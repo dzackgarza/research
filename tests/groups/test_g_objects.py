@@ -14,8 +14,6 @@ from dzack_research.preamble.all import (
     FiniteGSets,
     FreeModule,
     GObjects,
-    GroupModule,
-    GroupModules,
     Groups,
     Modules,
     Sets,
@@ -44,7 +42,7 @@ def _regular_representation(ring):
             {label: module.module_generator(group_element * label) for label in group}
         )(vector)
 
-    return group, GroupModule(module, group, act)
+    return group, Modules(ring[group])(module, act)
 
 
 def test_a_finite_g_set_on_an_owned_finite_ordered_set_is_a_g_object_in_sets() -> None:
@@ -77,7 +75,7 @@ def test_equivariant_maps_of_g_sets_are_the_set_maps_commuting_with_the_actions(
 def test_the_regular_representation_is_a_g_object_in_modules() -> None:
     group, representation = _regular_representation(QQ)
     assert representation in GObjects(group, Modules(QQ))
-    assert representation in GroupModules(QQ, group)
+    assert representation in Modules(QQ[group])
     assert representation.acting_group() is group
     endomorphisms = Modules(QQ).Mor(representation, representation)
     # Left translation is a left action: ``rho(gh) = rho(g) rho(h)``.

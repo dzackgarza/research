@@ -2,20 +2,17 @@ from sage.categories.sets_cat import Sets
 
 from dzack_research.preamble.all import (
     BasedFreeModule,
-    GroupModule,
+    Modules,
     Groups,
     QuadraticField,
     ZZ,
     abelianization_adjunction,
     base_change_adjunction,
     category_inclusion,
-    coinvariants_trivial_adjunction,
     free_forgetful_adjunction,
     group_module_base_change_adjunction,
-    group_module_homset,
     module_homset,
     order_number_field_adjunction,
-    trivial_invariants_adjunction,
     alternating_algebra_functor,
     symmetric_algebra_functor,
     tensor_algebra_functor,
@@ -49,7 +46,7 @@ def _swap_group_module():
             }
         )
 
-    return group, GroupModule(module, group, swap)
+    return group, Modules(ZZ[group])(module, swap)
 
 
 def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() -> None:
@@ -84,7 +81,7 @@ def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> N
             }
         )
 
-    acted = GroupModule(module, group, action)
+    acted = Modules(ZZ[group])(module, action)
     invariants = acted.module_invariants()
     coinvariants = acted.module_coinvariants()
 
@@ -220,7 +217,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     f = acted.module_generator("f")
 
     try:
-        group_module_homset(acted, acted)(
+        acted.Mor(acted)(
             {"e": e, "f": e}
         )
     except ValueError as error:
@@ -228,14 +225,14 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     else:
         raise AssertionError("an R[G]-Hom set accepted a non-equivariant module map")
 
-    adjunction = trivial_invariants_adjunction(ZZ, group)
+    adjunction = Modules(ZZ).trivial_invariants_adjunction(group)
     invariants = adjunction.right_adjoint()(acted)
     assert invariants.rank() == 1
     assert invariants.inclusion().is_in_image(e + f)
 
     source = BasedFreeModule(ZZ, finite_ordered_set(("n",)))
     trivial_source = adjunction.left_adjoint()(source)
-    equivariant = group_module_homset(trivial_source, acted)(
+    equivariant = trivial_source.Mor(acted)(
         {"n": e + f}
     )
     transpose = adjunction.hom_set_isomorphism_forward(equivariant)
@@ -252,7 +249,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
     )
     _assert_maps_agree(left, right, source.module_generators())
 
-    acted_endomorphism = group_module_homset(acted, acted)(
+    acted_endomorphism = acted.Mor(acted)(
         {"e": 2 * e, "f": 2 * f}
     )
     left, right = adjunction.counit_transformation().naturality_square(
@@ -277,7 +274,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
     group, acted = _swap_group_module()
     e = acted.module_generator("e")
     f = acted.module_generator("f")
-    adjunction = coinvariants_trivial_adjunction(ZZ, group)
+    adjunction = Modules(ZZ[group]).coinvariants_trivial_adjunction()
     coinvariants = adjunction.left_adjoint()(acted)
 
     assert coinvariants.rank() == 1
@@ -298,7 +295,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
             coinvariants.module_generator(label)
         )
 
-    acted_endomorphism = group_module_homset(acted, acted)(
+    acted_endomorphism = acted.Mor(acted)(
         {"e": 2 * e, "f": 2 * f}
     )
     left, right = adjunction.unit_transformation().naturality_square(
@@ -429,13 +426,13 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
 
 
 def test_declared_subcategory_edges_give_canonical_inclusion_functors() -> None:
-    from dzack_research.preamble.all import FormModules, GroupModules, Modules
+    from dzack_research.preamble.all import FormModules
 
     group, acted = _swap_group_module()
-    forget_action = category_inclusion(GroupModules(ZZ, group), Modules(ZZ))
+    forget_action = category_inclusion(Modules(ZZ[group]), Modules(ZZ))
     assert forget_action(acted) is acted
 
-    doubled = group_module_homset(acted, acted)(
+    doubled = acted.Mor(acted)(
         {
             "e": 2 * acted.module_generator("e"),
             "f": 2 * acted.module_generator("f"),
@@ -469,7 +466,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     restricted = restriction(extended)
     assert restricted.module_generating_set().cardinality() == 4
 
-    extended_identity = group_module_homset(extended, extended)(
+    extended_identity = extended.Mor(extended)(
         {
             label: extended.module_generator(label)
             for label in extended.module_generating_set()
@@ -480,7 +477,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     for generator in extended.module_generators():
         assert recovered(generator) == generator
 
-    source_endomorphism = group_module_homset(acted, acted)(
+    source_endomorphism = acted.Mor(acted)(
         {
             "e": 2 * acted.module_generator("e"),
             "f": 2 * acted.module_generator("f"),
@@ -491,7 +488,7 @@ def test_scalar_extension_restriction_lifts_to_group_modules_with_equivariance_a
     )
     _assert_maps_agree(left, right, acted.module_generators())
 
-    target_endomorphism = group_module_homset(extended, extended)(
+    target_endomorphism = extended.Mor(extended)(
         {
             "e": order(3) * extended.module_generator("e"),
             "f": order(3) * extended.module_generator("f"),

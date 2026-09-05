@@ -3,7 +3,7 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     FinitelyPresentedTorsionModules,
     GF,
-    GroupModule,
+    Modules,
     Groups,
     ZZ,
 )
@@ -25,7 +25,7 @@ def test_ordinary_character_is_the_trace_class_function_of_the_stored_action() -
     def action(group_element, vector):
         return (positive if group_element.sign() == 1 else negative)(vector)
 
-    acted = GroupModule(module, group, action)
+    acted = Modules(ZZ[group])(module, action)
     character = acted.character()
 
     assert character.domain() is group
@@ -57,7 +57,7 @@ def test_brauer_character_uses_teichmuller_lifts_not_modular_traces() -> None:
             moved = order_three(moved)
         return moved
 
-    acted = GroupModule(module, group, action)
+    acted = Modules(base_ring[group])(module, action)
     brauer_character = acted.brauer_character()
     representatives = group.conjugacy_classes_representatives()
     regular_representatives = tuple(
@@ -83,7 +83,7 @@ def test_nonfree_finitely_presented_group_module_has_no_ordinary_matrix_characte
     def action(group_element, vector):
         return vector if group_element == group.one() else -vector
 
-    acted = GroupModule(module, group, action)
+    acted = Modules(ZZ[group])(module, action)
     assert acted.act(generator, acted.module_generator(0)) == -acted.module_generator(0)
     with pytest.raises(NotImplementedError, match="finite free group module"):
         acted.character()

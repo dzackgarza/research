@@ -9,7 +9,7 @@ from dzack_research.preamble.all import (
     QQ,
     FiniteGSets,
     FreeModule,
-    GroupModule,
+    Modules,
     Groups,
     Subgroups,
 )
@@ -26,7 +26,7 @@ def _natural_permutation_module(ring, group, degree):
             }
         )(vector)
 
-    return GroupModule(module, group, act)
+    return Modules(ring[group])(module, act)
 
 
 def test_the_product_of_permutations_is_their_composition() -> None:

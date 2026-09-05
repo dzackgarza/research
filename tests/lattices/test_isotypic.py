@@ -3,7 +3,6 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     FormedModules,
     GroupLattice,
-    GroupModule,
     Groups,
     Lattices,
     Modules,
@@ -21,7 +20,7 @@ def test_c2_integral_isotypic_decomposition_is_the_plus_minus_underlattice() -> 
     def action(group_element, vector):
         return vector if group_element == group.one() else swap(vector)
 
-    acted = GroupModule(module, group, action)
+    acted = Modules(ZZ[group])(module, action)
     decomposition = acted.isotypic_decomposition()
 
     assert decomposition.isotypic_characters().cardinality() == 2
@@ -46,7 +45,7 @@ def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
             moved = cycle(moved)
         return moved
 
-    acted = GroupModule(module, group, action)
+    acted = Modules(ZZ[group])(module, action)
     characters = acted.isotypic_characters()
     decomposition = acted.isotypic_decomposition()
 

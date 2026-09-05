@@ -8,7 +8,7 @@ of ``G``-objects is a morphism of ``C`` commuting with the two actions, so
 conjugation.  The forgetful functor to ``C`` is evaluation at the one object
 of ``BG``.
 
-``GSets(G)`` is ``GObjects(G, Sets())``, and ``GroupModules(R, G)`` refines
+``GSets(G)`` is ``GObjects(G, Sets())``, and ``Modules(R[G])`` refines
 ``GObjects(G, Modules(R))``.  A specialization constructs its objects through
 ``C``'s own constructor and supplies the action as the one datum of this
 level: a function from group elements to data that ``Mor_C(X, X)`` accepts.
@@ -184,9 +184,6 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
     def an_object(self):
         r"""The trivial action on an object of the underlying category."""
         from dzack_research.preamble.categories.group.g_sets import trivial_g_set
-        from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-            trivial_group_action,
-        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         category = self.underlying_category()
@@ -196,7 +193,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         assert category.is_subcategory(Modules(category.base_ring())), (
             f"no owned constructor equips an object of {category} with a group action"
         )
-        return trivial_group_action(sample, self.acting_group())
+        return Modules(category.base_ring()).trivial_action(self.acting_group())(sample)
 
     class ParentMethods:
         def __init__(self, acting_group, action, underlying_category, **rest) -> None:

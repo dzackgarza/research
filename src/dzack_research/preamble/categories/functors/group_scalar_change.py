@@ -17,10 +17,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
+from dzack_research.preamble.categories.modules.pure.modules import Modules, restrict_scalars
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    GroupModule,
-    GroupModules,
+
+    _equip_action,
     group_module_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
@@ -60,8 +61,8 @@ class GroupModuleScalarExtensionFunctor(Functor):
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(
-            GroupModules(self._source_ring, group),
-            GroupModules(self._target_ring, group),
+            Modules(GroupAlgebra(self._source_ring, group)),
+            Modules(GroupAlgebra(self._target_ring, group)),
         )
 
     def ring_map(self):
@@ -111,8 +112,8 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
         super().__init__(
-            GroupModules(self._target_ring, group),
-            GroupModules(self._source_ring, group),
+            Modules(GroupAlgebra(self._target_ring, group)),
+            Modules(GroupAlgebra(self._source_ring, group)),
         )
 
     def ring_map(self):
@@ -138,7 +139,7 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
                 _forget_action_element(group_module, acted_image)
             )
 
-        return GroupModule(
+        return _equip_action(
             unacted_restricted,
             self.group(),
             action,

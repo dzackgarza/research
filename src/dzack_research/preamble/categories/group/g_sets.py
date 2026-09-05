@@ -94,6 +94,10 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     def _repr_object_names(self):
         return f"finite {self.group()}-sets"
 
+    def _call_(self, point_set, action):
+        r"""The finite ``G``-set on ``point_set`` with the action ``action(g, x)``."""
+        return finite_g_set(point_set, self.group(), action)
+
     _HomCategory = GSetHomCategoryConstruction
 
     class ParentMethods:

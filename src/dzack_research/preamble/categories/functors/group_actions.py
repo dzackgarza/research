@@ -11,12 +11,13 @@ The Hom-sets on the acted side are the actual equivariant Hom-sets supplied by
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    FinitelyPresentedGroupModules,
+
     group_module_homset,
-    trivial_group_action,
+    _trivial_action,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
@@ -48,15 +49,15 @@ class TrivialActionFunctor(Functor):
         self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
-            FinitelyPresentedModules(self._base_ring),
-            FinitelyPresentedGroupModules(self._base_ring, group),
+            Modules(self._base_ring),
+            Modules(GroupAlgebra(self._base_ring, group)),
         )
 
     def group(self):
         return self._group
 
     def _apply_object(self, module):
-        return trivial_group_action(module, self.group())
+        return _trivial_action(module, self.group())
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -78,8 +79,8 @@ class InvariantsFunctor(Functor):
         self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
-            FinitelyPresentedGroupModules(self._base_ring, group),
-            FinitelyPresentedModules(self._base_ring),
+            Modules(GroupAlgebra(self._base_ring, group)),
+            Modules(self._base_ring),
         )
 
     def _apply_object(self, group_module):
@@ -114,8 +115,8 @@ class CoinvariantsFunctor(Functor):
         self._base_ring = _owned_ring(base_ring)
         self._group = group
         super().__init__(
-            FinitelyPresentedGroupModules(self._base_ring, group),
-            FinitelyPresentedModules(self._base_ring),
+            Modules(GroupAlgebra(self._base_ring, group)),
+            Modules(self._base_ring),
         )
 
     def _apply_object(self, group_module):

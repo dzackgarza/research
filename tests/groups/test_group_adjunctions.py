@@ -3,7 +3,7 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     finite_g_set,
     FinitelyPresentedTorsionModules,
-    GroupModule,
+    Modules,
     Groups,
     ZZ,
     free_g_set_underlying_adjunction,
@@ -12,7 +12,6 @@ from dzack_research.preamble.all import (
     g_set_orbits_trivial_adjunction,
     g_set_trivial_fixed_adjunction,
     group_homset,
-    group_module_homset,
     induction_restriction_adjunction,
     restriction_coinduction_adjunction,
     underlying_cofree_g_set_adjunction,
@@ -57,7 +56,7 @@ def _s3_c2_sign_module():
     def sign_action(group_element, vector):
         return vector if group_element == subgroup.one() else -vector
 
-    return supergroup, subgroup, GroupModule(module, subgroup, sign_action)
+    return supergroup, subgroup, Modules(ZZ[subgroup])(module, sign_action)
 
 
 def _s3_c2_torsion_sign_module():
@@ -73,7 +72,7 @@ def _s3_c2_torsion_sign_module():
     def sign_action(group_element, vector):
         return vector if group_element == subgroup.one() else -vector
 
-    return supergroup, subgroup, GroupModule(module, subgroup, sign_action)
+    return supergroup, subgroup, Modules(ZZ[subgroup])(module, sign_action)
 
 
 def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_triangles() -> None:
@@ -292,7 +291,7 @@ def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturali
     adjunction = induction_restriction_adjunction(ZZ, subgroup, supergroup)
     induced = adjunction.left_adjoint()(module)
 
-    doubled = group_module_homset(induced, induced)(
+    doubled = induced.Mor(induced)(
         {
             label: 2 * induced.module_generator(label)
             for label in induced.module_generating_set()
@@ -302,7 +301,7 @@ def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturali
     recovered = adjunction.hom_set_isomorphism_inverse(transpose)
     _assert_maps_agree(recovered, doubled, induced.module_generators())
 
-    module_endomorphism = group_module_homset(module, module)(
+    module_endomorphism = module.Mor(module)(
         {"m": 3 * module.module_generator("m")}
     )
     left, right = adjunction.unit_transformation().naturality_square(
@@ -310,7 +309,7 @@ def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturali
     )
     _assert_maps_agree(left, right, module.module_generators())
 
-    induced_endomorphism = group_module_homset(induced, induced)(
+    induced_endomorphism = induced.Mor(induced)(
         {
             label: 5 * induced.module_generator(label)
             for label in induced.module_generating_set()
@@ -326,7 +325,7 @@ def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturali
     ) * adjunction.unit(adjunction.right_adjoint()(induced))
     _assert_maps_agree(
         first_triangle,
-        group_module_homset(first_triangle.domain(), first_triangle.domain()).identity(),
+        first_triangle.domain().Mor(first_triangle.domain()).identity(),
         first_triangle.domain().module_generators(),
     )
 
@@ -335,7 +334,7 @@ def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturali
     )
     _assert_maps_agree(
         second_triangle,
-        group_module_homset(induced, induced).identity(),
+        induced.Mor(induced).identity(),
         induced.module_generators(),
     )
 
@@ -345,7 +344,7 @@ def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_natura
     adjunction = restriction_coinduction_adjunction(ZZ, subgroup, supergroup)
     coinduced = adjunction.right_adjoint()(module)
 
-    doubled = group_module_homset(coinduced, coinduced)(
+    doubled = coinduced.Mor(coinduced)(
         {
             label: 2 * coinduced.module_generator(label)
             for label in coinduced.module_generating_set()
@@ -355,7 +354,7 @@ def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_natura
     recovered = adjunction.hom_set_isomorphism_forward(transpose)
     _assert_maps_agree(recovered, doubled, coinduced.module_generators())
 
-    coinduced_endomorphism = group_module_homset(coinduced, coinduced)(
+    coinduced_endomorphism = coinduced.Mor(coinduced)(
         {
             label: 3 * coinduced.module_generator(label)
             for label in coinduced.module_generating_set()
@@ -366,7 +365,7 @@ def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_natura
     )
     _assert_maps_agree(left, right, coinduced.module_generators())
 
-    module_endomorphism = group_module_homset(module, module)(
+    module_endomorphism = module.Mor(module)(
         {"m": 5 * module.module_generator("m")}
     )
     left, right = adjunction.counit_transformation().naturality_square(
@@ -379,7 +378,7 @@ def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_natura
     ) * adjunction.unit(coinduced)
     _assert_maps_agree(
         first_triangle,
-        group_module_homset(coinduced, coinduced).identity(),
+        coinduced.Mor(coinduced).identity(),
         coinduced.module_generators(),
     )
 
@@ -389,7 +388,7 @@ def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_natura
     )
     _assert_maps_agree(
         second_triangle,
-        group_module_homset(restricted, restricted).identity(),
+        restricted.Mor(restricted).identity(),
         restricted.module_generators(),
     )
 
@@ -406,7 +405,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     assert all(induced_invariants.unrank(position) == ZZ(4) for position in range(3))
     assert all(generator.additive_order() == 4 for generator in induced.module_generators())
 
-    induced_doubling = group_module_homset(induced, induced)(
+    induced_doubling = induced.Mor(induced)(
         {
             label: 2 * induced.module_generator(label)
             for label in induced.module_generating_set()
@@ -424,7 +423,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     )
     _assert_maps_agree(
         induction_triangle,
-        group_module_homset(induced, induced).identity(),
+        induced.Mor(induced).identity(),
         induced.module_generators(),
     )
 
@@ -438,7 +437,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     )
     assert all(generator.additive_order() == 4 for generator in coinduced.module_generators())
 
-    coinduced_doubling = group_module_homset(coinduced, coinduced)(
+    coinduced_doubling = coinduced.Mor(coinduced)(
         {
             label: 2 * coinduced.module_generator(label)
             for label in coinduced.module_generating_set()
@@ -460,6 +459,6 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     ) * coinduction.unit(coinduced)
     _assert_maps_agree(
         coinduction_triangle,
-        group_module_homset(coinduced, coinduced).identity(),
+        coinduced.Mor(coinduced).identity(),
         coinduced.module_generators(),
     )

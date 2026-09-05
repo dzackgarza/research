@@ -13,10 +13,12 @@ The implementation uses Sage's finite cosets only to choose coordinates for
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
 from dzack_research.preamble.categories.group.groups import _owned_group
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    FinitelyPresentedGroupModules,
-    GroupModule,
+    _equip_action,
+
     group_module_homset,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -136,8 +138,8 @@ class RestrictionOfActingGroupFunctor(Functor):
             subgroup, supergroup
         )
         super().__init__(
-            FinitelyPresentedGroupModules(self._base_ring, self._supergroup),
-            FinitelyPresentedGroupModules(self._base_ring, self._subgroup),
+            Modules(GroupAlgebra(self._base_ring, self._supergroup)),
+            Modules(GroupAlgebra(self._base_ring, self._subgroup)),
         )
 
     def subgroup(self):
@@ -150,7 +152,7 @@ class RestrictionOfActingGroupFunctor(Functor):
         return self._inclusion
 
     def _apply_object(self, group_module):
-        restricted = GroupModule(
+        restricted = _equip_action(
             group_module,
             self.subgroup(),
             lambda subgroup_element, vector: group_module.act(
@@ -192,8 +194,8 @@ class InductionFunctor(Functor):
             name="Left-coset representatives",
         )
         super().__init__(
-            FinitelyPresentedGroupModules(self._base_ring, self._subgroup),
-            FinitelyPresentedGroupModules(self._base_ring, self._supergroup),
+            Modules(GroupAlgebra(self._base_ring, self._subgroup)),
+            Modules(GroupAlgebra(self._base_ring, self._supergroup)),
         )
 
     def subgroup(self):
@@ -257,7 +259,7 @@ class InductionFunctor(Functor):
                     )
             return module.linear_combination(output_coefficients)
 
-        return GroupModule(module, self.supergroup(), action)
+        return _equip_action(module, self.supergroup(), action)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -300,8 +302,8 @@ class CoinductionFunctor(Functor):
             name="Right-coset representatives",
         )
         super().__init__(
-            FinitelyPresentedGroupModules(self._base_ring, self._subgroup),
-            FinitelyPresentedGroupModules(self._base_ring, self._supergroup),
+            Modules(GroupAlgebra(self._base_ring, self._subgroup)),
+            Modules(GroupAlgebra(self._base_ring, self._supergroup)),
         )
 
     def subgroup(self):
@@ -374,7 +376,7 @@ class CoinductionFunctor(Functor):
                         ] = coefficient
             return module.linear_combination(output_coefficients)
 
-        return GroupModule(module, self.supergroup(), action)
+        return _equip_action(module, self.supergroup(), action)
 
     def value_at(self, coinduced, vector, representative):
         source = self.chosen_preimage(coinduced)

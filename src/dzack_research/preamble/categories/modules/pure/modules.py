@@ -112,8 +112,56 @@ class ModuleEndCategoryConstruction(LinearEndCategoryConstruction):
     r"""The ring-valued endomorphism family ``M |-> End_R(M)``."""
 
 
+def _is_group_algebra(ring) -> bool:
+    r"""Decide whether ``ring`` is an owned group algebra ``R[G]``.
+
+    Read off the ring's own category: constructing ``GroupAlgebras(R)`` to
+    ask would need ``Modules(R)``, which may be the category being built.
+    """
+    from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
+
+    if ring not in OwnedRings():
+        return False
+    # Sage realizes each category instance in a dynamic subclass, so the
+    # placement is recognized by its category class, not by identity.
+    return any(
+        isinstance(placement, GroupAlgebras)
+        for placement in ring.category().all_super_categories(proper=False)
+    )
+
+
 class Modules(OwnedCategoryOverBaseRing):
     r"""Modules over a ring, on the owned additive and scalar spines."""
+
+    @staticmethod
+    def __classcall__(cls, base_ring, *args, **kwargs):
+        r"""``Modules(R[G])`` is the category of modules over a group algebra.
+
+        The owned placement of a group module is the ring it is a module
+        over, so the group algebra selects the category class that knows its
+        group; every other ring reaches the generic construction.
+        """
+        if cls is Modules and _is_group_algebra(base_ring):
+            from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+                ModulesOverGroupAlgebra,
+            )
+
+            return ModulesOverGroupAlgebra(base_ring)
+        return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, *args, **kwargs)
+
+    def trivial_action(self, group):
+        r"""``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation."""
+        from dzack_research.preamble.categories.functors.group_actions import TrivialActionFunctor
+
+        return TrivialActionFunctor(self.base_ring(), group)
+
+    def trivial_invariants_adjunction(self, group):
+        r"""``Triv_G -| (-)^G``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            trivial_invariants_adjunction,
+        )
+
+        return trivial_invariants_adjunction(self.base_ring(), group)
 
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""

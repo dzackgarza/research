@@ -1,6 +1,19 @@
-r"""Native-backed modules equipped with an action of a specified group."""
+r"""Modules over a group algebra: ``Modules(R[G])``.
 
-from sage.categories.category import Category
+An ``R[G]``-module is a module over the ring ``R[G]``.  Restricting the
+ring action along the group inclusion ``G -> R[G]`` gives a left action of
+``G`` by ``R``-linear automorphisms, and conversely an ``R``-module with a
+left ``G``-action is an ``R[G]``-module by linear extension; this is the
+equivalence ``GObjects(G, Modules(R)) ~ Modules(R[G])``.  Since ``ZZ`` is
+initial, every ``R[G]``-module is a ``ZZ[G]``-module by restriction along
+``ZZ[G] -> R[G]``, and the functors stated over ``ZZ`` apply to it.
+
+Invariants and coinvariants are scalar change along the augmentation
+``R[G] -> R``: ``M^G = Hom_{R[G]}(R, M)`` is the coextension and
+``M_G = R tensor_{R[G]} M`` the extension, computed as the wide equalizer
+and coequalizer of the action on a finite group generating set.
+"""
+
 from sage.categories.map import Map
 from sage.misc.cachefunc import cached_method
 
@@ -9,10 +22,12 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
     EqualizerOfFamily,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoryPacketMethods,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.algebras.group_algebras import (
+    GroupAlgebra,
+    GroupAlgebras,
+)
 from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
@@ -49,6 +64,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -68,60 +84,116 @@ class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
         return GroupModuleHomset
 
 
-class _CategoryOverRingAndActingGroup(OwnedCategory):
-    r"""Shared Python parameter handling for categories indexed by ``(R,G)``."""
+class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
+    r"""``Modules(R[G])``: the modules over a group algebra.
 
-    @staticmethod
-    def __classcall__(cls, base_ring, group):
+    ``Modules(S)`` constructs this category whenever ``S`` is a group
+    algebra, so the spelling is ``Modules(R[G])``.  Its objects are the
+    ``R``-modules with a chosen left ``G``-action, its morphisms the
+    ``R``-linear equivariant maps.
+    """
 
-        return Category.__classcall__(
-            cls,
-            _owned_ring(base_ring),
-            _owned_group(group),
-        )
+    def group_algebra(self):
+        return self.base_ring()
 
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = base_ring
-        self._group = group
-        OwnedCategory.__init__(self)
-
-    def base_ring(self):
-        return self._base_ring
+    def coefficient_ring(self):
+        r"""``R``, the scalars of the group algebra ``R[G]``."""
+        return self.base_ring().base_ring()
 
     def acting_group(self):
-        return self._group
-
-
-class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
-    r"""The category of ``R[G]``-modules for a specified ring and group."""
+        return self.base_ring().group()
 
     def _repr_object_names(self):
-        return f"{self.base_ring()}[{self.acting_group()}]-modules"
+        return f"modules over {self.base_ring()}"
 
     def super_categories(self):
+        ring = self.coefficient_ring()
         return [
-            GObjects(self.acting_group(), Modules(self.base_ring())),
-            Modules(self.base_ring()),
+            GObjects(self.acting_group(), Modules(ring)),
+            Modules(ring),
         ]
 
     _HomCategory = GroupModuleHomCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
 
+    def an_object(self):
+        r"""The trivial action on the free module of rank one."""
+        ring = self.coefficient_ring()
+        return Modules(ring).trivial_action(self.acting_group())(Modules(ring).an_object())
+
+    def _call_(self, module, action):
+        r"""Equip an ``R``-module with a left ``G``-action, ``action(g, m)``."""
+        return _equip_action(module, self.acting_group(), action)
+
     def is_semisimple(self) -> bool:
-        r"""Return the conclusion of Maschke's theorem when it applies."""
-        ring = self.base_ring()
-        group = self.acting_group()
-        if not ring.is_field():
-            raise NotImplementedError(
-                "this method applies Maschke's theorem over a field; it does not classify semisimplicity over a general coefficient ring"
-            )
-        if group.is_finite() is not True:
-            raise NotImplementedError(
-                "semisimplicity of the group algebra is not decided here for an infinite group"
-            )
-        characteristic = ring.characteristic()
-        zero = characteristic.parent().zero()
-        return characteristic == zero or group.order() % characteristic != zero
+        r"""Maschke's theorem, asked of the group algebra."""
+        return self.base_ring().is_semisimple()
+
+    # The three scalar-change functors along the augmentation R[G] -> R.
+
+    def invariants(self):
+        r"""``(-)^G = Hom_{R[G]}(R, -) : Modules(R[G]) -> Modules(R)``."""
+        from dzack_research.preamble.categories.functors.group_actions import InvariantsFunctor
+
+        return InvariantsFunctor(self.coefficient_ring(), self.acting_group())
+
+    def coinvariants(self):
+        r"""``(-)_G = R tensor_{R[G]} - : Modules(R[G]) -> Modules(R)``."""
+        from dzack_research.preamble.categories.functors.group_actions import CoinvariantsFunctor
+
+        return CoinvariantsFunctor(self.coefficient_ring(), self.acting_group())
+
+    def coinvariants_trivial_adjunction(self):
+        r"""``(-)_G -| Triv_G``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            coinvariants_trivial_adjunction,
+        )
+
+        return coinvariants_trivial_adjunction(self.coefficient_ring(), self.acting_group())
+
+    # Scalar change along ZZ[H] -> ZZ[G] for H <= G.
+
+    def restriction(self, subgroup):
+        r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            RestrictionOfActingGroupFunctor,
+        )
+
+        return RestrictionOfActingGroupFunctor(
+            self.coefficient_ring(), subgroup, self.acting_group()
+        )
+
+    def induction(self, supergroup):
+        r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``."""
+        from dzack_research.preamble.categories.functors.group_induction import InductionFunctor
+
+        return InductionFunctor(self.coefficient_ring(), self.acting_group(), supergroup)
+
+    def coinduction(self, supergroup):
+        r"""``CoInd_H^G : Modules(R[H]) -> Modules(R[G])``."""
+        from dzack_research.preamble.categories.functors.group_induction import CoinductionFunctor
+
+        return CoinductionFunctor(self.coefficient_ring(), self.acting_group(), supergroup)
+
+    def induction_restriction_adjunction(self, supergroup):
+        r"""``Ind_H^G -| Res_H^G``."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            induction_restriction_adjunction,
+        )
+
+        return induction_restriction_adjunction(
+            self.coefficient_ring(), self.acting_group(), supergroup
+        )
+
+    def restriction_coinduction_adjunction(self, subgroup):
+        r"""``Res_H^G -| CoInd_H^G``."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            restriction_coinduction_adjunction,
+        )
+
+        return restriction_coinduction_adjunction(
+            self.coefficient_ring(), subgroup, self.acting_group()
+        )
 
     class ParentMethods:
         def __init__(
@@ -164,6 +236,10 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             # ``group()`` itself, so the acting group is read through it.
             return self.group()
 
+        def group_algebra(self):
+            r"""``R[G]``, the ring this is a module over."""
+            return GroupAlgebra(self.base_ring(), self.group())
+
         def is_trivial_action(self) -> bool:
             return self._preamble_action_is_trivial
 
@@ -191,16 +267,56 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
                 }
             )
 
+        def Mor(self, codomain, category=None):
+            r"""``Mor_{R[G]}(M, N)``, the equivariant maps; ``Modules(R)`` names the linear ones."""
+            if category is None or category.is_subcategory(Modules(self.group_algebra())):
+                return group_module_homset(self, codomain)
+            return super().Mor(codomain, category)
+
         def _Hom_(self, codomain, category=None):
-            if codomain not in GroupModules(self.base_ring(), self.group()):
+            if codomain not in Modules(self.group_algebra()):
                 raise TypeError("an R[G]-module morphism requires the same acting group")
             return group_module_homset(self, codomain)
 
+        def _finite_action_endomorphism_family(self):
+            r"""Return ``{id_M} union {rho(s) : s in S}`` for a chosen finite ``S``.
+
+            Choosing a finite group generating set is a represented backend for
+            the wide equalizer/coequalizer of the full action; callers retain
+            the universal-construction spelling.
+            """
+            group = self.group()
+            if group.is_finitely_generated() is not True:
+                raise NotImplementedError(
+                    "the represented action equalizer/coequalizer requires a chosen finite group generating set"
+                )
+            generators = group.group_generators()
+            indices = CoproductOfFamily(
+                Sets.Δ[1],
+                lambda side: Sets.Δ[0] if int(side) == 0 else generators,
+            )
+            identity = module_homset(self, self).identity()
+            return finite_indexed_family(
+                indices,
+                lambda tagged: (
+                    identity
+                    if int(tagged.summand_index()) == 0
+                    else self.action_of(tagged.summand_element())
+                ),
+                name=f"Identity and chosen action generators on {self}",
+            )
+
         def module_invariants(self):
-            r"""Return ``M^G`` as the equalizer subobject of the action and identity."""
+            r"""``M^G = Hom_{R[G]}(R, M)``, the wide equalizer of the action and the identity."""
             if self.is_trivial_action():
                 return self.unacted_module()
-            return self._represented_action_equalizer()
+            return EqualizerOfFamily(self._finite_action_endomorphism_family())
+
+        def module_coinvariants(self):
+            r"""``M_G = R tensor_{R[G]} M``, the wide coequalizer of the action and the identity."""
+            if self.is_trivial_action():
+                return self.unacted_module()
+            return CoequalizerOfFamily(self._finite_action_endomorphism_family())
 
         def isotypic_characters(self):
             r"""Return the irreducible-character indices appropriate to the coefficient ring."""
@@ -217,18 +333,12 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
 
             return isotypic_decomposition(self)
 
-        def module_coinvariants(self):
-            r"""Return ``M_G`` as the coequalizer of the action and identity."""
-            if self.is_trivial_action():
-                return self.unacted_module()
-            return self._represented_action_coequalizer()
-
         def character(self):
             r"""Return the ordinary trace character in characteristic zero."""
             group = self.group()
             if group.is_finite() is not True:
                 raise NotImplementedError("ordinary character tables here require a finite group")
-            if self not in FinitelyGeneratedFreeGroupModules(self.base_ring(), group):
+            if self not in FinitelyGeneratedFreeModules(self.base_ring()):
                 raise NotImplementedError(
                     "the ordinary character is implemented here for a finite free group module; a finite presentation alone does not supply the finite-dimensional linear representation used by this construction"
                 )
@@ -254,7 +364,7 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             group = self.group()
             if group.is_finite() is not True:
                 raise NotImplementedError("Brauer characters here require a finite group")
-            if self not in FinitelyGeneratedFreeGroupModules(self.base_ring(), group):
+            if self not in FinitelyGeneratedFreeModules(self.base_ring()):
                 raise NotImplementedError(
                     "the Brauer character is defined here for a finite free group module"
                 )
@@ -332,7 +442,7 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             scalar_extension = ScalarExtensionFunctor(ring_map)
             changed_module = scalar_extension(unacted)
             if self.is_trivial_action():
-                return trivial_group_action(changed_module, self.group())
+                return _trivial_action(changed_module, self.group())
 
             def changed_action(group_element, vector):
                 underlying_action = (
@@ -342,72 +452,7 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
                 )
                 return scalar_extension(underlying_action)(vector)
 
-            return GroupModule(changed_module, self.group(), changed_action)
-
-
-
-class FinitelyGeneratedFreeGroupModules(_CategoryOverRingAndActingGroup):
-    r"""Group modules whose underlying module is finite free with a chosen basis."""
-
-    def _repr_object_names(self):
-        return f"finitely generated free {self.base_ring()}[{self.acting_group()}]-modules"
-
-    def super_categories(self):
-
-        return [
-            GroupModules(self.base_ring(), self.acting_group()),
-            FinitelyPresentedGroupModules(self.base_ring(), self.acting_group()),
-            FinitelyGeneratedFreeModules(self.base_ring()),
-        ]
-
-
-class FinitelyPresentedGroupModules(_CategoryOverRingAndActingGroup):
-    r"""Group modules with a chosen finite presentation of the underlying module."""
-
-    def _repr_object_names(self):
-        return f"finitely presented {self.base_ring()}[{self.acting_group()}]-modules"
-
-    def super_categories(self):
-
-        return [
-            GroupModules(self.base_ring(), self.acting_group()),
-            FinitelyPresentedModules(self.base_ring()),
-        ]
-
-    class ParentMethods:
-        def _finite_action_endomorphism_family(self):
-            r"""Return ``{id_M} union {rho(s) : s in S}`` for a chosen finite ``S``.
-
-            Choosing a finite group generating set is a represented backend for
-            the wide equalizer/coequalizer of the full action; callers retain
-            the universal-construction spelling.
-            """
-            group = self.group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError(
-                    "the represented action equalizer/coequalizer requires a chosen finite group generating set"
-                )
-            generators = group.group_generators()
-            indices = CoproductOfFamily(
-                Sets.Δ[1],
-                lambda side: Sets.Δ[0] if int(side) == 0 else generators,
-            )
-            identity = module_homset(self, self).identity()
-            return finite_indexed_family(
-                indices,
-                lambda tagged: (
-                    identity
-                    if int(tagged.summand_index()) == 0
-                    else self.action_of(tagged.summand_element())
-                ),
-                name=f"Identity and chosen action generators on {self}",
-            )
-
-        def _represented_action_equalizer(self):
-            return EqualizerOfFamily(self._finite_action_endomorphism_family())
-
-        def _represented_action_coequalizer(self):
-            return CoequalizerOfFamily(self._finite_action_endomorphism_family())
+            return _equip_action(changed_module, self.group(), changed_action)
 
 
 def _apply_action(action, group_element, vector):
@@ -502,29 +547,28 @@ def group_module_homset(domain, codomain) -> GroupModuleHomset:
     group = domain.group()
     if codomain.base_ring() is not ring or codomain.group() != group:
         raise ValueError("R[G]-module morphisms require one coefficient ring and acting group")
-    return GroupModules(ring, group).Mor(domain, codomain)
+    return Modules(GroupAlgebra(ring, group)).Mor(domain, codomain)
 
 
-def GroupModule(module, group_or_action, action=None, *, _action_is_trivial=False):
-    r"""Equip a finitely presented module with a specified left group action.
+def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=False):
+    r"""Equip a finitely presented ``R``-module with a left ``G``-action.
 
-    ``GroupModule(M, rho)`` accepts a morphism ``rho`` whose domain is the
-    acting group and whose values act on ``M``.  ``GroupModule(M, G, action)``
-    accepts the equivalent binary action ``action(g, m)``.  The resulting
-    parent is a distinct structured module; the selected module labels are
-    transported unchanged.
+    The result is an object of ``Modules(R[G])``, and of ``Modules(ZZ[G])``
+    by restriction along ``ZZ[G] -> R[G]``.  ``action`` is either a morphism
+    ``rho`` with domain the acting group, or the binary ``action(g, m)``.
+    The selected module labels are transported unchanged.
     """
 
     base_ring = module.base_ring()
     if module not in FinitelyPresentedModules(base_ring):
         raise NotImplementedError(
-            "the active GroupModule constructor requires a represented finite presentation"
+            "equipping an action requires a represented finite presentation"
         )
     if action is None:
         action = group_or_action
         if not isinstance(action, Map):
             raise TypeError(
-                "with two arguments, GroupModule expects an action morphism whose domain is the acting group"
+                "with two arguments, an action morphism whose domain is the acting group is expected"
             )
         group = _owned_group(action.domain())
     else:
@@ -533,7 +577,7 @@ def GroupModule(module, group_or_action, action=None, *, _action_is_trivial=Fals
     labels = module.module_generating_set()
     if not labels.cardinality().is_finite():
         raise NotImplementedError(
-            "the active native GroupModule constructor currently materializes a finite framing"
+            "equipping an action currently materializes a finite framing"
         )
 
     is_free = module in FinitelyGeneratedFreeModules(base_ring)
@@ -542,12 +586,11 @@ def GroupModule(module, group_or_action, action=None, *, _action_is_trivial=Fals
             "a nonfree group module requires a chosen finite presentation"
         )
 
-    categories = [
-        GroupModules(base_ring, group),
-        FinitelyPresentedGroupModules(base_ring, group),
-    ]
-    if is_free:
-        categories.append(FinitelyGeneratedFreeGroupModules(base_ring, group))
+    from dzack_research.preamble.catalogue import ZZ as integers
+
+    categories = [Modules(GroupAlgebra(base_ring, group))]
+    if base_ring is not integers:
+        categories.append(Modules(GroupAlgebra(integers, group)))
     construction_data = {
         "acting_group": group,
         "unacted_module": module,
@@ -568,9 +611,9 @@ def GroupModule(module, group_or_action, action=None, *, _action_is_trivial=Fals
     )
 
 
-def trivial_group_action(module, group):
+def _trivial_action(module, group):
     r"""Equip ``module`` with the trivial action of ``group``."""
-    return GroupModule(
+    return _equip_action(
         module,
         group,
         lambda _group_element, vector: vector,
@@ -579,12 +622,8 @@ def trivial_group_action(module, group):
 
 
 __all__ = [
-    "FinitelyGeneratedFreeGroupModules",
-    "FinitelyPresentedGroupModules",
-    "GroupModule",
     "GroupModuleHomset",
     "GroupModuleMorphism",
-    "GroupModules",
+    "ModulesOverGroupAlgebra",
     "group_module_homset",
-    "trivial_group_action",
 ]

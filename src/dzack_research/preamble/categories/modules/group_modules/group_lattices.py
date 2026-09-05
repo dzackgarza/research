@@ -1,25 +1,42 @@
 r"""Lattices equipped with a chosen form-preserving group action."""
 
+from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    GroupModule,
-    GroupModules,
-    _CategoryOverRingAndActingGroup,
-)
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
+from dzack_research.preamble.categories.group.groups import _owned_group
 from dzack_research.preamble.categories.lattices import (
     FiniteRankLattices,
     Lattice,
     Lattices,
     RootLattices,
 )
+from dzack_research.preamble.categories.modules.group_modules.group_modules import _equip_action
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
+from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class GroupLattices(_CategoryOverRingAndActingGroup):
+class GroupLattices(OwnedCategory):
     r"""Lattices carrying a specified action by lattice isometries."""
+
+    @staticmethod
+    def __classcall__(cls, base_ring, group):
+        return Category.__classcall__(cls, _owned_ring(base_ring), _owned_group(group))
+
+    def __init__(self, base_ring, group) -> None:
+        self._base_ring = base_ring
+        self._group = group
+        OwnedCategory.__init__(self)
+
+    def base_ring(self):
+        return self._base_ring
+
+    def acting_group(self):
+        return self._group
 
     def _repr_object_names(self):
         return f"{self.acting_group()}-lattices over {self.base_ring()}"
@@ -28,7 +45,7 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
 
         return [
             Lattices(self.base_ring()),
-            GroupModules(self.base_ring(), self.acting_group()),
+            Modules(GroupAlgebra(self.base_ring(), self.acting_group())),
         ]
 
     class ParentMethods:
@@ -69,7 +86,7 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
 
         @cached_method
         def group_module(self):
-            return GroupModule(self, self.action())
+            return _equip_action(self, self.action())
 
         def act(self, group_element, vector):
 
@@ -128,7 +145,7 @@ def GroupLattice(lattice, group_or_action, action=None):
 
     base_ring = lattice.base_ring()
     assert lattice in FiniteRankLattices(base_ring)
-    source_group_module = GroupModule(lattice, group_or_action, action)
+    source_group_module = _equip_action(lattice, group_or_action, action)
     group = source_group_module.group()
 
     prototype = Lattices(base_ring)(

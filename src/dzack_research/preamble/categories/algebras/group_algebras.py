@@ -117,6 +117,13 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             )
             return algebra_homset(self, ring)(counit)
 
+        @cached_method
+        def regular_representation(self):
+            r"""``R[G]`` as a module over itself by left multiplication."""
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            return Modules(self)(self, lambda g, element: self(g) * element)
+
         def is_semisimple(self) -> bool:
             r"""Maschke's theorem in its ring form (Lam, FC, Theorem 6.1).
 
