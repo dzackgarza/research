@@ -9,13 +9,22 @@ The witness observations record earlier findings; inspect the current owner befo
 
 ## Active scheme and inheritance work
 
+The source-grounded dependency assessment is [PORT_TODO.md §8.4](PORT_TODO.md#84-commutative-algebra-foundation-required-by-scheme-theory).
+Use the existing quotient, localization, differential, and presented-module constructions as the starting point.
+
+- [ ] Repair the shared prime-local unit and ideal operations in `rings/ring_foundation.py` and `rings/commutative_algebra.py`.
+  Extend prime localization to reducible and nonreduced polynomial quotients, with their residue and comparison maps.
+- [ ] Connect localized-module equality and vanishing to exact presentation algorithms in `modules/localizations.py`.
+  Retain the existing localization functor and its transport of morphisms and exact constructions.
+- [ ] Route successive affine closed embeddings through the existing quotient-of-presentation operation in `algebras/free_algebras.py`.
+  Preserve relative presentations through parameter maps and scalar change, and connect all required owned map types to affine `Spec` and pushouts.
 - [ ] Complete the underlying-module construction for each algebra used by the geometry, including its action on morphisms and initialized module state.
   Reuse module arithmetic, presentations, and linear-map algorithms through that structure.
   Inspect `categories/algebras/algebras.py` together with `categories/functors/algebra_modules.py`.
 - [ ] Repair the shared constructor or functor path when an inherited operation cannot use its required state.
   Keep the repair in `owned_category.py`, `refine.py`, or the owning functor as appropriate.
   Use the [local Cat work criteria](TODO-PRIORITIES.md#how-much-category-theory-to-implement-here) to decide between automatic inheritance and explicit functor application.
-- [ ] Complete the affine-local algebra, spaces over a base, subschemes, structure sheaves, and gluing requirements in `PORT_TODO.md` §§8.4–10.
+- [ ] Extend existing affine structure-sheaf values to restriction morphisms, compatible covers, and sheaf gluing in `PORT_TODO.md` §§8.4–10.
   Restriction to charts and stalks must expose the same algebraic objects and inherited algorithms used outside scheme theory.
 - [ ] Build the general actions, toric lattices, divisors, cycles, cohomology, local singularity theory, covers, and families in `PORT_TODO.md` §§11–16.
   Expose the resulting objects and maps through the notebook session as each construction becomes usable.

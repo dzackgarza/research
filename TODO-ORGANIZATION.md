@@ -5,6 +5,8 @@
 [TODO-PRIORITIES.md](TODO-PRIORITIES.md#how-much-category-theory-to-implement-here) owns the criteria for work before the `sage-categories` transfer.
 Apply the findings below to the module, affine-local algebra, and general scheme constructions first.
 Recheck each finding at its live owner; the assessment records an earlier source tree.
+The current algebra-to-geometry assessment is [PORT_TODO.md §8.4](PORT_TODO.md#84-commutative-algebra-foundation-required-by-scheme-theory).
+Its construction traces identify the immediate consolidation work.
 
 The useful unit of consolidation is one mathematical responsibility and its dependent constructions.
 An algebra should obtain module operations from its underlying module; geometric constructions should use the resulting algebra and module maps.
@@ -17,8 +19,12 @@ The current `owned_category.py` adapter makes implementation classes available t
 Treat repairs to that common path according to the consumer they enable and the duplication they remove.
 
 - [ ] Consolidate repeated mathematical operations at the owner used by the active geometry construction.
+- [ ] Connect ring quotients and presented algebra quotients through their scalar maps and shared presentation operations.
+  Nested subschemes, differential modules, and fibers must consume the same relations.
 - [ ] Consolidate localization, quotient, tensor, and presentation calculations across affine schemes, stalks, sheaves, and cover algebras.
-- [ ] Reuse the general group-action construction for sets, modules, schemes, and induced actions on their invariants.
+  Extend the existing localization functor and transported module presentations with the required exact local algorithms.
+- [ ] Unify the existing finite G-set and finitely presented group-module action constructions at the common categorical owner.
+  Extend it to schemes and their invariants with the required morphisms and computational regimes.
 - [ ] Realize toric character modules, divisor groups, and cohomology pairings through existing module and formed-module categories.
 - [ ] Make each required underlying-structure functor explicit on objects and morphisms, with the correct initialized image.
 - [ ] Keep framework-specific initialization and class assembly within the existing common runtime boundaries.

@@ -11,7 +11,8 @@ Its foundation is a coherent algebraic subtree with reusable module, ring, algeb
 
 ## Geometry delivery sequence
 
-- [ ] Begin with the distinguished-open requirement in §9.2: construct the open immersion, localization map, and restriction of functions.
+- [ ] Close the quotient/localization/module dependencies in §8.4 using the family `xy=t`, its reducible special fiber, and its local rings.
+  Extend the existing distinguished-open construction with restriction maps on functions and modules.
 - [ ] Complete affine `Spec` on ring morphisms, closed immersions, and fiber products through the algebra constructions in §§8.4–10.
 - [ ] Supply structure sheaves, localized modules, projective affine charts, and gluing from §§8.4 and 9.4, with their restriction and transition maps.
 - [ ] Build general group actions from §13.1 and reuse them for sets, modules, schemes, and induced actions on invariants.
@@ -54,7 +55,9 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Replace remaining subclasses/usages of Sage parameterized category bases whose constructors impose Sage mathematical-category membership. In particular, categories parameterized by a ring/module/group/etc. must store the owned base object directly; the owned base need not itself lie in Sage's corresponding category graph.
 - [ ] Audit all category constructors with custom `__classcall__`/`__classcall_private__` logic after the parameterized-category migration. Normalize parameters through owned constructors (`own_ring`, owned groups, etc.) and do not use Sage category membership as the criterion that the parameter is mathematically valid.
 - [ ] Complete the owned Hom/End/Aut packet architecture at foundational levels. `Hom_C(A,B)`, `End_C(A)`, and `Aut_C(A)` are owned category constructions; runtime inheritance from Sage Homsets may be used only where Python's `Morphism` machinery requires it, never to define the mathematical Hom notion.
-- [ ] Add and use a generic owned ring-morphism Hom object. Ring maps, quotient maps, localization maps, residue maps, algebra/module structure maps `R -> End(X)`, completion maps, and affine-Spec pullbacks must be objects of the owned ring-Hom construction. An optional Sage/Julia/OSCAR/etc. morphism is merely an engine realization attached privately.
+- [ ] Complete and consistently use the existing `RingHomset` and `RingMorphism` in `categories/rings/ring_foundation.py`.
+  Extend their kernel, factorization, and algebra-map connections as specified in §8.4.
+  Quotient, localization, residue, completion, and structure maps must retain the owned Hom and their mathematical endpoints.
 - [ ] Remove public uses of `Hom(..., SageRings())`, `Hom(..., SageSets())`, `Hom(..., SageGroups())`, Sage `Modules(R)`, Sage `Algebras(R)`, and analogous constructions whenever the intended arrow is a mathematical arrow in an owned category. Replace them by the corresponding owned Hom object; retain Sage Hom calls only at explicit private engine boundaries.
 - [ ] Remove Sage mathematical categories from foundational owned categories: `Sets`, finite/infinite/countable set refinements, magma/semigroup/monoid/additive variants, groups/abelian/finite groups, semirings/rngs/rings/commutative rings/domains/division rings/fields/finite fields, modules/vector spaces, associative/unital/commutative algebras, graded variants, and any descendants whose semantic inheritance still reaches a Sage category node.
 - [ ] Do the same purity audit in the less central branches after the foundation is stable: graded modules/algebras, profinite groups, G-sets, forms/value modules, connections, function spaces, enumerated/ordered sets, divisors, lattices, Coxeter structures, schemes, and other category families. Backend predicates can witness owned placement; they cannot be inherited semantic structure.
@@ -82,8 +85,10 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Extend the now-live general module carrier (arbitrary represented set with explicit additive structure and scalar action, stored as `rho:R -> End(M)`) through the rest of the owned module graph: make the additive-group structure itself a first-class owned construction where useful, remove remaining dependence of `Modules(R)` on Sage's native module category as mathematical structure, and preserve Sage modules only as optimized computational realizations.
 - [ ] Extend linearity verification dispatch for elementwise module morphisms: generator-defined framed/FP maps remain linear by construction with relation checks; finite represented carriers/rings are exhaustively checked; add exact engine/symbolic/PID-specific checks where they genuinely prove the callable agrees with a linear map, and keep DEBUG-only diagnostics for declared callables outside decidable regimes.
 - [ ] Extend the now-live rank distinction beyond represented finite modules: `rank_at(p)=dim_{kappa(p)}(M tensor_R kappa(p))`, finite-projective local rank, and generic/Matsumura rank over domains are separate APIs and must remain so. Add rank-function objects/stratifications on `Spec(R)` and locally constant rank for finite projectives; support infinite-cardinal generic rank only when the module/cardinal infrastructure genuinely represents it.
-- [ ] Extend the now-live module-localization functor `S^{-1}(-)`, prime localizations `M_p`, localization units, localized morphisms, and fibers `M(p)=M_p tensor_{R_p} kappa(p)` with a universal scalar-extension realization for the now-live general module carriers, not only the optimized framed/free/finitely-presented backends. Connect `mu(M_p)=dim_{kappa(p)}M(p)` to an actual minimal-generator/Nakayama API over local rings rather than only returning the fiber dimension numerically.
-- [ ] Extend the now-live Fitting ideals/support/rank-threshold loci beyond chosen finite presentations: verify presentation independence through the generic algebra, add `Ann(M)` and the supported equality `Supp(M)=V(Ann(M))=V(Fitt_0(M))`, and use Fitting strata for local-freeness/projective-rank tests and rank-jump loci.
+- [ ] Extend the existing fraction-module localization and its transported presentations through exact relation computations over local rings; §8.4 owns the source-grounded scope.
+  Preserve the existing module fibers, residue modules, minimal generating sets, and Nakayama surjectivity operations.
+- [ ] Extend the existing Fitting/support/fiber-dimension operations to local-freeness loci with their trivializations and comparison maps.
+  Extend annihilators beyond their Smith and cyclic-presentation cases at the scalar-action kernel owner.
 - [ ] Generalize torsion/torsion-free predicates without guessed booleans.
 - [ ] Generalize cardinality using the cardinal of the base and actual decomposition.
 - [ ] Generalize exponent/annihilator vocabulary only where meaningful; a nonzero free abelian group does not have exponent `1`.
@@ -94,6 +99,172 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Port only missing mathematical operations: actual automorphism groups, subgroup inclusions, sections/retractions/one-sided inverses, and action homsets.
 
 ### 8.4 Commutative-algebra foundation required by scheme theory
+
+The following assessment traces the requested geometry through the working source inspected on 2026-09-05, including uncommitted implementations.
+It establishes source-level construction paths and explicit restrictions; it does not establish fresh Sage execution results.
+The named owners below were read at their constructors and dependent operations.
+A definition search across `src/dzack_research/preamble/` supplied the surrounding scope; archive implementations and external engine coverage remain separate investigations.
+
+The existing foundation is substantial: polynomial presentations, quotient maps, ideal submodules, module kernels, scalar change, differentials, and affine constructions.
+The immediate problem is closure under the operations geometry applies to them.
+A polynomial quotient can supply a differential module while its prime localization is rejected.
+A localization can retain a module presentation while its fraction equality cannot use that presentation.
+Closing these paths supplies several geometric constructions from the same algebraic work.
+
+#### Equations, affine maps, and fibers
+
+[`free_algebras.py`](src/dzack_research/preamble/categories/algebras/free_algebras.py) constructs polynomial and Laurent algebras, selected polynomial quotients, coefficient base change, coproducts, and pushouts.
+`_quotient_by_algebra_elements_backend` already combines new equations with an existing presentation's relations.
+[`schemes.py`](src/dzack_research/preamble/categories/schemes/schemes.py) contains affine spaces, equation-defined embeddings, distinguished-open immersions, and affine fiber products using these operations.
+[`AffineSpecFunctor`](src/dzack_research/preamble/categories/schemes/affine_spec.py) already acts on objects and morphisms of commutative algebras over a fixed ring.
+`Schemes` also supplies slice objects over `Spec(R)` through the shared `SliceOver` construction.
+
+The boundaries occur at the maps and presentations.
+`AffineSchemes.closed_subscheme` calls `FinitelyPresentedAlgebra` directly on its coordinate algebra, whose constructor requires a symmetric algebra.
+Thus a second closed embedding into a presented quotient needs the existing quotient-of-presentation operation.
+The pushout backend accepts concrete `AlgebraMorphism` instances; presented and ring morphisms have separate implementations.
+`Spec` and `affine_spec_morphism` require Sage realizations, and the latter requires a common represented algebra base.
+[`RingMorphism.kernel`](src/dzack_research/preamble/categories/rings/ring_foundation.py) currently delegates only to a selected module-annihilator provider.
+
+- [ ] Consolidate successive quotients, ring and algebra quotient presentations, and their maps while preserving the chosen scalar ring.
+  The same presentation must serve subschemes, fibers, module coefficients, and differentials.
+- [ ] Make the existing coproduct, pushout, and affine-Spec paths accept the required owned ring/algebra maps through their mathematical Hom owners.
+  Supply quotient factorization, localization factorization, kernels, images, and ideal extension/contraction in supported presentation regimes.
+- [ ] Represent a chosen parameter map as an algebra structure with a usable relative presentation.
+  `own_algebra(structure_map)` currently makes an unframed algebra, while algebra scalar extension requires a chosen finite polynomial presentation.
+  Thread the presentation through parameter changes so explicit families retain computable fibers and relative differentials.
+  Extend the existing slice construction to the required general scheme bases and commuting family morphisms.
+
+#### Localizations, stalks, and exact modules
+
+[`CommutativeIdeal`](src/dzack_research/preamble/categories/rings/commutative_ideals.py) already constructs ideals as submodules of the regular module.
+It uses engine syzygies, or a principal-domain case, to obtain their presentations.
+Its methods include sum, product, intersection, powers, radical, colon, saturation, primary decomposition, and associated primes when the engine supplies them.
+This is broader than integer and number-order ideals.
+Localization extension is implemented; contraction uses a remembered source ideal and a finitely generated denominator monoid.
+
+[`commutative_algebra.py`](src/dzack_research/preamble/categories/rings/commutative_algebra.py) contains prime spectra, specialization, `V(I)`, `D(f)`, quotients, and localizations.
+`PrimeLocalization` explicitly requires an integral domain and selects its fraction field as engine.
+`quotient_localization_comparison` supplies maps in both directions for finitely generated denominator monoids.
+General prime complements fall outside that comparison.
+
+[`finitely_presented_modules.py`](src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py) supplies presented kernels over PIDs and polynomial quotients over fields through Singular syzygies.
+It lifts coefficient-ring relations into the free-module presentation for quotient-coefficient equality.
+[`ModuleLocalizationFunctor`](src/dzack_research/preamble/categories/functors/module_localization.py) transports objects, morphisms, inclusions, and kernel/cokernel comparisons.
+[`LocalizedModule`](src/dzack_research/preamble/categories/modules/localizations.py) transports selected presentations too.
+Its fraction-equality implementation uses source equality, a torsion-free case, and finite-set enumeration; it does not consume the transported relation presentation for general torsion modules.
+
+- [ ] Extend prime localization and its ideal/module operations to represented reducible and nonreduced polynomial quotients.
+  The local ring of `QQ[x,y]/(xy)` at `(x,y)` is a first required case for singular fibers.
+  Preserve residue maps and the comparison between quotient-then-localize and localize-then-quotient.
+- [ ] Correct local unit and ideal semantics in the shared ring implementation.
+  `LocalizationRings` asks its engine about units; `PrimeLocalizations` selects a fraction field, where every nonzero element is a unit.
+  Unit testing in `QQ[x]_(x)` must instead reflect its maximal ideal.
+  `OwnedRings.Commutative.ideal` also selects `LocalizedMaximalIdeal` views for prime-localized ideals; connect these to the same ideal-submodule operations.
+- [ ] Compute equality, vanishing, and relation membership of localized finitely presented modules using supported saturation/local-algebra algorithms.
+  Localizing `QQ[x]/(x)` at `x` must produce the zero module through those algorithms.
+  Its infinite underlying set is irrelevant to that computation.
+- [ ] Extend exact module calculations to maps constructed directly over localized coefficient rings, alongside the existing transport of known source kernels.
+  Reuse this path for overlap compatibility, sheaf kernels, conormal modules, and finite algebra calculations.
+- [ ] Preserve represented spectrum points, residue fields, and scalar maps across these constructions.
+  Extend local homomorphisms and maximal-ideal compatibility through that same path.
+
+#### Differentials, singular loci, and flatness
+
+[`KahlerDifferentials`](src/dzack_research/preamble/categories/algebras/kahler_differentials.py) already constructs the differential module from the derivatives of polynomial relations.
+It retains the universal derivation and factorization to a target module.
+Its presentation reader in [`derivations.py`](src/dzack_research/preamble/categories/algebras/derivations.py) accepts symmetric algebras and chosen finite polynomial presentations.
+The presented-module owner already computes Fitting ideals, support, and fiber-dimension loci.
+`Modules` supplies residue modules and fibers; the presented owner selects minimal module generating sets by residue linear algebra.
+`ModuleMorphism.is_surjective_by_nakayama` already uses the residue morphism.
+Annihilators currently have Smith and cyclic-presentation implementations.
+
+- [ ] Connect differential modules to localization, scalar change, the conormal sequence, and change of relative base.
+  Route cotangent spaces and tangent maps through the existing module fiber and Hom operations.
+- [ ] Construct smooth and singular loci from the differential/Fitting calculations with the correct relative hypotheses and scheme structures.
+  Supply local dimension, regularity, and component data where the criterion needs more than the differential presentation.
+- [ ] Extend annihilators beyond Smith and cyclic presentations, using the existing scalar-action kernel owner.
+  Use the resulting ideals for support and local-freeness calculations.
+- [ ] Establish finite projectivity, local freeness, and flatness in the supported presentation regimes.
+  `ProjectiveModules` currently records placement and computes rank through fibers; it does not decide projectivity from a presentation.
+  Supply actual local trivializations and comparison maps for invertible modules and finite locally free algebras.
+- [ ] For families over a DVR, connect supported torsion and module calculations to the applicable flatness criterion.
+  A chosen morphism to the base alone supplies neither flatness nor its locus.
+
+#### Affine covers, invertible sheaves, and cyclic covers
+
+[`StructureSheaf`](src/dzack_research/preamble/categories/schemes/ringed_spaces.py) delegates global sections, distinguished-open sections, and affine stalks to scheme methods.
+The affine methods return the existing algebra, its localizations, and prime local rings.
+This supplies local values; §9.4 still needs the restriction morphisms and compatible overlap/gluing constructions.
+The sections method accepts a distinguished-open inclusion in the prime spectrum, while `AffineSchemes.distinguished_open` returns a scheme with its inclusion.
+Connect these representations so the same geometric open determines its sections and restriction maps.
+`ProjectiveSpace` currently adopts the Sage space; its standard charts must connect to the same algebraic theory through graded localization and degree-zero parts.
+
+[`algebra_from_multiplication`](src/dzack_research/preamble/categories/algebras/algebras.py) already builds an algebra from a module multiplication map.
+The presented-algebra constructor also selects finite-free module data for supported one-variable quotients.
+[`AlgebraUnderlyingModuleFunctor`](src/dzack_research/preamble/categories/functors/algebra_modules.py) transports free tensor/symmetric algebras through graded module sums and otherwise returns the existing algebra object.
+These are useful beginnings for finite cover algebras; usable inherited module data and the affine-Spec realization must agree.
+
+- [ ] Supply restriction maps between localizations and their composition, cover refinements, and gluing of objects and morphisms through §9.4.
+  Localize the same module presentation for sheaf restrictions and stalks.
+- [ ] Build graded localization, degree-zero chart algebras, and overlap maps for `Proj` through the existing graded algebra owners.
+- [ ] Glue rank-one locally free modules with their transition units, tensor powers, and section maps.
+  Use these for Cartier divisors, line bundles, and the cyclic cover algebra in §13.2.
+- [ ] Make the cyclic algebra's multiplication, underlying finite module, local equation presentation, and scalar changes share one construction.
+  Relative `Spec` then glues its affine spectra and structure maps.
+  Ramification calculations use the differential and Fitting operations above.
+
+#### Divisors, cycles, and completed local geometry
+
+The constructors in [`divisors/`](src/dzack_research/preamble/categories/divisors/) equip supplied modules with divisor, class-group, or Picard roles.
+`PicardGroup(module)` requires a supplied framed module; it does not compute a scheme's invertible sheaves or their quotient by isomorphism.
+The finite module and formed-module structures can receive the geometric results once those are constructed.
+
+`AdicCompletion` in `commutative_algebra.py` accepts a principal ideal and calls the selected engine's completion operation.
+`PowerSeriesRing` and `DualNumbers` provide additional local examples.
+Their local-base constructors currently store only the new variable in the maximal ideal; extension of the base maximal ideal needs repair.
+A multigenerator maximal-adic completion of a singular affine algebra is outside the completion constructor's explicit input regime.
+
+- [ ] Supply total quotient rings where needed, regular-element predicates, height-one localizations, orders of vanishing, and finite local lengths.
+  Use these for Cartier/Weil comparison, principal divisors, fundamental-cycle multiplicities, and local intersections.
+- [ ] Extend finite/integral algebra theory with normalization, integral closure, conductor ideals, and the maps needed for curve normalization and divisor classes.
+  Retain dimension, prime-height, minimal-prime, Artinian-factor, and support computations at their algebraic owners.
+- [ ] Implement the supported normality, regularity, and local-factoriality criteria required by the comparisons in §11.
+  Construct Picard and class groups from their geometric relations before equipping the results with module or form structure.
+- [ ] Extend completion to local polynomial quotients, multigenerator ideals, and finite modules, with quotient/localization comparison maps.
+  Retain adic inverse systems and the Noetherian hypotheses for exactness, separatedness, and flatness.
+  Keep finite precision attached to the engine realization.
+- [ ] Correct local-base power-series and dual-number maximal ideals, including the image of the base maximal ideal.
+  Reuse the resulting DVR, residue-field, valuation, and completion maps in formal families and singularity calculations.
+
+#### Group actions, toric geometry, and global cohomology
+
+[`GSets`](src/dzack_research/preamble/categories/group/g_sets.py) has a finite enumerated permutation realization with equivariant maps, orbits, and fixed-point sets.
+[`GroupModule`](src/dzack_research/preamble/categories/modules/group_modules/group_modules.py) uses a selected finite module presentation and supplies module invariants and coinvariants.
+The action constructors are specialized to these objects; §13.1 must supply their common categorical construction and its scheme specialization.
+For an affine quotient, a module of invariants must additionally obtain its algebra multiplication and a computable algebra presentation.
+Finite-point fixed-set enumeration cannot supply a scheme-theoretic fixed ideal.
+
+[`polytopes.py`](src/dzack_research/preamble/categories/schemes/polytopes.py) already uses a preamble free integer module and a private normal-fan engine.
+The required continuation is characters/cocharacters, semigroup algebras of cones, and their localization maps and gluing in §16.
+These depend on the same presented-algebra and cover machinery above.
+
+[`Cohomology`](src/dzack_research/preamble/categories/modules/cochain_complexes.py) computes a kernel/image quotient of a supplied complex.
+[`CohomologyAlgebra`](src/dzack_research/preamble/categories/algebras/cohomology_algebras.py) obtains products from a supplied DGA.
+[`DeRhamAlgebra`](src/dzack_research/preamble/categories/algebras/de_rham_algebras.py) reuses differential modules and exterior powers for affine algebraic de Rham theory.
+`modules/hodge.py` constructs exterior-algebra duality and Hodge-star operations on finite free modules with extra data.
+These operations do not construct the singular cochains or Hodge structure of a scheme.
+The selected presented-module `free_resolution` builds a length-one PID resolution; higher local homological computations need a wider resolution regime.
+
+- [ ] Build the common action construction through the existing Hom and functor owners, then add scheme equalizers and supported invariant-algebra quotients.
+- [ ] Extend the toric algebra and gluing constructions in §16 using the existing integer modules and polytope computations.
+- [ ] Supply supported longer resolutions and `Tor`/`Ext` calculations for the local intersection and sheaf computations that need them.
+  Reuse existing tensor, internal-Hom, kernel, cokernel, and cohomology operations.
+- [ ] Construct the geometric complexes and comparison maps required for coherent cohomology, integral singular cohomology, and higher direct images.
+  Covers and local algebra supply inputs; topology, cup products, cycle classes, and monodromy require their own justified constructions.
+  Connect their output modules to the existing formed-module and lattice theory.
+
+#### Existing engine integration obligations
 
 - [ ] Backend routing policy: keep mathematical objects, inclusions, structure maps, universal properties, and functorial laws in the preamble, but delegate algorithmic engine work to established CAS backends wherever available. Backend-specific matrices/ideals/handles/process protocols remain private and every public result must be crossed back into live owned objects/morphisms/subobjects.
 - [ ] Use Sage's native commutative-algebra interfaces, and hence Singular where Sage routes there, for Groebner bases, syzygies, elimination, ideal membership/reduction, saturation/colon computations, dimensions/Hilbert data, polynomial quotient calculations, resolutions, and primary-decomposition/associated-prime computations in the regimes those backends actually support. Do not reimplement these algorithms in Python.
@@ -106,32 +277,6 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Treat Macaulay2 as an optional advanced commutative-algebra backend: Sage's M2 interface is present but no `M2`/`Macaulay2` executable is currently provisioned. Once available, use it where it materially improves free resolutions, Betti data, local/cohomological algebra, or primary decomposition instead of recreating those algorithms.
 - [ ] Use Maxima only for symbolic-calculus operations it actually owns; do not route exact algebraic ideal/module computations through Maxima merely because the executable is present.
 - [ ] Maintain a small backend-capability layer selecting among Sage/Singular, `libgap`, OSCAR via `sage-julia-bridge`, optional Macaulay2, Maxima, and specialized wrappers such as `py_polyhedral`; mathematical code should ask for an operation/capability rather than shelling out to a particular executable itself.
-- [ ] Ring/algebra homsets with composition, kernels, images, quotient factorization, and universal properties for quotient/localization maps; use these as the source of contravariant affine scheme morphisms.
-- [ ] General owned ideals beyond the current `ZZ`/number-order module adapter: finitely generated ideals in polynomial, quotient, localization, power-series, and local rings, with inclusions and quotient modules/rings.
-- [ ] Ideal arithmetic: sum, product, intersection, powers, extension/contraction along ring maps, colon/saturation where supported, radicals, nilradical/Jacobson radical, and exact prime/maximal predicates.
-- [ ] Noetherian ideal theory: associated primes, primary decomposition, minimal primes, irreducible components, support, and annihilators/Fitting ideals of finitely generated modules.
-- [ ] Prime spectrum as an actual set/poset of prime ideals where representable, with specialization order and Zariski closed sets `V(I)`, distinguished opens `D(f)`, radical-ideal/closed-set correspondence, generic points in supported Noetherian cases, and maximal spectrum where useful.
-- [ ] Extend localization beyond the now-live submonoids `S <= (R, ·)`, represented ring localizations, module localization functor, localization units, and localized morphisms: universal factorization for arbitrary represented `S`, extension/contraction of ideals, localization of quotient rings, a universal scalar-extension/localization carrier for general module objects, and exact-sequence preservation/exactness laws. Principal localization uses `<f>` and prime localization uses `R \ p` as actual submonoids.
-- [ ] Local homomorphisms and local-ring structure beyond the initial principal examples: maximal ideal/residue field compatibility, localization at arbitrary represented primes, units/nonunits, and Artinian local quotient examples.
-- [ ] Nakayama's lemma and its standard computational consequences for finite modules over local rings: minimal generators, surjectivity/isomorphism tests modulo the maximal ideal, and cotangent-space calculations.
-- [ ] Extend the now-live residue maps `R -> R_p -> kappa(p)` and module fibers beyond the current domain/prime-localization regime to arbitrary represented commutative rings and primes; test localization/base-change squares and reuse the same residue-field object for scheme stalks, cotangent spaces, and module fibers.
-- [ ] Noetherian modules and exact finite-presentation machinery over polynomial/quotient/local rings using Sage/Singular/Groebner backends; do not force PID Smith-form semantics outside their valid range.
-- [ ] Flat and faithfully flat modules/algebras, exactness of localization, finite projective/locally free criteria, and the local criterion for flatness in the exact regimes needed by base change and fibers.
-- [ ] Finite/integral ring extensions, integral dependence, finite algebras/modules, lying-over/going-up/incomparability where applicable, integral closure/normalization, and conductor ideals; connect normalization to curves/schemes later.
-- [ ] Krull dimension, chains/heights of primes, principal ideal theorem and basic dimension formulas in supported Noetherian finite-type regimes; codimension should use height when ambient-dimension subtraction is not justified.
-- [ ] Zero-dimensional/Artinian structure and Chinese-remainder decompositions, local Artinian factors, nilpotence of the Jacobson radical, and length of finite modules where exact.
-- [ ] Adic topology beyond the initial completion objects: powers `I^n`, inverse systems `R/I^n` and `M/I^nM`, separatedness/completeness, Krull intersection, Artin--Rees, completion of finite modules, exactness/flatness statements under Noetherian hypotheses, and compatibility with quotients.
-- [ ] Treat finite-precision `p`-adic/power-series backends explicitly as computational realizations of abstract completions rather than identifying precision with the mathematical completion object.
-- [ ] DVR/valuation-ring basics needed for local geometry: uniformizers, valuations, residue fields, completions, discrete valuation criteria, and order-of-vanishing computations in the supported PID/Dedekind/function-field examples.
-- [ ] Extend the now-live finite-presentation commutative-algebra coproducts `A tensor_R B` and pushouts `B tensor_A C` to broader represented algebras; add categorical pullbacks of commutative rings/algebras where needed and complete the expected base-change/associativity laws.
-- [ ] Extend module base change/localization beyond the current framed/free/finitely-presented materializations, prove/test localization exactness and compatibility with kernels/cokernels in supported Noetherian regimes, and add enough `Tor`/`Ext` for local intersection multiplicity and basic deformation/cotangent examples; the scalar-extension/restriction adjunction and first-class localization specialization are already live.
-- [ ] Kähler differentials over general commutative algebras integrated with quotients/localization/base change; exact conormal sequence, derivations, `m/m^2`, Zariski cotangent/tangent spaces, and Jacobian matrices in finite-type presentations.
-- [ ] Graded commutative algebra needed for `Proj`: homogeneous ideals, irrelevant ideal, graded localization and degree-zero parts, homogeneous quotient rings/modules, and standard affine charts.
-- [ ] `A^n_R = Spec(R[x_1,...,x_n])` derived through affine `Spec`, with functor-of-points `A^n_R(S)=S^n`; similarly derive affine closed subschemes from quotient algebras.
-- [ ] `Proj` sufficient to derive `P^n_R = Proj(R[x_0,...,x_n])`, its standard affine cover, and its functor-of-points interpretation rather than only adopting Sage's ambient projective-space object.
-- [ ] Presheaves/sheaves on a basis sufficient for affine schemes: restriction maps, sheaf condition on represented finite distinguished-open covers, sheafification where needed, and direct-limit stalks.
-- [ ] Structure sheaf on `Spec(R)` from `D(f) |-> R_f`; stalk `O_{Spec R,p}=R_p`; principal/basic opens from localization; affine quasi-coherent sheaves from modules with `M~(D(f))=M_f` and exact localization/restriction laws.
-- [ ] Only after the preceding affine/local algebra is live, use stalks/localizations for regularity, regular local rings, smoothness/Jacobian criteria, local intersection multiplicity, and singularity computations.
 
 ## 9. Scheme and algebraic-geometry foundation
 
@@ -147,8 +292,8 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 ### 9.2 Subschemes
 
 - [ ] Integrate closed-subscheme inclusions with the generic `SubobjectCategory`; native equation-defined closed embeddings already land as live scheme morphisms.
-- [ ] Open subschemes as actual open immersions/subobjects.
-- [ ] Principal/basic opens.
+- [ ] Extend the existing distinguished-open immersions to general represented open subschemes and their gluing.
+- [ ] Complete function and module restriction maps on principal opens, reusing their existing localization maps.
 - [ ] Scheme-theoretic intersections.
 - [ ] Intersection multiplicity from correct local/stalk/Tor definitions with hypotheses visible.
 

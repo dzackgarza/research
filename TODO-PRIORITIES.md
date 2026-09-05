@@ -732,27 +732,39 @@ Repair shared initialization before adding dependent implementations. Use the lo
 
 ## Fundamental scheme theory
 
-The toolkit is specified in `PORT_TODO.md` §§8–16, including the sheaf, action, cycle, topology, and family requirements.
-Build the algebraic subtree well enough that changing to an affine chart or stalk exposes a usable algebraic object.
-Its category selects the algorithm; the scheme layer assembles the local results through restriction and gluing maps.
-A geometric implementation must call those operations rather than recreate ideal, module, or algebra calculations.
+[`PORT_TODO.md` §8.4](PORT_TODO.md#84-commutative-algebra-foundation-required-by-scheme-theory) owns the source-grounded dependency assessment.
+It distinguishes existing constructions, their explicit restrictions, and the extensions required by §§9–16.
+Work starts from those implementations: polynomial quotients, ideal submodules, presented-module kernels, localization functors, differential modules, and affine scheme maps.
 
-Order by these dependencies:
+The first shared construction is the family `xy=t` over the parameter line.
+Retain its parameter algebra map, fiber construction, and the local ring of its special fiber at `(x,y)`.
+The special fiber requires prime localization of a reducible quotient, which the current domain-only constructor rejects.
+Its differential module and Fitting ideals reuse existing implementations; restricting those data requires the same local algebra as sheaves and singular loci.
+For the special fiber `A = QQ[x,y]/(xy)`, the differential presentation has relation `y dx + x dy = 0`.
+Its first Fitting ideal is `(x,y)`, obtained from that presentation at the module owner.
+The remaining construction must connect this ideal to the singular closed subscheme and its stalk, with all restriction maps.
+This connects the geometry to the precise algebraic extensions needed next.
 
-1. Rings, ideals, quotients, localizations, local rings, residue fields, completions, module presentations, tensor products, and algebra morphisms.
-2. Affine and projective spaces over a specified base, equation-defined subschemes, immersions, and fiber products.
-3. Affine covers, overlaps, gluing, structure sheaves, and sheaves of modules and algebras built from local data.
-4. Generic group actions and equivariant maps, specialized to schemes over a base; toric character and cocharacter lattices.
-5. Line bundles, divisors, cycles, Picard and class groups; relative cyclic covers, fixed loci, and supported quotients through their sheaf and action dependencies.
-6. Supported local singularity calculations, singular cohomology, Hodge invariants, fundamental groups, and formed-module or lattice realizations.
-7. Families as morphisms over a base, relative constructions, and higher-direct-image calculations with their topology and hypotheses stated.
+Proceed along the following dependencies:
 
-These are dependency layers, not requirements to exhaust one subject before the next construction begins.
-The first affine specimen is a distinguished open with its localization map and restriction of functions.
-The projective specimen glues standard affine charts with their overlap maps.
-Both use the same ring and module operations that later sheaves, covers, and families require.
-Maintain the general contracts while extending the supported computational regimes through established engines.
-Global invariants use their own geometric or topological algorithms, sharing the algebraic inputs and resulting module structures where applicable.
+1. Preserve relative polynomial presentations through successive quotients, parameter maps, localization, and scalar change.
+   Connect their ring and algebra maps to the existing affine-Spec and fiber-product operations.
+2. Complete prime-local and localized-module arithmetic in these regimes, including units, ideals, equality, and exact maps.
+   Reuse existing presentation and syzygy algorithms through the shared algebraic owners.
+3. Supply restriction maps and compatible gluing for affine covers, modules, and algebras.
+   Connect standard projective charts through graded localization and degree-zero parts.
+4. Extend differentials through localization and base change, then construct smooth/singular loci and supported flatness/local-freeness criteria.
+   The existing Fitting ideals and Nakayama operations supply parts of this work.
+5. Develop invertible sheaves and finite cover algebras, generic actions and quotient algebras, and toric semigroup charts through these dependencies.
+   Divisor and cycle computations additionally require height-one local algebra, lengths, normalization, and their comparison maps.
+6. Extend local completions and resolutions for singularities and families.
+   Construct the geometric/topological inputs needed by cohomology, Hodge invariants, fundamental groups, and higher direct images.
+   Reuse the resulting module and formed-module operations for lattice realizations.
+
+These are dependent constructions; independent parts can proceed together.
+The existing local algebra supports work before its full generalization, while the shared restrictions above need correction before their consumers rely on them.
+General noncommutative-algebra or differential-graded-framework expansion is selected only when a named construction requires it.
+General scheme constructions become available in notebooks as these dependencies close.
 
 ## Arithmetic and reflection applications after the geometry prerequisites
 
