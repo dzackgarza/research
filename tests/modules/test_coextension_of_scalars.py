@@ -110,3 +110,44 @@ def test_restriction_is_left_adjoint_to_coextension() -> None:
     for label in labels:
         element = restricted.module_generator(label)
         assert recovered(element) == weights(element)
+
+
+def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_action() -> None:
+    r"""Along ``ZZ -> ZZ[C2]`` restriction forgets the action and is left adjoint to coextension."""
+    group = Groups.C(2)
+    group_algebra = ZZ[group]
+    structure_map = ring_morphism(ZZ, group_algebra, lambda integer: integer * group_algebra.one())
+    plane = FreeModule(ZZ, 2)
+    labels = plane.module_generating_set()
+    first, second = labels.unrank(0), labels.unrank(1)
+    e0, e1 = plane.module_generator(first), plane.module_generator(second)
+
+    def swap(group_element, vector):
+        if group_element == group.one():
+            return vector
+        coefficients = module_coefficients(vector, plane)
+        return coefficients.get(second, ZZ.zero()) * e0 + coefficients.get(first, ZZ.zero()) * e1
+
+    swapped = Modules(group_algebra)(plane, swap)
+    adjunction = Modules(group_algebra).restriction_coextension_adjunction(structure_map)
+    forgotten = adjunction.left_adjoint()(swapped)
+    assert forgotten in Modules(ZZ)
+    assert forgotten.rank() == 2
+
+    generator = group.group_generators().unrank(0)
+    unit = adjunction.unit(swapped)
+    coextended = unit.codomain()
+    assert unit(swapped.act(generator, swapped.module_generator(0))) == coextended.act(
+        generator, unit(swapped.module_generator(0))
+    )
+
+    target = FreeModule(ZZ, 1)
+    weights = module_homset(forgotten, target)(
+        {0: target.module_generator(0), 1: 3 * target.module_generator(0)}
+    )
+    transposed = adjunction.hom_set_isomorphism_forward(weights)
+    assert transposed.domain() is swapped
+    recovered = adjunction.hom_set_isomorphism_inverse(transposed, target)
+    for label in forgotten.module_generating_set():
+        element = forgotten.module_generator(label)
+        assert recovered(element) == weights(element)

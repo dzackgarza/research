@@ -100,8 +100,30 @@ class RestrictionOfScalarsFunctor(Functor):
     def ring_map(self):
         return self._ring_map
 
+    # Along ``R -> R[G]`` an ``R[G]``-module is an ``R``-module with a chosen
+    # action, and restriction forgets the action: the image is the module the
+    # action was equipped on, read through the forget and equip morphisms.
+    # Along any other map the image is the restricted-scalars view.
+
+    def _restricts_group_modules(self) -> bool:
+        return self._target_ring in GroupAlgebras(self._source_ring)
+
     def _apply_object(self, module):
+        if self._restricts_group_modules():
+            return module.unacted_module()
         return restrict_scalars(module, self.ring_map())
+
+    def _restricted_element(self, restricted, element):
+        r"""Read an element of the ``S``-module in its restriction ``restricted``."""
+        if self._restricts_group_modules():
+            return self.chosen_preimage(restricted).forget_action_morphism()(element)
+        return restricted(element)
+
+    def _extension_element(self, restricted, element):
+        r"""Read an element of ``restricted`` back in the ``S``-module it restricts."""
+        if self._restricts_group_modules():
+            return self.chosen_preimage(restricted).equip_action_morphism()(element)
+        return element.underlying_element()
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
@@ -113,8 +135,8 @@ class RestrictionOfScalarsFunctor(Functor):
             )
 
         def image(label):
-            source_element = source.module_generator(label).underlying_element()
-            return target(morphism(source_element))
+            source_element = self._extension_element(source, source.module_generator(label))
+            return self._restricted_element(target, morphism(source_element))
 
         return module_homset(source, target)(image)
 
@@ -284,8 +306,9 @@ class RestrictionCoextensionAdjunction(Adjunction):
                 coextended,
                 hom(
                     {
-                        label: restricted(
-                            module.scalar_multiple(scalars.module_generator(label), element)
+                        label: self.left_adjoint()._restricted_element(
+                            restricted,
+                            module.scalar_multiple(scalars.module_generator(label), element),
                         )
                         for label in scalars.module_generating_set()
                     }
@@ -300,7 +323,7 @@ class RestrictionCoextensionAdjunction(Adjunction):
         one = self.right_adjoint().scalars_as_module().one()
         return module_homset(restricted, module).elementwise(
             lambda element: self.right_adjoint()._hom_element(
-                coextended, element.underlying_element()
+                coextended, self.left_adjoint()._extension_element(restricted, element)
             )(one),
             verify_linearity=False,
         )

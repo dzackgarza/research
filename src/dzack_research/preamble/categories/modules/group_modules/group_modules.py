@@ -55,6 +55,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     _initialize_module_hom_parent,
     _ModuleHomsetCommonMethods,
+    module_coefficients,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -336,6 +337,23 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def is_trivial_action(self) -> bool:
             return self._preamble_action_is_trivial
+
+        def scalar_multiple(self, scalar, element):
+            r"""``(sum_g a_g g) . m = sum_g a_g (g . m)`` for a group-algebra scalar; ``r m`` for ``r`` in ``R``."""
+            group_algebra = self.group_algebra()
+            match scalar:
+                case _ if scalar in group_algebra:
+                    return sum(
+                        (
+                            coefficient * self.act(group_element, element)
+                            for group_element, coefficient in module_coefficients(
+                                scalar, group_algebra
+                            ).items()
+                        ),
+                        self.zero(),
+                    )
+                case _:
+                    return super().scalar_multiple(scalar, element)
 
         def unacted_module(self):
             r"""Return the module from which this chosen action was equipped."""
