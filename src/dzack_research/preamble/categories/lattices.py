@@ -35,6 +35,7 @@ from dzack_research.preamble.categories._lattice import (
     _IdentityGram,
     _PairingGram,
     _ScaledGram,
+    Lattice,
     colimit_lattice,
     discriminant_of_gram,
     generator_pairings,
@@ -106,7 +107,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     MatrixSpace,
-    _finalize_module_subobject,
+    _module_subobject_constructor_data,
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -241,9 +242,10 @@ def _lattice_subobject_spanning(module, basis):
 
     ring = module.base_ring()
     rank = int(basis.cardinality())
-    labels = Sets.Δ[rank - 1]
+    labels, embedded, lift = _module_subobject_constructor_data(module, basis)
+    category = module.lattice_category()
     if rank == 0:
-        source = module.lattice_category()(0)
+        prototype = category(0)
     else:
         gram = tensor(
             ring,
@@ -255,19 +257,24 @@ def _lattice_subobject_spanning(module, basis):
                 for j in range(rank)
             ),
         )
-        source = module.lattice_category()(gram, module_generators=labels)
-    module_inclusion = module_embedding(
-        source,
-        module,
-        lambda label: basis.unrank(int(label))
+        prototype = category(gram, module_generators=labels)
+
+    def inclusion_factory(source):
+        module_inclusion = module_embedding(source, module, embedded)
+        return source.Emb(module)(module_inclusion)
+
+    source = Lattice(
+        prototype._module,
+        prototype.gram_tensor(),
+        category,
+        prototype._sage_lattice,
+        subobject_ambient=module,
+        subobject_generator_images=embedded,
+        subobject_lift=lift,
+        subobject_inclusion_factory=inclusion_factory,
     )
-    inclusion = source.Emb(module)(module_inclusion)
-    return _finalize_module_subobject(
-        module,
-        basis,
-        source,
-        inclusion=inclusion,
-    )
+    source = refine(source, source.category())
+    return category._refine_lattice_object(source)
 
 
 class LocalGenusSymbol:
@@ -1803,45 +1810,53 @@ class Lattices(OwnedCategoryOverBaseRing):
             abstract_glue = _torsion_module_presented_by_matrix(relations, labels)
 
             quadratic_values = first_discriminant.quadratic_value_module()
+            source_images = {
+                label: source_class
+                for label, source_class in zip(labels, source_classes, strict=True)
+            }
+
+            def source_inclusion(source):
+                return form_embedding(
+                    source,
+                    first_discriminant,
+                    source_images,
+                    quadratic=True,
+                )
+
             source_form = TorsionQuadraticFormModules(self.base_ring()).from_module(
                 abstract_glue,
                 _quadratic_gram_on(first_discriminant, source_classes),
                 quadratic_values,
+                _subobject_ambient=first_discriminant,
+                _subobject_generator_images=source_images,
+                _subobject_inclusion_factory=source_inclusion,
             )
             target_gram = tuple(
                 tuple(-entry for entry in row)
                 for row in _quadratic_gram_on(second_discriminant, target_classes)
             )
+            second_twist = second_discriminant.twist(-1)
+            target_images = {
+                label: second_twist.equip_form_morphism()(target_class)
+                for label, target_class in zip(labels, target_classes, strict=True)
+            }
+
+            def target_inclusion(target):
+                return form_embedding(
+                    target,
+                    second_twist,
+                    target_images,
+                    quadratic=True,
+                )
+
             target_form = TorsionQuadraticFormModules(self.base_ring()).from_module(
                 abstract_glue,
                 target_gram,
                 quadratic_values,
+                _subobject_ambient=second_twist,
+                _subobject_generator_images=target_images,
+                _subobject_inclusion_factory=target_inclusion,
             )
-
-            source_embedding = form_embedding(
-                source_form,
-                first_discriminant,
-                {
-                    label: source_class
-                    for label, source_class in zip(labels, source_classes, strict=True)
-                },
-                quadratic=True,
-            )
-            source_form._preamble_inclusion = source_embedding
-            refine(source_form, ModuleSubobjects(self.base_ring()))
-
-            second_twist = second_discriminant.twist(-1)
-            target_embedding = form_embedding(
-                target_form,
-                second_twist,
-                {
-                    label: second_twist.equip_form_morphism()(target_class)
-                    for label, target_class in zip(labels, target_classes, strict=True)
-                },
-                quadratic=True,
-            )
-            target_form._preamble_inclusion = target_embedding
-            refine(target_form, ModuleSubobjects(self.base_ring()))
 
             target_subgroup = second_discriminant.subgroup_on(target_classes)
             extension_index = first.sum(second).index()
@@ -2406,7 +2421,10 @@ class FiniteRankLattices(OwnedCategoryOverBaseRing):
             FinitelyGeneratedFreeModules(self.base_ring()),
         ]
 
-    class ParentMethods(Lattices.ParentMethods):
+    class ParentMethods:
+        # No base: `Lattices` is a super category above, so the category graph
+        # already delivers its methods.  Naming it here states the class graph
+        # by hand, which is what the tied named classes replace.
         def is_finite_rank(self) -> bool:
             return True
 

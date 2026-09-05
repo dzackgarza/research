@@ -156,6 +156,79 @@ class Cat(Category):
             raise ValueError("functors are not composable in Cat")
         return second * first
 
+    class ParentMethods:
+        r"""What a category can do, as an object of ``Cat``.
+
+        One home for the operations on categories.  Every owned category
+        receives them through ``subcategory_class``, which
+        ``CatConstructionsMixin`` on the owned root builds with this class
+        among its bases -- not through parenthood, which states separately
+        that a category is an object of ``Cat``.
+        """
+
+        @property
+        def ObjectType(self):
+            r"""Return the complete implementation type for objects of this category."""
+            return self.parent_class
+
+        @property
+        def ElementType(self):
+            r"""Return the complete implementation type for their elements."""
+            return self.element_class
+
+        def opposite(self):
+            r"""Return \(C^{op}\)."""
+            from dzack_research.preamble.categories.abstract_categories.category_constructions import (
+                OppositeCategory,
+            )
+
+            return OppositeCategory(self)
+        def Core(self):
+            r"""Return the maximal groupoid inside this category."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                CoreCategory,
+            )
+
+            return CoreCategory(self)
+        def ArrowCategory(self):
+            r"""Return \(\mathrm{Ar}(C)=\mathrm{Fun}([1],C)\)."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                ArrowCategory as _ArrowCategory,
+            )
+
+            return _ArrowCategory(self)
+        def SliceOver(self, base_object):
+            r"""Return the slice \(C/X\)."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                SliceCategory,
+            )
+
+            return SliceCategory(self, base_object)
+        def CosliceUnder(self, base_object):
+            r"""Return the coslice \(X/C\)."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                CosliceCategory,
+            )
+
+            return CosliceCategory(self, base_object)
+        def Subobjects(self, base_object):
+            r"""Return the category of subobjects of ``base_object`` here."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                SubobjectCategory,
+            )
+
+            return SubobjectCategory(self, base_object)
+        def Superobjects(self, base_object):
+            r"""Return the category of superobjects of ``base_object`` here."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                SuperobjectCategory,
+            )
+
+            return SuperobjectCategory(self, base_object)
+        def _fold_construction(self, binary_construction, factors, *, name):
+            r"""Return the construction over a finite family, from the binary one."""
+            return fold_construction(binary_construction, factors, name=name)
+
     def ArrowCategory(self):
         r"""Return the arrow category of ``Cat``.
 
