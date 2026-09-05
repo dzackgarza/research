@@ -408,7 +408,7 @@ class LiftCoset(SageObject):
         self._restriction_map = restriction_map
         self._element = restriction_map.codomain()(element)
 
-    def ambient(self):
+    def supergroup(self):
         return self._restriction_map.domain()
 
     def finite_automorphism(self):
@@ -437,14 +437,14 @@ class LiftCoset(SageObject):
             if candidate not in self:
                 raise ValueError("the supplied automorphism is not in this lift coset")
             return candidate
-        if self.ambient()._is_finite_field():
-            return self.ambient().lift(self._element)
+        if self.supergroup()._is_finite_field():
+            return self.supergroup().lift(self._element)
         raise ValueError(
             "this extension coset has no canonically selected representative"
         )
 
     def _repr_(self) -> str:
-        return f"Lift coset of {self._element} in {self.ambient()}"
+        return f"Lift coset of {self._element} in {self.supergroup()}"
 
 
 def restrict_along(

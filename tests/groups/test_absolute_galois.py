@@ -274,7 +274,7 @@ def test_open_subgroups_are_actual_subgroups_and_classes_forget_the_embedding() 
     intersection = index_two.intersection(index_three)
 
     assert index_two in OpenAbsoluteGaloisSubgroups()
-    assert index_two.ambient() is group
+    assert index_two.supergroup() is group
     assert index_two.supergroup() is group
     assert index_two.index() == 2
     assert frobenius not in index_two

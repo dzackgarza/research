@@ -98,12 +98,12 @@ def _residue_field_order(base_prime):
 class FiniteGaloisSubgroup(Parent):
     r"""A literal finite subgroup represented by selected quotient elements."""
 
-    def __init__(self, ambient, elements, description) -> None:
-        self._ambient = ambient
+    def __init__(self, supergroup, elements, description) -> None:
+        self._supergroup = supergroup
         self._elements = tuple(elements)
         self._element_set = frozenset(self._elements)
         self._description = description
-        if ambient.one() not in self._element_set:
+        if supergroup.one() not in self._element_set:
             raise ValueError("a represented subgroup must contain the identity")
         if any(
             left * right not in self._element_set
@@ -113,18 +113,16 @@ class FiniteGaloisSubgroup(Parent):
             raise ValueError(
                 "the selected finite elements are not closed under multiplication"
             )
-        Parent.__init__(self, facade=ambient, category=OwnedFiniteGroups())
+        Parent.__init__(self, facade=supergroup, category=OwnedFiniteGroups())
 
-    def ambient(self):
-        return self._ambient
-
-    supergroup = ambient
+    def supergroup(self):
+        return self._supergroup
 
     def __contains__(self, element) -> bool:
         return element in self._element_set
 
     def _element_constructor_(self, element):
-        element = self._ambient(element)
+        element = self._supergroup(element)
         if element not in self:
             raise ValueError("the element is outside this finite subgroup")
         return element
@@ -133,7 +131,7 @@ class FiniteGaloisSubgroup(Parent):
         return iter(self._elements)
 
     def one(self):
-        return self._ambient.one()
+        return self._supergroup.one()
 
     def order(self):
         from sage.rings.integer_ring import ZZ
@@ -150,21 +148,21 @@ class FiniteGaloisSubgroup(Parent):
         )
 
     def _repr_(self) -> str:
-        return f"{self._description} in {self._ambient}"
+        return f"{self._description} in {self._supergroup}"
 
 
 class FiniteElementConjugacyClass(SageObject):
     r"""The actual conjugacy orbit of an element in a finite quotient."""
 
-    def __init__(self, ambient, representative) -> None:
-        self._ambient = ambient
-        self._representative = ambient(representative)
+    def __init__(self, supergroup, representative) -> None:
+        self._supergroup = supergroup
+        self._representative = supergroup(representative)
         self._elements = frozenset(
-            element * self._representative * element.inverse() for element in ambient
+            element * self._representative * element.inverse() for element in supergroup
         )
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def representative(self):
         return self._representative
@@ -178,15 +176,15 @@ class FiniteElementConjugacyClass(SageObject):
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, FiniteElementConjugacyClass)
-            and other._ambient is self._ambient
+            and other._supergroup is self._supergroup
             and other._elements == self._elements
         )
 
     def __hash__(self) -> int:
-        return hash((id(self._ambient), self._elements))
+        return hash((id(self._supergroup), self._elements))
 
     def _repr_(self) -> str:
-        return f"Conjugacy class of {self._representative} in {self._ambient}"
+        return f"Conjugacy class of {self._representative} in {self._supergroup}"
 
 
 def finite_decomposition_group(quotient, prime_above) -> FiniteGaloisSubgroup:
@@ -247,19 +245,19 @@ def finite_frobenius_class(
 
 
 class AbsoluteDecompositionGroup(SageObject):
-    def __init__(self, ambient, prime, prolongation: PrimeProlongation) -> None:
+    def __init__(self, supergroup, prime, prolongation: PrimeProlongation) -> None:
         if not isinstance(prolongation, PrimeProlongation):
             raise TypeError(
                 "an actual decomposition group requires a chosen prime prolongation"
             )
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
-        self._ambient = ambient
+        self._supergroup = supergroup
         self._prime = prime
         self._prolongation = prolongation
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def prime(self):
         return self._prime
@@ -274,26 +272,26 @@ class AbsoluteDecompositionGroup(SageObject):
         )
 
     def conjugacy_class(self):
-        return DecompositionGroupConjugacyClass(self._ambient, self._prime)
+        return DecompositionGroupConjugacyClass(self._supergroup, self._prime)
 
     def _repr_(self) -> str:
-        return f"Decomposition group at {self._prolongation} in {self._ambient}"
+        return f"Decomposition group at {self._prolongation} in {self._supergroup}"
 
 
 class AbsoluteInertiaGroup(SageObject):
-    def __init__(self, ambient, prime, prolongation: PrimeProlongation) -> None:
+    def __init__(self, supergroup, prime, prolongation: PrimeProlongation) -> None:
         if not isinstance(prolongation, PrimeProlongation):
             raise TypeError(
                 "an actual inertia group requires a chosen prime prolongation"
             )
         if prolongation.base_prime() != prime:
             raise ValueError("the prolongation lies over a different base prime")
-        self._ambient = ambient
+        self._supergroup = supergroup
         self._prime = prime
         self._prolongation = prolongation
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def prime(self):
         return self._prime
@@ -308,25 +306,25 @@ class AbsoluteInertiaGroup(SageObject):
         )
 
     def conjugacy_class(self):
-        return InertiaGroupConjugacyClass(self._ambient, self._prime)
+        return InertiaGroupConjugacyClass(self._supergroup, self._prime)
 
     def _repr_(self) -> str:
-        return f"Inertia group at {self._prolongation} in {self._ambient}"
+        return f"Inertia group at {self._prolongation} in {self._supergroup}"
 
 
 class DecompositionGroupConjugacyClass(SageObject):
-    def __init__(self, ambient, prime) -> None:
-        self._ambient = ambient
+    def __init__(self, supergroup, prime) -> None:
+        self._supergroup = supergroup
         self._prime = prime
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def prime(self):
         return self._prime
 
     def representative(self, prolongation):
-        return self._ambient.decomposition_group(
+        return self._supergroup.decomposition_group(
             self._prime,
             prolongation=prolongation,
         )
@@ -334,30 +332,30 @@ class DecompositionGroupConjugacyClass(SageObject):
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, DecompositionGroupConjugacyClass)
-            and other._ambient is self._ambient
+            and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
 
     def __hash__(self) -> int:
-        return hash((id(self._ambient), self._prime, "decomposition"))
+        return hash((id(self._supergroup), self._prime, "decomposition"))
 
     def _repr_(self) -> str:
-        return f"Conjugacy class of decomposition groups at {self._prime} in {self._ambient}"
+        return f"Conjugacy class of decomposition groups at {self._prime} in {self._supergroup}"
 
 
 class InertiaGroupConjugacyClass(SageObject):
-    def __init__(self, ambient, prime) -> None:
-        self._ambient = ambient
+    def __init__(self, supergroup, prime) -> None:
+        self._supergroup = supergroup
         self._prime = prime
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def prime(self):
         return self._prime
 
     def representative(self, prolongation):
-        return self._ambient.inertia_group(
+        return self._supergroup.inertia_group(
             self._prime,
             prolongation=prolongation,
         )
@@ -365,26 +363,26 @@ class InertiaGroupConjugacyClass(SageObject):
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, InertiaGroupConjugacyClass)
-            and other._ambient is self._ambient
+            and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
 
     def __hash__(self) -> int:
-        return hash((id(self._ambient), self._prime, "inertia"))
+        return hash((id(self._supergroup), self._prime, "inertia"))
 
     def _repr_(self) -> str:
-        return f"Conjugacy class of inertia groups at {self._prime} in {self._ambient}"
+        return f"Conjugacy class of inertia groups at {self._prime} in {self._supergroup}"
 
 
 class FrobeniusConjugacyClass(SageObject):
     r"""The canonical global Frobenius class at an unramified base prime."""
 
-    def __init__(self, ambient, prime) -> None:
-        self._ambient = ambient
+    def __init__(self, supergroup, prime) -> None:
+        self._supergroup = supergroup
         self._prime = prime
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def prime(self):
         return self._prime
@@ -398,15 +396,15 @@ class FrobeniusConjugacyClass(SageObject):
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, FrobeniusConjugacyClass)
-            and other._ambient is self._ambient
+            and other._supergroup is self._supergroup
             and other._prime == self._prime
         )
 
     def __hash__(self) -> int:
-        return hash((id(self._ambient), self._prime, "frobenius"))
+        return hash((id(self._supergroup), self._prime, "frobenius"))
 
     def _repr_(self) -> str:
-        return f"Frobenius conjugacy class at {self._prime} in {self._ambient}"
+        return f"Frobenius conjugacy class at {self._prime} in {self._supergroup}"
 
 
 __all__ = [

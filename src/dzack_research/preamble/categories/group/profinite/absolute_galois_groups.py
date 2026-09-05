@@ -75,11 +75,8 @@ class OpenAbsoluteGaloisSubgroups(Category_singleton):
         return [AbsoluteGaloisGroups()]
 
     class ParentMethods:
-        def ambient(self):
-            return self._ambient
-
         def supergroup(self):
-            return self._ambient
+            return self._supergroup
 
         def fixed_field(self):
             return self._fixed_extension.field()

@@ -253,22 +253,22 @@ class FrobeniusElement(AbsoluteGaloisGroupElement):
 class ElementConjugacyClass(SageObject):
     r"""The conjugacy class of a represented global automorphism."""
 
-    def __init__(self, ambient, representative) -> None:
-        self._ambient = ambient
+    def __init__(self, supergroup, representative) -> None:
+        self._supergroup = supergroup
         self._representative = representative
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def representative(self):
         return self._representative
 
     def __contains__(self, element) -> bool:
-        if self._ambient.is_abelian() is not True:
+        if self._supergroup.is_abelian() is not True:
             raise NotImplementedError(
                 "conjugacy membership is not decided for this absolute Galois group"
             )
-        if element not in self._ambient:
+        if element not in self._supergroup:
             return False
         return element == self._representative
 
@@ -277,23 +277,23 @@ class ElementConjugacyClass(SageObject):
             return True
         if not isinstance(other, ElementConjugacyClass):
             return False
-        if other._ambient is not self._ambient:
+        if other._supergroup is not self._supergroup:
             return False
-        if self._ambient.is_abelian() is not True:
+        if self._supergroup.is_abelian() is not True:
             raise NotImplementedError(
                 "conjugacy-class equality is not decided for this absolute Galois group"
             )
         return other._representative == self._representative
 
     def __hash__(self) -> int:
-        if self._ambient.is_abelian() is not True:
+        if self._supergroup.is_abelian() is not True:
             raise TypeError(
                 "undecided absolute-Galois conjugacy classes are not hashable"
             )
-        return hash((id(self._ambient), self._representative))
+        return hash((id(self._supergroup), self._representative))
 
     def _repr_(self) -> str:
-        return f"Conjugacy class of {self._representative} in {self._ambient}"
+        return f"Conjugacy class of {self._representative} in {self._supergroup}"
 
 def _as_exact_embedding(domain, codomain, embedding) -> ExactFieldMorphism:
     domain = _own_ring(domain)
@@ -759,24 +759,24 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
 
 
 class OpenSubgroupInclusion(Morphism):
-    r"""The literal inclusion of a realized open subgroup into its ambient group."""
+    r"""The literal inclusion of a realized open subgroup into its supergroup group."""
 
     def __init__(self, subgroup) -> None:
         Morphism.__init__(
             self,
-            continuous_group_homset(subgroup, subgroup.ambient()),
+            continuous_group_homset(subgroup, subgroup.supergroup()),
         )
 
     def _call_(self, element):
         subgroup = self.domain()
         element = subgroup(element)
-        ambient = self.codomain()
+        supergroup = self.codomain()
         exponent = element.frobenius_exponent()
-        if exponent is not None and ambient._is_finite_field():
-            return FrobeniusElement(ambient, subgroup.index() * exponent)
+        if exponent is not None and supergroup._is_finite_field():
+            return FrobeniusElement(supergroup, subgroup.index() * exponent)
         exact = element.exact_action()
         if exact is not None:
-            return ambient(exact)
+            return supergroup(exact)
         raise NotImplementedError("the subgroup element has no global exact action")
 
     def is_injective(self) -> bool:
@@ -789,24 +789,24 @@ class OpenSubgroupInclusion(Morphism):
 class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     r"""The actual subgroup fixing one embedded finite extension (E/K)."""
 
-    def __init__(self, ambient, extension: FiniteGaloisExtension) -> None:
+    def __init__(self, supergroup, extension: FiniteGaloisExtension) -> None:
         if not isinstance(extension, FiniteGaloisExtension):
             raise TypeError(
                 "an open subgroup requires represented finite-extension data"
             )
-        extension = ambient.extension_data(extension)
-        self._ambient = ambient
+        extension = supergroup.extension_data(extension)
+        self._supergroup = supergroup
         self._fixed_extension = extension
         super().__init__(
             extension.field(),
-            closure=ambient.algebraic_closure(),
+            closure=supergroup.algebraic_closure(),
             embedding=extension.embedding(),
         )
         refine(self, OpenAbsoluteGaloisSubgroups())
         self._inclusion = OpenSubgroupInclusion(self)
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def fixed_field(self):
         return self._fixed_extension.field()
@@ -829,7 +829,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     def __contains__(self, element) -> bool:
         if isinstance(element, AbsoluteGaloisGroupElement) and element.parent() is self:
             return True
-        if element not in self._ambient:
+        if element not in self._supergroup:
             return False
         embedding = self.embedding()
         try:
@@ -843,14 +843,14 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     def _element_constructor_(self, datum=None, **options):
         if (
             isinstance(datum, AbsoluteGaloisGroupElement)
-            and datum.parent() is self._ambient
+            and datum.parent() is self._supergroup
         ):
             if datum not in self:
                 raise ValueError(
-                    "the ambient automorphism does not fix this subgroup's field"
+                    "the supergroup automorphism does not fix this subgroup's field"
                 )
             exponent = datum.frobenius_exponent()
-            if exponent is not None and self._ambient._is_finite_field():
+            if exponent is not None and self._supergroup._is_finite_field():
                 if exponent % self.index():
                     raise ValueError(
                         "the Frobenius power is outside this open subgroup"
@@ -859,17 +859,17 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             exact = datum.exact_action()
             if exact is not None:
                 return super()._element_constructor_(exact)
-            raise NotImplementedError("the ambient element has no global exact action")
+            raise NotImplementedError("the supergroup element has no global exact action")
         return super()._element_constructor_(datum, **options)
 
     def conjugacy_class(self):
-        return OpenGaloisSubgroupConjugacyClass(self._ambient, self.fixed_field())
+        return OpenGaloisSubgroupConjugacyClass(self._supergroup, self.fixed_field())
 
     def core(self):
         if self.is_normal():
             return self
         field = _engine_ring(self.fixed_field())
-        base = _engine_ring(self._ambient.base_field())
+        base = _engine_ring(self._supergroup.base_field())
         defining_base = getattr(field, "base_field", lambda: None)()
         if defining_base is base:
             polynomial = field.relative_polynomial()
@@ -877,7 +877,7 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             polynomial = field.defining_polynomial().change_ring(base)
         else:
             raise NotImplementedError(
-                "the relative defining polynomial over the ambient base field is unavailable"
+                "the relative defining polynomial over the supergroup base field is unavailable"
             )
 
         normal_field, base_backend = polynomial.splitting_field(
@@ -885,18 +885,18 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
         )
         normal_field = _own_ring(normal_field)
         base_embedding = _exact_field_morphism_from_engine(
-            self._ambient.base_field(), normal_field, base_backend
+            self._supergroup.base_field(), normal_field, base_backend
         )
         compatible_closure_embeddings = []
         for fixed_to_normal in exact_embeddings(self.fixed_field(), normal_field):
             if not all(
                 fixed_to_normal(self._fixed_extension.base_embedding()(generator))
                 == base_embedding(generator)
-                for generator in field_generators(self._ambient.base_field())
+                for generator in field_generators(self._supergroup.base_field())
             ):
                 continue
             for normal_to_closure in exact_embeddings(
-                normal_field, self._ambient.algebraic_closure()
+                normal_field, self._supergroup.algebraic_closure()
             ):
                 if all(
                     normal_to_closure(fixed_to_normal(generator))
@@ -908,17 +908,17 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             raise ValueError(
                 "the normal closure could not be placed compatibly inside the chosen algebraic closure"
             )
-        stage = self._ambient.extension_data(
+        stage = self._supergroup.extension_data(
             normal_field,
             embedding=compatible_closure_embeddings[0],
             base_embedding=base_embedding,
         )
-        return self._ambient.open_subgroup(stage)
+        return self._supergroup.open_subgroup(stage)
 
     def __le__(self, other) -> bool:
         if (
             not isinstance(other, OpenAbsoluteGaloisSubgroup)
-            or other.ambient() is not self.ambient()
+            or other.supergroup() is not self.supergroup()
         ):
             return False
         for embedding in exact_embeddings(other.fixed_field(), self.fixed_field()):
@@ -932,36 +932,36 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     def intersection(self, other):
         if (
             not isinstance(other, OpenAbsoluteGaloisSubgroup)
-            or other.ambient() is not self.ambient()
+            or other.supergroup() is not self.supergroup()
         ):
             raise ValueError(
-                "open-subgroup intersection requires one ambient Galois group"
+                "open-subgroup intersection requires one supergroup Galois group"
             )
         if _engine_ring(self.fixed_field()) in FiniteFields():
             degree = ZZ(self.index()).lcm(ZZ(other.index()))
-            return self.ambient().open_subgroup(self.ambient().finite_extension(degree))
+            return self.supergroup().open_subgroup(self.supergroup().finite_extension(degree))
         raise NotImplementedError(
             "the compositum must be supplied with its exact closure embedding"
         )
 
     def _repr_(self) -> str:
-        return f"Gal({self.algebraic_closure()} / {self.fixed_field()}) inside {self._ambient}"
+        return f"Gal({self.algebraic_closure()} / {self.fixed_field()}) inside {self._supergroup}"
 
 
 class OpenGaloisSubgroupConjugacyClass(SageObject):
     r"""The conjugacy class obtained by forgetting (E\hookrightarrow\bar K)."""
 
-    def __init__(self, ambient, extension_field) -> None:
-        self._ambient = ambient
+    def __init__(self, supergroup, extension_field) -> None:
+        self._supergroup = supergroup
         if isinstance(extension_field, FiniteGaloisExtension):
-            if extension_field.base_field() is not ambient.base_field():
-                raise ValueError("the extension has the wrong ambient base field")
+            if extension_field.base_field() is not supergroup.base_field():
+                raise ValueError("the extension has the wrong supergroup base field")
             self._extension_field = extension_field.field()
             self._base_embedding = extension_field.base_embedding()
         else:
             self._extension_field = _own_ring(extension_field)
             base_embeddings = exact_embeddings(
-                ambient.base_field(), self._extension_field
+                supergroup.base_field(), self._extension_field
             )
             if len(base_embeddings) != 1:
                 raise ValueError(
@@ -969,8 +969,8 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
                 )
             self._base_embedding = base_embeddings[0]
 
-    def ambient(self):
-        return self._ambient
+    def supergroup(self):
+        return self._supergroup
 
     def fixed_field(self):
         return self._extension_field
@@ -980,7 +980,7 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
 
     def index(self):
 
-        return _relative_degree(self._ambient.base_field(), self._extension_field)
+        return _relative_degree(self._supergroup.base_field(), self._extension_field)
 
     def representative(self, embedding=None):
         if embedding is None:
@@ -988,12 +988,12 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
                 candidate
                 for candidate in exact_embeddings(
                     self._extension_field,
-                    self._ambient.algebraic_closure(),
+                    self._supergroup.algebraic_closure(),
                 )
                 if all(
                     candidate(self._base_embedding(generator))
-                    == self._ambient.base_embedding()(generator)
-                    for generator in field_generators(self._ambient.base_field())
+                    == self._supergroup.base_embedding()(generator)
+                    for generator in field_generators(self._supergroup.base_field())
                 )
             ]
             if not candidates:
@@ -1001,23 +1001,23 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
                     "the K-extension has no compatible embedding in the chosen closure"
                 )
             embedding = candidates[0]
-        stage = self._ambient.extension_data(
+        stage = self._supergroup.extension_data(
             self._extension_field,
             embedding=embedding,
             base_embedding=self._base_embedding,
         )
-        return self._ambient.open_subgroup(stage)
+        return self._supergroup.open_subgroup(stage)
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, OpenGaloisSubgroupConjugacyClass):
             return False
-        if other._ambient is not self._ambient or other.index() != self.index():
+        if other._supergroup is not self._supergroup or other.index() != self.index():
             return False
         return any(
             all(
                 isomorphism(self._base_embedding(generator))
                 == other._base_embedding(generator)
-                for generator in field_generators(self._ambient.base_field())
+                for generator in field_generators(self._supergroup.base_field())
             )
             for isomorphism in exact_embeddings(
                 self._extension_field, other._extension_field
@@ -1025,17 +1025,17 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
         )
 
     def __hash__(self) -> int:
-        return hash((id(self._ambient), self.index()))
+        return hash((id(self._supergroup), self.index()))
 
     def _repr_(self) -> str:
         return (
             f"Conjugacy class of index-{self.index()} open subgroups of "
-            f"{self._ambient} corresponding to {self._extension_field}"
+            f"{self._supergroup} corresponding to {self._extension_field}"
         )
 
 
-def open_absolute_galois_subgroup(ambient, extension, embedding=None):
-    return ambient.open_subgroup(extension, embedding=embedding)
+def open_absolute_galois_subgroup(supergroup, extension, embedding=None):
+    return supergroup.open_subgroup(extension, embedding=embedding)
 
 absolute_galois_group = AbsoluteGaloisGroup
 

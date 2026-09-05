@@ -31,7 +31,7 @@ def _unit_group_element(unit_group, residue):
 
 class RestrictedProfiniteCharacter(Morphism):
     def __init__(self, character, subgroup) -> None:
-        if subgroup.ambient() is not character.domain():
+        if subgroup.supergroup() is not character.domain():
             raise ValueError("the subgroup does not lie in this character's domain")
         self._character = character
         Morphism.__init__(
