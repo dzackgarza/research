@@ -231,6 +231,34 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     return bool(lifted.is_prime() and lifted.dimension() == 0)
 
         def radical(self):
+            ring = self.ring()
+            if ring._has_selected_exact_coefficient_presentation():
+                presentation_ring = ring._exact_coefficient_presentation_ring()
+                lifted_generators = tuple(
+                    presentation_ring(
+                        ring._lift_coefficient_to_presentation(generator)
+                    )
+                    for generator in self.ideal_generators()
+                )
+                presentation_relations = tuple(
+                    presentation_ring(relation)
+                    for relation in ring._exact_coefficient_presentation_relations()
+                )
+                lifted = presentation_ring.ideal(
+                    *(
+                        presentation_relations
+                        + lifted_generators
+                        or (presentation_ring.zero(),)
+                    )
+                )
+                radical = lifted.radical()
+                descended_generators = tuple(
+                    ring._descend_coefficient_from_presentation(generator)
+                    for generator in radical.ideal_generators()
+                )
+                return ring.ideal(
+                    *(descended_generators or (ring.zero(),))
+                )
             return _from_engine_ideal(self.ring(), self._engine_ideal().radical())
 
         def colon(self, other):

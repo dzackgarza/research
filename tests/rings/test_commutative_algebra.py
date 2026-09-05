@@ -757,6 +757,11 @@ def test_selected_presented_algebra_localization_has_exact_fraction_equality() -
     assert localized_origin.contraction() == axes.ideal(axes.one())
     assert localized_origin.contains_ambient_element(localized.one())
 
+    squared_x = axes.ideal(xbar**2)
+    radical = squared_x.radical()
+    assert radical.contains_ambient_element(xbar)
+    assert radical == axes.ideal(xbar)
+
 
 def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
     from dzack_research.preamble.categories.algebras import (
