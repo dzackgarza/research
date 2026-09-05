@@ -150,11 +150,11 @@ def test_product_of_projective_spaces_is_the_actual_multiprojective_scheme() -> 
 
 def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     from dzack_research.preamble.all import (
-        Coproduct,
         FinitelyPresentedAlgebra,
         PolynomialRing,
         Spec,
     )
+    from dzack_research.preamble.categories.abstract_categories import Coproduct
 
     left_free = PolynomialRing(QQ, "x")
     right_free = PolynomialRing(QQ, "y")
@@ -234,7 +234,8 @@ def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None
 
 
 def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() -> None:
-    from dzack_research.preamble.all import FiberProduct, PolynomialRing, SpecFunctor
+    from dzack_research.preamble.all import PolynomialRing, SpecFunctor
+    from dzack_research.preamble.categories.abstract_categories import FiberProduct
 
     common = PolynomialRing(QQ, "s")
     left_algebra = PolynomialRing(QQ, "x")
@@ -277,3 +278,53 @@ def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() ->
         (right_projection * induced).coordinate_algebra_morphism()(y)
         == target_to_right.coordinate_algebra_morphism()(y)
     )
+
+
+def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None:
+    from dzack_research.preamble.all import FinitelyPresentedAlgebra, PolynomialRing, SpecFunctor
+    from dzack_research.preamble.categories.abstract_categories import FiberProduct
+
+    parameter = PolynomialRing(QQ, "t")
+    t = parameter.algebra_generator("t")
+    presentation = PolynomialRing(parameter, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    y = presentation.algebra_generator("y")
+    family_algebra = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    residue_algebra = parameter.quotient_ring(parameter.ideal(t))
+
+    spec = SpecFunctor(parameter)
+    parameter_scheme = Spec(parameter, base_ring=parameter)
+    family = spec(family_algebra)
+    zero = spec(residue_algebra)
+
+    assert parameter_scheme is Schemes(parameter).base_scheme()
+    assert family.base_scheme() is parameter_scheme
+    assert zero.base_scheme() is parameter_scheme
+
+    special_fiber = FiberProduct(
+        family.structure_morphism(),
+        zero.structure_morphism(),
+    )
+    to_family, to_zero = special_fiber.fiber_product_projections()
+
+    assert special_fiber in Schemes(parameter)
+    assert special_fiber.fiber_product_base() is parameter_scheme
+    assert to_family.domain() is special_fiber
+    assert to_family.codomain() is family
+    assert to_zero.domain() is special_fiber
+    assert to_zero.codomain() is zero
+
+    special_algebra = special_fiber.coordinate_algebra()
+    x0 = special_algebra.algebra_generator("x")
+    y0 = special_algebra.algebra_generator("y")
+    assert special_algebra.base_ring() is parameter
+    assert x0 * y0 == special_algebra.zero()
+
+    left_square = family.structure_morphism() * to_family
+    right_square = zero.structure_morphism() * to_zero
+    assert left_square == right_square
+    assert left_square.coordinate_algebra_morphism()(t) == special_algebra.zero()
+    assert right_square.coordinate_algebra_morphism()(t) == special_algebra.zero()
+
+    induced_identity = special_fiber.from_pullback_cone(to_family, to_zero)
+    assert induced_identity == special_fiber.categorical_identity_morphism()

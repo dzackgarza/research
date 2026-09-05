@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.rings.commutative_algebra import (
+    QuotientRings,
     refine_commutative_algebra,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -49,6 +50,7 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    AlgebrasWithChosenFinitePresentation,
     FramedAlgebras,
     _engine_algebra_morphism,
 )
@@ -420,7 +422,7 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     @cached_method
     def slice_category(self):
-        return SliceOver(LocallyRingedSpaces(), self.base_scheme())
+        return SliceOver(self, self.base_scheme())
 
     def as_slice_object(self, scheme):
         if scheme not in self:
@@ -1192,8 +1194,56 @@ def affine_spec_morphism(algebra_morphism):
         raise ValueError("affine Spec requires an algebra morphism over one scalar base")
     source_scheme = Spec(target_algebra, base_ring=ring)
     target_scheme = Spec(source_algebra, base_ring=ring)
+    try:
+        engine_morphism = _engine_algebra_morphism(algebra_morphism)
+    except (NotImplementedError, ValueError) as error:
+        # A relative selected presentation can have a flattened Sage quotient
+        # engine whose polynomial generators include generators of the scalar
+        # ring.  The owned algebra morphism still contains the right map, but
+        # the generic framed-algebra bridge cannot reconstruct that flattened
+        # native map from the relative algebra generators alone.  A canonical
+        # Sage coercion is an admissible private realization only after checking
+        # it on finite generating families for both the algebra and its scalar
+        # ring.
+        base = source_algebra.base_ring()
+        scalar_base = base.base_ring()
+        if (
+            source_algebra not in FramedAlgebras(base)
+            or base not in FramedAlgebras(scalar_base)
+        ):
+            raise error
+        algebra_labels = source_algebra.algebra_generating_set()
+        scalar_labels = base.algebra_generating_set()
+        if (
+            not algebra_labels.cardinality().is_finite()
+            or not scalar_labels.cardinality().is_finite()
+        ):
+            raise error
+        engine_source = _engine_ring(source_algebra)
+        engine_target = _engine_ring(target_algebra)
+        engine_morphism = engine_target.coerce_map_from(engine_source)
+        if engine_morphism is None:
+            raise error
+
+        test_values = tuple(
+            source_algebra.algebra_generator(label)
+            for label in algebra_labels
+        ) + tuple(
+            source_algebra(
+                source_algebra.algebra_structure_morphism()(
+                    base.algebra_generator(label)
+                )
+            )
+            for label in scalar_labels
+        )
+        if any(
+            engine_morphism(_engine_element(source_algebra, value))
+            != _engine_element(target_algebra, algebra_morphism(value))
+            for value in test_values
+        ):
+            raise error
     native = _native_scheme_homset(source_scheme, target_scheme)(
-        _engine_algebra_morphism(algebra_morphism), check=False
+        engine_morphism, check=False
     )
     morphism = refine_scheme_morphism(
         native,
@@ -1440,12 +1490,100 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
                 raise ValueError("the left pullback-cone map has the wrong codomain")
             if right_map.codomain() is not right_projection.codomain():
                 raise ValueError("the right pullback-cone map has the wrong codomain")
-            algebra_pushout = self._preamble_fiber_product_algebra_pushout
-            induced = algebra_pushout.from_pushout_cocone(
-                left_map.coordinate_algebra_morphism(),
-                right_map.coordinate_algebra_morphism(),
+            left_pullback = left_map.coordinate_algebra_morphism()
+            right_pullback = right_map.coordinate_algebra_morphism()
+            selected_factorization = getattr(
+                self,
+                "_preamble_fiber_product_cocone_factorization",
+                None,
             )
+            if selected_factorization is None:
+                algebra_pushout = self._preamble_fiber_product_algebra_pushout
+                induced = algebra_pushout.from_pushout_cocone(
+                    left_pullback,
+                    right_pullback,
+                )
+            else:
+                induced = selected_factorization(left_pullback, right_pullback)
             return affine_spec_morphism(induced)
+
+
+def _quotient_base_change_pushout(left_pullback, right_pullback):
+    r"""Realize ``A tensor_T T/I`` as ``A/IA`` in the represented quotient regime.
+
+    This is the affine algebra backend for base change along a represented
+    quotient of the scalar ring.  It is used only when the general algebra
+    pushout cannot own the span because ``T/I`` has no selected algebra
+    framing.  The quotient presentation supplies the pushout object, its two
+    canonical maps, and the universal cocone factorization.
+    """
+
+    base = left_pullback.domain()
+    if right_pullback.domain() is not base:
+        raise ValueError("a quotient base-change span requires one scalar source")
+
+    def realize(other_pullback, quotient_pullback, *, quotient_on_right):
+        other = other_pullback.codomain()
+        quotient = quotient_pullback.codomain()
+        if quotient not in QuotientRings():
+            return None
+        if quotient.quotient_source() is not base:
+            return None
+
+        if other not in AlgebrasWithChosenFinitePresentation(base):
+            return None
+        equations = tuple(
+            other_pullback(generator)
+            for generator in quotient.defining_ideal().ideal_generators()
+        )
+        try:
+            pushout, other_to_pushout = other._quotient_by_algebra_elements(
+                equations
+            )
+        except NotImplementedError:
+            return None
+
+        engine_quotient_to_pushout = _engine_ring(pushout).coerce_map_from(
+            _engine_ring(quotient)
+        )
+        if engine_quotient_to_pushout is None:
+            return None
+        quotient_to_pushout = quotient.Mor(pushout)(engine_quotient_to_pushout)
+
+        if quotient_on_right:
+            left_to_pushout = other_to_pushout
+            right_to_pushout = quotient_to_pushout
+        else:
+            left_to_pushout = quotient_to_pushout
+            right_to_pushout = other_to_pushout
+
+        def factor(left_to_target, right_to_target):
+            if left_to_target.codomain() is not right_to_target.codomain():
+                raise ValueError("a pushout cocone requires one common codomain")
+            if (
+                left_to_target.domain() is not left_pullback.codomain()
+                or right_to_target.domain() is not right_pullback.codomain()
+            ):
+                raise ValueError("the pushout cocone maps have the wrong domains")
+
+            other_to_target = (
+                left_to_target if quotient_on_right else right_to_target
+            )
+            target = other_to_target.codomain()
+            labels = pushout.algebra_generating_set()
+            return pushout.Mor(target)(
+                {
+                    label: other_to_target(other.algebra_generator(label))
+                    for label in labels
+                }
+            )
+
+        return pushout, left_to_pushout, right_to_pushout, factor
+
+    represented = realize(left_pullback, right_pullback, quotient_on_right=True)
+    if represented is not None:
+        return represented
+    return realize(right_pullback, left_pullback, quotient_on_right=False)
 
 
 def scheme_fiber_product(left_map, right_map):
@@ -1468,15 +1606,33 @@ def scheme_fiber_product(left_map, right_map):
         )
 
 
-    algebra_pushout = Pushout(
-        left_map.coordinate_algebra_morphism(),
-        right_map.coordinate_algebra_morphism(),
-    )
+    left_pullback = left_map.coordinate_algebra_morphism()
+    right_pullback = right_map.coordinate_algebra_morphism()
+    cocone_factorization = None
+    try:
+        algebra_pushout = Pushout(left_pullback, right_pullback)
+        left_pushout_map = algebra_pushout.left_pushout_map()
+        right_pushout_map = algebra_pushout.right_pushout_map()
+    except NotImplementedError:
+        quotient_base_change = _quotient_base_change_pushout(
+            left_pullback,
+            right_pullback,
+        )
+        if quotient_base_change is None:
+            raise
+        (
+            algebra_pushout,
+            left_pushout_map,
+            right_pushout_map,
+            cocone_factorization,
+        ) = quotient_base_change
     product = Spec(algebra_pushout, base_ring=base_ring)
-    left_projection = affine_spec_morphism(algebra_pushout.left_pushout_map())
-    right_projection = affine_spec_morphism(algebra_pushout.right_pushout_map())
+    left_projection = affine_spec_morphism(left_pushout_map)
+    right_projection = affine_spec_morphism(right_pushout_map)
     product._preamble_fiber_product_cospan = (left_map, right_map)
     product._preamble_fiber_product_algebra_pushout = algebra_pushout
+    if cocone_factorization is not None:
+        product._preamble_fiber_product_cocone_factorization = cocone_factorization
     product._preamble_fiber_product_projections = (
         left_projection,
         right_projection,

@@ -90,6 +90,7 @@ digraph preamble {
     "FramedAlgebras" [label="FramedAlgebras(R)", fillcolor="#ffe4e6"];
     "FreeAlgebras" [label="FreeAlgebras(R)", fillcolor="#ffe4e6"];
     "GradedFreeAlgebras" [label="GradedFreeAlgebras(R)", fillcolor="#ffe4e6"];
+    "GroupAlgebras" [label="GroupAlgebras(R)", fillcolor="#ffe4e6"];
     "KahlerDifferentialModules" [label="KahlerDifferentialModules(R)", fillcolor="#ffe4e6"];
     "LieAlgebras" [label="LieAlgebras(R)", fillcolor="#ffe4e6"];
     "MatrixAlgebras" [label="MatrixAlgebras(R)", fillcolor="#ffe4e6"];
@@ -358,6 +359,8 @@ digraph preamble {
   "FunctionEnumeratedSets" -> "EnumeratedSets";
   "GradedFreeAlgebras" -> "FreeAlgebras";
   "GradedTensorProductModules" -> "Modules";
+  "GroupAlgebras" -> "AlgebrasWithChosenMultiplication";
+  "GroupAlgebras" -> "AugmentedAlgebras";
   "Groups" -> "Monoids";
   "GroupsWithChosenFiniteGeneratingSet" -> "OwnedFinitelyGeneratedGroups";
   "GroupsWithChosenFinitePresentation" -> "GroupsWithChosenFiniteGeneratingSet";
