@@ -20,6 +20,7 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.owned_category import OwnedParent, object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     _category_homset,
@@ -448,6 +449,49 @@ class Sets(OwnedCategory):
 
         def finite_subsets(self):
             return FiniteSubsets(self)
+
+    class Finite(CategoryWithAxiom):
+        r"""Sets whose cardinality is finite."""
+
+        def an_object(self):
+            r"""The ordinal 2."""
+            return finite_ordinal_set(2)
+
+        def __contains__(self, candidate) -> bool:
+            if candidate not in Sets():
+                return False
+            try:
+                return cardinal(candidate.cardinality()).is_finite()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+
+    class Infinite(CategoryWithAxiom):
+        r"""Sets whose cardinality is infinite."""
+
+        def an_object(self):
+            r"""The natural numbers."""
+            return NN
+
+        def __contains__(self, candidate) -> bool:
+            # The cardinality of the underlying set decides this, as it does for
+            # FiniteSets.  Sage's own Infinite() axiom answers for Sage's graph, in
+            # which an owned set is not placed at all (`CAT-12`).
+            if candidate not in Sets():
+                return False
+            try:
+                return not cardinal(candidate.cardinality()).is_finite()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+def FiniteSets():
+    r"""The category of finite sets."""
+    return Sets().Finite()
+
+
+def InfiniteSets():
+    r"""The category of infinite sets."""
+    return Sets().Infinite()
+
+
 
 
 def Set(source):
@@ -1692,45 +1736,6 @@ class Homsets(OwnedCategory):
             return self.domain() is self.codomain()
 
 
-class FiniteSets(OwnedCategory):
-    r"""Sets whose cardinality is finite."""
-
-    def an_object(self):
-        r"""The ordinal 2."""
-        return finite_ordinal_set(2)
-
-    def super_categories(self):
-        return [Sets()]
-
-    def __contains__(self, candidate) -> bool:
-        if candidate not in Sets():
-            return False
-        try:
-            return cardinal(candidate.cardinality()).is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
-
-
-class InfiniteSets(OwnedCategory):
-    r"""Sets whose cardinality is infinite."""
-
-    def an_object(self):
-        r"""The natural numbers."""
-        return NN
-
-    def super_categories(self):
-        return [Sets()]
-
-    def __contains__(self, candidate) -> bool:
-        # The cardinality of the underlying set decides this, as it does for
-        # FiniteSets.  Sage's own Infinite() axiom answers for Sage's graph, in
-        # which an owned set is not placed at all (`CAT-12`).
-        if candidate not in Sets():
-            return False
-        try:
-            return not cardinal(candidate.cardinality()).is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
 
 
 class CountableSets(OwnedCategory):
