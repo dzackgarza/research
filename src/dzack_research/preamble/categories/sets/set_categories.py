@@ -67,74 +67,78 @@ class InfiniteEnumeratedSets(OwnedCategory):
         return [EnumeratedSets()]
 
 
-class FiniteOrdinalSet(Parent):
-    r"""The canonical finite ordinal ``{0,...,size-1}`` as a lazy owned set."""
+class FiniteOrdinalSets(OwnedCategory):
+    r"""The canonical finite ordinals \(\{0,\dots,n-1\}\), lazily."""
 
-    def __init__(self, size) -> None:
-        self._size = int(size)
-        if self._size < 0:
-            raise ValueError("a finite ordinal cardinality is nonnegative")
-        Parent.__init__(
-            self,
-            facade=True,
-            category=Category.join(
-                (EnumeratedSets(), TotallyOrderedSets(), FiniteEnumeratedSets())
-            ),
-        )
+    def an_object(self):
+        r"""\(\{0,1,2\}\)."""
+        return finite_ordinal_set(3)
 
-    def cardinality(self):
-        return cardinal(self._size)
+    def super_categories(self):
+        # The join every finite ordinal was built in, declared once
+        # by the category rather than computed for each object.
+        return [EnumeratedSets(), TotallyOrderedSets(), FiniteEnumeratedSets()]
 
-    def __iter__(self):
-        return (NN(index) for index in range(self._size))
+    class ParentMethods:
+        def __init__(self, size, **rest) -> None:
+            self._size = int(size)
+            assert self._size >= 0, "a finite ordinal cardinality is nonnegative"
+            super().__init__(facade=True, **rest)
 
-    def unrank(self, position):
-        position = int(position)
-        if position < 0 or position >= self._size:
-            raise IndexError(position)
-        return NN(position)
+        def cardinality(self):
+            return cardinal(self._size)
 
-    def rank(self, element):
-        try:
-            position = int(element)
-        except (TypeError, ValueError) as error:
-            raise ValueError(element) from error
-        if position < 0 or position >= self._size:
-            raise ValueError(element)
-        return position
+        def __iter__(self):
+            return (NN(index) for index in range(self._size))
 
-    position = rank
-    index = rank
+        def unrank(self, position):
+            position = int(position)
+            if position < 0 or position >= self._size:
+                raise IndexError(position)
+            return NN(position)
 
-    def __contains__(self, element) -> bool:
-        try:
-            position = int(element)
-        except (TypeError, ValueError):
-            return False
-        return 0 <= position < self._size
+        def rank(self, element):
+            try:
+                position = int(element)
+            except (TypeError, ValueError) as error:
+                raise ValueError(element) from error
+            if position < 0 or position >= self._size:
+                raise ValueError(element)
+            return position
 
-    is_parent_of = __contains__
+        position = rank
+        index = rank
 
-    def __call__(self, element):
-        return self.unrank(self.rank(element))
+        def __contains__(self, element) -> bool:
+            try:
+                position = int(element)
+            except (TypeError, ValueError):
+                return False
+            return 0 <= position < self._size
 
-    def __getitem__(self, position):
-        return self.unrank(position)
+        is_parent_of = __contains__
 
-    def le(self, left, right):
-        return self.rank(left) <= self.rank(right)
+        def __call__(self, element):
+            return self.unrank(self.rank(element))
 
-    def __len__(self):
-        return self._size
+        def __getitem__(self, position):
+            return self.unrank(position)
 
-    def _repr_(self):
-        if not self._size:
-            return "{}"
-        return f"{{0,...,{self._size - 1}}}"
+        def le(self, left, right):
+            return self.rank(left) <= self.rank(right)
+
+        def __len__(self):
+            return self._size
+
+        def _repr_(self):
+            if not self._size:
+                return "{}"
+            return f"{{0,...,{self._size - 1}}}"
+
 
 
 def finite_ordinal_set(size):
-    return FiniteOrdinalSet(size)
+    return object_of(FiniteOrdinalSets(), size=size)
 
 
 @cached_function
@@ -645,10 +649,9 @@ class PowerSets(OwnedCategory):
 
     class ParentMethods:
         def __init__(self, base_set, **rest) -> None:
-            if base_set not in Sets():
-                raise TypeError("a power set is formed from an owned set")
+            assert base_set in Sets(), "a power set is formed from an owned set"
             self._base_set = base_set
-            Parent.__init__(self, category=SageSets())
+            super().__init__(**rest)
 
         def base_set(self):
             return self._base_set
@@ -1557,6 +1560,126 @@ ObjectSetsOfDiscreteCategories = SageSets
 ExponentialsOfSets = FunctionSets
 
 
+class NaturalNumberSets(OwnedCategory):
+    r"""The owned set \(\mathbb{N}=\{0,1,2,\dots\}\)."""
+
+    def an_object(self):
+        r"""\(\mathbb{N}\)."""
+        return NN
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
+        # Enumerated as well as countably infinite: the identity ranking
+        # is the chosen enumeration.  Declared by the category rather
+        # than joined for the one object.
+        return [
+            CountablyInfiniteSets(),
+            TotallyOrderedSets(),
+            InfiniteEnumeratedSets(),
+            AdditiveMonoids(),
+        ]
+
+    class ElementMethods(Element):
+        r"""What a natural number is."""
+
+        def __init__(self, parent, value) -> None:
+            Element.__init__(self, parent)
+            # This constructor is an ingress boundary.  It accepts the owned
+            # integer view without importing the higher ring theory back into Sets;
+            # the ring carrier exposes only this private runtime marker/engine pair.
+            from sage.rings.integer_ring import ZZ as _SageZZ
+
+            if isinstance(value, parent.category().ElementType):
+                value = int(value)
+            elif isinstance(value, SageObject):
+                parent = element_parent(value)
+                if not (
+                    bool(getattr(parent, "_preamble_owned_ring_parent", False))
+                    and getattr(parent, "_engine", None) is _SageZZ
+                ):
+                    raise TypeError(
+                        "raw backend integers are not accepted by the owned natural numbers"
+                    )
+                value = int(value)
+            value = int(value)
+            if value < 0:
+                raise ValueError("a natural number is nonnegative")
+            self._value = value
+
+        def __int__(self):
+            return self._value
+
+        __index__ = __int__
+
+        def __hash__(self):
+            return hash((id(self.parent()), self._value))
+
+        def __eq__(self, other):
+            # The argument is genuinely arbitrary here, so the question is
+            # membership rather than what class it is.
+            if other not in self.parent():
+                return False
+            return self.parent()(other)._value == self._value
+
+        def __ne__(self, other):
+            return not self == other
+
+        def __lt__(self, other):
+            other = self.parent()(other)
+            return self._value < other._value
+
+        def __le__(self, other):
+            other = self.parent()(other)
+            return self._value <= other._value
+
+        def __add__(self, other):
+            other = self.parent()(other)
+            return self.parent()(self._value + int(other))
+
+        __radd__ = __add__
+
+        def _repr_(self):
+            return str(self._value)
+
+    class ParentMethods:
+
+        def __init__(self, **rest) -> None:
+            super().__init__(**rest)
+
+        def _element_constructor_(self, value):
+            if isinstance(value, self.category().ElementType) and value.parent() is self:
+                return value
+            return self.element_class(self, value)
+
+        def __call__(self, value):
+            r"""Construct an owned natural number without Sage coercion discovery."""
+            return self._element_constructor_(value)
+
+        def __contains__(self, value) -> bool:
+            return isinstance(value, self.category().ElementType) and value.parent() is self
+
+        def __iter__(self):
+            index = 0
+            while True:
+                yield self(index)
+                index += 1
+
+        def unrank(self, index):
+            return self(int(index))
+
+        def rank(self, value):
+            return int(self(value))
+
+        def cardinality(self):
+            return aleph0
+
+        def zero(self):
+            return self(0)
+
+        def _repr_(self):
+            return "Natural numbers"
+
 class Homsets(OwnedCategory):
     r"""Hom objects \(\operatorname{Hom}(X,Y)\), which are sets."""
 
@@ -1688,126 +1811,11 @@ class TotallyOrderedSets(OwnedCategory):
         return [PartiallyOrderedSets()]
 
 
-class NaturalNumber(Element):
-    r"""An element of the owned natural-number set."""
-
-    def __init__(self, parent, value) -> None:
-        Element.__init__(self, parent)
-        # This constructor is an ingress boundary.  It accepts the owned
-        # integer view without importing the higher ring theory back into Sets;
-        # the ring carrier exposes only this private runtime marker/engine pair.
-        from sage.rings.integer_ring import ZZ as _SageZZ
-
-        if isinstance(value, NaturalNumber):
-            value = int(value)
-        elif isinstance(value, SageObject):
-            parent = element_parent(value)
-            if not (
-                bool(getattr(parent, "_preamble_owned_ring_parent", False))
-                and getattr(parent, "_engine", None) is _SageZZ
-            ):
-                raise TypeError(
-                    "raw backend integers are not accepted by the owned natural numbers"
-                )
-            value = int(value)
-        value = int(value)
-        if value < 0:
-            raise ValueError("a natural number is nonnegative")
-        self._value = value
-
-    def __int__(self):
-        return self._value
-
-    __index__ = __int__
-
-    def __hash__(self):
-        return hash((id(self.parent()), self._value))
-
-    def __eq__(self, other):
-        return (
-            isinstance(other, NaturalNumber)
-            and other.parent() is self.parent()
-            and other._value == self._value
-        )
-
-    def __ne__(self, other):
-        return not self == other
-
-    def __lt__(self, other):
-        other = self.parent()(other)
-        return self._value < other._value
-
-    def __le__(self, other):
-        other = self.parent()(other)
-        return self._value <= other._value
-
-    def __add__(self, other):
-        other = self.parent()(other)
-        return self.parent()(self._value + int(other))
-
-    __radd__ = __add__
-
-    def _repr_(self):
-        return str(self._value)
 
 
-class NaturalNumbers(Parent):
-    r"""The owned set ``N={0,1,2,...}``."""
-
-    Element = NaturalNumber
-
-    def __init__(self) -> None:
-        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-
-        Parent.__init__(
-            self,
-            # Enumerated as well as countably infinite: the identity ranking is
-            # the chosen enumeration, and `__iter__` below is it.
-            category=Category.join(
-                (
-                    CountablyInfiniteSets(),
-                    TotallyOrderedSets(),
-                    InfiniteEnumeratedSets(),
-                    AdditiveMonoids(),
-                )
-            ),
-        )
-
-    def _element_constructor_(self, value):
-        if isinstance(value, NaturalNumber) and value.parent() is self:
-            return value
-        return self.element_class(self, value)
-
-    def __call__(self, value):
-        r"""Construct an owned natural number without Sage coercion discovery."""
-        return self._element_constructor_(value)
-
-    def __contains__(self, value) -> bool:
-        return isinstance(value, NaturalNumber) and value.parent() is self
-
-    def __iter__(self):
-        index = 0
-        while True:
-            yield self(index)
-            index += 1
-
-    def unrank(self, index):
-        return self(int(index))
-
-    def rank(self, value):
-        return int(self(value))
-
-    def cardinality(self):
-        return aleph0
-
-    def zero(self):
-        return self(0)
-
-    def _repr_(self):
-        return "Natural numbers"
 
 
-NN = NaturalNumbers()
+NN = object_of(NaturalNumberSets())
 
 
 class FinitelySupportedFunctionSets(OwnedCategory):
@@ -1861,7 +1869,7 @@ __all__ = [
     "DisjointUnionsOfSets",
     "EnumeratedSets",
     "ExponentialOfSets",
-    "FiniteOrdinalSet",
+    "FiniteOrdinalSets",
     "FinitePowerSets",
     "FiniteSets",
     "FiniteSubsets",
@@ -1871,8 +1879,7 @@ __all__ = [
     "ImageSet",
     "InfiniteEnumeratedSets",
     "InfiniteSets",
-    "NaturalNumber",
-    "NaturalNumbers",
+    "NaturalNumberSets",
     "NN",
     "ObjectSetsOfDiscreteCategories",
     "PartiallyOrderedSets",
