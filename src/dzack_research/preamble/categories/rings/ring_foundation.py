@@ -51,6 +51,7 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
     Semigroups,
 )
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
 from dzack_research.preamble.categories.sets.cardinals import (
     aleph0,
@@ -380,7 +381,7 @@ class LocalizationRings(OwnedCategory):
             return f"({self.numerator()})/({self.denominator()})"
 
     def super_categories(self):
-        return [OwnedCommutativeRings()]
+        return [OwnedRings().Commutative()]
 
     class ParentMethods:
 
@@ -671,6 +672,91 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             raise TypeError("a ring morphism object requires two owned rings")
         return _ring_mor_category(domain, codomain)
 
+    class Commutative(CategoryWithAxiom):
+        r"""Commutative unital rings in the owned mathematical graph."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "commutative rings"
+
+        def an_object(self):
+            r"""The integers."""
+            return _own_ring(SageZZ)
+
+        class ParentMethods:
+            def is_commutative(self):
+                return True
+
+            def as_algebra_over(self, base_ring):
+                from dzack_research.preamble.categories.algebras.algebras import refine_algebra
+
+                base = _own_ring(base_ring)
+                engine = _engine_ring(self)
+                if not engine.has_coerce_map_from(_engine_ring(base)):
+                    raise ValueError(
+                        f"{self} has no represented canonical algebra structure over {base}"
+                    )
+                return refine_algebra(self, base)
+
+            def as_ZZ_algebra(self):
+                return self.as_algebra_over(_own_ring(SageZZ))
+
+            def ideal(self, *generators):
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    LocalizedMaximalIdeal,
+                    PrimeLocalizations,
+                )
+                from dzack_research.preamble.categories.rings.commutative_ideals import (
+                    CommutativeIdeal,
+                )
+
+                if self in PrimeLocalizations():
+                    normalized = tuple(self(generator) for generator in generators)
+                    source = self.localization_source()
+                    fraction_engine = _engine_ring(self.fraction_field())
+                    numerators = tuple(
+                        source._from_engine_element(
+                            _engine_ring(source)(
+                                fraction_engine(_engine_element(self, generator)).numerator()
+                            )
+                        )
+                        for generator in normalized
+                    )
+                    source_ideal = source.ideal(*numerators)
+                    return LocalizedMaximalIdeal(
+                        self, normalized, source_ideal=source_ideal
+                    )
+                return CommutativeIdeal(self, *generators)
+
+            def quotient_ring(self, ideal):
+                from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRing
+
+                return QuotientRing(self, ideal)
+
+            def localization(self, *elements):
+                from dzack_research.preamble.categories.rings.commutative_algebra import Localization
+
+                return Localization(self, *elements)
+
+            def localize_at_prime(self, prime):
+                from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalization
+
+                return PrimeLocalization(self, prime)
+
+            def adic_completion(self, ideal, precision=20):
+                from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
+
+                return AdicCompletion(self, ideal, precision=precision)
+
+            @cached_method
+            def spectrum(self):
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    PrimeSpectra,
+                )
+                from dzack_research.preamble.owned_category import object_of
+
+                return object_of(PrimeSpectra(), ring=self)
+
     class ParentMethods:
         def _fresh_free_module_on(self, labels):
             r"""Return the selected free module on ``labels`` over this ring."""
@@ -791,7 +877,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             r"""Return whether ``element`` is central in the foundational ring regimes."""
             if element not in self:
                 return False
-            if self in OwnedCommutativeRings():
+            if self in OwnedRings().Commutative():
                 return True
             raise NotImplementedError(
                 f"{self} has no ring-theoretic centrality decision without selected higher structure"
@@ -800,7 +886,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):
             r"""Return the canonical ring map \(R\to Z(R)\) when it is the identity."""
-            if self not in OwnedCommutativeRings():
+            if self not in OwnedRings().Commutative():
                 raise TypeError(
                     f"{self} is noncommutative, so the identity does not land "
                     "in its center"
@@ -818,13 +904,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         @cached_method
         def ring_center(self):
             r"""Return the centre ``Z(R)`` as a predicate-defined subring."""
-            if self in OwnedCommutativeRings():
+            if self in OwnedRings().Commutative():
                 return self
             return predicate_subring(
                 self,
                 self.is_central,
                 "z commutes with every element",
-                OwnedCommutativeRings(),
+                OwnedRings().Commutative(),
             )
 
         def fraction_field(self):
@@ -832,122 +918,6 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             if self in OwnedFields():
                 return self
             return _own_ring(_engine_ring(self).fraction_field())
-
-class OwnedCommutativeRings(OwnedCategory):
-    r"""Commutative unital rings in the owned mathematical graph."""
-
-    def an_object(self):
-        r"""The integers."""
-        return _own_ring(SageZZ)
-
-    def super_categories(self):
-        return [OwnedRings()]
-
-    class ParentMethods:
-        def __init__(self, **rest) -> None:
-            super().__init__(**rest)
-            self._place_as_algebra_over_itself()
-
-        def is_commutative(self):
-            return True
-
-        def _place_as_algebra_over_itself(self):
-            r"""Place this ring in ``CommutativeAlgebras(self)``.
-
-            A commutative ring is a commutative algebra over itself: its centre
-            is all of it, and the identity is the structure morphism.  The
-            category is self-referential, so it can only be named once the ring
-            exists, which is why this is a refinement rather than a placement
-            chosen at construction.
-
-            A ring that already declares a different base -- ``R[x]`` declares
-            ``R`` -- keeps that one.  It is an algebra over itself as well, but
-            two ``CommutativeAlgebras`` nodes in one placement carry the same
-            ``SubcategoryMethods`` container in both their class chains, and a
-            join naming both asks C3 for that container at two incompatible
-            positions, so the class cannot be built at all.
-            """
-            from dzack_research.preamble.categories.algebras.algebras import (
-                CommutativeAlgebras,
-            )
-
-            for placement in self.category().all_super_categories(proper=False):
-                if (
-                    isinstance(placement, CommutativeAlgebras)
-                    and placement.base_ring() is not self
-                ):
-                    return
-            refine(self, CommutativeAlgebras(self))
-
-        def as_algebra_over(self, base_ring):
-            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
-
-            base = _own_ring(base_ring)
-            engine = _engine_ring(self)
-            if not engine.has_coerce_map_from(_engine_ring(base)):
-                raise ValueError(
-                    f"{self} has no represented canonical algebra structure over {base}"
-                )
-            return refine_algebra(self, base)
-
-        def as_ZZ_algebra(self):
-            return self.as_algebra_over(_own_ring(SageZZ))
-
-        def ideal(self, *generators):
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                LocalizedMaximalIdeal,
-                PrimeLocalizations,
-            )
-            from dzack_research.preamble.categories.rings.commutative_ideals import (
-                CommutativeIdeal,
-            )
-
-            if self in PrimeLocalizations():
-                normalized = tuple(self(generator) for generator in generators)
-                source = self.localization_source()
-                fraction_engine = _engine_ring(self.fraction_field())
-                numerators = tuple(
-                    source._from_engine_element(
-                        _engine_ring(source)(
-                            fraction_engine(_engine_element(self, generator)).numerator()
-                        )
-                    )
-                    for generator in normalized
-                )
-                source_ideal = source.ideal(*numerators)
-                return LocalizedMaximalIdeal(
-                    self, normalized, source_ideal=source_ideal
-                )
-            return CommutativeIdeal(self, *generators)
-
-        def quotient_ring(self, ideal):
-            from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRing
-
-            return QuotientRing(self, ideal)
-
-        def localization(self, *elements):
-            from dzack_research.preamble.categories.rings.commutative_algebra import Localization
-
-            return Localization(self, *elements)
-
-        def localize_at_prime(self, prime):
-            from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalization
-
-            return PrimeLocalization(self, prime)
-
-        def adic_completion(self, ideal, precision=20):
-            from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
-
-            return AdicCompletion(self, ideal, precision=precision)
-
-        @cached_method
-        def spectrum(self):
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                PrimeSpectra,
-            )
-            from dzack_research.preamble.owned_category import object_of
-
-            return object_of(PrimeSpectra(), ring=self)
 
 
 class OwnedOrderedRings(OwnedCategory):
@@ -974,7 +944,7 @@ class OwnedIntegralDomains(OwnedCategory):
         return _own_ring(SageZZ)
 
     def super_categories(self):
-        return [OwnedCommutativeRings()]
+        return [OwnedRings().Commutative()]
 
     class ParentMethods:
         def is_integral_domain(self, *args, **kwargs):
@@ -1008,7 +978,7 @@ class OwnedNoetherianRings(OwnedCategory):
         return _own_ring(SageZZ)
 
     def super_categories(self):
-        return [OwnedCommutativeRings()]
+        return [OwnedRings().Commutative()]
 
     class ParentMethods:
         def is_noetherian(self):
@@ -1043,7 +1013,7 @@ class OwnedLocalRings(OwnedCategory):
         return PrimeLocalization(_own_ring(SageZZ), 2)
 
     def super_categories(self):
-        return [OwnedCommutativeRings()]
+        return [OwnedRings().Commutative()]
 
     class ParentMethods:
         def is_local(self):
@@ -1081,7 +1051,7 @@ class OwnedAdicallyCompleteRings(OwnedCategory):
         return AdicCompletion(_own_ring(SageZZ), 2)
 
     def super_categories(self):
-        return [OwnedCommutativeRings()]
+        return [OwnedRings().Commutative()]
 
     class ParentMethods:
         def is_adically_complete(self):
@@ -1182,7 +1152,14 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
 
     @staticmethod
     def __classcall__(cls, base_ring, *args, **kwargs):
-        base_ring = _owned_ring(base_ring)
+        # During construction of an engine-backed owned ring, ``self`` already
+        # exists and already carries its engine, but ``Parent.__init__`` has not
+        # yet installed its category.  A self-referential placement such as
+        # ``CommutativeAlgebras(R)`` must therefore accept that constructing
+        # parent directly rather than asking category membership of an object
+        # whose category is precisely what is being built.
+        if not isinstance(base_ring, _OwnedRingParent):
+            base_ring = _owned_ring(base_ring)
         return OwnedParameterizedCategory.__classcall__(
             cls,
             base_ring,
@@ -1479,12 +1456,26 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def __init__(self, engine: Ring, *, category=None) -> None:
         self._engine = engine
         placement = _owned_ring_category(engine)
+        if placement.is_subcategory(OwnedRings().Commutative()):
+            from dzack_research.preamble.categories.algebras.algebras import (
+                CommutativeAlgebras,
+            )
+
+            declares_other_algebra_base = category is not None and any(
+                isinstance(candidate, CommutativeAlgebras)
+                and candidate.base_ring() is not self
+                for candidate in category.all_super_categories(proper=False)
+            )
+            if not declares_other_algebra_base:
+                # ``self`` is allocated before ``__init__`` runs, so its
+                # canonical R-algebra placement can be selected before the one
+                # and only Parent initialization.  This is construction, not a
+                # post-hoc category refinement.
+                placement = Category.join((placement, CommutativeAlgebras(self)))
         if category is not None:
             placement = Category.join((placement, category))
         Parent.__init__(self, category=placement)
         realize_owned_category(self)
-        if self in OwnedCommutativeRings():
-            self._place_as_algebra_over_itself()
 
     def _from_engine_element(self, value):
         if getattr(value, "parent", lambda: None)() is not self._engine:
@@ -1587,7 +1578,7 @@ def _owned_ring_category(engine: Ring) -> Category:
     category = engine.category()
     extra = []
     if category.is_subcategory(SageCommutativeRings()):
-        extra.append(OwnedCommutativeRings())
+        extra.append(OwnedRings().Commutative())
     if category.is_subcategory(SageIntegralDomains()):
         extra.append(OwnedIntegralDomains())
     if engine is SageZZ or engine is SageQQ:
@@ -1775,7 +1766,6 @@ Rings = OwnedRings
 OrderedRings = OwnedOrderedRings
 DivisionRings = OwnedDivisionRings
 Fields = OwnedFields
-CommutativeRings = OwnedCommutativeRings
 IntegralDomains = OwnedIntegralDomains
 PrincipalIdealDomains = OwnedPrincipalIdealDomains
 NoetherianRings = OwnedNoetherianRings
@@ -1783,3 +1773,15 @@ ArtinianRings = OwnedArtinianRings
 LocalRings = OwnedLocalRings
 AdicallyCompleteRings = OwnedAdicallyCompleteRings
 CompleteLocalRings = OwnedCompleteLocalRings
+
+
+def CommutativeRings():
+    r"""The category of commutative unital rings.
+
+    The session name for ``OwnedRings().Commutative()``: commutativity is an
+    axiom on the operation, and this is the category it cuts out.
+    """
+    return OwnedRings().Commutative()
+
+
+OwnedCommutativeRings = CommutativeRings

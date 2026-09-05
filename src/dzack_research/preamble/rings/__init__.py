@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedArtinianRings,
     OwnedCategoryOverBaseRing,
     OwnedCommutativeRings,
+    OwnedRings,
     OwnedCompleteLocalRings,
     OwnedDivisionRings,
     OwnedFields,
@@ -103,7 +104,7 @@ from dzack_research.preamble.categories.algebras.algebras import refine_matrix_a
 
 
 def _public_commutative_ring(ring):
-    if ring not in OwnedCommutativeRings():
+    if ring not in OwnedRings().Commutative():
         raise TypeError("the public commutative-ring surface requires an owned commutative ring")
     return ring
 
@@ -239,6 +240,7 @@ __all__ = [
     "CommutativeIdeal",
     "CommutativeIdeals",
     "CommutativeRings",
+    "OwnedCommutativeRings",
     "CompleteLocalRings",
     "ComplexField",
     "CyclotomicField",
@@ -269,7 +271,6 @@ __all__ = [
     "OwnedAdicallyCompleteRings",
     "OwnedArtinianRings",
     "OwnedCategoryOverBaseRing",
-    "OwnedCommutativeRings",
     "OwnedCompleteLocalRings",
     "OwnedDivisionRings",
     "OwnedFields",

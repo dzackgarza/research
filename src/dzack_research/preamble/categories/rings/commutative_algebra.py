@@ -29,7 +29,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
     OwnedArtinianRings,
-    OwnedCommutativeRings,
+    OwnedRings,
     OwnedCompleteLocalRings,
     OwnedIntegralDomains,
     OwnedFields,
@@ -145,7 +145,7 @@ class PrimeSpectra(OwnedCategory):
 
         def __init__(self, ring, **rest) -> None:
             self._ring = _own_ring(ring)
-            assert self._ring in OwnedCommutativeRings(), (
+            assert self._ring in OwnedRings().Commutative(), (
                 "Spec(R) requires a commutative ring"
             )
             super().__init__(**rest)
@@ -589,7 +589,7 @@ class QuotientRings(OwnedCategory):
                 ) from error
 
     def super_categories(self):
-        return [OwnedCommutativeRings()]
+        return [OwnedRings().Commutative()]
 
 
 

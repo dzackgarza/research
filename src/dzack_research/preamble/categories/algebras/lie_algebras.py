@@ -2,7 +2,7 @@
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    OwnedCommutativeRings,
+    OwnedRings,
 )
 from dzack_research.preamble.categories.algebras.algebras import AssociativeAlgebras
 from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -22,7 +22,7 @@ class LieAlgebras(OwnedCategoryOverBaseRing):
         return "Lie algebras"
 
     def super_categories(self):
-        if self.base_ring() not in OwnedCommutativeRings():
+        if self.base_ring() not in OwnedRings().Commutative():
             raise TypeError("a Lie algebra here is over a commutative base ring")
 
         return [Modules(self.base_ring())]
