@@ -7,6 +7,7 @@ from itertools import product
 from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
+from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -934,6 +935,18 @@ class _ModuleHomScalarAction(Action):
         return self._homset.scalar_multiple(scalar, morphism)
 
 
+def _model_smith_engine(homset):
+    r"""The Smith engine of the presented model of ``homset``, when the model has one."""
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        _SelectedFinitePresentationModules,
+    )
+
+    model = homset.internal_hom_model()
+    if model not in _SelectedFinitePresentationModules(model.base_ring()):
+        return None
+    return model._smith_engine()
+
+
 def _initialize_module_hom_parent(
     parent,
     hom_family,
@@ -962,6 +975,7 @@ def _initialize_module_hom_parent(
         MatrixSpaces,
         _matrix_coefficients,
         _matrix_unit,
+        _represented_finite_presentation,
     )
 
     if placement.is_subcategory(MatrixSpaces(ring)):
@@ -975,6 +989,32 @@ def _initialize_module_hom_parent(
             parent,
             morphism,
         )
+        # A matrix space is a finitely generated free module, so Hom objects
+        # between matrix spaces are matrix spaces too: it supplies the fresh
+        # free-module constructor that placement asks a free module for.
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FreshFreeModuleOn,
+        )
+
+        parent._preamble_free_module_constructor = lambda labels, **options: FreshFreeModuleOn(
+            ring, labels, **options
+        )
+    elif full_internal_hom and _represented_finite_presentation(domain) and _represented_finite_presentation(codomain):
+        # Hom(M, N) between presented modules is presented by its
+        # endpoint-determined model (see ``internal_hom``); the presented-module
+        # protocol reads these hooks, each of which reaches the model lazily.
+        parent._preamble_module_generator_function = lambda label: parent._morphism_from_internal_model(
+            parent.internal_hom_model().module_generator(label)
+        )
+        parent._preamble_module_coordinate_function = lambda morphism: tuple(
+            parent.internal_hom_model()._framing_coordinates(
+                parent._internal_model_from_morphism(parent(morphism))
+            )
+        )
+        parent._preamble_module_from_coordinates_function = lambda coordinates: parent._morphism_from_internal_model(
+            parent.internal_hom_model()._from_coordinates(coordinates)
+        )
+        parent._preamble_pid_engine_factory = lambda: _model_smith_engine(parent)
     CategoricalHomset.__init__(
         parent,
         hom_family,
@@ -1107,6 +1147,24 @@ class _ModuleHomsetCommonMethods:
 class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
     Element = ModuleMorphism
 
+    # The presented-module protocol reads the chosen presentation as data.  A
+    # matrix space stores it at construction; any other Hom between presented
+    # modules is presented by its endpoint-determined model, reached here on
+    # first use.
+    @lazy_attribute
+    def _preamble_module_generating_set(self):
+        return self.internal_hom_model().module_generating_set()
+
+    @lazy_attribute
+    def _preamble_relation_matrix(self):
+        _model, _inclusion, relation_matrix, _presentation = self._internal_hom_model_data()
+        return relation_matrix
+
+    @lazy_attribute
+    def _preamble_presentation(self):
+        _model, _inclusion, _relation_matrix, presentation = self._internal_hom_model_data()
+        return presentation
+
     def __init__(self, hom_family, domain, codomain) -> None:
         _initialize_module_hom_parent(
             self,
@@ -1161,10 +1219,8 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         return presentation
 
     def _selected_presentation_rows(self):
-        if (
-            self.__dict__.get("_preamble_module_generating_set") is not None
-            and self.__dict__.get("_preamble_relation_matrix") is None
-        ):
+        if "_preamble_free_module_constructor" in self.__dict__:
+            # A matrix space is free: no relations.
             return ()
         try:
             return tuple(self.presentation_matrix().rows())

@@ -13,6 +13,8 @@ cohomology in degree ``shift - n``.  The resolution currently owned by the
 presented modules has length at most one, over a principal ideal domain.
 """
 
+from sage.misc.cachefunc import cached_function
+
 from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
@@ -37,16 +39,14 @@ def _common_base_ring(module, other):
     return ring
 
 
-def Tor(degree, module, other):
-    r"""Return ``Tor_degree(module, other)``, the homology of ``F_• ⊗ other``."""
-    degree = int(degree)
-    assert degree >= 0, "a homological degree is nonnegative"
+@cached_function(key=lambda module, other, shift: (id(module), id(other), shift))
+def _tensored_resolution(module, other, shift):
+    r"""``F_• ⊗ other`` as a cochain complex with ``F_i ⊗ other`` in degree ``shift - i``."""
     ring = _common_base_ring(module, other)
     resolution = free_resolution(module)
     length = resolution.length()
-    shift = max(length, degree)
     tensor = TensorByFunctor(other)
-    tensored = CochainComplex(
+    return CochainComplex(
         ring,
         {shift - term: tensor(resolution.term(term)) for term in range(length + 1)},
         {
@@ -55,7 +55,15 @@ def Tor(degree, module, other):
         },
         name=f"Free resolution of {module} tensored with {other}",
     )
-    return Cohomology(tensored, shift - degree)
+
+
+def Tor(degree, module, other):
+    r"""Return ``Tor_degree(module, other)``, the homology of ``F_• ⊗ other``."""
+    degree = int(degree)
+    assert degree >= 0, "a homological degree is nonnegative"
+    length = free_resolution(module).length()
+    shift = max(length, degree)
+    return Cohomology(_tensored_resolution(module, other, shift), shift - degree)
 
 
 def Ext(degree, module, other):

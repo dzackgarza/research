@@ -199,6 +199,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             return TensorProduct(self, other)
 
+        @cached_method
         def free_resolution(self):
             r"""Return the selected length-one free resolution over the represented PID."""
 
@@ -526,7 +527,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             modules cross here for Smith-form data and convert every result
             back to an owned object before returning it.
             """
-            return self.__dict__.get("_preamble_pid_engine")
+            engine = self.__dict__.get("_preamble_pid_engine")
+            if engine is None:
+                # An internal Hom is presented by its endpoint-determined
+                # model, whose Smith engine is built on first use.
+                factory = self.__dict__.get("_preamble_pid_engine_factory")
+                if factory is not None:
+                    engine = self._preamble_pid_engine = factory()
+            return engine
 
         def _framing_coordinates(self, element):
             r"""Coordinates of ``element`` as an indexed family on the chosen framing.
@@ -626,7 +634,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if engine is not None:
                 return cardinal(int(engine.cardinality()))
             scalars = _engine_ring(self.base_ring())
-            if scalars.is_field():
+            if scalars.is_field() or not self._selected_presentation_rows():
+                # A vector space, or a free module (no relations): |R|^rank.
                 return cardinal(scalars.cardinality()) ** self.rank()
             assert False, (
                 "cardinality is defined for every presented module, but this "

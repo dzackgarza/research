@@ -62,7 +62,8 @@ def test_tor_and_ext_of_cyclic_modules_over_a_polynomial_ring() -> None:
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
     square, line = _cyclic(ring, x**2), _cyclic(ring, x)
-    assert Tor(1, square, line).annihilator() == ring.ideal(x)
-    assert Tor(0, square, line).annihilator() == ring.ideal(x)
-    assert Ext(1, square, ring_as_module(ring)).annihilator() == ring.ideal(x**2)
-    assert Ext(0, square, ring_as_module(ring)).cardinality() == 1
+    assert tuple(Tor(1, square, line).invariant_factors()) == (x,)
+    assert tuple(Tor(0, square, line).invariant_factors()) == (x,)
+    assert tuple(Ext(1, square, ring_as_module(ring)).invariant_factors()) == (x**2,)
+    assert Ext(0, square, ring_as_module(ring)).invariant_factors().cardinality() == 0
+    assert Ext(0, square, ring_as_module(ring)).rank() == 0

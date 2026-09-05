@@ -575,11 +575,11 @@ class InternalHomModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def inclusion_into_generator_maps(self):
+            r"""The inclusion of the presented model of ``Hom(M, N)`` into ``N^{gens(M)}``."""
             inclusion = self.__dict__.get("_preamble_internal_hom_inclusion")
-            if inclusion is None:
-                raise NotImplementedError(
-                    "this Hom module has no computed finite-presentation inclusion"
-                )
+            if inclusion is not None:
+                return inclusion
+            _model, inclusion, _relations, _presentation = self._internal_hom_model_data()
             return inclusion
 
 
@@ -1023,8 +1023,8 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=_extra_construction_data,
             )
 
+        @cached_method
         def free_resolution(self):
-
             zero = self._fresh_free_module_on(finite_ordered_set(()))
             return FreeResolution(
                 self,
