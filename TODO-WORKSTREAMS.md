@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| SPEC-category-spellings-20260905 | expectation files: functors, adjunctions, constructions and constructors are spelled on their categories; group modules are `Modules(ZZ[G])`; the conventions are recorded in AGENTS.md and the constructions CONTRIBUTING | Claude Code session 014pGhSMwfktxgNks1sDaZeo; `/home/dzack/research` | write: `tests/constructions/`; `tests/user_simulations/`; `AGENTS.md` | `f51544e74186412766237ceebfcaacab68342de9` / claimed | 2026-09-05T11:13:10Z |
 | P-number-field-presentation-20260905 | P — give `K.as_algebra()` the canonical `QQ` scalar parent and the primitive-element chosen finite presentation, enabling coproducts such as `QQ(i) coproduct_QQ QQ(i)` | ChatGPT continuation `2026-09-05-92d036b8`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/rings/number_fields.py`; `src/dzack_research/preamble/categories/algebras/free_algebras.py`; `tests/algebras/test_relative_presentations.py` | `8616b6f33e3ed4b3a68dba8a7973fecdbd5cfb70`; fresh pinned pre-edit survey regenerated from this exact source snapshot and all 18,613 megadoc lines read; generated-doc reservation released | 2026-09-05T11:04:00Z |
 
 ### Existing work awaiting adoption
