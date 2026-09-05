@@ -758,6 +758,30 @@ def test_selected_presented_algebra_localization_has_exact_fraction_equality() -
     assert localized_origin.contains_ambient_element(localized.one())
 
 
+def test_fitting_ideals_commute_with_selected_presented_localization() -> None:
+    from dzack_research.preamble.categories.algebras import (
+        FinitelyPresentedAlgebra,
+        KahlerDifferentials,
+    )
+
+    presentation = PolynomialRing(QQ, ("x", "y"))
+    x, y = presentation.algebra_generators()
+    axes = FinitelyPresentedAlgebra(presentation, (x * y,))
+    xbar = axes.algebra_generator("x")
+    ybar = axes.algebra_generator("y")
+    omega = KahlerDifferentials(axes)
+
+    assert omega.fitting_ideal(1) == axes.ideal(xbar, ybar)
+
+    localized = axes.localization(xbar)
+    localized_omega = omega.localize(localized)
+    localized_fitting = localized_omega.fitting_ideal(1)
+
+    # Fitt_1(Omega)_x = (x,y)A_x = A_x because x is inverted.
+    assert localized_fitting.contraction() == axes.ideal(axes.one())
+    assert localized_fitting.contains_ambient_element(localized.one())
+
+
 def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None:
     from dzack_research.preamble.categories.modules import FreeModule, module_homset
 

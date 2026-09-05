@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _refine_matrix_hom,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     LocalRings,
     OwnedFields,
     PrincipalIdealDomains,
@@ -359,6 +360,25 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if index < 0:
                 raise ValueError("a Fitting-ideal index is nonnegative")
             ring = self.base_ring()
+
+            # Fitting ideals commute with arbitrary base change, hence in
+            # particular with localization.  A LocalizedModule remembers its
+            # source presentation, so use that theorem directly instead of
+            # demanding a second matrix-minor engine over S^{-1}R.  Concretely,
+            # every presentation minor maps to the corresponding minor of the
+            # transported presentation, and therefore
+            # Fitt_i(S^{-1}M) = S^{-1}Fitt_i(M).
+            if ring in LocalizationRings():
+                from dzack_research.preamble.categories.modules.localizations import (
+                    LocalizedModules,
+                )
+
+                if self in LocalizedModules(ring):
+                    source = self.localization_source_module()
+                    source_ring = ring.localization_source()
+                    if source in _SelectedFinitePresentationModules(source_ring):
+                        return source.fitting_ideal(index).extension_to_localization(ring)
+
             n = int(self.number_of_module_generators())
             minor_size = n - index
             if minor_size <= 0:
