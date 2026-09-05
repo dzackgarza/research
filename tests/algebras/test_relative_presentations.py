@@ -70,3 +70,56 @@ def test_pushout_accepts_maps_from_a_presented_source() -> None:
     assert pushout in CommutativeAlgebraPushouts(QQ)
     left_pushout, right_pushout = pushout.pushout_maps()
     assert left_pushout(left(tbar)) == right_pushout(right(tbar))
+
+
+def test_number_field_algebra_uses_its_primitive_presentation_for_coproduct() -> None:
+    from dzack_research.preamble.all import (
+        FinitelyGeneratedFreeModules,
+        IntegralDomains,
+        QuadraticField,
+    )
+    from dzack_research.preamble.categories.algebras.algebras import (
+        CommutativeAlgebraCoproducts,
+        commutative_algebra_coproduct,
+    )
+
+    field = QuadraticField(-1, "i")
+    gaussian = field.as_algebra()
+    primitive = gaussian.algebra_generator("i")
+
+    assert gaussian is not field
+    assert gaussian.base_ring() is QQ
+    assert gaussian in AlgebrasWithChosenFinitePresentation(QQ)
+    assert gaussian in FinitelyGeneratedFreeModules(QQ)
+    assert tuple(gaussian.module_generators()) == (gaussian.one(), primitive)
+    assert gaussian.algebra_presentation_morphism()(gaussian.relations().value(0)) == 0
+    assert gaussian.lift_to_presentation(primitive) == gaussian.presentation_ring().algebra_generator("i")
+
+    split = commutative_algebra_coproduct(gaussian, gaussian)
+    assert split in CommutativeAlgebraCoproducts(QQ)
+    assert split not in IntegralDomains()
+
+
+def test_relative_number_field_algebra_uses_an_absolute_primitive_presentation() -> None:
+    from dzack_research.preamble.all import (
+        FinitelyGeneratedFreeModules,
+        NumberField,
+        QuadraticField,
+    )
+
+    base = QuadraticField(2, "a")
+    relative_polynomials = PolynomialRing(base, "u")
+    u = relative_polynomials.algebra_generator("u")
+    field = NumberField(u**2 - base.primitive_element(), "b")
+    algebra = field.as_algebra()
+    primitive = algebra.algebra_generator("absolute_generator")
+
+    assert algebra.base_ring() is QQ
+    assert algebra in AlgebrasWithChosenFinitePresentation(QQ)
+    assert algebra in FinitelyGeneratedFreeModules(QQ)
+    assert algebra.number_of_module_generators() == field.degree()
+    assert algebra.algebra_presentation_morphism()(algebra.relations().value(0)) == 0
+    assert (
+        algebra.lift_to_presentation(primitive)
+        == algebra.presentation_ring().algebra_generator("absolute_generator")
+    )

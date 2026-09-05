@@ -266,6 +266,10 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         commutative_backend=False,
         finite_free_degree=None,
         presentation_flattening=None,
+        generator_values=None,
+        presentation_lift=None,
+        finite_free_generator=None,
+        finite_free_coordinates=None,
     ) -> None:
         if extra_construction_data is not None:
             for name, value in extra_construction_data:
@@ -278,7 +282,12 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         )
 
         def lift_to_presentation(element):
-            representative = quotient_engine(self._engine_element(element)).lift()
+            backend = quotient_engine(self._engine_element(element))
+            representative = (
+                backend.lift()
+                if presentation_lift is None
+                else presentation_lift(backend)
+            )
             if unflatten is not None:
                 representative = unflatten(representative)
             return presentation_ring._from_engine_element(representative)
@@ -297,24 +306,43 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             module_labels = Sets.Δ[finite_free_degree - 1]
             self._preamble_base_ring = base
             self._preamble_module_generating_set = module_labels
+            module_primitive = (
+                quotient_engine.gen()
+                if finite_free_generator is None
+                else finite_free_generator
+            )
             self._preamble_module_generator_values = indexed_family(
                 module_labels,
-                lambda exponent: self._from_engine_element(quotient_engine.gen()) ** int(exponent),
+                lambda exponent: self._from_engine_element(module_primitive) ** int(exponent),
                 name="Quotient module generator values",
             )
-            self._preamble_module_coordinate_function = lambda element: (
-                base._from_engine_element(coefficient)
-                for coefficient in quotient_engine(self._engine_element(self(element)))
-            )
+
+            def module_coordinates(element):
+                backend = quotient_engine(self._engine_element(self(element)))
+                coordinates = (
+                    backend
+                    if finite_free_coordinates is None
+                    else finite_free_coordinates(backend)
+                )
+                return (
+                    base._from_engine_element(coefficient)
+                    for coefficient in coordinates
+                )
+
+            self._preamble_module_coordinate_function = module_coordinates
             placement.append(FinitelyGeneratedFreeModules(base))
 
-        generator_values = None
+        selected_generator_values = generator_values
         if presentation_flattening is not None:
+            if selected_generator_values is not None:
+                raise ValueError(
+                    "a flattened presentation computes its algebra-generator values canonically"
+                )
             presentation_engine = _engine_ring(presentation_ring)
             # The flattened engine lists parameter variables before these
             # outer algebra generators, so positional backend generators no
             # longer represent the selected algebra framing.
-            generator_values = tuple(
+            selected_generator_values = tuple(
                 quotient_engine(presentation_flattening(presentation_engine.gen(position)))
                 for position in range(presentation_engine.ngens())
             )
@@ -324,7 +352,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             quotient_engine,
             base,
             labels,
-            generator_values=generator_values,
+            generator_values=selected_generator_values,
             categories=tuple(placement),
         )
         self._preamble_algebra_presentation_morphism = algebra_homset(
@@ -346,6 +374,49 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             self._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
                 _commutative_algebra_pushout_backend(left_map, right_map)
             )
+
+
+def _presented_algebra_on_engine(
+    engine,
+    presentation_ring,
+    relations,
+    *,
+    generator_values=None,
+    finite_free_degree=None,
+    finite_free_generator=None,
+    finite_free_coordinates=None,
+    presentation_lift=None,
+):
+    r"""Represent a chosen polynomial presentation on an authoritative engine.
+
+    This is the crossing for an algebra whose computation parent already exists
+    independently of the polynomial presentation (a number field is the first
+    consumer).  The returned object keeps ``engine`` as its ring realization;
+    ``presentation_ring`` and ``relations`` supply the algebra framing, quotient
+    map, scalar-change data, and finite-presentation module structure.
+    """
+    base = presentation_ring.base_ring()
+    if presentation_ring not in SymmetricAlgebras(base):
+        raise TypeError(
+            "an authoritative-engine algebra requires a commutative polynomial presentation"
+        )
+    presentation_ideal, selected_relations = _relations_to_ideal(
+        presentation_ring, relations
+    )
+    return _PresentedAlgebraParent(
+        engine,
+        base,
+        presentation_ring.algebra_generating_set(),
+        presentation_ring,
+        selected_relations,
+        presentation_ideal,
+        commutative_backend=True,
+        finite_free_degree=finite_free_degree,
+        generator_values=generator_values,
+        presentation_lift=presentation_lift,
+        finite_free_generator=finite_free_generator,
+        finite_free_coordinates=finite_free_coordinates,
+    )
 
 
 def FinitelyPresentedAlgebra(

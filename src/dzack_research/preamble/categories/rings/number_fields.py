@@ -28,12 +28,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_numeral,
     _engine_ring,
 )
-from dzack_research.preamble.refine import refine
-from dzack_research.preamble.categories.algebras.algebras import (
-    Algebras,
-    FinitelyPresentedAlgebras,
-    refine_algebra,
-)
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.fractional_ideals import (
     FractionalIdeal,
@@ -113,7 +108,15 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
 
             integers = _own_ring(SageZZ)
             engine = _engine_ring(self)
-            value = SageZZ.one() if engine is SageQQ else SageZZ(engine.degree())
+            value = (
+                SageZZ.one()
+                if engine is SageQQ
+                else SageZZ(
+                    engine.degree()
+                    if engine.is_absolute()
+                    else engine.absolute_degree()
+                )
+            )
             return integers._from_engine_element(value)
 
         def discriminant(self):
@@ -237,15 +240,52 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
             return self.normal_closure().galois_group()
 
         def as_algebra(self):
-            r"""Return this field as the corresponding ``QQ``-algebra object."""
-
-            labels = (
-                self.algebra_generating_set()
-                if self in NumberFieldsWithChosenPrimitiveElement()
-                else None
+            r"""Return this field with its selected finite ``QQ``-algebra presentation."""
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                SymmetricAlgebraOn,
+                _presented_algebra_on_engine,
             )
-            algebra = refine_algebra(self, _own_ring(SageQQ), labels)
-            return refine(algebra, FinitelyPresentedAlgebras(algebra.base_ring()))
+
+            rationals = _own_number_field(SageQQ)
+            engine = _engine_ring(self)
+            if engine is SageQQ:
+                return rationals
+
+            presentation_lift = None
+            finite_free_coordinates = None
+            if not engine.is_absolute():
+                # A relative generator need not generate K over QQ.  Sage's
+                # absolute model supplies both the chosen absolute primitive
+                # element in this same engine and exact conversion to its
+                # one-variable QQ presentation.
+                absolute = engine.absolute_field("absolute_generator")
+                from_absolute, to_absolute = absolute.structure()
+                primitive = from_absolute(absolute.gen())
+                polynomial = absolute.defining_polynomial()
+                labels = finite_ordered_set(("absolute_generator",))
+                presentation_lift = lambda element: to_absolute(element).lift()
+                finite_free_coordinates = lambda element: tuple(to_absolute(element))
+                degree = int(engine.absolute_degree())
+            else:
+                primitive = engine.gen()
+                polynomial = engine.defining_polynomial()
+                labels = self.algebra_generating_set()
+                degree = int(engine.degree())
+
+            presentation = SymmetricAlgebraOn(rationals, labels)
+            relation = presentation._from_engine_element(
+                _engine_ring(presentation)(polynomial)
+            )
+            return _presented_algebra_on_engine(
+                engine,
+                presentation,
+                (relation,),
+                generator_values=(primitive,),
+                finite_free_degree=degree,
+                finite_free_generator=primitive,
+                finite_free_coordinates=finite_free_coordinates,
+                presentation_lift=presentation_lift,
+            )
 
 
 class NumberFieldsWithChosenPrimitiveElement(Category):
