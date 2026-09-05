@@ -2,30 +2,28 @@ r"""Cardinal and ordinal arithmetic in the owned set-theoretic number hierarchy.
 
 from __future__ import annotations
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-)
-
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 
-from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.semirings import Semirings
-from sage.categories.sets_cat import Sets as SageSets
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
-from sage.structure.unique_representation import UniqueRepresentation
 
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+)
+from dzack_research.preamble.owned_category import object_of
 
 
 @dataclass(frozen=True)
@@ -385,7 +383,7 @@ class Cardinalities(OwnedCategory):
         return _cardinal_with_expression(_PowerCardinal(cardinal_base, cardinal_exponent))
 
     def supremum(self, *cardinal_numbers):
-        terms: list[Cardinal] = []
+        terms: list[Cardinalities.ParentMethods] = []
         for cardinal_number in map(cardinal, cardinal_numbers):
             expression = cardinal_number.expression()
             if isinstance(expression, _SupremumCardinal):
@@ -394,13 +392,13 @@ class Cardinalities(OwnedCategory):
                 terms.append(cardinal_number)
         if not terms:
             raise ValueError("a finite supremum needs at least one cardinal")
-        maximal_terms: list[Cardinal] = []
-        for candidate in sorted(set(terms), key=Cardinal.sort_key):
+        maximal_terms: list[Cardinalities.ParentMethods] = []
+        for candidate in sorted(set(terms), key=lambda term: term.sort_key()):
             if any(self.le(candidate, term) for term in maximal_terms):
                 continue
             maximal_terms = [term for term in maximal_terms if not self.le(term, candidate)]
             maximal_terms.append(candidate)
-        maximal_terms.sort(key=Cardinal.sort_key)
+        maximal_terms.sort(key=lambda term: term.sort_key())
         if len(maximal_terms) == 1:
             return maximal_terms[0]
         return _cardinal_with_expression(_SupremumCardinal(tuple(maximal_terms)))

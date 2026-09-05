@@ -318,6 +318,10 @@ class OrbitSets(OwnedCategory):
             except AttributeError:
                 return False
 
+        def _element_constructor_(self, orbit):
+            assert orbit in self, f"{orbit} is not an orbit of {self}"
+            return orbit
+
         def cardinality(self):
             return self._orbit_classes.cardinality()
 

@@ -11,12 +11,6 @@ under the standard free and cofree constructions, giving
 ``G × - ⊣ U ⊣ Map(G,-)``.
 """
 
-from sage.categories.morphism import SetMorphism
-from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily
-from dzack_research.preamble.categories.sets.set_categories import (
-    FiniteSets,
-    Sets,
-)
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
@@ -29,7 +23,14 @@ from dzack_research.preamble.categories.group.g_sets import (
     trivial_g_set,
 )
 from dzack_research.preamble.categories.group.groups import _owned_group
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    CartesianProductOfFamily,
+    FiniteSets,
+    Sets,
+)
 
 
 class TrivialGSetFunctor(Functor):
@@ -72,9 +73,8 @@ class GSetOrbitsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return SetMorphism(
-            Sets().Mor(source, target),
-            lambda orbit: target.orbit_of(morphism(orbit.representative())),
+        return Sets().Mor(source, target)(
+            lambda orbit: target.orbit_of(morphism(orbit.representative()))
         )
 
     def _repr_(self):
@@ -97,7 +97,7 @@ class GSetFixedPointsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return SetMorphism(Sets().Mor(source, target), morphism)
+        return Sets().Mor(source, target)(morphism)
 
     def _repr_(self):
         return f"{self.group()}-fixed-point functor on finite G-sets"
@@ -118,10 +118,7 @@ class GSetOrbitsTrivialAdjunction(Adjunction):
     def counit(self, set_object):
         trivial = self.right_adjoint()(set_object)
         orbit_set = self.left_adjoint()(trivial)
-        return SetMorphism(
-            Sets().Mor(orbit_set, set_object),
-            lambda orbit: orbit.representative(),
-        )
+        return Sets().Mor(orbit_set, set_object)(lambda orbit: orbit.representative())
 
 
 
@@ -135,7 +132,7 @@ class GSetTrivialFixedAdjunction(Adjunction):
     def unit(self, set_object):
         trivial = self.left_adjoint()(set_object)
         fixed = self.right_adjoint()(trivial)
-        return SetMorphism(Sets().Mor(set_object, fixed), lambda point: point)
+        return Sets().Mor(set_object, fixed)(lambda point: point)
 
     def counit(self, g_set):
         fixed = self.right_adjoint()(g_set)
@@ -212,7 +209,7 @@ class UnderlyingFiniteGSetFunctor(Functor):
         return g_set
 
     def _apply_morphism(self, morphism):
-        return SetMorphism(Sets().Mor(morphism.domain(), morphism.codomain()), morphism)
+        return Sets().Mor(morphism.domain(), morphism.codomain())(morphism)
 
     def _repr_(self):
         return f"Underlying finite-set functor on {self.group()}-sets"
@@ -291,11 +288,10 @@ class FreeGSetUnderlyingAdjunction(Adjunction):
 
     def unit(self, set_object):
         free = self.left_adjoint()(set_object)
-        return SetMorphism(
-            Sets().Mor(set_object, free),
+        return Sets().Mor(set_object, free)(
             lambda point: self.left_adjoint().free_point(
                 free, self.left_adjoint().group().one(), point
-            ),
+            )
         )
 
     def counit(self, g_set):
@@ -324,13 +320,12 @@ class UnderlyingCofreeGSetAdjunction(Adjunction):
 
     def counit(self, set_object):
         cofree = self.right_adjoint()(set_object)
-        return SetMorphism(
-            Sets().Mor(cofree, set_object),
+        return Sets().Mor(cofree, set_object)(
             lambda function_point: self.right_adjoint().function_value(
                 cofree,
                 function_point,
                 self.right_adjoint().group().one(),
-            ),
+            )
         )
 
 

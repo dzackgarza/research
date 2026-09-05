@@ -250,8 +250,7 @@ def _engine_cosets(group, subgroup, side):
     backend_cosets = cosets(_engine_group(subgroup), side=side)
     coset_positions = Sets.Δ[len(backend_cosets) - 1]
 
-    def own_coset(position):
-        backend_members = backend_cosets[int(position)]
+    def own_coset(backend_members):
         member_positions = Sets.Δ[len(backend_members) - 1]
         return finite_ordered_image(
             member_positions,
@@ -261,9 +260,12 @@ def _engine_cosets(group, subgroup, side):
             name="Coset elements",
         )
 
+    # Each coset is one object: build them once, so a coset read back from a
+    # representative is the coset the family already holds.
+    owned_cosets = tuple(own_coset(backend_members) for backend_members in backend_cosets)
     return finite_ordered_image(
         coset_positions,
-        own_coset,
+        lambda position: owned_cosets[int(position)],
         name=f"{side.capitalize()} cosets",
     )
 
