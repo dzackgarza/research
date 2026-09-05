@@ -782,54 +782,73 @@ def PowerSet(base_set):
     return object_of(PowerSets(), base_set=base_set)
 
 
-class FunctionSet(Parent):
-    r"""The exponential \(Y^X=\operatorname{Hom}_{Set}(X,Y)\)."""
+def _function_set_of(codomain, exponent):
+    r"""Build \(Y^X\) and place it.
 
-    def __init__(self, codomain, exponent) -> None:
-        if codomain not in Sets() or exponent not in Sets():
-            raise TypeError("an exponential requires two owned sets")
-        self._codomain = codomain
-        self._exponent = exponent
-        # Owned placement, not Sage's: over a finite exponent every function is
-        # finitely supported, and over an infinite one that is exactly what fails.
-        finite_exponent = exponent in FiniteSets()
-        Parent.__init__(
-            self,
-            category=FinitelySupportedFunctionSets() if finite_exponent else Sets(),
-        )
+    Over a finite exponent every function is finitely supported, and over an
+    infinite one that is exactly what fails, so the refinement is read off the
+    exponent.
+    """
+    from dzack_research.preamble.refine import refine
 
-    def base(self):
-        return self._codomain
+    exponential = object_of(FunctionSets(), codomain=codomain, exponent=exponent)
+    if exponent in FiniteSets():
+        refine(exponential, FinitelySupportedFunctionSets())
+    return exponential
 
-    def exponent(self):
-        return self._exponent
 
-    def homset(self):
-        return Sets().Mor(self.exponent(), self.base())
+class FunctionSets(OwnedCategory):
+    r"""Exponentials \(Y^X=\operatorname{Hom}_{Set}(X,Y)\)."""
 
-    def __call__(self, *args, **kwargs):
-        r"""Construct through the owned set representation directly."""
-        return self._element_constructor_(*args, **kwargs)
+    def an_object(self):
+        r"""\(\Delta_2^{\Delta_1}\)."""
+        return ExponentialOfSets(Sets.Δ[2], Sets.Δ[1])
 
-    def _element_constructor_(self, definition):
-        homset = self.homset()
-        if definition in homset:
-            return definition
-        return homset(definition)
+    def super_categories(self):
+        return [Sets()]
 
-    def __contains__(self, function) -> bool:
-        return function in self.homset()
+    class ParentMethods:
+        def __init__(self, codomain, exponent, **rest) -> None:
+            assert codomain in Sets() and exponent in Sets(), (
+                "an exponential requires two owned sets"
+            )
+            self._codomain = codomain
+            self._exponent = exponent
+            super().__init__(**rest)
 
-    def cardinality(self):
-        return cardinal(self.base().cardinality()) ** cardinal(self.exponent().cardinality())
+        def base(self):
+            return self._codomain
 
-    def _repr_(self) -> str:
-        return f"{self.base()}^{self.exponent()}"
+        def exponent(self):
+            return self._exponent
+
+        def homset(self):
+            return Sets().Mor(self.exponent(), self.base())
+
+        def __call__(self, *args, **kwargs):
+            r"""Construct through the owned set representation directly."""
+            return self._element_constructor_(*args, **kwargs)
+
+        def _element_constructor_(self, definition):
+            homset = self.homset()
+            if definition in homset:
+                return definition
+            return homset(definition)
+
+        def __contains__(self, function) -> bool:
+            return function in self.homset()
+
+        def cardinality(self):
+            return cardinal(self.base().cardinality()) ** cardinal(self.exponent().cardinality())
+
+        def _repr_(self) -> str:
+            return f"{self.base()}^{self.exponent()}"
+
 
 
 @cached_function
 def ExponentialOfSets(codomain, exponent):
-    return FunctionSet(codomain, exponent)
+    return _function_set_of(codomain, exponent)
 
 
 class FixedCardinalitySubsets(Parent):
@@ -1514,7 +1533,7 @@ def CoproductMorphism(source, target, component_morphisms):
 
 
 ObjectSetsOfDiscreteCategories = SageSets
-ExponentialsOfSets = FunctionSet
+ExponentialsOfSets = FunctionSets
 FinitePowerSets = FiniteSubsetsParent
 
 
@@ -1828,7 +1847,7 @@ __all__ = [
     "FiniteSubsets",
     "FinitelySupportedFunctionSets",
     "FixedCardinalitySubsets",
-    "FunctionSet",
+    "FunctionSets",
     "ImageSet",
     "InfiniteEnumeratedSets",
     "InfiniteSets",
