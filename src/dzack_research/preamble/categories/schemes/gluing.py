@@ -2,14 +2,21 @@ r"""Descent data for modules on represented distinguished affine covers."""
 
 from itertools import combinations
 
+from sage.categories.category import Category
+from sage.categories.morphism import Morphism
+from sage.misc.classcall_metaclass import typecall
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
     CategoricalIsomorphism,
+    CategoryPacketMethods,
+    HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
@@ -53,7 +60,50 @@ def _maps_agree_on_framing(left, right) -> bool:
     )
 
 
-class ModuleGluingDatum(SageObject):
+_MODULE_GLUING_DATA_CATEGORIES = {}
+
+
+class ModuleGluingHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return ModuleGluingHomset
+
+
+class ModuleGluingData(CategoryPacketMethods, Category):
+    r"""Module descent data on one represented distinguished affine cover."""
+
+    @staticmethod
+    def __classcall__(category_class, cover):
+        key = id(cover)
+        cached = _MODULE_GLUING_DATA_CATEGORIES.get(key)
+        if cached is not None and cached.cover() is cover:
+            return cached
+        category = typecall(category_class, cover)
+        _MODULE_GLUING_DATA_CATEGORIES[key] = category
+        return category
+
+    def __init__(self, cover) -> None:
+        self._cover = cover
+        Category.__init__(self)
+
+    def cover(self):
+        return self._cover
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        return (
+            isinstance(candidate, ModuleGluingDatum)
+            and candidate.cover() is self.cover()
+        )
+
+    def _repr_object_names(self):
+        return f"module descent data on {self.cover()}"
+
+    _HomCategory = ModuleGluingHomCategoryConstruction
+
+
+class ModuleGluingDatum(Parent):
     r"""Finitely framed modules with descent isomorphisms on an affine cover."""
 
     def __init__(self, cover, local_modules, transitions) -> None:
@@ -84,6 +134,7 @@ class ModuleGluingDatum(SageObject):
         self._sheaf = None
         self._verify_pairwise_transitions()
         self._verify_cocycles()
+        Parent.__init__(self, category=ModuleGluingData(cover))
 
     def cover(self):
         return self._cover
@@ -307,8 +358,184 @@ class ModuleGluingDatum(SageObject):
             self._sheaf = GluedModuleSheaf(self)
         return self._sheaf
 
+    def Mor(self, target):
+        r"""Return the represented Hom category of descent morphisms to ``target``."""
+
+        return self.category().Mor(self, target)
+
     def _repr_(self):
         return f"Module gluing datum on {self.cover()}"
+
+
+class ModuleGluingMorphism(Morphism):
+    r"""A morphism between module descent data on one represented affine cover."""
+
+    def __init__(self, parent, local_maps) -> None:
+        Morphism.__init__(self, parent)
+        local_maps = tuple(local_maps)
+        if len(local_maps) != len(self.domain().local_modules()):
+            raise ValueError("a module descent morphism requires one local map on each affine chart")
+
+        self._local_maps = tuple(
+            module_homset(
+                self.domain().local_module(index),
+                self.codomain().local_module(index),
+            )(local_map)
+            for index, local_map in enumerate(local_maps)
+        )
+        self._restricted_local_maps = {}
+        self._global_sections_map = None
+        self._verify_overlap_compatibility()
+
+    def cover(self):
+        return self.domain().cover()
+
+    def local_maps(self):
+        return self._local_maps
+
+    def local_map(self, index):
+        return self.local_maps()[int(index)]
+
+    def restricted_local_map(self, chart_index, *intersection_indices):
+        r"""Restrict one chart map to the represented cover intersection."""
+
+        chart_index = int(chart_index)
+        indices = self.cover().intersection_indices(
+            chart_index,
+            *intersection_indices,
+        )
+        key = (chart_index, indices)
+        cached = self._restricted_local_maps.get(key)
+        if cached is not None:
+            return cached
+
+        local_map = self.local_map(chart_index)
+        source = self.domain().restricted_module(chart_index, *indices)
+        target = self.codomain().restricted_module(chart_index, *indices)
+        if source is self.domain().local_module(chart_index):
+            self._restricted_local_maps[key] = local_map
+            return local_map
+
+        source_open = self.cover().open(chart_index)
+        target_open = self.cover().intersection(indices)
+        ring_map = self.domain().scheme().structure_sheaf().restriction_map(
+            source_open,
+            target_open,
+        )
+        local_source = self.domain().local_module(chart_index)
+        local_target = self.codomain().local_module(chart_index)
+
+        def image(label):
+            local_image = local_map(local_source.module_generator(label))
+            return _change_coefficients(local_image, local_target, target, ring_map)
+
+        cached = module_homset(source, target)(image)
+        self._restricted_local_maps[key] = cached
+        return cached
+
+    def _verify_overlap_compatibility(self) -> None:
+        for left_index, right_index in combinations(
+            range(len(self.domain().local_modules())),
+            2,
+        ):
+            source_transition = self.domain().transition(left_index, right_index).forward()
+            target_transition = self.codomain().transition(left_index, right_index).forward()
+            left_restriction = self.restricted_local_map(
+                left_index,
+                left_index,
+                right_index,
+            )
+            right_restriction = self.restricted_local_map(
+                right_index,
+                left_index,
+                right_index,
+            )
+            via_left = target_transition * left_restriction
+            via_right = right_restriction * source_transition
+            if not _maps_agree_on_framing(via_left, via_right):
+                raise ValueError(
+                    "module descent morphism is incompatible with transition maps on an overlap"
+                )
+
+    def global_sections_map(self):
+        r"""Return the induced ambient-ring linear map on compatible global sections."""
+
+        if self._global_sections_map is None:
+            source_sections = self.domain().compatible_sections()
+            target_sections = self.codomain().compatible_sections()
+
+            def image(section):
+                section = source_sections(section)
+                return target_sections(
+                    tuple(
+                        self.local_map(index)(section.component(index))
+                        for index in range(len(self.local_maps()))
+                    )
+                )
+
+            self._global_sections_map = module_homset(
+                source_sections,
+                target_sections,
+            ).elementwise(
+                image,
+                verify_linearity=False,
+            )
+        return self._global_sections_map
+
+    def then(self, other):
+        r"""Return ``other after self``."""
+
+        if other.domain() is not self.codomain():
+            raise ValueError("the first descent-morphism target must equal the second source")
+        return other * self
+
+    def __mul__(self, other):
+        if not isinstance(other, ModuleGluingMorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return other.domain().Mor(self.codomain())(
+            tuple(
+                self.local_map(index) * other.local_map(index)
+                for index in range(len(self.local_maps()))
+            )
+        )
+
+    def _repr_(self):
+        return f"Module descent morphism from {self.domain()} to {self.codomain()}"
+
+
+class ModuleGluingHomset(CategoricalHomset):
+    r"""The fixed Hom category between two module descent data on one cover."""
+
+    Element = ModuleGluingMorphism
+
+    def __init__(self, family, domain, codomain) -> None:
+        if domain.cover() is not codomain.cover():
+            raise ValueError("a module descent Hom requires one common affine cover")
+        CategoricalHomset.__init__(self, family, domain, codomain)
+
+    def _element_constructor_(self, local_maps):
+        if isinstance(local_maps, ModuleGluingMorphism):
+            if (
+                local_maps.domain() is not self.domain()
+                or local_maps.codomain() is not self.codomain()
+            ):
+                raise ValueError("the module descent morphism has the wrong endpoints")
+            if local_maps.parent() is self:
+                return local_maps
+            local_maps = local_maps.local_maps()
+        return self.element_class(self, local_maps)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity belongs to a descent endomorphism Hom")
+        return self(
+            tuple(
+                module_homset(module, module).identity()
+                for module in self.domain().local_modules()
+            )
+        )
 
 
 class CompatibleLocalSectionElement(ModuleElement):
@@ -498,5 +725,8 @@ class GluedModuleSheaf(SageObject):
 __all__ = [
     "CompatibleLocalSectionsModule",
     "GluedModuleSheaf",
+    "ModuleGluingData",
     "ModuleGluingDatum",
+    "ModuleGluingHomset",
+    "ModuleGluingMorphism",
 ]
