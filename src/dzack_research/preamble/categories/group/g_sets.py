@@ -98,6 +98,36 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         r"""The finite ``G``-set on ``point_set`` with the action ``action(g, x)``."""
         return finite_g_set(point_set, self.group(), action)
 
+    # Functors out of finite G-sets, sited on their domain.
+
+    def orbits_functor(self):
+        r"""``X |-> X/G : FinGSet_G -> FinSet``."""
+        from dzack_research.preamble.categories.functors.g_sets import GSetOrbitsFunctor
+
+        return GSetOrbitsFunctor(self.group())
+
+    def fixed_points_functor(self):
+        r"""``X |-> X^G : FinGSet_G -> FinSet``."""
+        from dzack_research.preamble.categories.functors.g_sets import GSetFixedPointsFunctor
+
+        return GSetFixedPointsFunctor(self.group())
+
+    def orbits_trivial_adjunction(self):
+        r"""``(-)/G -| Triv_G``."""
+        from dzack_research.preamble.categories.functors.g_sets import (
+            g_set_orbits_trivial_adjunction,
+        )
+
+        return g_set_orbits_trivial_adjunction(self.group())
+
+    def underlying_cofree_adjunction(self):
+        r"""``U -| Map(G, -)``: the underlying set is left adjoint to the cofree ``G``-set."""
+        from dzack_research.preamble.categories.functors.g_sets import (
+            underlying_cofree_g_set_adjunction,
+        )
+
+        return underlying_cofree_g_set_adjunction(self.group())
+
     _HomCategory = GSetHomCategoryConstruction
 
     class ParentMethods:
@@ -164,11 +194,11 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
         def orbits(self):
             r"""The orbit set ``X / G``."""
-            from dzack_research.preamble.categories.functors.g_sets import (
-                GSetOrbitsFunctor,
-            )
+            return FiniteGSets(self.acting_group()).orbits_functor()(self)
 
-            return GSetOrbitsFunctor(self.acting_group())(self)
+        def fixed_points(self):
+            r"""The fixed-point set ``X^G``."""
+            return FiniteGSets(self.acting_group()).fixed_points_functor()(self)
 
         def rank(self, point):
             return self.point_set().rank(point)
@@ -194,6 +224,18 @@ class GSetMorphism(SetMorphism):
         return g_set_homset(other.domain(), self.codomain())(
             lambda point: self(other(point))
         )
+
+    def _as_set_map(self):
+        r"""The same function read in ``Sets``, between the finite point sets."""
+        return Sets().Mor(self.domain().point_set(), self.codomain().point_set())(
+            lambda point: self(point)
+        )
+
+    def is_injective(self) -> bool:
+        return self._as_set_map().is_injective()
+
+    def is_surjective(self) -> bool:
+        return self._as_set_map().is_surjective()
 
 
 class GSetHomset(GObjectHomset):

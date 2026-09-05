@@ -204,6 +204,27 @@ class OwnedSetMorphism(SetMorphism):
     def is_identity(self) -> bool:
         return self._preamble_is_identity
 
+    def _image_points(self):
+        r"""The image, enumerated: decidable for a finite enumerated domain."""
+        domain = self.domain()
+        assert domain in FiniteSets() and domain in EnumeratedSets(), (
+            "injectivity and surjectivity are decided here on a finite enumerated domain"
+        )
+        return {self(element) for element in domain}
+
+    def is_injective(self) -> bool:
+        r"""Decide ``f(x) = f(y) => x = y`` by counting the image."""
+        return len(self._image_points()) == int(self.domain().cardinality())
+
+    def is_surjective(self) -> bool:
+        r"""Decide that every point of the codomain is a value."""
+        codomain = self.codomain()
+        assert codomain in FiniteSets() and codomain in EnumeratedSets(), (
+            "surjectivity is decided here on a finite enumerated codomain"
+        )
+        image = self._image_points()
+        return all(point in image for point in codomain)
+
     def __mul__(self, other):
         if not isinstance(other, SetMorphism) or other.codomain() is not self.domain():
             return NotImplemented
@@ -456,6 +477,36 @@ class Sets(OwnedCategory):
         def an_object(self):
             r"""The ordinal 2."""
             return finite_ordinal_set(2)
+
+        # Functors into finite G-sets, sited on their domain.
+
+        def trivial_action(self, group):
+            r"""``Triv_G : FinSet -> FinGSet_G``, every point fixed."""
+            from dzack_research.preamble.categories.functors.g_sets import TrivialGSetFunctor
+
+            return TrivialGSetFunctor(group)
+
+        def free_action(self, group):
+            r"""``G x - : FinSet -> FinGSet_G``, the free ``G``-set on a set."""
+            from dzack_research.preamble.categories.functors.g_sets import FreeGSetFunctor
+
+            return FreeGSetFunctor(group)
+
+        def free_underlying_adjunction(self, group):
+            r"""``G x - -| U``."""
+            from dzack_research.preamble.categories.functors.g_sets import (
+                free_g_set_underlying_adjunction,
+            )
+
+            return free_g_set_underlying_adjunction(group)
+
+        def trivial_fixed_adjunction(self, group):
+            r"""``Triv_G -| (-)^G``."""
+            from dzack_research.preamble.categories.functors.g_sets import (
+                g_set_trivial_fixed_adjunction,
+            )
+
+            return g_set_trivial_fixed_adjunction(group)
 
         def __contains__(self, candidate) -> bool:
             if candidate not in Sets():

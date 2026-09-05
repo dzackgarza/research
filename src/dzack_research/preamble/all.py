@@ -290,22 +290,6 @@ from dzack_research.preamble.categories.functors.cardinality import (
     CardinalityFunctor,
     cardinality_functor,
 )
-from dzack_research.preamble.categories.functors.g_sets import (
-    CofreeGSetFunctor,
-    FreeGSetFunctor,
-    FreeGSetUnderlyingAdjunction,
-    GSetFixedPointsFunctor,
-    GSetOrbitsFunctor,
-    GSetOrbitsTrivialAdjunction,
-    GSetTrivialFixedAdjunction,
-    TrivialGSetFunctor,
-    UnderlyingCofreeGSetAdjunction,
-    UnderlyingFiniteGSetFunctor,
-    free_g_set_underlying_adjunction,
-    g_set_orbits_trivial_adjunction,
-    g_set_trivial_fixed_adjunction,
-    underlying_cofree_g_set_adjunction,
-)
 from dzack_research.preamble.categories.functors.group_induction import (
     CoinductionFunctor,
     InductionFunctor,
@@ -582,8 +566,6 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     GeneralModuleParent,
     GradedModules,
     GradedAlgebraModules,
-    GroupLattice,
-    GroupLattices,
     GroupModuleHomset,
     GroupModuleMorphism,
     HodgeDiscriminant,

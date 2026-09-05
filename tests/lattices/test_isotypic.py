@@ -2,7 +2,6 @@ from dzack_research.preamble.all import (
     ZZ,
     BasedFreeModule,
     FormedModules,
-    GroupLattice,
     Groups,
     Lattices,
     Modules,
@@ -66,7 +65,7 @@ def test_group_lattice_invariants_and_formed_coinvariants_keep_the_form() -> Non
     def action(group_element, vector):
         return vector if group_element == group.one() else swap(vector)
 
-    acted = GroupLattice(lattice, group, action)
+    acted = Lattices(ZZ[group])(lattice, action)
     decomposition = acted.isotypic_decomposition()
     invariants = acted.invariant_lattice()
     formed_coinvariants = acted.formed_coinvariants()

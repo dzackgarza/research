@@ -10,16 +10,13 @@ _EXPORTS = {'GroupModuleHomset': ('dzack_research.preamble.categories.modules.gr
                              'ModulesOverGroupAlgebra'),
  'group_module_homset': ('dzack_research.preamble.categories.modules.group_modules.group_modules',
                          'group_module_homset'),
- 'GroupLattice': ('dzack_research.preamble.categories.modules.group_modules.group_lattices',
-                  'GroupLattice'),
- 'GroupLattices': ('dzack_research.preamble.categories.modules.group_modules.group_lattices',
-                   'GroupLattices')}
+ 'LatticesOverGroupAlgebra': ('dzack_research.preamble.categories.modules.group_modules.group_lattices',
+                             'LatticesOverGroupAlgebra')}
 
 __all__ = ['GroupModuleHomset',
  'GroupModuleMorphism',
  'ModulesOverGroupAlgebra',
- 'GroupLattice',
- 'GroupLattices',
+ 'LatticesOverGroupAlgebra',
  'group_module_homset']
 
 def __getattr__(name):

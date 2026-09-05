@@ -1,20 +1,18 @@
 
 from dzack_research.preamble.all import (
+    FiniteGSets,
+    FiniteSets,
     BasedFreeModule,
     finite_g_set,
     FinitelyPresentedTorsionModules,
     Modules,
     Groups,
     ZZ,
-    free_g_set_underlying_adjunction,
     free_group_underlying_set_adjunction,
     g_set_homset,
-    g_set_orbits_trivial_adjunction,
-    g_set_trivial_fixed_adjunction,
     group_homset,
     induction_restriction_adjunction,
     restriction_coinduction_adjunction,
-    underlying_cofree_g_set_adjunction,
 )
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
@@ -81,7 +79,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     target = finite_ordered_set((ZZ(10), ZZ(20)))
     second_target = finite_ordered_set((ZZ(30), ZZ(40)))
 
-    orbit_adjunction = g_set_orbits_trivial_adjunction(group)
+    orbit_adjunction = FiniteGSets(group).orbits_trivial_adjunction()
     orbits = orbit_adjunction.left_adjoint()(acted)
     orbit_map = Sets().Mor(orbits, target)(lambda orbit: ZZ(10) if orbit.representative() in (0, 1) else ZZ(20))
     equivariant = orbit_adjunction.hom_set_isomorphism_forward(orbit_map)
@@ -117,7 +115,7 @@ def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_t
     for orbit in orbits:
         assert second_triangle(orbit) == orbit
 
-    fixed_adjunction = g_set_trivial_fixed_adjunction(group)
+    fixed_adjunction = FiniteSets().trivial_fixed_adjunction(group)
     source = finite_ordered_set((ZZ(50), ZZ(60)))
     trivial_source = fixed_adjunction.left_adjoint()(source)
     fixed_morphism = g_set_homset(trivial_source, acted)(lambda _point: ZZ(2))
@@ -155,7 +153,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
     source = finite_ordered_set((ZZ(10), ZZ(20)))
     second_source = finite_ordered_set((ZZ(30), ZZ(40)))
 
-    free_adjunction = free_g_set_underlying_adjunction(group)
+    free_adjunction = FiniteSets().free_underlying_adjunction(group)
     free = free_adjunction.left_adjoint()(source)
     equivariant = g_set_homset(free, acted)(
         lambda point: acted.act(
@@ -190,7 +188,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
     for point in free:
         assert second_triangle(point) == point
 
-    cofree_adjunction = underlying_cofree_g_set_adjunction(group)
+    cofree_adjunction = FiniteGSets(group).underlying_cofree_adjunction()
     arbitrary_set_map = Sets().Mor(acted, source)(lambda point: ZZ(10) if point in (0, 2) else ZZ(20))
     cofree_transpose = cofree_adjunction.hom_set_isomorphism_forward(
         arbitrary_set_map

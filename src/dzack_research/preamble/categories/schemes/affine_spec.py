@@ -28,7 +28,7 @@ class AffineSpecFunctor(ContravariantFunctor):
         return self._base_ring
 
     def _apply_contravariant_object(self, algebra):
-        return Spec(algebra)
+        return Spec(algebra, base_ring=self.base_ring())
 
     def _apply_contravariant_morphism(self, morphism):
         return affine_spec_morphism(morphism)

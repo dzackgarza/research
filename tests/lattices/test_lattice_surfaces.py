@@ -7,7 +7,6 @@ from dzack_research.preamble.all import (
     FinitelyPresentedAlgebras,
     FractionalIdeals,
     FramedModules,
-    GroupLattice,
     Groups,
     Ideals,
     Lattices,
@@ -377,7 +376,7 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
         left, right = vector.to_tuple()
         return plane((right, left))
 
-    group_lattice = GroupLattice(plane, group, swap)
+    group_lattice = Lattices(ZZ[group])(plane, swap)
     involution = group_lattice.group().group_generators().unrank(0)
 
     assert group_lattice.action().domain() is group
@@ -407,4 +406,4 @@ def test_group_lattice_rejects_actions_outside_the_orthogonal_automorphism_hom()
         return plane.scalar_multiple(ZZ(2), vector)
 
     with pytest.raises(ValueError, match="preserve the lattice form"):
-        GroupLattice(plane, group, nonisometric_action)
+        Lattices(ZZ[group])(plane, nonisometric_action)

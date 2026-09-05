@@ -593,6 +593,15 @@ class Lattices(OwnedCategoryOverBaseRing):
             ) from error
         if ring not in _Rings:
             raise TypeError("Lattices(R) takes a ring R; construct an object as Lattices(R)(data)")
+        from dzack_research.preamble.categories.modules.pure.modules import _is_group_algebra
+
+        if cls is Lattices and _is_group_algebra(ring):
+            # Lattices(R[G]): lattices over R with a form-preserving G-action.
+            from dzack_research.preamble.categories.modules.group_modules.group_lattices import (
+                LatticesOverGroupAlgebra,
+            )
+
+            return LatticesOverGroupAlgebra(ring)
         return super().__classcall__(cls, ring)
 
     @overload  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class

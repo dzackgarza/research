@@ -415,7 +415,8 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     @cached_method
     def base_scheme(self):
-        return Spec(self.base_ring())
+        ring = self.base_ring()
+        return Spec(ring, base_ring=ring)
 
     @cached_method
     def slice_category(self):
@@ -470,7 +471,8 @@ class Schemes(OwnedCategoryOverBaseRing):
             return Schemes(self.scheme_base_ring())
 
         def base_scheme(self):
-            return Spec(self.scheme_base_ring())
+            ring = self.scheme_base_ring()
+            return Spec(ring, base_ring=ring)
 
         def _scheme_underlying_space(self):
             base_ring = self.scheme_base_ring()
@@ -826,7 +828,7 @@ class AffineSchemes(_SchemePropertyCategory):
                     "presentation of its coordinate algebra"
                 )
             quotient, quotient_map = quotient_operation(equations)
-            subscheme = Spec(quotient)
+            subscheme = Spec(quotient, base_ring=self.scheme_base_ring())
             spec_inclusion = affine_spec_morphism(quotient_map)
             inclusion = categorical_scheme_morphism(
                 spec_inclusion.native_morphism(),
@@ -1088,35 +1090,46 @@ def _integral_placement(base_ring):
         return False
 
 
-def Spec(ring_or_algebra):
+def Spec(ring_or_algebra, base_ring=None):
     r"""Return the affine scheme ``Spec(A)`` over the represented scalar base.
 
     If ``A`` is an owned commutative ``R``-algebra, the returned object lies in
     ``Schemes(R)`` and its structure morphism is induced contravariantly by
     ``R -> A``.  A bare commutative ring ``R`` is read as an ``R``-algebra over
-    itself, so ``Spec(R)`` remains the terminal affine ``R``-scheme.
+    itself when it is supplied as the explicit ``base_ring``, so
+    ``Spec(R, base_ring=R)`` is the terminal affine ``R``-scheme.  Omitting the
+    base retains the coordinate algebra's represented scalar base.
     """
     algebra = _own_ring(ring_or_algebra)
-    cached = _AFFINE_SPECTRA.get(id(algebra))
-    if cached is not None and cached.coordinate_algebra() is algebra:
-        return cached
-    try:
-        declared_base = algebra.algebra_base_ring()
-    except AttributeError:
-        base = algebra
+    if base_ring is None:
+        try:
+            declared_base = algebra.algebra_base_ring()
+        except AttributeError:
+            base = algebra
+        else:
+            # A bare owned ring is canonically an algebra over itself.  Some
+            # constructor-owned refinements (notably the public QQ view) share an
+            # engine with the foundational owned ring returned by the generic
+            # algebra-base accessor, but are a different owned parent.  Spec(R)
+            # must stay over the stated R, not silently switch to that second view.
+            base = (
+                algebra
+                if _engine_ring(declared_base) is _engine_ring(algebra)
+                else _own_ring(declared_base)
+            )
     else:
-        # A bare owned ring is canonically an algebra over itself.  Some
-        # constructor-owned refinements (notably the public QQ view) share an
-        # engine with the foundational owned ring returned by the generic
-        # algebra-base accessor, but are a different owned parent.  Spec(R)
-        # must stay over the stated R, not silently switch to that second view.
-        base = (
-            algebra
-            if _engine_ring(declared_base) is _engine_ring(algebra)
-            else _own_ring(declared_base)
-        )
+        base = _own_ring(base_ring)
 
-    scheme = _SageSpec(_engine_ring(algebra))
+    cache_key = (id(algebra), id(base))
+    cached = _AFFINE_SPECTRA.get(cache_key)
+    if (
+        cached is not None
+        and cached.coordinate_algebra() is algebra
+        and cached.scheme_base_ring() is base
+    ):
+        return cached
+
+    scheme = _SageSpec(_engine_ring(algebra), _engine_ring(base))
     categories = [AffineSchemes(base)]
 
     if algebra is base or algebra in FramedAlgebras(base):
@@ -1147,7 +1160,7 @@ def Spec(ring_or_algebra):
     if algebra is base:
         scheme._preamble_structure_morphism = scheme._preamble_identity_morphism
     else:
-        base_scheme = Spec(base)
+        base_scheme = Spec(base, base_ring=base)
         engine_map = _engine_ring(algebra).coerce_map_from(_engine_ring(base))
         if engine_map is None:
             raise NotImplementedError(
@@ -1163,7 +1176,7 @@ def Spec(ring_or_algebra):
         scheme._preamble_structure_morphism._preamble_coordinate_algebra_morphism = (
             algebra.algebra_structure_morphism()
         )
-    _AFFINE_SPECTRA[id(algebra)] = scheme
+    _AFFINE_SPECTRA[cache_key] = scheme
     return scheme
 
 
@@ -1177,8 +1190,8 @@ def affine_spec_morphism(algebra_morphism):
         raise TypeError("affine Spec acts on a represented algebra morphism")
     if source_algebra.base_ring() is not target_algebra.base_ring():
         raise ValueError("affine Spec requires an algebra morphism over one scalar base")
-    source_scheme = Spec(target_algebra)
-    target_scheme = Spec(source_algebra)
+    source_scheme = Spec(target_algebra, base_ring=ring)
+    target_scheme = Spec(source_algebra, base_ring=ring)
     native = _native_scheme_homset(source_scheme, target_scheme)(
         _engine_algebra_morphism(algebra_morphism), check=False
     )
@@ -1232,7 +1245,7 @@ def AffineSpace(dimension, base_ring, names=None):
     scheme._preamble_identity_morphism._preamble_coordinate_algebra_morphism = (
         scheme.coordinate_algebra().Mor(scheme.coordinate_algebra()).identity()
     )
-    base_scheme = Spec(base)
+    base_scheme = Spec(base, base_ring=base)
     engine_map = engine_coordinate_ring.coerce_map_from(_engine_ring(base))
     if engine_map is None:
         raise NotImplementedError(
@@ -1378,7 +1391,7 @@ def scheme_product(*schemes):
                 right_map
             ]
             algebra = new_algebra
-        product = Spec(algebra)
+        product = Spec(algebra, base_ring=base)
         projections = [affine_spec_morphism(factor_map) for factor_map in factor_maps]
         refine_scheme(product, base, [ProductSchemes(base)])
     else:
@@ -1459,7 +1472,7 @@ def scheme_fiber_product(left_map, right_map):
         left_map.coordinate_algebra_morphism(),
         right_map.coordinate_algebra_morphism(),
     )
-    product = Spec(algebra_pushout)
+    product = Spec(algebra_pushout, base_ring=base_ring)
     left_projection = affine_spec_morphism(algebra_pushout.left_pushout_map())
     right_projection = affine_spec_morphism(algebra_pushout.right_pushout_map())
     product._preamble_fiber_product_cospan = (left_map, right_map)

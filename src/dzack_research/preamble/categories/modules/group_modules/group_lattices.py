@@ -1,12 +1,16 @@
-r"""Lattices equipped with a chosen form-preserving group action."""
+r"""Lattices with a group action: ``Lattices(R[G])``.
 
-from sage.categories.category import Category
+An object of ``Lattices(R[G])`` is an ``R[G]``-module whose underlying
+``R``-module is a lattice with a form the group preserves, so the action is
+a group morphism ``G -> O(L)``.  ``Lattices(S)`` constructs this category
+whenever ``S`` is a group algebra; the constructor is
+``Lattices(R[G])(L, action)``.
+"""
+
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
-from dzack_research.preamble.categories.group.groups import _owned_group
 from dzack_research.preamble.categories.lattices import (
     FiniteRankLattices,
     Lattice,
@@ -16,37 +20,44 @@ from dzack_research.preamble.categories.lattices import (
 from dzack_research.preamble.categories.modules.group_modules.group_modules import _equip_action
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class GroupLattices(OwnedCategory):
-    r"""Lattices carrying a specified action by lattice isometries."""
+class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
+    r"""``Lattices(R[G])``: lattices over ``R`` carrying an action by isometries."""
 
-    @staticmethod
-    def __classcall__(cls, base_ring, group):
-        return Category.__classcall__(cls, _owned_ring(base_ring), _owned_group(group))
+    def group_algebra(self):
+        return self.base_ring()
 
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = base_ring
-        self._group = group
-        OwnedCategory.__init__(self)
-
-    def base_ring(self):
-        return self._base_ring
+    def coefficient_ring(self):
+        return self.base_ring().base_ring()
 
     def acting_group(self):
-        return self._group
+        return self.base_ring().group()
 
     def _repr_object_names(self):
-        return f"{self.acting_group()}-lattices over {self.base_ring()}"
+        return f"lattices over {self.base_ring()}"
 
     def super_categories(self):
-
         return [
-            Lattices(self.base_ring()),
-            Modules(GroupAlgebra(self.base_ring(), self.acting_group())),
+            Lattices(self.coefficient_ring()),
+            Modules(self.base_ring()),
         ]
+
+    def an_object(self):
+        r"""The hyperbolic plane with the swap of its two isotropic generators."""
+        plane = Lattices(self.coefficient_ring())("U")
+        labels = plane.module_generating_set()
+        left, right = plane.module_generators()
+        swap = plane.Aut()({labels[0]: right, labels[1]: left})
+        group = self.acting_group()
+        assert group.cardinality() == 2, "the sample action is a swap, an action of C_2"
+        return self(plane, lambda g, vector: vector if g == group.one() else swap(vector))
+
+    def _call_(self, lattice, action):
+        r"""Equip ``lattice`` with the action ``action(g, v)``, which must preserve its form."""
+        return group_lattice(lattice, self.acting_group(), action)
 
     class ParentMethods:
         def group(self):
@@ -140,7 +151,7 @@ class GroupLattices(OwnedCategory):
             return self.group_module().character()
 
 
-def GroupLattice(lattice, group_or_action, action=None):
+def group_lattice(lattice, group_or_action, action=None):
     r"""Equip ``lattice`` with a selected action preserving its form."""
 
     base_ring = lattice.base_ring()
@@ -152,7 +163,7 @@ def GroupLattice(lattice, group_or_action, action=None):
         lattice.gram_tensor(),
         module_generators=lattice.module_generating_set(),
     )
-    extra_categories = [GroupLattices(base_ring, group)]
+    extra_categories = [Lattices(GroupAlgebra(base_ring, group))]
     construction_data = [("group_module_source", source_group_module)]
     if lattice in RootLattices():
         extra_categories.append(RootLattices())
@@ -172,4 +183,4 @@ def GroupLattice(lattice, group_or_action, action=None):
     return result
 
 
-__all__ = ["GroupLattice", "GroupLattices"]
+__all__ = ["LatticesOverGroupAlgebra", "group_lattice"]
