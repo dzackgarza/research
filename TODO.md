@@ -184,11 +184,6 @@ and leave the defect.
   like the category methods do, or it is operator notation.
   `categories/schemes/schemes.py`.
 
-- [ ] **`Modules(R)` publishes no pushout, though `R`-Mod is cocomplete.**  The
-  pushout of a span `A <- C -> B` is `coker(C -> A (+) B, c |-> (f(c), -g(c)))`,
-  and the biproduct and cokernel it needs both exist.  Only
-  `CommutativeAlgebras` supplies `_categorical_pushout` today, so a span of
-  module maps has nowhere to ask.  `categories/modules/pure/modules.py`.
 
 - [ ] **A span is not yet an object.**  `C.pushout(left_leg, right_leg)` names
   the two legs because no span diagram is constructed; the diagram vocabulary

@@ -134,6 +134,26 @@ class Modules(OwnedCategoryOverBaseRing):
                 self._categorical_biproduct, factors, name="Biproduct factors"
             )
 
+        def pushout(self, left_leg, right_leg):
+            r"""Return the pushout of the span these two legs form.
+
+            \(R\)-Mod is cocomplete, and the pushout of
+            \(A \xleftarrow{f} C \xrightarrow{g} B\) is the coequalizer of
+            \(\iota_A f\) and \(\iota_B g\) into \(A \oplus B\), which
+            identifies \(f(c)\) with \(g(c)\) for every \(c\).
+            """
+            assert left_leg.domain() is right_leg.domain(), (
+                "a span has one common domain"
+            )
+            total = self._categorical_biproduct(left_leg.codomain(), right_leg.codomain())
+            return self._categorical_coequalizer(
+                total.left_injection() * left_leg,
+                total.right_injection() * right_leg,
+            )
+
+        def _categorical_pushout(self, left_leg, right_leg):
+            return self.pushout(left_leg, right_leg)
+
         def _categorical_biproduct(self, left, right):
             if left not in self or right not in self:
                 raise TypeError("a module biproduct requires two modules over one ring")
@@ -341,12 +361,12 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = point
             return NotImplemented
 
-        def _free_biproduct_with(self, other, labels):
-            _ = (other, labels)
+        def _free_biproduct_with(self, other, labels, factors):
+            _ = (other, labels, factors)
             return NotImplemented
 
-        def _presented_biproduct_with(self, other, labels):
-            _ = (other, labels)
+        def _presented_biproduct_with(self, other, labels, factors):
+            _ = (other, labels, factors)
             return NotImplemented
 
         def _presented_module_from_relation_rows(self, labels, rows):
@@ -1122,7 +1142,17 @@ class RestrictedScalarsModuleView(Parent):
         def _repr_(self):
             return repr(self._underlying_element)
 
-    def __init__(self, module, ring_map) -> None:
+    def __init__(
+        self,
+        module,
+        ring_map,
+        *,
+        subobject_ambient=None,
+        subobject_generator_images=None,
+        subobject_lift=None,
+        subobject_inclusion_factory=None,
+        subobject_verify_linearity=True,
+    ) -> None:
         self._preamble_extension_module = module
         self._preamble_ring_map = ring_map
         base_ring = _owned_ring(ring_map.domain())
@@ -1160,6 +1190,18 @@ class RestrictedScalarsModuleView(Parent):
                         categories.append(FinitelyPresentedModules(base_ring))
                     if module in FinitelyGeneratedFreeModules(extension_ring):
                         categories.append(FinitelyGeneratedFreeModules(base_ring))
+
+        subobject_data = (
+            subobject_inclusion_factory is not None
+            or (subobject_ambient is not None and subobject_generator_images is not None)
+        )
+        if subobject_data:
+            self._preamble_subobject_ambient = subobject_ambient
+            self._preamble_subobject_generator_images = subobject_generator_images
+            self._preamble_subobject_lift = subobject_lift
+            self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
+            self._preamble_subobject_verify_linearity = subobject_verify_linearity
+            categories.append(ModuleSubobjects(base_ring))
 
         self._preamble_base_ring = base_ring
         if self._preamble_module_generating_set is not None:
@@ -1332,14 +1374,31 @@ class RestrictedScalarsModuleView(Parent):
         )
 
 
-def restrict_scalars(module, ring_map):
+def restrict_scalars(
+    module,
+    ring_map,
+    *,
+    _subobject_ambient=None,
+    _subobject_generator_images=None,
+    _subobject_lift=None,
+    _subobject_inclusion_factory=None,
+    _subobject_verify_linearity=True,
+):
     r"""Return ``Res_R^S(module)`` along the specified morphism ``R -> S``."""
     if _engine_ring(ring_map.codomain()) is not _engine_ring(module.base_ring()):
         raise ValueError(
             f"restriction of scalars for {module} requires a map into "
             f"{module.base_ring()}, got codomain {ring_map.codomain()}"
         )
-    return RestrictedScalarsModuleView(module, ring_map)
+    return RestrictedScalarsModuleView(
+        module,
+        ring_map,
+        subobject_ambient=_subobject_ambient,
+        subobject_generator_images=_subobject_generator_images,
+        subobject_lift=_subobject_lift,
+        subobject_inclusion_factory=_subobject_inclusion_factory,
+        subobject_verify_linearity=_subobject_verify_linearity,
+    )
 
 
 def twist_scalar_action(module, ring_endomorphism):
@@ -1718,8 +1777,11 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         return "chosen module biproducts"
 
     def super_categories(self):
+        from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
+            DirectSumObjects,
+        )
 
-        return [Modules(self.base_ring())]
+        return [Modules(self.base_ring()), DirectSumObjects()]
 
     class ParentMethods:
         def biproduct_factors(self):
@@ -1746,6 +1808,27 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 lambda label: self.module_generator(
                     _biproduct_label(labels, 1, label)
                 )
+            )
+
+        def left_injection(self):
+            r"""Return \(\iota_0 : M_0 \to M_0 \oplus M_1\)."""
+            return self._summand_injection(0)
+
+        def right_injection(self):
+            r"""Return \(\iota_1 : M_1 \to M_0 \oplus M_1\)."""
+            return self._summand_injection(1)
+
+        def _summand_injection(self, position):
+            r"""A biproduct is a coproduct, so it has these beside its projections."""
+            summand = self.biproduct_factor(position)
+            labels = self.module_generating_set()
+            return module_homset(summand, self)(
+                {
+                    label: self.module_generator(
+                        _biproduct_label(labels, position, label)
+                    )
+                    for label in summand.module_generating_set()
+                }
             )
 
         def left_projection(self):
@@ -1822,15 +1905,14 @@ def _module_biproduct(left, right):
 
     labels = _biproduct_label_set(left, right)
     factors = _biproduct_factor_family(left, right)
-    result = left._free_biproduct_with(right, labels)
+    result = left._free_biproduct_with(right, labels, factors)
     if result is NotImplemented:
-        result = left._presented_biproduct_with(right, labels)
+        result = left._presented_biproduct_with(right, labels, factors)
     if result is NotImplemented:
         raise NotImplementedError(
             "the represented module factors provide no biproduct realization"
         )
-    result._preamble_biproduct_factors = factors
-    return refine(result, BiproductModules(ring))
+    return result
 
 
 def biproduct_morphism(left_morphism, right_morphism, source=None, target=None):
