@@ -232,6 +232,57 @@ def test_polynomial_ideals_are_module_subobjects_with_singular_arithmetic() -> N
     assert same_ideal(ideal.intersection(other), ring.ideal(x * y))
 
 
+def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None:
+    from dzack_research.preamble.all import FinitelyPresentedAlgebra
+
+    parameter = PolynomialRing(QQ, "t")
+    t = parameter.algebra_generator("t")
+    presentation = PolynomialRing(parameter, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    y = presentation.algebra_generator("y")
+    family = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    x_family = family.algebra_generator("x")
+
+    principal = family.ideal(x_family)
+    assert principal.inclusion().is_injective()
+    assert family.krull_dimension() == 2
+    assert principal.syzygy_matrix().ncols() == 1
+    assert principal.syzygy_matrix().nrows() == 0
+
+    special_fiber, _family_to_fiber = family._quotient_by_algebra_elements(
+        (family.algebra_structure_morphism()(t),)
+    )
+    x0 = special_fiber.algebra_generator("x")
+    y0 = special_fiber.algebra_generator("y")
+    origin = special_fiber.ideal(x0, y0)
+
+    assert special_fiber.krull_dimension() == 1
+    assert x0 * y0 == special_fiber.zero()
+    assert origin.is_prime()
+    assert origin.is_maximal()
+    assert origin.syzygy_matrix().ncols() == 2
+    assert origin.syzygy_matrix().nrows() == 2
+
+    local = special_fiber.localize_at_prime(origin)
+    assert local in LocalRings()
+    assert local.localization_source() is special_fiber
+    assert local.localized_prime() is origin
+    assert not local(x0).is_unit()
+    assert not local(y0).is_unit()
+    assert local(x0 + 1).is_unit()
+    assert local(y0 + 1).is_unit()
+    assert local(x0) in local.maximal_ideal()
+    assert local(y0) in local.maximal_ideal()
+    assert local.one() not in local.maximal_ideal()
+
+    residue = local.residue_field()
+    residue_map = local.residue_map()
+    assert residue_map(local(x0)) == residue.zero()
+    assert residue_map(local(y0)) == residue.zero()
+    assert residue_map(local.one()) == residue.one()
+    assert residue.fraction_field() is residue
+
+
 def test_affine_spec_is_contravariant_on_commutative_algebra_maps() -> None:
     from dzack_research.preamble.all import CommutativeAlgebras, Spec, SpecFunctor
 

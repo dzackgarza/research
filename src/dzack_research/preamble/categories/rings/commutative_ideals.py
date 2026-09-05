@@ -8,6 +8,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedIntegralDomains,
     OwnedCategoryOverBaseRing,
     _engine_element,
+    _engine_quotient_cover_ideal,
     _engine_ring,
     _own_ring,
 )
@@ -171,7 +172,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         for generator in self.ideal_generators()
                     )
                 )
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 raise NotImplementedError(
                     "this ideal has no active engine-ideal realization"
                 ) from error
@@ -187,10 +188,47 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         extension = extension_to_localization
 
         def is_prime(self):
-            return bool(self._engine_ideal().is_prime())
+            backend = self._engine_ideal()
+            try:
+                return bool(backend.is_prime())
+            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+                try:
+                    return bool(
+                        _engine_quotient_cover_ideal(self.ring(), backend).is_prime()
+                    )
+                except (
+                    AttributeError,
+                    NotImplementedError,
+                    TypeError,
+                    ValueError,
+                ) as quotient_error:
+                    raise NotImplementedError(
+                        "primality of this ideal has no active exact backend"
+                    ) from quotient_error
 
         def is_maximal(self):
-            return bool(self._engine_ideal().is_maximal())
+            backend = self._engine_ideal()
+            try:
+                return bool(backend.is_maximal())
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                try:
+                    lifted = _engine_quotient_cover_ideal(self.ring(), backend)
+                except (
+                    AttributeError,
+                    NotImplementedError,
+                    TypeError,
+                    ValueError,
+                ) as error:
+                    raise NotImplementedError(
+                        "maximality of this ideal has no active exact backend"
+                    ) from error
+                try:
+                    return bool(lifted.is_maximal())
+                except NotImplementedError:
+                    cover = lifted.ring()
+                    if not bool(cover.base_ring().is_field()):
+                        raise
+                    return bool(lifted.is_prime() and lifted.dimension() == 0)
 
         def radical(self):
             return _from_engine_ideal(self.ring(), self._engine_ideal().radical())
@@ -329,7 +367,15 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return self.ring().quotient_ring(self)
 
         def syzygy_matrix(self):
-            return self._engine_ideal().syzygy_module()
+            from sage.matrix.constructor import matrix
+
+            backend = self._engine_ideal()
+            selected = tuple(backend.gens())
+            rows = _engine_ideal_syzygy_rows(self.ring(), backend, selected)
+            engine = _engine_ring(self.ring())
+            if rows:
+                return matrix(engine, rows)
+            return matrix(engine, 0, len(selected))
 
         def primary_decomposition(self):
             method = _engine_ideal_method(
@@ -368,6 +414,50 @@ def _engine_ideal_method(ideal, name, unavailable_message):
     if method is None:
         raise NotImplementedError(unavailable_message)
     return method
+
+
+def _engine_ideal_syzygy_rows(ring, backend, selected):
+    r"""Return exact relation rows for selected ideal generators.
+
+    Singular computes syzygies directly for polynomial-ring ideals, but Sage's
+    generic quotient-ring ideal forwards ``syz`` with an unsupported quotient
+    parent.  For ``R=S/J`` and ``I=(f_1,...,f_n)`` we instead compute syzygies
+    of ``(f_1,...,f_n,J)`` in ``S`` and project the first ``n`` coordinates to
+    ``R``.  This projection is exactly ``ker(R^n -> I)``: a tuple ``a`` is a
+    relation modulo ``J`` iff ``sum a_i f_i`` is a linear combination of the
+    generators of ``J``.
+    """
+    try:
+        syzygies = backend.syzygy_module()
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        engine = _engine_ring(ring)
+        try:
+            cover = engine.cover_ring()
+            defining = engine.defining_ideal()
+            lifted = tuple(engine(generator).lift() for generator in selected)
+            augmented = cover.ideal(lifted + tuple(defining.gens()))
+            syzygies = augmented.syzygy_module()
+        except (
+            AttributeError,
+            NotImplementedError,
+            TypeError,
+            ValueError,
+        ) as quotient_error:
+            raise NotImplementedError(
+                "this ideal has no selected exact module-presentation backend"
+            ) from quotient_error
+
+        rows = tuple(
+            tuple(engine(syzygies[position, column]) for column in range(len(selected)))
+            for position in range(syzygies.nrows())
+        )
+        zero = engine.zero()
+        return tuple(row for row in rows if any(coefficient != zero for coefficient in row))
+
+    return tuple(
+        tuple(syzygies[position, column] for column in range(syzygies.ncols()))
+        for position in range(syzygies.nrows())
+    )
 
 
 def _relation_element(free_module, row):
@@ -418,7 +508,9 @@ def CommutativeIdeal(ring, *generators):
         values = (engine.zero(),)
     backend = engine.ideal(values)
     selected = tuple(backend.gens())
-    if not hasattr(backend, "syzygy_module"):
+    try:
+        syzygy_rows = _engine_ideal_syzygy_rows(source, backend, selected)
+    except NotImplementedError:
         if source not in OwnedIntegralDomains() or len(selected) != 1:
             raise NotImplementedError(
                 "this ideal has no selected exact module-presentation backend"
@@ -457,10 +549,9 @@ def CommutativeIdeal(ring, *generators):
                 },
             )
         return ideal
-    syzygies = backend.syzygy_module()
 
     labels = finite_ordered_set(range(len(selected)))
-    relation_labels = finite_ordered_set(range(int(syzygies.nrows())))
+    relation_labels = finite_ordered_set(range(len(syzygy_rows)))
     free_generators = BasedFreeModule(source, labels)
     free_relations = BasedFreeModule(source, relation_labels)
     presentation = module_homset(free_relations, free_generators)(
@@ -468,8 +559,8 @@ def CommutativeIdeal(ring, *generators):
             label: _relation_element(
                 free_generators,
                 tuple(
-                    _owned_engine_value(source, syzygies[position, column])
-                    for column in range(syzygies.ncols())
+                    _owned_engine_value(source, coefficient)
+                    for coefficient in syzygy_rows[position]
                 ),
             )
             for position, label in enumerate(relation_labels)

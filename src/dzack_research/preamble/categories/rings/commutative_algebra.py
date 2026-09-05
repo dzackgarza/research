@@ -38,6 +38,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedRings,
     _engine_element,
+    _engine_krull_dimension,
+    _engine_quotient_cover_ideal,
     _engine_ring,
     _own_ring,
 )
@@ -545,7 +547,7 @@ class QuotientRings(OwnedCategory):
                 raise NotImplementedError(
                     "Krull dimension of this quotient has no selected computation"
                 )
-            return self._preamble_engine_ring.krull_dimension()
+            return _engine_krull_dimension(self)
 
         def _repr_(self):
             return f"{self.quotient_source()} / {self.defining_ideal()}"
@@ -867,32 +869,51 @@ def QuotientRing(ring, ideal):
     defining_ideal = _owned_ideal(source, ideal)
     defining = _engine_ideal(source, defining_ideal)
     try:
-        quotient_engine = engine.quotient(defining)
+        lifted = _engine_quotient_cover_ideal(source, defining)
+        quotient_engine = lifted.ring().quotient(lifted)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
-        quotient_engine = None
+        try:
+            quotient_engine = engine.quotient(defining)
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            quotient_engine = None
+
+    dimension = None
+    if quotient_engine is not None and source in OwnedNoetherianRings():
+        try:
+            dimension = _engine_krull_dimension(quotient_engine)
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+
+    quotient_is_field = False
+    quotient_is_domain = False
+    if quotient_engine is not None:
+        try:
+            quotient_is_field = bool(quotient_engine.is_field())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+        try:
+            quotient_is_domain = bool(quotient_engine.is_integral_domain())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+        if quotient_is_domain and dimension == 0:
+            quotient_is_field = True
 
     placements = []
     if source in OwnedNoetherianRings():
         placements.append(OwnedNoetherianRings())
+    if quotient_is_field:
+        placements.append(OwnedFields())
+    elif quotient_is_domain:
+        placements.append(OwnedIntegralDomains())
     if quotient_engine is not None:
         try:
-            if bool(quotient_engine.is_field()):
-                placements.append(OwnedFields())
-            elif bool(quotient_engine.is_integral_domain()):
-                placements.append(OwnedIntegralDomains())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        try:
             if bool(quotient_engine.is_finite()):
-
                 placements.append(FiniteSets())
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             pass
-        try:
-            if source in OwnedNoetherianRings() and quotient_engine.krull_dimension() == 0:
-                placements.append(OwnedArtinianRings())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
+    if dimension == 0:
+        placements.append(OwnedArtinianRings())
+
     return object_of(
         Category.join((QuotientRings(), CommutativeAlgebras(source), *placements)),
         source=source,
@@ -1099,6 +1120,16 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     else:
         fraction_field = None
         fraction_engine = None
+    base = source.base_ring()
+    algebra_source = (
+        source
+        if base is not None and source in Algebras(base)
+        else None
+    )
+    if algebra_source is not None:
+        placements.extend((Algebras(base), OwnedAlgebras(base)))
+        if source in CommutativeAlgebras(base):
+            placements.append(CommutativeAlgebras(base))
     return object_of(
         Category.join([PrimeLocalizations(), *placements]),
         source=source,

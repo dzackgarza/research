@@ -673,7 +673,7 @@
     "AdicallyCompleteRings": {
       "display": "AdicallyCompleteRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1068",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1102",
       "summary": "Commutative rings represented as complete for a chosen adic topology.",
       "owned": true,
       "exported": true,
@@ -2085,7 +2085,7 @@
     "ArtinianRings": {
       "display": "ArtinianRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1015",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1049",
       "summary": "Artinian commutative rings.",
       "owned": true,
       "exported": true,
@@ -4691,7 +4691,7 @@
     "CommutativeIdeals": {
       "display": "CommutativeIdeals(R)",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/commutative_ideals.py:82",
+      "source": "src/dzack_research/preamble/categories/rings/commutative_ideals.py:83",
       "summary": "Ideals of ``R``: subobjects of the rank-one ``R``-module ``R``.",
       "owned": true,
       "exported": true,
@@ -5038,7 +5038,7 @@
     "CompleteLocalRings": {
       "display": "CompleteLocalRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1088",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1122",
       "summary": "Local rings complete for the represented maximal-ideal/adic topology.",
       "owned": true,
       "exported": true,
@@ -8246,7 +8246,7 @@
     "DivisionRings": {
       "display": "DivisionRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1100",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1134",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -9180,7 +9180,7 @@
     "Fields": {
       "display": "Fields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1109",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1143",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -11881,7 +11881,7 @@
     "FormalPowerSeriesRings": {
       "display": "FormalPowerSeriesRings(R)",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/commutative_algebra.py:1160",
+      "source": "src/dzack_research/preamble/categories/rings/commutative_algebra.py:1191",
       "summary": "Formal power-series rings ``R[[t]]`` over the owned ring ``R``.",
       "owned": true,
       "exported": true,
@@ -15043,7 +15043,7 @@
     "IntegralDomains": {
       "display": "IntegralDomains",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:963",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:989",
       "summary": "Commutative rings without zero divisors.",
       "owned": true,
       "exported": true,
@@ -17133,7 +17133,7 @@
     "LocalRings": {
       "display": "LocalRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1030",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1064",
       "summary": "Commutative rings equipped with their unique maximal ideal.",
       "owned": true,
       "exported": true,
@@ -19165,7 +19165,7 @@
     "NoetherianRings": {
       "display": "NoetherianRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:997",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1031",
       "summary": "Noetherian commutative rings.",
       "owned": true,
       "exported": true,
@@ -20155,7 +20155,7 @@
     "OrderedRings": {
       "display": "OrderedRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:947",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:973",
       "summary": "Totally ordered rings in the owned scalar hierarchy.",
       "owned": true,
       "exported": true,
@@ -20925,7 +20925,7 @@
     "OwnedCategoryOverBaseRing": {
       "display": "OwnedCategoryOverBaseRing(R)",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1174",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1208",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -20937,7 +20937,7 @@
       "operations": {},
       "inherits": [],
       "specimens": [],
-      "problem": "NotImplementedError: <abstract method super_categories at 0x7fce73b51a60>"
+      "problem": "NotImplementedError: <abstract method super_categories at 0x7f0591fd9a60>"
     },
     "OwnedCompleteLocalRings": {
       "display": "OwnedCompleteLocalRings",
@@ -21090,7 +21090,7 @@
     "OwnedDivisionRings": {
       "display": "OwnedDivisionRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1100",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1134",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -21225,7 +21225,7 @@
     "OwnedFields": {
       "display": "OwnedFields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1109",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1143",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -22789,7 +22789,7 @@
     "OwnedOrders": {
       "display": "OwnedOrders",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1135",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1169",
       "summary": "Orders in number fields as a ring-theoretic property category.",
       "owned": true,
       "exported": true,
@@ -23102,7 +23102,7 @@
     "OwnedRings": {
       "display": "OwnedRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:678",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:704",
       "summary": "Unital rings whose notebook-facing ring interface is owned here.",
       "owned": true,
       "exported": true,
@@ -23406,7 +23406,7 @@
     "OwnedRngs": {
       "display": "OwnedRngs",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:667",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:693",
       "summary": "Rngs on the owned operation spine.",
       "owned": true,
       "exported": true,
@@ -23514,7 +23514,7 @@
     "OwnedSemirings": {
       "display": "OwnedSemirings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:656",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:682",
       "summary": "Semirings on the owned operation spine.",
       "owned": true,
       "exported": true,
@@ -24221,7 +24221,7 @@
     "PrimeFields": {
       "display": "PrimeFields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1163",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1197",
       "summary": "Prime fields \\(\\mathbf F_p\\).",
       "owned": true,
       "exported": true,
@@ -24405,7 +24405,7 @@
     "PrimeSpectra": {
       "display": "PrimeSpectra",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/commutative_algebra.py:68",
+      "source": "src/dzack_research/preamble/categories/rings/commutative_algebra.py:70",
       "summary": "The prime spectra \\(\\operatorname{Spec}R\\), ordered by inclusion.",
       "owned": true,
       "exported": true,
@@ -24572,7 +24572,7 @@
     "PrincipalIdealDomains": {
       "display": "PrincipalIdealDomains",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:978",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1004",
       "summary": "Principal ideal domains in the owned ring hierarchy.",
       "owned": true,
       "exported": true,
@@ -26354,7 +26354,7 @@
     "Rings": {
       "display": "Rings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:678",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:704",
       "summary": "Unital rings whose notebook-facing ring interface is owned here.",
       "owned": true,
       "exported": true,

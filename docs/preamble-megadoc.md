@@ -11584,7 +11584,7 @@ Ordered by depth: the least structured first.
 
 The prime spectra \(\operatorname{Spec}R\), ordered by inclusion.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:68`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:70`
 - **probed as** `Category of prime spectra`
 - **above** [`PartiallyOrderedSets`](#cat-partiallyorderedsets)
 - **refines**, transitively, in Sage's linearization order: [`PartiallyOrderedSets`](#cat-partiallyorderedsets) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -11632,7 +11632,7 @@ The prime spectra \(\operatorname{Spec}R\), ordered by inclusion.
 
 Ideals of `R`: subobjects of the rank-one `R`-module `R`.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_ideals.py:82`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_ideals.py:83`
 - **probed as** `Category of commutative ideals`
 - **above** [`Modules(R)`](#cat-modules)
 - **below** [`Ideals(R)`](#cat-ideals)
@@ -11694,7 +11694,7 @@ Ideals of `R`: subobjects of the rank-one `R`-module `R`.
 
 Rngs on the owned operation spine.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:667`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:693`
 - **probed as** `Category of owned rngs`
 - **above** [`AdditiveGroups`](#cat-additivegroups), [`Semigroups`](#cat-semigroups)
 - **below** [`OwnedRings`](#cat-ownedrings), [`Rings`](#cat-rings)
@@ -11728,7 +11728,7 @@ Rngs on the owned operation spine.
 
 Semirings on the owned operation spine.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:656`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:682`
 - **probed as** `Category of owned semirings`
 - **above** [`AdditiveMonoids`](#cat-additivemonoids), [`Monoids`](#cat-monoids)
 - **below** [`OwnedRings`](#cat-ownedrings), [`Rings`](#cat-rings)
@@ -11762,7 +11762,7 @@ Semirings on the owned operation spine.
 
 Unital rings whose notebook-facing ring interface is owned here.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:678`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:704`
 - **probed as** `Category of owned rings`
 - **above** [`OwnedRngs`](#cat-ownedrngs), [`OwnedSemirings`](#cat-ownedsemirings)
 - **below** [`Algebras(R)`](#cat-algebras), [`DivisionRings`](#cat-divisionrings), [`MatrixEndomorphismSpaces(R)`](#cat-matrixendomorphismspaces), [`OrderedRings`](#cat-orderedrings), [`OwnedDivisionRings`](#cat-owneddivisionrings), [`OwnedOrderedRings`](#cat-ownedorderedrings), [`OwnedRings.Commutative`](#cat-ownedrings-commutative), [`PredicateSubrings`](#cat-predicatesubrings)
@@ -11810,7 +11810,7 @@ Unital rings whose notebook-facing ring interface is owned here.
 
 Unital rings whose notebook-facing ring interface is owned here.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:678`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:704`
 - **probed as** `Category of owned rings`
 - **above** [`OwnedRngs`](#cat-ownedrngs), [`OwnedSemirings`](#cat-ownedsemirings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -11853,7 +11853,7 @@ nothing else, is why a level would otherwise need a hand-written parent
 class beside its category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1100`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1134`
 - **probed as** `Category of owned division rings`
 - **above** [`OwnedRings`](#cat-ownedrings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -11886,7 +11886,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Totally ordered rings in the owned scalar hierarchy.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:947`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:973`
 - **probed as** `Category of owned ordered rings`
 - **above** [`OwnedRings`](#cat-ownedrings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -11930,7 +11930,7 @@ nothing else, is why a level would otherwise need a hand-written parent
 class beside its category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1100`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1134`
 - **probed as** `Category of owned division rings`
 - **above** [`OwnedRings`](#cat-ownedrings)
 - **below** [`Fields`](#cat-fields), [`OwnedFields`](#cat-ownedfields)
@@ -12092,7 +12092,7 @@ class beside its category.
 
 Commutative rings represented as complete for a chosen adic topology.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1068`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1102`
 - **probed as** `Category of owned adically complete rings`
 - **above** [`OwnedRings.Commutative`](#cat-ownedrings-commutative)
 - **refines**, transitively, in Sage's linearization order: [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12125,7 +12125,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Commutative rings without zero divisors.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:963`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:989`
 - **probed as** `Category of owned integral domains`
 - **above** [`OwnedRings.Commutative`](#cat-ownedrings-commutative)
 - **refines**, transitively, in Sage's linearization order: [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12158,7 +12158,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Commutative rings equipped with their unique maximal ideal.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1030`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1064`
 - **probed as** `Category of owned local rings`
 - **above** [`OwnedRings.Commutative`](#cat-ownedrings-commutative)
 - **refines**, transitively, in Sage's linearization order: [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12191,7 +12191,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Noetherian commutative rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:997`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1031`
 - **probed as** `Category of owned noetherian rings`
 - **above** [`OwnedRings.Commutative`](#cat-ownedrings-commutative)
 - **refines**, transitively, in Sage's linearization order: [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12387,7 +12387,7 @@ Noetherian commutative rings.
 
 Artinian commutative rings.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1015`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1049`
 - **probed as** `Category of owned artinian rings`
 - **above** [`OwnedNoetherianRings`](#cat-ownednoetherianrings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedNoetherianRings`](#cat-ownednoetherianrings) · [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12461,7 +12461,7 @@ Artinian commutative rings.
 
 Local rings complete for the represented maximal-ideal/adic topology.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1088`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1122`
 - **probed as** `Category of owned complete local rings`
 - **above** [`OwnedAdicallyCompleteRings`](#cat-ownedadicallycompleterings), [`OwnedLocalRings`](#cat-ownedlocalrings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedAdicallyCompleteRings`](#cat-ownedadicallycompleterings) · [`OwnedLocalRings`](#cat-ownedlocalrings) · [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12535,7 +12535,7 @@ Local rings complete for the represented maximal-ideal/adic topology.
 
 Orders in number fields as a ring-theoretic property category.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1135`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1169`
 - **probed as** `Category of owned orders`
 - **above** [`OwnedIntegralDomains`](#cat-ownedintegraldomains), [`OwnedNoetherianRings`](#cat-ownednoetherianrings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedNoetherianRings`](#cat-ownednoetherianrings) · [`OwnedIntegralDomains`](#cat-ownedintegraldomains) · [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12618,7 +12618,7 @@ Principal ideal domains in the owned ring hierarchy.
 
 Principal ideal domains in the owned ring hierarchy.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:978`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1004`
 - **probed as** `Category of owned principal ideal domains`
 - **above** [`OwnedIntegralDomains`](#cat-ownedintegraldomains), [`OwnedNoetherianRings`](#cat-ownednoetherianrings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedNoetherianRings`](#cat-ownednoetherianrings) · [`OwnedIntegralDomains`](#cat-ownedintegraldomains) · [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12664,7 +12664,7 @@ nothing else, is why a level would otherwise need a hand-written parent
 class beside its category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1109`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1143`
 - **probed as** `Category of owned fields`
 - **above** [`OwnedArtinianRings`](#cat-ownedartinianrings), [`OwnedDivisionRings`](#cat-owneddivisionrings), [`OwnedIntegralDomains`](#cat-ownedintegraldomains), [`OwnedLocalRings`](#cat-ownedlocalrings), [`OwnedNoetherianRings`](#cat-ownednoetherianrings), [`OwnedPrincipalIdealDomains`](#cat-ownedprincipalidealdomains)
 - **refines**, transitively, in Sage's linearization order: [`OwnedLocalRings`](#cat-ownedlocalrings) · [`OwnedArtinianRings`](#cat-ownedartinianrings) · [`OwnedPrincipalIdealDomains`](#cat-ownedprincipalidealdomains) · [`OwnedDivisionRings`](#cat-owneddivisionrings) · [`OwnedNoetherianRings`](#cat-ownednoetherianrings) · [`OwnedIntegralDomains`](#cat-ownedintegraldomains) · [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12703,7 +12703,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Formal power-series rings `R[[t]]` over the owned ring `R`.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1160`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1191`
 - **probed as** `Category of formal power-series rings`
 - **above** [`Algebras.Commutative`](#cat-algebras-commutative), [`OwnedAdicallyCompleteRings`](#cat-ownedadicallycompleterings)
 - **refines**, transitively, in Sage's linearization order: [`OwnedAdicallyCompleteRings`](#cat-ownedadicallycompleterings) · [`Algebras.Commutative`](#cat-algebras-commutative) · [`Algebras(R)`](#cat-algebras) · [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AssociativeAlgebras(R)`](#cat-associativealgebras) · [`Modules(R)`](#cat-modules) · [`AdditiveGroups.AdditiveCommutative`](#cat-additivegroups-additivecommutative) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12760,7 +12760,7 @@ nothing else, is why a level would otherwise need a hand-written parent
 class beside its category.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1109`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1143`
 - **probed as** `Category of owned fields`
 - **above** [`OwnedArtinianRings`](#cat-ownedartinianrings), [`OwnedDivisionRings`](#cat-owneddivisionrings), [`OwnedIntegralDomains`](#cat-ownedintegraldomains), [`OwnedLocalRings`](#cat-ownedlocalrings), [`OwnedNoetherianRings`](#cat-ownednoetherianrings), [`OwnedPrincipalIdealDomains`](#cat-ownedprincipalidealdomains)
 - **below** [`OwnedNumberFields`](#cat-ownednumberfields), [`PrimeFields`](#cat-primefields)
@@ -12885,7 +12885,7 @@ Finite extensions of `QQ`.
 
 Prime fields \(\mathbf F_p\).
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1163`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1197`
 - **probed as** `Category of prime fields`
 - **above** [`OwnedFields`](#cat-ownedfields)
 - **refines**, transitively, in Sage's linearization order: [`OwnedFields`](#cat-ownedfields) · [`OwnedLocalRings`](#cat-ownedlocalrings) · [`OwnedArtinianRings`](#cat-ownedartinianrings) · [`OwnedPrincipalIdealDomains`](#cat-ownedprincipalidealdomains) · [`OwnedDivisionRings`](#cat-owneddivisionrings) · [`OwnedNoetherianRings`](#cat-ownednoetherianrings) · [`OwnedIntegralDomains`](#cat-ownedintegraldomains) · [`OwnedRings.Commutative`](#cat-ownedrings-commutative) · [`OwnedRings`](#cat-ownedrings) · [`OwnedSemirings`](#cat-ownedsemirings) · [`Monoids`](#cat-monoids) · [`OwnedRngs`](#cat-ownedrngs) · [`Semigroups`](#cat-semigroups) · [`Magmas`](#cat-magmas) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -12981,8 +12981,8 @@ Number fields carrying the primitive element selected by their presentation.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1174`
-- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7fce73b51a60>
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1208`
+- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7f0591fd9a60>
 
 ### Objects
 
@@ -13049,7 +13049,7 @@ An exact, explicitly real number.
 
 The distinguished open subobject `D(f) -> Spec(R)`.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:327`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:329`
 - **built by** `DistinguishedOpenSubobject(spectrum, function)`
 
 **Operations**
@@ -13061,7 +13061,7 @@ The distinguished open subobject `D(f) -> Spec(R)`.
 
 The closed subobject `V(I) -> Spec(R)`.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:293`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:295`
 - **built by** `ZariskiClosedSubobject(spectrum, ideal)`
 
 **Operations**
@@ -13146,7 +13146,7 @@ An owned ring parent with one private computational realization.
 
 Return `(generators) <= R` with its selected module inclusion.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_ideals.py:410`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_ideals.py:500`
 - **built by** `CommutativeIdeal(ring, *generators)`
 
 #### `CommutativeRings` <sub>FUNCTION</sub>
@@ -13158,7 +13158,7 @@ The session name for ``OwnedRings().Commutative()``: commutativity is an
 axiom on the operation, and this is the category it cuts out.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1819`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1868`
 - **built by** `CommutativeRings()`
 
 #### `ComplexField` <sub>FUNCTION</sub>
@@ -13175,7 +13175,7 @@ axiom on the operation, and this is the category it cuts out.
 
 Return the dual-number algebra `R[epsilon]/(epsilon^2)`.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1287`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1318`
 - **built by** `DualNumbers(base_ring, name='epsilon')`
 
 #### `FiniteField` <sub>FUNCTION</sub>
@@ -13222,7 +13222,7 @@ Return the public finite matrix Hom, with algebra structure when square.
 
 #### `PowerSeriesRing` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1245`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1276`
 - **built by** `PowerSeriesRing(base_ring, *args, **kwargs)`
 
 #### `PrimeField` <sub>FUNCTION</sub>
@@ -13256,7 +13256,7 @@ Return the owned finite-precision real represented by `value`.
 
 Return `R/m` for a maximal ideal, or the represented local residue field.
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1071`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1092`
 - **built by** `ResidueField(ring, ideal=None)`
 
 #### `Zmod` <sub>FUNCTION</sub>
@@ -13266,12 +13266,12 @@ Return `R/m` for a maximal ideal, or the represented local residue field.
 
 #### `Zp` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1232`
+- **defined at** `src/dzack_research/preamble/categories/rings/commutative_algebra.py:1263`
 - **built by** `Zp(*args, **kwargs)`
 
 #### `predicate_subring` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:645`
+- **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:671`
 - **built by** `predicate_subring(ambient_ring, predicate, description, category=None)`
 
 ## Schemes & Algebraic Geometry

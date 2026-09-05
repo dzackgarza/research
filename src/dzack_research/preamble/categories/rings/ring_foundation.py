@@ -399,7 +399,7 @@ class LocalizationRings(OwnedCategory):
             self._preamble_engine_ring = _engine_ring
             if algebra_source is not None:
                 self._preamble_algebra_base_ring = algebra_source.base_ring()
-            super().__init__(base=source.base_ring(), **rest)
+            super().__init__(base_ring=source.base_ring(), **rest)
 
             self._preamble_localization_map = ring_morphism(
                 source,
@@ -453,11 +453,25 @@ class LocalizationRings(OwnedCategory):
                 return self.fraction(value[0], value[1])
             if self._preamble_engine_ring is not None:
                 try:
-                    represented = self._preamble_engine_ring(value)
+                    value_parent = getattr(value, "parent", lambda: None)()
+                    engine_value = (
+                        _engine_element(value_parent, value)
+                        if value_parent in OwnedRings()
+                        else value
+                    )
+                    represented = self._preamble_engine_ring(engine_value)
+                    structure = self.localization_submonoid().structure_data()
+                    trusted_denominator = structure.get("kind") != "prime_complement"
+                    source = self.localization_source()
+                    source_engine = _engine_ring(source)
                     return self.fraction(
-                        self.localization_source()(represented.numerator()),
-                        self.localization_source()(represented.denominator()),
-                        _trusted_denominator=True,
+                        source._from_engine_element(
+                            source_engine(represented.numerator())
+                        ),
+                        source._from_engine_element(
+                            source_engine(represented.denominator())
+                        ),
+                        _trusted_denominator=trusted_denominator,
                     )
                 except (AttributeError, TypeError, ValueError):
                     pass
@@ -465,6 +479,18 @@ class LocalizationRings(OwnedCategory):
 
         def __call__(self, value):
             return self._element_constructor_(value)
+
+        def __contains__(self, value) -> bool:
+            if (
+                isinstance(value, self.category().ElementType)
+                and value.parent() is self
+            ):
+                return True
+            try:
+                self(value)
+            except (NotImplementedError, TypeError, ValueError):
+                return False
+            return True
 
         def _from_engine_element(self, value):
             engine = self._preamble_engine_ring
@@ -989,9 +1015,17 @@ class OwnedPrincipalIdealDomains(OwnedCategory):
 def _engine_krull_dimension(ring):
     engine = _engine_ring(ring)
     method = getattr(engine, "krull_dimension", None)
-    if method is None:
-        raise NotImplementedError(f"Krull dimension of {ring} has no active backend")
-    return method()
+    if method is not None:
+        try:
+            return method()
+        except NotImplementedError:
+            pass
+    try:
+        return engine.defining_ideal().dimension()
+    except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+        raise NotImplementedError(
+            f"Krull dimension of {ring} has no active backend"
+        ) from error
 
 
 class OwnedNoetherianRings(OwnedCategory):
@@ -1703,6 +1737,21 @@ def _engine_ring(ring):
             ring = ring._ambient_ring
             continue
         return ring
+
+
+def _engine_quotient_cover_ideal(ring, engine_ideal):
+    r"""Lift an ideal of a selected quotient engine to its cover ring.
+
+    If the computation parent of ``ring`` is ``S/J``, then an ideal generated
+    by classes ``f_i`` is represented upstairs by ``J + (\tilde f_i)``.  This
+    private crossing is the exact backend datum needed by Singular operations
+    that work over ``S`` but not over Sage's generic quotient-ring parent.
+    """
+    engine = _engine_ring(ring)
+    cover = engine.cover_ring()
+    defining = engine.defining_ideal()
+    lifted = tuple(engine(generator).lift() for generator in engine_ideal.gens())
+    return cover.ideal(tuple(defining.gens()) + lifted)
 
 
 def _engine_element(ring, element):
