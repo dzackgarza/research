@@ -456,12 +456,16 @@ class QuotientRings(OwnedCategory):
                         "the selected quotient-engine element has no lift to the source ring"
                     )
                 value = source._from_engine_element(source_engine(lift()))
-            elif quotient_engine is not None and value_parent in OwnedRings():
+            elif value_parent in OwnedRings():
                 try:
-                    same_engine = _engine_ring(value_parent) is quotient_engine
+                    value_engine = _engine_ring(value_parent)
                 except (TypeError, ValueError, AttributeError):
-                    same_engine = False
-                if same_engine:
+                    value_engine = None
+                if value_parent is source or value_engine is source_engine:
+                    value = source._from_engine_element(
+                        source_engine(_engine_element(value_parent, value))
+                    )
+                elif quotient_engine is not None and value_engine is quotient_engine:
                     backend_value = quotient_engine(_engine_element(value_parent, value))
                     lift = getattr(backend_value, "lift", None)
                     if lift is None:

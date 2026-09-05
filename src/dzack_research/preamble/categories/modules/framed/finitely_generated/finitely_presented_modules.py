@@ -113,6 +113,25 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def base_ring(self):
             return self._preamble_base_ring
 
+        def _richcmp_(self, other, op):
+            r"""Compare represented modules by their selected cokernel presentation.
+
+            Structural equipment such as a chosen inclusion does not change the
+            underlying presented module.  In particular, the whole subobject of
+            ``M`` is a distinct equipped parent but represents the same module
+            when it carries the identical selected presentation.
+            """
+            if op not in (op_EQ, op_NE):
+                return NotImplemented
+            try:
+                same_ring = other.base_ring() is self.base_ring()
+                same_presentation = other.presentation() == self.presentation()
+            except (AttributeError, TypeError, ValueError):
+                same_ring = False
+                same_presentation = False
+            equal = bool(same_ring and same_presentation)
+            return equal if op == op_EQ else not equal
+
         def _same_presentation_module(self, labels):
             r"""Return a fresh module carrying this chosen finite presentation."""
             if labels != self.module_generating_set():

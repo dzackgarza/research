@@ -19,19 +19,21 @@ from dzack_research.preamble.categories.abstract_categories.functors import (
     DiscreteCategory,
     DiscreteDiagram,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.functors.core import NaturalTransformation
 
 
 class DiagramCategory(FunctorCategory):
     r"""The functor category ``[J,C]`` of diagrams of one shape."""
 
-    def __init__(self, index_category, ambient_category) -> None:
-        super().__init__(Cat(), index_category, ambient_category)
+    def __init__(self, index_category, target_category) -> None:
+        super().__init__(Cat(), index_category, target_category)
 
     def index_category(self):
         return self.domain_category()
 
-    def ambient_category(self):
+    def target_category(self):
         return self.codomain_category()
 
 
@@ -43,76 +45,6 @@ class InverseSystem(DiagramCategory):
     r"""A diagram category read contravariantly as an inverse system."""
 
 
-class ConeObject(Parent):
-    r"""A cone ``Delta(A) => D`` over a diagram ``D:J->C``."""
-
-    def __init__(self, cone_category, apex, transformation) -> None:
-        self._cone_category = cone_category
-        self._apex = apex
-        self._transformation = transformation
-        Parent.__init__(self, category=SageSets())
-
-    def cone_category(self):
-        return self._cone_category
-
-    def diagram(self):
-        return self.cone_category().diagram()
-
-    def apex(self):
-        return self._apex
-
-    def transformation(self):
-        return self._transformation
-
-    def structure_morphism(self, index):
-        return self.transformation().component(index)
-
-    def structure_morphisms(self):
-        domain = self.diagram().domain()
-        return indexed_family(
-            domain.object_set(),
-            lambda label: self.structure_morphism(domain(label)),
-            name=f"Structure morphisms of {self}",
-        )
-
-    def _repr_(self) -> str:
-        return f"Cone with apex {self.apex()} over {self.diagram()}"
-
-
-class CoconeObject(Parent):
-    r"""A cocone ``D => Delta(A)`` under a diagram ``D:J->C``."""
-
-    def __init__(self, cocone_category, apex, transformation) -> None:
-        self._cocone_category = cocone_category
-        self._apex = apex
-        self._transformation = transformation
-        Parent.__init__(self, category=SageSets())
-
-    def cocone_category(self):
-        return self._cocone_category
-
-    def diagram(self):
-        return self.cocone_category().diagram()
-
-    def apex(self):
-        return self._apex
-
-    def transformation(self):
-        return self._transformation
-
-    def costructure_morphism(self, index):
-        return self.transformation().component(index)
-
-    def costructure_morphisms(self):
-        domain = self.diagram().domain()
-        return indexed_family(
-            domain.object_set(),
-            lambda label: self.costructure_morphism(domain(label)),
-            name=f"Costructure morphisms of {self}",
-        )
-
-    def _repr_(self) -> str:
-        return f"Cocone with apex {self.apex()} under {self.diagram()}"
 
 
 def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
@@ -210,8 +142,40 @@ class CoconeHomset(CategoricalHomset):
         return CoconeMorphism(self, apex_map)
 
 
-class ConeCategory(Category):
+class ConeCategory(OwnedCategory):
     r"""The category of cones over one represented diagram."""
+
+    class ParentMethods:
+        def __init__(self, apex, transformation, **rest) -> None:
+            self._apex = apex
+            self._transformation = transformation
+            super().__init__(**rest)
+
+        def cone_category(self):
+            return self.category()
+
+        def diagram(self):
+            return self.cone_category().diagram()
+
+        def apex(self):
+            return self._apex
+
+        def transformation(self):
+            return self._transformation
+
+        def structure_morphism(self, index):
+            return self.transformation().component(index)
+
+        def structure_morphisms(self):
+            domain = self.diagram().domain()
+            return indexed_family(
+                domain.object_set(),
+                lambda label: self.structure_morphism(domain(label)),
+                name=f"Structure morphisms of {self}",
+            )
+
+        def _repr_(self) -> str:
+            return f"Cone with apex {self.apex()} over {self.diagram()}"
 
     def __init__(self, diagram) -> None:
         self._diagram = diagram
@@ -223,20 +187,24 @@ class ConeCategory(Category):
     def diagram(self):
         return self._diagram
 
-    def ambient_category(self):
+    def target_category(self):
         return self.diagram().codomain()
 
     def super_categories(self):
         return [OwnedObjects()]
 
     def __contains__(self, candidate) -> bool:
-        return isinstance(candidate, ConeObject) and candidate.diagram() is self.diagram()
+        category = getattr(candidate, "category", lambda: None)()
+        return (
+            isinstance(category, ConeCategory)
+            and category.diagram() is self.diagram()
+        )
 
     def cone(self, apex, components):
 
-        constant = ConstantDiagram(self.diagram().domain(), self.ambient_category(), apex)
+        constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
         transformation = NaturalTransformation(constant, self.diagram(), components)
-        return ConeObject(self, apex, transformation)
+        return object_of(self, apex=apex, transformation=transformation)
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -245,8 +213,40 @@ class ConeCategory(Category):
 
 
 
-class CoconeCategory(Category):
+class CoconeCategory(OwnedCategory):
     r"""The category of cocones under one represented diagram."""
+
+    class ParentMethods:
+        def __init__(self, apex, transformation, **rest) -> None:
+            self._apex = apex
+            self._transformation = transformation
+            super().__init__(**rest)
+
+        def cocone_category(self):
+            return self.category()
+
+        def diagram(self):
+            return self.cocone_category().diagram()
+
+        def apex(self):
+            return self._apex
+
+        def transformation(self):
+            return self._transformation
+
+        def costructure_morphism(self, index):
+            return self.transformation().component(index)
+
+        def costructure_morphisms(self):
+            domain = self.diagram().domain()
+            return indexed_family(
+                domain.object_set(),
+                lambda label: self.costructure_morphism(domain(label)),
+                name=f"Costructure morphisms of {self}",
+            )
+
+        def _repr_(self) -> str:
+            return f"Cocone with apex {self.apex()} under {self.diagram()}"
 
     def __init__(self, diagram) -> None:
         self._diagram = diagram
@@ -258,20 +258,24 @@ class CoconeCategory(Category):
     def diagram(self):
         return self._diagram
 
-    def ambient_category(self):
+    def target_category(self):
         return self.diagram().codomain()
 
     def super_categories(self):
         return [OwnedObjects()]
 
     def __contains__(self, candidate) -> bool:
-        return isinstance(candidate, CoconeObject) and candidate.diagram() is self.diagram()
+        category = getattr(candidate, "category", lambda: None)()
+        return (
+            isinstance(category, CoconeCategory)
+            and category.diagram() is self.diagram()
+        )
 
     def cocone(self, apex, components):
 
-        constant = ConstantDiagram(self.diagram().domain(), self.ambient_category(), apex)
+        constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
         transformation = NaturalTransformation(self.diagram(), constant, components)
-        return CoconeObject(self, apex, transformation)
+        return object_of(self, apex=apex, transformation=transformation)
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -289,13 +293,13 @@ class CoproductCoconeCategory(CoconeCategory):
 
 
 class LimitsOfCategory(Category):
-    def __init__(self, index_category, ambient_category) -> None:
+    def __init__(self, index_category, target_category) -> None:
         self._index_category = index_category
-        self._ambient_category = ambient_category
+        self._target_category = target_category
         super().__init__()
 
     def _make_named_class_key(self, name):
-        return self._index_category, self._ambient_category
+        return self._index_category, self._target_category
 
     def super_categories(self):
         return [OwnedObjects()]
@@ -378,7 +382,7 @@ class TensorProductCategory(Category):
             return False
 
 
-def ambient_category_of(objects):
+def common_category_of(objects):
     family = _finite_factor_family(objects)
     if family.cardinality() == cardinal(0):
         raise ValueError("a common category requires at least one object")
@@ -393,22 +397,22 @@ def Cocone(diagram, apex, components):
     return CoconeCategory(diagram).cocone(apex, components)
 
 
-def _discrete_diagram(factors, ambient_category=None):
+def _discrete_diagram(factors, target_category=None):
     family = _finite_factor_family(factors)
     if family.cardinality() == cardinal(0):
         raise ValueError("the current selected finite product requires at least one factor")
-    ambient = ambient_category_of(family) if ambient_category is None else ambient_category
+    target = common_category_of(family) if target_category is None else target_category
 
     index = DiscreteCategory(family.index_set())
-    return DiscreteDiagram(index, ambient, family)
+    return DiscreteDiagram(index, target, family)
 
 
-def product_cone_category(factors, ambient_category=None):
-    return ProductConeCategory(_discrete_diagram(factors, ambient_category))
+def product_cone_category(factors, target_category=None):
+    return ProductConeCategory(_discrete_diagram(factors, target_category))
 
 
-def coproduct_cocone_category(factors, ambient_category=None):
-    return CoproductCoconeCategory(_discrete_diagram(factors, ambient_category))
+def coproduct_cocone_category(factors, target_category=None):
+    return CoproductCoconeCategory(_discrete_diagram(factors, target_category))
 
 
 __all__ = [
@@ -430,7 +434,7 @@ __all__ = [
     "ProductConeCategory",
     "ProductsOfCategory",
     "TensorProductCategory",
-    "ambient_category_of",
+    "common_category_of",
     "coproduct_cocone_category",
     "product_cone_category",
 ]
