@@ -232,6 +232,7 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     target_generator = target.group_generators().unrank(0)
     free = adjunction.left_adjoint()(source)
 
+    assert adjunction.right_adjoint()(target) is target
     set_morphism = Sets().Mor(source, target)(lambda point: target_generator if point == 2 else target_generator**2)
     group_morphism = adjunction.hom_set_isomorphism_inverse(set_morphism)
     recovered = adjunction.hom_set_isomorphism_forward(group_morphism)

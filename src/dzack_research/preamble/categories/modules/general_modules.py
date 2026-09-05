@@ -1,4 +1,4 @@
-"""General represented modules from a carrier and explicit structure maps."""
+"""General represented modules from an underlying set and explicit structure maps."""
 
 import logging
 
@@ -26,7 +26,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GeneralModuleElement(ModuleElement):
-    r"""One element of a module presented on an arbitrary set carrier."""
+    r"""One element of a module presented on an arbitrary underlying set."""
 
     def __init__(self, parent, value) -> None:
         self._value = value
@@ -75,7 +75,7 @@ class GeneralModuleElement(ModuleElement):
 class GeneralModuleParent(Parent):
     r"""A general ``R``-module carried by a represented set.
 
-    The defining data are additive operations on the carrier and a scalar
+    The defining data are additive operations on the underlying set and a scalar
     action.  After construction the action is stored as the actual morphism
     ``rho : R -> End_R(M)``; it is not merely a callback attached to the
     parent.
@@ -86,7 +86,7 @@ class GeneralModuleParent(Parent):
     def __init__(
         self,
         ring,
-        carrier,
+        underlying_set,
         *,
         addition,
         zero,
@@ -103,9 +103,9 @@ class GeneralModuleParent(Parent):
             raise TypeError("addition and negation must be callable")
 
         self._preamble_base_ring = _owned_ring(ring)
-        self._preamble_carrier = Set(carrier)
+        self._preamble_underlying_set = Set(underlying_set)
         self._preamble_addition = addition
-        self._preamble_zero_value = self._normalize_carrier_value(zero)
+        self._preamble_zero_value = self._normalize_underlying_value(zero)
         self._preamble_negation = negation
         self._preamble_input_rho = rho
         self._preamble_scalar_callback = scalar_action
@@ -137,22 +137,20 @@ class GeneralModuleParent(Parent):
     def base(self):
         return self.base_ring()
 
-    def carrier(self):
-        return self._preamble_carrier
+    def underlying_set(self):
+        return self._preamble_underlying_set
 
-    underlying_set = carrier
-
-    def _normalize_carrier_value(self, value):
+    def _normalize_underlying_value(self, value):
         if isinstance(value, GeneralModuleElement):
             value = value.underlying_element()
-        if value not in self._preamble_carrier:
-            raise ValueError(f"{value!r} is not in the selected module carrier")
+        if value not in self._preamble_underlying_set:
+            raise ValueError(f"{value!r} is not in the module's underlying set")
         return value
 
     def _element_constructor_(self, value):
         if isinstance(value, GeneralModuleElement) and value.parent() is self:
             return value
-        return self.element_class(self, self._normalize_carrier_value(value))
+        return self.element_class(self, self._normalize_underlying_value(value))
 
     def __call__(self, value):
         return self._element_constructor_(value)
@@ -160,17 +158,17 @@ class GeneralModuleParent(Parent):
     def __contains__(self, value) -> bool:
         if isinstance(value, GeneralModuleElement):
             return value.parent() is self
-        return value in self.carrier()
+        return value in self.underlying_set()
 
     def __iter__(self):
-        return (self(value) for value in self.carrier())
+        return (self(value) for value in self.underlying_set())
 
     def cardinality(self):
-        return cardinal(self.carrier().cardinality())
+        return cardinal(self.underlying_set().cardinality())
 
     def is_finite(self):
         try:
-            return bool(self.carrier().is_finite())
+            return bool(self.underlying_set().is_finite())
         except (AttributeError, NotImplementedError):
             try:
                 return bool(self.cardinality().is_finite())
@@ -185,7 +183,7 @@ class GeneralModuleParent(Parent):
         """
         if self.is_finite() is not True:
             raise NotImplementedError(
-                "annihilator of this general module requires a represented finite carrier or a stronger algebra backend"
+                "annihilator of this general module requires a represented finite underlying set or a stronger algebra backend"
             )
         engine = _engine_ring(self.base_ring())
         try:
@@ -257,7 +255,7 @@ class GeneralModuleParent(Parent):
             elements = None
         if not finite or elements is None:
             _LOGGER.debug(
-                "General module over %s accepted without exhaustive carrier-law verification",
+                "General module over %s accepted without exhaustive module-law verification",
                 self.base_ring(),
             )
             return
@@ -286,9 +284,9 @@ class GeneralModuleParent(Parent):
             )
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             _LOGGER.debug(
-                "Additive group laws for finite carrier %s were exhaustively checked, but "
+                "Additive group laws for the finite underlying set %s were exhaustively checked, but "
                 "scalar-module laws over non-enumerated/infinite %s were not exhaustive",
-                self.carrier(),
+                self.underlying_set(),
                 self.base_ring(),
             )
             return
@@ -320,12 +318,12 @@ class GeneralModuleParent(Parent):
                         raise ValueError("scalar multiplication is not associative")
 
     def _repr_(self):
-        return f"Module over {self.base_ring()} on carrier {self.carrier()}"
+        return f"Module over {self.base_ring()} on {self.underlying_set()}"
 
 
 def GeneralModule(
     ring,
-    carrier,
+    underlying_set,
     *,
     addition,
     zero,
@@ -337,7 +335,7 @@ def GeneralModule(
     r"""Construct a general represented ``R``-module from its structure data."""
     return GeneralModuleParent(
         ring,
-        carrier,
+        underlying_set,
         addition=addition,
         zero=zero,
         negation=negation,

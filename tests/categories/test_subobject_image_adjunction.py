@@ -1,8 +1,9 @@
 from dzack_research.preamble.all import (
     BasedFreeModule,
+    FinitelyPresentedModule,
     FreeModuleOn,
+    ModuleSubobjects,
     NN,
-    Subobjects,
     ZZ,
     module_homset,
     subobject_image_adjunction,
@@ -22,6 +23,24 @@ def _assert_order_maps_agree(left, right) -> None:
     assert left.domain() is right.domain()
     assert left.codomain() is right.codomain()
     _assert_module_maps_agree(left.factor_morphism(), right.factor_morphism())
+
+
+def test_whole_presented_subobject_does_not_refine_the_ambient_in_place() -> None:
+    cover = BasedFreeModule(ZZ, finite_ordered_set((0,)))
+    generator = cover.module_generator(0)
+    module = FinitelyPresentedModule(
+        module_homset(cover, cover)({0: 2 * generator})
+    )
+
+    assert module not in ModuleSubobjects(ZZ)
+    whole = module.subobject_on(module.module_generators())
+
+    assert whole is not module
+    assert module not in ModuleSubobjects(ZZ)
+    assert whole in ModuleSubobjects(ZZ)
+    assert whole.inclusion().codomain() is module
+    assert whole.inclusion().is_surjective()
+    assert whole.inclusion().lift(module.module_generator(0)) == whole.module_generator(0)
 
 
 def test_fixed_ambient_subobjects_and_direct_inverse_image_form_a_galois_connection() -> None:
@@ -106,3 +125,20 @@ def test_finite_subobject_of_countable_free_module_uses_only_finite_support() ->
     assert subobject.inclusion().is_in_image(e100)
     assert subobject.inclusion().is_in_image(e1000)
     assert not subobject.inclusion().is_in_image(ambient.module_generator(NN(500)))
+
+
+def test_module_subobject_intersection_is_the_kernel_pullback() -> None:
+    ambient = BasedFreeModule(ZZ, finite_ordered_set(("e1", "e2")))
+    e1, e2 = ambient.module_generators()
+    left = ambient.subobject_on((2 * e1, e2))
+    right = ambient.subobject_on((e1, 2 * e2))
+
+    intersection = left.intersection(right)
+    inclusion = intersection.inclusion()
+
+    assert inclusion.codomain() is ambient
+    assert intersection.index() == 4
+    assert inclusion.is_in_image(2 * e1)
+    assert inclusion.is_in_image(2 * e2)
+    assert not inclusion.is_in_image(e1)
+    assert not inclusion.is_in_image(e2)

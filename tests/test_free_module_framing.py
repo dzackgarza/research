@@ -45,3 +45,25 @@ def test_infinite_framing_is_not_enumerated_for_finite_ring_linearity_checks() -
 
     generator = module.module_generator(NN(17))
     assert identity(generator) == generator
+
+
+def test_infinite_generator_defined_morphism_keeps_its_image_family_lazy() -> None:
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+
+    module = FreeModule(ZZ, NN)
+    evaluated = []
+
+    def generator_image(label):
+        evaluated.append(label)
+        return module.module_generator(label)
+
+    identity = module_homset(module, module)(generator_image)
+
+    assert evaluated == []
+    assert identity.module_generator_images().index_set() is module.module_generating_set()
+    generator = module.module_generator(NN(17))
+    assert identity(generator) == generator
+    assert evaluated == [NN(17)]
+
+    with pytest.raises(TypeError, match="finite framing"):
+        module_homset(module, module)({NN(0): module.module_generator(NN(0))})

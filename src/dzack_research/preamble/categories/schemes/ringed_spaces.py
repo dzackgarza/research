@@ -15,7 +15,7 @@ class SchemeUnderlyingSpace(SageObject):
 
     Sage's scheme parents do not expose a separate topological-space parent.
     The owned API nevertheless keeps the mathematical structure explicit: this
-    object remembers the represented scheme and is the carrier on which open
+    object remembers the represented scheme and is the space on which open
     and closed-subspace structure can later be attached.
     """
 

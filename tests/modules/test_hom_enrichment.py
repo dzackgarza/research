@@ -12,12 +12,14 @@ from dzack_research.preamble.all import (
     SymmetricAlgebraOn,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.modules import FreeModuleOn
+from dzack_research.preamble.categories.sets import NN
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
 
 
-def test_module_hom_is_the_internal_hom_module_not_a_second_carrier() -> None:
+def test_module_hom_is_the_internal_hom_module() -> None:
     source = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
     target = BasedFreeModule(ZZ, finite_ordered_set(("f",)))
 
@@ -67,6 +69,28 @@ def test_module_hom_is_unique_even_when_objects_have_more_structure() -> None:
     assert (QQ(2) * identity)(x) == 2 * x
 
 
+def test_internal_hom_on_infinite_framings_does_not_force_a_finite_model() -> None:
+    source = FreeModuleOn(ZZ, NN)
+    target = FreeModuleOn(ZZ, NN)
+
+    internal = InternalHom(source, target)
+
+    assert internal is module_homset(source, target)
+    assert internal.__dict__.get("_preamble_internal_hom_model") is None
+
+    evaluated = []
+
+    def image(label):
+        evaluated.append(label)
+        return target.module_generator(label)
+
+    identity = internal(image)
+    assert evaluated == []
+    e1000 = source.module_generator(NN(1000))
+    assert identity(e1000) == target.module_generator(NN(1000))
+    assert evaluated == [NN(1000)]
+
+
 def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() -> None:
     polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
     x = polynomial.algebra_generator("x")
@@ -103,3 +127,33 @@ def test_general_presented_kernel_uses_polynomial_syzygies_and_has_exact_lift() 
     element = source.linear_combination({"u": xbar, "v": -ybar})
     lifted = inclusion.lift(element)
     assert inclusion(lifted) == element
+
+
+def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
+    source_free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r4",)))
+    source = FinitelyPresentedModule(
+        module_homset(source_relations, source_free)(
+            {"r4": 4 * source_free.module_generator("x")}
+        )
+    )
+    target_free = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
+    target_relations = BasedFreeModule(ZZ, finite_ordered_set(("r2",)))
+    target = FinitelyPresentedModule(
+        module_homset(target_relations, target_free)(
+            {"r2": 2 * target_free.module_generator("y")}
+        )
+    )
+    morphism = module_homset(source, target)(
+        {"x": target.module_generator("y")}
+    )
+
+    kernel = morphism.kernel()
+    inclusion = kernel.inclusion()
+    invariant_factors = kernel.invariant_factors()
+    assert invariant_factors.cardinality() == 1
+    assert invariant_factors.unrank(0) == ZZ(2)
+
+    two_x = source.scalar_multiple(ZZ(2), source.module_generator("x"))
+    lifted = inclusion.lift(two_x)
+    assert inclusion(lifted) == two_x

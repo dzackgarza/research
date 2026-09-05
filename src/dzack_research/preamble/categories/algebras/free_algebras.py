@@ -432,7 +432,7 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             # These free constructions are connected: their canonical
             # degree-zero algebra and module is the scalar ring itself.
             if degree == 0:
-                # The represented exterior/divided-power carriers are assembled
+                # The represented exterior/divided-power algebras are assembled
                 # from their authoritative module-power pieces.  Their concrete
                 # degree-zero piece is therefore the existing degree-zero power
                 # module; do not let this generic free-algebra method replace it.

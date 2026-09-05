@@ -17,7 +17,7 @@ from dzack_research.preamble.categories.modules import (
     tensor_power_permutation,
     tensor_power_polarization,
 )
-from dzack_research.preamble.categories.sets import NN, cardinal, finite_ordered_set
+from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 
 
 def _assert_maps_agree(left, right) -> None:
@@ -121,6 +121,6 @@ def test_countable_free_module_powers_use_combinatorial_index_sets_lazily() -> N
     assert symmetric.module_generator(symmetric_label).parent() is symmetric
     assert alternating.module_generator(alternating_label).parent() is alternating
     assert divided.module_generator(divided_label).parent() is divided
-    assert cardinal(symmetric_labels.cardinality()).is_countably_infinite()
-    assert cardinal(alternating_labels.cardinality()).is_countably_infinite()
-    assert cardinal(divided_labels.cardinality()).is_countably_infinite()
+    assert symmetric_labels.cardinality().is_countably_infinite()
+    assert alternating_labels.cardinality().is_countably_infinite()
+    assert divided_labels.cardinality().is_countably_infinite()

@@ -71,7 +71,7 @@ class GradedModuleMorphism(ModuleMorphism):
                 target_homogeneous = image.is_homogeneous()
                 target_degree = image.degree()
             except AttributeError as error:
-                raise ValueError("a graded-module map has a nonhomogeneous target carrier") from error
+                raise ValueError("a graded-module map has a nonhomogeneous image") from error
             if not target_homogeneous or target_degree != source_degree:
                 raise ValueError("a graded-module morphism must preserve degree")
 

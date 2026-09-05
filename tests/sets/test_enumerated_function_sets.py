@@ -45,12 +45,15 @@ def test_hermite_polynomials_are_enumerated_by_naturals() -> None:
     assert H3 in hermite
     assert hermite.rank(H3) == 3
     assert hermite.unrank(3) == H3
+    assert hermite[3] == H3
     assert H0 in SR
     assert str(H0) == "H_0"
     assert 1 not in hermite
     assert indexed_symbol("H", -1, "H") not in hermite
     with pytest.raises(IndexError):
         hermite.unrank(-1)
+    with pytest.raises(IndexError):
+        hermite[-1]
 
 
 def test_integer_indexed_function_sets() -> None:
@@ -75,6 +78,8 @@ def test_integer_indexed_function_sets() -> None:
     assert laurent.rank(laurent.function(-2)) == 4
     assert z_m1 in laurent
     assert laurent.function(-1) == laurent.unrank(laurent.rank(z_m1))
+    assert laurent[0] == laurent.function(0)
+    assert laurent[2] == laurent.function(-1)
     assert str(z_m1) == "z_m1"
     assert sinc.function(-1) in sinc
     assert str(sinc_1) == "sinc_1"
@@ -83,6 +88,8 @@ def test_integer_indexed_function_sets() -> None:
     assert 1 not in fourier
     with pytest.raises(IndexError):
         laurent.unrank(-1)
+    with pytest.raises(IndexError):
+        laurent[-1]
 
 
 def test_a_lattice_may_be_free_on_hermite_polynomials() -> None:

@@ -229,7 +229,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         def projection_from_fraction_field(self):
             r"""Return the quotient map ``Frac(R) -> Frac(R) / a`` as an owned set map.
 
-            The fraction field currently has no canonical ``R``-module carrier
+            The fraction field currently has no canonical ``R``-module structure
             for arbitrary ``R`` at this layer, so the underlying map is stated
             in the owned category of sets rather than returning Sage's coercion
             map.  Module-valued consumers should use the scalar-restricted

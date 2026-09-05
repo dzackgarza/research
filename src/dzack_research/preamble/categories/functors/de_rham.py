@@ -27,7 +27,7 @@ def _exterior_word(label, degree):
 
 
 def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
-    r"""Extend ``A -> B^0`` uniquely to ``DR(A) -> B`` on the live carriers."""
+    r"""Extend ``A -> B^0`` uniquely to ``DR(A) -> B`` on the live algebras."""
     source_algebra = source_dga.de_rham_source_algebra()
     if algebra_morphism.domain() is not source_algebra:
         raise ValueError("the degree-zero map has the wrong de Rham source")
@@ -111,7 +111,7 @@ class DegreeZeroDGAFunctor(Functor):
             return dga.degree_zero_algebra()
         except AttributeError as error:
             raise NotImplementedError(
-                "this DGA carrier does not expose its represented degree-zero algebra"
+                "this DGA does not expose its represented degree-zero algebra"
             ) from error
 
     def _apply_morphism(self, morphism):
@@ -137,7 +137,7 @@ class DegreeZeroDGAFunctor(Functor):
 class DeRhamAdjunction(Adjunction):
     r"""The adjunction ``DR_R ⊣ (-)^0``.
 
-    On the represented carriers the Hom-set bijection is the universal
+    On the represented algebras the Hom-set bijection is the universal
     extension of an algebra map ``A -> B^0`` by ``da |-> d_B(a)``.
     """
 

@@ -2,7 +2,6 @@
 from dzack_research.preamble.all import (
     AbelianizationAdjunction,
     AlgebraBaseChangeAdjunction,
-    AlgebraScalarExtensionFunctor,
     FinitelyPresentedAlgebra,
     FreeGroupUnderlyingSetAdjunction,
     Groups,
@@ -17,7 +16,7 @@ from dzack_research.preamble.categories.rings.embeddings import number_field_hom
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
 
-def test_algebra_transpose_uses_the_scalar_extension_construction_source() -> None:
+def test_algebra_transpose_uses_the_left_functors_recorded_preimage() -> None:
     scalar_presentation = SymmetricAlgebraOn(QQ, ["s"])
     s = scalar_presentation.algebra_generator("s")
     extension_ring = FinitelyPresentedAlgebra(scalar_presentation, (s**2 - 2,))
@@ -34,11 +33,11 @@ def test_algebra_transpose_uses_the_scalar_extension_construction_source() -> No
         (y**2 - extension_ring.algebra_generator("s"),),
     )
 
-    independently_extended = AlgebraScalarExtensionFunctor(ring_map)(source)
+    adjunction = AlgebraBaseChangeAdjunction(ring_map)
+    independently_extended = adjunction.left_adjoint()(source)
     morphism = independently_extended.Mor(target)(
         {"x": target.algebra_generator("y")}
     )
-    adjunction = AlgebraBaseChangeAdjunction(ring_map)
     transpose = adjunction.hom_set_isomorphism_forward(morphism)
     restricted_target = adjunction.right_adjoint()(target)
 
@@ -62,8 +61,9 @@ def test_abelianization_transpose_uses_the_quotient_projection_on_its_domain() -
     )
 
     first_adjunction = AbelianizationAdjunction()
+    assert first_adjunction.right_adjoint()(target) is target
     factored = first_adjunction.hom_set_isomorphism_inverse(group_morphism)
-    recovered = AbelianizationAdjunction().hom_set_isomorphism_forward(factored)
+    recovered = first_adjunction.hom_set_isomorphism_forward(factored)
 
     for generator in group_generators:
         assert recovered(generator) == group_morphism(generator)
@@ -103,17 +103,16 @@ def test_fraction_field_transpose_is_indexed_by_the_stated_source_order() -> Non
     assert recovered(field.primitive_element()) == field.primitive_element()
 
 
-def test_free_group_transpose_reads_the_intrinsic_index_set() -> None:
+def test_free_group_transpose_uses_the_left_functors_recorded_preimage() -> None:
     source = finite_ordered_set((ZZ(11), ZZ(13)))
-    free_group = Groups.Free(index_set=source)
+    adjunction = FreeGroupUnderlyingSetAdjunction()
+    free_group = adjunction.left_adjoint()(source)
     target = Groups.C(3)
     target_generator = target.group_generators().unrank(0)
     generator_map = Sets().Mor(source, target)(lambda point: target_generator if point == 11 else target_generator**2)
     group_morphism = group_homset(free_group, target)(generator_map)
 
-    transpose = FreeGroupUnderlyingSetAdjunction().hom_set_isomorphism_forward(
-        group_morphism
-    )
+    transpose = adjunction.hom_set_isomorphism_forward(group_morphism)
 
     for point in source:
         assert transpose(point) == generator_map(point)

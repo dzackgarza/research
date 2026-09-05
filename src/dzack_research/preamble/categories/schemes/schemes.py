@@ -179,7 +179,7 @@ class SchemeMorphism(Morphism):
     pullback_on_coordinate_algebras = coordinate_algebra_morphism
 
     def __eq__(self, other) -> bool:
-        r"""Decide equality from represented pullbacks or the native carrier."""
+        r"""Decide equality from represented pullbacks or the native scheme."""
         if not isinstance(other, SchemeMorphism):
             return False
         if self.domain() is not other.domain() or self.codomain() is not other.codomain():
@@ -288,7 +288,7 @@ def _has_scheme_placement(scheme, category_class) -> bool:
 
 
 def _native_scheme_homset(domain, codomain):
-    r"""Return Sage's private scheme-Hom runtime carrier for owned schemes."""
+    r"""Return Sage's private scheme-Hom runtime homset for owned schemes."""
     return _SageScheme._Hom_(domain, codomain)
 
 

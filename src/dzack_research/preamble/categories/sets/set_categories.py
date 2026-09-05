@@ -1580,7 +1580,7 @@ class NaturalNumberSets(OwnedCategory):
             Element.__init__(self, parent)
             # This constructor is an ingress boundary.  It accepts the owned
             # integer view without importing the higher ring theory back into Sets;
-            # the ring carrier exposes only this private runtime marker/engine pair.
+            # the ring exposes only this private runtime marker/engine pair.
             from sage.rings.integer_ring import ZZ as _SageZZ
 
             if isinstance(value, parent.category().ElementType):

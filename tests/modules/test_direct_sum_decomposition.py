@@ -23,7 +23,7 @@ def test_direct_sum_decomposition_is_structure_on_the_existing_biproduct() -> No
     assert equipped.number_of_summands() == 2
 
 
-def test_direct_sum_decomposition_retains_an_owned_summand_family() -> None:
+def test_direct_sum_decomposition_rejects_post_construction_relabelling() -> None:
     left = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
     right = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
     direct_sum = Modules(left.base_ring()).biproduct([left, right])
@@ -34,12 +34,11 @@ def test_direct_sum_decomposition_retains_an_owned_summand_family() -> None:
         name="Chosen summands",
     )
 
-    equipped = DirectSumDecomposition(direct_sum, family)
+    with pytest.raises(ValueError, match="constructor-owned labels"):
+        DirectSumDecomposition(direct_sum, family)
 
-    assert equipped.summands() is family
-    assert equipped.summand_index_set() is labels
-    assert equipped.summand("left") is left
-    assert equipped.summand("right") is right
+    assert direct_sum.summand(0) is left
+    assert direct_sum.summand(1) is right
 
 
 def test_direct_sum_decomposition_rejects_an_unverified_family() -> None:

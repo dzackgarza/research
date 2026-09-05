@@ -82,7 +82,7 @@ def _finite_coset_sum(module, representatives):
 
     The framing is the actual product of the representative set with the source
     framing.  Presentation rows are generated directly from this product; no
-    Python pair family or block-row list is a mathematical carrier.
+    Python pair family or block-row list is a mathematical object.
     """
     source_labels = module.module_generating_set()
     labels = _coset_sum_labels(representatives, source_labels)

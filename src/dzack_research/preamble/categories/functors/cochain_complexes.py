@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class CochainUnderlyingGradedModuleFunctor(Functor):
-    r"""Forget the differential while retaining the same graded carrier."""
+    r"""Forget the differential while retaining the same graded module."""
 
     def __init__(self, base_ring) -> None:
         self._base_ring = _owned_ring(base_ring)

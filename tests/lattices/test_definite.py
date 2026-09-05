@@ -2,6 +2,7 @@ import pytest
 from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import (
+    Cardinalities,
     FiniteGroups,
     Lattices,
     MatrixSpace,
@@ -287,7 +288,7 @@ def test_explicit_even_unimodular_embedding_crosses_oscar_data_into_live_morphis
 
     monkeypatch.setattr(
         lattice_engines,
-        "oscar_even_unimodular_primitive_embedding",
+        "even_unimodular_primitive_embedding",
         lambda _gram, _positive, _negative: (target_gram, embedding_matrix),
     )
 
@@ -599,6 +600,7 @@ def test_isotropic_line_plane_flag_orbits_equivalence_and_stabilizers_are_live_s
     assert line.rank() == 1 and line.is_primitive()
     assert plane.rank() == 2 and plane.is_primitive()
     assert flag.rank() == 2
+    assert flag.rank() in Cardinalities()
     assert tuple(term.rank() for term in flag.terms()) == (1, 2)
 
     line_witness = lattice.O().isotropic_equivalence_witness(line, line)
@@ -691,7 +693,7 @@ def test_centralizer_discriminant_image_matches_finite_a2_centralizer(monkeypatc
 
     monkeypatch.setattr(
         lattice_engines,
-        "oscar_centralizer_discriminant_image",
+        "centralizer_discriminant_image",
         lambda _gram, _isometry: ((tensor.matrix(ZZ, [[2]]),), ZZ(2), ZZ(1), ZZ(1)),
     )
     lattice = Lattices(ZZ)("A2")

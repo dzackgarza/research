@@ -7,6 +7,15 @@ from dzack_research.preamble.all import (
     DiscreteDiagram,
     Sets,
 )
+from dzack_research.preamble.categories.sets import NN
+
+
+def test_infinite_discrete_category_objects_retain_the_original_index_set() -> None:
+    category = DiscreteCategory(NN)
+    objects = category.objects()
+
+    assert objects.index_set() is NN
+    assert objects[NN(1000)] is category(NN(1000))
 
 
 def test_cones_and_cocones_are_natural_transformations_with_commuting_apex_maps() -> None:

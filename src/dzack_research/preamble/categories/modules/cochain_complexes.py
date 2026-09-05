@@ -191,7 +191,7 @@ class CochainComplexObject(GradedDirectSumModule):
         }
         if any(degree < 0 for degree in self._selected_pieces):
             raise NotImplementedError(
-                "the live finite-support carrier currently materializes nonnegative cochain complexes"
+                "the live finite-support model currently materializes nonnegative cochain complexes"
             )
 
 

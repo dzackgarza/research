@@ -1191,7 +1191,7 @@ class _GeneralPresentedModule:
 class _PresentedModule(_GeneralPresentedModule):
     r"""An owned presented module with an optional private Sage Smith engine.
 
-    The mathematical carrier and its elements are the same owned quotient
+    The mathematical object and its elements are the same owned quotient
     model used for general presentations.  Sage's FGP module is private state
     used only by Smith-form algorithms.
     """
@@ -1249,7 +1249,7 @@ class _PresentedModule(_GeneralPresentedModule):
 
 
 class _PresentedModuleObjects(OwnedCategoryOverBaseRing):
-    r"""The private quotient-carrier realization of a selected presentation."""
+    r"""The private quotient realization of a selected presentation."""
 
     @classmethod
     def _repr_object_names(cls):

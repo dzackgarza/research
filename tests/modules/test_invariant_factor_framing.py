@@ -1,4 +1,10 @@
-from dzack_research.preamble.all import BasedFreeModule, Lattices, ZZ, module_homset
+from dzack_research.preamble.all import (
+    BasedFreeModule,
+    Cardinalities,
+    Lattices,
+    ZZ,
+    module_homset,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
@@ -51,6 +57,7 @@ def test_invariant_factor_form_drops_only_unit_factors_and_keeps_free_summands()
     assert normalized_factors.cardinality() == 1
     assert normalized_factors.unrank(0) == 0
     assert normalized.rank() == 1
+    assert normalized.rank() in Cardinalities()
     for generator in quotient.module_generators():
         assert normalization.inverse()(normalization(generator)) == generator
 

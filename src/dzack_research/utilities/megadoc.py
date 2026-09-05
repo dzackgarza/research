@@ -39,7 +39,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
 from types import ModuleType
-from typing import Final, TypeVar
+from typing import Final, Protocol, TypeVar, runtime_checkable
 
 # Imported for real, not only for annotations: `issubclass` against a module
 # name narrows a type, while `issubclass` against an attribute stashed on the
@@ -48,8 +48,19 @@ from sage.categories.category import Category, JoinCategory
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import AbstractMethod
 from sage.misc.cachefunc import CachedMethod
-from sage.structure.element import Element
 from sage.structure.parent import Parent
+from sage.structure.element import Element
+
+
+@runtime_checkable
+class WrapsAFunction(Protocol):
+    r"""What Sage's cached-method descriptor yields: a caller keeping its function.
+
+    The caller's own docstring and signature describe the caching wrapper, so the
+    function it holds is the only route to what the method actually is.
+    """
+
+    f: Callable[..., object]
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 
@@ -332,7 +343,6 @@ class Survey:
     def __init__(self) -> None:
         sys.setrecursionlimit(5000)
         import dzack_research.preamble.all as session
-        from dzack_research.preamble.categories.sets.set_categories import NN
         from dzack_research.preamble.rings import session_ring_objects
 
         self.session: ModuleType = session
@@ -345,7 +355,6 @@ class Survey:
         ring = session_ring_objects()["ZZ"]
         assert isinstance(ring, Parent), "the session's ZZ must be an owned parent"
         self.ring: Parent = ring
-        self.monoid: Parent = NN
 
         self.categories: dict[str, CategoryDoc] = {}
         self.functors: list[FunctorDoc] = []
@@ -395,54 +404,38 @@ class Survey:
     # ---- categories ---------------------------------------------------
 
     def probe_arguments(self, klass: type) -> tuple[tuple[Parent, ...], str] | None:
-        r"""How to build one, or ``None`` when the parameter is not a ring.
+        r"""What to build one from, read off the category's declared type.
 
-        A category taking a category, a diagram or an object is a *construction*
-        on categories; it is documented as such rather than guessed at.
+        The declaration is the base class or the annotation, never the parameter's
+        name: a name is a string, and a string is not a type.  A category derived
+        from ``OwnedCategoryOverBaseRing`` *is* declared to be over a base ring, so
+        the session's ring is supplied.  Anything else -- a bare ``parameter``, or a
+        second parameter with no annotation -- declares nothing, and there is
+        nothing here to construct from.  The survey does not guess, and it does not
+        keep a table of what each category probably meant: what a parameter *is* is
+        mathematics, and it belongs in the preamble's own signature (`LEX-01`,
+        `LEX-12`).  Until it is written there, the category is reported as
+        undeclared rather than placed on a guess that happened to work.
         """
         try:
-            params = [p for p in inspect.signature(klass).parameters if p != "self"]
+            signature = inspect.signature(klass)
         except NO_SIGNATURE:
             return None
+        params = [p for name, p in signature.parameters.items() if name != "self"]
         if not params:
             return (), "nullary"
-        if params == ["parameter"] or params == ["base_ring"]:
+        if len(params) == 1 and self.is_over_a_ring(klass):
             return (self.ring,), "parameterized"
-        if params == ["base_ring", "grading_monoid"]:
-            return (self.ring, self.monoid), "parameterized"
         return None
 
-    CATEGORY_VALUED: Final = frozenset(
-        {
-            "base_category",
-            "index_category",
-            "ambient_category",
-            "first_category",
-            "second_category",
-            "arrow_category",
-            "subcategory",
-            "supercategory",
-            "image_category",
-            "diagram",
-            "functor",
-            "category_of_categories",
-        }
-    )
+    @staticmethod
+    def is_over_a_ring(klass: type) -> bool:
+        r"""Whether the category declares, by its base class, that it is over a ring."""
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            OwnedCategoryOverBaseRing,
+        )
 
-    @classmethod
-    def is_construction(cls, klass: type) -> bool:
-        r"""Whether the parameter is itself a category, diagram or functor.
-
-        Such a class is an operation *on* categories, so it has no fixed place
-        in the poset; one parameterized by a ring, a group or a monoid does have
-        a place, and is only missing here because the survey will not choose the
-        parameter on a reader's behalf.
-        """
-        try:
-            params = {p for p in inspect.signature(klass).parameters if p != "self"}
-        except NO_SIGNATURE:
-            return False
-        return bool(params & cls.CATEGORY_VALUED)
+        return issubclass(klass, OwnedCategoryOverBaseRing)
 
     def collect_categories(self) -> None:
         pending: list[Category] = []
@@ -451,10 +444,7 @@ class Survey:
             if not (inspect.isclass(value) and issubclass(value, Category)):
                 continue
             probe = self.probe_arguments(value)
-            if probe is not None:
-                arity = probe[1]
-            else:
-                arity = "construction" if self.is_construction(value) else "unplaced"
+            arity = probe[1] if probe is not None else "undeclared"
             doc = CategoryDoc(
                 name=name,
                 module=value.__module__,
@@ -739,7 +729,7 @@ class Survey:
             if inspect.isclass(value):
                 if issubclass(value, Morphism):
                     kind = "MORPHISM"
-                elif issubclass(value, Element):
+                elif Element in value.__mro__:
                     kind = "ELEMENT"
                 elif issubclass(value, Parent):
                     kind = "OBJECT"
@@ -1059,11 +1049,10 @@ class Report:
             facts.append(f"- **probed as** `{doc.instance_repr}`")
         if doc.problem:
             facts.append(f"- **could not be built**: {doc.problem}")
-        if doc.arity == "construction":
-            facts.append(f"- **an operation on categories**: `{doc.name}{doc.init_signature}`")
-        elif doc.arity == "unplaced":
+        if doc.arity == "undeclared":
             facts.append(
-                f"- **parameterized** by data the survey will not choose for you: `{doc.name}{doc.init_signature}`; supply it and the category takes its place in the poset"
+                f"- **not placed**: `{doc.name}{doc.init_signature}` annotates no parameter,"
+                " so the survey has nothing to construct it from (`LEX-12`)"
             )
         if doc.supers:
             facts.append("- **above** " + ", ".join(self.link(s) for s in sorted(set(doc.supers))))
@@ -1137,12 +1126,10 @@ class Report:
         self.mermaid(key)
 
         categories = [d for d in self.survey.categories.values() if d.subsystem == key]
-        poset = sorted(
-            (d for d in categories if d.arity in {"nullary", "parameterized"}),
-            key=lambda d: (self.depth(d), d.name),
-        )
-        unplaced = sorted((d for d in categories if d.arity == "unplaced"), key=lambda d: d.name)
-        constructions = sorted((d for d in categories if d.arity == "construction"), key=lambda d: d.name)
+        # One list, ordered by how much structure a category carries.  A category
+        # the survey could not construct has no depth to sort on and sorts last;
+        # its entry says why, and says nothing once the cause is gone.
+        poset = sorted(categories, key=lambda d: (d.instance_repr == "", self.depth(d), d.name))
         functors = [f for f in self.survey.functors if f.subsystem == key]
         symbols = [p for p in self.survey.plain if p.subsystem == key]
 
@@ -1154,27 +1141,6 @@ class Report:
                 "",
             )
             for doc in poset:
-                self.category_entry(doc)
-        if unplaced:
-            self.out(
-                "### Categories awaiting a parameter",
-                "",
-                "These are ordinary categories of the poset, parameterized by something"
-                " the survey will not pick for a reader: an acting group, a ring map, a"
-                " degree.  Their relations appear once the parameter is supplied; the"
-                " operations they introduce are listed from the declaration.",
-                "",
-            )
-            for doc in unplaced:
-                self.category_entry(doc)
-        if constructions:
-            self.out(
-                "### Operations on categories",
-                "",
-                "These take a category, a diagram or a functor and return a category, so they have no fixed place in the poset.",
-                "",
-            )
-            for doc in constructions:
                 self.category_entry(doc)
         if functors:
             self.out("### Functors and adjunctions", "")

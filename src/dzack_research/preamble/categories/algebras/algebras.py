@@ -167,7 +167,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def algebra_homset(self, hom_family, codomain):
-            r"""Return the fixed-endpoint Hom carrier selected by this algebra category."""
+            r"""Return the fixed-endpoint homset selected by this algebra category."""
             return AlgebraHomset(hom_family, self, codomain)
 
         def base_ring(self):

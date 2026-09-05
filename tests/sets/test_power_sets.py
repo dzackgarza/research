@@ -68,7 +68,7 @@ def test_predicate_subsets_and_power_set_cardinalities_include_countable_case() 
     finite = Sets.Δ[4]
     assert PowerSet(finite).cardinality() == cardinal(32)
     naturals = Sets.Δ[aleph0]
-    assert cardinal(naturals.cardinality()) == aleph0
+    assert naturals.cardinality() == aleph0
     assert PowerSet(naturals).cardinality() == cardinal(2) ** aleph0
 
 

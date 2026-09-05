@@ -378,9 +378,13 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     assert module.rank_at(generic) == 0
     assert module.generic_rank() == 0
     assert module.rank_at(origin) == 1
+    assert module.fiber_dimension(origin) == module.fiber(origin).dimension()
     assert module.local_number_of_generators(origin) == 1
     localized_at_origin = module.localize_at_prime(origin)
     assert localized_at_origin.minimal_number_of_generators() == 1
+    residue_module = localized_at_origin.residue_module()
+    assert localized_at_origin.minimal_number_of_generators() == residue_module.dimension()
+    assert residue_module.basis_generator_labels().cardinality() == residue_module.dimension()
     assert localized_at_origin.submodule(
         localized_at_origin.minimal_module_generators()
     ) == localized_at_origin
@@ -389,6 +393,7 @@ def test_module_local_fiber_rank_generic_rank_and_fitting_loci() -> None:
     fitting_zero = module.fitting_ideal(0)
     assert fitting_zero == ring.ideal(ring(x))
     assert module.annihilator() == fitting_zero
+    assert module.annihilator() == module.scalar_action().kernel()
     assert generic not in module.support()
     assert origin in module.support()
     assert generic not in module.annihilator_support()
@@ -441,6 +446,11 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     torsion_at_two = torsion.localize_at_prime(p2)
     torsion_at_five = torsion.localize_at_prime(p5)
     assert torsion.annihilator() == ZZ.ideal(ZZ(6))
+    assert torsion.annihilator() == torsion.scalar_action().kernel()
+    assert free.annihilator() == ZZ.ideal(ZZ.zero())
+    assert free.annihilator() == free.scalar_action().kernel()
+    zero_free = FreeModule(ZZ, 0)
+    assert zero_free.annihilator() == ZZ.ideal(ZZ.one())
     assert torsion_at_two.localization_source_module() is torsion
     assert torsion_at_five.localization_source_module() is torsion
     assert torsion.rank_at(p2) == 1
@@ -505,10 +515,10 @@ def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) ->
 def test_general_module_localization_uses_fraction_model_and_detects_s_torsion() -> None:
     from dzack_research.preamble.all import GeneralModule, LocalizedModules, Set, module_homset
 
-    carrier = Set([0, 1, 2, 3, 4, 5])
+    underlying_set = Set([0, 1, 2, 3, 4, 5])
     module = GeneralModule(
         ZZ,
-        carrier,
+        underlying_set,
         addition=lambda left, right: (left + right) % 6,
         zero=0,
         negation=lambda value: (-value) % 6,
@@ -666,6 +676,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     )
 
     assert quotient.minimal_number_of_generators() == 1
+    assert quotient.minimal_number_of_generators() == quotient.residue_module().dimension()
     assert quotient.submodule(quotient.minimal_module_generators()) == quotient
 
     projection = module_homset(free, quotient)(
@@ -684,7 +695,7 @@ def test_nakayama_minimal_generators_and_surjectivity_are_local_module_operation
     assert not multiplication_by_x.is_surjective_by_nakayama()
 
 
-def test_general_module_materializes_from_bare_carrier_and_action() -> None:
+def test_general_module_materializes_from_an_underlying_set_and_action() -> None:
     from dzack_research.preamble.all import GeneralModule, Modules, module_homset
 
     field = GF(3)
@@ -718,3 +729,4 @@ def test_general_module_materializes_from_bare_carrier_and_action() -> None:
         raise AssertionError("finite general modules must reject a nonlinear elementwise map")
 
     assert module.annihilator() == field.ideal(field.zero())
+    assert module.annihilator() == module.scalar_action().kernel()

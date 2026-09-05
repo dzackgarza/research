@@ -1,8 +1,8 @@
 r"""The forgetful functor \(U\colon R\text{-}\mathbf{Alg}\to R\text{-}\mathbf{Mod}\).
 
 An associative unital \(R\)-algebra is already an \(R\)-module.  Finite
-module-backed algebras use that carrier directly.  A represented free algebra
-has infinitely many homogeneous generators as a module, so its carrier is the
+module-backed algebras use that module directly.  A represented free algebra
+has infinitely many homogeneous generators as a module, so its underlying module is the
 finite-support direct sum of its actual presented homogeneous pieces.
 """
 

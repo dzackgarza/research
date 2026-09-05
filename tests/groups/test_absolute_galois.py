@@ -1,6 +1,7 @@
 import pytest
 
 from sage.misc.unknown import Unknown
+from sage.categories.homset import Homset
 from sage.rings.finite_rings.integer_mod_ring import Integers
 
 from dzack_research.preamble.all import GF, NumberField, PolynomialRing, QQ, QuadraticField
@@ -84,7 +85,7 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert frobenius(embedding(base_generator)) == embedding(base_generator)
     assert square.domain() is extension_object
     assert square.codomain() is extension_object
-    assert square.right() is frobenius
+    assert square.right() is frobenius.as_morphism()
     assert square.left()(base_generator) == base_generator
     assert (~frobenius * frobenius)(alpha) == alpha
     assert square * group.slice_automorphism(frobenius**2) == group.slice_automorphism(
@@ -93,6 +94,13 @@ def test_absolute_galois_group_is_the_slice_automorphism_group_with_exact_maps()
     assert ~square == group.slice_automorphism(~frobenius)
     assert group.slice_automorphism(group.one()) * square == square
     assert tuple(group.topological_group_generators()) == (frobenius,)
+
+    field_endomorphisms = group.arrow_set()
+    assert not isinstance(group, Homset)
+    assert field_endomorphisms in group.super_categories()
+    assert frobenius.as_morphism().parent() is field_endomorphisms
+    assert frobenius in group
+    assert frobenius.as_morphism() in group
 
 
 def test_exact_closure_maps_do_not_enumerate_infinite_generators_or_admit_set_maps() -> (

@@ -340,7 +340,7 @@ class ModuleMorphism(Morphism):
             self._check_elementwise_zero_when_possible()
             _LOGGER.debug(
                 "Elementwise module morphism %s -> %s accepted without exhaustive "
-                "linearity verification; source carrier is not represented as finite",
+                "linearity verification; the source is not represented as finite",
                 domain,
                 codomain,
             )
@@ -1044,7 +1044,7 @@ class _ModuleHomsetCommonMethods:
         r"""Construct a declared linear map from its action on arbitrary elements.
 
         Exact verification is performed when the represented source/scalar
-        carriers make it decidable (notably finite carriers).  Otherwise the
+        underlying sets make it decidable (notably finite ones).  Otherwise the
         callable is accepted as the defining elementwise realization and a
         DEBUG diagnostic records that its linearity was not mechanically
         certified.  For finitely generated/presented objects, prefer the

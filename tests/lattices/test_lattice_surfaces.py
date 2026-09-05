@@ -380,6 +380,8 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
     group_lattice = GroupLattice(plane, group, swap)
     involution = group_lattice.group().group_generators().unrank(0)
 
+    assert group_lattice.action().domain() is group
+    assert group_lattice.action().codomain() is group_lattice.Aut()
     action = group_lattice.action_of(involution)
     assert action.parent() is group_lattice.Aut()
     left, right = group_lattice.module_generators()
@@ -393,3 +395,16 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
     assert invariants.rank() == 1
     assert coinvariants.rank() == 1
     assert coinvariants.is_torsion_free()
+
+
+def test_group_lattice_rejects_actions_outside_the_orthogonal_automorphism_hom() -> None:
+    group = Groups.C(2)
+    plane = Lattices(ZZ)("U")
+
+    def nonisometric_action(group_element, vector):
+        if group_element == group.one():
+            return vector
+        return plane.scalar_multiple(ZZ(2), vector)
+
+    with pytest.raises(ValueError, match="preserve the lattice form"):
+        GroupLattice(plane, group, nonisometric_action)

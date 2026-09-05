@@ -596,7 +596,7 @@ def ModuleWithConnection(connection):
     algebra = connection.algebra()
     if source not in FinitelyGeneratedFreeModules(algebra):
         raise NotImplementedError(
-            "the live structured connection carrier is currently materialized for finite free modules"
+            "the live structured connection is currently materialized for finite free modules"
         )
     categories = [ModulesWithConnection(algebra)]
     if connection.is_flat():

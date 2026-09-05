@@ -114,13 +114,13 @@ def ellipsis_iter(*args):
 
 def var(*_args, **_kwargs):
     raise NotImplementedError(
-        "the preamble has no owned generic symbolic-variable carrier yet"
+        "the preamble has no owned generic symbolic-variable parent yet"
     )
 
 
 def symbolic_expression(*_args, **_kwargs):
     raise NotImplementedError(
-        "the preamble has no owned generic symbolic-expression carrier yet"
+        "the preamble has no owned generic symbolic-expression parent yet"
     )
 
 

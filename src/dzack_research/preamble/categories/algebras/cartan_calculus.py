@@ -1,6 +1,6 @@
 r"""Cartan calculus on represented affine algebraic de Rham algebras.
 
-No new carrier is introduced here.  Vector fields are exactly derivations
+No new object is introduced here.  Vector fields are exactly derivations
 ``Der_R(A,A)`` (with ``A`` read as its rank-one ``A``-module), while
 contractions and Lie derivatives are actual graded derivations of the existing
 de Rham DGA.

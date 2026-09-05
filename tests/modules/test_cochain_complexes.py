@@ -6,6 +6,7 @@ from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplex,
     CochainComplexes,
+    FinitelyPresentedModule,
     GradedModules,
     cochain_homset,
     module_homset,
@@ -53,6 +54,43 @@ def test_generic_cohomology_uses_kernel_image_and_cokernel() -> None:
     assert h1.class_of_cycle(2 * f) == h1.zero()
 
 
+def test_presented_pid_cohomology_uses_semantic_kernel_and_image_backends() -> None:
+    source_free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r4",)))
+    source = FinitelyPresentedModule(
+        module_homset(source_relations, source_free)(
+            {"r4": 4 * source_free.module_generator("x")}
+        )
+    )
+    target_free = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
+    target_relations = BasedFreeModule(ZZ, finite_ordered_set(("r2",)))
+    target = FinitelyPresentedModule(
+        module_homset(target_relations, target_free)(
+            {"r2": 2 * target_free.module_generator("y")}
+        )
+    )
+    differential = module_homset(source, target)(
+        {"x": target.module_generator("y")}
+    )
+    complex_ = CochainComplex(
+        ZZ,
+        {0: source, 1: target},
+        {0: differential},
+    )
+
+    h0 = complex_.cohomology(0)
+    h1 = complex_.cohomology(1)
+    invariant_factors = h0.invariant_factors()
+    assert invariant_factors.cardinality() == 1
+    assert invariant_factors.unrank(0) == ZZ(2)
+    assert h1.is_zero()
+
+    two_x = source.scalar_multiple(ZZ(2), source.module_generator("x"))
+    two_x_class = h0.class_of_cycle(two_x)
+    assert two_x_class != h0.zero()
+    assert h0.cycle_representative(two_x_class) == two_x
+
+
 def test_cochain_morphisms_are_degree_zero_chain_maps() -> None:
     C0 = _rank_one("e")
     C1 = _rank_one("f")
@@ -71,7 +109,7 @@ def test_cochain_morphisms_are_degree_zero_chain_maps() -> None:
         )
 
 
-def test_forgetful_functor_retains_the_same_graded_carrier() -> None:
+def test_forgetful_functor_retains_the_same_graded_module() -> None:
     C0 = _rank_one("e")
     complex_ = CochainComplex(ZZ, {0: C0}, {})
     forget = cochain_underlying_graded_module_functor(ZZ)

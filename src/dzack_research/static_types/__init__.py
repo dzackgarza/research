@@ -298,7 +298,7 @@ class DualBilinearForm(Tensor):
     pass
 
 
-class GradedCarrier(_StaticMarker):
+class GradedObject(_StaticMarker):
     pass
 
 
@@ -310,7 +310,7 @@ class GradedMorphism(_StaticMarker):
     pass
 
 
-class DifferentialGradedCarrier(GradedCarrier):
+class DifferentialGradedObject(GradedObject):
     pass
 
 
@@ -319,7 +319,7 @@ class DifferentialGradedMorphism(GradedMorphism):
 
 
 DifferentialForm = HomogeneousElement
-DeRhamAlgebra = DifferentialGradedCarrier
+DeRhamAlgebra = DifferentialGradedObject
 
 
 class DeRhamGradedTag(_StaticMarker):
@@ -472,10 +472,10 @@ bilinear_form_view = _view
 dual_bilinear_form_view = _view
 form_view = _view
 de_rham_algebra_view = _view
-graded_carrier_view = _view
+graded_object_view = _view
 homogeneous_element_view = _view
 graded_morphism_view = _view
-differential_graded_carrier_view = _view
+differential_graded_object_view = _view
 differential_graded_morphism_view = _view
 multivector_view = _view
 metric_covariant_form_view = _view
@@ -829,7 +829,7 @@ def exterior_power(module, degree):
 
 
 def exterior_one(module, element):
-    """Read ``Lambda^1(module)=module`` without constructing a second carrier."""
+    """Read ``Lambda^1(module)=module`` without constructing a second module."""
     return element
 
 
@@ -918,7 +918,7 @@ def apply(linear_map, vector):
 
 
 def graded_multiply(left, right):
-    """Multiply homogeneous elements of one represented additive graded carrier."""
+    """Multiply homogeneous elements of one represented additive graded object."""
     return left * right
 
 
@@ -1177,7 +1177,7 @@ __all__ = [
     "DerivationSpace",
     "DerivationTag",
     "DifferentialForm",
-    "DifferentialGradedCarrier",
+    "DifferentialGradedObject",
     "DifferentialGradedMorphism",
     "DifferentialOperator",
     "Down",
@@ -1194,7 +1194,7 @@ __all__ = [
     "FormOperator",
     "FractionFieldContext",
     "FunctorImage",
-    "GradedCarrier",
+    "GradedObject",
     "GradedMorphism",
     "HomObject",
     "HomTag",
@@ -1299,7 +1299,7 @@ __all__ = [
     "de_rham_map",
     "dga_d",
     "dga_morphism_view",
-    "differential_graded_carrier_view",
+    "differential_graded_object_view",
     "differential_graded_morphism_view",
     "dual_bilinear_form_view",
     "dual_tensor",
@@ -1327,7 +1327,7 @@ __all__ = [
     "functor_morphism_image",
     "functor_object_image",
     "functor_view",
-    "graded_carrier_view",
+    "graded_object_view",
     "graded_commutator",
     "graded_derivation_operator_view",
     "graded_map",

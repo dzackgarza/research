@@ -1,8 +1,9 @@
+import pytest
+
 from dzack_research.preamble.all import (
     Cat,
     DiscreteCategory,
     DiscreteFunctor,
-    ImageOfFunctor,
     ObjectSetFunctor,
     Sets,
     free_forgetful_adjunction,
@@ -40,20 +41,22 @@ def test_cat_reifies_live_functors_and_functor_categories_have_natural_transform
     assert carried(source.object_set()(0)) == target.object_set()(1)
 
 
-def test_functor_image_objects_keep_chosen_preimages_without_reverse_lookup() -> None:
+def test_functor_provenance_records_objects_and_morphisms_in_one_store() -> None:
     free = free_forgetful_adjunction(__import__(
         "dzack_research.preamble.all", fromlist=["ZZ"]
     ).ZZ).left_adjoint()
-    first = Sets.Δ[0]
-    second = __import__(
-        "dzack_research.preamble.categories.sets", fromlist=["finite_ordered_set"]
-    ).finite_ordered_set((first(0),))
-    image = ImageOfFunctor(free)
-    presented_first = image(first)
-    presented_second = image(second)
+    source = Sets.Δ[0]
 
-    assert presented_first.preimage() is first
-    assert presented_second.preimage() is second
-    inclusion = image.inclusion()
-    assert inclusion(presented_first) is free(first)
-    assert inclusion(presented_second) is free(second)
+    image = free(source)
+    assert free(source) is image
+    assert free.chosen_preimage(image) is source
+
+    identity = Sets().Mor(source, source).identity()
+    image_identity = free(identity)
+    assert free(identity) is image_identity
+    assert free.chosen_preimage(image_identity) is identity
+
+    second_source = Sets.Δ[1]
+    free.adopt_object_image(second_source, image)
+    with pytest.raises(ValueError, match="multiple chosen preimages"):
+        free.chosen_preimage(image)

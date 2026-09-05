@@ -328,7 +328,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return Modules(self.base_ring())
 
         def _module_homset_class(self):
-            r"""Return the canonical fixed-Hom carrier for maps out of this module type."""
+            r"""Return the canonical fixed homset for maps out of this module type."""
 
             return ModuleHomset
 
@@ -2116,7 +2116,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         def from_tensor(self, coordinate_tensor):
             r"""Read a compatible type-``(1,1)`` tensor as this linear map.
 
-            This is an explicit interpretation, not a second matrix carrier:
+            This is an explicit interpretation, not a second matrix object:
             the returned object is an element of this Hom object.
             """
             if coordinate_tensor.tensor_valence() != (NN**2)((1, 1)):

@@ -33,7 +33,7 @@ def _homogeneous_degree(element):
         return parent.homogeneous_degree(element)
     except AttributeError as error:
         raise NotImplementedError(
-            "this graded carrier does not expose homogeneous element degrees"
+            "this graded object does not expose homogeneous element degrees"
         ) from error
 
 

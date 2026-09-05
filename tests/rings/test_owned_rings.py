@@ -27,11 +27,14 @@ def test_session_integer_and_rational_rings_are_owned_views() -> None:
 def test_owned_ring_power_constructs_a_free_module_over_the_owned_ring() -> None:
     session = _session()
     ZZ = session["ZZ"]
+    FreeModule = session["FreeModule"]
 
     module = ZZ**3
     assert module.base_ring() is ZZ
     assert module.rank() == 3
     assert module is ZZ**3
+    assert FreeModule(ZZ, ZZ(3)) is module
+    assert FreeModule(ZZ, SageZZ(3)) is module
 
 
 def test_owned_polynomial_and_matrix_ring_constructors_cross_to_the_engine() -> None:
@@ -115,6 +118,7 @@ def test_noncommutative_center_is_a_predicate_subring() -> None:
 
 def test_owned_ring_constructors_return_owned_rings() -> None:
     session = _session()
+    ZZ = session["ZZ"]
     OwnedFields = session["OwnedFields"]
     OwnedRings = session["OwnedRings"]
 
@@ -122,6 +126,8 @@ def test_owned_ring_constructors_return_owned_rings() -> None:
     assert session["PrimeField"](5) in session["PrimeFields"]()
     assert session["Zmod"](8) in OwnedRings()
     assert session["QuadraticField"](2, "a") in OwnedFields()
+    assert session["QuadraticField"](ZZ(2), "a") in OwnedFields()
+    assert session["QuadraticField"](SageZZ(2), "a") in OwnedFields()
 
 
 def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:
@@ -143,6 +149,8 @@ def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:
     assert order in OwnedOrders()
     assert gaussian.cardinality() == aleph0
     assert order.cardinality() == aleph0
+    assert order.rank() in session["Cardinalities"]()
+    assert real_quadratic.signature() == session["signature_pair"](2, 0)
     assert ZZ["x"].algebra_generating_set() == finite_ordered_set(("x",))
     assert tuple(QQ["x"].algebra_generating_set()) == ("x",)
 

@@ -67,15 +67,17 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
     assert represented_derivation(xbar + ybar) == derivation(xbar + ybar)
     assert represented_classifier(universal(xbar + ybar)) == derivation(xbar + ybar)
 
-    ambient = derivations.ambient_hom()
+    module_morphisms = derivations.arrow_set()
     restricted_derivations = derivations.restricted_module()
     underlying = derivations.inclusion()(restricted_derivations(derivation))
     assert derivations in Modules(algebra)
     assert restricted_derivations in ModuleSubobjects(QQ)
     assert derivations.inclusion().domain() is restricted_derivations
-    assert derivations.inclusion().codomain() is ambient
-    assert ambient is Modules(QQ).Mor(algebra, derivations.restricted_target_module())
-    assert underlying.parent() is ambient
+    assert derivations.inclusion().codomain() is module_morphisms
+    assert module_morphisms is Modules(QQ).Mor(
+        algebra, derivations.restricted_target_module()
+    )
+    assert underlying.parent() is module_morphisms
     assert underlying(xbar).underlying_element() == derivation(xbar)
     action = derivations.algebra_action()
     assert action.domain() is algebra

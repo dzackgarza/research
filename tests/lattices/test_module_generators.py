@@ -1,6 +1,7 @@
 from sage.all import SR
 
 from dzack_research.preamble.all import (
+    Cardinalities,
     diagonal_gram,
     Lattices,
     QuadraticField,
@@ -193,6 +194,8 @@ def test_twist_rescales_the_form_at_every_rank() -> None:
     f3 = infinite.module_generator(3)
     support = f0 + f3
     assert infinite.rank() == Infinity
+    assert infinite.rank() in Cardinalities()
+    assert infinite.module_generating_set().cardinality() in Cardinalities()
     assert f0 * f0 == 2
     assert f0 * f1 == 0
     assert f1 * f1 == 2

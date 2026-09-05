@@ -1,3 +1,5 @@
+from sage.categories.homset import Homset
+
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras import (
     DeRhamAlgebra,
@@ -8,7 +10,7 @@ from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebraOn,
     VectorFields,
 )
-from dzack_research.preamble.categories.modules import ring_as_module
+from dzack_research.preamble.categories.modules import Modules, ring_as_module
 from dzack_research.static_types import (
     d as static_d,
     form_view,
@@ -44,7 +46,15 @@ def test_vector_fields_are_derivations_and_have_the_expected_lie_bracket() -> No
         }
     )
     bracket = LieBracket(d_dx, x_d_dy)
+    module_morphisms = Modules(QQ).Mor(
+        vector_fields.domain_object(), vector_fields.codomain_object()
+    )
 
+    assert not isinstance(vector_fields, Homset)
+    assert vector_fields.arrow_set() is module_morphisms
+    assert module_morphisms in vector_fields.super_categories()
+    assert d_dx.as_morphism().parent() is module_morphisms
+    assert d_dx.as_morphism() in vector_fields
     assert bracket.parent() is vector_fields
     assert bracket(x) == values.zero()
     assert bracket(y) == _scalar_module_element(values, algebra.one())
@@ -69,7 +79,13 @@ def test_contraction_and_lie_derivative_are_actual_graded_derivations() -> None:
 
     contraction = InteriorProduct(vector)
     lie = LieDerivative(vector)
+    graded_morphisms = Modules(QQ).Mor(de_rham, de_rham)
 
+    assert not isinstance(contraction.parent(), Homset)
+    assert contraction.parent().arrow_set() is graded_morphisms
+    assert graded_morphisms in contraction.parent().super_categories()
+    assert contraction.as_morphism().parent() is graded_morphisms
+    assert contraction.as_morphism() in contraction.parent()
     assert contraction.degree_shift() == -1
     assert lie.degree_shift() == 0
     assert contraction(X) == de_rham.zero()

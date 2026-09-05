@@ -104,7 +104,7 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 
             # Transport the already-computed internal-Hom presentation to the
             # actual derivation parent.  This adds coordinates to the same
-            # derivation object; it does not create a second Der_R carrier.
+            # derivation object; it does not create a second Der_R.
             if derivations.__dict__.get("_preamble_kahler_classifier_module") is None:
                 derivations._preamble_module_generating_set = (
                     classifiers.module_generating_set()

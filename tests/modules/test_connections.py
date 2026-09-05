@@ -1,3 +1,5 @@
+from sage.categories.homset import Homset
+
 import pytest
 
 from dzack_research.preamble.all import QQ
@@ -7,6 +9,7 @@ from dzack_research.preamble.categories.modules import (
     Connections,
     DifferentialGradedModules,
     ModuleWithConnection,
+    Modules,
     ModulesWithFlatConnection,
     ModulesWithConnection,
     connection_homset,
@@ -29,6 +32,14 @@ def test_connection_extends_by_leibniz_and_curvature_detects_nonflatness() -> No
     dx = omega.differential_generator("x")
 
     trivial = space({"e": space.target_module().zero()})
+    module_morphisms = Modules(QQ).Mor(
+        space.restricted_source_module(), space.restricted_target_module()
+    )
+    assert not isinstance(space, Homset)
+    assert space.arrow_set() is module_morphisms
+    assert module_morphisms in space.super_categories()
+    assert trivial.as_morphism().parent() is module_morphisms
+    assert trivial.as_morphism() in space
     assert trivial(module.scalar_multiple(x, e)) == space.target_module().pure_tensor(e, dx)
     assert trivial.is_flat()
 
@@ -56,7 +67,14 @@ def test_connection_modules_are_distinct_structured_objects_with_horizontal_homs
     assert structured in ModulesWithConnection(algebra)
     assert structured in ModulesWithFlatConnection(algebra)
     assert structured.connection().is_flat()
-    identity = connection_homset(structured, structured).identity()
+    horizontal_maps = connection_homset(structured, structured)
+    module_morphisms = Modules(algebra).Mor(structured, structured)
+    identity = horizontal_maps.identity()
+    assert not isinstance(horizontal_maps, Homset)
+    assert horizontal_maps.arrow_set() is module_morphisms
+    assert module_morphisms in horizontal_maps.super_categories()
+    assert identity.as_morphism().parent() is module_morphisms
+    assert identity.as_morphism() in horizontal_maps
     assert identity(structured.module_generator("e")) == structured.module_generator("e")
 
     nonzero_source = BasedFreeModule(algebra, finite_ordered_set(("e",)))

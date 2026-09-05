@@ -113,7 +113,7 @@ def _install_internal_hom_model(homset, model, inclusion) -> None:
 def InternalHom(source, target):
     r"""Return the enriched Hom object ``source.Hom(target)``.
 
-    The categorical Hom-set is always the mathematical carrier.  For a
+    The categorical Hom-set is always the mathematical answer.  For a
     selected presentation ``F1 -> F0 -> source``, this function additionally
     computes the finite presentation
     ``ker(Hom(F0,target) -> Hom(F1,target))`` and installs that presentation on

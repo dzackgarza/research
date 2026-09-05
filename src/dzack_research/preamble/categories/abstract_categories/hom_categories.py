@@ -893,7 +893,7 @@ class HomCategoryOf(Category):
             raise TypeError("Hom endpoints must lie in the base category")
         # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
         # construction, so Sage's cached_method recurses here.  Endpoint
-        # refinement may strengthen the represented fixed-Hom carrier, so a
+        # refinement may strengthen the represented fixed homset, so a
         # cached parent is reusable only if it still has the selected class.
         fixed_class = self.fixed_category_class_for(domain, codomain)
         cached = self._cached_between(domain, codomain)
@@ -916,7 +916,7 @@ class HomCategoryOf(Category):
             if len(inherited) == 1:
                 # No new Hom declaration means this is a full/property
                 # subcategory for morphism purposes.  Reuse the inherited Hom
-                # object literally rather than fabricating a second carrier.
+                # object literally rather than fabricating a second homset.
                 result = inherited[0]
             elif len(inherited) > 1:
                 raise TypeError(

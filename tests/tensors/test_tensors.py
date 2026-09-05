@@ -4,6 +4,7 @@ import pytest
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.all import (
+    Cardinalities,
     GF,
     QQ,
     ZZ,
@@ -89,9 +90,11 @@ def test_a_matrix_hom_is_taken_between_framed_free_modules() -> None:
 
     # The integer arity resolves to the free module on a named set.
     assert Sets.Δ[1].cardinality() == 2
+    assert Sets.Δ[1].cardinality() in Cardinalities()
     assert FreeModule(ZZ, 2) is FreeModuleOn(ZZ, Sets.Δ[1])
 
     assert f.parent() is maps
+    assert f.matrix_rank() == ZZ(2)
     assert f.domain() is FreeModuleOn(ZZ, Sets.Δ[1])
     assert f.codomain() is FreeModuleOn(ZZ, Sets.Δ[1])
     assert maps.identity() * f == f
@@ -137,6 +140,7 @@ def test_general_tensor_constructor_encodes_variance_and_higher_rank() -> None:
     assert _shape[1] == 2
     assert _shape[2] == 2
     assert higher.tensor_order() == 3
+    assert higher.tensor_order() in Cardinalities()
     assert higher[1, 0, 1] == ZZ(6)
 
 
@@ -332,7 +336,7 @@ def test_tensor_space_records_index_modules() -> None:
     assert gram.tensor_type() == (NN**2)((0, 2))
     assert mixed.tensor_type() == (NN**2)((2, 0))
     upper, lower = gram.index_modules()
-    assert not upper and lower.cardinality() == 2
+    assert upper.cardinality() == 0 and lower.cardinality() == 2
     assert int(lower[0].rank()) == 2
 
 
