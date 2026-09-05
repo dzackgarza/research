@@ -8,26 +8,10 @@ from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.owned_category import object_of
 from sage.structure.parent import Parent
 
-
-class OppositeObject(Parent):
-    r"""An object of ``C`` regarded as an object of ``C^op``."""
-
-    def __init__(self, opposite_category, underlying_object) -> None:
-        self._opposite_category = opposite_category
-        self._underlying_object = underlying_object
-        Parent.__init__(self, category=SageSets())
-
-    def opposite_category(self):
-        return self._opposite_category
-
-    def underlying_object(self):
-        return self._underlying_object
-
-    def _repr_(self) -> str:
-        return f"op({self.underlying_object()})"
 
 
 class OppositeMorphism(Morphism):
@@ -75,8 +59,28 @@ class OppositeHomset(CategoricalHomset):
         return self(base.Mor(underlying, underlying).identity())
 
 
-class OppositeCategory(Category):
+class OppositeCategory(OwnedCategory):
     r"""The opposite category ``C^op``."""
+
+    def an_object(self):
+        r"""An object of the base category, read in the opposite."""
+        return self.object(self.base_category().an_object())
+
+    class ParentMethods:
+        r"""An object of ``C`` regarded as an object of ``C^op``."""
+
+        def __init__(self, underlying_object, **rest) -> None:
+            self._underlying_object = underlying_object
+            super().__init__(**rest)
+
+        def opposite_category(self):
+            return self.category()
+
+        def underlying_object(self):
+            return self._underlying_object
+
+        def _repr_(self) -> str:
+            return f"op({self.underlying_object()})"
 
     def __init__(self, base_category) -> None:
         self._base_category = base_category
@@ -95,14 +99,15 @@ class OppositeCategory(Category):
     def object(self, underlying_object):
         if underlying_object not in self.base_category():
             raise TypeError("the object lies outside the base category")
-        return OppositeObject(self, underlying_object)
+        return object_of(self, underlying_object=underlying_object)
 
     __call__ = object
 
     def __contains__(self, candidate) -> bool:
+        category = getattr(candidate, "category", lambda: None)()
         return (
-            isinstance(candidate, OppositeObject)
-            and candidate.opposite_category().base_category() == self.base_category()
+            isinstance(category, OppositeCategory)
+            and category.base_category() == self.base_category()
         )
 
     def Mor(self, domain, codomain):
@@ -120,27 +125,6 @@ class OppositeCategory(Category):
     def _repr_(self) -> str:
         return f"Opposite of {self.base_category()}"
 
-
-class ProductObject(Parent):
-    r"""An object ``(X,Y)`` of a product category ``C x D``."""
-
-    def __init__(self, product_category, first, second) -> None:
-        self._product_category = product_category
-        self._first = first
-        self._second = second
-        Parent.__init__(self, category=SageSets())
-
-    def product_category(self):
-        return self._product_category
-
-    def first(self):
-        return self._first
-
-    def second(self):
-        return self._second
-
-    def _repr_(self) -> str:
-        return f"({self.first()}, {self.second()})"
 
 
 class ProductMorphism(Morphism):
@@ -198,8 +182,35 @@ class ProductHomset(CategoricalHomset):
         )
 
 
-class ProductCategory(Category):
+class ProductCategory(OwnedCategory):
     r"""The categorical product ``C x D``."""
+
+    def an_object(self):
+        r"""The pair of witnesses of the two factors."""
+        return self.pair(
+            self.first_category().an_object(),
+            self.second_category().an_object(),
+        )
+
+    class ParentMethods:
+        r"""An object ``(X,Y)`` of a product category ``C x D``."""
+
+        def __init__(self, first, second, **rest) -> None:
+            self._first = first
+            self._second = second
+            super().__init__(**rest)
+
+        def product_category(self):
+            return self.category()
+
+        def first(self):
+            return self._first
+
+        def second(self):
+            return self._second
+
+        def _repr_(self) -> str:
+            return f"({self.first()}, {self.second()})"
 
     def __init__(self, first_category, second_category) -> None:
         self._first_category = first_category
@@ -222,13 +233,14 @@ class ProductCategory(Category):
     def pair(self, first, second):
         if first not in self.first_category() or second not in self.second_category():
             raise TypeError("the pair lies outside the product category")
-        return ProductObject(self, first, second)
+        return object_of(self, first=first, second=second)
 
     __call__ = pair
 
     def __contains__(self, candidate) -> bool:
+        category = getattr(candidate, "category", lambda: None)()
         return (
-            isinstance(candidate, ProductObject)
+            isinstance(category, ProductCategory)
             and candidate.first() in self.first_category()
             and candidate.second() in self.second_category()
         )
@@ -250,9 +262,7 @@ __all__ = [
     "OppositeCategory",
     "OppositeHomset",
     "OppositeMorphism",
-    "OppositeObject",
     "ProductCategory",
     "ProductHomset",
     "ProductMorphism",
-    "ProductObject",
 ]
