@@ -275,9 +275,36 @@ class Modules(OwnedCategoryOverBaseRing):
         if matrix:
             placement.append(MatrixSpaces(ring))
             if domain is codomain:
-                placement.append(MatrixEndomorphismSpaces(ring))
+                if ring in OwnedRings().Commutative():
+                    from dzack_research.preamble.categories.algebras.algebras import (
+                        MatrixAlgebras,
+                    )
+
+                    placement.append(MatrixAlgebras(ring))
+                else:
+                    placement.append(MatrixEndomorphismSpaces(ring))
         elif domain is codomain:
             placement.append(OwnedRings())
+        if full_internal_hom and not matrix:
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                _SelectedFinitePresentationModules,
+            )
+
+            if (
+                _represented_finite_presentation(domain)
+                and _represented_finite_presentation(codomain)
+            ):
+                placement.append(_SelectedFinitePresentationModules(ring))
+        if full_internal_hom and domain in TensorProductModules(ring):
+            factors = domain.tensor_factors()
+            if (
+                factors.cardinality().is_finite()
+                and int(factors.cardinality().finite_value()) == 2
+                and factors.unrank(0) is factors.unrank(1)
+            ):
+                from dzack_research.preamble.categories.forms.forms import BilinearFormHoms
+
+                placement.append(BilinearFormHoms(ring))
         return Category.join(tuple(placement))
 
 
@@ -743,7 +770,10 @@ class FreeModules(OwnedCategoryOverBaseRing):
         return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
 
     def super_categories(self):
-        return [Modules(self.base_ring())]
+        return [
+            Modules(self.base_ring()),
+            ProjectiveModules(self.base_ring()),
+        ]
 
     class ParentMethods:
         def is_free(self) -> bool:
@@ -778,9 +808,11 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             localized = self.localize_at_prime(point)
             fiber = localized.base_change(point.local_ring().residue_map())
             residue = point.residue_field()
-            fiber._preamble_fiber_point = point
-            fiber._preamble_fiber_localization = localized
-            return refine(fiber, VectorSpaces(residue))
+            if fiber not in VectorSpaces(residue):
+                raise TypeError(
+                    "base change to a residue field must construct a vector space"
+                )
+            return fiber
 
         def fiber_dimension(self, point):
             r"""Return ``dim_{kappa(p)} M(p)`` when the finite fiber is represented."""
@@ -805,7 +837,12 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             if ring not in LocalRings():
                 raise TypeError("the residue module is defined here for modules over a local ring")
             residue = ring.residue_field()
-            return refine(self.base_change(ring.residue_map()), VectorSpaces(residue))
+            module = self.base_change(ring.residue_map())
+            if module not in VectorSpaces(residue):
+                raise TypeError(
+                    "base change to a residue field must construct a vector space"
+                )
+            return module
 
         def minimal_number_of_generators(self):
             r"""Return ``dim_k(M/mM)`` for a finite module over a local ring."""
@@ -973,8 +1010,18 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 return NotImplemented
             return self.subobject_on(generators)
 
-        def _same_presentation_module(self, labels):
-            return self._fresh_free_module_on(labels)
+        def _same_presentation_module(
+            self,
+            labels,
+            *,
+            _extra_categories=(),
+            _extra_construction_data=None,
+        ):
+            return self._fresh_free_module_on(
+                labels,
+                _extra_categories=tuple(_extra_categories),
+                _extra_construction_data=_extra_construction_data,
+            )
 
         def free_resolution(self):
 
@@ -995,6 +1042,8 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
 
 
 class ProjectiveModules(OwnedCategoryOverBaseRing):
+    _certifying_predicate = "is_projective"
+
     def an_object(self):
         r"""The free module of rank one, which is projective."""
         from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor

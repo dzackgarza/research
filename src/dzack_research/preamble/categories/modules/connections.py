@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.modules.powers import (
     alternating_power_product,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import DifferentialComponentMorphism

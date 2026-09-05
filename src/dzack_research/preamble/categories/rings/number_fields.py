@@ -1,7 +1,7 @@
 r"""Owned number fields and their selected primitive-element presentations."""
 
 from sage.categories.category import Category
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.all import (
     CyclotomicField as _SageCyclotomicField,
     NumberField as _SageNumberField,
@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedOrders,
     OwnedRings,
+    _OwnedRingParent,
     _engine_element,
     _engine_numeral,
     _engine_ring,
@@ -398,25 +399,33 @@ class OrdersWithChosenIntegralBasis(Category):
 
 
 def _refine_order_view(order):
-    r"""Admit an engine-backed order to its constructor-computed order properties."""
-    if order not in OwnedOrders():
-        order = refine(order, OwnedOrders())
-    order = refine(order, OrdersWithChosenIntegralBasis())
-
-    return order
+    r"""Return the constructor-owned order view with its selected integral basis."""
+    return _owned_order_view(_engine_ring(order))
 
 
 def _refine_number_field_view(field):
-    r"""Admit an engine-backed field to constructor-computed number-field properties."""
+    r"""Return the constructor-owned number-field view of an engine field."""
     if field not in OwnedRings():
-        raise TypeError("number-field refinement expects an owned ring view")
-    engine = _engine_ring(field)
+        raise TypeError("number-field construction expects an owned ring view")
+    return _owned_number_field_view(_engine_ring(field))
+
+
+@cached_function
+def _owned_order_view(engine):
+    r"""Construct the selected-integral-basis view of one engine order."""
+    probe = _OwnedRingParent(engine)
+    if probe._preamble_is_number_field_order() is not True:
+        raise TypeError("the selected integral-basis view requires a number-field order")
+    return _OwnedRingParent(engine, category=OrdersWithChosenIntegralBasis())
+
+
+@cached_function
+def _owned_number_field_view(engine):
+    r"""Construct the strongest number-field view determined by ``engine``."""
     categories = [OwnedNumberFields()]
     if engine is not SageQQ:
         categories.append(NumberFieldsWithChosenPrimitiveElement())
-    field = refine(field, categories)
-
-    return field
+    return _OwnedRingParent(engine, category=Category.join(tuple(categories)))
 
 
 

@@ -511,6 +511,26 @@ class LocalizationRings(OwnedCategory):
             if source in OwnedIntegralDomains():
                 return False
 
+            structure = self.localization_submonoid().structure_data()
+            if structure.get("kind") == "prime_complement":
+                prime = structure.get("prime_ideal")
+                if prime is None:
+                    return Unknown
+                try:
+                    annihilator = source.ideal(source.zero()).colon(
+                        source.ideal(difference)
+                    )
+                    return any(
+                        not prime.contains_ambient_element(generator)
+                        for generator in annihilator.ideal_generators()
+                    )
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
+                    pass
+
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                QuotientRings,
+            )
+
             if source in QuotientRings():
                 try:
                     source_ring = source.quotient_source()
@@ -1457,12 +1477,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         self._engine = engine
         placement = _owned_ring_category(engine)
         if placement.is_subcategory(OwnedRings().Commutative()):
-            from dzack_research.preamble.categories.algebras.algebras import (
-                CommutativeAlgebras,
-            )
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
 
             declares_other_algebra_base = category is not None and any(
-                isinstance(candidate, CommutativeAlgebras)
+                isinstance(candidate, Algebras.Commutative)
                 and candidate.base_ring() is not self
                 for candidate in category.all_super_categories(proper=False)
             )
@@ -1471,7 +1489,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                 # canonical R-algebra placement can be selected before the one
                 # and only Parent initialization.  This is construction, not a
                 # post-hoc category refinement.
-                placement = Category.join((placement, CommutativeAlgebras(self)))
+                placement = Category.join((placement, Algebras(self).Commutative()))
         if category is not None:
             placement = Category.join((placement, category))
         Parent.__init__(self, category=placement)
@@ -1583,6 +1601,8 @@ def _owned_ring_category(engine: Ring) -> Category:
         extra.append(OwnedIntegralDomains())
     if engine is SageZZ or engine is SageQQ:
         extra.append(OwnedOrderedRings())
+    if engine is SageQQ:
+        extra.append(PrimeFields())
     if category.is_subcategory(SagePrincipalIdealDomains()):
         extra.append(OwnedPrincipalIdealDomains())
     try:

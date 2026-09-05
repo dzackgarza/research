@@ -31,6 +31,7 @@ class AbelianizationFunctor(Functor):
 
     def __init__(self) -> None:
         super().__init__(OwnedGroups(), OwnedAbelianGroups())
+        self._quotient_projections = {}
 
     def _apply_object(self, group):
         model = _gap_model(group)
@@ -42,14 +43,19 @@ class AbelianizationFunctor(Functor):
             OwnedFiniteAbelianGroups() if group.is_finite() is True else OwnedAbelianGroups()
         )
         quotient = refine(quotient, placement)
-        quotient._preamble_abelianization_projection = group_homset(group, quotient)(
-            projection
+        quotient_projection = group_homset(group, quotient)(projection)
+        self._quotient_projections[id(quotient)] = (
+            quotient,
+            quotient_projection,
         )
         return quotient
 
     def quotient_projection_from_image(self, abelianization):
         self.chosen_preimage(abelianization)
-        return abelianization._preamble_abelianization_projection
+        stored = self._quotient_projections.get(id(abelianization))
+        if stored is None or stored[0] is not abelianization:
+            raise KeyError("the abelianization image has no retained quotient projection")
+        return stored[1]
 
     def quotient_projection(self, group):
         quotient = self(group)

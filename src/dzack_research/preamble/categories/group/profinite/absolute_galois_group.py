@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from typing import cast
 
+from sage.categories.category import Category
 from sage.categories.finite_fields import FiniteFields
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
@@ -45,7 +46,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
     CyclotomicCharacter,
     QuadraticCharacter,
@@ -398,7 +398,14 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
 
     Element = AbsoluteGaloisGroupElement
 
-    def __init__(self, field, *, closure=None, embedding=None) -> None:
+    def __init__(
+        self,
+        field,
+        *,
+        closure=None,
+        embedding=None,
+        extra_categories=(),
+    ) -> None:
         self._field = _own_ring(field)
         computation_field = _engine_ring(self._field)
         if closure is None:
@@ -410,7 +417,9 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         self._extension_cache: dict[object, FiniteGaloisExtension] = {}
         self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
         self._one_element = None
-        category = absolute_galois_group_category(self._field)
+        category = Category.join(
+            (absolute_galois_group_category(self._field), *tuple(extra_categories))
+        )
         # The elements are field automorphisms of the closure, so this is the
         # subcategory of Aut_Fields(closure) fixing the structure map from K.
         RestrictedHomCategoryParent.__init__(
@@ -422,8 +431,8 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             ),
             self._closure,
             self._closure,
+            category=category,
         )
-        refine(self, category)
         self._slice_category = CosliceCategory(OwnedFields(), self._field)
         self._extension_object = self._slice_category(self._embedding)
 
@@ -801,8 +810,8 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             extension.field(),
             closure=supergroup.algebraic_closure(),
             embedding=extension.embedding(),
+            extra_categories=(OpenAbsoluteGaloisSubgroups(),),
         )
-        refine(self, OpenAbsoluteGaloisSubgroups())
         self._inclusion = OpenSubgroupInclusion(self)
 
     def supergroup(self):

@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -54,7 +55,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
 from dzack_research.preamble.rings.unit_interval import UnitInterval
@@ -415,8 +415,11 @@ class GradedTensorSquare(UniqueRepresentation, Parent):
     def __init__(self, module) -> None:
         self._preamble_tensor_factors = (module, module)
         ring = _real_ring()
-        Parent.__init__(self, base=_engine_ring(ring), category=Modules(ring))
-        refine(self, GradedTensorProductModules(ring))
+        Parent.__init__(
+            self,
+            base=_engine_ring(ring),
+            category=GradedTensorProductModules(ring),
+        )
 
     def _repr_(self) -> str:
         left, _right = self.tensor_factors()
@@ -472,14 +475,44 @@ class _LebesgueAlgebraFromMultiplication(Parent):
 
     Element = _GradedLebesgueElement
 
-    def __init__(self, module) -> None:
+    def __init__(self, module, multiplication, unital) -> None:
         ring = _real_ring()
         self._preamble_algebra_base_ring = ring
-        Parent.__init__(self, base=_engine_ring(ring), category=Modules(ring))
-        refine(
+        monoid = module.grading_monoid()
+        categories = [
+            LebesgueGradedModules(ring),
+            GradedModules(ring, monoid),
+        ]
+        match unital:
+            case True:
+                categories.extend(
+                    [
+                        AlgebrasWithChosenMultiplication(ring),
+                        GradedAlgebras(ring, monoid),
+                        CommutativeAlgebras(ring),
+                    ]
+                )
+            case False:
+                categories.extend(
+                    [
+                        AssociativeAlgebrasWithChosenMultiplication(ring),
+                        AssociativeAlgebras(ring),
+                    ]
+                )
+        Parent.__init__(
             self,
-            [LebesgueGradedModules(ring), GradedModules(ring, module.grading_monoid())],
+            base=_engine_ring(ring),
+            category=Category.join(tuple(categories)),
         )
+        self._preamble_multiplication_morphism = _transport_multiplication(
+            multiplication,
+            self,
+        )
+        if unital:
+            unit_degree = monoid.monoidal_unit()
+            self._preamble_algebra_unit = self._from_components(
+                {unit_degree: self.graded_piece(unit_degree).one()}
+            )
 
     def _repr_(self) -> str:
         ring = self._preamble_algebra_base_ring
@@ -541,10 +574,15 @@ class GradedLebesgueModule(UniqueRepresentation, Parent):
     def __init__(self, grading_monoid) -> None:
         ring = _real_ring()
         self._preamble_algebra_base_ring = ring
-        Parent.__init__(self, base=_engine_ring(ring), category=Modules(ring))
-        refine(
+        Parent.__init__(
             self,
-            [LebesgueGradedModules(ring), GradedModules(ring, grading_monoid)],
+            base=_engine_ring(ring),
+            category=Category.join(
+                (
+                    LebesgueGradedModules(ring),
+                    GradedModules(ring, grading_monoid),
+                )
+            ),
         )
 
     def _repr_(self) -> str:
@@ -584,38 +622,7 @@ def intern_graded_lebesgue_algebra(multiplication, ring, unital):
             "this internment presents a Lebesgue graded module by a "
             "morphism of its tensor square"
         )
-    algebra = _LebesgueAlgebraFromMultiplication(module)
-    algebra._preamble_multiplication_morphism = _transport_multiplication(
-        multiplication, algebra
-    )
-    algebra._preamble_algebra_base_ring = ring
-    monoid = module.grading_monoid()
-    match unital:
-        case True:
-            unit_degree = monoid.monoidal_unit()
-            algebra._preamble_algebra_unit = algebra._from_components(
-                {unit_degree: algebra.graded_piece(unit_degree).one()}
-            )
-            return refine(
-                algebra,
-                [
-                    AlgebrasWithChosenMultiplication(ring),
-                    GradedAlgebras(ring, monoid),
-                    CommutativeAlgebras(ring),
-                    LebesgueGradedModules(ring),
-                    GradedModules(ring, monoid),
-                ],
-            )
-        case False:
-            return refine(
-                algebra,
-                [
-                    AssociativeAlgebrasWithChosenMultiplication(ring),
-                    AssociativeAlgebras(ring),
-                    LebesgueGradedModules(ring),
-                    GradedModules(ring, monoid),
-                ],
-            )
+    return _LebesgueAlgebraFromMultiplication(module, multiplication, unital)
 
 
 @cached_function

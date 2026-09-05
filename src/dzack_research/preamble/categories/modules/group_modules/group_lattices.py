@@ -1,15 +1,16 @@
 r"""Lattices equipped with a chosen form-preserving group action."""
 
 from sage.categories.morphism import SetMorphism
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     GroupModule,
     GroupModules,
     _CategoryOverRingAndActingGroup,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.lattices import (
     FiniteRankLattices,
+    Lattice,
     Lattices,
     RootLattices,
 )
@@ -32,10 +33,43 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
 
     class ParentMethods:
         def group(self):
-            return self._preamble_group_module.group()
+            return self._preamble_group_module_source.group()
 
+        def is_trivial_action(self) -> bool:
+            return self._preamble_group_module_source.is_trivial_action()
+
+        def unacted_module(self):
+            return self._preamble_group_module_source.unacted_module()
+
+        @cached_method
         def action(self):
-            return self._preamble_lattice_action
+            source_group_module = self._preamble_group_module_source
+            group = source_group_module.group()
+
+            def transported_image(group_element, label):
+                backing_image = source_group_module.act(
+                    group_element,
+                    source_group_module.module_generator(label),
+                )
+                return self.linear_combination(
+                    module_coefficients(backing_image, source_group_module)
+                )
+
+            orthogonal_group = self.Aut()
+            action = SetMorphism(
+                Sets().Mor(group, orthogonal_group),
+                lambda group_element: orthogonal_group(
+                    lambda label: transported_image(group_element, label)
+                ),
+            )
+            assert group.is_finitely_generated() is True
+            for group_generator in group.group_generators():
+                action(group_generator)
+            return action
+
+        @cached_method
+        def group_module(self):
+            return GroupModule(self, self.action())
 
         def act(self, group_element, vector):
 
@@ -53,7 +87,7 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
 
         def module_invariants(self):
             r"""Return the native fixed submodule of the underlying group module."""
-            return self._preamble_group_module.module_invariants()
+            return self.group_module().module_invariants()
 
         def invariant_lattice(self):
             r"""Return ``L^G`` as a formed subobject of this lattice.
@@ -75,7 +109,7 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
 
         def module_coinvariants(self):
             r"""Return the underlying module quotient by ``(g-1)M``."""
-            return self._preamble_group_module.module_coinvariants()
+            return self.group_module().module_coinvariants()
 
         def formed_coinvariants(self):
             r"""Return ``(L^G)^perp`` as a formed subobject of ``L``.
@@ -86,7 +120,7 @@ class GroupLattices(_CategoryOverRingAndActingGroup):
             return self.invariant_lattice().orthogonal_complement()
 
         def character(self):
-            return self._preamble_group_module.character()
+            return self.group_module().character()
 
 
 def GroupLattice(lattice, group_or_action, action=None):
@@ -97,48 +131,27 @@ def GroupLattice(lattice, group_or_action, action=None):
     source_group_module = GroupModule(lattice, group_or_action, action)
     group = source_group_module.group()
 
-    result = Lattices(base_ring)(
+    prototype = Lattices(base_ring)(
         lattice.gram_tensor(),
         module_generators=lattice.module_generating_set(),
     )
-
-    assert group.is_finitely_generated() is True
-
-    def transported_image(group_element, label):
-        backing_image = source_group_module.act(
-            group_element,
-            source_group_module.module_generator(label),
-        )
-        return result.linear_combination(
-            module_coefficients(backing_image, source_group_module)
-        )
-
-    orthogonal_group = result.Aut()
-    lattice_action = SetMorphism(
-        Sets().Mor(group, orthogonal_group),
-        lambda group_element: orthogonal_group(
-            lambda label: transported_image(group_element, label)
-        ),
-    )
-
-    # The selected action is represented by a map into Aut(L).  For a chosen
-    # finite group presentation it suffices to force the generator images
-    # through that Hom here; form preservation and invertibility are owned by
-    # the lattice-isometry constructor.
-    for group_generator in group.group_generators():
-        lattice_action(group_generator)
-
-    group_module = GroupModule(result, lattice_action)
-    result._preamble_group_module = group_module
-    result._preamble_lattice_action = lattice_action
-
-    result = refine(result, GroupLattices(base_ring, group))
-
-
+    extra_categories = [GroupLattices(base_ring, group)]
+    construction_data = [("group_module_source", source_group_module)]
     if lattice in RootLattices():
-        result = result.lattice_category()._refine_root_lattice(
-            result, lattice.cartan_type()
-        )
+        extra_categories.append(RootLattices())
+        construction_data.append(("cartan_type", lattice.cartan_type()))
+    result = Lattice(
+        prototype._module,
+        prototype.gram_tensor(),
+        Lattices(base_ring),
+        prototype._sage_lattice,
+        extra_categories=tuple(extra_categories),
+        construction_data=tuple(construction_data),
+    )
+    result = result.lattice_category()._refine_lattice_object(result)
+    assert group.is_finitely_generated() is True
+    for group_generator in group.group_generators():
+        result.action()(group_generator)
     return result
 
 

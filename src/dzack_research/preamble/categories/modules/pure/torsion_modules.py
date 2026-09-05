@@ -26,6 +26,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import refine
 class TorsionModules(OwnedCategoryOverBaseRing):
+    _certifying_predicate = "is_torsion"
+
     def an_object(self):
         r"""The discriminant group of U, which is torsion."""
         from dzack_research.preamble.categories.lattices import Lattices
@@ -118,13 +120,15 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
                 for row, order in enumerate(orders)
             )
         )
-        return _torsion_module_presented_by_matrix(relations)
+        return _torsion_module_presented_by_matrix(relations, base_ring=ring)
 
 
-def _torsion_module_presented_by_matrix(relations, module_generating_set=None):
-    r"""Return the ``ZZ``-module presented by relation rows ``relations``."""
+def _torsion_module_presented_by_matrix(
+    relations, module_generating_set=None, *, base_ring=None
+):
+    r"""Return the torsion module presented by relation rows ``relations``."""
 
-    ring = _own_ring(SageZZ)
+    ring = _own_ring(SageZZ) if base_ring is None else base_ring
     try:
         relation_parent = relations.parent()
     except AttributeError:

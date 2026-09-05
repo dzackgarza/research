@@ -1,5 +1,7 @@
 """Divisor groups as framed free modules."""
 
+from collections.abc import Mapping
+
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
@@ -14,8 +16,18 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+
+def _module_in_role(module, category, message):
+    r"""Return a fresh represented module born in the stated divisor role."""
+    constructor = getattr(module, "_same_presentation_module", None)
+    if constructor is None:
+        raise NotImplementedError(message)
+    return constructor(
+        module.module_generating_set(),
+        _extra_categories=(category,),
+    )
 
 
 class DivisorGroups(Category):
@@ -36,7 +48,11 @@ def DivisorGroup(module):
 
     if module not in FramedFreeModules(_own_ring(SageZZ)):
         raise TypeError("a divisor group is a free abelian group on specified prime divisors")
-    return refine(module, DivisorGroups())
+    return _module_in_role(
+        module,
+        DivisorGroups(),
+        "a divisor group requires a represented free-module presentation",
+    )
 
 
 class FormalDivisorGroups(OwnedCategoryOverBaseRing):
@@ -57,9 +73,13 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
         # A formal divisor is an element of the free module's engine, so the
         # group, not the element, answers questions about its terms.
         def terms(self, divisor):
-            return tuple(
-                (coefficient, prime_divisor)
-                for prime_divisor, coefficient in module_coefficients(divisor, self).items()
+            return finite_ordered_set(
+                tuple(
+                    (coefficient, prime_divisor)
+                    for prime_divisor, coefficient in module_coefficients(
+                        divisor, self
+                    ).items()
+                )
             )
 
         def components(self, divisor):
@@ -86,9 +106,10 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
 def FormalDivisorGroup(coefficient_ring, prime_divisors):
     r"""Return the group of formal divisors on the stated prime divisors, one per ``(R, S)``."""
     ring = _owned_ring(coefficient_ring)
-    return refine(
-        FreshFreeModuleOn(ring, finite_ordered_set(prime_divisors)),
-        FormalDivisorGroups(ring),
+    return FreshFreeModuleOn(
+        ring,
+        finite_ordered_set(prime_divisors),
+        _extra_categories=(FormalDivisorGroups(ring),),
     )
 
 
@@ -100,10 +121,13 @@ def FormalDivisor(coefficient_ring, terms):
     answers ``terms``, ``components`` and printing for it.
     """
     ring = _owned_ring(coefficient_ring)
-    terms = tuple(terms)
+    terms = (
+        tuple((coefficient, prime_divisor) for prime_divisor, coefficient in terms.items())
+        if isinstance(terms, Mapping)
+        else tuple(terms)
+    )
     prime_divisors = finite_ordered_set(
-        prime_divisor
-        for _, prime_divisor in terms
+        tuple(prime_divisor for _, prime_divisor in terms)
     )
     group = FormalDivisorGroup(ring, tuple(prime_divisors))
     coefficients = {

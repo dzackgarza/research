@@ -349,6 +349,7 @@ def LocalizedModule(
     subobject_inclusion_factory=None,
     subobject_verify_linearity=True,
     extra_categories=(),
+    extra_construction_data=None,
 ):
     r"""Return ``S^{-1}M``, placed by what the source module already is.
 
@@ -363,6 +364,8 @@ def LocalizedModule(
         "localization_ring": localization_ring,
         "localization_functor": localization_functor,
     }
+    if extra_construction_data is not None:
+        data.update(extra_construction_data)
 
     if subobject_inclusion_factory is not None or (
         subobject_ambient is not None and subobject_generator_images is not None

@@ -2,9 +2,11 @@
 
 from sage.categories.category import Category
 
-from dzack_research.preamble.categories.divisors.divisor_groups import DivisorGroups
+from dzack_research.preamble.categories.divisors.divisor_groups import (
+    DivisorGroups,
+    _module_in_role,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
@@ -22,4 +24,8 @@ def WeilDivisorGroup(module):
 
     if module not in FramedFreeModules(_own_ring(SageZZ)):
         raise TypeError("Weil divisors are free on specified codimension-one subvarieties")
-    return refine(module, WeilDivisorGroups())
+    return _module_in_role(
+        module,
+        WeilDivisorGroups(),
+        "a Weil divisor group requires a represented free-module presentation",
+    )

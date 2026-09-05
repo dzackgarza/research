@@ -870,6 +870,9 @@ class FunctionSets(OwnedCategory):
         def exponent(self):
             return self._exponent
 
+        def _preamble_all_functions_finitely_supported(self) -> bool:
+            return self.exponent() in FiniteSets()
+
         def homset(self):
             return Sets().Mor(self.exponent(), self.base())
 
@@ -1044,20 +1047,21 @@ def _cartesian_product_of(index_set, family):
     built in the category it always belongs to and gains the enumerated
     placement it earns.
     """
-    product = object_of(
-        CartesianProductsOfSets(), index_set=index_set, family=family
-    )
     try:
         finite = cardinal(index_set.cardinality()).is_finite() and all(
             cardinal(family(index).cardinality()).is_finite() for index in index_set
         )
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         finite = False
+    product_category = CartesianProductsOfSets()
+    category = product_category
     if finite:
-        from dzack_research.preamble.refine import refine
-
-        refine(product, [EnumeratedSets(), FiniteEnumeratedSets()])
-    return product
+        category = Category.join(
+            (product_category, EnumeratedSets(), FiniteEnumeratedSets())
+        )
+    return product_category.ObjectType(
+        category=category, index_set=index_set, family=family
+    )
 
 
 class CartesianProductsOfSets(OwnedCategory):
@@ -1826,6 +1830,8 @@ NN = object_of(NaturalNumberSets())
 
 class FinitelySupportedFunctionSets(OwnedCategory):
     r"""Function sets whose elements have finite support."""
+
+    _certifying_predicate = "_preamble_all_functions_finitely_supported"
 
     def an_object(self):
         r"""Functions from the ordinal 2 to itself, all of finite support."""

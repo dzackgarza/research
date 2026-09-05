@@ -30,10 +30,14 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_embedding
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_embedding,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     Modules,
+    ModulesWithChosenFinitePresentation,
     restrict_scalars,
 )
 
@@ -282,6 +286,16 @@ class DerivationSpace(RestrictedHomCategoryParent):
         base = algebra.base_ring()
         structure_map = algebra.algebra_structure_morphism()
         self._restricted_target = restricted_target
+        from dzack_research.preamble.categories.algebras.kahler_differentials import (
+            KahlerDifferentials,
+        )
+        from dzack_research.preamble.categories.modules.internal_hom import InternalHom
+
+        classifiers = InternalHom(KahlerDifferentials(algebra), target_module)
+        self._preamble_kahler_classifier_module = classifiers
+        category = Modules(algebra)
+        if classifiers in ModulesWithChosenFinitePresentation(algebra):
+            category = ModulesWithChosenFinitePresentation(algebra)
         # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
         # Leibniz rule, so the existing R-linear Mor category is the base.
         self._preamble_base_ring = algebra
@@ -290,7 +304,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
             family,
             algebra,
             restricted_target,
-            category=Modules(algebra),
+            category=category,
         )
         self.register_action(_DerivationAlgebraAction(algebra, self, True))
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
@@ -331,6 +345,44 @@ class DerivationSpace(RestrictedHomCategoryParent):
 
     def generator_labels(self):
         return self._generator_labels
+
+    def _kahler_classifier_module(self):
+        return self._preamble_kahler_classifier_module
+
+    def _from_kahler_classifier(self, classifier):
+        classifiers = self._kahler_classifier_module()
+        classifier = classifiers(classifier)
+        differentials = classifiers.domain()
+        return self(
+            {
+                label: classifier(differentials.differential_generator(label))
+                for label in self.generator_labels()
+            }
+        )
+
+    def _to_kahler_classifier(self, derivation):
+        derivation = self(derivation)
+        return self._kahler_classifier_module().domain().from_derivation(derivation)
+
+    def module_generating_set(self):
+        return self._kahler_classifier_module().module_generating_set()
+
+    def module_generator(self, label):
+        classifier = self._kahler_classifier_module()
+        return self._from_kahler_classifier(classifier.module_generator(label))
+
+    def presentation_matrix(self):
+        return self._kahler_classifier_module().presentation_matrix()
+
+    def presentation(self):
+        return self._kahler_classifier_module().presentation()
+
+    def _selected_presentation_rows(self):
+        return self._kahler_classifier_module()._selected_presentation_rows()
+
+    def _selected_module_coefficients(self, derivation):
+        classifiers = self._kahler_classifier_module()
+        return module_coefficients(self._to_kahler_classifier(derivation), classifiers)
 
     def _element_constructor_(self, generator_images):
         if isinstance(generator_images, Derivation) and generator_images.parent() is self:

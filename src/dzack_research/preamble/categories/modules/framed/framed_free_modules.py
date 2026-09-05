@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.modules.pure.modules import (
     BiproductModules,
     FinitelyGeneratedFreeModules,
+    VectorSpaces,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
@@ -51,6 +52,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _refine_matrix_hom,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
     PrincipalIdealDomains,
     _own_ring,
 )
@@ -64,6 +66,8 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
 
     categories = [_SparseFramedFreeModules(ring)]
+    if ring in OwnedFields():
+        categories.append(VectorSpaces(ring))
     if module_generating_set.cardinality().is_finite():
         categories.append(FinitelyGeneratedFreeModules(ring))
     return categories

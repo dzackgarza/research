@@ -42,6 +42,7 @@ from sage.misc.unknown import Unknown
 from sage.rings.infinity import infinity
 from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
+from sage.structure.category_object import CategoryObject
 from sage.structure.element import MultiplicativeGroupElement, RingElement
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
@@ -75,7 +76,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     cardinal,
 )
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     _engine_matrix,
@@ -1018,13 +1019,15 @@ class IndexedFreeGroupHomset(CategoricalHomset):
     Element = IndexedFreeGroupHomomorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-
+        category = Monoids() if domain is codomain else None
         CategoricalHomset.__init__(
             self,
             hom_family,
             domain,
             codomain,
+            category=category,
         )
+        realize_owned_category(self)
 
     def _element_constructor_(self, images, **_options):
         return self.element_class(self, images)
@@ -1104,7 +1107,7 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
     def __classcall__(cls, family, domain, codomain):
         return typecall(cls, family, domain, codomain)
 
-    def __init__(self, hom_family, domain, codomain):
+    def __init__(self, hom_family, domain, codomain, *, category=None):
         self._family = hom_family
         self._end_family = None
         self._aut_family = None
@@ -1115,6 +1118,14 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         GroupHomset_libgap.__init__(
             self, domain, codomain, category=SageGroups(), check=False
         )
+        placement = []
+        if domain is codomain:
+            placement.append(Monoids())
+        if category is not None:
+            placement.append(category)
+        if placement:
+            CategoryObject._refine_category_(self, Category.join(tuple(placement)))
+            realize_owned_category(self)
 
     def _element_constructor_(self, images, check=True, **_options):
         match images:
@@ -1262,14 +1273,18 @@ class GroupAutomorphismGroup(GroupHomset):
         return typecall(cls, hom_family, group, engine_subgroup=engine_subgroup)
 
     def __init__(self, hom_family, group, engine_subgroup=None):
-        GroupHomset.__init__(self, hom_family, group, group)
         self._engine_subgroup = engine_subgroup
         self._supergroup = self
-
-        categories = [GroupAutomorphismGroups(), OwnedGroups()]
+        categories = [GroupAutomorphismGroups()]
         if group.is_finite() is True:
             categories.append(OwnedFiniteGroups())
-        refine(self, categories)
+        GroupHomset.__init__(
+            self,
+            hom_family,
+            group,
+            group,
+            category=Category.join(tuple(categories)),
+        )
 
     def super_categories(self):
         packet = category_packet(self.base_category())
@@ -1355,7 +1370,6 @@ class GroupEndCategoryConstruction(EndCategoryConstruction):
             return cached
         endomorphisms = self.base_category().Mor(obj, obj)
         endomorphisms.attach_end_family(self)
-        refine(endomorphisms, Monoids())
         return self._remember_between(obj, obj, endomorphisms)
 
 

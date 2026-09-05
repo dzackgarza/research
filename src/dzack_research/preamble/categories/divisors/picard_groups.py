@@ -3,7 +3,7 @@
 from sage.categories.category import Category
 
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.categories.divisors.divisor_groups import _module_in_role
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
@@ -22,4 +22,8 @@ def PicardGroup(module):
     category = PicardGroups()
     if module not in category.super_categories()[0]:
         raise TypeError("a Picard group must carry its quotient framing")
-    return refine(module, category)
+    return _module_in_role(
+        module,
+        category,
+        "a Picard group requires a represented framed-module presentation",
+    )

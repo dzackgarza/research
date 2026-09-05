@@ -13,7 +13,6 @@ from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    OwnedCommutativeRings,
     OwnedRings,
     _engine_element,
     _engine_ring,
@@ -26,9 +25,9 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -109,8 +108,63 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         return [AssociativeAlgebras(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            multiplication_source_module,
+            source_multiplication,
+            algebra_base_ring,
+            **rest,
+        ) -> None:
+            self._preamble_multiplication_source_module = multiplication_source_module
+            self._preamble_source_multiplication = source_multiplication
+            self._preamble_algebra_base_ring = algebra_base_ring
+            super().__init__(**rest)
+
+        @cached_method
+        def _multiplication_transport_maps(self):
+            source = self._preamble_multiplication_source_module
+            labels = self.module_generating_set()
+            forget = module_homset(self, source)(
+                {label: source.module_generator(label) for label in labels}
+            )
+            equip = module_homset(source, self)(
+                {label: self.module_generator(label) for label in labels}
+            )
+            return forget, equip
+
+        @cached_method
+        def _transported_multiplication_morphism(self):
+            source_multiplication = self._preamble_source_multiplication
+            forget, equip = self._multiplication_transport_maps()
+            source_tensor = source_multiplication.domain()
+            tensor_constructor = getattr(source_tensor, "_same_presentation_module", None)
+            if tensor_constructor is None:
+                raise TypeError(
+                    "the selected multiplication tensor has no represented module presentation"
+                )
+            tensor_factors = indexed_family(
+                Sets.Δ[1],
+                lambda _index: self,
+                name="Tensor factors",
+            )
+            transported_tensor = tensor_constructor(
+                source_tensor.module_generating_set(),
+                _extra_categories=(TensorProductModules(self.base_ring()),),
+                _extra_construction_data={"tensor_factors": tensor_factors},
+            )
+            transported = tensor_product_morphism(
+                forget,
+                forget,
+                source=transported_tensor,
+                target=source_tensor,
+            )
+            return equip * source_multiplication * transported
+
         def multiplication_morphism(self):
-            return self._preamble_multiplication_morphism
+            selected = self.__dict__.get("_preamble_multiplication_morphism")
+            if selected is not None:
+                return selected
+            return self._transported_multiplication_morphism()
 
     class ElementMethods:
         def _mul_(self, other):
@@ -269,6 +323,96 @@ class Algebras(OwnedCategoryOverBaseRing):
             multiplication, self.base_ring(), unital=True
         )
 
+    class Commutative(CategoryWithAxiom):
+        r"""Commutative associative unital algebras over ``R``."""
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "commutative algebras"
+
+        class SubcategoryMethods:
+            r"""Constructions this category owns, reachable from any subcategory."""
+
+            def product(self, factors):
+                r"""Return the product of a finite family of objects of this category."""
+                return self._fold_construction(
+                    self._categorical_product, factors, name="Product factors"
+                )
+
+            def _categorical_product(self, left, right):
+                raise NotImplementedError(
+                    "the represented categorical product of commutative algebras is not yet implemented"
+                )
+
+            def coproduct(self, factors):
+                r"""Return the coproduct of a finite family of objects of this category."""
+                return self._fold_construction(
+                    self._categorical_coproduct, factors, name="Coproduct factors"
+                )
+
+            def _categorical_coproduct(self, left, right):
+                operation = getattr(left, "_commutative_algebra_coproduct", None)
+                if operation is None:
+                    operation = getattr(right, "_commutative_algebra_coproduct", None)
+                if operation is None:
+                    raise NotImplementedError(
+                        "neither factor carries a represented commutative-algebra coproduct backend"
+                    )
+                return operation(left, right)
+
+            def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
+                return source.from_cocone(
+                    target.left_coproduct_map() * left_morphism,
+                    target.right_coproduct_map() * right_morphism,
+                )
+
+            def pushout(self, left_leg, right_leg):
+                r"""Return the pushout of the span these two legs form.
+
+                The span is the diagram, and the pushout is its colimit; the legs
+                are named here because the span object is the datum, not an arity.
+                """
+                assert left_leg.domain() is right_leg.domain(), (
+                    "a span has one common domain"
+                )
+                return self._categorical_pushout(left_leg, right_leg)
+
+            def _categorical_pushout(self, left_morphism, right_morphism):
+                left = left_morphism.codomain()
+                right = right_morphism.codomain()
+                operation = getattr(left, "_commutative_algebra_pushout", None)
+                if operation is None:
+                    operation = getattr(right, "_commutative_algebra_pushout", None)
+                if operation is None:
+                    raise NotImplementedError(
+                        "neither factor carries a represented commutative-algebra pushout backend"
+                    )
+                return operation(left_morphism, right_morphism)
+
+        _HomCategory = AlgebraHomCategoryConstruction
+
+        def an_object(self):
+            r"""The polynomial algebra on one generator."""
+            from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "commutative algebras"
+
+
+
+
+
+
+
+        class ParentMethods:
+            def is_commutative(self) -> bool:
+                return True
+
+
 
 class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     r"""Unital algebras interned on a chosen morphism \(A\otimes_R A\to A\)."""
@@ -303,11 +447,26 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        @cached_method
         def one(self):
-            return self._preamble_algebra_unit
+            selected = self.__dict__.get("_preamble_algebra_unit")
+            if selected is not None:
+                return selected
+            source = self._preamble_multiplication_source_module
+            multiplication = self._preamble_source_multiplication
+            unit_source = (
+                source.one()
+                if source in Algebras(self.base_ring())
+                else _unit_from_multiplication(multiplication)
+            )
+            _forget, equip = self._multiplication_transport_maps()
+            return equip(unit_source)
 
         def multiplication_morphism(self):
-            return self._preamble_multiplication_morphism
+            selected = self.__dict__.get("_preamble_multiplication_morphism")
+            if selected is not None:
+                return selected
+            return self._transported_multiplication_morphism()
 
         def _owned_scalar_multiple(self, scalar, element):
             r"""Use the selected underlying module action on an interned algebra."""
@@ -326,95 +485,6 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
                 lambda scalar: center(unit._lmul_(base(scalar))),
             )
 
-
-class CommutativeAlgebras(OwnedCategoryOverBaseRing):
-    r"""Commutative associative unital algebras over ``R``."""
-
-    class SubcategoryMethods:
-        r"""Constructions this category owns, reachable from any subcategory."""
-
-        def product(self, factors):
-            r"""Return the product of a finite family of objects of this category."""
-            return self._fold_construction(
-                self._categorical_product, factors, name="Product factors"
-            )
-
-        def _categorical_product(self, left, right):
-            raise NotImplementedError(
-                "the represented categorical product of commutative algebras is not yet implemented"
-            )
-
-        def coproduct(self, factors):
-            r"""Return the coproduct of a finite family of objects of this category."""
-            return self._fold_construction(
-                self._categorical_coproduct, factors, name="Coproduct factors"
-            )
-
-        def _categorical_coproduct(self, left, right):
-            operation = getattr(left, "_commutative_algebra_coproduct", None)
-            if operation is None:
-                operation = getattr(right, "_commutative_algebra_coproduct", None)
-            if operation is None:
-                raise NotImplementedError(
-                    "neither factor carries a represented commutative-algebra coproduct backend"
-                )
-            return operation(left, right)
-
-        def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
-            return source.from_cocone(
-                target.left_coproduct_map() * left_morphism,
-                target.right_coproduct_map() * right_morphism,
-            )
-
-        def pushout(self, left_leg, right_leg):
-            r"""Return the pushout of the span these two legs form.
-
-            The span is the diagram, and the pushout is its colimit; the legs
-            are named here because the span object is the datum, not an arity.
-            """
-            assert left_leg.domain() is right_leg.domain(), (
-                "a span has one common domain"
-            )
-            return self._categorical_pushout(left_leg, right_leg)
-
-        def _categorical_pushout(self, left_morphism, right_morphism):
-            left = left_morphism.codomain()
-            right = right_morphism.codomain()
-            operation = getattr(left, "_commutative_algebra_pushout", None)
-            if operation is None:
-                operation = getattr(right, "_commutative_algebra_pushout", None)
-            if operation is None:
-                raise NotImplementedError(
-                    "neither factor carries a represented commutative-algebra pushout backend"
-                )
-            return operation(left_morphism, right_morphism)
-
-    _HomCategory = AlgebraHomCategoryConstruction
-
-    def an_object(self):
-        r"""The polynomial algebra on one generator."""
-        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
-        from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-        return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "commutative algebras"
-
-    def super_categories(self):
-
-        return [Algebras(self.base_ring()), OwnedCommutativeRings()]
-
-
-
-
-
-
-
-    class ParentMethods:
-        def is_commutative(self) -> bool:
-            return True
 
 
 class FramedAlgebras(OwnedCategoryOverBaseRing):
@@ -499,7 +569,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
 
-        if self.base_ring() not in OwnedCommutativeRings():
+        if self.base_ring() not in OwnedRings().Commutative():
             raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
@@ -524,7 +594,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
             )
 
         def algebra_generating_set(self):
-            return self._preamble_algebra_generating_set
+            return self.module_generating_set()
 
         def algebra_generator(self, label):
             label = self.algebra_generating_set()(label)
@@ -532,16 +602,19 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
 
 
 def refine_matrix_algebra(homset):
-    r"""Attach the canonical ``R``-algebra structure to a square matrix Hom object."""
+    r"""Return a square matrix Hom after requiring constructor-time algebra placement."""
 
     ring = homset.base_ring()
     if homset not in MatrixEndomorphismSpaces(ring):
         return homset
-    if ring not in OwnedCommutativeRings():
+    if ring not in OwnedRings().Commutative():
         return homset
-    homset._preamble_base_ring = ring
-    homset._preamble_algebra_generating_set = homset.module_generating_set()
-    return refine(homset, MatrixAlgebras(ring))
+    if homset not in MatrixAlgebras(ring):
+        raise TypeError(
+            "a finite-free endomorphism Hom over a commutative ring must be "
+            "constructed in its canonical matrix-algebra category"
+        )
+    return homset
 
 
 class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
@@ -692,8 +765,19 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
 
         tensor_factors = coproduct_factors
 
+        @cached_method
         def coproduct_injection(self, index):
-            return self._preamble_coproduct_injections[index]
+            index = int(index)
+            if index not in (0, 1):
+                raise IndexError("a binary coproduct has two injections")
+            factor = self.coproduct_factors()[index]
+            tag = "left" if index == 0 else "right"
+            return factor.Mor(self)(
+                {
+                    label: self.algebra_generator((tag, label))
+                    for label in factor.algebra_generating_set()
+                }
+            )
 
         def coproduct_injections(self):
             return tuple(self.coproduct_injection(index) for index in range(2))
@@ -754,8 +838,19 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         def pushout_span(self):
             return self._preamble_pushout_span
 
+        @cached_method
         def pushout_maps(self):
-            return self._preamble_pushout_maps
+            coproduct = self._preamble_pushout_coproduct
+            quotient_map = coproduct.Mor(self)(
+                {
+                    label: self.algebra_generator(label)
+                    for label in coproduct.algebra_generating_set()
+                }
+            )
+            return tuple(
+                quotient_map * injection
+                for injection in coproduct.coproduct_injections()
+            )
 
         def left_pushout_map(self):
             return self.pushout_maps()[0]
@@ -1273,6 +1368,10 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
     Element = _OwnedAlgebraElement
 
+    def base_ring(self):
+        r"""Return the scalar ring declared by this algebra construction."""
+        return self._preamble_algebra_base_ring
+
     def __init__(
         self,
         engine,
@@ -1282,8 +1381,11 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         generator_values=None,
         *,
         categories=(),
+        construction_data=(),
     ) -> None:
         base = _owned_ring(base_ring)
+        for name, value in construction_data:
+            setattr(self, name, value)
         self._preamble_algebra_base_ring = base
         self._preamble_algebra_generating_set = (
             None if labels is None else finite_ordered_set(labels)
@@ -1377,17 +1479,30 @@ def _default_structure_map(base, algebra):
 
 
 @cached_function
-def _owned_algebra_view(engine, base_ring, labels=None, categories=()):
+def _owned_algebra_view(
+    engine,
+    base_ring,
+    labels=None,
+    categories=(),
+    construction_data=(),
+):
     base = _owned_ring(base_ring)
     return _OwnedAlgebraParent(
         engine,
         base,
         labels,
         categories=tuple(categories),
+        construction_data=tuple(construction_data),
     )
 
 
-def refine_algebra(algebra, base_ring, labels=None, *categories):
+def refine_algebra(
+    algebra,
+    base_ring,
+    labels=None,
+    *categories,
+    construction_data=(),
+):
     r"""Construct an owned algebra view with its selected categories present."""
     base = _owned_ring(base_ring)
     return _owned_algebra_view(
@@ -1395,6 +1510,7 @@ def refine_algebra(algebra, base_ring, labels=None, *categories):
         base,
         labels,
         tuple(categories),
+        tuple(construction_data),
     )
 
 
@@ -1420,7 +1536,12 @@ def _require_endomorphism_multiplication(multiplication, ring):
     return module
 
 
-def _module_presented_by_multiplication(module):
+def _module_presented_by_multiplication(
+    module,
+    *,
+    extra_categories=(),
+    extra_construction_data=None,
+):
     from sage.rings.infinity import Infinity
 
     ring = _owned_ring(module.base_ring())
@@ -1434,7 +1555,11 @@ def _module_presented_by_multiplication(module):
         raise TypeError(
             "the multiplication internment requires a represented finite module presentation"
         )
-    return constructor(labels)
+    return constructor(
+        labels,
+        _extra_categories=tuple(extra_categories),
+        _extra_construction_data=extra_construction_data,
+    )
 
 
 def _unit_from_multiplication(multiplication):
@@ -1509,7 +1634,13 @@ def _multiplication_is_commutative(multiplication) -> bool:
     return True
 
 
-def algebra_from_multiplication(multiplication, base_ring=None, unital=True):
+def algebra_from_multiplication(
+    multiplication,
+    base_ring=None,
+    unital=True,
+    *,
+    extra_categories=(),
+):
     r"""Return the algebra presented by an \(R\)-module morphism \(A\otimes_R A\to A\)."""
     from sage.categories.map import Map
 
@@ -1532,39 +1663,27 @@ def algebra_from_multiplication(multiplication, base_ring=None, unital=True):
                 "a multiplication outside the represented tensor-product category requires its module to own the algebra construction"
             )
         return specialized(multiplication, unital=unital)
-    algebra = _module_presented_by_multiplication(module)
-    labels = module.module_generating_set()
-    forget = module_homset(algebra, module)(
-        {label: module.module_generator(label) for label in labels}
-    )
-    equip = module_homset(module, algebra)(
-        {label: algebra.module_generator(label) for label in labels}
-    )
-    source_tensor = TensorProduct(algebra, algebra)
-    transported = tensor_product_morphism(
-        forget,
-        forget,
-        source=source_tensor,
-        target=multiplication.domain(),
-    )
-    algebra._preamble_multiplication_morphism = equip * multiplication * transported
-    algebra._preamble_algebra_base_ring = ring
-    placement = [AssociativeAlgebrasWithChosenMultiplication(ring)]
+    placement = []
     if unital:
         if module in Algebras(ring):
-            unit_source = module.one()
+            module.one()
         else:
-            unit_source = _unit_from_multiplication(multiplication)
-        algebra._preamble_algebra_unit = equip(unit_source)
-        placement.extend(
-            [
-                Algebras(ring),
-                AlgebrasWithChosenMultiplication(ring),
-            ]
-        )
+            _unit_from_multiplication(multiplication)
+        placement.append(AlgebrasWithChosenMultiplication(ring))
         if _multiplication_is_commutative(multiplication):
             placement.append(CommutativeAlgebras(ring))
-    return refine(algebra, placement)
+    else:
+        placement.append(AssociativeAlgebrasWithChosenMultiplication(ring))
+    placement.extend(extra_categories)
+    return _module_presented_by_multiplication(
+        module,
+        extra_categories=tuple(placement),
+        extra_construction_data={
+            "multiplication_source_module": module,
+            "source_multiplication": multiplication,
+            "algebra_base_ring": ring,
+        },
+    )
 
 
 @cached_function
@@ -1712,3 +1831,12 @@ __all__ = [
     "own_algebra",
     "refine_algebra",
 ]
+
+
+def CommutativeAlgebras(base_ring):
+    r"""The category of commutative ``R``-algebras.
+
+    The session name for ``Algebras(R).Commutative()``: commutativity is an
+    axiom on the multiplication, and this is the category it cuts out.
+    """
+    return Algebras(base_ring).Commutative()

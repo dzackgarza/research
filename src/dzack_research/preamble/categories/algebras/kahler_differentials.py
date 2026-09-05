@@ -1,6 +1,6 @@
 r"""Kähler differentials of represented commutative algebras."""
 
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
     Derivations,
@@ -14,13 +14,14 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    FreshFreeModuleOn,
+)
 from dzack_research.preamble.categories.modules.internal_hom import InternalHom
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -58,13 +59,24 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        def __init__(self, source_algebra, **rest) -> None:
+            self._preamble_source_algebra = source_algebra
+            super().__init__(**rest)
+
         def source_algebra(self):
             return self._preamble_source_algebra
 
         algebra = source_algebra
 
+        @cached_method
         def universal_derivation(self):
-            return self._preamble_universal_derivation
+            algebra = self.source_algebra()
+            return Derivations(algebra, self)(
+                {
+                    label: self.differential_generator(label)
+                    for label in algebra.algebra_generating_set()
+                }
+            )
 
         def differential_generator(self, algebra_generator_label):
             return self.module_generator(("d", algebra_generator_label))
@@ -94,40 +106,10 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                     "the represented Kähler Hom isomorphism currently requires a finite presentation of Hom_A(Omega^1,M)"
                 )
             derivations = Derivations(algebra, target_module)
-
-            def to_derivation(classifier):
-                return derivations(
-                    {
-                        label: classifier(self.differential_generator(label))
-                        for label in derivations.generator_labels()
-                    }
-                )
-
-            def to_classifier(derivation):
-                return self.from_derivation(derivation)
-
-            # Transport the already-computed internal-Hom presentation to the
-            # actual derivation parent.  This adds coordinates to the same
-            # derivation object; it does not create a second Der_R.
-            if derivations.__dict__.get("_preamble_kahler_classifier_module") is None:
-                derivations._preamble_module_generating_set = (
-                    classifiers.module_generating_set()
-                )
-                derivations._preamble_relation_matrix = classifiers.presentation_matrix()
-                derivations._preamble_presentation = classifiers.presentation()
-                derivations._preamble_module_generator_function = (
-                    lambda label: to_derivation(classifiers.module_generator(label))
-                )
-                derivations._preamble_module_coefficient_function = (
-                    lambda derivation: module_coefficients(
-                        to_classifier(derivation),
-                        classifiers,
-                    )
-                )
-                derivations._preamble_kahler_classifier_module = classifiers
-                refine(
-                    derivations,
-                    ModulesWithChosenFinitePresentation(algebra),
+            if derivations not in ModulesWithChosenFinitePresentation(algebra):
+                raise TypeError(
+                    "the represented Kähler classifier must construct Der_R(A,M) "
+                    "with its chosen finite presentation"
                 )
 
             forward = module_homset(classifiers, derivations)(
@@ -185,19 +167,18 @@ def KahlerDifferentials(algebra):
             return free_differentials.linear_combination(coefficients)
 
         relation_map = module_homset(relation_module, free_differentials)(relation_image)
-        omega = FinitelyPresentedModule(relation_map)
+        omega = FinitelyPresentedModule(
+            relation_map,
+            _extra_categories=(KahlerDifferentialModules(algebra),),
+            _extra_construction_data={"source_algebra": algebra},
+        )
     else:
-        omega = free_differentials
-
-    omega._preamble_source_algebra = algebra
-    omega = refine(omega, KahlerDifferentialModules(algebra))
-    universal = Derivations(algebra, omega)(
-        {
-            label: omega.differential_generator(label)
-            for label in labels
-        }
-    )
-    omega._preamble_universal_derivation = universal
+        omega = FreshFreeModuleOn(
+            algebra,
+            differential_labels,
+            _extra_categories=(KahlerDifferentialModules(algebra),),
+            _extra_construction_data={"source_algebra": algebra},
+        )
     return omega
 
 

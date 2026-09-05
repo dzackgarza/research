@@ -236,8 +236,14 @@ def indecomposable_name(lattice):
     return None
 
 
-@cached_function(key=lambda module, basis: (id(module), basis))
-def _lattice_subobject_spanning(module, basis):
+@cached_function(
+    key=lambda module, basis, root_cartan_type=None: (
+        id(module),
+        basis,
+        root_cartan_type,
+    )
+)
+def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
     r"""Return the canonical lattice subobject on a finite span basis."""
 
     ring = module.base_ring()
@@ -263,11 +269,18 @@ def _lattice_subobject_spanning(module, basis):
         module_inclusion = module_embedding(source, module, embedded)
         return source.Emb(module)(module_inclusion)
 
+    extra_categories = ()
+    construction_data = ()
+    if root_cartan_type is not None:
+        extra_categories = (RootLattices(),)
+        construction_data = (("cartan_type", root_cartan_type),)
     source = Lattice(
         prototype._module,
         prototype.gram_tensor(),
         category,
         prototype._sage_lattice,
+        extra_categories=extra_categories,
+        construction_data=construction_data,
         subobject_ambient=module,
         subobject_generator_images=embedded,
         subobject_lift=lift,
@@ -678,9 +691,29 @@ class Lattices(OwnedCategoryOverBaseRing):
         return refine(lattice, categories) if categories else lattice
 
     def _refine_root_lattice(self, lattice, cartan_type):
-        r"""Attach the selected root-system provenance to ``lattice``."""
-        lattice._cartan_type = cartan_type
-        return refine(lattice, RootLattices())
+        r"""Return a root-structured copy with constructor-owned Cartan data."""
+        if lattice in RootLattices() and lattice.cartan_type() == cartan_type:
+            return lattice
+        result = Lattice(
+            lattice._module,
+            lattice.gram_tensor(),
+            self,
+            lattice._sage_lattice,
+            extra_categories=(RootLattices(),),
+            construction_data=(("cartan_type", cartan_type),),
+            subobject_ambient=lattice.__dict__.get("_preamble_subobject_ambient"),
+            subobject_generator_images=lattice.__dict__.get(
+                "_preamble_subobject_generator_images"
+            ),
+            subobject_lift=lattice.__dict__.get("_preamble_subobject_lift"),
+            subobject_inclusion_factory=lattice.__dict__.get(
+                "_preamble_subobject_inclusion_factory"
+            ),
+            subobject_verify_linearity=lattice.__dict__.get(
+                "_preamble_subobject_verify_linearity", True
+            ),
+        )
+        return self._refine_lattice_object(result)
 
     def colimit(self, stage):
         r"""Return \(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
@@ -771,6 +804,15 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             basis = _span_basis_elements(self, module_generating_set)
             return _lattice_subobject_spanning(self, basis)
+
+        def _root_subobject_on(self, module_generating_set, cartan_type):
+            r"""Return the selected root sublattice with Cartan data at construction."""
+            basis = _span_basis_elements(self, module_generating_set)
+            return _lattice_subobject_spanning(
+                self,
+                basis,
+                root_cartan_type=cartan_type,
+            )
 
         @cached_method
         def form(self):
@@ -2479,7 +2521,7 @@ class RootLattices(Category):
 
     class ParentMethods:
         def cartan_type(self):
-            return self._cartan_type
+            return self._preamble_cartan_type
 
         def simple_roots(self):
             r"""Return the selected framing, which is the chosen simple system."""

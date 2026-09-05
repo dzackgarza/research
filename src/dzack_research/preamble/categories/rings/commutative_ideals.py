@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
@@ -69,11 +68,14 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
         subobject_ambient=target_regular_module,
         subobject_generator_images=embedded,
         extra_categories=(CommutativeIdeals(localization_ring),),
+        extra_construction_data={
+            "ideal_generators": tuple(
+                localization_map(generator)
+                for generator in source_ideal.ideal_generators()
+            ),
+            "localization_source_ideal": source_ideal,
+        },
     )
-    ideal._preamble_ideal_generators = tuple(
-        localization_map(generator) for generator in source_ideal.ideal_generators()
-    )
-    ideal._preamble_localization_source_ideal = source_ideal
     return ideal
 
 
@@ -102,6 +104,21 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         return candidate in self.subobject_category()
 
     class ParentMethods:
+        def __init__(
+            self,
+            ideal_generators=None,
+            engine_ideal=None,
+            localization_source_ideal=None,
+            **rest,
+        ) -> None:
+            if ideal_generators is not None:
+                self._preamble_ideal_generators = tuple(ideal_generators)
+            if engine_ideal is not None:
+                self._preamble_engine_ideal = engine_ideal
+            if localization_source_ideal is not None:
+                self._preamble_localization_source_ideal = localization_source_ideal
+            super().__init__(**rest)
+
         def ring(self):
             return self.base_ring()
 
@@ -415,6 +432,13 @@ def CommutativeIdeal(ring, *generators):
                 Sets.Δ[-1],
                 _subobject_ambient=ambient_module,
                 _subobject_generator_images={},
+                _extra_categories=(CommutativeIdeals(source),),
+                _extra_construction_data={
+                    "engine_ideal": backend,
+                    "ideal_generators": (
+                        _owned_engine_value(source, generator),
+                    ),
+                },
             )
         else:
             ideal = FreshFreeModuleOn(
@@ -424,10 +448,14 @@ def CommutativeIdeal(ring, *generators):
                 _subobject_generator_images={
                     0: ambient_module((_owned_engine_value(source, generator),))
                 },
+                _extra_categories=(CommutativeIdeals(source),),
+                _extra_construction_data={
+                    "engine_ideal": backend,
+                    "ideal_generators": (
+                        _owned_engine_value(source, generator),
+                    ),
+                },
             )
-        ideal._preamble_engine_ideal = backend
-        ideal._preamble_ideal_generators = (_owned_engine_value(source, generator),)
-        refine(ideal, CommutativeIdeals(source))
         return ideal
     syzygies = backend.syzygy_module()
 
@@ -455,10 +483,15 @@ def CommutativeIdeal(ring, *generators):
             label: ambient_module((_owned_engine_value(source, selected[position]),))
             for position, label in enumerate(labels)
         },
+        _extra_categories=(CommutativeIdeals(source),),
+        _extra_construction_data={
+            "engine_ideal": backend,
+            "ideal_generators": tuple(
+                _owned_engine_value(source, generator)
+                for generator in selected
+            ),
+        },
     )
-    ideal._preamble_engine_ideal = backend
-    ideal._preamble_ideal_generators = tuple(_owned_engine_value(source, generator) for generator in selected)
-    refine(ideal, CommutativeIdeals(source))
     return ideal
 
 

@@ -1,5 +1,6 @@
 """Owned categories and basic constructors for schemes over a base ring."""
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.morphism import Morphism
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -13,6 +14,7 @@ from sage.schemes.projective.projective_space import (
 from sage.schemes.product_projective.space import (
     ProductProjectiveSpaces as _SageProductProjectiveSpaces,
 )
+from sage.structure.category_object import CategoryObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SliceOver
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -38,7 +40,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     SchemeUnderlyingSpace,
 )
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Coproduct,
     Pushout,
@@ -51,7 +53,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _engine_algebra_morphism,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
     FreeAlgebras,
     GradedFreeAlgebras,
     SymmetricAlgebras,
@@ -299,7 +300,13 @@ def refine_scheme_morphism(morphism, base_ring):
 
 
 def refine_scheme(scheme, base_ring=None, categories=()):
-    r"""Adopt a native Sage scheme into the owned scheme hierarchy."""
+    r"""Adopt a native Sage scheme at the scheme-constructor boundary.
+
+    This is structural placement, not property refinement: the native scheme
+    is not an owned scheme until this adapter has installed its base and full
+    category placement.  Keep that operation separate from :func:`refine`,
+    whose post-construction role is restricted to verified properties/axioms.
+    """
     base = _own_ring(scheme.base_ring()) if base_ring is None else _own_ring(base_ring)
     scheme._preamble_scheme_base_ring = base
     placements = [Schemes(base), *categories]
@@ -308,7 +315,9 @@ def refine_scheme(scheme, base_ring=None, categories=()):
         for category in placement.all_super_categories(proper=False):
             category_types.add(type(category))
     scheme._preamble_scheme_category_types = frozenset(category_types)
-    return refine(scheme, placements)
+    CategoryObject._refine_category_(scheme, Category.join(tuple(placements)))
+    realize_owned_category(scheme)
+    return scheme
 
 
 class Schemes(OwnedCategoryOverBaseRing):
@@ -712,19 +721,25 @@ class AffineSchemes(_SchemePropertyCategory):
                 else tuple(equations)
             )
             algebra = self.coordinate_algebra()
-            quotient = FinitelyPresentedAlgebra(algebra, equations)
-            subscheme = Spec(quotient)
-            spec_inclusion = affine_spec_morphism(
-                quotient.algebra_presentation_morphism()
+            quotient_operation = getattr(
+                algebra,
+                "_quotient_by_algebra_elements",
+                None,
             )
+            if quotient_operation is None:
+                raise NotImplementedError(
+                    "a closed affine subscheme requires a represented polynomial "
+                    "presentation of its coordinate algebra"
+                )
+            quotient, quotient_map = quotient_operation(equations)
+            subscheme = Spec(quotient)
+            spec_inclusion = affine_spec_morphism(quotient_map)
             inclusion = categorical_scheme_morphism(
                 spec_inclusion.native_morphism(),
                 domain=subscheme,
                 codomain=self,
             )
-            inclusion._preamble_coordinate_algebra_morphism = (
-                quotient.algebra_presentation_morphism()
-            )
+            inclusion._preamble_coordinate_algebra_morphism = quotient_map
             subscheme._preamble_inclusion = inclusion
             return refine_closed_subscheme(
                 subscheme,

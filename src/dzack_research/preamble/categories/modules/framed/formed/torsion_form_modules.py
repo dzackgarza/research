@@ -6,6 +6,7 @@ relation submodule in the appropriate sense; these constructors check that
 descent before equipping the module with the form.
 """
 
+from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_method
@@ -27,7 +28,7 @@ from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     refine_finitely_presented_torsion_module,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
@@ -715,13 +716,18 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             else engine_group
         )
         self._supergroup = self if supergroup is None else supergroup
+        categories = [OwnedFiniteGroups()]
+        if supergroup is not None:
+            self._preamble_supergroup = supergroup
+            categories.append(Subgroups(supergroup))
         CategoricalHomset.__init__(
             self,
             hom_family,
             form,
             form,
+            category=Category.join(tuple(categories)),
         )
-        refine(self, OwnedFiniteGroups())
+        realize_owned_category(self)
 
     def is_quadratic(self) -> bool:
         return self._quadratic
@@ -996,9 +1002,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             engine_group=engine_subgroup,
             supergroup=self,
         )
-        subgroup._preamble_supergroup = self
-
-        return refine(subgroup, [OwnedFiniteGroups(), Subgroups(self)])
+        return subgroup
 
     def stabilizer_of_element(self, element):
         point = self._engine_abelian_element(element)
@@ -1203,13 +1207,14 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             raise ValueError("the bilinear form does not descend through the selected relations")
         formed = FormModule(
             BilinearForms(module, value_module)(values),
+            _extra_categories=(self,),
             _subobject_ambient=_subobject_ambient,
             _subobject_generator_images=_subobject_generator_images,
             _subobject_lift=_subobject_lift,
             _subobject_inclusion_factory=_subobject_inclusion_factory,
             _subobject_verify_linearity=_subobject_verify_linearity,
         )
-        return refine(formed, self)
+        return formed
 
     def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
         r"""Construct a torsion bilinear form from presentation and Gram data."""
@@ -1352,13 +1357,14 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             raise ValueError("the quadratic form does not descend through the selected relations")
         formed = FormModule(
             QuadraticForms(module, value_module)(values),
+            _extra_categories=(self,),
             _subobject_ambient=_subobject_ambient,
             _subobject_generator_images=_subobject_generator_images,
             _subobject_lift=_subobject_lift,
             _subobject_inclusion_factory=_subobject_inclusion_factory,
             _subobject_verify_linearity=_subobject_verify_linearity,
         )
-        return refine(formed, self)
+        return formed
 
     def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
         r"""Construct a torsion quadratic form from presentation and Gram data."""
@@ -1442,12 +1448,10 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
                             quadratic_form.lift_pairing(equip(left), equip(right))
                         )
                     )
-                )
+                ),
+                _extra_categories=(TorsionBilinearFormModules(self.base_ring()),),
             )
-            return refine(
-                associated,
-                TorsionBilinearFormModules(self.base_ring()),
-            )
+            return associated
 
 
 __all__ = [

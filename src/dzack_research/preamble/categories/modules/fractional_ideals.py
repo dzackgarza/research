@@ -27,7 +27,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleEmbedding,
 )
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModuleOn,
     MatrixSpace,
@@ -228,6 +228,12 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             if _engine_ring(self.base_ring()) is SageZZ:
                 return True
             return _principal_generator_from_integer_module(self) is not None
+
+        def is_projective(self) -> bool:
+            ring = _engine_ring(self.base_ring())
+            if ring is SageZZ:
+                return True
+            return bool(ring.is_maximal()) or self.is_principal()
 
         def principal_generator(self):
             r"""Return ``a`` with ``I=aR`` when this ideal is principal."""

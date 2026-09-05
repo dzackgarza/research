@@ -251,10 +251,9 @@ def root_sublattice(lattice):
 
     recognized = component_types[0] if len(component_types) == 1 else CartanType(component_types)
 
-    source = lattice.subobject_on(ordered)
     if lattice.is_negative_definite():
-        source = lattice.lattice_category()._refine_root_lattice(source, recognized)
-    return source
+        return lattice._root_subobject_on(ordered, recognized)
+    return lattice.subobject_on(ordered)
 
 
 def vectors_of_square_and_divisibility(lattice, square, divisibility):

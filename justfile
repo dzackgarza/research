@@ -97,8 +97,12 @@ docs-preview: docs-bib
 # Survey a live session into the preamble reference, its graph JSON, and the interactive graph
 preamble-megadoc:
     # The survey imports the preamble, so it runs under Sage's own interpreter,
-    # which sits beside the `sage` launcher SAGE_BIN names.
-    PYTHONPATH=src "$(dirname "${SAGE_BIN:-$(command -v sage)}")/python3" \
+    # which sits beside the real `sage` launcher.  Resolve wrapper symlinks
+    # before taking dirname: ~/.local/bin/sage may point into Sage's venv.
+    sage_launcher="${SAGE_BIN:-$(command -v sage)}"; \
+    case "$sage_launcher" in */*) ;; *) sage_launcher="$(command -v "$sage_launcher")" ;; esac; \
+    sage_launcher="$(readlink -f "$sage_launcher")"; \
+    PYTHONPATH=src "$(dirname "$sage_launcher")/python3" \
         -m dzack_research.utilities.megadoc -o "{{preamble_megadoc_file}}"
 
 # Static architecture/complexity inventory for the live preamble

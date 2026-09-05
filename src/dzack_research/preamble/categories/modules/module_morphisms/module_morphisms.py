@@ -1120,25 +1120,76 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
         r"""Construct a module morphism without Sage coercion discovery."""
         return self._element_constructor_(images)
 
+    def _internal_hom_model_data(self):
+        from dzack_research.preamble.categories.modules.internal_hom import (
+            _internal_hom_model_data,
+        )
 
+        return _internal_hom_model_data(self)
 
+    def module_generating_set(self):
+        selected = self.__dict__.get("_preamble_module_generating_set")
+        if selected is not None:
+            return selected
+        model, _inclusion, _relations, _presentation = self._internal_hom_model_data()
+        return model.module_generating_set()
 
+    def module_generator(self, label):
+        generator_function = self.__dict__.get("_preamble_module_generator_function")
+        if generator_function is not None:
+            labels = self.module_generating_set()
+            if label not in labels:
+                raise ValueError(f"{label!r} is not a module-generator label")
+            return generator_function(labels(label))
+        model = self.internal_hom_model()
+        if label not in model.module_generating_set():
+            raise ValueError(f"{label!r} is not an internal-Hom generator label")
+        return self._morphism_from_internal_model(model.module_generator(label))
 
+    def presentation_matrix(self):
+        stored = self.__dict__.get("_preamble_relation_matrix")
+        if stored is not None:
+            return stored
+        _model, _inclusion, relation_matrix, _presentation = self._internal_hom_model_data()
+        return relation_matrix
 
+    def presentation(self):
+        stored = self.__dict__.get("_preamble_presentation")
+        if stored is not None:
+            return stored
+        _model, _inclusion, _relation_matrix, presentation = self._internal_hom_model_data()
+        return presentation
 
+    def _selected_presentation_rows(self):
+        if (
+            self.__dict__.get("_preamble_module_generating_set") is not None
+            and self.__dict__.get("_preamble_relation_matrix") is None
+        ):
+            return ()
+        try:
+            return tuple(self.presentation_matrix().rows())
+        except NotImplementedError:
+            return None
 
-
+    def _selected_module_coefficients(self, morphism):
+        coefficient_function = self.__dict__.get("_preamble_module_coefficient_function")
+        if coefficient_function is not None:
+            return coefficient_function(morphism)
+        try:
+            model = self.internal_hom_model()
+        except NotImplementedError:
+            return None
+        return module_coefficients(
+            self._internal_model_from_morphism(self(morphism)),
+            model,
+        )
 
     def internal_hom_model(self):
-        model = self.__dict__.get("_preamble_internal_hom_model")
-        if model is None:
-            raise NotImplementedError("this Hom module has no computed finite presentation")
+        model, _inclusion, _relations, _presentation = self._internal_hom_model_data()
         return model
 
     def inclusion_into_generator_maps(self):
-        inclusion = self.__dict__.get("_preamble_internal_hom_inclusion")
-        if inclusion is None:
-            raise NotImplementedError("this Hom module has no computed generator-assignment inclusion")
+        _model, inclusion, _relations, _presentation = self._internal_hom_model_data()
         return inclusion
 
     def _morphism_from_internal_model(self, model_element):

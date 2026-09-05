@@ -1,5 +1,6 @@
 r"""Internal Hom modules for the exact finitely presented module backend."""
 
+from sage.misc.cachefunc import cached_function
 from sage.modules.fg_pid.fgp_morphism import FGP_Homset, FGP_Morphism
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -10,7 +11,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     InternalHomModules,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
@@ -57,86 +57,24 @@ def _native_fgp_morphism(morphism):
     return FGP_Morphism(FGP_Homset(domain_engine, codomain_engine), native_linear)
 
 
-def _install_internal_hom_model(homset, model, inclusion) -> None:
-    r"""Install one selected finite-presentation model on the canonical Hom parent."""
+@cached_function(key=lambda homset: id(homset))
+def _internal_hom_model_data(homset):
+    r"""Compute the endpoint-determined finite presentation of one Hom parent.
 
-
-    relation_matrix = _presentation_matrix(model)
-    presentation = (
-        model.presentation()
-        if model in _SelectedFinitePresentationModules(model.base_ring())
-        else _presentation_from_relation_rows(
-            model.base_ring(),
-            model.module_generating_set(),
-            Sets.Δ[relation_matrix.nrows() - 1],
-            relation_matrix,
-        )
-    )
-
-    def model_from_coordinates(coordinates):
-        values = iter(coordinates)
-        coefficients = {}
-        for label in model.module_generating_set():
-            try:
-                coefficient = next(values)
-            except StopIteration as error:
-                raise ValueError("internal-Hom coordinates are too short") from error
-            if coefficient:
-                coefficients[label] = coefficient
-        try:
-            next(values)
-        except StopIteration:
-            return model.linear_combination(coefficients)
-        raise ValueError("internal-Hom coordinates are too long")
-
-    homset._preamble_internal_hom_model = model
-    homset._preamble_internal_hom_inclusion = inclusion
-    homset._preamble_module_generating_set = model.module_generating_set()
-    homset._preamble_relation_matrix = relation_matrix
-    homset._preamble_presentation = presentation
-    homset._preamble_module_generator_function = (
-        lambda label: homset._morphism_from_internal_model(model.module_generator(label))
-    )
-    homset._preamble_module_coefficient_function = (
-        lambda morphism: module_coefficients(
-            homset._internal_model_from_morphism(homset(morphism)),
-            model,
-        )
-    )
-    homset._preamble_module_from_coordinates_function = (
-        lambda coordinates: homset._morphism_from_internal_model(
-            model_from_coordinates(coordinates)
-        )
-    )
-
-
-def InternalHom(source, target):
-    r"""Return the enriched Hom object ``source.Hom(target)``.
-
-    The categorical Hom-set is always the mathematical answer.  For a
-    selected presentation ``F1 -> F0 -> source``, this function additionally
-    computes the finite presentation
-    ``ker(Hom(F0,target) -> Hom(F1,target))`` and installs that presentation on
-    the same Hom parent.  The temporary quotient module is only a computational
-    model for the presentation and never escapes as a second Hom object.
+    The Hom parent receives its structural categories when it is constructed.
+    This helper only realizes that already-determined presentation lazily; it
+    never mutates the Hom parent's category or installs provenance on it.
     """
+    source = homset.domain()
+    target = homset.codomain()
     ring = _owned_ring(source.base_ring())
-    if _owned_ring(target.base_ring()) != ring:
-        raise ValueError("an internal Hom requires one common base ring")
-
-
-    homset = module_homset(source, target)
-    if homset.__dict__.get("_preamble_internal_hom_model") is not None:
-        return homset
-
-
     if (
         not _represented_finite_presentation(source)
         or not _represented_finite_presentation(target)
     ):
-        return homset
-
-
+        raise NotImplementedError(
+            "this Hom module has no endpoint-determined finite presentation"
+        )
 
     source_labels = source.module_generating_set()
     target_labels = target.module_generating_set()
@@ -175,13 +113,9 @@ def InternalHom(source, target):
         and generator_assignments._smith_engine() is not None
         and relation_assignments._smith_engine() is not None
     ):
-        # ``kernel`` is a Sage FGP module over the engine ring; its cover,
-        # relative relation matrix and lifts are read here and re-presented as
-        # the owned module ``model`` before anything is returned.
         kernel = _native_fgp_morphism(relation_evaluation).kernel()
         engine_ring = _engine_ring(ring)
         engine_kernel_relations = kernel._relative_matrix().change_ring(engine_ring)
-
         kernel_relations = MatrixSpace(
             ring,
             engine_kernel_relations.nrows(),
@@ -214,14 +148,27 @@ def InternalHom(source, target):
     else:
         model = relation_evaluation.kernel()
         inclusion = model.inclusion()
-    _install_internal_hom_model(homset, model, inclusion)
-    return refine(
-        homset,
-        [
-            InternalHomModules(ring),
-            _SelectedFinitePresentationModules(ring),
-        ],
+
+    relation_matrix = _presentation_matrix(model)
+    presentation = (
+        model.presentation()
+        if model in _SelectedFinitePresentationModules(model.base_ring())
+        else _presentation_from_relation_rows(
+            model.base_ring(),
+            model.module_generating_set(),
+            Sets.Δ[relation_matrix.nrows() - 1],
+            relation_matrix,
+        )
     )
+    return model, inclusion, relation_matrix, presentation
+
+
+def InternalHom(source, target):
+    r"""Return the canonical enriched Hom object ``source.Hom(target)``."""
+    ring = _owned_ring(source.base_ring())
+    if _owned_ring(target.base_ring()) != ring:
+        raise ValueError("an internal Hom requires one common base ring")
+    return module_homset(source, target)
 
 
 def internal_hom_morphism(source_internal_hom, target_internal_hom, source_map, target_map):

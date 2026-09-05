@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
@@ -67,6 +66,11 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
         return [FinitelyPresentedTorsionModules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(self, source_lattice, dual_lattice, **rest) -> None:
+            self._preamble_source_lattice = source_lattice
+            self._preamble_dual_lattice = dual_lattice
+            super().__init__(**rest)
+
         def source_lattice(self):
             return self._preamble_source_lattice
 
@@ -161,6 +165,10 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        def __init__(self, bilinear_value_module, **rest) -> None:
+            self._preamble_bilinear_value_module = bilinear_value_module
+            super().__init__(**rest)
+
         def bilinear_value_module(self):
             return self._preamble_bilinear_value_module
 
@@ -376,6 +384,10 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        def __init__(self, quadratic_value_module, **rest) -> None:
+            self._preamble_quadratic_value_module = quadratic_value_module
+            super().__init__(**rest)
+
         def quadratic_value_module(self):
             return self._preamble_quadratic_value_module
 
@@ -646,6 +658,16 @@ class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
         return [FinitelyPresentedTorsionModules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            ambient_discriminant_module,
+            discriminant_engine_subgroup,
+            **rest,
+        ) -> None:
+            self._preamble_ambient_discriminant_module = ambient_discriminant_module
+            self._preamble_discriminant_engine_subgroup = discriminant_engine_subgroup
+            super().__init__(**rest)
+
         def ambient_discriminant_module(self):
             return self._preamble_ambient_discriminant_module
 
@@ -716,6 +738,14 @@ def _discriminant_subgroup(ambient, generators):
         for invariant in engine_subgroup.invariants()
         if invariant > 1
     )
+    categories = (
+        FinitelyPresentedTorsionModules(ring),
+        DiscriminantSubmodules(ring),
+    )
+    construction_data = {
+        "ambient_discriminant_module": ambient,
+        "discriminant_engine_subgroup": engine_subgroup,
+    }
     if invariants:
         prototype = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics(invariants)
         ambient_generators = tuple(
@@ -732,6 +762,8 @@ def _discriminant_subgroup(ambient, generators):
             prototype.presentation(),
             _subobject_ambient=ambient,
             _subobject_generator_images=images,
+            _extra_categories=categories,
+            _extra_construction_data=construction_data,
         )
     else:
         # The zero finite module is presented by the identity on one generator.
@@ -741,11 +773,10 @@ def _discriminant_subgroup(ambient, generators):
             module_homset(free, free).identity(),
             _subobject_ambient=ambient,
             _subobject_generator_images={0: ambient.zero()},
+            _extra_categories=categories,
+            _extra_construction_data=construction_data,
         )
-    refine(source, FinitelyPresentedTorsionModules(ring))
-    source._preamble_ambient_discriminant_module = ambient
-    source._preamble_discriminant_engine_subgroup = engine_subgroup
-    return refine(source, DiscriminantSubmodules(ambient.base_ring()))
+    return source
 
 
 def _all_discriminant_subgroups(ambient):
@@ -792,22 +823,28 @@ def DiscriminantModule(lattice):
     r"""Return the literal cokernel of ``L -> L^#`` with descended forms when supported."""
     assert lattice.is_finite_rank() and lattice.is_nondegenerate()
 
-    module = lattice.correlation_morphism().cokernel()
-    module._preamble_source_lattice = lattice
-    module._preamble_dual_lattice = lattice.dual_lattice()
-    refine(module, DiscriminantModules(lattice.base_ring()))
+    prototype = lattice.correlation_morphism().cokernel()
+    ring = lattice.base_ring()
+    categories = [DiscriminantModules(ring)]
+    construction_data = {
+        "source_lattice": lattice,
+        "dual_lattice": lattice.dual_lattice(),
+    }
 
     # The general quotient-value abstraction is present, but the active native
     # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
     # another PID until its fraction-field quotient engine exists.
-    if _engine_ring(lattice.base_ring()) is SageZZ:
-
-        module._preamble_bilinear_value_module = FractionFieldQuotient(lattice.base_ring(), 1)
-        refine(module, DiscriminantBilinearModules(lattice.base_ring()))
+    if _engine_ring(ring) is SageZZ:
+        construction_data["bilinear_value_module"] = FractionFieldQuotient(ring, 1)
+        categories.append(DiscriminantBilinearModules(ring))
         if lattice.is_even():
-            module._preamble_quadratic_value_module = FractionFieldQuotient(lattice.base_ring(), 2)
-            refine(module, DiscriminantQuadraticModules(lattice.base_ring()))
-    return module
+            construction_data["quadratic_value_module"] = FractionFieldQuotient(ring, 2)
+            categories.append(DiscriminantQuadraticModules(ring))
+    return FinitelyPresentedModule(
+        prototype.presentation(),
+        _extra_categories=tuple(categories),
+        _extra_construction_data=construction_data,
+    )
 
 
 __all__ = [

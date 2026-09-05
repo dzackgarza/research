@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FreeResolution,
     ModulesWithChosenFinitePresentation,
+    VectorSpaces,
 )
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -113,30 +114,30 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def base_ring(self):
             return self._preamble_base_ring
 
-        def _richcmp_(self, other, op):
-            r"""Compare represented modules by their selected cokernel presentation.
-
-            Structural equipment such as a chosen inclusion does not change the
-            underlying presented module.  In particular, the whole subobject of
-            ``M`` is a distinct equipped parent but represents the same module
-            when it carries the identical selected presentation.
-            """
-            if op not in (op_EQ, op_NE):
-                return NotImplemented
+        def _same_selected_presentation_as(self, other):
+            r"""Return whether ``other`` represents this selected cokernel."""
             try:
                 same_ring = other.base_ring() is self.base_ring()
                 same_presentation = other.presentation() == self.presentation()
             except (AttributeError, TypeError, ValueError):
-                same_ring = False
-                same_presentation = False
-            equal = bool(same_ring and same_presentation)
-            return equal if op == op_EQ else not equal
+                return False
+            return bool(same_ring and same_presentation)
 
-        def _same_presentation_module(self, labels):
+        def _same_presentation_module(
+            self,
+            labels,
+            *,
+            _extra_categories=(),
+            _extra_construction_data=None,
+        ):
             r"""Return a fresh module carrying this chosen finite presentation."""
             if labels != self.module_generating_set():
                 raise ValueError("the requested framing differs from the selected presentation")
-            return FinitelyPresentedModule(self.presentation())
+            return FinitelyPresentedModule(
+                self.presentation(),
+                _extra_categories=tuple(_extra_categories),
+                _extra_construction_data=_extra_construction_data,
+            )
 
         def _presented_biproduct_with(self, other, labels, factors):
             r"""Return the finite-presentation realization of ``self direct_sum other``."""
@@ -1047,6 +1048,16 @@ class _GeneralPresentedModule:
     private; the category states the mathematics.
     """
 
+    def __eq__(self, other):
+        r"""Compare the underlying represented modules, not extra equipment."""
+        return self._same_selected_presentation_as(other)
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __hash__(self):
+        return hash((self.base_ring(), self.presentation()))
+
     def __init__(
         self,
         free_module,
@@ -1304,6 +1315,8 @@ def _new_presented_module(
 ):
     r"""Build a represented quotient through the category constructor chain."""
     categories = [_PresentedModuleObjects(base_ring)]
+    if base_ring in OwnedFields():
+        categories.append(VectorSpaces(base_ring))
     data = {
         "engine": engine,
         "free_module": free_module,

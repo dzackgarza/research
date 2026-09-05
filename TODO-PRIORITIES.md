@@ -730,6 +730,8 @@ Apply `archives/preamble/src-TODO.md` to the construction needed by the active g
 
 Repair shared initialization before adding dependent implementations. Use the local Cat boundary defined above to bound the repair.
 
+**Status: complete.** The remaining delayed-construction uses of `refine()` were removed from enriched Hom/End objects, formed and discriminant modules, Kähler derivations, Lebesgue graded objects, root/group lattices, vector-space base changes, number-field/order views, finite product enumeration, and native-scheme adoption. Constructor-owned data now enter through the corresponding object/view construction paths; the scheme adapter performs its structural adoption explicitly rather than through the property-refinement helper. The remaining production `refine()` calls admit only constructor-computed properties or axioms (finite/finite-support, abelian/finite, prime-field, torsion, finite-presentation, nondegeneracy/lattice properties, and projectivity). The old import-time ring/module/algebra installer family is absent from the production source census.
+
 ## Fundamental scheme theory
 
 [`PORT_TODO.md` §8.4](PORT_TODO.md#84-commutative-algebra-foundation-required-by-scheme-theory) owns the source-grounded dependency assessment.

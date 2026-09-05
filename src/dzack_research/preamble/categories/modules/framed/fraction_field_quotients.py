@@ -26,7 +26,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules

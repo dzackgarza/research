@@ -66,7 +66,6 @@ from dzack_research.preamble.categories.sets.cardinals import (
     aleph0,
     cardinal,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     _component_shape,
     _tensor_richcmp,
@@ -245,6 +244,8 @@ class Lattice(Parent, IndexedGenerators):
         sage_lattice,
         names=None,
         *,
+        extra_categories=(),
+        construction_data=(),
         subobject_ambient=None,
         subobject_generator_images=None,
         subobject_lift=None,
@@ -255,7 +256,13 @@ class Lattice(Parent, IndexedGenerators):
         self._preamble_free_module_constructor = module._fresh_free_module_on
         self._gram = gram
         self._sage_lattice = sage_lattice
-        parent_category = category
+        for name, value in construction_data:
+            setattr(self, f"_preamble_{name}", value)
+        parent_category = (
+            Category.join((category, *tuple(extra_categories)))
+            if extra_categories
+            else category
+        )
         subobject_data = (
             subobject_inclusion_factory is not None
             or (subobject_ambient is not None and subobject_generator_images is not None)
@@ -271,7 +278,7 @@ class Lattice(Parent, IndexedGenerators):
             self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
             self._preamble_subobject_verify_linearity = subobject_verify_linearity
             parent_category = Category.join(
-                (category, ModuleSubobjects(category.base_ring()))
+                (parent_category, ModuleSubobjects(category.base_ring()))
             )
         if isinstance(gram, _BiproductGram):
             from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
@@ -418,7 +425,14 @@ class Lattice(Parent, IndexedGenerators):
 
 
 @cached_function
-def _lattice_parent(module, gram, category, sage_lattice, names=None):
+def _lattice_parent(
+    module,
+    gram,
+    category,
+    sage_lattice,
+    names=None,
+    root_cartan_type=None,
+):
     r"""Construct a lattice and install the owned category surface.
 
     A lattice is its free module together with its form, so two
@@ -426,7 +440,22 @@ def _lattice_parent(module, gram, category, sage_lattice, names=None):
     Grams hash equally, so this is Sage's own construction cache.
     """
 
-    lattice = Lattice(module, gram, category, sage_lattice, names)
+    extra_categories = ()
+    construction_data = ()
+    if root_cartan_type is not None:
+        from dzack_research.preamble.categories.lattices import RootLattices
+
+        extra_categories = (RootLattices(),)
+        construction_data = (("cartan_type", root_cartan_type),)
+    lattice = Lattice(
+        module,
+        gram,
+        category,
+        sage_lattice,
+        names,
+        extra_categories=extra_categories,
+        construction_data=construction_data,
+    )
     refiner = getattr(category, "_refine_lattice_object", None)
     return refiner(lattice) if refiner is not None else lattice
 
@@ -1150,10 +1179,18 @@ def _lattice_from_gram_tensor(
         if module_generators is None
         else FreshFreeModuleOn(ring, generating_set)
     )
-    result = _lattice_parent(module, gram_tensor, category, None, names)
-    if root_cartan_type is not None and _engine_ring(ring) is SageZZ:
-        return category._refine_root_lattice(result, root_cartan_type)
-    return result
+    return _lattice_parent(
+        module,
+        gram_tensor,
+        category,
+        None,
+        names,
+        root_cartan_type=(
+            root_cartan_type
+            if root_cartan_type is not None and _engine_ring(ring) is SageZZ
+            else None
+        ),
+    )
 
 
 def _require_form_tensor(form, ring):

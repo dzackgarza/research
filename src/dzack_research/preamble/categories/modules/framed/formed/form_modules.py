@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     category_packet,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
-from dzack_research.preamble.refine import realize_owned_category, refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
@@ -1230,6 +1230,7 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
 def FormModule(
     form,
     *,
+    _extra_categories=(),
     _subobject_ambient=None,
     _subobject_generator_images=None,
     _subobject_lift=None,
@@ -1249,7 +1250,6 @@ def FormModule(
     module = form.module()
     base_ring = module.base_ring()
     labels = module.module_generating_set()
-    assert labels.cardinality().is_finite()
     categories = [FormModules(base_ring)]
     is_free = module in FramedFreeModules(base_ring)
     is_presented = module in ModulesWithChosenFinitePresentation(base_ring)
@@ -1279,6 +1279,7 @@ def FormModule(
                 FinitelyGeneratedFreeFormModules(base_ring),
             ]
         )
+    categories.extend(tuple(_extra_categories))
     construction_data = {
         "source_form": form,
         "unformed_module": module,
@@ -1297,7 +1298,7 @@ def FormModule(
     if is_presented:
         return FinitelyPresentedModule(module.presentation(), **common)
     raise TypeError(
-        "the active formed-module constructor requires a finite free or chosen finitely presented module"
+        "the active formed-module constructor requires a framed free or chosen finitely presented module"
     )
 
 
@@ -1355,25 +1356,7 @@ def _formed_module_from_pairing(pairing):
 
     if not _is_bilinear_form(pairing):
         raise TypeError("the diagonal of PairedModules is a bilinear form")
-    module = pairing.module()
-    ring = module.base_ring()
-    if module in FramedFreeModules(ring):
-        try:
-            finite = module.module_generating_set().cardinality().is_finite()
-        except AttributeError:
-            finite = False
-        if finite:
-            return FormModule(pairing)
-    module._form = pairing
-    module._pairing = pairing
-    return refine(
-        module,
-        [
-            FormModules(ring),
-            FormedModules(pairing.codomain()),
-            BilinearFormModules(ring),
-        ],
-    )
+    return FormModule(pairing)
 
 
 class _HeterogeneousPairing(Parent):

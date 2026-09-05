@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     TensorProductModuleMorphism,
@@ -394,10 +393,7 @@ def BilinearForms(module, value_module):
         except NotImplementedError:
             pass
         else:
-            return refine(
-                module_homset(tensor_product, value_module),
-                BilinearFormHoms(module.base_ring()),
-            )
+            return module_homset(tensor_product, value_module)
     return _callable_form_space(module, module, value_module, "bilinear")
 
 

@@ -2,6 +2,7 @@ r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
+from sage.categories.category import Category
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -40,7 +41,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     tensor,
@@ -607,11 +608,19 @@ class LatticeHomset(CategoricalHomset):
 class LatticeEmbeddingHomset(CategoricalHomset):
     Element = LatticeEmbedding
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(self, hom_family, domain, codomain, *, category=None) -> None:
         lattices = domain.lattice_category()
         if domain not in lattices or codomain not in lattices:
             raise TypeError("a lattice embedding homset has lattice endpoints")
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+        CategoricalHomset.__init__(
+            self,
+            hom_family,
+            domain,
+            codomain,
+            category=category,
+        )
+        if category is not None:
+            realize_owned_category(self)
 
     def _element_constructor_(self, images):
         if isinstance(images, ModuleEmbedding):
@@ -784,17 +793,22 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     Element = LatticeIsometry
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        LatticeEmbeddingHomset.__init__(self, hom_family, domain, codomain)
+        categories = []
         if domain is codomain:
-
-            categories = [OwnedGroups()]
+            categories.append(OwnedGroups())
             if (
                 _engine_ring(domain.base_ring()) is SageZZ
                 and domain.is_finite_rank()
                 and domain.is_definite()
             ):
                 categories.append(OwnedFiniteGroups())
-            refine(self, categories)
+        LatticeEmbeddingHomset.__init__(
+            self,
+            hom_family,
+            domain,
+            codomain,
+            category=Category.join(tuple(categories)) if categories else None,
+        )
 
     def _element_constructor_(self, images):
         if isinstance(images, LatticeIsometry):

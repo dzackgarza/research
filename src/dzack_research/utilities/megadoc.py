@@ -1330,12 +1330,12 @@ def graph_dot(survey: Survey) -> str:
         lines.append(f'    label="{html.escape(title)}"; fontsize=13; color="#cbd5e1"; style=rounded;')
         for doc in sorted(members, key=lambda d: d.name):
             shape = "" if survey.is_owned(doc.module) else ', style="rounded,filled,dashed"'
-            lines.append(f'    {doc.name} [label="{doc.display}", fillcolor="{colour[key]}"{shape}];')
+            lines.append(f'    {json.dumps(doc.name)} [label="{doc.display}", fillcolor="{colour[key]}"{shape}];')
         lines.append("  }")
     for doc in sorted(drawn.values(), key=lambda d: d.name):
         for super_name in sorted(set(doc.supers)):
             if super_name in drawn:
-                lines.append(f"  {doc.name} -> {super_name};")
+                lines.append(f"  {json.dumps(doc.name)} -> {json.dumps(super_name)};")
     lines.append("}")
     return "\n".join(lines) + "\n"
 

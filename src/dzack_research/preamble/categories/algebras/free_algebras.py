@@ -54,7 +54,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
@@ -260,10 +259,14 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         presentation_ideal,
         *,
         extra_categories=(),
+        extra_construction_data=None,
         free_source_module=None,
         commutative_backend=False,
         finite_free_degree=None,
     ) -> None:
+        if extra_construction_data is not None:
+            for name, value in extra_construction_data:
+                setattr(self, name, value)
         self._preamble_presentation_ring = presentation_ring
         self._preamble_presentation_relations = selected_relations
         self._preamble_presentation_ideal = presentation_ideal
@@ -326,6 +329,7 @@ def FinitelyPresentedAlgebra(
     relations,
     *,
     _extra_categories=(),
+    _extra_construction_data=None,
     _free_source_module=None,
 ):
     r"""Return the selected quotient ``R[S] / (relations)``."""
@@ -360,6 +364,11 @@ def FinitelyPresentedAlgebra(
         selected_relations,
         presentation_ideal,
         extra_categories=tuple(_extra_categories),
+        extra_construction_data=(
+            None
+            if _extra_construction_data is None
+            else tuple(_extra_construction_data)
+        ),
         free_source_module=_free_source_module,
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
@@ -609,25 +618,33 @@ def _commutative_algebra_coproduct_backend(left, right):
     ) + _transport_relations(
         right_presentation, right_relations, presentation, "right"
     )
-    coproduct = FinitelyPresentedAlgebra(presentation, relations) if relations else presentation
-    left_map = left.Mor(coproduct)(
-        {
-            label: coproduct.algebra_generator(("left", label))
-            for label in left.algebra_generating_set()
-        }
+    construction_data = (("_preamble_coproduct_factors", (left, right)),)
+    if relations:
+        return FinitelyPresentedAlgebra(
+            presentation,
+            relations,
+            _extra_categories=(CommutativeAlgebraCoproducts(base),),
+            _extra_construction_data=construction_data,
+        )
+    return refine_algebra(
+        presentation,
+        base,
+        combined_labels,
+        FreeAlgebras(base),
+        GradedFreeAlgebras(base),
+        SymmetricAlgebras(base),
+        CommutativeAlgebraCoproducts(base),
+        construction_data=construction_data,
     )
-    right_map = right.Mor(coproduct)(
-        {
-            label: coproduct.algebra_generator(("right", label))
-            for label in right.algebra_generating_set()
-        }
-    )
-    coproduct._preamble_coproduct_factors = (left, right)
-    coproduct._preamble_coproduct_injections = (left_map, right_map)
-    return refine(coproduct, CommutativeAlgebraCoproducts(base))
 
 
-def _quotient_by_algebra_elements_backend(algebra, elements):
+def _quotient_by_algebra_elements_backend(
+    algebra,
+    elements,
+    *,
+    extra_categories=(),
+    extra_construction_data=None,
+):
     base = algebra.base_ring()
     selected = tuple(elements)
     if not selected:
@@ -645,7 +662,12 @@ def _quotient_by_algebra_elements_backend(algebra, elements):
         raise NotImplementedError(
             "quotienting a commutative algebra requires a selected polynomial presentation"
         )
-    quotient = FinitelyPresentedAlgebra(presentation, relations)
+    quotient = FinitelyPresentedAlgebra(
+        presentation,
+        relations,
+        _extra_categories=tuple(extra_categories),
+        _extra_construction_data=extra_construction_data,
+    )
     quotient_map = algebra.Mor(quotient)(
         {
             label: quotient.algebra_generator(label)
@@ -686,13 +708,16 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         raise NotImplementedError(
             "the represented coproduct has no selected algebra-quotient backend"
         )
-    pushout, quotient_map = quotient_operation(equalities)
-    left_pushout = quotient_map * left_injection
-    right_pushout = quotient_map * right_injection
-    pushout._preamble_pushout_span = (left_map, right_map)
-    pushout._preamble_pushout_maps = (left_pushout, right_pushout)
-    pushout._preamble_pushout_coproduct = tensor
-    return refine(pushout, CommutativeAlgebraPushouts(base))
+    pushout, _quotient_map = _quotient_by_algebra_elements_backend(
+        tensor,
+        equalities,
+        extra_categories=(CommutativeAlgebraPushouts(base),),
+        extra_construction_data=(
+            ("_preamble_pushout_span", (left_map, right_map)),
+            ("_preamble_pushout_coproduct", tensor),
+        ),
+    )
+    return pushout
 
 class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
     r"""Divided-power algebras ``Gamma(M)`` with their canonical grading."""

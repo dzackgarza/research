@@ -50,7 +50,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     PartiallyOrderedSets,
     SetInclusion,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
 from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeal
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -655,11 +654,26 @@ class QuotientLocalizationComparison(SageObject):
 
 
 class PrimeLocalizations(OwnedCategory):
-    r"""Prime local rings ``R_p`` represented inside ``Frac(R)``."""
+    r"""Prime local rings ``R_p`` represented by fractions with denominator outside ``p``."""
 
     def super_categories(self):
         r"""``R_p`` is the localization at the multiplicative set ``R \ p``."""
-        return [LocalizationRings(), OwnedLocalRings(), OwnedIntegralDomains()]
+        return [LocalizationRings(), OwnedLocalRings()]
+
+    class ElementMethods:
+        def is_unit(self):
+            parent = self.parent()
+            return not parent.localized_prime().contains_ambient_element(
+                self.numerator()
+            )
+
+        def inverse_of_unit(self):
+            if not self.is_unit():
+                raise ZeroDivisionError(f"{self} is not a unit")
+            return self.parent().fraction(
+                self.denominator(),
+                self.numerator(),
+            )
 
     class ParentMethods:
         def __init__(
@@ -667,7 +681,7 @@ class PrimeLocalizations(OwnedCategory):
             source,
             submonoid,
             prime_ideal,
-            fraction_field,
+            fraction_field=None,
             *,
             engine_ring=None,
             **rest,
@@ -690,8 +704,8 @@ class PrimeLocalizations(OwnedCategory):
 
             source_engine = _engine_ring(source)
             generators = tuple(
-                self.fraction(source._from_engine_element(source_engine(generator)))
-                for generator in prime_ideal.gens()
+                self.fraction(generator)
+                for generator in prime_ideal.ideal_generators()
             )
             self._preamble_maximal_ideal = LocalizedMaximalIdeal(
                 self,
@@ -738,10 +752,11 @@ class PrimeLocalizations(OwnedCategory):
             return self._preamble_localization_map
 
         def is_field(self):
-            r"""A domain localization ``R_p`` is a field exactly for ``p=(0)``."""
-            source = self.localization_source()
-            prime = self.localized_prime()
-            return bool(prime == _engine_ring(source).ideal(0))
+            r"""Return whether the maximal ideal ``p R_p`` vanishes."""
+            return all(
+                self(generator) == self.zero()
+                for generator in self.localized_prime().ideal_generators()
+            )
 
 
 class AdicCompletions(Category):
@@ -838,7 +853,7 @@ class LocalizedMaximalIdeal(GeneratedIdealView):
             return False
         if ring in LocalizationRings():
             numerator, _ = ring.localization_fraction_data(element)
-            return _engine_element(ring.localization_source(), numerator) in self.source_ideal()
+            return self.source_ideal().contains_ambient_element(numerator)
         fraction = _engine_ring(ring.fraction_field())(element)
         return fraction.numerator() in self.source_ideal()
 
@@ -1074,11 +1089,16 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     prime_ideal = structure.get("prime_ideal")
     if prime_ideal is None:
         raise ValueError("prime-complement localization requires its represented prime ideal")
-    fraction_field = source.fraction_field()
-    fraction_engine = _engine_ring(fraction_field)
     placements = []
     if source in OwnedNoetherianRings():
         placements.append(OwnedNoetherianRings())
+    if source in OwnedIntegralDomains():
+        placements.append(OwnedIntegralDomains())
+        fraction_field = source.fraction_field()
+        fraction_engine = _engine_ring(fraction_field)
+    else:
+        fraction_field = None
+        fraction_engine = None
     return object_of(
         Category.join([PrimeLocalizations(), *placements]),
         source=source,
@@ -1092,14 +1112,15 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
 def PrimeLocalization(ring, prime):
     r"""Return ``R_p`` using the submonoid ``R \ p -> (R,*)``."""
     source = _own_ring(ring)
-    if source not in OwnedIntegralDomains():
-        raise TypeError("prime localization is currently represented for integral domains")
-    prime_ideal = _engine_ideal(source, prime)
-    if not bool(prime_ideal.is_prime()):
+    if source not in OwnedRings().Commutative():
+        raise TypeError("prime localization requires a commutative source ring")
+    prime_ideal = _owned_ideal(source, prime)
+    if not prime_ideal.is_prime():
         raise ValueError("R_p requires a prime ideal p")
+    prime_engine = _engine_ideal(source, prime_ideal)
     complement = predicate_submonoid(
         source,
-        lambda element: _engine_ring_value(source, element) not in prime_ideal,
+        lambda element: _engine_ring_value(source, element) not in prime_engine,
         f"{source} \\ {prime_ideal}",
         structure_data={"kind": "prime_complement", "prime_ideal": prime_ideal},
     )

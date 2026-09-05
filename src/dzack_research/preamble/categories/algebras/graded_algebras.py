@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     algebra_homset,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
-from dzack_research.preamble.refine import refine
 
 
 def _homogeneous_degree(element):
@@ -278,17 +277,18 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
     _HomCategory = GradedAlgebraHomCategoryConstruction
 
     def _call_(self, multiplication):
-
-        algebra = algebra_from_multiplication(
-            multiplication, self.base_ring(), unital=True
-        )
         module = multiplication.codomain()
         graded = GradedModules(self.base_ring(), self.grading_monoid())
         if module not in graded:
             raise TypeError(
                 f"{module} is not a module graded by {self.grading_monoid()}"
             )
-        return refine(algebra, [graded, self])
+        return algebra_from_multiplication(
+            multiplication,
+            self.base_ring(),
+            unital=True,
+            extra_categories=(self,),
+        )
 
 
 __all__ = [

@@ -19,11 +19,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+    GroupModule,
     GroupModules,
     group_module_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
     base_change_adjunction,
@@ -124,8 +124,6 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
     def _apply_object(self, group_module):
         unacted_extension = _unacted_module(group_module)
         unacted_restricted = restrict_scalars(unacted_extension, self.ring_map())
-        restricted = restrict_scalars(unacted_extension, self.ring_map())
-        restricted._preamble_acting_group = self.group()
 
         def action(group_element, vector):
             acted_source = _equip_action_element(
@@ -136,43 +134,36 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
                 group_element,
                 acted_source,
             )
-            return restricted.element_class(
-                restricted,
-                _forget_action_element(group_module, acted_image),
+            return unacted_restricted.wrap(
+                _forget_action_element(group_module, acted_image)
             )
 
-        restricted._preamble_action = action
-        restricted._preamble_unacted_module = unacted_restricted
-        restricted._preamble_action_is_trivial = group_module.is_trivial_action()
-        restricted._preamble_forget_action_morphism = module_homset(
-            restricted, unacted_restricted
-        )(
-            lambda label: unacted_restricted(
-                restricted.module_generator(label).underlying_element()
-            )
+        return GroupModule(
+            unacted_restricted,
+            self.group(),
+            action,
+            _action_is_trivial=group_module.is_trivial_action(),
         )
-        restricted._preamble_equip_action_morphism = module_homset(
-            unacted_restricted, restricted
-        )(
-            lambda label: restricted(
-                unacted_restricted.module_generator(label).underlying_element()
-            )
-        )
-        return refine(restricted, GroupModules(self._source_ring, self.group()))
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
+        source_unacted = source.unacted_module()
+        target_unacted = target.unacted_module()
         return group_module_homset(source, target)(
-            lambda label: target(
-                _forget_action_element(
-                    morphism.codomain(),
-                    morphism(
-                        _equip_action_element(
-                            morphism.domain(),
-                            source.module_generator(label).underlying_element(),
+            lambda label: target.equip_action_morphism()(
+                target_unacted.wrap(
+                    _forget_action_element(
+                        morphism.codomain(),
+                        morphism(
+                            _equip_action_element(
+                                morphism.domain(),
+                                source.forget_action_morphism()(
+                                    source.module_generator(label)
+                                ).underlying_element(),
+                            )
                         )
-                    ),
+                    )
                 )
             )
         )
