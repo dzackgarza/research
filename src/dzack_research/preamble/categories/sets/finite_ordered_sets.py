@@ -331,7 +331,17 @@ class FiniteFilteredOrderedSets(OwnedCategory):
             self._source = source
             self._predicate = predicate
             self._filtered_name = name
-            super().__init__(source=source, unrank=self._filtered_unrank, name=name, finite=True, **rest)
+            # This level supplies its own unrank, rank and cardinality, so the
+            # base takes the source as index set and this level's unrank.
+            super().__init__(
+                source,
+                self.unrank,
+                rank=self.rank,
+                contains=lambda element: predicate(element),
+                name=name,
+                finite=True,
+                **rest,
+            )
 
         def source(self):
             return self._source

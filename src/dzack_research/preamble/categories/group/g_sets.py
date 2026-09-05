@@ -6,6 +6,7 @@ point-set presentation is used only to compute equivariance, fixed points,
 orbits, and the standard finite free/cofree constructions.
 """
 
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
@@ -129,56 +130,54 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
         return f"finite {self.group()}-sets"
 
     class ParentMethods:
+        def __init__(self, point_set, action, **rest) -> None:
+            group = action.domain()
+            assert point_set in FiniteEnumeratedSets(), (
+                "a G-set here is on a finite enumerated point set"
+            )
+            assert group.is_finitely_generated() is True, (
+                "the represented equivariant Hom-set requires a chosen finite group "
+                "generating set"
+            )
+            self._preamble_g_set_points = point_set
+            self._preamble_g_set_action = action
+            permutations = action.codomain()
+            for group_generator in group.group_generators():
+                backend_permutation = permutations._to_engine(action(group_generator))
+                for point in point_set:
+                    if backend_permutation(point) not in point_set:
+                        raise ValueError("the action morphism does not preserve the stated point set")
+            super().__init__(facade=point_set, **rest)
+
+        def __iter__(self):
+            return iter(self.point_set())
+
+        def action(self):
+            return self._preamble_g_set_action
+
+        def __contains__(self, point) -> bool:
+            return point in self.point_set()
+
+        is_parent_of = __contains__
+
+        def __call__(self, point):
+            return self._element_constructor_(point)
+
+        def _element_constructor_(self, point):
+            if point not in self.point_set():
+                raise ValueError(f"{point!r} is not a point of {self}")
+            return self.point_set()(point)
+
+        def cardinality(self):
+            return cardinal(self.point_set().cardinality())
+
+        def _repr_(self):
+            return f"{self.point_set()} with {self.acting_group()}-action"
         def point_set(self):
             r"""Return the finite set used to present the points of this ``G``-set."""
             return self._preamble_g_set_points
 
 
-class FiniteGSet(Parent):
-    r"""A finite set equipped with a group morphism into its permutation group."""
-
-    def __init__(self, point_set, action) -> None:
-        group = action.domain()
-        if point_set not in FiniteEnumeratedSets():
-            raise TypeError("the represented G-set constructor requires a finite enumerated point set")
-        if group.is_finitely_generated() is not True:
-            raise NotImplementedError(
-                "the represented equivariant Hom-set requires a chosen finite group generating set"
-            )
-        self._preamble_g_set_points = point_set
-        self._preamble_g_set_action = action
-        permutations = action.codomain()
-        for group_generator in group.group_generators():
-            backend_permutation = permutations._to_engine(action(group_generator))
-            for point in point_set:
-                if backend_permutation(point) not in point_set:
-                    raise ValueError("the action morphism does not preserve the stated point set")
-        Parent.__init__(self, facade=point_set, category=FiniteGSets(group))
-
-    def __iter__(self):
-        return iter(self.point_set())
-
-    def action(self):
-        return self._preamble_g_set_action
-
-    def __contains__(self, point) -> bool:
-        return point in self.point_set()
-
-    is_parent_of = __contains__
-
-    def __call__(self, point):
-        return self._element_constructor_(point)
-
-    def _element_constructor_(self, point):
-        if point not in self.point_set():
-            raise ValueError(f"{point!r} is not a point of {self}")
-        return self.point_set()(point)
-
-    def cardinality(self):
-        return cardinal(self.point_set().cardinality())
-
-    def _repr_(self):
-        return f"{self.point_set()} with {self.acting_group()}-action"
 
 
 class GSetMorphism(SetMorphism):
@@ -286,7 +285,11 @@ def _finite_g_set_from_action(group, point_set, action):
             for group_generator in group.group_generators()
         }
     )
-    return FiniteGSet(point_set, action_morphism)
+    return object_of(
+        FiniteGSets(action_morphism.domain()),
+        point_set=point_set,
+        action=action_morphism,
+    )
 
 
 def finite_g_set(point_set, group, action):
@@ -481,7 +484,6 @@ class Torsors(Category):
 
 
 __all__ = [
-    "FiniteGSet",
     "FiniteGSets",
     "GSets",
     "GSetHomset",

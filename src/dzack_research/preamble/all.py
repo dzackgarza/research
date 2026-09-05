@@ -427,7 +427,6 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     FiniteGaloisSubgroup,
     FiniteGroupClassFunction,
     FiniteGroups,
-    FiniteGSet,
     FiniteGSets,
     FinitelyGeneratedGroups,
     FinitelyPresentedGroups,
