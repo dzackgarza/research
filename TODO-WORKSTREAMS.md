@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| R-localized-ideal-contraction-20260905 | R — lift localized-ideal contraction through selected quotient presentations so localized Fitting ideals have exact ideal semantics | ChatGPT continuation `2026-09-05-localization-recovery`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/rings/commutative_ideals.py`; `tests/rings/test_commutative_algebra.py` | `e98693323f5adb13ae6ae65116c3db513ea694c3`; after `84a15b05`, `S^{-1}Omega` constructs for `A=k[x,y]/(xy)`, but contracting `S^{-1}(x,y)` from `A_x` calls Singular saturation in Sage's quotient parent and raises `TypeError`. Lift the source ideal, presentation relations, and denominator product to the selected polynomial cover before saturation. | 2026-09-05T16:03:51Z |
 
 ### Existing work awaiting adoption
 
