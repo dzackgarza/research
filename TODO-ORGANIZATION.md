@@ -3,16 +3,23 @@
 ## Current organization work
 
 [TODO-PRIORITIES.md](TODO-PRIORITIES.md#how-much-category-theory-to-implement-here) owns the criteria for work before the `sage-categories` transfer.
-Apply the findings below to the scheme, algebra, and module constructions serving AEGS notebooks first.
+Apply the findings below to the module, affine-local algebra, and general scheme constructions first.
 Recheck each finding at its live owner; the assessment records an earlier source tree.
 
 The useful unit of consolidation is one mathematical responsibility and its dependent constructions.
 An algebra should obtain module operations from its underlying module; geometric constructions should use the resulting algebra and module maps.
+Affine charts, restrictions, and stalks must return objects in that same algebraic subtree.
+Local computations dispatch through their categories; restriction and gluing maps assemble the geometric result.
+Sheaves of modules and algebras reuse these local operations, with their compatibility data owned at the sheaf level.
+Global invariants retain their own hypotheses and algorithms, including the topology needed for singular cohomology.
 Fix the shared construction path when this reuse requires initialized inherited state.
 The current `owned_category.py` adapter makes implementation classes available through the category inheritance chain.
 Treat repairs to that common path according to the consumer they enable and the duplication they remove.
 
 - [ ] Consolidate repeated mathematical operations at the owner used by the active geometry construction.
+- [ ] Consolidate localization, quotient, tensor, and presentation calculations across affine schemes, stalks, sheaves, and cover algebras.
+- [ ] Reuse the general group-action construction for sets, modules, schemes, and induced actions on their invariants.
+- [ ] Realize toric character modules, divisor groups, and cohomology pairings through existing module and formed-module categories.
 - [ ] Make each required underlying-structure functor explicit on objects and morphisms, with the correct initialized image.
 - [ ] Keep framework-specific initialization and class assembly within the existing common runtime boundaries.
 - [ ] Use explicit functor application where it gives correct shared implementation before automatic threading is available.

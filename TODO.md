@@ -3,8 +3,8 @@
 ## Work selection
 
 Follow [the execution priorities](TODO-PRIORITIES.md#current-objective-and-order) and its boundary for local category work.
-The first application is scheme theory for AEGS notebooks, with its required module and algebra inheritance.
-Select a reported defect below when it blocks that construction or causes dependent implementations to repeat an algorithm.
+The active work is a general scheme-theory toolkit built on coherent module and affine-local algebra constructions.
+Select a reported defect below when it blocks those constructions or causes dependent implementations to repeat an algorithm.
 The witness observations record earlier findings; inspect the current owner before treating one as an outstanding defect.
 
 ## Active scheme and inheritance work
@@ -15,10 +15,11 @@ The witness observations record earlier findings; inspect the current owner befo
 - [ ] Repair the shared constructor or functor path when an inherited operation cannot use its required state.
   Keep the repair in `owned_category.py`, `refine.py`, or the owning functor as appropriate.
   Use the [local Cat work criteria](TODO-PRIORITIES.md#how-much-category-theory-to-implement-here) to decide between automatic inheritance and explicit functor application.
-- [ ] Complete the distinguished-open, affine-morphism, structure-sheaf, and projective-gluing requirements in `PORT_TODO.md` §§8.4–10.
-  Expose the resulting schemes and maps through the notebook session.
-- [ ] Continue the line-bundle, section, cover, involution, and toric/ADE requirements needed by the AEGS calculations.
-  `PORT_TODO.md` §§11–14, 16–17, and 20 own the detailed mathematics.
+- [ ] Complete the affine-local algebra, spaces over a base, subschemes, structure sheaves, and gluing requirements in `PORT_TODO.md` §§8.4–10.
+  Restriction to charts and stalks must expose the same algebraic objects and inherited algorithms used outside scheme theory.
+- [ ] Build the general actions, toric lattices, divisors, cycles, cohomology, local singularity theory, covers, and families in `PORT_TODO.md` §§11–16.
+  Expose the resulting objects and maps through the notebook session as each construction becomes usable.
+  Keep the detailed requirements and supported computational hypotheses in that file.
 
 ## Collection and finiteness remediation
 

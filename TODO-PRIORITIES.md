@@ -5,19 +5,19 @@ The detailed mathematical requirements remain in those files.
 
 ## Current objective and order
 
-Develop principled scheme constructions that support AEGS geometry in `computations/notebooks/`.
+Develop a general scheme-theory toolkit built on the preamble's affine-local algebra, modules, and categorical constructions.
 This research proceeds while `~/gitclones/sage-categories` develops the replacement category framework.
 The preamble must remain usable, organized, and extensible throughout that work.
 
-1. Complete the scheme, algebra, and module constructions needed by the next AEGS notebook calculation.
-2. Repair their shared categorical inheritance and initialization wherever the calculation would otherwise duplicate an implementation.
-3. Extend geometric algorithms through those owners: sheaves, sections, covers, involutions, singularities, and toric or ADE pairs.
+1. Build a coherent affine-local algebraic foundation: rings, ideals, modules, algebras, their morphisms, and their constructions.
+2. Thread underlying structures and constructors through that foundation so higher constructions reuse its algorithms.
+3. Build relative schemes, covers and sheaves, group actions, divisors, cycles, cohomology, and families through those algebraic owners.
 4. Continue arithmetic lattice orbits, centralizers, embeddings, and reflection geometry as subsequent research applications.
 
-Steps 1–3 form one dependency-driven work stream. Notebook geometry can advance before the framework transfer.
+Steps 1–3 form one dependency-driven work stream. General constructions become available in notebooks before the framework transfer.
 An arithmetic calculation moves earlier when that geometry requires its result.
 Integrate with `sage-categories` alongside this application order when it supports the complete construction being transferred.
-Each work unit ends at a mathematical construction usable by the notebook, including its maps and inherited operations.
+Each work unit completes a reusable mathematical construction, including its maps, inherited operations, and supported algorithms.
 
 ## How much category theory to implement here
 
@@ -77,7 +77,7 @@ It earns its place when it keeps current categories reusable and enables the nee
 ### Transfer by complete mathematical dependency
 
 Before replacing a preamble subsystem, establish the required public constructors, underlying-structure functors, and morphism actions in `sage-categories`.
-Include an inherited operation and the domain-specific algorithm needed by its notebook consumer.
+Include an inherited operation and the domain-specific algorithm needed by its mathematical consumer.
 The presence of a similarly named category or a production specification alone does not establish readiness.
 
 Rewrite the subsystem's categories as leaves using the declared functors and constructor protocol.
@@ -104,7 +104,7 @@ Before a structural edit in a subsystem:
 5. Do not split files or reorganize packages until ownership and dependencies have stabilized enough that the split reflects mathematics rather than current implementation accidents.
 
 Use the existing collection implementations in each active construction.
-Consolidate representations when this restores mathematical reuse or supports the notebook result.
+Consolidate representations when this restores mathematical reuse or completes a shared mathematical construction.
 
 Judge progress by `CONTRIBUTING.md` `DEV-36`.  The goal is source a mathematician can read against a definition; every count is a weak proxy for that.
 A measure is usable only as a differential signal beside its upstream Sage comparator, and only when it makes someone open a file and read it.
@@ -730,32 +730,29 @@ Apply `archives/preamble/src-TODO.md` to the construction needed by the active g
 
 Repair shared initialization before adding dependent implementations. Use the local Cat boundary defined above to bound the repair.
 
-## Scheme theory for AEGS notebooks
+## Fundamental scheme theory
 
-This is the first active application. Complete its ring Hom, module, functor, and constructor dependencies with each geometric construction.
-Detailed requirements are in `PORT_TODO.md` §§8.4–14, 16–17, and 20.
-The first foundational specimen is a distinguished open of the affine line, with its localization map and restriction of functions.
+The toolkit is specified in `PORT_TODO.md` §§8–16, including the sheaf, action, cycle, topology, and family requirements.
+Build the algebraic subtree well enough that changing to an affine chart or stalk exposes a usable algebraic object.
+Its category selects the algorithm; the scheme layer assembles the local results through restriction and gluing maps.
+A geometric implementation must call those operations rather than recreate ideal, module, or algebra calculations.
 
-Order:
+Order by these dependencies:
 
-1. Complete the commutative-algebra semantic spine required by affine geometry: owned ideals, quotient/localization maps, spectra, residue/local rings, kernels/images and exact module operations.
+1. Rings, ideals, quotients, localizations, local rings, residue fields, completions, module presentations, tensor products, and algebra morphisms.
+2. Affine and projective spaces over a specified base, equation-defined subschemes, immersions, and fiber products.
+3. Affine covers, overlaps, gluing, structure sheaves, and sheaves of modules and algebras built from local data.
+4. Generic group actions and equivariant maps, specialized to schemes over a base; toric character and cocharacter lattices.
+5. Line bundles, divisors, cycles, Picard and class groups; relative cyclic covers, fixed loci, and supported quotients through their sheaf and action dependencies.
+6. Supported local singularity calculations, singular cohomology, Hodge invariants, fundamental groups, and formed-module or lattice realizations.
+7. Families as morphisms over a base, relative constructions, and higher-direct-image calculations with their topology and hypotheses stated.
 
-2. Make `Spec` an actual contravariant functor on the owned ring/algebra Hom construction.
-
-3. Make affine scheme morphism pullback intrinsic Hom data rather than side-channel metadata on a Sage wrapper.
-
-4. Derive affine closed subschemes from quotient algebras and generic subobjects.
-
-5. Derive affine products/fiber products through categorical tensor/pushout constructions.
-
-6. Remove scheme-specific caches/endpoint overrides that the normalized Hom/functor layer makes unnecessary.
-
-7. Then complete remaining scheme/polytope collection ownership, facets/fans, and general affine/projective cases.
-
-Continue through affine structure sheaves and module localization, then projective charts and gluing, line bundles, and section maps.
-Use these constructions for the cover, involution, fixed-locus, quotient, and toric/ADE calculations selected by the AEGS notebooks.
-Local geometry uses the stated localization and stalk hypotheses from `PORT_TODO.md`.
-Notebook computations retain the source example, base, scheme objects, and actual morphisms so they can use the later leaf implementations.
+These are dependency layers, not requirements to exhaust one subject before the next construction begins.
+The first affine specimen is a distinguished open with its localization map and restriction of functions.
+The projective specimen glues standard affine charts with their overlap maps.
+Both use the same ring and module operations that later sheaves, covers, and families require.
+Maintain the general contracts while extending the supported computational regimes through established engines.
+Global invariants use their own geometric or topological algorithms, sharing the algebraic inputs and resulting module structures where applicable.
 
 ## Arithmetic and reflection applications after the geometry prerequisites
 
@@ -821,11 +818,16 @@ Choose cleanup by the correctness and readability of the surviving mathematical 
 The active dependency chain is:
 
 ```text
-AEGS scheme construction
-    -> required algebra/module operations and underlying-structure functors
-        -> bounded shared inheritance and constructor repairs
-            -> usable scheme objects and morphisms in notebooks
-                -> further geometry and required arithmetic applications
+affine-local rings, modules, algebras, and their structure functors
+    -> shared inheritance and constructor threading
+        -> relative schemes, affine covers, stalks, and sheaf gluing
+            -> actions, covers, cycles, invariants, and families
+                -> notebook research and arithmetic applications
+
+local part of a geometric computation
+    -> restriction to charts or stalks
+        -> algorithms at the algebraic category owner
+            -> local results assembled through the geometric maps
 
 sage-categories framework development proceeds alongside this chain
     -> complete prerequisite implementations for a preamble subsystem

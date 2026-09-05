@@ -6,22 +6,26 @@ Inspect the current source before selecting its missing mathematical output.
 Original section numbers are retained for source references.
 
 [TODO-PRIORITIES.md](TODO-PRIORITIES.md#current-objective-and-order) owns execution order and the boundary for local category work.
-Scheme theory for AEGS notebooks is the first application, developed alongside `sage-categories`.
-Its module, algebra, functor, and initialization dependencies belong to that application.
+General scheme theory is the active mathematical program, developed alongside `sage-categories`.
+Its foundation is a coherent algebraic subtree with reusable module, ring, algebra, and functor constructions.
 
 ## Geometry delivery sequence
 
 - [ ] Begin with the distinguished-open requirement in §9.2: construct the open immersion, localization map, and restriction of functions.
 - [ ] Complete affine `Spec` on ring morphisms, closed immersions, and fiber products through the algebra constructions in §§8.4–10.
-- [ ] Supply structure sheaves, localized modules, projective affine charts, and gluing from §8.4, with their restriction and transition maps.
-- [ ] Build the line bundles and section maps from §11 needed for the selected AEGS construction.
-- [ ] Continue through the required covers, involutions, fixed subschemes, quotients, and toric/ADE pairs in §§12–14 and 16–17.
-- [ ] Express each selected AEGS example in `computations/notebooks/` using these scheme objects and morphisms.
-  Retain its source locator and hypotheses with the mathematical calculation.
+- [ ] Supply structure sheaves, localized modules, projective affine charts, and gluing from §§8.4 and 9.4, with their restriction and transition maps.
+- [ ] Build general group actions from §13.1 and reuse them for sets, modules, schemes, and induced actions on invariants.
+- [ ] Connect the toric character and cocharacter constructions in §16 to the preamble's module and lattice operations.
+- [ ] Build the divisor, line-bundle, cycle, and cohomology constructions in §11 with their comparison maps and computational hypotheses.
+- [ ] Construct relative cyclic covers, fixed subschemes, and supported quotients through the sheaf and action constructions in §13.
+- [ ] Extend the local theory in §12 and the families and higher direct images in §15 through the same algebraic and sheaf owners.
+- [ ] Make each general construction available through the notebook session with its defining maps and supported algorithms.
 
-The sequence selects small complete constructions from the sections below.
-Generalizing every algebraic operation to every base ring is separate from completing the cases required by the geometry.
-The public mathematical domains and computational hypotheses remain explicit in each case.
+The sequence selects complete constructions along their mathematical dependencies.
+Develop the algebraic foundation before its dependent geometric operation, while allowing independent constructions to proceed together.
+Affine charts and stalks expose objects in that foundation, where categories supply the applicable algorithms.
+The scheme layer assembles local results through restriction and gluing maps.
+State computational regimes explicitly and extend them through established engines while retaining general mathematical ownership.
 
 ## Existing mathematical implementations to extend
 
@@ -133,12 +137,16 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 
 ### 9.1 Ringed spaces and schemes
 
+- [ ] Affine and projective spaces over `Spec(R)` with their structure morphisms, affine or homogeneous coordinate algebras, and standard charts.
+- [ ] Construct closed subschemes from equations in those algebras, with homogeneity required in the projective case; retain the ideal sheaf and embedding.
+- [ ] Complete `Spec` as a contravariant functor on the owned ring-Hom construction.
+  Make affine pullback intrinsic data of the scheme Hom, using shared Hom and functor machinery for endpoints and construction reuse.
 - [ ] Extend the now-live affine stalks `O_{Spec R,p}=R_p` beyond the current domain/prime-localization regime and integrate them with general ringed-space/local-intersection constructions.
 - [ ] Populate exact generic membership/refinement for quasi-affine, quasi-projective, integral, separated, finite-type, normal, and smooth scheme properties beyond the currently placed base/affine/projective spaces.
 
 ### 9.2 Subschemes
 
-- [ ] Integrate closed-subsheme inclusions with the generic `SubobjectCategory`; native equation-defined closed embeddings already land as live scheme morphisms.
+- [ ] Integrate closed-subscheme inclusions with the generic `SubobjectCategory`; native equation-defined closed embeddings already land as live scheme morphisms.
 - [ ] Open subschemes as actual open immersions/subobjects.
 - [ ] Principal/basic opens.
 - [ ] Scheme-theoretic intersections.
@@ -152,6 +160,24 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Arithmetic and geometric genus as distinct invariants.
 - [ ] Curve normalization data and relation to delta invariants.
 
+### 9.4 Affine covers, gluing, and sheaves
+
+- [ ] Represent affine covers by open immersions, with overlap opens, transition isomorphisms, and their restriction maps.
+  Refine overlaps by affine covers when needed; retain the refinements and comparison maps.
+- [ ] Glue schemes and scheme morphisms from compatible local data.
+  Check inverse and cocycle conditions on represented overlaps through the underlying algebra morphisms where equality is decidable.
+  Use the mapping properties in [Stacks, gluing schemes](https://stacks.math.columbia.edu/tag/01JA).
+- [ ] Construct sheaves of `O_X`-modules and `O_X`-algebras from modules and algebras on affine opens and compatible overlap identifications.
+  Reuse localization and scalar extension for restrictions; glue morphisms as well as objects.
+- [ ] Compute sections on supported covers from compatible local sections, with their restriction maps.
+  Compute stalks through the existing local-ring and module-localization constructions.
+- [ ] Supply sheaf kernels, cokernels, tensor products, and local presentations through their algebraic owners.
+  State the sheaf category and hypotheses required for each operation.
+- [ ] Implement inverse image, direct image, and pullback of modules along a scheme morphism with their correct source and target categories.
+  Distinguish inverse image of a sheaf from scalar extension defining module pullback.
+- [ ] Construct relative `Spec_X(A)` for a quasi-coherent `O_X`-algebra from affine spectra and their gluing maps.
+  Retain its structure morphism and compatibility with base change.
+
 ## 10. Categorical scheme operations and products
 
 - [ ] Products of schemes as categorical products over the stated base.
@@ -164,7 +190,12 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Equalizers and fixed subschemes.
 - [ ] Scheme-theoretic image.
 - [ ] Base change of schemes with identity/composition laws.
-- [ ] Parameter spaces/relative Spec where needed by section and cyclic-cover families.
+- [ ] Slice and coslice categories using the shared categorical constructions, with their objects and commuting morphisms.
+  Schemes over `S` and families `X -> S` use `Sch/S`; pointed constructions use the appropriate coslice.
+- [ ] Base change on objects, morphisms, and automorphisms over a base, with the induced commuting squares.
+- [ ] Composition along a base morphism and its relation to pullback in slice categories.
+  Lift or descend automorphisms only with the required compatibility and descent data.
+- [ ] Parameter spaces of sections and relative `Spec` through the sheaf constructions in §9.4 and families in §15.
 
 ## 11. Picard groups, line bundles, intersections, cohomology, and sections
 
@@ -172,11 +203,18 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 
 - [ ] Attach live `PicardGroup`, `ClassGroup`, `CartierDivisorGroup`, `WeilDivisorGroup` functorially to schemes where defined.
 - [ ] Natural Cartier/Picard to Weil/class comparisons under correct hypotheses.
+- [ ] Compute Cartier divisors by local equations with their associated invertible sheaves; compute Weil multiplicities and principal divisors at their divisor owners.
+- [ ] Supply exact supported predicates for normality, regularity, and local factoriality, and use them to establish the applicable comparison isomorphisms.
+  For locally Noetherian integral schemes, use [the Picard-to-class-group comparison](https://stacks.math.columbia.edu/tag/02SI).
 - [ ] Distinguished `O(1)` on projective space.
 - [ ] Field cases `Pic(A^n)=0`, `Cl(A^n)=0`, `Pic(P^n)=Z`, `Cl(P^n)=Z` through the general objects.
 - [ ] General-base projective-space Picard group including the base contribution; do not hard-code field formulas.
 - [ ] `Pic(P^1 x P^1) ~= Z^2` and standard generators.
 - [ ] Picard lattice/intersection pairing on surfaces such as `P^1 x P^1`.
+- [ ] Keep `Pic(X)` as an abelian group or `ZZ`-module; equip it with the intersection form where defined.
+  Expose the Néron–Severi group and numerical divisor classes with their quotient maps when those are the computed objects.
+  Specialize to preamble lattices when the chosen group is finite free and satisfies the required form hypotheses.
+  Record the polarization when a higher-dimensional intersection pairing requires one.
 
 ### 11.2 Line bundles/intersections
 
@@ -208,20 +246,57 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Parameter spaces of sections.
 - [ ] Bertini-family interfaces only with correct genericity statements.
 
+### 11.5 Algebraic cycles and cycle classes
+
+- [ ] Construct the codimension-graded cycle groups `Z^r(X)` in supported dimension regimes.
+  Send a closed subscheme to its fundamental cycle, using local lengths for component multiplicities.
+- [ ] Form Chow groups `CH^r(X)` by rational equivalence, with cycle representatives and quotient maps where computable.
+  Relate codimension-one cycles, Weil divisor classes, and `Pic(X)` through the comparisons in §11.1.
+- [ ] Supply proper pushforward, flat pullback, and supported intersection products with their hypotheses and degree shifts.
+- [ ] Construct cycle class maps to the supported cohomology or homology theory, with coefficients and grading explicit.
+  Relate divisor classes to first Chern classes and intersection products to cup products where the comparison applies.
+
+### 11.6 Topological invariants and cohomology forms
+
+- [ ] For schemes with a specified complex realization, compute supported singular cohomology groups `H^i(X; ZZ)` and their graded ring structure.
+  Preserve integral torsion and induced maps; keep coherent-sheaf cohomology in §11.3 distinct.
+- [ ] Realize cup-product pairings as preamble formed modules in the regimes where evaluation gives the required value module.
+  For smooth projective surfaces, construct the middle-cohomology lattice on `H^2(X; ZZ)` modulo torsion.
+  Support the torsion-free K3 case directly, with divisor cycle classes as actual module morphisms.
+- [ ] Extend these constructions to specified mild singularities using the appropriate ordinary, intersection, or resolution cohomology.
+  State comparison maps and the hypotheses for nondegeneracy or duality for the selected theory.
+- [ ] Compute supported fundamental groups with a base point and induced homomorphisms when the pointed morphism is available.
+- [ ] Compute supported Hodge numbers; state purity or mixed-Hodge grading and connect to the relevant cohomology objects.
+- [ ] Use established topological and geometric algorithms for global invariants.
+  Reuse affine-local algebra for their local inputs and module algorithms for the resulting groups, maps, and pairings.
+
 ## 12. Singularities of curves and schemes
 
-- [ ] Local regularity/singularity testing.
+- [ ] Local regularity/singularity testing through `O_{X,x}`, its maximal ideal, residue field, and completion.
+  Retain the localization, residue, and completion maps and their supported computational presentations.
+- [ ] Construct the smooth locus of a morphism as an open subscheme in supported finite-presentation settings.
+  Construct the singular or nonsmooth closed subscheme using a stated ideal-sheaf convention and hypotheses.
+  Distinguish regularity of local rings from smoothness over the specified base.
 - [ ] Zariski tangent spaces.
 - [ ] Jacobian criterion in supported finite-type settings.
 - [ ] Milnor algebras/numbers for isolated hypersurface singularities.
 - [ ] Tjurina algebras/numbers.
 - [ ] ADE normal-form/type recognition with explicit scope/hypotheses.
+- [ ] Classify supported pointed singularities using their local or completed local algebras and established algorithms.
+  Return the equivalence notion and any constructed coordinate change with the classification.
 - [ ] Archived `A_n` and `D_n` plane-curve families.
 - [ ] Delta invariants and relation to normalization/geometric genus.
 
 ## 16. Toric schemes and varieties
 
 - [ ] `ToricSchemes(S)` as schemes with torus/fan structure, not hard-coded fan recognition.
+- [ ] Represent the character and cocharacter lattices `M` and `N` of a split torus through existing preamble free `ZZ`-modules and their module duality.
+  Elements represent actual characters and cocharacters, with the perfect evaluation pairing `M x N -> ZZ`.
+  A chosen frame gives the standard `ZZ^n` presentation and permits reuse of `I_{n,0}` operations through its underlying module.
+  Keep the chosen positive form distinct from the character–cocharacter pairing.
+- [ ] Construct affine toric charts from cone semigroup algebras and glue along face-localization maps through §§8.4 and 9.4.
+- [ ] Use lattice homomorphisms compatible with fans to construct toric morphisms and the induced algebra maps.
+- [ ] Compute supported toric divisor, class, Picard, and cohomology data through the general objects in §11.
 - [ ] Construction from rational fans.
 - [ ] Construction from lattice polytopes via normal fans.
 - [ ] Preserve polarizing-polytope relation.
@@ -231,21 +306,45 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 
 ## 13. Cyclic covers, involutions, fixed loci, and quotients
 
+### 13.1 Group actions in a category
+
+- [ ] Construct objects with a `G`-action from a group morphism `G -> Aut_C(X)`, using the existing group, Hom, and functor machinery.
+  Define morphisms by equivariance in `C`, with the forgetful functor to `C` explicit on objects and morphisms.
+- [ ] Develop `G`-sets and equivariant maps at that generic owner.
+  Relate linear actions on `R`-modules to `R[G]`-modules, including `ZZ[G]`, through the module and algebra constructions.
+- [ ] Specialize the same construction to `C = Sch/S` and reuse it for induced actions on sheaves, sections, divisors, and cohomology.
+  Record variance and any preserved form on the induced action.
+- [ ] Support restriction along a group homomorphism and transport through functors when the required functorial action is defined.
+- [ ] Distinguish abstract-group actions from group-scheme actions over a general base; use each with its actual morphisms and hypotheses.
+
+### 13.2 Relative cyclic covers and deck groups
+
 - [ ] Cyclic-cover data `(L,s,n)` with branch section in `H^0(X,L^n)`.
 - [ ] Cover algebra `oplus_{i=0}^{n-1} L^{-i}` with multiplication from the branch section.
-- [ ] Finite cover morphism as an actual scheme morphism.
+- [ ] Construct the cover by relative `Spec` of that `O_X`-algebra, using its module operations and affine gluing.
+- [ ] Finite cover morphism as an object of `Sch/X`, with its base changes and morphisms over `X`.
 - [ ] Branch and ramification subschemes.
 - [ ] Canonical-bundle formula under correct hypotheses.
 - [ ] Smoothness criteria in supported cases.
-- [ ] Deck transformations as automorphisms.
+- [ ] Deck group as the automorphism group of the cover object over its base, with its action on the covering scheme.
+  Determine when the cyclic construction supplies a `mu_n`-action and when it identifies with the intended constant cyclic group.
+  Retain characteristic, roots-of-unity, and separability hypotheses in ramification and quotient computations.
 - [ ] Lifts of base automorphisms preserving/scaling the branch section; two lifts for double covers when they exist.
-- [ ] Fixed subschemes as equalizers.
-- [ ] Fixed-point evaluation and equivariant section-space actions.
 - [ ] Action on holomorphic top forms when cohomology is present.
-- [ ] Fixed-locus/representation/Lefschetz compatibility.
-- [ ] Quotient schemes/families for supported finite actions.
-- [ ] Local invariant rings connected to global quotient data.
 - [ ] `(4,4)` K3 double-cover family and two lifts of the diagonal sign involution.
+
+### 13.3 Fixed subschemes and quotients
+
+- [ ] Fixed subschemes of automorphisms as equalizers, and common fixed subschemes for represented group actions.
+  Compute fixed ideals on affine charts through the ring-morphism and ideal algorithms, then glue.
+- [ ] Decide emptiness of supported fixed subschemes and expose the resulting fixed-point-free predicate.
+  Distinguish absence of common fixed points from freeness of the whole group action.
+- [ ] Fixed-point evaluation and equivariant section-space actions.
+- [ ] Fixed-locus/representation/Lefschetz compatibility under the applicable geometric and topological hypotheses.
+- [ ] Construct quotients for supported cyclic groups and involutions, with the quotient morphism and universal property.
+  Compute affine invariant rings through established algebra algorithms and glue when the quotient hypotheses permit it.
+- [ ] Descend equivariant morphisms and compatible automorphisms through those quotients.
+  State the hypotheses for compatibility with base change, including for families.
 - [ ] Enriques quotient only after fixed-point-free and compatibility conditions are actual predicates/morphisms.
 
 ## 14. Complete intersections, del Pezzo geometry, and blowups
@@ -259,6 +358,23 @@ Local repairs provide coherent reuse until the corresponding framework consumer 
 - [ ] Exceptional divisors and Picard/intersection changes.
 - [ ] Strict transforms of curves/divisors.
 - [ ] Archived del Pezzo blowup benchmarks.
+
+## 15. Families, local bases, and higher direct images
+
+- [ ] Represent families as morphisms `f: X -> S` in the slice category, with fibers and base changes through §10.
+  Record flatness, properness, and smoothness as additional properties of the morphism when established.
+- [ ] Construct a family from polynomial equations by specifying the parameter algebra and its map into the coordinate algebra.
+  Selecting `z` as parameter in equations in `x,y,z` gives a morphism to the `z`-line.
+  Compute fibers using the corresponding residue-field base change and determine flatness in supported regimes.
+- [ ] Support bases given by DVRs and their spectra, generic and special fibers, and base change to completions.
+  Reuse the valuation, localization, residue-field, and completion constructions in §8.4.
+- [ ] Support complex-disc families in the analytic category, with explicit comparison to algebraic or formal models when available.
+  State which topology each sheaf and cohomology operation uses.
+- [ ] Construct supported higher direct images of the constant integral sheaf and their stalks.
+  Supply the comparison with fiber cohomology when the hypotheses of [proper base change in topology](https://stacks.math.columbia.edu/tag/09V4) apply.
+- [ ] On suitable smooth strata, represent the resulting local systems and monodromy as actual group actions on cohomology modules.
+  Retain specialization and comparison maps when supported, using the same module, sheaf, and action owners.
+- [ ] Build relative cyclic covers and compatible quotient families by applying §13 over the specified base.
 
 ## 7. Representation theory of `R[G]`-modules and group lattices
 
