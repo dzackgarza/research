@@ -61,6 +61,26 @@ _OWNED_SPELLINGS = {
         base_object.category() if category is None else category
     ).Subobjects(base_object),
     "ProductCategory": lambda left, right: Cat().product([left, right]),
+    # A span owns its pushout, and the category publishes it too; the legs are
+    # the span's data, not an arity.
+    "Pushout": lambda left, right: _common_owned_category(
+        left.domain(), left.codomain(), right.codomain()
+    ).pushout(left, right),
+    "FiberProduct": lambda left, right: _common_owned_category(
+        left.domain(), right.domain(), left.codomain()
+    ).fiber_product(left, right),
+    "Equalizer": lambda left, right: _common_owned_category(
+        left.domain(), left.codomain()
+    ).equalizer(left, right),
+    "Coequalizer": lambda left, right: _common_owned_category(
+        left.domain(), left.codomain()
+    ).coequalizer(left, right),
+    "EqualizerOfFamily": lambda arrows: _common_owned_category(
+        *[a.domain() for a in arrows], *[a.codomain() for a in arrows]
+    ).equalizer_of_family(arrows),
+    "CoequalizerOfFamily": lambda arrows: _common_owned_category(
+        *[a.domain() for a in arrows], *[a.codomain() for a in arrows]
+    ).coequalizer_of_family(arrows),
 }
 
 

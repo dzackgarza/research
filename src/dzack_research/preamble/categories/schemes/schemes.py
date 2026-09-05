@@ -353,6 +353,13 @@ class Schemes(OwnedCategoryOverBaseRing):
         def _categorical_product(self, left, right):
             return scheme_product(left, right)
 
+        def fiber_product(self, left_leg, right_leg):
+            r"""Return the fiber product of the cospan these two legs form."""
+            assert left_leg.codomain() is right_leg.codomain(), (
+                "a cospan has one common codomain"
+            )
+            return self._categorical_pullback(left_leg, right_leg)
+
         def _categorical_pullback(self, left_morphism, right_morphism):
             return scheme_fiber_product(left_morphism, right_morphism)
 

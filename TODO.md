@@ -183,3 +183,26 @@ and leave the defect.
   A construction is taken over an index set (`CON-14`), so this reads a family
   like the category methods do, or it is operator notation.
   `categories/schemes/schemes.py`.
+
+- [ ] **`Modules(R)` publishes no pushout, though `R`-Mod is cocomplete.**  The
+  pushout of a span `A <- C -> B` is `coker(C -> A (+) B, c |-> (f(c), -g(c)))`,
+  and the biproduct and cokernel it needs both exist.  Only
+  `CommutativeAlgebras` supplies `_categorical_pushout` today, so a span of
+  module maps has nowhere to ask.  `categories/modules/pure/modules.py`.
+
+- [ ] **A span is not yet an object.**  `C.pushout(left_leg, right_leg)` names
+  the two legs because no span diagram is constructed; the diagram vocabulary
+  can express one (`DiagramCategory` is `[J,C]`, and `ConeCategory(diagram)`
+  already owns its cones), so the span should be built over the shape
+  `. <- . -> .` and own its own colimit -- `span.pushout()`, with
+  `C.pushout(span)` the category-side spelling.
+  `categories/abstract_categories/products.py`.
+
+- [ ] **Sage's `join` and `meet` on categories are inverted relative to the
+  inclusion order, and 27 owned call sites use them directly.**  Measured:
+  `Category.join([Modules(ZZ), FiniteSets()])` is below both, so it is the
+  *meet* of the inclusion-ordered lattice, while `Category.meet(...)` returns
+  `Sets`, which is above both.  Sage names it for joining the axioms.  Both are
+  operations on categories reached with the categories in argument position, so
+  they belong on `Cat` (`ARC-12`), which is also where the naming can stop
+  being inverted.  24 `Category.join` and 3 `Category.meet` across the preamble.

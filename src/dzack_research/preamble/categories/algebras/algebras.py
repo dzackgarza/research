@@ -361,6 +361,17 @@ class CommutativeAlgebras(OwnedCategoryOverBaseRing):
                 target.right_coproduct_map() * right_morphism,
             )
 
+        def pushout(self, left_leg, right_leg):
+            r"""Return the pushout of the span these two legs form.
+
+            The span is the diagram, and the pushout is its colimit; the legs
+            are named here because the span object is the datum, not an arity.
+            """
+            assert left_leg.domain() is right_leg.domain(), (
+                "a span has one common domain"
+            )
+            return self._categorical_pushout(left_leg, right_leg)
+
         def _categorical_pushout(self, left_morphism, right_morphism):
             left = left_morphism.codomain()
             right = right_morphism.codomain()

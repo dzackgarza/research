@@ -157,6 +157,14 @@ class Modules(OwnedCategoryOverBaseRing):
         def _categorical_coproduct(self, left, right):
             return self._categorical_biproduct(left, right)
 
+        def equalizer(self, left_arrow, right_arrow):
+            r"""Return the equalizer of a parallel pair."""
+            return self._categorical_equalizer(left_arrow, right_arrow)
+
+        def coequalizer(self, left_arrow, right_arrow):
+            r"""Return the coequalizer of a parallel pair."""
+            return self._categorical_coequalizer(left_arrow, right_arrow)
+
         def _categorical_equalizer(self, left_morphism, right_morphism):
             r"""Realize an equalizer in ``R-Mod`` as ``ker(left-right)``."""
             if (
@@ -178,6 +186,14 @@ class Modules(OwnedCategoryOverBaseRing):
             ):
                 raise ValueError("module coequalizer arrows must be parallel R-linear maps")
             return (left_morphism - right_morphism).cokernel()
+
+        def equalizer_of_family(self, arrows):
+            r"""Return the wide equalizer of a family of parallel arrows."""
+            return self._categorical_equalizer_family(arrows)
+
+        def coequalizer_of_family(self, arrows):
+            r"""Return the wide coequalizer of a family of parallel arrows."""
+            return self._categorical_coequalizer_family(arrows)
 
         def _categorical_equalizer_family(self, morphisms):
             r"""Realize a finite wide equalizer through kernels/intersections."""
@@ -527,9 +543,33 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
+        @cached_method
         def inclusion(self):
-            r"""Return the chosen monomorphism representing this subobject."""
-            return self._preamble_inclusion
+            r"""Return the chosen monomorphism represented by constructor data."""
+            factory = self.__dict__.get("_preamble_subobject_inclusion_factory")
+            if factory is not None:
+                inclusion = factory(self)
+            else:
+                ambient = self.__dict__.get("_preamble_subobject_ambient")
+                images = self.__dict__.get("_preamble_subobject_generator_images")
+                if ambient is None or images is None:
+                    selected = self.__dict__.get("_preamble_inclusion")
+                    assert selected is not None, (
+                        f"{self} is a module subobject without constructor-owned inclusion data"
+                    )
+                    return selected
+                inclusion = module_embedding(
+                    self,
+                    ambient,
+                    images,
+                    verify_linearity=self.__dict__.get(
+                        "_preamble_subobject_verify_linearity", True
+                    ),
+                )
+            lift = self.__dict__.get("_preamble_subobject_lift")
+            if lift is not None:
+                inclusion._preamble_lift = lambda element: lift(self, element)
+            return inclusion
 
         def ambient_module(self):
             r"""Return the ambient module, i.e. the codomain of the inclusion."""
