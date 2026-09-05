@@ -862,9 +862,10 @@ class OwnedCommutativeRings(OwnedCategory):
 
             A ring that already declares a different base -- ``R[x]`` declares
             ``R`` -- keeps that one.  It is an algebra over itself as well, but
-            ``CommutativeAlgebras`` shares one dynamic class across its bases,
-            so a join naming two of its objects asks C3 for that class at two
-            incompatible positions and the class cannot be built.
+            two ``CommutativeAlgebras`` nodes in one placement carry the same
+            ``SubcategoryMethods`` container in both their class chains, and a
+            join naming both asks C3 for that container at two incompatible
+            positions, so the class cannot be built at all.
             """
             from dzack_research.preamble.categories.algebras.algebras import (
                 CommutativeAlgebras,
