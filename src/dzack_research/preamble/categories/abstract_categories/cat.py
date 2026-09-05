@@ -28,7 +28,7 @@ class CategoryObject(Parent):
     def __init__(self, category_of_categories, represented_category) -> None:
         self._category_of_categories = category_of_categories
         self._represented_category = represented_category
-        Parent.__init__(self, category=SageSets())
+        Parent.__init__(self, category=category_of_categories)
 
     def category_of_categories(self):
         return self._category_of_categories
