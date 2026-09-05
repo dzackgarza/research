@@ -2,7 +2,6 @@ r"""Graded modules and differential graded modules over a represented DGA."""
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 
@@ -25,6 +24,11 @@ class GradedAlgebraModules(OwnedParameterizedCategory):
 
         algebra = self.graded_algebra()
         return [GradedModules(algebra.base_ring(), algebra.grading_monoid())]
+
+    def __contains__(self, obj):
+        if obj is self.graded_algebra():
+            return obj in GradedModules(obj.base_ring(), obj.grading_monoid())
+        return super().__contains__(obj)
 
     class ParentMethods:
         def graded_algebra(self):
@@ -59,6 +63,15 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
             CochainComplexes(dga.base_ring()),
         ]
 
+    def __contains__(self, obj):
+        if obj is self.dga():
+            from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+                DifferentialGradedAlgebras,
+            )
+
+            return obj in DifferentialGradedAlgebras(obj.base_ring())
+        return super().__contains__(obj)
+
     class ParentMethods:
         def dga(self):
             return self._preamble_dg_algebra
@@ -69,12 +82,13 @@ class DifferentialGradedModules(OwnedParameterizedCategory):
 
 def regular_dg_module(dga):
     r"""Read a DGA as its canonical right DG-module over itself."""
-    dga._preamble_graded_algebra = dga
-    dga._preamble_dg_algebra = dga
-    dga._preamble_graded_algebra_action = lambda module_element, algebra_element: (
-        module_element * algebra_element
+    from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+        DifferentialGradedAlgebras,
     )
-    return refine(dga, DifferentialGradedModules(dga))
+
+    if dga not in DifferentialGradedAlgebras(dga.base_ring()):
+        raise TypeError("the regular DG-module construction requires a differential graded algebra")
+    return dga
 
 
 __all__ = [

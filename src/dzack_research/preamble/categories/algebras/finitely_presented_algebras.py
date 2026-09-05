@@ -9,20 +9,21 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
-    _OwnedAlgebraParent,
     OwnedAlgebras,
-    _default_structure_map,
     algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
+    GradedFreeAlgebras,
     SymmetricAlgebraOn,
+    TensorAlgebras,
+    _PresentedAlgebraParent,
 )
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
 )
-from dzack_research.preamble.refine import refine
 
 
 from dzack_research.preamble.categories.modules.tensor_products import (
@@ -204,35 +205,19 @@ def _tensor_algebra_from_module_presentation(presentation_ring, module):
     )
     quotient_engine = engine.quotient(presentation_ideal)
     labels = presentation_ring.algebra_generating_set()
-    presented = _OwnedAlgebraParent(
+    presented = _PresentedAlgebraParent(
         quotient_engine,
         base,
         labels,
-        quotient_engine.coerce_map_from(_engine_ring(base)),
-    )
-    presented._preamble_structure_map = _default_structure_map(base, presented)
-    presented._preamble_presentation_ring = presentation_ring
-    presented._preamble_presentation_relations = selected_relations
-    presented._preamble_presentation_ideal = presentation_ideal
-    presented._preamble_lift_to_presentation = lambda element: presentation_ring._from_engine_element(
-        quotient_engine(presented._engine_element(element)).lift()
-    )
-    presented._preamble_tensor_algebra_source_module = module
-    presented = refine(
-        presented,
-        [
-            Algebras(base),
-            OwnedAlgebras(base),
-            FramedAlgebras(base),
-            FinitelyPresentedAlgebras(base),
-            AlgebrasWithChosenFinitePresentation(base),
-        ],
-    )
-    presented._preamble_algebra_presentation_morphism = algebra_homset(
         presentation_ring,
-        presented,
-    )(
-        lambda label: presented.algebra_generator(label)
+        selected_relations,
+        presentation_ideal,
+        extra_categories=(
+            GradedFreeAlgebras(base),
+            TensorAlgebras(base),
+            GradedAlgebras(base),
+        ),
+        free_source_module=module,
     )
     return presented
 

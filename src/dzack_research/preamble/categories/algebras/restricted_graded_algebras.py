@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
@@ -36,7 +35,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
 
     Element = RestrictedGradedAlgebraElement
 
-    def __init__(self, extension_algebra, ring_map) -> None:
+    def __init__(self, extension_algebra, ring_map, *, extra_categories=()) -> None:
         self._extension_algebra = extension_algebra
         self._ring_map = ring_map
         self._degree_zero_algebra = extension_algebra.base_ring()
@@ -68,20 +67,10 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
                 }
             )
 
-        GradedDirectSumModule.__init__(
-            self,
-            base,
-            piece,
-            name=f"{extension_algebra} over {base}",
-            realize_generator=realize_generator,
-            realized_object=extension_algebra,
-            from_realization=from_realization,
-        )
-
-
         categories = [
             GradedAlgebras(base),
             StrictlyGradedCommutativeAlgebras(base),
+            *tuple(extra_categories),
         ]
         try:
             degree_zero_labels = self.degree_zero_algebra().algebra_generating_set()
@@ -111,10 +100,19 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
             self._preamble_algebra_generator_values = indexed_family(
                 framing,
                 generator_value,
-                name=f"Algebra generators of {self}",
+                name="Restricted graded-algebra generators",
             )
             categories.append(FramedAlgebras(base))
-        refine(self, categories)
+        GradedDirectSumModule.__init__(
+            self,
+            base,
+            piece,
+            name=f"{extension_algebra} over {base}",
+            realize_generator=realize_generator,
+            realized_object=extension_algebra,
+            from_realization=from_realization,
+            extra_categories=tuple(categories),
+        )
 
     def extension_algebra(self):
         return self._extension_algebra

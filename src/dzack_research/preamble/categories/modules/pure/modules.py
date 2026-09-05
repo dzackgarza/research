@@ -1040,10 +1040,17 @@ class FramedModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def __init__(
             self,
-            module_generating_set,
-            module_generator_function,
+            module_generating_set=None,
+            module_generator_function=None,
             **rest,
         ) -> None:
+            r"""Store a chosen framing.
+
+            A framing is a choice, so most modules are constructed with one.  A
+            module whose framing is *determined* -- the localization of a framed
+            module, a module read over a smaller ring -- receives none here and
+            says what its framing is by overriding the two accessors below.
+            """
             self._preamble_module_generating_set = module_generating_set
             self._preamble_module_generator_function = module_generator_function
             super().__init__(**rest)

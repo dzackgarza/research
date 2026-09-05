@@ -1,9 +1,8 @@
-"""Selected higher constructions on the owned scalar foundation.
+"""Compatibility import surface for the owned scalar foundation.
 
-Internal mathematical theories should import scalar categories, engine
-crossings, and owned-ring adoption from :mod:`ring_foundation`.  This module
-is intentionally above the module/algebra implementations: it owns only the
-standard ring syntax whose values are constructions in those theories.
+Standard ring constructions are methods of the foundational owned ring
+categories themselves.  Importing this module therefore performs no category
+refinement or structure installation.
 """
 
 from dzack_research.preamble.categories.rings.ring_foundation import *  # noqa: F401,F403
@@ -19,14 +18,3 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring_category,
     _owning_constructor,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    RingAdjunctionConstructions as RingConstructions,
-)
-from dzack_research.preamble.refine import refine
-
-
-def refine_ring_constructions(ring):
-    r"""Attach the selected standard construction syntax to an owned ring."""
-    if ring not in OwnedRings():
-        raise TypeError("ring constructions require an owned ring")
-    return refine(ring, RingConstructions())

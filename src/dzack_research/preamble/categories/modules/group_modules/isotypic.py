@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from sage.categories.category import Category
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -12,13 +11,17 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    MatrixSpace,
+    _module_subobject_spanning_with_structure,
+    _span_basis_elements,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 @dataclass(frozen=True)
@@ -49,14 +52,30 @@ class IsotypicCharacter:
     __repr__ = _repr_
 
 
-class IsotypicDecompositions(Category):
+class IsotypicDecompositions(OwnedCategory):
     r"""Submodules equipped with their selected isotypic summands."""
 
     def super_categories(self):
-
-        return [Sets()]
+        return [DirectSumObjects()]
 
     class ParentMethods:
+        def __init__(self, isotypic_characters, isotypic_components, **rest) -> None:
+            characters = tuple(isotypic_characters)
+            components = tuple(isotypic_components)
+            if len(characters) != len(components):
+                raise ValueError("isotypic characters and components must have equal length")
+            self._preamble_isotypic_characters = characters
+            self._preamble_isotypic_components = components
+            index_set = finite_ordered_set(characters)
+            super().__init__(
+                summands=indexed_family(
+                    index_set,
+                    lambda character: components[int(index_set.rank(character))],
+                    name="Isotypic summands",
+                ),
+                **rest,
+            )
+
         def isotypic_characters(self):
             return self._preamble_isotypic_characters
 
@@ -238,20 +257,20 @@ def isotypic_decomposition(module):
     r"""Return ``⊕ M_chi -> M`` with its selected summand structure."""
     characters = _split_irreducible_characters(module)
     components = tuple(isotypic_component(module, character) for character in characters)
-    if not components:
-        return module.subobject_on(())
-    summed = components[0]
-    for component in components[1:]:
-        summed = summed.sum(component)
-    summed._preamble_isotypic_characters = characters
-    summed._preamble_isotypic_components = components
-
-    summed._preamble_direct_sum_summands = components
-
-    summed._preamble_direct_sum_index_set = finite_ordered_set(characters)
-    return refine(
-        summed,
-        [summed.category(), DirectSumObjects(), IsotypicDecompositions()],
+    spanning = tuple(
+        component.inclusion()(generator)
+        for component in components
+        for generator in component.module_generators()
+    )
+    basis = _span_basis_elements(module, spanning)
+    return _module_subobject_spanning_with_structure(
+        module,
+        basis,
+        extra_categories=(IsotypicDecompositions(),),
+        extra_construction_data={
+            "isotypic_characters": characters,
+            "isotypic_components": components,
+        },
     )
 
 

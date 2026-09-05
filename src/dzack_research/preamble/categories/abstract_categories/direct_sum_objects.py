@@ -1,23 +1,27 @@
 r"""Objects equipped with a chosen finite direct-sum decomposition."""
 
-from sage.categories.category import Category
-
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
 
 
-class DirectSumObjects(Category):
+class DirectSumObjects(OwnedCategory):
     r"""Objects carrying a selected ordered family of direct summands."""
 
     def super_categories(self):
         return [Objects()]
 
     class ParentMethods:
+        def __init__(self, summands, **rest) -> None:
+            if not isinstance(summands, IndexedFamily):
+                raise TypeError("a selected direct-sum decomposition is an indexed family")
+            self._preamble_direct_sum_summands = summands
+            self._preamble_direct_sum_index_set = summands.index_set()
+            super().__init__(**rest)
+
         def summands(self):
             return self._preamble_direct_sum_summands
 
@@ -66,11 +70,11 @@ def _binary_decomposition_is_valid(underlying_object, summands) -> bool:
 
 
 def DirectSumDecomposition(underlying_object, summands, summand_index_set=None):
-    r"""Equip ``underlying_object`` with the selected decomposition ``⊕ M_i``.
+    r"""Verify the constructor-owned decomposition ``underlying_object = ⊕ M_i``.
 
-    This does not construct a new direct sum. It records an indexed family of
-    summands of an object already in hand, after verifying the represented
-    binary universal map when that is the active backend.
+    Direct-sum data is construction data, so this accessor never equips an
+    already existing parent.  It only verifies that the stated family agrees
+    with the decomposition selected by that parent's constructor.
     """
     if isinstance(summands, IndexedFamily):
         if summand_index_set is not None and summands.index_set() is not summand_index_set:
@@ -106,9 +110,18 @@ def DirectSumDecomposition(underlying_object, summands, summand_index_set=None):
                 raise ValueError("a one-summand decomposition must be the object itself") from error
             if inclusion.codomain() is not underlying_object or not inclusion.is_surjective():
                 raise ValueError("the stated one summand does not equal the object")
-    underlying_object._preamble_direct_sum_summands = family
-    underlying_object._preamble_direct_sum_index_set = labels
-    return refine(underlying_object, DirectSumObjects())
+
+    selected = underlying_object.__dict__.get("_preamble_direct_sum_summands")
+    selected_labels = underlying_object.__dict__.get("_preamble_direct_sum_index_set")
+    if selected is None or selected_labels is None:
+        raise ValueError(
+            "direct-sum decomposition data must be supplied by the object's constructor"
+        )
+    if labels != selected_labels:
+        raise ValueError("the stated summand labels differ from the constructor-owned labels")
+    if any(selected[label] is not family[label] for label in labels):
+        raise ValueError("the stated summands differ from the constructor-owned summands")
+    return underlying_object
 
 
 

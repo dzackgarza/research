@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
 from dzack_research.preamble.categories.sets.set_categories import NN
 
@@ -120,6 +121,7 @@ class GradedDirectSumModule(Parent):
         realized_object=None,
         from_realization=None,
         degree_index_set=None,
+        extra_categories=(),
     ) -> None:
         self._base_ring = _owned_ring(base_ring)
         self._preamble_base_ring = self._base_ring
@@ -134,12 +136,14 @@ class GradedDirectSumModule(Parent):
         categories = [
             GradedModules(self._base_ring),
             FramedModules(self._base_ring),
+            *tuple(extra_categories),
         ]
         Parent.__init__(
             self,
             base=_engine_ring(self._base_ring),
             category=Category.join(tuple(categories)),
         )
+        realize_owned_category(self)
 
     def base_ring(self):
         return self._base_ring

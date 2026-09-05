@@ -273,7 +273,6 @@ def _lattice_subobject_spanning(module, basis):
         subobject_lift=lift,
         subobject_inclusion_factory=inclusion_factory,
     )
-    source = refine(source, source.category())
     return category._refine_lattice_object(source)
 
 

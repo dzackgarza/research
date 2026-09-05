@@ -74,7 +74,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     aleph,
     cardinal,
 )
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category, refine
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     _engine_matrix,
@@ -176,9 +176,7 @@ def _elements_have_gap_models(group) -> bool:
 
 def _transported_subgroup(group, engine_subgroup):
     """Return the owned subgroup object with its exact ambient endpoint."""
-    subgroup = _TransportedGroupSubobject(group, engine_subgroup)
-    subgroup._preamble_supergroup = group
-    return refine(subgroup, Subgroups(group))
+    return _TransportedGroupSubobject(group, engine_subgroup)
 
 
 def _subgroup_from_gap(group, gap_subgroup):
@@ -537,7 +535,7 @@ class OwnedGroup(Parent):
     def __init__(self, engine) -> None:
         self._engine = engine
         Parent.__init__(self, category=_owned_group_category(engine))
-        refine(self, self.category())
+        realize_owned_category(self)
 
     def _engine_group(self):
         return self._engine
@@ -597,13 +595,16 @@ class _TransportedGroupSubobject(Parent):
 
     def __init__(self, supergroup, engine_subgroup) -> None:
         self._supergroup = supergroup
+        self._preamble_supergroup = supergroup
         self._engine = engine_subgroup
         Parent.__init__(
             self,
             facade=supergroup,
-            category=_owned_group_category(engine_subgroup),
+            category=Category.join(
+                (_owned_group_category(engine_subgroup), Subgroups(supergroup))
+            ),
         )
-        refine(self, self.category())
+        realize_owned_category(self)
 
     def _engine_group(self):
         return self._engine
@@ -1800,7 +1801,7 @@ class _AbelianEndomorphismRingParent(Parent):
         self._group = group
         self._additive = group.category().is_subcategory(CommutativeAdditiveGroups())
         Parent.__init__(self, category=AbelianGroupEndomorphismRings())
-        refine(self, AbelianGroupEndomorphismRings())
+        realize_owned_category(self)
 
 
 class OwnedAbelianGroups(OwnedCategory):

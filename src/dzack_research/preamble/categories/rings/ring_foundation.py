@@ -30,7 +30,7 @@ from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
-from sage.structure.element import Element, RingElement
+from sage.structure.element import CommutativeRingElement, Element, RingElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
@@ -278,11 +278,13 @@ class PredicateSubrings(OwnedCategory):
 class LocalizationRings(OwnedCategory):
     r"""Commutative localizations carrying their selected source and submonoid."""
 
-    class ElementMethods(Element):
+    class ElementMethods(CommutativeRingElement):
+        r"""A represented fraction ``a/s`` in ``S^{-1}R``."""
+
         def __init__(self, parent, numerator, denominator) -> None:
             self._numerator = parent.localization_source()(numerator)
             self._denominator = parent.localization_source()(denominator)
-            CommutativeRingElement.__init__(self, parent)
+            super().__init__(parent)
 
         def numerator(self):
             return self._numerator
@@ -321,7 +323,7 @@ class LocalizationRings(OwnedCategory):
 
         def inverse_of_unit(self):
             parent = self.parent()
-            engine = _selected_localization_engine(parent)
+            engine = parent._selected_engine_ring()
             source = parent.localization_source()
             represented = engine(
                 _engine_element(source, self.numerator())
@@ -337,7 +339,7 @@ class LocalizationRings(OwnedCategory):
             )
 
         def is_unit(self):
-            engine = _selected_localization_engine(self.parent())
+            engine = self.parent()._selected_engine_ring()
             source = self.parent().localization_source()
             represented = engine(
                 _engine_element(source, self.numerator())
@@ -408,6 +410,19 @@ class LocalizationRings(OwnedCategory):
                     self._preamble_localization_map
                     * algebra_source.algebra_structure_morphism()
                 )
+
+        def _selected_engine_ring(self):
+            r"""Return the private realization that computes in this localization.
+
+            Protected contract: the element arithmetic of this category asks its
+            parent for the realization that decides invertibility.
+            """
+            engine = self._preamble_engine_ring
+            if engine is None:
+                raise NotImplementedError(
+                    "this localization has no selected computation realization"
+                )
+            return engine
 
         def localize_module(self, module):
             r"""Return ``S^{-1}M`` through the module-localization theory."""

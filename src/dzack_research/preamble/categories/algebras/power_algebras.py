@@ -42,7 +42,6 @@ from dzack_research.preamble.categories.modules.powers import (
     divided_power_product,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -74,14 +73,6 @@ class PowerAlgebra(GradedDirectSumModule):
 
             degree_index_set = Sets.Δ[int(module.rank())]
 
-        GradedDirectSumModule.__init__(
-            self,
-            base,
-            lambda degree: constructor(module, int(degree)),
-            name=(f"Lambda({module})" if flavor == "alternating" else f"Gamma({module})"),
-            degree_index_set=degree_index_set,
-        )
-
         flavor_category = (
             AlternatingAlgebras(base)
             if flavor == "alternating"
@@ -95,9 +86,16 @@ class PowerAlgebra(GradedDirectSumModule):
         self._preamble_algebra_generator_values = indexed_family(
             self._preamble_algebra_generating_set,
             lambda label: self.from_component(1, module.module_generator(label)),
-            name=f"Algebra generator values of {self}",
+            name="Power-algebra generator values",
         )
-        refine(self, categories)
+        GradedDirectSumModule.__init__(
+            self,
+            base,
+            lambda degree: constructor(module, int(degree)),
+            name=(f"Lambda({module})" if flavor == "alternating" else f"Gamma({module})"),
+            degree_index_set=degree_index_set,
+            extra_categories=tuple(categories),
+        )
 
     def flavor(self):
         return self._flavor

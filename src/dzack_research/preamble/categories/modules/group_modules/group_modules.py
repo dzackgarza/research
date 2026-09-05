@@ -2,6 +2,7 @@ r"""Native-backed modules equipped with an action of a specified group."""
 
 from sage.categories.category import Category
 from sage.categories.map import Map
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -18,6 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     CoequalizerOfFamily,
     EqualizerOfFamily,
@@ -28,7 +30,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.functors.scalar_change import ScalarExtensionFunctor
 from dzack_research.preamble.categories.group.class_functions import finite_group_class_function
 from dzack_research.preamble.categories.group.groups import (
@@ -61,7 +62,7 @@ class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
         return GroupModuleHomset
 
 
-class _CategoryOverRingAndActingGroup(Category):
+class _CategoryOverRingAndActingGroup(OwnedCategory):
     r"""Shared Python parameter handling for categories indexed by ``(R,G)``."""
 
     @staticmethod
@@ -76,7 +77,7 @@ class _CategoryOverRingAndActingGroup(Category):
     def __init__(self, base_ring, group) -> None:
         self._base_ring = base_ring
         self._group = group
-        Category.__init__(self)
+        OwnedCategory.__init__(self)
 
     def base_ring(self):
         return self._base_ring
@@ -115,25 +116,65 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
         return characteristic == zero or group.order() % characteristic != zero
 
     class ParentMethods:
+        def __init__(
+            self,
+            acting_group,
+            unacted_module,
+            source_action,
+            action_is_trivial=False,
+            **rest,
+        ) -> None:
+            self._preamble_acting_group = acting_group
+            self._preamble_unacted_module = unacted_module
+            self._preamble_source_action = source_action
+            self._preamble_action_is_trivial = bool(action_is_trivial)
+            super().__init__(**rest)
+
         def group(self):
             return self._preamble_acting_group
 
         def is_trivial_action(self) -> bool:
-            return bool(self.__dict__.get("_preamble_action_is_trivial", False))
+            return self._preamble_action_is_trivial
 
         def unacted_module(self):
             r"""Return the module from which this chosen action was equipped."""
             return self._preamble_unacted_module
 
+        @cached_method
         def forget_action_morphism(self):
-            return self._preamble_forget_action_morphism
+            unacted = self.unacted_module()
+            return module_homset(self, unacted)(
+                {
+                    label: unacted.module_generator(label)
+                    for label in self.module_generating_set()
+                }
+            )
 
+        @cached_method
         def equip_action_morphism(self):
-            return self._preamble_equip_action_morphism
+            unacted = self.unacted_module()
+            return module_homset(unacted, self)(
+                {
+                    label: self.module_generator(label)
+                    for label in self.module_generating_set()
+                }
+            )
 
+        @cached_method
         def action(self):
             r"""Return the chosen action datum used to construct this group module."""
-            return self._preamble_action
+            forget_action = self.forget_action_morphism()
+            equip_action = self.equip_action_morphism()
+            source_action = self._preamble_source_action
+
+            def represented_action(group_element, vector):
+                if vector.parent() is not self:
+                    raise TypeError(f"the action must be applied to elements of {self}")
+                source_vector = forget_action(vector)
+                source_image = _apply_action(source_action, group_element, source_vector)
+                return equip_action(source_image)
+
+            return represented_action
 
         def act(self, group_element, vector):
             r"""Return ``group_element * vector`` in this group module."""
@@ -489,7 +530,7 @@ def group_module_homset(domain, codomain) -> GroupModuleHomset:
     return GroupModules(ring, group).Mor(domain, codomain)
 
 
-def GroupModule(module, group_or_action, action=None):
+def GroupModule(module, group_or_action, action=None, *, _action_is_trivial=False):
     r"""Equip a finitely presented module with a specified left group action.
 
     ``GroupModule(M, rho)`` accepts a morphism ``rho`` whose domain is the
@@ -521,48 +562,45 @@ def GroupModule(module, group_or_action, action=None):
         )
 
     is_free = module in FinitelyGeneratedFreeModules(base_ring)
-    if is_free:
-        represented_module = FreshFreeModuleOn(base_ring, labels)
-    elif module in ModulesWithChosenFinitePresentation(base_ring):
-        represented_module = FinitelyPresentedModule(module.presentation())
-    else:
+    if not is_free and module not in ModulesWithChosenFinitePresentation(base_ring):
         raise TypeError(
             "a nonfree group module requires a chosen finite presentation"
         )
 
-    forget_action = module_homset(represented_module, module)(
-        {label: module.module_generator(label) for label in labels}
-    )
-    equip_action = module_homset(module, represented_module)(
-        {label: represented_module.module_generator(label) for label in labels}
-    )
-
-    def represented_action(group_element, vector):
-        if vector.parent() is not represented_module:
-            raise TypeError(f"the action must be applied to elements of {represented_module}")
-        source_vector = forget_action(vector)
-        source_image = _apply_action(action, group_element, source_vector)
-        return equip_action(source_image)
-
-    represented_module._preamble_acting_group = group
-    represented_module._preamble_action = represented_action
-    represented_module._preamble_unacted_module = module
-    represented_module._preamble_forget_action_morphism = forget_action
-    represented_module._preamble_equip_action_morphism = equip_action
     categories = [
         GroupModules(base_ring, group),
         FinitelyPresentedGroupModules(base_ring, group),
     ]
     if is_free:
         categories.append(FinitelyGeneratedFreeGroupModules(base_ring, group))
-    return refine(represented_module, categories)
+    construction_data = {
+        "acting_group": group,
+        "unacted_module": module,
+        "source_action": action,
+        "action_is_trivial": _action_is_trivial,
+    }
+    if is_free:
+        return FreshFreeModuleOn(
+            base_ring,
+            labels,
+            _extra_categories=tuple(categories),
+            _extra_construction_data=construction_data,
+        )
+    return FinitelyPresentedModule(
+        module.presentation(),
+        _extra_categories=tuple(categories),
+        _extra_construction_data=construction_data,
+    )
 
 
 def trivial_group_action(module, group):
     r"""Equip ``module`` with the trivial action of ``group``."""
-    acted = GroupModule(module, group, lambda _group_element, vector: vector)
-    acted._preamble_action_is_trivial = True
-    return acted
+    return GroupModule(
+        module,
+        group,
+        lambda _group_element, vector: vector,
+        _action_is_trivial=True,
+    )
 
 
 __all__ = [

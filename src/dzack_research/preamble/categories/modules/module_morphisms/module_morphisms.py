@@ -23,7 +23,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfSets,
     Sets,
 )
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Biproduct,
     TensorProduct,
@@ -889,14 +889,6 @@ class ModuleMorphism(Morphism):
             raise NotImplementedError(
                 "this cokernel has no represented quotient-module backend"
             )
-        projection = module_homset(self.codomain(), quotient)(
-            {
-                label: quotient.module_generator(label)
-                for label in self.codomain().module_generating_set()
-            }
-        )
-        quotient._preamble_cokernel_morphism = self
-        quotient._preamble_cokernel_projection = projection
         return quotient
 
 
@@ -959,18 +951,39 @@ def _initialize_module_hom_parent(
     if domain.base_ring() != codomain.base_ring():
         raise ValueError("module morphisms require a common base ring")
 
-    parent._preamble_base_ring = _owned_ring(domain.base_ring())
+    ring = _owned_ring(domain.base_ring())
+    parent._preamble_base_ring = ring
+    placement = domain.module_category()._hom_parent_placement(
+        domain,
+        codomain,
+        full_internal_hom=full_internal_hom,
+    )
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        MatrixSpaces,
+        _matrix_coefficients,
+        _matrix_unit,
+    )
+
+    if placement.is_subcategory(MatrixSpaces(ring)):
+        labels = CartesianProductOfSets(
+            codomain.module_generating_set(),
+            domain.module_generating_set(),
+        )
+        parent._preamble_module_generating_set = labels
+        parent._preamble_module_generator_function = lambda label: _matrix_unit(parent, label)
+        parent._preamble_module_coefficient_function = lambda morphism: _matrix_coefficients(
+            parent,
+            morphism,
+        )
     CategoricalHomset.__init__(
         parent,
         hom_family,
         domain,
         codomain,
+        category=placement,
     )
-    domain.module_category()._refine_hom_parent(
-        parent,
-        full_internal_hom=full_internal_hom,
-    )
-    scalar_parent = parent._preamble_base_ring
+    realize_owned_category(parent)
+    scalar_parent = ring
     parent.register_action(_ModuleHomScalarAction(scalar_parent, parent, True))
     parent.register_action(_ModuleHomScalarAction(scalar_parent, parent, False))
 

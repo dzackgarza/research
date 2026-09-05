@@ -21,9 +21,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
+)
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -86,6 +88,24 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
         return [FinitelyPresentedModules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            cohomology_complex,
+            cohomology_degree,
+            cohomology_current_module,
+            cohomology_cycles,
+            cohomology_boundaries,
+            cohomology_boundary_in_cycles,
+            **rest,
+        ) -> None:
+            self._preamble_cohomology_complex = cohomology_complex
+            self._preamble_cohomology_degree = cohomology_degree
+            self._preamble_cohomology_current_module = cohomology_current_module
+            self._preamble_cohomology_cycles = cohomology_cycles
+            self._preamble_cohomology_boundaries = cohomology_boundaries
+            self._preamble_cohomology_boundary_in_cycles = cohomology_boundary_in_cycles
+            super().__init__(**rest)
+
         def cochain_complex(self):
             return self._preamble_cohomology_complex
 
@@ -185,11 +205,11 @@ class CochainComplexObject(GradedDirectSumModule):
             base_ring,
             piece,
             name=name or "Cochain complex",
+            extra_categories=(CochainComplexes(base_ring),),
         )
         self._zero_module = zero_module
         self._preamble_differential = CochainDifferential(self)
         self._validate_differentials()
-        refine(self, CochainComplexes(self.base_ring()))
 
     def selected_degrees(self):
         return tuple(sorted(self._selected_pieces))
@@ -427,14 +447,19 @@ def Cohomology(complex_, degree):
     cycles = Cycles(complex_, degree)
     boundaries = Boundaries(complex_, degree)
     boundary_in_cycles = boundaries.inclusion().factor_through(cycles.inclusion())
-    result = boundary_in_cycles.cokernel()
-    result._preamble_cohomology_complex = complex_
-    result._preamble_cohomology_degree = degree
-    result._preamble_cohomology_current_module = complex_.graded_piece(degree)
-    result._preamble_cohomology_cycles = cycles
-    result._preamble_cohomology_boundaries = boundaries
-    result._preamble_cohomology_boundary_in_cycles = boundary_in_cycles
-    result = refine(result, CohomologyModules(ring))
+    result = FinitelyPresentedModule(
+        boundary_in_cycles,
+        _cokernel_morphism=boundary_in_cycles,
+        _extra_categories=(CohomologyModules(ring),),
+        _extra_construction_data={
+            "cohomology_complex": complex_,
+            "cohomology_degree": degree,
+            "cohomology_current_module": complex_.graded_piece(degree),
+            "cohomology_cycles": cycles,
+            "cohomology_boundaries": boundaries,
+            "cohomology_boundary_in_cycles": boundary_in_cycles,
+        },
+    )
     _COHOMOLOGY_CACHE[cache_key] = result
     return result
 

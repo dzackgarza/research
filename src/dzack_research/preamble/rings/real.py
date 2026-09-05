@@ -38,11 +38,13 @@ from sage.symbolic.ring import SR
 
 from dzack_research.preamble.logic import Predicate
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
     OwnedRings,
     _engine_element,
     _engine_ring,
     _own_ring,
 )
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
 from dzack_research.preamble.logic import ask
@@ -447,8 +449,9 @@ class ExactRealField(UniqueRepresentation, Field):
         Field.__init__(
             self,
             base=self,
-            category=Category.join((Fields().Infinite(), UncountableSets())),
+            category=Category.join((OwnedFields(), UncountableSets())),
         )
+        realize_owned_category(self)
 
     def _repr_(self) -> str:
         return "Real Field"

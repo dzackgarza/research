@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     category_packet,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category, refine
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FramedFreeModules,
     FreeModuleOn,
     FreshFreeModuleOn,
-    _finalize_module_subobject,
+    _module_subobject_constructor_data,
     _span_basis_elements,
     ring_as_module,
 )
@@ -754,20 +754,49 @@ class FormModules(OwnedCategoryOverBaseRing):
     _HomCategory = FormedModuleHomCategoryConstruction
 
     class ParentMethods:
+        def __init__(self, source_form, unformed_module, **rest) -> None:
+            self._preamble_source_form = source_form
+            self._preamble_unformed_module = unformed_module
+            super().__init__(**rest)
+
+        @cached_method
         def form(self):
-            return self._form
+            return self._preamble_source_form.pullback(self.forget_form_morphism())
 
         def unformed_module(self):
             r"""Return the module used to equip this represented formed object."""
             return self._preamble_unformed_module
 
+        @cached_method
         def forget_form_morphism(self):
             r"""Return the canonical module identification from the formed copy."""
-            return self._preamble_forget_form_morphism
+            module = self.unformed_module()
+            return module_homset(self, module)(
+                {
+                    label: module.module_generator(label)
+                    for label in self.module_generating_set()
+                }
+            )
 
+        @cached_method
         def equip_form_morphism(self):
             r"""Return the inverse canonical module identification into the formed copy."""
-            return self._preamble_equip_form_morphism
+            module = self.unformed_module()
+            return module_homset(module, self)(
+                {
+                    label: self.module_generator(label)
+                    for label in self.module_generating_set()
+                }
+            )
+
+        def pairing(self, left, right):
+            return self.form()(left, right)
+
+        def left_module(self):
+            return self
+
+        def right_module(self):
+            return self
 
         def value_module(self):
             return self.form().codomain()
@@ -1031,7 +1060,6 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
 class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
     class ParentMethods:
-        Mor = FormModules.ParentMethods.Mor
         base_change = FormModules.ParentMethods.base_change
 
     def an_object(self):
@@ -1101,7 +1129,6 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
         return [FormModules(self.base_ring()), FramedFreeModules(self.base_ring())]
 
     class ParentMethods:
-        Mor = FormModules.ParentMethods.Mor
         base_change = FormModules.ParentMethods.base_change
 
         def subobject_on(self, module_generating_set):
@@ -1147,7 +1174,6 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        Mor = FormModules.ParentMethods.Mor
         base_change = FormModules.ParentMethods.base_change
 
         @cached_method
@@ -1201,7 +1227,15 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
             return _engine_ring(self.base_ring()).ideal(self.gram_tensor().list())
 
 
-def FormModule(form):
+def FormModule(
+    form,
+    *,
+    _subobject_ambient=None,
+    _subobject_generator_images=None,
+    _subobject_lift=None,
+    _subobject_inclusion_factory=None,
+    _subobject_verify_linearity=True,
+):
     r"""Return the same represented module construction equipped with ``form``.
 
     The result remains a module object; it is not a wrapper around an
@@ -1216,35 +1250,17 @@ def FormModule(form):
     base_ring = module.base_ring()
     labels = module.module_generating_set()
     assert labels.cardinality().is_finite()
-    if module in FramedFreeModules(base_ring):
-        formed = FreshFreeModuleOn(base_ring, labels)
-    elif module in ModulesWithChosenFinitePresentation(base_ring):
-        formed = FinitelyPresentedModule(module.presentation())
-    else:
-        raise TypeError(
-            "the active formed-module constructor requires a finite free or chosen finitely presented module"
-        )
-    forget_form = module_homset(formed, module)(
-        {label: module.module_generator(label) for label in labels}
-    )
-    equip_form = module_homset(module, formed)(
-        {label: formed.module_generator(label) for label in labels}
-    )
-    formed._form = form.pullback(forget_form)
-    formed._pairing = formed._form
-    formed._preamble_unformed_module = module
-    formed._preamble_forget_form_morphism = forget_form
-    formed._preamble_equip_form_morphism = equip_form
-
     categories = [FormModules(base_ring)]
-    if formed in FramedFreeModules(base_ring):
+    is_free = module in FramedFreeModules(base_ring)
+    is_presented = module in ModulesWithChosenFinitePresentation(base_ring)
+    if is_free:
         categories.append(FreeFormModules(base_ring))
-    if formed in FinitelyPresentedModules(base_ring):
+    if is_presented:
         categories.append(FinitelyPresentedFormModules(base_ring))
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
-        categories.append(FormedModules(formed._form.codomain()))
-        if formed in FinitelyPresentedModules(base_ring):
+        categories.append(FormedModules(form.codomain()))
+        if is_presented:
             categories.append(FinitelyPresentedBilinearFormModules(base_ring))
         try:
             symmetric = form.gram_tensor().is_symmetric()
@@ -1254,40 +1270,58 @@ def FormModule(form):
             categories.append(SymmetricBilinearFormModules(base_ring))
     else:
         categories.append(QuadraticFormModules(base_ring))
-        if formed in FinitelyPresentedModules(base_ring):
+        if is_presented:
             categories.append(FinitelyPresentedQuadraticFormModules(base_ring))
-    if formed in FinitelyGeneratedFreeModules(base_ring):
+    if module in FinitelyGeneratedFreeModules(base_ring):
         categories.extend(
             [
                 FinitelyGeneratedFormModules(base_ring),
                 FinitelyGeneratedFreeFormModules(base_ring),
             ]
         )
-    return refine(formed, categories)
+    construction_data = {
+        "source_form": form,
+        "unformed_module": module,
+    }
+    common = {
+        "_subobject_ambient": _subobject_ambient,
+        "_subobject_generator_images": _subobject_generator_images,
+        "_subobject_lift": _subobject_lift,
+        "_subobject_inclusion_factory": _subobject_inclusion_factory,
+        "_subobject_verify_linearity": _subobject_verify_linearity,
+        "_extra_categories": tuple(categories),
+        "_extra_construction_data": construction_data,
+    }
+    if is_free:
+        return FreshFreeModuleOn(base_ring, labels, **common)
+    if is_presented:
+        return FinitelyPresentedModule(module.presentation(), **common)
+    raise TypeError(
+        "the active formed-module constructor requires a finite free or chosen finitely presented module"
+    )
 
 
 @cached_function(key=lambda module, basis: (id(module), basis))
 def _form_subobject_spanning(module, basis):
     r"""Return the canonical formed subobject on a finite span basis."""
 
-    labels = OwnedSets.Δ[int(basis.cardinality()) - 1]
+    labels, embedded, lift = _module_subobject_constructor_data(module, basis)
     free_source = FreeModuleOn(module.base_ring(), labels)
     preliminary = module_embedding(
         free_source,
         module,
-        lambda label: basis.unrank(int(label)),
+        embedded,
     )
-    source = FormModule(module.form().pullback(preliminary))
-    inclusion = form_embedding(
-        source,
-        module,
-        lambda label: basis.unrank(int(label)),
-    )
-    return _finalize_module_subobject(
-        module,
-        basis,
-        source,
-        inclusion=inclusion,
+
+    def inclusion_factory(source):
+        return form_embedding(source, module, embedded)
+
+    return FormModule(
+        module.form().pullback(preliminary),
+        _subobject_ambient=module,
+        _subobject_generator_images=embedded,
+        _subobject_lift=lift,
+        _subobject_inclusion_factory=inclusion_factory,
     )
 
 
@@ -1349,7 +1383,7 @@ class _HeterogeneousPairing(Parent):
         self._pairing = pairing
         category = PairedModules(pairing.codomain())
         Parent.__init__(self, category=category)
-        refine(self, [category])
+        realize_owned_category(self)
 
     def _repr_(self) -> str:
         return (

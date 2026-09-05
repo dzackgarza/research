@@ -3,6 +3,7 @@
 from sage.categories.commutative_algebras import (
     CommutativeAlgebras as SageCommutativeAlgebras,
 )
+from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
@@ -1273,15 +1274,32 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         engine,
         base_ring,
         labels,
-        structure_map,
+        structure_map=None,
         generator_values=None,
+        *,
+        categories=(),
     ) -> None:
-        self._preamble_algebra_base_ring = _owned_ring(base_ring)
+        base = _owned_ring(base_ring)
+        self._preamble_algebra_base_ring = base
         self._preamble_algebra_generating_set = (
             None if labels is None else finite_ordered_set(labels)
         )
-        self._preamble_structure_map = structure_map
-        _OwnedRingParent.__init__(self, engine)
+        placement = [Algebras(base), OwnedAlgebras(base)]
+        if engine in SageCommutativeAlgebras(_engine_ring(base)):
+            placement.append(CommutativeAlgebras(base))
+        if labels is not None:
+            placement.append(FramedAlgebras(base))
+        placement.extend(categories)
+        _OwnedRingParent.__init__(
+            self,
+            engine,
+            category=Category.join(tuple(placement)),
+        )
+        self._preamble_structure_map = (
+            _default_structure_map(base, self)
+            if structure_map is None
+            else structure_map
+        )
         if labels is None:
             if generator_values is not None:
                 raise ValueError(
@@ -1355,27 +1373,25 @@ def _default_structure_map(base, algebra):
 
 
 @cached_function
-def _owned_algebra_view(engine, base_ring, labels=None):
+def _owned_algebra_view(engine, base_ring, labels=None, categories=()):
     base = _owned_ring(base_ring)
-    # Construct the parent first with a temporary engine-level map argument;
-    # the public map is replaced immediately below once the parent exists.
-    engine_map = engine.coerce_map_from(_engine_ring(base))
-    view = _OwnedAlgebraParent(engine, base, labels, engine_map)
-    view._preamble_structure_map = _default_structure_map(base, view)
-    return view
+    return _OwnedAlgebraParent(
+        engine,
+        base,
+        labels,
+        categories=tuple(categories),
+    )
 
 
 def refine_algebra(algebra, base_ring, labels=None, *categories):
-    r"""Place a native algebra in its owned algebra categories."""
+    r"""Construct an owned algebra view with its selected categories present."""
     base = _owned_ring(base_ring)
-    algebra = _owned_algebra_view(_engine_ring(algebra), base, labels)
-    placement = [Algebras(base), OwnedAlgebras(base)]
-    if _engine_ring(algebra) in SageCommutativeAlgebras(_engine_ring(base)):
-        placement.append(CommutativeAlgebras(base))
-    if labels is not None:
-        placement.append(FramedAlgebras(base))
-    placement.extend(categories)
-    return refine(algebra, placement)
+    return _owned_algebra_view(
+        _engine_ring(algebra),
+        base,
+        labels,
+        tuple(categories),
+    )
 
 
 def _require_endomorphism_multiplication(multiplication, ring):
@@ -1555,7 +1571,7 @@ def own_algebra(structure_map):
     base = _owned_ring(structure_map.domain())
     engine = _engine_ring(structure_map.codomain())
     algebra = _OwnedAlgebraParent(engine, base, None, structure_map)
-    return refine(algebra, [Algebras(base), OwnedAlgebras(base)])
+    return algebra
 
 
 def _engine_algebra_morphism_from_generator_images(

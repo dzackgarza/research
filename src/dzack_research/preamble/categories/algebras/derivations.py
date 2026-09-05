@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.categories.category import Category
 from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.structure.element import ModuleElement
@@ -35,7 +36,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     restrict_scalars,
 )
-from dzack_research.preamble.refine import refine
 
 
 def _commutative_presentation_data(algebra):
@@ -284,27 +284,32 @@ class DerivationSpace(RestrictedHomCategoryParent):
         self._restricted_target = restricted_target
         # Der_R(A,M) is the subcategory of Hom_R(A,Res_R M) carved out by the
         # Leibniz rule, so the existing R-linear Mor category is the base.
+        self._preamble_base_ring = algebra
         RestrictedHomCategoryParent.__init__(
             self,
             family,
             algebra,
             restricted_target,
+            category=Modules(algebra),
         )
-        self._preamble_base_ring = algebra
-        refine(self, Modules(algebra))
         self.register_action(_DerivationAlgebraAction(algebra, self, True))
         self.register_action(_DerivationAlgebraAction(algebra, self, False))
-        self._restricted_module = restrict_scalars(self, structure_map)
-        self._preamble_inclusion = module_embedding(
-            self._restricted_module,
-            self.arrow_set(),
-            lambda restricted_derivation: (
-                restricted_derivation.underlying_element().underlying_linear_morphism()
-            ),
-            verify_linearity=False,
+
+        def restricted_inclusion(restricted_module):
+            return module_embedding(
+                restricted_module,
+                self.arrow_set(),
+                lambda restricted_derivation: (
+                    restricted_derivation.underlying_element().underlying_linear_morphism()
+                ),
+                verify_linearity=False,
+            )
+
+        self._restricted_module = restrict_scalars(
+            self,
+            structure_map,
+            _subobject_inclusion_factory=restricted_inclusion,
         )
-        self._restricted_module._preamble_inclusion = self._preamble_inclusion
-        refine(self._restricted_module, ModuleSubobjects(base))
 
     def base_ring(self):
         return self._preamble_base_ring
@@ -322,7 +327,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
         return self._restricted_module
 
     def inclusion(self):
-        return self._preamble_inclusion
+        return self.restricted_module().inclusion()
 
     def generator_labels(self):
         return self._generator_labels
@@ -534,14 +539,14 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
         self._shift = family.degree_shift()
 
         ring = algebra.base_ring()
+        self._preamble_base_ring = ring
         RestrictedHomCategoryParent.__init__(
             self,
             family,
             algebra,
             target,
+            category=Category.join((Modules(ring), ModuleSubobjects(ring))),
         )
-        self._preamble_base_ring = ring
-        refine(self, [Modules(ring), ModuleSubobjects(ring)])
 
     @cached_method
     def inclusion(self):

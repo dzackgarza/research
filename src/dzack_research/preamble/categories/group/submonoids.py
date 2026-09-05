@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category
 
 
 class SubmonoidInclusion(MonoidMorphism):
@@ -61,12 +61,12 @@ class _SubmonoidParent(Parent):
         self._preamble_monoid_generators = (
             None if generators is None else finite_ordered_set(tuple(generators))
         )
-        Parent.__init__(self, facade=ambient, category=Monoids())
+        Parent.__init__(self, facade=ambient, category=Submonoids(ambient))
         self._preamble_inclusion = SubmonoidInclusion(
             Monoids().Mor(self, ambient),
             lambda element: element,
         )
-        refine(self, Submonoids(ambient))
+        realize_owned_category(self)
         if predicate is not None and not bool(predicate(ambient.one())):
             raise ValueError("a submonoid must contain the ambient multiplicative identity")
 

@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
-    ModuleSubobjects,
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import PowerSeriesRing
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -25,7 +24,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytopeParent
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.rings.real import RR
 
 
@@ -253,14 +251,7 @@ def root_sublattice(lattice):
 
     recognized = component_types[0] if len(component_types) == 1 else CartanType(component_types)
 
-    labels = finite_ordered_set(range(len(ordered)))
-    source = lattice.lattice_category()(
-        [[left.b(right) for right in ordered] for left in ordered],
-        module_generators=labels,
-    )
-    inclusion = source.Emb(lattice)({label: root for label, root in zip(labels, ordered, strict=True)})
-    source._preamble_inclusion = inclusion
-    refine(source, ModuleSubobjects(lattice.base_ring()))
+    source = lattice.subobject_on(ordered)
     if lattice.is_negative_definite():
         source = lattice.lattice_category()._refine_root_lattice(source, recognized)
     return source

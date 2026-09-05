@@ -28,12 +28,13 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    BiproductModules,
     FinitelyGeneratedFreeModules,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.modules.base_change import base_change_codomain
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
@@ -48,12 +49,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     Modules,
     _refine_matrix_hom,
-    register_module_scalar_action,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     PrincipalIdealDomains,
     _own_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -61,39 +60,10 @@ from dzack_research.preamble.categories.sets.cardinals import (
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
-class FreeModuleBaseRings(Category):
-    r"""Rings equipped with the selected free-module exponent construction."""
-
-    def super_categories(self):
-        return [OwnedRings()]
-
-    class ParentMethods:
-        def _fresh_free_module_on(self, labels):
-            return FreshFreeModuleOn(self.base_ring(), labels)
-
-        def __pow__(self, exponent):
-            return FreeModule(self, exponent)
-
-
-def _scalar_action_morphism(module, scalar_multiple):
-    r"""Return ``rho_M : R -> End_R(M)`` from the parent's private scalar crossing."""
-
-    ring = module.base_ring()
-    endomorphisms = Modules(ring).End(module)
-    return ring_morphism(
-        ring,
-        endomorphisms,
-        lambda scalar: endomorphisms.elementwise(
-            lambda element: scalar_multiple(scalar, element),
-            verify_linearity=False,
-        ),
-    )
-
-
 def _finitely_generated_free_placement(ring, module_generating_set):
     r"""Return the owned categories of ``R^(S)``: finitely generated exactly when ``S`` is finite."""
 
-    categories = [FramedFreeModules(ring)]
+    categories = [_SparseFramedFreeModules(ring)]
     if module_generating_set.cardinality().is_finite():
         categories.append(FinitelyGeneratedFreeModules(ring))
     return categories
@@ -172,31 +142,28 @@ class _SparseFreeModuleElement(ModuleElement):
         )
 
 
-class _SparseFreeModuleParent(Parent):
-    """The owned free module on arbitrary labels over a ring with no Sage engine for it."""
+class _SparseFreeModuleParent:
+    """Construction methods for the owned free module on arbitrary labels."""
 
-    Element = _SparseFreeModuleElement
-
-    def __init__(self, ring, labels) -> None:
-        self._preamble_base_ring = ring
-        self._preamble_module_generating_set = labels
-        self._preamble_free_module_constructor = lambda new_labels: FreshFreeModuleOn(
+    def __init__(
+        self,
+        base_ring,
+        module_generating_set,
+        **rest,
+    ) -> None:
+        ring = _owned_ring(base_ring)
+        labels = module_generating_set
+        self._preamble_free_module_constructor = lambda new_labels, **options: FreshFreeModuleOn(
             ring,
             new_labels,
+            **options,
         )
-        self._preamble_module_generator_function = self._basis_element
-        self._preamble_module_coefficient_function = (
-            lambda element: self._element_constructor_(element).monomial_coefficients()
+        super().__init__(
+            base_ring=ring,
+            module_generating_set=labels,
+            module_generator_function=self._basis_element,
+            **rest,
         )
-        categories = _finitely_generated_free_placement(ring, labels)
-        Parent.__init__(self, base=ring, category=Category.join(tuple(categories)))
-        refine(self, categories)
-        self._preamble_scalar_action_morphism = _scalar_action_morphism(
-            self,
-            self._raw_scalar_multiple,
-        )
-
-        register_module_scalar_action(self)
 
     def _basis_element(self, label):
         labels = self._preamble_module_generating_set
@@ -288,6 +255,9 @@ class _SparseFreeModuleParent(Parent):
             },
         )
 
+    def _selected_module_coefficients(self, element):
+        return self._element_constructor_(element).monomial_coefficients()
+
     def _repr_(self):
         return f"Free module on {self.module_generating_set()} over {self.base_ring()}"
 
@@ -310,18 +280,18 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         return [FreeModules(self.base_ring()), FramedModules(self.base_ring())]
 
     class ParentMethods:
-        def _fresh_free_module_on(self, labels):
+        def _fresh_free_module_on(self, labels, **options):
             constructor = self.__dict__.get("_preamble_free_module_constructor")
             if constructor is None:
                 raise NotImplementedError(
                     "this free module has no selected fresh-parent constructor"
                 )
-            return constructor(labels)
+            return constructor(labels, **options)
 
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
                 return NotImplemented
-            return FinitelyPresentedModule(morphism)
+            return FinitelyPresentedModule(morphism, _cokernel_morphism=morphism)
 
         def _represented_annihilator_ideal(self):
             r"""Return the kernel ideal of the scalar action on a free module."""
@@ -375,11 +345,15 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return framing_morphism(self, self, self.module_generator)
 
-        def _free_biproduct_with(self, other, labels):
+        def _free_biproduct_with(self, other, labels, factors):
             r"""Return the free biproduct realization when both factors are framed free."""
             if other not in FramedFreeModules(self.base_ring()):
                 return NotImplemented
-            return FreeModuleOn(self.base_ring(), labels)
+            return FreshFreeModuleOn(
+                self.base_ring(),
+                labels,
+                _biproduct_factors=factors,
+            )
 
         def rank(self):
             r"""Return the cardinality of the module generating set.
@@ -418,6 +392,59 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             target_ring = base_change_codomain(self, ring_map)
             return FreshFreeModuleOn(target_ring, self.module_generating_set())
+
+
+class _SparseFramedFreeModules(OwnedCategoryOverBaseRing):
+    r"""The private sparse-coordinate realization of a framed free module."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "sparse represented framed free modules"
+
+    def super_categories(self):
+        return [FramedFreeModules(self.base_ring())]
+
+    ElementMethods = _SparseFreeModuleElement
+
+    class ParentMethods(_SparseFreeModuleParent):
+        pass
+
+
+def _new_sparse_free_module(
+    ring,
+    labels,
+    *,
+    subobject_ambient=None,
+    subobject_generator_images=None,
+    subobject_lift=None,
+    subobject_inclusion_factory=None,
+    subobject_verify_linearity=True,
+    biproduct_factors=None,
+    extra_categories=(),
+    extra_construction_data=None,
+):
+    r"""Build a sparse free module through the category constructor chain."""
+    categories = _finitely_generated_free_placement(ring, labels)
+    data = {
+        "base_ring": ring,
+        "module_generating_set": labels,
+    }
+    if subobject_ambient is not None or subobject_inclusion_factory is not None:
+        categories.append(ModuleSubobjects(ring))
+        data.update(
+            subobject_ambient=subobject_ambient,
+            subobject_generator_images=subobject_generator_images,
+            subobject_lift=subobject_lift,
+            subobject_inclusion_factory=subobject_inclusion_factory,
+            subobject_verify_linearity=subobject_verify_linearity,
+        )
+    if biproduct_factors is not None:
+        categories.append(BiproductModules(ring))
+        data["biproduct_factors"] = biproduct_factors
+    categories.extend(extra_categories)
+    if extra_construction_data is not None:
+        data.update(extra_construction_data)
+    return object_of(Category.join(tuple(categories)), **data)
 
 
 
@@ -535,7 +562,7 @@ def module_subobject_on(module, module_generating_set):
     return _module_subobject_spanning(module, basis)
 
 
-@cached_function(key=lambda module, basis: (id(module), basis))
+@cached_function(key=lambda module, basis: (id(module), tuple(basis)))
 def _module_subobject_spanning(module, basis):
     r"""Return the subobject on its canonical owned finite span basis.
 
@@ -544,40 +571,45 @@ def _module_subobject_spanning(module, basis):
     mathematical endpoints.
     """
 
+    return _module_subobject_spanning_with_structure(module, basis)
+
+
+def _module_subobject_spanning_with_structure(
+    module,
+    basis,
+    *,
+    extra_categories=(),
+    extra_construction_data=None,
+):
+    r"""Construct a span, optionally in additional structural categories."""
+    ring = module.base_ring()
+    labels, embedded, lift_from_finite_support = _module_subobject_constructor_data(
+        module,
+        basis,
+    )
+    return _new_sparse_free_module(
+        ring,
+        labels,
+        subobject_ambient=module,
+        subobject_generator_images=embedded,
+        subobject_lift=lift_from_finite_support,
+        extra_categories=extra_categories,
+        extra_construction_data=extra_construction_data,
+    )
+
+
+def _module_subobject_constructor_data(module, basis):
+    r"""Return labels, generator images, and lift data for a finite span."""
+
     ring = module.base_ring()
     if module not in FramedFreeModules(ring):
         raise NotImplementedError(
             "the active submodule basis engine constructs subobjects of framed free modules"
         )
     labels = Sets.Δ[int(basis.cardinality()) - 1]
-    source = FreshFreeModuleOn(ring, labels)
-    return _finalize_module_subobject(module, basis, source)
-
-
-def _finalize_module_subobject(module, basis, source, *, inclusion=None):
-    r"""Install the common inclusion and finite-support lift on a chosen source.
-
-    ``source`` is selected by the mathematical owner of the ambient structured
-    module.  Generic module subobjects use an ordinary free source; formed
-    modules and lattices choose sources carrying the pulled-back structure in
-    their own defining modules.
-    """
-
-    ring = module.base_ring()
-    labels = source.module_generating_set()
 
     def embedded(label):
         return basis.unrank(int(label))
-
-    if inclusion is None:
-        inclusion = module_embedding(source, module, embedded)
-    elif inclusion.domain() is not source or inclusion.codomain() is not module:
-        raise ValueError("the selected subobject inclusion has the wrong endpoints")
-
-    # A finite subobject of an infinitely framed free module still has a
-    # finite-support membership problem.  Install that exact lift rather than
-    # routing through the generic finite-ambient coordinate solver.
-
 
     support_labels = _finite_support_labels(module, basis)
     source_rank = int(basis.cardinality())
@@ -602,7 +634,7 @@ def _finalize_module_subobject(module, basis, source, *, inclusion=None):
     else:
         coordinate_matrix = None
 
-    def lift_from_finite_support(element):
+    def lift_from_finite_support(source, element):
         element = element if element.parent() is module else module(element)
         coefficients = module_coefficients(element, module)
         if any(label not in support_labels for label in coefficients):
@@ -627,11 +659,7 @@ def _finalize_module_subobject(module, basis, source, *, inclusion=None):
             }
         )
 
-    inclusion._preamble_lift = lift_from_finite_support
-    source._preamble_inclusion = inclusion
-
-    source = refine(source, ModuleSubobjects(ring))
-    return source
+    return labels, embedded, lift_from_finite_support
 
 
 
@@ -698,7 +726,7 @@ def _module_generating_set(labels):
 @cached_function
 def _owned_free_module_on(ring, module_generating_set):
     r"""Return the owned free module ``F_R(S)`` on the stated labels."""
-    return _SparseFreeModuleParent(ring, module_generating_set)
+    return _new_sparse_free_module(ring, module_generating_set)
 
 
 def FreeModule(base_ring, rank_or_index_set):
@@ -758,7 +786,19 @@ def FreeModuleOn(base_ring, module_generating_set):
     )
 
 
-def FreshFreeModuleOn(base_ring, module_generating_set):
+def FreshFreeModuleOn(
+    base_ring,
+    module_generating_set,
+    *,
+    _subobject_ambient=None,
+    _subobject_generator_images=None,
+    _subobject_lift=None,
+    _subobject_inclusion_factory=None,
+    _subobject_verify_linearity=True,
+    _biproduct_factors=None,
+    _extra_categories=(),
+    _extra_construction_data=None,
+):
     r"""Return a new free-module parent on the specified basis labels.
 
     Two different actions or forms on isomorphic free modules must remain
@@ -770,7 +810,18 @@ def FreshFreeModuleOn(base_ring, module_generating_set):
     if ring not in OwnedRings():
         raise TypeError("FreshFreeModuleOn expects a preamble ring")
     labels = _module_generating_set(module_generating_set)
-    return _SparseFreeModuleParent(ring, labels)
+    return _new_sparse_free_module(
+        ring,
+        labels,
+        subobject_ambient=_subobject_ambient,
+        subobject_generator_images=_subobject_generator_images,
+        subobject_lift=_subobject_lift,
+        subobject_inclusion_factory=_subobject_inclusion_factory,
+        subobject_verify_linearity=_subobject_verify_linearity,
+        biproduct_factors=_biproduct_factors,
+        extra_categories=_extra_categories,
+        extra_construction_data=_extra_construction_data,
+    )
 
 
 def BasedFreeModule(base_ring, rank_or_labels):

@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     FramedAlgebras,
     OwnedAlgebras,
     _OwnedAlgebraParent,
-    _default_structure_map,
     algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -17,7 +16,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     FreeAlgebras,
@@ -151,11 +149,25 @@ class GradedAugmentedAlgebras(OwnedCategoryOverBaseRing):
 class _AlgebraWithChosenAugmentation(_OwnedAlgebraParent):
     r"""An algebra interned on a chosen family of generator images."""
 
-    def __init__(self, engine, base_ring, labels, augmentation_images, augmentation_codomain) -> None:
+    def __init__(
+        self,
+        engine,
+        base_ring,
+        labels,
+        augmentation_images,
+        augmentation_codomain,
+        *,
+        categories=(),
+    ) -> None:
         self._preamble_augmentation_images = augmentation_images
         self._preamble_augmentation_codomain = augmentation_codomain
-        engine_map = engine.coerce_map_from(_engine_ring(base_ring))
-        _OwnedAlgebraParent.__init__(self, engine, base_ring, labels, engine_map)
+        _OwnedAlgebraParent.__init__(
+            self,
+            engine,
+            base_ring,
+            labels,
+            categories=(AugmentedAlgebras(base_ring), *tuple(categories)),
+        )
 
 
 def _augmentation_codomain_is_allowed(domain, base, codomain) -> bool:
@@ -211,19 +223,12 @@ def augmented_algebra(augmentation):
     images = tuple(
         (label, augmentation(domain.algebra_generator(label))) for label in labels
     )
-    algebra = _AlgebraWithChosenAugmentation(
+    placement = _graded_algebra_placement(domain, base)
+    return _AlgebraWithChosenAugmentation(
         _engine_ring(domain),
         base,
         labels,
         images,
         aug_codomain,
+        categories=tuple(placement),
     )
-    algebra._preamble_structure_map = _default_structure_map(base, algebra)
-    placement = [
-        Algebras(base),
-        OwnedAlgebras(base),
-        FramedAlgebras(base),
-        AugmentedAlgebras(base),
-    ]
-    placement.extend(_graded_algebra_placement(domain, base))
-    return refine(algebra, placement)

@@ -32,10 +32,8 @@ from dzack_research.preamble.categories.modules.framed.fraction_field_quotients 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
-    module_embedding,
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
 from dzack_research.preamble.categories.rings.ring_foundation import (
     Zmod,
     _engine_element,
@@ -719,26 +717,35 @@ def _discriminant_subgroup(ambient, generators):
         if invariant > 1
     )
     if invariants:
-        source = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics(invariants)
+        prototype = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics(invariants)
         ambient_generators = tuple(
             ambient._from_smith_engine_element(generator)
             for generator in engine_subgroup.smith_form_gens()
         )
-        images = {label: image for label, image in zip(source.module_generating_set(), ambient_generators, strict=True)}
+        images = {
+            label: image
+            for label, image in zip(
+                prototype.module_generating_set(), ambient_generators, strict=True
+            )
+        }
+        source = FinitelyPresentedModule(
+            prototype.presentation(),
+            _subobject_ambient=ambient,
+            _subobject_generator_images=images,
+        )
     else:
         # The zero finite module is presented by the identity on one generator.
 
         free = BasedFreeModule(ambient.base_ring(), finite_ordered_set((0,)))
-        source = FinitelyPresentedModule(module_homset(free, free).identity())
-        images = {label: ambient.zero() for label in source.module_generating_set()}
-    inclusion = module_embedding(source, ambient, images)
-    source._preamble_inclusion = inclusion
+        source = FinitelyPresentedModule(
+            module_homset(free, free).identity(),
+            _subobject_ambient=ambient,
+            _subobject_generator_images={0: ambient.zero()},
+        )
+    refine(source, FinitelyPresentedTorsionModules(ring))
     source._preamble_ambient_discriminant_module = ambient
     source._preamble_discriminant_engine_subgroup = engine_subgroup
-    return refine(
-        source,
-        [source.category(), ModuleSubobjects(ambient.base_ring()), DiscriminantSubmodules(ambient.base_ring())],
-    )
+    return refine(source, DiscriminantSubmodules(ambient.base_ring()))
 
 
 def _all_discriminant_subgroups(ambient):

@@ -5,11 +5,10 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 
-from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
 class Magmas(OwnedCategory):
     def super_categories(self):
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
         return [Sets()]
 
 
@@ -38,6 +37,8 @@ class Monoids(OwnedCategory):
 
 class AdditiveMagmas(OwnedCategory):
     def super_categories(self):
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
         return [Sets()]
 
 
@@ -65,15 +66,6 @@ class CommutativeAdditiveGroups(OwnedCategory):
 
     def super_categories(self):
         return [AdditiveGroups()]
-
-
-# The canonical natural-number parent is created at the set root, before this
-# operation spine can be imported without a package cycle.  Once the spine is
-# available, place that existing parent in its actual additive-monoid category.
-from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.refine import refine
-
-refine(NN, AdditiveMonoids())
 
 
 class MonoidMorphism(Morphism):
@@ -105,6 +97,8 @@ class MonoidHomset(Homset):
     Element = MonoidMorphism
 
     def __init__(self, domain, codomain) -> None:
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
         Homset.__init__(self, domain, codomain, category=Sets())
 
     def __call__(self, function):

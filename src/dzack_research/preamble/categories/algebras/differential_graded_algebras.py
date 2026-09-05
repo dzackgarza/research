@@ -105,6 +105,21 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     _HomCategory = None
 
     class ParentMethods:
+        def graded_algebra(self):
+            return self
+
+        def dga(self):
+            return self
+
+        def right_action(self):
+            return lambda module_element, algebra_element: module_element * algebra_element
+
+        def act(self, module_element, algebra_element):
+            return module_element * algebra_element
+
+        def is_differential_graded_module(self) -> bool:
+            return True
+
         def _Hom_(self, codomain, category=None):
             dgas = DifferentialGradedAlgebras(self.base_ring())
             if codomain in dgas and (

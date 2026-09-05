@@ -4,7 +4,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
 )
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
 from sage.categories.morphism import Morphism, SetMorphism
@@ -72,8 +72,32 @@ class ModulesWithConnection(OwnedParameterizedCategory):
         return [Modules(self.algebra())]
 
     class ParentMethods:
+        def __init__(self, source_connection, **rest) -> None:
+            self._preamble_source_connection = source_connection
+            super().__init__(**rest)
+
+        @cached_method
         def connection(self):
-            return self._preamble_connection
+            source_connection = self._preamble_source_connection
+            transported_target = Connections(self).target_module()
+            omega = source_connection.one_forms()
+
+            def transported_image(label):
+                image = transported_target.zero()
+                for (source_label, form_label), coefficient in module_coefficients(
+                    source_connection.generator_image(label),
+                    source_connection.target_module(),
+                ).items():
+                    image += transported_target.scalar_multiple(
+                        coefficient,
+                        transported_target.pure_tensor(
+                            self.module_generator(source_label),
+                            omega.module_generator(form_label),
+                        ),
+                    )
+                return image
+
+            return Connections(self)(transported_image)
 
         def _Hom_(self, codomain, category=None):
             return module_homset(self, codomain)
@@ -574,29 +598,15 @@ def ModuleWithConnection(connection):
         raise NotImplementedError(
             "the live structured connection carrier is currently materialized for finite free modules"
         )
-    result = FreshFreeModuleOn(algebra, source.module_generating_set())
-    transported_target = Connections(result).target_module()
-    omega = connection.one_forms()
-    def transported_image(label):
-        image = transported_target.zero()
-        for (source_label, form_label), coefficient in module_coefficients(
-            connection.generator_image(label),
-            connection.target_module(),
-        ).items():
-            image += transported_target.scalar_multiple(
-                coefficient,
-                transported_target.pure_tensor(
-                    result.module_generator(source_label),
-                    omega.module_generator(form_label),
-                ),
-            )
-        return image
-
-    result._preamble_connection = Connections(result)(transported_image)
     categories = [ModulesWithConnection(algebra)]
-    if result._preamble_connection.is_flat():
+    if connection.is_flat():
         categories.append(ModulesWithFlatConnection(algebra))
-    return refine(result, categories)
+    return FreshFreeModuleOn(
+        algebra,
+        source.module_generating_set(),
+        _extra_categories=tuple(categories),
+        _extra_construction_data={"source_connection": connection},
+    )
 
 
 class ConnectionDeRhamDifferential:
@@ -655,12 +665,12 @@ class ConnectionDeRhamModule:
                     algebra.base_ring(),
                     piece,
                     name=f"de Rham DG-module of {coefficient_module}",
+                    extra_categories=(DifferentialGradedModules(dga),),
                 )
                 self._preamble_graded_algebra = dga
                 self._preamble_dg_algebra = dga
                 self._preamble_graded_algebra_action = self._right_action
                 self._preamble_differential = ConnectionDeRhamDifferential(self)
-                refine(self, DifferentialGradedModules(dga))
 
             def connection(self):
                 return self._connection

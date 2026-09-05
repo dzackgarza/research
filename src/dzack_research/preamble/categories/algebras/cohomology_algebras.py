@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     ring_morphism,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import dga_homset
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
@@ -66,8 +65,8 @@ class _CohomologyAlgebra(GradedDirectSumModule):
             dga.base_ring(),
             lambda degree: Cohomology(dga, degree),
             name=f"H^*({dga})",
+            extra_categories=(CohomologyAlgebras(dga.base_ring()),),
         )
-        refine(self, CohomologyAlgebras(dga.base_ring()))
 
     def source_dga(self):
         return self._preamble_cohomology_source_dga

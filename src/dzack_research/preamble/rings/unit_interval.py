@@ -8,6 +8,7 @@ monoid (identity ``one()``, not ``zero()``).
 """
 
 from sage.categories.monoids import Monoids as SageMonoids
+from sage.categories.category import Category
 from sage.rings.rational_field import QQ
 from sage.structure.element import Element, parent as sage_parent
 from sage.structure.parent import Parent
@@ -15,7 +16,7 @@ from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
 from dzack_research.preamble.categories.group.magmas import Monoids
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.categories.sets.cardinals import continuum
 
@@ -63,8 +64,11 @@ class UnitInterval(UniqueRepresentation, Parent):
     Element = UnitIntervalElement
 
     def __init__(self) -> None:
-        Parent.__init__(self, category=SageMonoids().Commutative().Infinite())
-        refine(self, Monoids())
+        Parent.__init__(
+            self,
+            category=Category.join((SageMonoids().Commutative().Infinite(), Monoids())),
+        )
+        realize_owned_category(self)
 
     def _repr_(self) -> str:
         return "unit interval under s⊕t = s+t-1"

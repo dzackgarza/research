@@ -448,8 +448,13 @@ class SubobjectCategory(Category):
         return self._base_object
 
     def super_categories(self):
+        r"""A subobject of an object of ``C`` is an object of ``C``.
 
-        return [Sets()]
+        What the subobject additionally carries is its chosen monomorphism into
+        the fixed base object; forgetting that leaves an object of the base
+        category, with every operation the base category owns.
+        """
+        return [self.base_category()]
 
     def slice_category(self):
         r"""Return the ambient slice ``C/X`` in which subobjects are monomorphisms."""

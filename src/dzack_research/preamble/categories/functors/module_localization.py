@@ -7,10 +7,9 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
 from dzack_research.preamble.categories.modules.localizations import (
-    GeneralLocalizedModuleParent,
+    LocalizedModule,
     LocalizedModules,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleEmbedding,
     module_embedding,
@@ -20,7 +19,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     restrict_scalars,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 
 
 class ModuleLocalizationFunctor(ScalarExtensionFunctor):
@@ -45,35 +43,18 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
         return True
 
     def _apply_object(self, module):
-        from sage.categories.rings import Rings as SageRings
-
-        represented_by_sage_ring = _engine_ring(self.localization_ring()) in SageRings()
-        if represented_by_sage_ring:
-            try:
-                localized = super()._apply_object(module)
-            except NotImplementedError:
-                localized = GeneralLocalizedModuleParent(
-                    module,
-                    self.localization_ring(),
-                    self,
-                )
-        else:
-            localized = GeneralLocalizedModuleParent(
-                module,
-                self.localization_ring(),
-                self,
-            )
-        localized._preamble_localization_ring = self.localization_ring()
-        localized._preamble_localization_submonoid = self.localization_submonoid()
-        localized._preamble_localization_functor = self
-        return refine(localized, LocalizedModules(self.localization_ring()))
+        return LocalizedModule(
+            module,
+            self.localization_ring(),
+            self,
+        )
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
 
-        if isinstance(source, GeneralLocalizedModuleParent):
-            if isinstance(target, GeneralLocalizedModuleParent):
+        if source in LocalizedModules(source.base_ring()):
+            if target in LocalizedModules(target.base_ring()):
                 def on_fraction(fraction):
                     return target.fraction(
                         morphism(fraction.numerator()),
@@ -95,7 +76,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
                 on_fraction,
                 verify_linearity=False,
             )
-        elif isinstance(target, GeneralLocalizedModuleParent):
+        elif target in LocalizedModules(target.base_ring()):
 
             if source not in FramedModules(source.base_ring()):
                 raise NotImplementedError(
@@ -144,7 +125,7 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
 
         image = self(module) if localized is None else localized
         restricted = restrict_scalars(image, self.ring_map())
-        if isinstance(image, GeneralLocalizedModuleParent):
+        if image in LocalizedModules(image.base_ring()):
             return module_homset(module, restricted).elementwise(
                 lambda element: restricted.wrap(image.fraction(element)),
                 verify_linearity=False,

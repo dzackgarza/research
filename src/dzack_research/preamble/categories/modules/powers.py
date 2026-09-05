@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
     coordinate_pair as _coordinate_pair,
     finite_framing as _finite_framing,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -36,6 +35,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     _presentation_rows,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreshFreeModuleOn,
     FramedFreeModules,
     FreeModuleOn,
     MatrixSpace,
@@ -324,6 +324,10 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
         return [DividedPowerModules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(self, divided_square_source, **rest) -> None:
+            self._preamble_divided_square_source = divided_square_source
+            super().__init__(**rest)
+
         def _module_homset_class(self):
             return QuadraticModuleHomset
 
@@ -525,7 +529,14 @@ def _divided_relation_rows(
     return rows
 
 
-def _presented_degree_power(module, degree: int, flavor: str):
+def _presented_degree_power(
+    module,
+    degree: int,
+    flavor: str,
+    *,
+    extra_categories=(),
+    extra_construction_data=None,
+):
 
     ring = _owned_ring(module.base_ring())
     if degree == 0:
@@ -538,6 +549,13 @@ def _presented_degree_power(module, degree: int, flavor: str):
     labels = _free_degree_labels(source_labels, degree, flavor)
 
     if module in FramedFreeModules(ring):
+        if extra_categories or extra_construction_data:
+            return FreshFreeModuleOn(
+                ring,
+                labels,
+                _extra_categories=extra_categories,
+                _extra_construction_data=extra_construction_data,
+            )
         return FreeModuleOn(ring, labels)
 
     if module not in ModulesWithChosenFinitePresentation(ring):
@@ -592,20 +610,22 @@ def _presented_degree_power(module, degree: int, flavor: str):
         relation_labels,
         relation_matrix,
     )
-    return FinitelyPresentedModule(presentation)
+    return FinitelyPresentedModule(
+        presentation,
+        _extra_categories=extra_categories,
+        _extra_construction_data=extra_construction_data,
+    )
 
 
 @cached_function(key=lambda module: id(module))
 def DividedSquare(module):
     r"""Return ``Gamma^2_R(M)``, the universal target for quadratic maps."""
-    result = _presented_degree_power(module, 2, "divided")
-    result._preamble_divided_square_source = module
-    return refine(
-        result,
-        [
-            DividedPowerModules(module.base_ring()),
-            DividedSquareModules(module.base_ring()),
-        ],
+    return _presented_degree_power(
+        module,
+        2,
+        "divided",
+        extra_categories=(DividedSquareModules(module.base_ring()),),
+        extra_construction_data={"divided_square_source": module},
     )
 
 
@@ -642,8 +662,7 @@ def TensorPower(module, degree):
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _tensor_power_nontrivial(module, degree):
 
-    result = TensorProduct(TensorPower(module, degree - 1), module)
-    return refine(result, TensorPowerModules(module.base_ring()))
+    return TensorProduct(TensorPower(module, degree - 1), module)
 
 
 def SymmetricPower(module, degree):
@@ -656,8 +675,7 @@ def SymmetricPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _symmetric_power_nontrivial(module, degree):
-    result = _presented_degree_power(module, degree, "symmetric")
-    return refine(result, SymmetricPowerModules(module.base_ring()))
+    return _presented_degree_power(module, degree, "symmetric")
 
 
 def AlternatingPower(module, degree):
@@ -670,8 +688,7 @@ def AlternatingPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _alternating_power_nontrivial(module, degree):
-    result = _presented_degree_power(module, degree, "alternating")
-    return refine(result, AlternatingPowerModules(module.base_ring()))
+    return _presented_degree_power(module, degree, "alternating")
 
 
 def DividedPower(module, degree):
@@ -690,8 +707,7 @@ def DividedPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _divided_power_nontrivial(module, degree):
-    result = _presented_degree_power(module, degree, "divided")
-    return refine(result, DividedPowerModules(module.base_ring()))
+    return _presented_degree_power(module, degree, "divided")
 
 
 from dzack_research.preamble.categories.modules.tensor_products import (

@@ -1176,7 +1176,18 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
 
     _IsoCategory = TorsionBilinearFormIsoCategoryConstruction
 
-    def from_module(self, module, gram, value_module):
+    def from_module(
+        self,
+        module,
+        gram,
+        value_module,
+        *,
+        _subobject_ambient=None,
+        _subobject_generator_images=None,
+        _subobject_lift=None,
+        _subobject_inclusion_factory=None,
+        _subobject_verify_linearity=True,
+    ):
         r"""Equip ``module`` with the bilinear form represented by ``gram``.
 
         The value object is explicit.  Descent is checked on both arguments:
@@ -1190,7 +1201,14 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         relations = _presentation_matrix(module)
         if not _bilinear_descends(relations, values, value_module):
             raise ValueError("the bilinear form does not descend through the selected relations")
-        formed = FormModule(BilinearForms(module, value_module)(values))
+        formed = FormModule(
+            BilinearForms(module, value_module)(values),
+            _subobject_ambient=_subobject_ambient,
+            _subobject_generator_images=_subobject_generator_images,
+            _subobject_lift=_subobject_lift,
+            _subobject_inclusion_factory=_subobject_inclusion_factory,
+            _subobject_verify_linearity=_subobject_verify_linearity,
+        )
         return refine(formed, self)
 
     def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):
@@ -1304,7 +1322,18 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
     _IsoCategory = TorsionQuadraticFormIsoCategoryConstruction
 
-    def from_module(self, module, gram, value_module):
+    def from_module(
+        self,
+        module,
+        gram,
+        value_module,
+        *,
+        _subobject_ambient=None,
+        _subobject_generator_images=None,
+        _subobject_lift=None,
+        _subobject_inclusion_factory=None,
+        _subobject_verify_linearity=True,
+    ):
         r"""Equip ``module`` with ``q(x)=x^T gram x`` valued in ``value_module``.
 
         For every relation ``r`` we check both ``q(r)=0`` and vanishing of the
@@ -1321,7 +1350,14 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         relations = _presentation_matrix(module)
         if not _quadratic_descends(relations, values, value_module):
             raise ValueError("the quadratic form does not descend through the selected relations")
-        formed = FormModule(QuadraticForms(module, value_module)(values))
+        formed = FormModule(
+            QuadraticForms(module, value_module)(values),
+            _subobject_ambient=_subobject_ambient,
+            _subobject_generator_images=_subobject_generator_images,
+            _subobject_lift=_subobject_lift,
+            _subobject_inclusion_factory=_subobject_inclusion_factory,
+            _subobject_verify_linearity=_subobject_verify_linearity,
+        )
         return refine(formed, self)
 
     def from_relations_and_gram(self, relations, gram, value_module, module_generating_set=None):

@@ -19,16 +19,62 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreshFreeModuleOn,
     ring_as_module,
 )
+from dzack_research.preamble.categories.modules.localizations import (
+    LocalizedModule,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-    module_embedding,
+    module_coefficients,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
+    ModuleSubobjects,
     Modules,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+def _localized_commutative_ideal(source_ideal, localization_ring):
+    r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal."""
+    from dzack_research.preamble.categories.functors.module_localization import (
+        module_localization_functor,
+    )
+
+    localization_map = localization_ring.localization_map()
+    source_ambient = ring_as_module(source_ideal.ring())
+    target_ambient = ring_as_module(localization_ring)
+    source_ambient_labels = tuple(source_ambient.module_generating_set())
+    target_ambient_labels = tuple(target_ambient.module_generating_set())
+    if len(source_ambient_labels) != 1 or len(target_ambient_labels) != 1:
+        raise ArithmeticError("a ring viewed as a module over itself must have rank one")
+    source_ambient_label = source_ambient_labels[0]
+    target_ambient_label = target_ambient_labels[0]
+
+    def embedded(label):
+        source_image = source_ideal.inclusion()(
+            source_ideal.module_generator(label)
+        )
+        coefficient = module_coefficients(source_image, source_ambient).get(
+            source_ambient_label,
+            source_ideal.ring().zero(),
+        )
+        return target_ambient.scalar_multiple(
+            localization_map(coefficient),
+            target_ambient.module_generator(target_ambient_label),
+        )
+
+    ideal = LocalizedModule(
+        source_ideal,
+        localization_ring,
+        module_localization_functor(localization_ring),
+        subobject_ambient=target_ambient,
+        subobject_generator_images=embedded,
+        extra_categories=(CommutativeIdeals(localization_ring),),
+    )
+    ideal._preamble_ideal_generators = tuple(
+        localization_map(generator) for generator in source_ideal.ideal_generators()
+    )
+    ideal._preamble_localization_source_ideal = source_ideal
+    return ideal
 
 
 class CommutativeIdeals(OwnedCategoryOverBaseRing):
@@ -58,9 +104,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def ring(self):
             return self.base_ring()
-
-        def inclusion(self):
-            return self._preamble_inclusion
 
         def ideal_generators(self):
             return self._preamble_ideal_generators
@@ -117,51 +160,12 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 ) from error
 
         def extension_to_localization(self, localization_ring):
-            r"""Return ``S^{-1}I <= S^{-1}R`` by localizing the inclusion."""
+            r"""Return the represented localization ``S^{-1}I <= S^{-1}R``."""
             if localization_ring not in LocalizationRings():
                 raise TypeError("ideal localization requires a represented ring localization")
             if localization_ring.localization_source() is not self.ring():
                 raise ValueError("the localization has the wrong source ring")
-
-
-            localized = self.localize(localization_ring)
-            localized_inclusion = localized.localization_functor()(self.inclusion())
-            localized_ambient = localized_inclusion.codomain()
-            standard_ambient = ring_as_module(localization_ring)
-            if localized_ambient is standard_ambient:
-                inclusion = localized_inclusion
-            else:
-                if localized_ambient not in FramedModules(localization_ring):
-                    raise NotImplementedError(
-                        "transporting this localized ideal to the standard rank-one module requires a represented framing"
-                    )
-                source_labels = tuple(localized_ambient.module_generating_set())
-                target_labels = tuple(standard_ambient.module_generating_set())
-                if len(source_labels) != 1 or len(target_labels) != 1:
-                    raise ArithmeticError("a localized ring must be free rank one over itself")
-                transport = module_homset(localized_ambient, standard_ambient)(
-                    {
-                        source_labels[0]: standard_ambient.module_generator(
-                            target_labels[0]
-                        )
-                    }
-                )
-
-                inclusion = ModuleEmbedding(
-                    module_homset(localized, standard_ambient),
-                    lambda element: transport(localized_inclusion(element)),
-                    elementwise=True,
-                    verify_linearity=False,
-                )
-
-            localized._preamble_inclusion = inclusion
-            localized._preamble_ideal_generators = tuple(
-                localization_ring.localization_map()(generator)
-                for generator in self.ideal_generators()
-            )
-            localized._preamble_localization_source_ideal = self
-            refine(localized, CommutativeIdeals(localization_ring))
-            return localized
+            return _localized_commutative_ideal(self, localization_ring)
 
         extension = extension_to_localization
 
@@ -406,16 +410,21 @@ def CommutativeIdeal(ring, *generators):
         generator = selected[0]
         ambient_module = ring_as_module(source)
         if generator == engine.zero():
-            ideal = FreshFreeModuleOn(source, Sets.Δ[-1])
-            inclusion = module_embedding(ideal, ambient_module, {})
-        else:
-            ideal = FreshFreeModuleOn(source, Sets.Δ[0])
-            inclusion = module_embedding(
-                ideal,
-                ambient_module,
-                {0: ambient_module((_owned_engine_value(source, generator),))},
+            ideal = FreshFreeModuleOn(
+                source,
+                Sets.Δ[-1],
+                _subobject_ambient=ambient_module,
+                _subobject_generator_images={},
             )
-        ideal._preamble_inclusion = inclusion
+        else:
+            ideal = FreshFreeModuleOn(
+                source,
+                Sets.Δ[0],
+                _subobject_ambient=ambient_module,
+                _subobject_generator_images={
+                    0: ambient_module((_owned_engine_value(source, generator),))
+                },
+            )
         ideal._preamble_engine_ideal = backend
         ideal._preamble_ideal_generators = (_owned_engine_value(source, generator),)
         refine(ideal, CommutativeIdeals(source))
@@ -438,17 +447,15 @@ def CommutativeIdeal(ring, *generators):
             for position, label in enumerate(relation_labels)
         }
     )
-    ideal = FinitelyPresentedModule(presentation)
     ambient_module = ring_as_module(source)
-    inclusion = module_embedding(
-        ideal,
-        ambient_module,
-        {
+    ideal = FinitelyPresentedModule(
+        presentation,
+        _subobject_ambient=ambient_module,
+        _subobject_generator_images={
             label: ambient_module((_owned_engine_value(source, selected[position]),))
             for position, label in enumerate(labels)
         },
     )
-    ideal._preamble_inclusion = inclusion
     ideal._preamble_engine_ideal = backend
     ideal._preamble_ideal_generators = tuple(_owned_engine_value(source, generator) for generator in selected)
     refine(ideal, CommutativeIdeals(source))

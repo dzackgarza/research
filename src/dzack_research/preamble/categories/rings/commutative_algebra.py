@@ -245,16 +245,6 @@ def _engine_coefficient_ring(engine):
     return None if base_ring is None else base_ring()
 
 
-def _selected_localization_engine(localization_ring):
-    r"""Return the selected private realization of a localization ring."""
-    engine = localization_ring.__dict__.get("_preamble_engine_ring")
-    if engine is None:
-        raise NotImplementedError(
-            "this localization has no selected computation realization"
-        )
-    return engine
-
-
 def _owned_ideal(ring, ideal):
     r"""Return the live ideal subobject represented by ``ideal`` when available."""
     source = _own_ring(ring)
@@ -664,7 +654,8 @@ class PrimeLocalizations(OwnedCategory):
     r"""Prime local rings ``R_p`` represented inside ``Frac(R)``."""
 
     def super_categories(self):
-        return [OwnedLocalRings(), OwnedIntegralDomains()]
+        r"""``R_p`` is the localization at the multiplicative set ``R \ p``."""
+        return [LocalizationRings(), OwnedLocalRings(), OwnedIntegralDomains()]
 
     class ParentMethods:
         def __init__(
@@ -1084,13 +1075,13 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     placements = []
     if source in OwnedNoetherianRings():
         placements.append(OwnedNoetherianRings())
-    return PrimeLocalizationParent(
-        source,
-        submonoid,
-        prime_ideal,
-        fraction_field,
+    return object_of(
+        Category.join([PrimeLocalizations(), *placements]),
+        source=source,
+        submonoid=submonoid,
+        prime_ideal=prime_ideal,
+        fraction_field=fraction_field,
         engine_ring=fraction_engine,
-        categories=tuple(placements),
     )
 
 

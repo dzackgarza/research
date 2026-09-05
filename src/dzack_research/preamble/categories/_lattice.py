@@ -237,11 +237,59 @@ class Lattice(Parent, IndexedGenerators):
     _repr_term = IndexedGenerators._repr_generator
     _latex_term = IndexedGenerators._latex_generator
 
-    def __init__(self, module, gram, category: Category, sage_lattice, names=None) -> None:
+    def __init__(
+        self,
+        module,
+        gram,
+        category: Category,
+        sage_lattice,
+        names=None,
+        *,
+        subobject_ambient=None,
+        subobject_generator_images=None,
+        subobject_lift=None,
+        subobject_inclusion_factory=None,
+        subobject_verify_linearity=True,
+    ) -> None:
         self._module = module
         self._preamble_free_module_constructor = module._fresh_free_module_on
         self._gram = gram
         self._sage_lattice = sage_lattice
+        parent_category = category
+        subobject_data = (
+            subobject_inclusion_factory is not None
+            or (subobject_ambient is not None and subobject_generator_images is not None)
+        )
+        if subobject_data:
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                ModuleSubobjects,
+            )
+
+            self._preamble_subobject_ambient = subobject_ambient
+            self._preamble_subobject_generator_images = subobject_generator_images
+            self._preamble_subobject_lift = subobject_lift
+            self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
+            self._preamble_subobject_verify_linearity = subobject_verify_linearity
+            parent_category = Category.join(
+                (category, ModuleSubobjects(category.base_ring()))
+            )
+        if isinstance(gram, _BiproductGram):
+            from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
+                DirectSumObjects,
+            )
+            from dzack_research.preamble.categories.sets.indexed_families import (
+                indexed_family,
+            )
+
+            labels = Sets.Δ[1]
+            summands = indexed_family(
+                labels,
+                lambda index: gram._left if int(index) == 0 else gram._right,
+                name="Constructor-owned lattice summands",
+            )
+            self._preamble_direct_sum_summands = summands
+            self._preamble_direct_sum_index_set = labels
+            parent_category = Category.join((parent_category, DirectSumObjects()))
         IndexedGenerators.__init__(
             self,
             _basis_keys(module),
@@ -251,7 +299,7 @@ class Lattice(Parent, IndexedGenerators):
         )
         parent_arguments = {
             "base": category.base_ring(),
-            "category": category,
+            "category": parent_category,
         }
         if names is not None:
             parent_arguments["names"] = names
@@ -378,10 +426,7 @@ def _lattice_parent(module, gram, category, sage_lattice, names=None):
     Grams hash equally, so this is Sage's own construction cache.
     """
 
-    lattice = refine(
-        Lattice(module, gram, category, sage_lattice, names),
-        category,
-    )
+    lattice = Lattice(module, gram, category, sage_lattice, names)
     refiner = getattr(category, "_refine_lattice_object", None)
     return refiner(lattice) if refiner is not None else lattice
 
