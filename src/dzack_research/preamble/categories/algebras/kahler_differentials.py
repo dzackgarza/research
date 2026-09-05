@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.algebras.derivations import (
     _commutative_presentation_data,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedCategoryOverBaseRing,
     _engine_ring,
 )
@@ -71,10 +72,15 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         @cached_method
         def universal_derivation(self):
             algebra = self.source_algebra()
+            generator_algebra = (
+                algebra.localization_source()
+                if algebra in LocalizationRings()
+                else algebra
+            )
             return Derivations(algebra, self)(
                 {
                     label: self.differential_generator(label)
-                    for label in algebra.algebra_generating_set()
+                    for label in generator_algebra.algebra_generating_set()
                 }
             )
 
@@ -131,6 +137,37 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
 @cached_function(key=lambda algebra: id(algebra))
 def KahlerDifferentials(algebra):
     r"""Return ``Omega^1_{A/R}`` with its universal ``R``-derivation."""
+    if algebra in LocalizationRings():
+        source = algebra.localization_source()
+        if source.base_ring() is not algebra.base_ring():
+            raise ValueError(
+                "localization of differentials requires the localization to preserve the algebra base"
+            )
+        source_omega = KahlerDifferentials(source)
+        from dzack_research.preamble.categories.functors.module_localization import (
+            module_localization_functor,
+        )
+        from dzack_research.preamble.categories.modules.localizations import (
+            LocalizedModule,
+        )
+
+        # Localization is an algebra base change A -> S^{-1}A and Kähler
+        # differentials commute with it:
+        #
+        #   Omega^1_{S^{-1}A/R} = S^{-1}A tensor_A Omega^1_{A/R}.
+        #
+        # Choose that localized module itself as the represented differential
+        # object.  Its LocalizedModules data therefore retains the comparison
+        # source and localization unit rather than merely recording an
+        # isomorphic but unrelated presentation.
+        return LocalizedModule(
+            source_omega,
+            algebra,
+            module_localization_functor(algebra),
+            extra_categories=(KahlerDifferentialModules(algebra),),
+            extra_construction_data={"source_algebra": algebra},
+        )
+
     presentation, labels, variables, relations, _lift = _commutative_presentation_data(
         algebra
     )

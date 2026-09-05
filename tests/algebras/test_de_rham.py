@@ -143,6 +143,48 @@ def test_dual_numbers_use_generic_de_rham_cohomology() -> None:
     assert de_rham.cohomology(1).is_zero()
 
 
+def test_kahler_differentials_and_universal_derivation_commute_with_localization() -> None:
+    from dzack_research.preamble.categories.algebras import (
+        FinitelyPresentedAlgebra,
+        KahlerDifferentialModules,
+    )
+    from dzack_research.preamble.categories.modules.localizations import LocalizedModules
+
+    polynomial = SymmetricAlgebraOn(QQ, ("x", "y"))
+    x = polynomial.algebra_generator("x")
+    y = polynomial.algebra_generator("y")
+    axes = FinitelyPresentedAlgebra(polynomial, [x * y])
+    xbar = axes.algebra_generator("x")
+    ybar = axes.algebra_generator("y")
+    localized = axes.localization(xbar)
+
+    omega = KahlerDifferentials(axes)
+    localized_omega = KahlerDifferentials(localized)
+    assert localized_omega in KahlerDifferentialModules(localized)
+    assert localized_omega in LocalizedModules(localized)
+    assert localized_omega.localization_source_module() is omega
+    assert localized_omega.source_algebra() is localized
+
+    universal = localized_omega.universal_derivation()
+    assert universal.domain() is localized
+    assert universal.codomain() is localized_omega
+
+    dx = localized_omega.differential_generator("x")
+    inverse_x = localized.fraction(axes.one(), xbar)
+    assert universal(localized(ybar)) == localized_omega.zero()
+    assert universal(inverse_x) == localized_omega.scalar_multiple(
+        -(inverse_x * inverse_x),
+        dx,
+    )
+    assert universal(localized(xbar) * inverse_x) == localized_omega.zero()
+
+    # Fitting ideals use the same selected base-change model.  Since x is
+    # invertible on D(x), Fitt_1(Omega)_x=(x,y)A_x is the unit ideal.
+    localized_fitting = localized_omega.fitting_ideal(1)
+    assert localized_fitting.contraction() == axes.ideal(axes.one())
+    assert localized_fitting.contains_ambient_element(localized.one())
+
+
 def test_de_rham_functor_sends_f_to_f_and_df_to_d_of_f() -> None:
     source = SymmetricAlgebraOn(QQ, ("x",))
     target = SymmetricAlgebraOn(QQ, ("t",))

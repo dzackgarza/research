@@ -20,6 +20,7 @@ from sage.structure.element import ModuleElement
 import operator
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     _engine_element,
     _engine_ring,
 )
@@ -143,6 +144,27 @@ class Derivation(ModuleElement):
 
     def _check_relations(self) -> None:
         algebra = self.domain()
+        if algebra in LocalizationRings():
+            source = algebra.localization_source()
+            presentation, _labels, variables, relations, _lift = (
+                _commutative_presentation_data(source)
+            )
+            localization_map = algebra.localization_map()
+            for relation in relations:
+                coefficients = _differentiate_representative(
+                    source,
+                    relation,
+                    variables,
+                )
+                localized_coefficients = tuple(
+                    localization_map(coefficient) for coefficient in coefficients
+                )
+                if self._evaluate_coefficients(localized_coefficients) != self.codomain().zero():
+                    raise ValueError(
+                        "the proposed generator images do not annihilate a defining source-algebra relation under the localized derivation rule"
+                    )
+            return
+
         presentation, _labels, variables, relations, _lift = _commutative_presentation_data(
             algebra
         )
@@ -159,6 +181,44 @@ class Derivation(ModuleElement):
 
     def __call__(self, element):
         algebra = self.domain()
+        if algebra in LocalizationRings():
+            source = algebra.localization_source()
+            _presentation, _labels, variables, _relations, lift = (
+                _commutative_presentation_data(source)
+            )
+            localization_map = algebra.localization_map()
+
+            def differentiate_source(value):
+                representative = lift(source(value))
+                coefficients = _differentiate_representative(
+                    source,
+                    representative,
+                    variables,
+                )
+                return self._evaluate_coefficients(
+                    tuple(localization_map(coefficient) for coefficient in coefficients)
+                )
+
+            numerator, denominator = algebra.localization_fraction_data(algebra(element))
+            numerator_derivative = differentiate_source(numerator)
+            denominator_derivative = differentiate_source(denominator)
+            numerator_image = localization_map(numerator)
+            denominator_inverse = algebra.fraction(
+                source.one(),
+                denominator,
+                _trusted_denominator=True,
+            )
+            target = self.codomain()
+            first = target.scalar_multiple(
+                denominator_inverse,
+                numerator_derivative,
+            )
+            second = target.scalar_multiple(
+                numerator_image * denominator_inverse * denominator_inverse,
+                denominator_derivative,
+            )
+            return first + (-second)
+
         presentation, _labels, variables, _relations, lift = _commutative_presentation_data(
             algebra
         )
@@ -278,8 +338,13 @@ class DerivationSpace(RestrictedHomCategoryParent):
             raise TypeError("an R-derivation A -> M requires M to be an A-module")
         self._algebra = algebra
         self._target_module = target_module
+        presentation_algebra = (
+            algebra.localization_source()
+            if algebra in LocalizationRings()
+            else algebra
+        )
         _presentation, labels, _variables, _relations, _lift = _commutative_presentation_data(
-            algebra
+            presentation_algebra
         )
         self._generator_labels = labels
 
