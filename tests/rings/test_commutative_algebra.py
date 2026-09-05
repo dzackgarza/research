@@ -737,6 +737,22 @@ def test_quotient_localization_comparison_is_an_actual_ring_isomorphism() -> Non
     ) == element
 
 
+def test_selected_presented_algebra_localization_has_exact_fraction_equality() -> None:
+    from dzack_research.preamble.categories.algebras import FinitelyPresentedAlgebra
+
+    presentation = PolynomialRing(QQ, ("x", "y"))
+    x, y = presentation.algebra_generators()
+    axes = FinitelyPresentedAlgebra(presentation, (x * y,))
+    xbar = axes.algebra_generator("x")
+    ybar = axes.algebra_generator("y")
+    localized = axes.localization(xbar)
+
+    # In A_x for A = k[x,y]/(xy), x is invertible and therefore y vanishes.
+    assert localized(ybar) == localized.zero()
+    assert localized(xbar) != localized.zero()
+    assert localized.one() != localized.zero()
+
+
 def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None:
     from dzack_research.preamble.categories.modules import FreeModule, module_homset
 

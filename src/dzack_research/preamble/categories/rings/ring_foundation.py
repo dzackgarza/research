@@ -531,10 +531,13 @@ class LocalizationRings(OwnedCategory):
             from sage.misc.unknown import Unknown
 
             source = self.localization_source()
-            difference = (
-                left.numerator() * right.denominator()
-                - right.numerator() * left.denominator()
-            )
+            left_product = left.numerator() * right.denominator()
+            right_product = right.numerator() * left.denominator()
+            # Use the owned additive operations rather than Python subtraction.
+            # In particular, represented quotient classes implement addition and
+            # negation directly, while Sage's inherited binary-subtraction
+            # dispatch need not recognize their common owned parent.
+            difference = source(left_product + (-right_product))
             if difference == source.zero():
                 return True
 
@@ -564,9 +567,9 @@ class LocalizationRings(OwnedCategory):
             if source in QuotientRings():
                 try:
                     source_ring = source.quotient_source()
-                    representative = source_ring(_quotient_representative(difference))
+                    representative = source_ring(difference.lift())
                     lifted_generators = tuple(
-                        source_ring(_quotient_representative(generator))
+                        source_ring(generator.lift())
                         for generator in self.localization_submonoid().monoid_generators()
                     )
                     if lifted_generators:
@@ -577,6 +580,48 @@ class LocalizationRings(OwnedCategory):
                             source_ring.ideal(product)
                         )
                         return saturated.contains_ambient_element(representative)
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
+                    pass
+
+            # A selected exact coefficient presentation A = P/I contains the
+            # same data needed for localization equality as an explicit
+            # QuotientRing object.  For a finitely generated multiplicative set
+            # S = <f_1,...,f_r>, a class d vanishes in S^{-1}A exactly when its
+            # lift to P belongs to I : (f_1 ... f_r)^∞.  Indeed, a monomial in
+            # the f_i kills d iff a sufficiently large common power of their
+            # product kills d, and conversely every such common power lies in S.
+            try:
+                has_presentation = source._has_selected_exact_coefficient_presentation()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                has_presentation = False
+            if has_presentation:
+                try:
+                    presentation_ring = source._exact_coefficient_presentation_ring()
+                    representative = presentation_ring(
+                        source._lift_coefficient_to_presentation(difference)
+                    )
+                    lifted_generators = tuple(
+                        presentation_ring(
+                            source._lift_coefficient_to_presentation(generator)
+                        )
+                        for generator in self.localization_submonoid().monoid_generators()
+                    )
+                    if not lifted_generators:
+                        return False
+                    product = presentation_ring.one()
+                    for generator in lifted_generators:
+                        product *= generator
+                    relations = tuple(
+                        presentation_ring(relation)
+                        for relation in source._exact_coefficient_presentation_relations()
+                    )
+                    defining_ideal = presentation_ring.ideal(
+                        *(relations or (presentation_ring.zero(),))
+                    )
+                    saturated = defining_ideal.saturation(
+                        presentation_ring.ideal(product)
+                    )
+                    return saturated.contains_ambient_element(representative)
                 except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
 
