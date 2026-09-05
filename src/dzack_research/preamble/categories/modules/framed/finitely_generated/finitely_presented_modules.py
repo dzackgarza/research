@@ -14,23 +14,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    _engine_element,
-    _engine_ring,
-    _own_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.modules.pure.modules import (
-    BiproductModules,
-    FinitelyPresentedModules,
-    FreeResolution,
-    ModulesWithChosenFinitePresentation,
-    VectorSpaces,
-)
-from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
     Isomorphism,
@@ -38,15 +21,18 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.base_change import base_change_scalar
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
     framing_morphism,
     module_coefficients,
     module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    ModuleSubobjects,
+    BiproductModules,
+    FreeResolution,
     Modules,
+    ModuleSubobjects,
+    ModulesWithChosenFinitePresentation,
+    VectorSpaces,
     _biproduct_label,
     _engine_matrix,
     _refine_matrix_hom,
@@ -54,19 +40,25 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     LocalRings,
+    OwnedCategoryOverBaseRing,
     OwnedFields,
     PrincipalIdealDomains,
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
     finite_ordered_image,
+    finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
+from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily, Sets
+from dzack_research.preamble.owned_category import object_of
 
 
 def _free_cover_owner(module):
@@ -75,7 +67,7 @@ def _free_cover_owner(module):
     if presentation is not None:
         try:
             return presentation().codomain()
-        except (AttributeError, TypeError, ValueError):
+        except AttributeError, TypeError, ValueError:
             pass
     return module
 
@@ -120,7 +112,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             try:
                 same_ring = other.base_ring() is self.base_ring()
                 same_presentation = other.presentation() == self.presentation()
-            except (AttributeError, TypeError, ValueError):
+            except AttributeError, TypeError, ValueError:
                 return False
             return bool(same_ring and same_presentation)
 
@@ -145,7 +137,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             try:
                 left_relations = _presentation_rows(self)
                 right_relations = _presentation_rows(other)
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
+            except AttributeError, NotImplementedError, TypeError, ValueError:
                 return NotImplemented
             size = labels.cardinality()
             if not size.is_finite():
@@ -169,9 +161,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                         right_label = right_labels.unrank(position)
                         row[labels.rank(_biproduct_label(labels, 1, right_label))] = coefficient
                 rows.append(row)
-            relations = _matrix_space_like(self, len(rows), width).from_rows(
-                tuple(tuple(row) for row in rows)
-            )
+            relations = _matrix_space_like(self, len(rows), width).from_rows(tuple(tuple(row) for row in rows))
             presentation = _presentation_from_relation_rows(
                 ring,
                 labels,
@@ -189,12 +179,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             morphism = self._preamble_cokernel_morphism
             if morphism is None:
                 raise ValueError("this finitely presented module was not constructed as a cokernel")
-            return module_homset(morphism.codomain(), self)(
-                {
-                    label: self.module_generator(label)
-                    for label in morphism.codomain().module_generating_set()
-                }
-            )
+            return module_homset(morphism.codomain(), self)({label: self.module_generator(label) for label in morphism.codomain().module_generating_set()})
 
         def tensor_product(self, other):
 
@@ -215,13 +200,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             def image(label):
                 row = relation_matrix.row(int(relation_labels.rank(label)))
                 return degree_zero.linear_combination(
-                    {
-                        target_label: ring._from_engine_element(coefficient)
-                        for target_label, coefficient in zip(
-                            target_labels, row, strict=True
-                        )
-                        if coefficient
-                    }
+                    {target_label: ring._from_engine_element(coefficient) for target_label, coefficient in zip(target_labels, row, strict=True) if coefficient}
                 )
 
             return FreeResolution(
@@ -246,25 +225,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def _selected_module_coefficients(self, element):
             coordinates = self._framing_coordinates(element)
-            return {
-                label: self.base_ring()(coordinates[label])
-                for label in self.module_generating_set()
-                if coordinates[label] != 0
-            }
+            return {label: self.base_ring()(coordinates[label]) for label in self.module_generating_set() if coordinates[label] != 0}
 
         def _represented_kernel_of_morphism(self, morphism):
             if self not in (morphism.domain(), morphism.codomain()):
                 return NotImplemented
-            if (
-                morphism.codomain() is self
-                and morphism.domain() is self.presentation().codomain()
-                and morphism == self.presentation_projection()
-            ):
+            if morphism.codomain() is self and morphism.domain() is self.presentation().codomain() and morphism == self.presentation_projection():
                 return self.presentation().image()
-            if (
-                morphism.domain()._selected_presentation_rows() is None
-                or morphism.codomain()._selected_presentation_rows() is None
-            ):
+            if morphism.domain()._selected_presentation_rows() is None or morphism.codomain()._selected_presentation_rows() is None:
                 return NotImplemented
             if self.base_ring() in PrincipalIdealDomains():
                 return _pid_presentation_kernel(morphism)
@@ -305,9 +273,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def subobject_on(self, module_generators):
             r"""Return the submodule generated by one finite family as an exact image."""
 
-            if hasattr(module_generators, "index_set") and callable(
-                getattr(module_generators, "value", None)
-            ):
+            if hasattr(module_generators, "index_set") and callable(getattr(module_generators, "value", None)):
                 labels = module_generators.index_set()
                 size = labels.cardinality()
                 if not size.is_finite():
@@ -316,12 +282,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             else:
                 generators = finite_ordered_set(module_generators)
                 labels = Sets.Δ[int(generators.cardinality()) - 1]
-                generator = lambda label: generators.unrank(int(label))
-            source = self.presentation().codomain()._fresh_free_module_on(labels)
-            spanning = module_homset(source, self)(
-                lambda label: self(generator(label))
-            )
 
+                def generator(label):
+                    return generators.unrank(int(label))
+
+            source = self.presentation().codomain()._fresh_free_module_on(labels)
+            spanning = module_homset(source, self)(lambda label: self(generator(label)))
 
             if self.base_ring() in LocalRings():
                 spans_all = spanning.is_surjective_by_nakayama()
@@ -331,6 +297,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 except NotImplementedError:
                     spans_all = False
             if spans_all:
+
                 def lift_from_ambient(image, element):
                     element = element if element.parent() is self else self(element)
                     return image.linear_combination(module_coefficients(element, self))
@@ -346,9 +313,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return FinitelyPresentedModule(
                 kernel.inclusion(),
                 _subobject_ambient=self,
-                _subobject_generator_images=lambda label: spanning(
-                    source.module_generator(label)
-                ),
+                _subobject_generator_images=lambda label: spanning(source.module_generator(label)),
             )
 
         submodule = subobject_on
@@ -387,15 +352,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if minor_size > min(matrix.nrows(), matrix.ncols()):
                 return ring.ideal(ring.zero())
             minors = tuple(matrix.minors(minor_size))
-            return ring.ideal(
-                *(
-                    tuple(
-                        ring._from_engine_element(_engine_ring(ring)(minor))
-                        for minor in minors
-                    )
-                    or (ring.zero(),)
-                )
-            )
+            return ring.ideal(*(tuple(ring._from_engine_element(_engine_ring(ring)(minor)) for minor in minors) or (ring.zero(),)))
 
         def _represented_annihilator_ideal(self):
             r"""Represent the scalar-action kernel in exact presentation regimes."""
@@ -407,28 +364,15 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     return ring.ideal(ring.one())
                 if any(invariant == 0 for invariant in invariants):
                     return ring.ideal(ring.zero())
-                nonunits = tuple(
-                    invariant for invariant in invariants if not invariant.is_unit()
-                )
+                nonunits = tuple(invariant for invariant in invariants if not invariant.is_unit())
                 return ring.ideal(ring._from_engine_element(_engine_ring(ring)(nonunits[-1])))
 
             if int(self.number_of_module_generators()) == 1:
-
                 matrix = _engine_matrix(self.presentation_matrix())
                 entries = tuple(matrix[row, 0] for row in range(matrix.nrows()))
-                return ring.ideal(
-                    *(
-                        tuple(
-                            ring._from_engine_element(_engine_ring(ring)(entry))
-                            for entry in entries
-                        )
-                        or (ring.zero(),)
-                    )
-                )
+                return ring.ideal(*(tuple(ring._from_engine_element(_engine_ring(ring)(entry)) for entry in entries) or (ring.zero(),)))
 
-            raise NotImplementedError(
-                "annihilator of this general finite presentation requires a commutative-algebra backend"
-            )
+            raise NotImplementedError("annihilator of this general finite presentation requires a commutative-algebra backend")
 
         def support(self):
             r"""Return ``Supp(M)=V(Fitt_0(M))`` in ``Spec(R)``."""
@@ -443,9 +387,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             """
             ring = self.base_ring()
             if ring not in LocalRings():
-                raise TypeError(
-                    "minimal generators via Nakayama require a represented local base ring"
-                )
+                raise TypeError("minimal generators via Nakayama require a represented local base ring")
             residue_module = self.residue_module()
             basis_labels = residue_module.basis_generator_labels()
             return finite_ordered_image(
@@ -461,9 +403,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             from sage.rings.integer_ring import ZZ as SageZZ
 
             relation_matrix = _engine_matrix(self.presentation_matrix())
-            return SageZZ(
-                int(self.number_of_module_generators()) - relation_matrix.rank()
-            )
+            return SageZZ(int(self.number_of_module_generators()) - relation_matrix.rank())
 
         def _represented_vector_space_basis_generator_labels(self):
             r"""Choose a basis subfamily of the selected generators over a field."""
@@ -535,9 +475,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             custom = self.__dict__.get("_preamble_module_from_coordinates_function")
             if custom is not None:
                 return custom(coordinates)
-            return self.linear_combination(
-                dict(zip(self.module_generating_set(), coordinates, strict=True))
-            )
+            return self.linear_combination(dict(zip(self.module_generating_set(), coordinates, strict=True)))
 
         def _smith_engine(self):
             r"""Sage's FGP module over the engine ring, or ``None``.
@@ -568,9 +506,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 labels = self.module_generating_set()
                 coordinates = tuple(custom(element))
                 owned = tuple(
-                    coordinate
-                    if getattr(coordinate, "parent", lambda: None)() is ring
-                    else ring._from_engine_element(_engine_ring(ring)(coordinate))
+                    coordinate if getattr(coordinate, "parent", lambda: None)() is ring else ring._from_engine_element(_engine_ring(ring)(coordinate))
                     for coordinate in coordinates
                 )
                 if len(owned) != int(labels.cardinality()):
@@ -595,16 +531,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             if ring not in PrincipalIdealDomains():
-                raise NotImplementedError(
-                    "selected-presentation Smith reduction is represented here over a PID"
-                )
+                raise NotImplementedError("selected-presentation Smith reduction is represented here over a PID")
             backend_relation_matrix = _engine_matrix(self.presentation_matrix())
             try:
                 return backend_relation_matrix.smith_form()
             except (AttributeError, NotImplementedError) as error:
-                raise NotImplementedError(
-                    f"the selected exact backend does not compute Smith form over {ring}"
-                ) from error
+                raise NotImplementedError(f"the selected exact backend does not compute Smith form over {ring}") from error
 
         @cached_method
         def _invariants_with_units(self):
@@ -614,45 +546,28 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             target_rank = int(diagonal.codomain().module_generating_set().cardinality())
             diagonal_rank = min(diagonal.parent().nrows(), diagonal.parent().ncols())
-            return tuple(
-                diagonal[position, position]
-                if position < diagonal_rank
-                else ring.zero()
-                for position in range(target_rank)
-            )
-
+            return tuple(diagonal[position, position] if position < diagonal_rank else ring.zero() for position in range(target_rank))
 
         def rank(self):
             r"""Return the rank of the free summand over a PID."""
 
             if self.base_ring() not in PrincipalIdealDomains():
-                raise NotImplementedError(
-                    "rank from invariant factors is represented here over a PID"
-                )
-            return cardinal(
-                sum(1 for invariant in self._invariants_with_units() if invariant == 0)
-            )
+                raise NotImplementedError("rank from invariant factors is represented here over a PID")
+            return cardinal(sum(1 for invariant in self._invariants_with_units() if invariant == 0))
 
         def is_torsion(self):
             return self.rank() == 0
 
         def is_torsion_free(self):
-            return all(
-                invariant == 0 or invariant.is_unit()
-                for invariant in self._invariants_with_units()
-            )
+            return all(invariant == 0 or invariant.is_unit() for invariant in self._invariants_with_units())
 
         def is_zero(self):
             if self.base_ring() not in PrincipalIdealDomains():
                 inherited = getattr(super(), "is_zero", None)
                 if inherited is None:
-                    raise NotImplementedError(
-                        "zero testing from selected invariant factors is represented here over a PID"
-                    )
+                    raise NotImplementedError("zero testing from selected invariant factors is represented here over a PID")
                 return inherited()
-            return all(
-                invariant.is_unit() for invariant in self._invariants_with_units()
-            )
+            return all(invariant.is_unit() for invariant in self._invariants_with_units())
 
         def cardinality(self):
             r"""Return the cardinality of the underlying set, as a cardinal."""
@@ -664,10 +579,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if scalars.is_field() or not self._selected_presentation_rows():
                 # A vector space, or a free module (no relations): |R|^rank.
                 return cardinal(scalars.cardinality()) ** self.rank()
-            assert False, (
-                "cardinality is defined for every presented module, but this "
-                f"presentation over {self.base_ring()} has no exact-cardinality computation"
-            )
+            assert False, f"cardinality is defined for every presented module, but this presentation over {self.base_ring()} has no exact-cardinality computation"
 
         @cached_method
         def invariant_factor_presentation(self):
@@ -681,34 +593,19 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             ring = self.base_ring()
             if ring not in PrincipalIdealDomains():
-                raise NotImplementedError(
-                    "invariant-factor presentation normalization is guaranteed here over a PID"
-                )
+                raise NotImplementedError("invariant-factor presentation normalization is guaranteed here over a PID")
             presentation = self.presentation()
-            diagonal_backend, row_change_backend, column_change_backend = (
-                self._selected_presentation_smith_backend()
-            )
+            diagonal_backend, row_change_backend, column_change_backend = self._selected_presentation_smith_backend()
 
-
-            source_labels = finite_ordered_set(
-                range(int(presentation.domain().module_generating_set().cardinality()))
-            )
-            target_labels = finite_ordered_set(
-                range(int(presentation.codomain().module_generating_set().cardinality()))
-            )
+            source_labels = finite_ordered_set(range(int(presentation.domain().module_generating_set().cardinality())))
+            target_labels = finite_ordered_set(range(int(presentation.codomain().module_generating_set().cardinality())))
             free_owner = presentation.codomain()
             normalized_source = free_owner._fresh_free_module_on(source_labels)
             normalized_target = free_owner._fresh_free_module_on(target_labels)
 
             def owned_matrix_morphism(domain, codomain, backend_matrix):
                 homset = _refine_matrix_hom(module_homset(domain, codomain))
-                rows = [
-                    [
-                        ring._from_engine_element(backend_matrix[row, column])
-                        for column in range(int(backend_matrix.ncols()))
-                    ]
-                    for row in range(int(backend_matrix.nrows()))
-                ]
+                rows = [[ring._from_engine_element(backend_matrix[row, column]) for column in range(int(backend_matrix.ncols()))] for row in range(int(backend_matrix.nrows()))]
                 return homset.from_rows(rows)
 
             # The stored relation matrix is the transpose of the presentation
@@ -739,7 +636,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 (~column_change_backend).transpose(),
             )
 
-
             arrows = ArrowCategory(Modules(ring))
             original_object = arrows(presentation)
             normalized_object = arrows(normalized_presentation)
@@ -766,12 +662,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             reduced_positions = Sets.Δ[int(retained.cardinality()) - 1]
             return finite_indexed_family(
                 reduced_positions,
-                lambda position: invariants[
-                    int(retained.unrank(int(position)))
-                ],
+                lambda position: invariants[int(retained.unrank(int(position)))],
                 name="Invariant-factor family",
             )
-
 
         @cached_method
         def smith_form_module_generators(self):
@@ -782,29 +675,20 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             labels = normalized.module_generating_set()
             return finite_indexed_family(
                 labels,
-                lambda label: normalization.inverse()(
-                    normalized.module_generator(label)
-                ),
+                lambda label: normalization.inverse()(normalized.module_generator(label)),
                 name="Smith framing family",
             )
-
 
         @cached_method
         def invariant_factor_form(self):
             r"""Return ``self -> M_if`` with only non-unit invariant factors."""
             return _module_invariant_factor_form(self)
 
-
         def presentation_projection(self):
             r"""Return the selected quotient map ``F_0 -> M``."""
 
             source = self.presentation().codomain()
-            return module_homset(source, self)(
-                {
-                    label: self.module_generator(label)
-                    for label in source.module_generating_set()
-                }
-            )
+            return module_homset(source, self)({label: self.module_generator(label) for label in source.module_generating_set()})
 
         def torsion_free_quotient_projection(self):
             r"""Return ``M -> M/Tor(M)`` from invariant-factor coordinates."""
@@ -812,27 +696,19 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized = normalization.codomain()
             invariants = self._invariants_with_units()
 
-
             positions = Sets.Δ[len(invariants) - 1]
             free_positions = finite_ordered_filter(
                 positions,
                 lambda position: invariants[int(position)] == self.base_ring().zero(),
             )
-            target = self.presentation().codomain()._fresh_free_module_on(
-                free_positions
-            )
+            target = self.presentation().codomain()._fresh_free_module_on(free_positions)
             normalized_projection = module_homset(normalized, target)(
                 {
-                    label: (
-                        target.module_generator(position)
-                        if position in free_positions
-                        else target.zero()
-                    )
+                    label: (target.module_generator(position) if position in free_positions else target.zero())
                     for position, label in enumerate(normalized.module_generating_set())
                 }
             )
             return normalized_projection * normalization.forward()
-
 
         def torsion_free_quotient(self):
             r"""Return ``M/Tor(M)``."""
@@ -847,25 +723,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 raise TypeError("the exponent here is the exponent of an abelian group")
             if not self.is_torsion():
                 return ring.zero()
-            factors = tuple(
-                abs(x)
-                for x in self.invariant_factors()
-                if abs(x) > ring.one()
-            )
+            factors = tuple(abs(x) for x in self.invariant_factors() if abs(x) > ring.one())
             return factors[-1] if factors else ring.one()
-
 
         def _repr_(self):
             if self._smith_engine() is None:
-                return (
-                    f"Finitely presented module on "
-                    f"{self.number_of_module_generators()} module generators over "
-                    f"{self.base_ring()}"
-                )
+                return f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()}"
             return (
-                f"Finitely presented module on "
-                f"{self.number_of_module_generators()} module generators over "
-                f"{self.base_ring()} with invariant factors {self.invariant_factors()}"
+                f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()} with invariant factors {self.invariant_factors()}"
             )
 
         def base_change(self, ring_map):
@@ -882,9 +747,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                             base_change_scalar(ring_map, coefficient),
                             target.module_generator(module_label),
                         )
-                        for module_label, coefficient in zip(
-                            target.module_generating_set(), row, strict=True
-                        )
+                        for module_label, coefficient in zip(target.module_generating_set(), row, strict=True)
                         if coefficient
                     ),
                     target.zero(),
@@ -896,7 +759,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 )
             }
             return FinitelyPresentedModule(module_homset(source, target)(images))
-
 
 
 def _module_invariant_factor_form(module):
@@ -927,17 +789,13 @@ def _module_invariant_factor_form(module):
         lambda position: not invariants[int(position)].is_unit(),
     )
 
-
     ring = module.base_ring()
     free_owner = module.presentation().codomain()
     reduced_labels = Sets.Δ[int(retained_positions.cardinality()) - 1]
     reduced_target = free_owner._fresh_free_module_on(reduced_labels)
     relation_labels = finite_ordered_filter(
         reduced_labels,
-        lambda reduced_position: invariants[
-            int(retained_positions.unrank(int(reduced_position)))
-        ]
-        != ring.zero(),
+        lambda reduced_position: invariants[int(retained_positions.unrank(int(reduced_position)))] != ring.zero(),
     )
     reduced_source = free_owner._fresh_free_module_on(relation_labels)
     reduced_presentation = module_homset(reduced_source, reduced_target)(
@@ -954,23 +812,13 @@ def _module_invariant_factor_form(module):
     full_labels = full_normalized.module_generating_set()
     full_to_reduced = module_homset(full_normalized, reduced)(
         {
-            full_label: (
-                reduced.module_generator(
-                    retained_positions.rank(retained_positions(position))
-                )
-                if position in retained_positions
-                else reduced.zero()
-            )
+            full_label: (reduced.module_generator(retained_positions.rank(retained_positions(position))) if position in retained_positions else reduced.zero())
             for position, full_label in enumerate(full_labels)
         }
     )
     reduced_to_full = module_homset(reduced, full_normalized)(
         {
-            reduced_label: full_normalized.module_generator(
-                full_labels.unrank(
-                    int(retained_positions.unrank(int(reduced_label)))
-                )
-            )
+            reduced_label: full_normalized.module_generator(full_labels.unrank(int(retained_positions.unrank(int(reduced_label)))))
             for reduced_label in reduced.module_generating_set()
         }
     )
@@ -981,30 +829,17 @@ def _module_invariant_factor_form(module):
     full_projection = full_normalized.presentation_projection()
     original_projection = module.presentation_projection()
     original_to_full = module_homset(module, full_normalized)(
-        {
-            label: full_projection(
-                target_forward(
-                    module.presentation().codomain().module_generator(label)
-                )
-            )
-            for label in module.module_generating_set()
-        }
+        {label: full_projection(target_forward(module.presentation().codomain().module_generator(label))) for label in module.module_generating_set()}
     )
     full_to_original = module_homset(full_normalized, module)(
-        {
-            label: original_projection(
-                target_inverse(
-                    diagonal_presentation.codomain().module_generator(label)
-                )
-            )
-            for label in full_normalized.module_generating_set()
-        }
+        {label: original_projection(target_inverse(diagonal_presentation.codomain().module_generator(label))) for label in full_normalized.module_generating_set()}
     )
     presentation_cokernel_iso = Isomorphism(
         original_to_full,
         full_to_original,
     )
     return reduced_iso * presentation_cokernel_iso
+
 
 class _GeneralPresentedElement(ModuleElement):
     r"""An element of a finitely presented module over a general ring.
@@ -1043,20 +878,14 @@ class _GeneralPresentedElement(ModuleElement):
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        equal = (
-            isinstance(other, _GeneralPresentedElement)
-            and other.parent() is self.parent()
-            and self.parent()._relation_contains(self._lift - other._lift)
-        )
+        equal = isinstance(other, _GeneralPresentedElement) and other.parent() is self.parent() and self.parent()._relation_contains(self._lift - other._lift)
         return equal if op == op_EQ else not equal
 
     def __hash__(self):
         parent = self.parent()
         smith_engine = parent._smith_engine()
         if smith_engine is None:
-            raise TypeError(
-                "hashing a presented-module class requires a represented canonical quotient key"
-            )
+            raise TypeError("hashing a presented-module class requires a represented canonical quotient key")
         key = tuple(parent._to_smith_engine_element(self).vector())
         return hash((id(parent), key))
 
@@ -1065,9 +894,7 @@ class _GeneralPresentedElement(ModuleElement):
         parent = self.parent()
         engine = parent._smith_engine()
         if engine is None or not parent.is_torsion():
-            raise NotImplementedError(
-                "additive order requires a represented finite torsion presentation"
-            )
+            raise NotImplementedError("additive order requires a represented finite torsion presentation")
         order = parent._to_smith_engine_element(self).additive_order()
         return parent.base_ring()._from_engine_element(SageZZ(order))
 
@@ -1085,7 +912,18 @@ class _GeneralPresentedModule:
     """
 
     def __eq__(self, other):
-        r"""Compare the underlying represented modules, not extra equipment."""
+        r"""Compare the underlying represented modules, not extra equipment.
+
+        Two ideals are equal when they are the same submodule of the ring,
+        whatever presentations were selected for them; that is the ideal
+        category's equality, routed to here because an ideal is placed in
+        both categories and equality is decided in one place.
+        """
+        from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
+
+        ideals = CommutativeIdeals(self.base_ring())
+        if self in ideals and other in ideals:
+            return self._engine_ideal() == other._engine_ideal()
         return self._same_selected_presentation_as(other)
 
     def __ne__(self, other):
@@ -1113,9 +951,7 @@ class _GeneralPresentedModule:
         super().__init__(
             base_ring=base_ring,
             module_generating_set=module_generating_set,
-            module_generator_function=lambda label: self._cover_generator(
-                int(module_generating_set.rank(label))
-            ),
+            module_generator_function=lambda label: self._cover_generator(int(module_generating_set.rank(label))),
             relation_matrix=relation_matrix,
             presentation=presentation,
             cokernel_morphism=cokernel_morphism,
@@ -1142,7 +978,6 @@ class _GeneralPresentedModule:
         labels = self.module_generating_set()
 
         if self._relation_submodule is None:
-
             coefficients = module_coefficients(lift, self._free_module)
             zero = self.base_ring().zero()
             return indexed_family(
@@ -1190,10 +1025,7 @@ class _GeneralPresentedModule:
             lifted = base_ring._lift_coefficient_to_presentation(value)
             return _engine_element(presentation_ring, lifted)
 
-        rows = [
-            lifted_free(tuple(lift_scalar(coefficient) for coefficient in row))
-            for row in _presentation_rows(self)
-        ]
+        rows = [lifted_free(tuple(lift_scalar(coefficient) for coefficient in row)) for row in _presentation_rows(self)]
         for algebra_relation in base_ring._exact_coefficient_presentation_relations():
             relation = _engine_element(presentation_ring, algebra_relation)
             for position in range(rank):
@@ -1201,11 +1033,7 @@ class _GeneralPresentedModule:
                 coordinates[position] = relation
                 rows.append(lifted_free(coordinates))
 
-        lifted_submodule = (
-            lifted_free.submodule(rows)
-            if rows
-            else lifted_free.zero_submodule()
-        )
+        lifted_submodule = lifted_free.submodule(rows) if rows else lifted_free.zero_submodule()
         self._lifted_relation_free_module = lifted_free
         self._lifted_relation_submodule = lifted_submodule
         return lifted_free, lifted_submodule
@@ -1214,10 +1042,7 @@ class _GeneralPresentedModule:
         if vector == self._free_module.zero():
             return True
         if self._relation_submodule is None:
-            raise NotImplementedError(
-                f"equality in a presented module over {self.base_ring()} has no "
-                "computation engine that decides membership in the relation module"
-            )
+            raise NotImplementedError(f"equality in a presented module over {self.base_ring()} has no computation engine that decides membership in the relation module")
         lifted_backend = self._lifted_relation_backend()
         if lifted_backend is None:
             return vector in self._relation_submodule
@@ -1231,9 +1056,7 @@ class _GeneralPresentedModule:
             lifted_owned = base_ring._lift_coefficient_to_presentation(owned_coefficient)
             return _engine_element(presentation_ring, lifted_owned)
 
-        lifted = lifted_free(
-            tuple(lift_backend_coefficient(coefficient) for coefficient in tuple(vector))
-        )
+        lifted = lifted_free(tuple(lift_backend_coefficient(coefficient) for coefficient in tuple(vector)))
         return lifted in lifted_submodule
 
     def __call__(self, value):
@@ -1290,27 +1113,17 @@ class _PresentedModule(_GeneralPresentedModule):
     def _to_smith_engine_element(self, element):
         r"""Cross an owned quotient element into the private FGP workspace."""
         owned = self(element)
-        representative = owned._representative()
         coordinates = self._cover_coordinates(owned)
         backend = self._preamble_pid_engine
         labels = self.module_generating_set()
-        return backend(
-            backend.V()(
-                tuple(
-                    _engine_element(self.base_ring(), coordinates[label])
-                    for label in labels
-                )
-            )
-        )
+        return backend(backend.V()(tuple(_engine_element(self.base_ring(), coordinates[label]) for label in labels)))
 
     def _from_smith_engine_element(self, element):
         r"""Cross one private FGP element back to an owned quotient element."""
         backend = self._preamble_pid_engine
         lift = backend(element).lift()
         ring = self.base_ring()
-        coordinates = tuple(
-            ring._from_engine_element(coefficient) for coefficient in tuple(lift)
-        )
+        coordinates = tuple(ring._from_engine_element(coefficient) for coefficient in tuple(lift))
         return self._from_coordinates(coordinates)
 
 
@@ -1410,13 +1223,7 @@ def _presentation_matrix(module):
 def _matrix_coordinate_rows(matrix):
     r"""Return finite coordinate rows of one matrix Hom element."""
     parent = matrix.parent()
-    return tuple(
-        tuple(
-            matrix.matrix_entry(row_label, column_label)
-            for column_label in parent.column_index_set()
-        )
-        for row_label in parent.row_index_set()
-    )
+    return tuple(tuple(matrix.matrix_entry(row_label, column_label) for column_label in parent.column_index_set()) for row_label in parent.row_index_set())
 
 
 def _presentation_rows(module):
@@ -1431,13 +1238,7 @@ def _presentation_rows(module):
 
 def _relation_element(module, row):
     return sum(
-        (
-            module.scalar_multiple(coefficient, module.module_generator(label))
-            for label, coefficient in zip(
-                module.module_generating_set(), row, strict=True
-            )
-            if coefficient
-        ),
+        (module.scalar_multiple(coefficient, module.module_generator(label)) for label, coefficient in zip(module.module_generating_set(), row, strict=True) if coefficient),
         module.zero(),
     )
 
@@ -1500,16 +1301,8 @@ def _pid_presentation_kernel(morphism):
         preimage = free_cover.zero_submodule()
     else:
         kernel_pairs = augmented.right_kernel().basis_matrix().rows()
-        projected = [
-            free_cover(tuple(row[position] for position in range(source_rank)))
-            for row in kernel_pairs
-            if any(row[position] != 0 for position in range(source_rank))
-        ]
-        preimage = (
-            free_cover.submodule(projected)
-            if projected
-            else free_cover.zero_submodule()
-        )
+        projected = [free_cover(tuple(row[position] for position in range(source_rank))) for row in kernel_pairs if any(row[position] != 0 for position in range(source_rank))]
+        preimage = free_cover.submodule(projected) if projected else free_cover.zero_submodule()
 
     basis_rows = tuple(tuple(row) for row in preimage.basis_matrix().rows())
     kernel_count = len(basis_rows)
@@ -1521,15 +1314,8 @@ def _pid_presentation_kernel(morphism):
         try:
             coordinates = preimage.coordinate_vector(source_relation)
         except (ArithmeticError, ValueError) as error:
-            raise ArithmeticError(
-                "a represented module morphism did not carry a source relation into the target relations"
-            ) from error
-        relation_coordinate_rows.append(
-            tuple(
-                ring._from_engine_element(engine(coefficient))
-                for coefficient in coordinates
-            )
-        )
+            raise ArithmeticError("a represented module morphism did not carry a source relation into the target relations") from error
+        relation_coordinate_rows.append(tuple(ring._from_engine_element(engine(coefficient)) for coefficient in coordinates))
 
     relation_labels = Sets.Δ[len(relation_coordinate_rows) - 1]
     relation_matrix = _matrix_space_like(
@@ -1574,16 +1360,8 @@ def _pid_presentation_kernel(morphism):
         try:
             coordinates = preimage.coordinate_vector(representative)
         except (ArithmeticError, ValueError) as error:
-            raise ValueError(
-                "the element does not lie in the represented kernel"
-            ) from error
-        return kernel.linear_combination(
-            {
-                label: ring._from_engine_element(engine(coordinates[int(label)]))
-                for label in kernel_labels
-                if coordinates[int(label)] != 0
-            }
-        )
+            raise ValueError("the element does not lie in the represented kernel") from error
+        return kernel.linear_combination({label: ring._from_engine_element(engine(coordinates[int(label)])) for label in kernel_labels if coordinates[int(label)] != 0})
 
     return FinitelyPresentedModule(
         presentation,
@@ -1617,14 +1395,12 @@ def _singular_presentation_kernel(morphism):
     from sage.matrix.special import identity_matrix
     from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
 
-
     domain = morphism.domain()
     codomain = morphism.codomain()
     ring = _owned_ring(domain.base_ring())
     if _owned_ring(codomain.base_ring()) is not ring:
         raise ValueError("a kernel presentation requires one coefficient ring")
 
-    engine = _engine_ring(ring)
     coefficient_presentation = ring._exact_coefficient_presentation_ring()
     presentation_ring = _engine_ring(coefficient_presentation)
     coefficient_relations = ring._exact_coefficient_presentation_relations()
@@ -1637,20 +1413,16 @@ def _singular_presentation_kernel(morphism):
         return _engine_element(coefficient_presentation, lifted)
 
     def descend_scalar(value):
-        lifted = coefficient_presentation._from_engine_element(
-            presentation_ring(value)
-        )
+        lifted = coefficient_presentation._from_engine_element(presentation_ring(value))
         return ring._descend_coefficient_from_presentation(lifted)
 
     try:
         coefficient_field = presentation_ring.base_ring()
         field_coefficients = bool(coefficient_field.is_field())
-    except (AttributeError, NotImplementedError):
+    except AttributeError, NotImplementedError:
         field_coefficients = False
     if not field_coefficients:
-        raise NotImplementedError(
-            "the general presented-kernel backend currently uses Singular over a polynomial ring over a field"
-        )
+        raise NotImplementedError("the general presented-kernel backend currently uses Singular over a polynomial ring over a field")
 
     # Singular's syz entry point requires a multivariate polynomial parent,
     # even in one variable.  Cross only this backend representation.
@@ -1690,33 +1462,18 @@ def _singular_presentation_kernel(morphism):
         )
 
     if m == 0:
-        kernel_lifts = [
-            tuple(
-                singular_ring.one() if i == j else singular_ring.zero()
-                for i in range(n)
-            )
-            for j in range(n)
-        ]
+        kernel_lifts = [tuple(singular_ring.one() if i == j else singular_ring.zero() for i in range(n)) for j in range(n)]
     else:
         coordinate_columns = []
         for source_label in source_labels:
             image = morphism(domain.module_generator(source_label))
             coefficients = module_coefficients(image, codomain)
-            coordinate_columns.append(
-                tuple(
-                    to_singular(lift_scalar(coefficients.get(label, ring.zero())))
-                    for label in target_labels
-                )
-            )
+            coordinate_columns.append(tuple(to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in target_labels))
         f_matrix = matrix(
             singular_ring,
             m,
             n,
-            [
-                coordinate_columns[column][row]
-                for row in range(m)
-                for column in range(n)
-            ],
+            [coordinate_columns[column][row] for row in range(m) for column in range(n)],
         )
         augmented = f_matrix
         if target_relations.nrows():
@@ -1724,22 +1481,13 @@ def _singular_presentation_kernel(morphism):
                 singular_ring,
                 target_relations.nrows(),
                 m,
-                [
-                    to_singular(lift_scalar(entry))
-                    for row in _matrix_coordinate_rows(target_relations)
-                    for entry in row
-                ],
+                [to_singular(lift_scalar(entry)) for row in _matrix_coordinate_rows(target_relations) for entry in row],
             )
             augmented = augmented.augment(-lifted_target_relations.transpose())
         for relation in coefficient_relations:
-            augmented = augmented.augment(
-                -to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, m)
-            )
+            augmented = augmented.augment(-to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, m))
         first_syzygies = singular_syzygies(augmented)
-        kernel_lifts = [
-            tuple(row[position] for position in range(n))
-            for row in first_syzygies.rows()
-        ]
+        kernel_lifts = [tuple(row[position] for position in range(n)) for row in first_syzygies.rows()]
 
     kernel_count = len(kernel_lifts)
     kernel_labels = Sets.Δ[kernel_count - 1]
@@ -1748,11 +1496,7 @@ def _singular_presentation_kernel(morphism):
             singular_ring,
             n,
             kernel_count,
-            [
-                kernel_lifts[column][row]
-                for row in range(n)
-                for column in range(kernel_count)
-            ],
+            [kernel_lifts[column][row] for row in range(n) for column in range(kernel_count)],
         )
     else:
         kernel_columns = matrix(singular_ring, n, 0, [])
@@ -1763,19 +1507,11 @@ def _singular_presentation_kernel(morphism):
             singular_ring,
             source_relations.nrows(),
             n,
-            [
-                to_singular(lift_scalar(entry))
-                for row in _matrix_coordinate_rows(source_relations)
-                for entry in row
-            ],
+            [to_singular(lift_scalar(entry)) for row in _matrix_coordinate_rows(source_relations) for entry in row],
         )
-        relation_augmented = relation_augmented.augment(
-            -lifted_source_relations.transpose()
-        )
+        relation_augmented = relation_augmented.augment(-lifted_source_relations.transpose())
     for relation in coefficient_relations:
-        relation_augmented = relation_augmented.augment(
-            -to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, n)
-        )
+        relation_augmented = relation_augmented.augment(-to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, n))
 
     if n == 0:
         kernel_relation_rows = []
@@ -1800,11 +1536,7 @@ def _singular_presentation_kernel(morphism):
     )
     generator_images = {
         label: domain.linear_combination(
-            {
-                source_label: from_singular(kernel_lifts[int(label)][position])
-                for position, source_label in enumerate(source_labels)
-                if kernel_lifts[int(label)][position] != 0
-            }
+            {source_label: from_singular(kernel_lifts[int(label)][position]) for position, source_label in enumerate(source_labels) if kernel_lifts[int(label)][position] != 0}
         )
         for label in kernel_labels
     }
@@ -1819,11 +1551,7 @@ def _singular_presentation_kernel(morphism):
         singular_ring,
         source_relations.nrows(),
         n,
-        [
-            to_singular(lift_scalar(entry))
-            for row in source_relations.rows()
-            for entry in row
-        ],
+        [to_singular(lift_scalar(entry)) for row in source_relations.rows() for entry in row],
     )
 
     def lift_from_domain(kernel, element):
@@ -1838,20 +1566,13 @@ def _singular_presentation_kernel(morphism):
             singular_ring,
             1,
             n,
-            [
-                to_singular(
-                    lift_scalar(coefficients.get(label, ring.zero()))
-                )
-                for label in source_labels
-            ],
+            [to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in source_labels],
         )
         spanning = kernel_generator_matrix
         if source_relations.nrows():
             spanning = spanning.stack(lifted_source_relation_rows)
         for relation in coefficient_relations:
-            spanning = spanning.stack(
-                to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, n)
-            )
+            spanning = spanning.stack(to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, n))
         try:
             lifted = matrix(
                 singular_ring,
@@ -1861,16 +1582,8 @@ def _singular_presentation_kernel(morphism):
                 ),
             )
         except RuntimeError as error:
-            raise ValueError(
-                "the element does not lie in the represented kernel"
-            ) from error
-        return kernel.linear_combination(
-            {
-                label: from_singular(lifted[position, 0])
-                for position, label in enumerate(kernel_labels)
-                if lifted[position, 0] != 0
-            }
-        )
+            raise ValueError("the element does not lie in the represented kernel") from error
+        return kernel.linear_combination({label: from_singular(lifted[position, 0]) for position, label in enumerate(kernel_labels) if lifted[position, 0] != 0})
 
     return FinitelyPresentedModule(
         presentation,
@@ -1890,12 +1603,7 @@ def _presentation_from_relation_rows(
     free_owner = relations.domain()
     target = free_owner._fresh_free_module_on(labels)
     source = free_owner._fresh_free_module_on(relation_labels)
-    images = {
-        label: _relation_element(target, row)
-        for label, row in zip(
-            source.module_generating_set(), _matrix_coordinate_rows(relations), strict=True
-        )
-    }
+    images = {label: _relation_element(target, row) for label, row in zip(source.module_generating_set(), _matrix_coordinate_rows(relations), strict=True)}
     return module_homset(source, target)(images)
 
 
@@ -1918,9 +1626,7 @@ def FinitelyPresentedModule(
     # underlying R-linear arrow; otherwise later presentation constructions
     # incorrectly inherit the stricter Hom object.
 
-    presentation = module_homset(
-        presentation.domain(), presentation.codomain()
-    )(presentation)
+    presentation = module_homset(presentation.domain(), presentation.codomain())(presentation)
     codomain = presentation.codomain()
     base_ring = codomain.base_ring()
     engine = _engine_ring(base_ring)
@@ -1930,17 +1636,11 @@ def FinitelyPresentedModule(
 
     added_rows = []
     for source_label in presentation.domain().module_generating_set():
-        image = presentation(
-            presentation.domain().module_generator(source_label)
-        )
+        image = presentation(presentation.domain().module_generator(source_label))
         coefficients = module_coefficients(image, codomain)
-        added_rows.append(
-            tuple(
-                coefficients.get(label, base_ring.zero())
-                for label in labels
-            )
-        )
+        added_rows.append(tuple(coefficients.get(label, base_ring.zero()) for label in labels))
     from itertools import chain
+
     existing_rows = _matrix_coordinate_rows(existing)
     existing_count = len(existing_rows)
     width = int(labels.cardinality())
@@ -1953,12 +1653,7 @@ def FinitelyPresentedModule(
     if existing_count == 0:
         selected_presentation = presentation
     else:
-
-        existing_labels = (
-            codomain.presentation().domain().module_generating_set()
-            if codomain in _SelectedFinitePresentationModules(base_ring)
-            else Sets.Δ[existing_count - 1]
-        )
+        existing_labels = codomain.presentation().domain().module_generating_set() if codomain in _SelectedFinitePresentationModules(base_ring) else Sets.Δ[existing_count - 1]
         added_labels = presentation.domain().module_generating_set()
         relation_labels = CoproductOfFamily(
             Sets.Δ[1],
@@ -1978,20 +1673,8 @@ def FinitelyPresentedModule(
         from sage.modules.free_module import FreeModule as SageFreeModule
 
         free = SageFreeModule(engine, int(labels.cardinality()))
-        backend_rows = [
-            free(
-                tuple(
-                    _engine_element(base_ring, coefficient)
-                    for coefficient in row
-                )
-            )
-            for row in _matrix_coordinate_rows(relations)
-        ]
-        relation_submodule = (
-            free.zero_submodule()
-            if not backend_rows
-            else free.submodule(backend_rows)
-        )
+        backend_rows = [free(tuple(_engine_element(base_ring, coefficient) for coefficient in row)) for row in _matrix_coordinate_rows(relations)]
+        relation_submodule = free.zero_submodule() if not backend_rows else free.submodule(backend_rows)
         # Sage's FGP implementation calls ``_clear_denom`` internally in
         # its Smith/optimization algorithms.  The live Smith-form surface of
         # this project is the integral ``ZZ`` specialization; other Sage rings

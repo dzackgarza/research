@@ -65,12 +65,11 @@ from collections.abc import Hashable
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
+from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.misc.constant_function import ConstantFunction
+from sage.misc.inherit_comparison import InheritComparisonMetaclass
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.category_object import CategoryObject
-from sage.structure.parent import Parent as SageParent
-from sage.misc.classcall_metaclass import ClasscallMetaclass
-from sage.misc.inherit_comparison import InheritComparisonMetaclass
 from sage.structure.dynamic_class import (
     DynamicClasscallMetaclass,
     DynamicInheritComparisonClasscallMetaclass,
@@ -78,6 +77,7 @@ from sage.structure.dynamic_class import (
     DynamicMetaclass,
     dynamic_class,
 )
+from sage.structure.parent import Parent as SageParent
 
 if TYPE_CHECKING:
     from typing import Any
@@ -101,9 +101,7 @@ class _DynamicABCClasscallMetaclass(DynamicClasscallMetaclass, _DynamicABCMetacl
     pass
 
 
-class _DynamicABCInheritComparisonMetaclass(
-    DynamicInheritComparisonMetaclass, _DynamicABCMetaclass
-):
+class _DynamicABCInheritComparisonMetaclass(DynamicInheritComparisonMetaclass, _DynamicABCMetaclass):
     pass
 
 
@@ -163,14 +161,8 @@ def _abc_metaclass_for(bases: tuple[type, ...]) -> type:
     if any(isinstance(base, ClasscallMetaclass) for base in bases):
         metaclass = _DynamicABCClasscallMetaclass
     if any(isinstance(base, InheritComparisonMetaclass) for base in bases):
-        metaclass = (
-            _DynamicABCInheritComparisonClasscallMetaclass
-            if metaclass is _DynamicABCClasscallMetaclass
-            else _DynamicABCInheritComparisonMetaclass
-        )
-    assert all(issubclass(metaclass, type(base)) for base in bases), (
-        f"no crossed metaclass dominates the bases of {bases}"
-    )
+        metaclass = _DynamicABCInheritComparisonClasscallMetaclass if metaclass is _DynamicABCClasscallMetaclass else _DynamicABCInheritComparisonMetaclass
+    assert all(issubclass(metaclass, type(base)) for base in bases), f"no crossed metaclass dominates the bases of {bases}"
     return metaclass
 
 
@@ -223,13 +215,10 @@ class CatConstructionsMixin:
         picklable: bool = True,
     ) -> type:
         if name == "subcategory_class":
-            return self._subcategory_class_with_cat_constructions(
-                method_provider, cache=cache, picklable=picklable
-            )
+            return self._subcategory_class_with_cat_constructions(method_provider, cache=cache, picklable=picklable)
         return super()._make_named_class(  # type: ignore[misc]
             name, method_provider, cache=cache, picklable=picklable
         )
-
 
     def _subcategory_class_with_cat_constructions(
         self,
@@ -262,27 +251,20 @@ class CatConstructionsMixin:
         subcategories must not be handed the constructions.
         """
         category = self
-        assert isinstance(category, Category), (
-            "OwnedCategoryMixin is mixed into a Category"
-        )
+        assert isinstance(category, Category), "OwnedCategoryMixin is mixed into a Category"
         cat_constructions = _cat_constructions()
-        provider, inherited = declared_implementation_types(
-            type(category), (method_provider,)
-        )
-        assert not inherited, (
-            "subcategory implementation declarations must have one owner"
-        )
+        provider, inherited = declared_implementation_types(type(category), (method_provider,))
+        assert not inherited, "subcategory implementation declarations must have one owner"
         if provider is cat_constructions:
             return super()._make_named_class(  # type: ignore[misc]
-                "subcategory_class", method_provider,
-                cache=cache, picklable=picklable,
+                "subcategory_class",
+                method_provider,
+                cache=cache,
+                picklable=picklable,
             )
-        bases = tuple(
-            super_category.subcategory_class
-            for super_category in category._super_categories_for_classes
-        )
+        bases = tuple(super_category.subcategory_class for super_category in category._super_categories_for_classes)
         carried = any(cat_constructions in base.mro() for base in bases)
-        if provider is not None:
+        if provider is not None and not any(provider in base.mro() for base in bases):
             bases = (provider,) + bases
         if not carried:
             # Last, never first.  A base that already carries the
@@ -353,9 +335,7 @@ def declared_implementation_types(
             inherited = ancestor.__dict__.get(provider_name)
             if inherited is None:
                 continue
-            assert isinstance(inherited, type), (
-                f"{ancestor.__name__}.{provider_name} must be a type"
-            )
+            assert isinstance(inherited, type), f"{ancestor.__name__}.{provider_name} must be a type"
             if any(issubclass(seen, inherited) for seen in declared):
                 continue
             declared.append(inherited)
@@ -390,9 +370,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     still enforces its obligations.
     """
 
-    _TIED_NAMED_CLASSES = frozenset(
-        ("parent_class", "element_class", "morphism_class")
-    )
+    _TIED_NAMED_CLASSES = frozenset(("parent_class", "element_class", "morphism_class"))
 
     _IMPLEMENTATION_PROVIDER_NAMES = {
         "ParentMethods": ("ParentMethods",),
@@ -433,22 +411,13 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             declaring_class = declaring_class.__base__
         match name:
             case "parent_class":
-                bases = tuple(
-                    super_category.parent_class
-                    for super_category in category._super_categories_for_classes
-                )
+                bases = tuple(super_category.parent_class for super_category in category._super_categories_for_classes)
                 reduction_function = _parent_class_of
             case "element_class":
-                bases = tuple(
-                    super_category.element_class
-                    for super_category in category._super_categories_for_classes
-                )
+                bases = tuple(super_category.element_class for super_category in category._super_categories_for_classes)
                 reduction_function = _element_class_of
             case "morphism_class":
-                bases = tuple(
-                    super_category.morphism_class
-                    for super_category in category._super_categories_for_classes
-                )
+                bases = tuple(super_category.morphism_class for super_category in category._super_categories_for_classes)
                 reduction_function = _morphism_class_of
             case _:
                 raise AssertionError(f"unsupported implementation type {name}")
@@ -464,16 +433,8 @@ class OwnedCategoryMixin(CatConstructionsMixin):
         # replace.  A super category that already reached this declaration is
         # skipped: it has it at the end of its own linearization, and asking
         # for it earlier contradicts that order, which C3 refuses.
-        declared = (
-            ()
-            if provider is None or any(provider in base.mro() for base in bases)
-            else (provider,)
-        )
-        carried = tuple(
-            ancestor_provider
-            for ancestor_provider in inherited
-            if not any(ancestor_provider in base.mro() for base in bases)
-        )
+        declared = () if provider is None or any(provider in base.mro() for base in bases) else (provider,)
+        carried = tuple(ancestor_provider for ancestor_provider in inherited if not any(ancestor_provider in base.mro() for base in bases))
         bases = declared + carried + bases
         # A base reached twice -- a join whose members share a super category --
         # is one base, in the position it was first required.
@@ -509,12 +470,16 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             if shared is not None:
                 return shared
 
-        if not any(isinstance(base, ABCMeta) for base in bases):
-            result = dynamic_class(
-                class_name, bases, None, doccls=doccls,
-                reduction=reduction, cache=cache,
-            )
-        else:
+        def build() -> type:
+            if not any(isinstance(base, ABCMeta) for base in bases):
+                return dynamic_class(
+                    class_name,
+                    bases,
+                    None,
+                    doccls=doccls,
+                    reduction=reduction,
+                    cache=cache,
+                )
             # A level declared obligations, so this class carries them.  Built
             # by hand because :func:`dynamic_class` takes no metaclass, so the
             # crossed dynamic/ABCMeta one cannot be requested from it; this
@@ -526,7 +491,7 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             # never asked for on this path, and its ``__slots__`` suppression,
             # which cannot fire because a provider is a plain Python class and
             # so always contributes a ``__dictoffset__``.
-            result = _abc_metaclass_for(bases)(
+            return _abc_metaclass_for(bases)(
                 class_name,
                 bases,
                 {
@@ -537,14 +502,13 @@ class OwnedCategoryMixin(CatConstructionsMixin):
                 },
             )
 
+        result = build()
         if key is not None:
             if key[2] != category._make_named_class_key(name):
                 # The parameter's category was refined while we built, so the
                 # key we would store is stale.  Sage's own override handles
                 # this the same way: discard and recompute.
-                return self._make_named_class(
-                    name, method_provider, cache=cache, picklable=picklable
-                )
+                return self._make_named_class(name, method_provider, cache=cache, picklable=picklable)
             category._make_named_class_cache[key] = result
         if name == "parent_class":
             result.ElementType = category.element_class
@@ -616,9 +580,20 @@ class OwnedParent:
         name that class twice.  ``CategoryObject._init_category_`` records the
         category and rewrites nothing, which is all a chain-built parent wants;
         this is the same technique ``OwnedCategoryObject`` uses one level up.
+
+        The category is recorded first, as Sage's own ``Parent.__init__`` does
+        before it runs the ``__init_extra__`` hooks: a hook a category level
+        declares -- the rings level places every ring as an algebra -- asks
+        the parent what it is, and must find the answer already there.
         """
-        SageParent.__init__(self, **rest)
         if category is not None:
+            CategoryObject._init_category_(self, category)
+        SageParent.__init__(self, **rest)
+        if category is not None and not self.category().is_subcategory(category):
+            # A facade parent makes ``Parent.__init__`` record Sage's facade
+            # category in place of the chain's; the chain's is the placement.
+            # A hook that refined the chain's category left a subcategory of
+            # it, which stays.
             CategoryObject._init_category_(self, category)
 
     @lazy_attribute
@@ -654,16 +629,12 @@ class _BaseRingOfACategoryOverABase:
     one, and nothing is written on a Sage class.
     """
 
-    def __get__(
-        self, category: Category | None, owner: type | None = None
-    ) -> "ConstantFunction | _BaseRingOfACategoryOverABase":
+    def __get__(self, category: Category | None, owner: type | None = None) -> ConstantFunction | _BaseRingOfACategoryOverABase:
         if category is None:
             return self
         base = category.base()
         if base is None:
-            raise AttributeError(
-                f"{type(category).__name__} is over no base, so it has no base ring"
-            )
+            raise AttributeError(f"{type(category).__name__} is over no base, so it has no base ring")
         return ConstantFunction(base)
 
 

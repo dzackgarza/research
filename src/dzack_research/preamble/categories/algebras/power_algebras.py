@@ -5,16 +5,12 @@ module constructions ``Lambda^n(M)`` and ``Gamma^n(M)``.  This module forms
 their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
+from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
-    HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
-
-from sage.misc.cachefunc import cached_function
-from sage.categories.category import Category
-from sage.categories.morphism import Morphism, SetMorphism
-
 from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
@@ -22,15 +18,15 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+from dzack_research.preamble.categories.modules.graded_direct_sums import (
+    GradedDirectSumElement,
+    GradedDirectSumModule,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
     module_homset,
-)
-from dzack_research.preamble.categories.modules.graded_direct_sums import (
-    GradedDirectSumElement,
-    GradedDirectSumModule,
 )
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
@@ -41,8 +37,14 @@ from dzack_research.preamble.categories.modules.powers import (
     divided_power_morphism,
     divided_power_product,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring as _engine_ring,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _owned_ring,
+    ring_morphism,
+)
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -70,14 +72,9 @@ class PowerAlgebra(GradedDirectSumModule):
         constructor = AlternatingPower if flavor == "alternating" else DividedPower
         degree_index_set = None
         if flavor == "alternating" and module in FinitelyGeneratedFreeModules(base):
-
             degree_index_set = Sets.Δ[int(module.rank())]
 
-        flavor_category = (
-            AlternatingAlgebras(base)
-            if flavor == "alternating"
-            else DividedPowerAlgebras(base)
-        )
+        flavor_category = AlternatingAlgebras(base) if flavor == "alternating" else DividedPowerAlgebras(base)
         categories = [flavor_category, FramedAlgebras(base)]
         if module in FinitelyGeneratedFreeModules(base):
             categories.extend([FreeAlgebras(base), GradedFreeAlgebras(base)])
@@ -96,6 +93,15 @@ class PowerAlgebra(GradedDirectSumModule):
             degree_index_set=degree_index_set,
             extra_categories=tuple(categories),
         )
+
+    def is_commutative(self) -> bool:
+        r"""Divided powers commute; an alternating algebra commutes on at most one generator or in characteristic two."""
+        if self._flavor == "divided":
+            return True
+        generators = self._preamble_algebra_generating_set.cardinality()
+        if generators.is_finite() and int(generators.finite_value()) <= 1:
+            return True
+        return int(self.base_ring().characteristic()) == 2
 
     def flavor(self):
         return self._flavor
@@ -119,9 +125,7 @@ class PowerAlgebra(GradedDirectSumModule):
         return self.free_source_module().module_generating_set()
 
     def algebra_generator(self, label):
-        return self.from_component(
-            1, self.free_source_module().module_generator(label)
-        )
+        return self.from_component(1, self.free_source_module().module_generator(label))
 
     def number_of_algebra_generators(self):
         return self.algebra_generating_set().cardinality()
@@ -142,14 +146,12 @@ class PowerAlgebra(GradedDirectSumModule):
             return self.from_component(1, self.free_source_module()(value))
         try:
             scalar = self.base_ring()(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             if isinstance(value, dict):
                 return GradedDirectSumModule._element_constructor_(self, value)
             raise TypeError(f"{value!r} does not define an element of {self}") from None
         piece = self.graded_piece(0)
-        return self.from_component(
-            0, piece.scalar_multiple(scalar, piece.module_generator(0))
-        )
+        return self.from_component(0, piece.scalar_multiple(scalar, piece.module_generator(0)))
 
     def one(self):
         return self(self.base_ring().one())
@@ -158,11 +160,7 @@ class PowerAlgebra(GradedDirectSumModule):
         left = self(left)
         right = self(right)
         result = self.zero()
-        product = (
-            alternating_power_product
-            if self.flavor() == "alternating"
-            else divided_power_product
-        )
+        product = alternating_power_product if self.flavor() == "alternating" else divided_power_product
         for left_degree, left_component in left.homogeneous_components().items():
             for right_degree, right_component in right.homogeneous_components().items():
                 component = product(
@@ -172,9 +170,7 @@ class PowerAlgebra(GradedDirectSumModule):
                     right_degree,
                     right_component,
                 )
-                result += self.from_component(
-                    left_degree + right_degree, component
-                )
+                result += self.from_component(left_degree + right_degree, component)
         return result
 
     def divided_power(self, value, exponent):
@@ -189,9 +185,7 @@ class PowerAlgebra(GradedDirectSumModule):
         if value == self.zero():
             return value
         if not value.is_homogeneous() or value.degree() != 1:
-            raise NotImplementedError(
-                "the represented canonical divided-power operation is currently evaluated on degree-one elements"
-            )
+            raise NotImplementedError("the represented canonical divided-power operation is currently evaluated on degree-one elements")
         return self.from_component(
             exponent,
             divided_power_element(
@@ -221,9 +215,7 @@ class PowerAlgebra(GradedDirectSumModule):
     def ring_center(self):
         if self.flavor() == "divided":
             return self
-        raise NotImplementedError(
-            "the ordinary center of an exterior algebra is not represented by a scalar-only shortcut"
-        )
+        raise NotImplementedError("the ordinary center of an exterior algebra is not represented by a scalar-only shortcut")
 
     def _repr_(self):
         symbol = "Lambda" if self.flavor() == "alternating" else "Gamma"
@@ -238,39 +230,22 @@ class PowerAlgebraMorphism(Morphism):
         source_module = self.domain().free_source_module()
         target_module = self.codomain().free_source_module()
         if isinstance(degree_one_map, ModuleMorphism):
-            if (
-                degree_one_map.domain() is not source_module
-                or degree_one_map.codomain() is not target_module
-            ):
+            if degree_one_map.domain() is not source_module or degree_one_map.codomain() is not target_module:
                 raise ValueError("the degree-one module map has the wrong endpoints")
             self._degree_one_map = degree_one_map
             return
 
         def target_component(label):
-            image = (
-                degree_one_map[label]
-                if isinstance(degree_one_map, dict)
-                else degree_one_map(label)
-            )
+            image = degree_one_map[label] if isinstance(degree_one_map, dict) else degree_one_map(label)
             if isinstance(image, PowerAlgebraElement):
-                if (
-                    image.parent() is not self.codomain()
-                    or not image.is_homogeneous()
-                    or image.degree() != 1
-                ):
-                    raise ValueError(
-                        "power-algebra generator images must lie in degree one"
-                    )
+                if image.parent() is not self.codomain() or not image.is_homogeneous() or image.degree() != 1:
+                    raise ValueError("power-algebra generator images must lie in degree one")
                 return image.homogeneous_component(1)
             if image not in target_module:
-                raise ValueError(
-                    "power-algebra generator images must lie in the target degree-one module"
-                )
+                raise ValueError("power-algebra generator images must lie in the target degree-one module")
             return target_module(image)
 
-        self._degree_one_map = module_homset(source_module, target_module)(
-            target_component
-        )
+        self._degree_one_map = module_homset(source_module, target_module)(target_component)
 
     def degree_one_map(self):
         return self._degree_one_map
@@ -279,11 +254,7 @@ class PowerAlgebraMorphism(Morphism):
         if element.parent() is not self.domain():
             element = self.domain()(element)
         result = self.codomain().zero()
-        power_map = (
-            alternating_power_morphism
-            if self.domain().flavor() == "alternating"
-            else divided_power_morphism
-        )
+        power_map = alternating_power_morphism if self.domain().flavor() == "alternating" else divided_power_morphism
         for degree, component in element.homogeneous_components().items():
             mapped = power_map(self.degree_one_map(), degree)(component)
             result += self.codomain()._from_component(degree, mapped)
@@ -296,30 +267,21 @@ class PowerAlgebraMorphism(Morphism):
         return bool(getattr(self, "_preamble_is_identity", False))
 
     def __mul__(self, other):
-        if (
-            not isinstance(other, PowerAlgebraMorphism)
-            or other.codomain() is not self.domain()
-        ):
+        if not isinstance(other, PowerAlgebraMorphism) or other.codomain() is not self.domain():
             return NotImplemented
         if self.is_identity():
             return other
         if other.is_identity():
             return self
-        return power_algebra_homset(other.domain(), self.codomain())(
-            self.degree_one_map() * other.degree_one_map()
-        )
+        return power_algebra_homset(other.domain(), self.codomain())(self.degree_one_map() * other.degree_one_map())
 
 
 class PowerAlgebraHomset(CategoricalHomset):
     Element = PowerAlgebraMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        if not isinstance(domain, PowerAlgebra) or not isinstance(
-            codomain, PowerAlgebra
-        ):
-            raise TypeError(
-                "a represented power-algebra Hom requires two power algebras"
-            )
+        if not isinstance(domain, PowerAlgebra) or not isinstance(codomain, PowerAlgebra):
+            raise TypeError("a represented power-algebra Hom requires two power algebras")
         if domain.flavor() != codomain.flavor():
             raise ValueError("power-algebra morphisms preserve the construction flavor")
         if domain.base_ring() is not codomain.base_ring():
@@ -339,11 +301,7 @@ class PowerAlgebraHomset(CategoricalHomset):
 
 
 def power_algebra_homset(domain, codomain):
-    category = (
-        AlternatingAlgebras(domain.base_ring())
-        if domain.flavor() == "alternating"
-        else DividedPowerAlgebras(domain.base_ring())
-    )
+    category = AlternatingAlgebras(domain.base_ring()) if domain.flavor() == "alternating" else DividedPowerAlgebras(domain.base_ring())
     return category.Mor(domain, codomain)
 
 

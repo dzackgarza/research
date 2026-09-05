@@ -2,6 +2,9 @@ r"""Restriction of scalar constants for represented graded power algebras."""
 
 from sage.misc.cachefunc import cached_function
 
+from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumElement,
     GradedDirectSumModule,
@@ -14,10 +17,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     ring_morphism,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     CoproductOfFamily,
@@ -34,6 +33,10 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
     r"""The same graded ring read over the constants of its degree-zero algebra."""
 
     Element = RestrictedGradedAlgebraElement
+
+    def is_commutative(self):
+        r"""The same multiplication read over fewer scalars commutes exactly when it did."""
+        return self._extension_algebra.is_commutative()
 
     def __init__(self, extension_algebra, ring_map, *, extra_categories=()) -> None:
         self._extension_algebra = extension_algebra
@@ -60,12 +63,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
 
         def from_realization(element):
             element = extension_algebra(element)
-            return self.from_components(
-                {
-                    degree: piece(degree)(component)
-                    for degree, component in element.homogeneous_components().items()
-                }
-            )
+            return self.from_components({degree: piece(degree)(component) for degree, component in element.homogeneous_components().items()})
 
         categories = [
             GradedAlgebras(base),
@@ -75,7 +73,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         try:
             degree_zero_labels = self.degree_zero_algebra().algebra_generating_set()
             degree_one_labels = extension_algebra.free_source_module().module_generating_set()
-        except (AttributeError, TypeError):
+        except AttributeError, TypeError:
             self._preamble_algebra_generating_set = None
         else:
             framing = CoproductOfFamily(
@@ -86,16 +84,8 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
 
             def generator_value(tagged):
                 if int(tagged.summand_index()) == 0:
-                    return self.from_degree_zero(
-                        self.degree_zero_algebra().algebra_generator(
-                            tagged.summand_element()
-                        )
-                    )
-                return self.from_realization(
-                    self.extension_algebra().algebra_generator(
-                        tagged.summand_element()
-                    )
-                )
+                    return self.from_degree_zero(self.degree_zero_algebra().algebra_generator(tagged.summand_element()))
+                return self.from_realization(self.extension_algebra().algebra_generator(tagged.summand_element()))
 
             self._preamble_algebra_generator_values = indexed_family(
                 framing,
@@ -140,11 +130,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         element = self(element)
         result = self.extension_algebra().zero()
         for degree, component in element.homogeneous_components().items():
-            underlying = (
-                component.underlying_element()
-                if hasattr(component, "underlying_element")
-                else component
-            )
+            underlying = component.underlying_element() if hasattr(component, "underlying_element") else component
             result += self.extension_algebra()._from_component(degree, underlying)
         return result
 
@@ -172,9 +158,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         return ring_morphism(
             self.base_ring(),
             self,
-            lambda scalar: self.from_degree_zero(
-                self.degree_zero_algebra()(self.ring_map()(scalar))
-            ),
+            lambda scalar: self.from_degree_zero(self.degree_zero_algebra()(self.ring_map()(scalar))),
         )
 
     def from_degree_zero(self, element):

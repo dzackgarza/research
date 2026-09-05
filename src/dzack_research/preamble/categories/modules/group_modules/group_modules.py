@@ -95,15 +95,23 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
     ``R``-linear equivariant maps.
     """
 
+    def __init__(self, group_algebra) -> None:
+        # Read once, at construction: the group algebra itself is an object
+        # of this category, the regular module, and asking it for its group
+        # after it is placed here would come back to this category.
+        self._acting_group = group_algebra.group()
+        self._coefficient_ring = group_algebra.base_ring()
+        super().__init__(group_algebra)
+
     def group_algebra(self):
         return self.base_ring()
 
     def coefficient_ring(self):
         r"""``R``, the scalars of the group algebra ``R[G]``."""
-        return self.base_ring().base_ring()
+        return self._coefficient_ring
 
     def acting_group(self):
-        return self.base_ring().group()
+        return self._acting_group
 
     def _repr_object_names(self):
         return f"modules over {self.base_ring()}"
@@ -157,9 +165,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         r"""``R[H] -> R[G]`` for the acting group ``H`` inside ``supergroup``."""
         subgroup = self.acting_group()
         inclusion = subgroup.inclusion()
-        assert inclusion.codomain() is _owned_group(supergroup), (
-            f"{subgroup} was not constructed as a subgroup of {supergroup}"
-        )
+        assert inclusion.codomain() is _owned_group(supergroup), f"{subgroup} was not constructed as a subgroup of {supergroup}"
         return OwnedGroups().group_algebra(self.coefficient_ring())(inclusion)
 
     def scalar_extension(self, ring_map):
@@ -264,11 +270,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
     def restriction(self, subgroup):
         r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``, restriction along ``R[H] -> R[G]``."""
-        return self.restriction_of_scalars(
-            Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(
-                self.acting_group()
-            )
-        )
+        return self.restriction_of_scalars(Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(self.acting_group()))
 
     def induction(self, supergroup):
         r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``, scalar extension along ``R[H] -> R[G]``."""
@@ -284,11 +286,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
     def restriction_coinduction_adjunction(self, subgroup):
         r"""``Res_H^G -| Coind_H^G``."""
-        return self.restriction_coextension_adjunction(
-            Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(
-                self.acting_group()
-            )
-        )
+        return self.restriction_coextension_adjunction(Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(self.acting_group()))
 
     class ParentMethods:
         def __init__(
@@ -323,8 +321,17 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 **rest,
             )
 
+        def _group_module_placement(self):
+            r"""The ``Modules(R[G])`` this object is placed in; its parameter names the group."""
+            for placement in self.category().all_super_categories(proper=False):
+                # Sage realizes each category instance in a dynamic subclass,
+                # so the placement is recognized by its category class.
+                if isinstance(placement, ModulesOverGroupAlgebra):
+                    return placement
+            raise AssertionError(f"{self} is not placed over a group algebra")
+
         def group(self):
-            return self._preamble_acting_group
+            return self._group_module_placement().acting_group()
 
         def acting_group(self):
             # ``GroupLattices`` enters through refinement and supplies
@@ -333,9 +340,27 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def group_algebra(self):
             r"""``R[G]``, the ring this is a module over."""
-            return GroupAlgebra(self.base_ring(), self.group())
+            return self._group_module_placement().group_algebra()
+
+        # The group algebra is an object of this category by its own
+        # promotion, as the regular module: the action is left multiplication
+        # and the module it acts on is itself.  Every other object arrived by
+        # equipping an ``R``-module with a chosen action.
+
+        def _is_the_regular_module(self) -> bool:
+            return self in GroupAlgebras(self.base_ring())
+
+        @cached_method
+        def action(self):
+            if not self._is_the_regular_module():
+                return super().action()
+            endomorphisms = Modules(self.base_ring()).Mor(self, self)
+            labels = self.module_generating_set()
+            return Sets().Mor(self.group(), endomorphisms)(lambda group_element: endomorphisms({label: self.module_generator(group_element * label) for label in labels}))
 
         def is_trivial_action(self) -> bool:
+            if self._is_the_regular_module():
+                return bool(self.group().cardinality() == 1)
             return self._preamble_action_is_trivial
 
         def scalar_multiple(self, scalar, element):
@@ -344,12 +369,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             match scalar:
                 case _ if scalar in group_algebra:
                     return sum(
-                        (
-                            coefficient * self.act(group_element, element)
-                            for group_element, coefficient in module_coefficients(
-                                scalar, group_algebra
-                            ).items()
-                        ),
+                        (coefficient * self.act(group_element, element) for group_element, coefficient in module_coefficients(scalar, group_algebra).items()),
                         self.zero(),
                     )
                 case _:
@@ -357,27 +377,23 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         def unacted_module(self):
             r"""Return the module from which this chosen action was equipped."""
+            if self._is_the_regular_module():
+                return self
             return self._preamble_unacted_module
 
         @cached_method
         def forget_action_morphism(self):
             unacted = self.unacted_module()
-            return module_homset(self, unacted)(
-                {
-                    label: unacted.module_generator(label)
-                    for label in self.module_generating_set()
-                }
-            )
+            if unacted is self:
+                return module_homset(self, self).identity()
+            return module_homset(self, unacted)({label: unacted.module_generator(label) for label in self.module_generating_set()})
 
         @cached_method
         def equip_action_morphism(self):
             unacted = self.unacted_module()
-            return module_homset(unacted, self)(
-                {
-                    label: self.module_generator(label)
-                    for label in self.module_generating_set()
-                }
-            )
+            if unacted is self:
+                return module_homset(self, self).identity()
+            return module_homset(unacted, self)({label: self.module_generator(label) for label in self.module_generating_set()})
 
         def Mor(self, codomain, category=None):
             r"""``Mor_{R[G]}(M, N)``, the equivariant maps; ``Modules(R)`` names the linear ones."""
@@ -399,9 +415,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             """
             group = self.group()
             if group.is_finitely_generated() is not True:
-                raise NotImplementedError(
-                    "the represented action equalizer/coequalizer requires a chosen finite group generating set"
-                )
+                raise NotImplementedError("the represented action equalizer/coequalizer requires a chosen finite group generating set")
             generators = group.group_generators()
             indices = CoproductOfFamily(
                 Sets.Δ[1],
@@ -410,11 +424,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             identity = module_homset(self, self).identity()
             return finite_indexed_family(
                 indices,
-                lambda tagged: (
-                    identity
-                    if int(tagged.summand_index()) == 0
-                    else self.action_of(tagged.summand_element())
-                ),
+                lambda tagged: identity if int(tagged.summand_index()) == 0 else self.action_of(tagged.summand_element()),
                 name=f"Identity and chosen action generators on {self}",
             )
 
@@ -442,11 +452,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             endomorphisms = InternalHom(self, self)
 
             def conjugation(group_element, endomorphism):
-                return (
-                    self.action_of(group_element)
-                    * endomorphism
-                    * self.action_of(group_element.inverse())
-                )
+                return self.action_of(group_element) * endomorphism * self.action_of(group_element.inverse())
 
             return _equip_action(endomorphisms, self.group(), conjugation).module_invariants()
 
@@ -462,13 +468,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 finite_ordered_set,
             )
 
-            return finite_ordered_set(
-                tuple(
-                    character
-                    for character in _split_irreducible_characters(self)
-                    if isotypic_component(self, character).rank() != 0
-                )
-            )
+            return finite_ordered_set(tuple(character for character in _split_irreducible_characters(self) if isotypic_component(self, character).rank() != 0))
 
         def isotypic_component(self, character):
             r"""Return the integral/base-ring isotypic component as a subobject."""
@@ -487,17 +487,18 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 raise NotImplementedError("ordinary character tables here require a finite group")
             if self not in FinitelyGeneratedFreeModules(self.base_ring()):
                 raise NotImplementedError(
-                    "the ordinary character is implemented here for a finite free group module; a finite presentation alone does not supply the finite-dimensional linear representation used by this construction"
+                    "the ordinary character is implemented here for a finite free group module; "
+                    "a finite presentation alone does not supply the finite-dimensional linear "
+                    "representation used by this construction"
                 )
             if self.base_ring().characteristic() != 0:
                 raise TypeError(
-                    "ordinary characters are not obtained by treating modular traces as characteristic-zero class functions; use the native Brauer-character machinery when appropriate"
+                    "ordinary characters are not obtained by treating modular traces as "
+                    "characteristic-zero class functions; use the native Brauer-character "
+                    "machinery when appropriate"
                 )
             representatives = group.conjugacy_classes_representatives()
-            traces = tuple(
-                self.action_of(group_element).trace()
-                for group_element in representatives
-            )
+            traces = tuple(self.action_of(group_element).trace() for group_element in representatives)
 
             return finite_group_class_function(
                 group,
@@ -512,15 +513,11 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             if group.is_finite() is not True:
                 raise NotImplementedError("Brauer characters here require a finite group")
             if self not in FinitelyGeneratedFreeModules(self.base_ring()):
-                raise NotImplementedError(
-                    "the Brauer character is defined here for a finite free group module"
-                )
+                raise NotImplementedError("the Brauer character is defined here for a finite free group module")
             if self.base_ring().characteristic() == 0:
                 raise TypeError("Brauer characters are the positive-characteristic representation invariant")
             if not self.base_ring().is_field():
-                raise TypeError(
-                    "Brauer characters require a finite-dimensional representation over a field of positive characteristic"
-                )
+                raise TypeError("Brauer characters require a finite-dimensional representation over a field of positive characteristic")
 
             from sage.combinat.free_module import CombinatorialFreeModule
 
@@ -561,20 +558,11 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 raise ArithmeticError("a finite group has at least the identity p-regular class")
             value_ring = _own_ring(backend_values[0].parent())
             engine_value_ring = _engine_ring(value_ring)
-            values = tuple(
-                value_ring._from_engine_element(engine_value_ring(value))
-                for value in backend_values
-            )
+            values = tuple(value_ring._from_engine_element(engine_value_ring(value)) for value in backend_values)
             characteristic = int(self.base_ring().characteristic())
-            representatives = tuple(
-                representative
-                for representative in group.conjugacy_classes_representatives()
-                if int(representative.order()) % characteristic
-            )
+            representatives = tuple(representative for representative in group.conjugacy_classes_representatives() if int(representative.order()) % characteristic)
             if len(representatives) != len(values):
-                raise ArithmeticError(
-                    "the private Brauer-character engine returned the wrong number of p-regular class values"
-                )
+                raise ArithmeticError("the private Brauer-character engine returned the wrong number of p-regular class values")
             return finite_group_class_function(
                 group,
                 value_ring,
@@ -592,11 +580,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 return _trivial_action(changed_module, self.group())
 
             def changed_action(group_element, vector):
-                underlying_action = (
-                    self.forget_action_morphism()
-                    * self.action_of(group_element)
-                    * self.equip_action_morphism()
-                )
+                underlying_action = self.forget_action_morphism() * self.action_of(group_element) * self.equip_action_morphism()
                 return scalar_extension(underlying_action)(vector)
 
             return _equip_action(changed_module, self.group(), changed_action)
@@ -634,9 +618,7 @@ class GroupModuleMorphism(ModuleMorphism):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
-        return group_module_homset(
-            other.domain(), self.codomain()
-        )._from_equivariant_images(
+        return group_module_homset(other.domain(), self.codomain())._from_equivariant_images(
             lambda element: self(other(element)),
             elementwise=True,
             verify_linearity=False,
@@ -647,11 +629,8 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
     Element = GroupModuleMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        assert domain.group() == codomain.group(), (
-            "R[G]-module morphisms require the same acting group"
-        )
+        assert domain.group() == codomain.group(), "R[G]-module morphisms require the same acting group"
         _initialize_module_hom_parent(self, hom_family, domain, codomain)
-
 
     def _from_equivariant_images(
         self,
@@ -683,8 +662,6 @@ class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
             verify_linearity=False,
         )
 
-
-
     def _repr_(self):
         return f"Mor_{self.domain().group()}({self.domain()}, {self.codomain()})"
 
@@ -708,15 +685,11 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
 
     base_ring = module.base_ring()
     if module not in FinitelyPresentedModules(base_ring):
-        raise NotImplementedError(
-            "equipping an action requires a represented finite presentation"
-        )
+        raise NotImplementedError("equipping an action requires a represented finite presentation")
     if action is None:
         action = group_or_action
         if not isinstance(action, Map):
-            raise TypeError(
-                "with two arguments, an action morphism whose domain is the acting group is expected"
-            )
+            raise TypeError("with two arguments, an action morphism whose domain is the acting group is expected")
         match action.domain():
             case group_algebra if group_algebra in GroupAlgebras(base_ring):
                 # ``rho: R[G] -> End_R(M)`` restricted along ``G -> R[G]``.
@@ -732,15 +705,11 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
 
     labels = module.module_generating_set()
     if not labels.cardinality().is_finite():
-        raise NotImplementedError(
-            "equipping an action currently materializes a finite framing"
-        )
+        raise NotImplementedError("equipping an action currently materializes a finite framing")
 
     is_free = module in FinitelyGeneratedFreeModules(base_ring)
     if not is_free and module not in ModulesWithChosenFinitePresentation(base_ring):
-        raise TypeError(
-            "a nonfree group module requires a chosen finite presentation"
-        )
+        raise TypeError("a nonfree group module requires a chosen finite presentation")
 
     from dzack_research.preamble.catalogue import ZZ as integers
 

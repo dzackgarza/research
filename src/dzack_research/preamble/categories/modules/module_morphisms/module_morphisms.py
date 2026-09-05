@@ -10,35 +10,31 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    OwnedRings,
-    _engine_element,
-    _engine_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.sets.set_categories import (
-    CartesianProductOfSets,
-    Sets,
-)
-from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Biproduct,
     TensorProduct,
 )
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     OwnedOrders,
+    OwnedRings,
+    _engine_element,
+    _engine_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
     indexed_family,
 )
-
+from dzack_research.preamble.categories.sets.set_categories import (
+    CartesianProductOfSets,
+    Sets,
+)
+from dzack_research.preamble.refine import realize_owned_category
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -76,17 +72,9 @@ def _solve_left_integrally_element(system, target, ring):
     target_values = tuple(ring(value) for value in target)
     if len(target_values) != int(target_labels.cardinality()):
         raise ValueError("the target has the wrong length for this linear system")
-    target_vector = left.domain().linear_combination(
-        {
-            label: target_values[position]
-            for position, label in enumerate(target_labels)
-            if target_values[position]
-        }
-    )
+    target_vector = left.domain().linear_combination({label: target_values[position] for position, label in enumerate(target_labels) if target_values[position]})
     shifted_vector = left(target_vector)
-    shifted_coefficients = module_coefficients(
-        shifted_vector, left.codomain()
-    )
+    shifted_coefficients = module_coefficients(shifted_vector, left.codomain())
     shifted_labels = left.codomain().module_generating_set()
 
     source_labels = smith.domain().module_generating_set()
@@ -94,11 +82,7 @@ def _solve_left_integrally_element(system, target, ring):
     solution = [ring.zero()] * width
     for index, shifted_label in enumerate(shifted_labels):
         value = shifted_coefficients.get(shifted_label, ring.zero())
-        divisor = (
-            smith[index, index]
-            if index < min(int(shifted_labels.cardinality()), width)
-            else ring.zero()
-        )
+        divisor = smith[index, index] if index < min(int(shifted_labels.cardinality()), width) else ring.zero()
         if divisor == 0:
             if value != 0:
                 raise ValueError("the element is not in the image of this morphism")
@@ -109,11 +93,7 @@ def _solve_left_integrally_element(system, target, ring):
         solution[index] = quotient
 
     normalized_solution = right.domain().linear_combination(
-        {
-            label: solution[position]
-            for position, label in enumerate(right.domain().module_generating_set())
-            if solution[position]
-        }
+        {label: solution[position] for position, label in enumerate(right.domain().module_generating_set()) if solution[position]}
     )
     return right(normalized_solution)
 
@@ -122,10 +102,7 @@ def _solve_left_integrally(system, target, ring):
     r"""Return positional coefficients ``a`` with ``a*system = target`` over a PID."""
     original_solution = _solve_left_integrally_element(system, target, ring)
     coefficients = module_coefficients(original_solution, original_solution.parent())
-    return tuple(
-        coefficients.get(label, ring.zero())
-        for label in original_solution.parent().module_generating_set()
-    )
+    return tuple(coefficients.get(label, ring.zero()) for label in original_solution.parent().module_generating_set())
 
 
 def module_coefficients(element, module=None) -> dict:
@@ -143,11 +120,7 @@ def module_coefficients(element, module=None) -> dict:
         # The selected framing owns its coefficient map.  This takes
         # precedence over any representation-specific realization such as a
         # localization fraction model.
-        return {
-            label: module.base_ring()(coefficient)
-            for label, coefficient in coefficient_function(element).items()
-            if coefficient != 0
-        }
+        return {label: module.base_ring()(coefficient) for label, coefficient in coefficient_function(element).items() if coefficient != 0}
 
     coordinate_function = module.__dict__.get("_preamble_module_coordinate_function")
     if coordinate_function is not None:
@@ -158,9 +131,7 @@ def module_coefficients(element, module=None) -> dict:
             try:
                 coefficient = next(coordinates)
             except StopIteration as error:
-                raise ValueError(
-                    "the selected module-coordinate function returned too few coordinates"
-                ) from error
+                raise ValueError("the selected module-coordinate function returned too few coordinates") from error
             coefficient = module.base_ring()(coefficient)
             if coefficient != 0:
                 result[label] = coefficient
@@ -168,9 +139,7 @@ def module_coefficients(element, module=None) -> dict:
             next(coordinates)
         except StopIteration:
             return result
-        raise ValueError(
-            "the selected module-coordinate function returned too many coordinates"
-        )
+        raise ValueError("the selected module-coordinate function returned too many coordinates")
     selected = module._selected_module_coefficients(element)
     if selected is not None:
         return selected
@@ -179,11 +148,7 @@ def module_coefficients(element, module=None) -> dict:
         labels = module.module_generating_set()
         engine = _engine_ring(module)
         backend_element = _engine_element(module, element)
-        coordinates = iter(
-            (SageZZ(backend_element),)
-            if engine is SageZZ
-            else engine.coordinates(backend_element)
-        )
+        coordinates = iter((SageZZ(backend_element),) if engine is SageZZ else engine.coordinates(backend_element))
         result = {}
         base = module.base_ring()
         base_engine = _engine_ring(base)
@@ -221,9 +186,7 @@ class ModuleMorphism(Morphism):
         framed_domain = bool(self.domain().is_framed())
         if elementwise or not framed_domain:
             if not callable(images):
-                raise TypeError(
-                    "a morphism from an unframed module must be supplied as an exact element map"
-                )
+                raise TypeError("a morphism from an unframed module must be supplied as an exact element map")
             self._element_function = images
             self._generator_image = None
             self._generator_morphism = None
@@ -257,10 +220,7 @@ class ModuleMorphism(Morphism):
             self._generator_morphism = set_homset(self._generator_image)
         elif isinstance(images, dict):
             if not labels.cardinality().is_finite():
-                raise TypeError(
-                    "dictionary generator-image syntax requires a finite framing; "
-                    "use a callable or indexed family for an infinite framing"
-                )
+                raise TypeError("dictionary generator-image syntax requires a finite framing; use a callable or indexed family for an infinite framing")
             normalized_images = {}
             for label, value in images.items():
                 normalized_label = labels(label)
@@ -279,18 +239,13 @@ class ModuleMorphism(Morphism):
             values = tuple(images)
             size = labels.cardinality()
             if not size.is_finite():
-                raise TypeError(
-                    "sequence generator-image syntax requires a finite framing; "
-                    "use a callable or indexed family for an infinite framing"
-                )
+                raise TypeError("sequence generator-image syntax requires a finite framing; use a callable or indexed family for an infinite framing")
             if len(values) != int(size.finite_value()):
                 raise ValueError("the number of generator images must equal the framing size")
             try:
                 labels.rank(labels.unrank(0)) if values else None
             except AttributeError as error:
-                raise TypeError(
-                    "sequence generator-image syntax requires a ranked framing"
-                ) from error
+                raise TypeError("sequence generator-image syntax requires a ranked framing") from error
             self._generator_images = indexed_family(
                 labels,
                 lambda label: values[int(labels.rank(label))],
@@ -334,14 +289,13 @@ class ModuleMorphism(Morphism):
 
         try:
             source_finite = bool(domain.is_finite())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        except AttributeError, NotImplementedError, TypeError, ValueError:
             source_finite = False
 
         if not source_finite:
             self._check_elementwise_zero_when_possible()
             _LOGGER.debug(
-                "Elementwise module morphism %s -> %s accepted without exhaustive "
-                "linearity verification; the source is not represented as finite",
+                "Elementwise module morphism %s -> %s accepted without exhaustive linearity verification; the source is not represented as finite",
                 domain,
                 codomain,
             )
@@ -349,11 +303,10 @@ class ModuleMorphism(Morphism):
 
         try:
             source_elements = tuple(domain)
-        except (AttributeError, TypeError):
+        except AttributeError, TypeError:
             self._check_elementwise_zero_when_possible()
             _LOGGER.debug(
-                "Elementwise module morphism %s -> %s accepted without exhaustive "
-                "linearity verification; finite source has no represented enumeration",
+                "Elementwise module morphism %s -> %s accepted without exhaustive linearity verification; finite source has no represented enumeration",
                 domain,
                 codomain,
             )
@@ -375,28 +328,19 @@ class ModuleMorphism(Morphism):
             if not label_set.cardinality().is_finite():
                 return None
             labels = tuple(label_set)
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        except AttributeError, NotImplementedError, TypeError, ValueError:
             return None
         engine = _engine_ring(ring)
         try:
             if not bool(engine.is_finite()):
                 return None
-            scalars = tuple(
-                ring._from_engine_element(engine(scalar))
-                for scalar in engine
-            )
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            scalars = tuple(ring._from_engine_element(engine(scalar)) for scalar in engine)
+        except AttributeError, NotImplementedError, TypeError, ValueError:
             return None
         elements = []
         seen = set()
         for coefficients in product(scalars, repeat=len(labels)):
-            element = domain.linear_combination(
-                {
-                    label: coefficient
-                    for label, coefficient in zip(labels, coefficients, strict=True)
-                    if coefficient != 0
-                }
-            )
+            element = domain.linear_combination({label: coefficient for label, coefficient in zip(labels, coefficients, strict=True) if coefficient != 0})
             try:
                 key = element
                 if key in seen:
@@ -419,9 +363,7 @@ class ModuleMorphism(Morphism):
             try:
                 return function(element)
             except (TypeError, ValueError) as error:
-                raise ValueError(
-                    "the supplied elementwise map is not additive on the represented module"
-                ) from error
+                raise ValueError("the supplied elementwise map is not additive on the represented module") from error
 
         if evaluate(zero) != codomain.zero():
             raise ValueError("an elementwise module morphism must send zero to zero")
@@ -432,18 +374,16 @@ class ModuleMorphism(Morphism):
 
         from sage.rings.integer_ring import ZZ as SageZZ
 
-
         if _engine_ring(ring) is SageZZ:
             return
 
         try:
             scalar_finite = bool(ring.is_finite())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        except AttributeError, NotImplementedError, TypeError, ValueError:
             scalar_finite = False
         if not scalar_finite:
             _LOGGER.debug(
-                "Elementwise map %s -> %s is exhaustively additive on its finite source, "
-                "but scalar-linearity over infinite %s was not exhaustively verified",
+                "Elementwise map %s -> %s is exhaustively additive on its finite source, but scalar-linearity over infinite %s was not exhaustively verified",
                 domain,
                 codomain,
                 ring,
@@ -451,14 +391,10 @@ class ModuleMorphism(Morphism):
             return
         try:
             engine = _engine_ring(ring)
-            scalars = tuple(
-                ring._from_engine_element(engine(scalar))
-                for scalar in engine
-            )
+            scalars = tuple(ring._from_engine_element(engine(scalar)) for scalar in engine)
         except TypeError:
             _LOGGER.debug(
-                "Elementwise map %s -> %s is exhaustively additive, but finite scalar "
-                "ring %s has no represented enumeration",
+                "Elementwise map %s -> %s is exhaustively additive, but finite scalar ring %s has no represented enumeration",
                 domain,
                 codomain,
                 ring,
@@ -466,9 +402,7 @@ class ModuleMorphism(Morphism):
             return
         for scalar in scalars:
             for element in source_elements:
-                if evaluate(domain.scalar_multiple(scalar, element)) != codomain.scalar_multiple(
-                    scalar, evaluate(element)
-                ):
+                if evaluate(domain.scalar_multiple(scalar, element)) != codomain.scalar_multiple(scalar, evaluate(element)):
                     raise ValueError("the supplied elementwise map is not scalar-linear")
 
     def _check_elementwise_zero_when_possible(self) -> None:
@@ -476,7 +410,7 @@ class ModuleMorphism(Morphism):
             source_zero = self.domain().zero()
             target_zero = self.codomain().zero()
             image = self._element_function(source_zero)
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
+        except AttributeError, NotImplementedError, TypeError, ValueError:
             return
         if image != target_zero:
             raise ValueError("an elementwise module morphism must send zero to zero")
@@ -491,30 +425,18 @@ class ModuleMorphism(Morphism):
         zero = self.codomain().zero()
         labels = domain.module_generating_set()
         for row in rows:
-            relation_image = self._linear_combination_of_generator_images(
-                {
-                    label: coefficient
-                    for label, coefficient in zip(labels, row, strict=True)
-                    if coefficient
-                }
-            )
+            relation_image = self._linear_combination_of_generator_images({label: coefficient for label, coefficient in zip(labels, row, strict=True) if coefficient})
             if relation_image != zero:
-                raise ValueError(
-                    "the selected module-generator images do not kill the domain relations"
-                )
+                raise ValueError("the selected module-generator images do not kill the domain relations")
 
     def module_generator_morphism(self):
         if self._generator_morphism is None:
-            raise NotImplementedError(
-                "an unframed morphism has no selected generator map"
-            )
+            raise NotImplementedError("an unframed morphism has no selected generator map")
         return self._generator_morphism
 
     def module_generator_images(self):
         if self._generator_morphism is None:
-            raise NotImplementedError(
-                "an unframed morphism has no selected generator-image family"
-            )
+            raise NotImplementedError("an unframed morphism has no selected generator-image family")
         return self._generator_images
 
     def __add__(self, other):
@@ -557,14 +479,8 @@ class ModuleMorphism(Morphism):
             return op == op_EQ
         domain = self.domain()
         if domain._selected_presentation_rows() is None:
-            raise NotImplementedError(
-                "module-morphism equality is not decidable without a chosen finite presentation of the source"
-            )
-        equal = all(
-            self(domain.module_generator(label))
-            == other(domain.module_generator(label))
-            for label in domain.module_generating_set()
-        )
+            raise NotImplementedError("module-morphism equality is not decidable without a chosen finite presentation of the source")
+        equal = all(self(domain.module_generator(label)) == other(domain.module_generator(label)) for label in domain.module_generating_set())
         return equal if op == op_EQ else not equal
 
     def __rmul__(self, scalar):
@@ -580,7 +496,7 @@ class ModuleMorphism(Morphism):
         r"""Use the canonical pointwise scalar action of the Hom module."""
         try:
             scalar = self.parent().base_ring()(actor)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return None
         return self.parent().scalar_multiple(scalar, self)
 
@@ -625,14 +541,8 @@ class ModuleMorphism(Morphism):
         Hom with the same endpoints.
         """
 
-        ring = self.domain().base_ring()
-        if not (
-            _has_finite_free_framing(self.domain())
-            and _has_finite_free_framing(self.codomain())
-        ):
-            raise NotImplementedError(
-                "a coordinate matrix requires finitely generated framed free endpoints"
-            )
+        if not (_has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain())):
+            raise NotImplementedError("a coordinate matrix requires finitely generated framed free endpoints")
         homset = module_homset(self.domain(), self.codomain())
         return self if self.parent() is homset else homset(self)
 
@@ -658,34 +568,24 @@ class ModuleMorphism(Morphism):
             localized_kernel = localization_functor(source_kernel)
             localized_inclusion = localization_functor(source_kernel.inclusion())
             if localized_inclusion.codomain() is not self.domain():
-                raise ArithmeticError(
-                    "localized kernel inclusion does not land in the cached localized domain"
-                )
+                raise ArithmeticError("localized kernel inclusion does not land in the cached localized domain")
             if localized_kernel not in ModuleSubobjects(self.domain().base_ring()):
-                raise ArithmeticError(
-                    "localization did not preserve the represented source-kernel subobject"
-                )
+                raise ArithmeticError("localization did not preserve the represented source-kernel subobject")
             if localized_kernel.inclusion() is not localized_inclusion:
-                raise ArithmeticError(
-                    "localized kernel inclusion is not the inclusion carried by the transported subobject"
-                )
+                raise ArithmeticError("localized kernel inclusion is not the inclusion carried by the transported subobject")
             return localized_kernel
 
         for owner in (self.domain(), self.codomain()):
             represented = owner._represented_kernel_of_morphism(self)
             if represented is not NotImplemented:
                 return represented
-        raise NotImplementedError(
-            "this kernel has no represented finite-free or general polynomial-presentation backend"
-        )
+        raise NotImplementedError("this kernel has no represented finite-free or general polynomial-presentation backend")
 
     def image(self):
         r"""Return ``im(self)`` as a subobject of the codomain."""
         labels = self.domain().module_generating_set()
         if not labels.cardinality().is_finite():
-            raise NotImplementedError(
-                "the represented image-subobject backend requires a finite domain framing"
-            )
+            raise NotImplementedError("the represented image-subobject backend requires a finite domain framing")
         return self.codomain().subobject_on(
             finite_indexed_family(
                 labels,
@@ -711,9 +611,7 @@ class ModuleMorphism(Morphism):
         if ring not in LocalRings():
             raise TypeError("reduction modulo the maximal ideal requires a represented local ring")
         if not self.domain().is_finitely_generated() or not self.codomain().is_finitely_generated():
-            raise TypeError(
-                "the active Nakayama interface requires finitely generated source and target"
-            )
+            raise TypeError("the active Nakayama interface requires finitely generated source and target")
         return self.base_change(ring.residue_map())
 
     reduction_mod_maximal_ideal = residue_morphism
@@ -757,46 +655,27 @@ class ModuleMorphism(Morphism):
         if custom is not None:
             return custom(element)
         ring = self.domain().base_ring()
-        if not (
-            _has_finite_free_framing(self.domain())
-            and _has_finite_free_framing(self.codomain())
-        ):
-            raise NotImplementedError(
-                "the coordinate lift requires finite free framed endpoints"
-            )
+        if not (_has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain())):
+            raise NotImplementedError("the coordinate lift requires finite free framed endpoints")
         if element.parent() is not self.codomain():
             element = self.codomain()(element)
         codomain_labels = tuple(self.codomain().module_generating_set())
         coefficients = module_coefficients(element, self.codomain())
-        target = [
-            coefficients[label]
-            if label in coefficients
-            else self.codomain().base_ring().zero()
-            for label in codomain_labels
-        ]
+        target = [coefficients[label] if label in coefficients else self.codomain().base_ring().zero() for label in codomain_labels]
         solution = _solve_left_integrally(
             self.matrix().transpose(),
             target,
             ring,
         )
-        return self.domain().linear_combination(
-            {
-                label: coefficient
-                for label, coefficient in zip(
-                    self.domain().module_generating_set(), solution, strict=True
-                )
-                if coefficient
-            }
-        )
+        return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
 
     def is_in_image(self, element) -> bool:
         r"""Return whether ``element`` has a preimage when the lift is decidable."""
         try:
             self.lift(element)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return False
         return True
-
 
     def orthogonal_complement(self):
         r"""Return ``im(self)^perp`` when the codomain carries a scalar-valued pairing."""
@@ -804,7 +683,6 @@ class ModuleMorphism(Morphism):
         ring = codomain.base_ring()
         if codomain.value_module() is not ring:
             raise TypeError("this orthogonal-complement construction requires a scalar-valued form")
-
 
         source_generators = tuple(self.domain().module_generators())
         labels = Sets.Δ[len(source_generators) - 1]
@@ -820,7 +698,8 @@ class ModuleMorphism(Morphism):
                                 codomain.module_generator(label),
                                 self(source_generator),
                             )
-                        ) != ring.zero()
+                        )
+                        != ring.zero()
                     }
                 )
                 for label in codomain.module_generating_set()
@@ -843,9 +722,7 @@ class ModuleMorphism(Morphism):
             source = self.domain().base_change(ring_map)
             target = self.codomain().base_change(ring_map)
         except AttributeError as error:
-            raise NotImplementedError(
-                "base change of this module morphism requires represented endpoint base changes"
-            ) from error
+            raise NotImplementedError("base change of this module morphism requires represented endpoint base changes") from error
 
         return module_homset(source, target)(
             {
@@ -890,7 +767,7 @@ class ModuleMorphism(Morphism):
             )
         try:
             return self.parent().scalar_multiple(other, self)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return NotImplemented
 
     @cached_method
@@ -900,9 +777,7 @@ class ModuleMorphism(Morphism):
         if quotient is NotImplemented:
             quotient = self.domain()._represented_cokernel_of_morphism(self)
         if quotient is NotImplemented:
-            raise NotImplementedError(
-                "this cokernel has no represented quotient-module backend"
-            )
+            raise NotImplementedError("this cokernel has no represented quotient-module backend")
         return quotient
 
 
@@ -974,10 +849,8 @@ def _initialize_module_hom_parent(
     ``Hom_{R[G]}`` must not subclass ``Hom_R`` as Python classes merely because
     they have ``Hom_R`` as a categorical supercategory.
     """
-    if domain.base_ring() != codomain.base_ring():
-        raise ValueError("module morphisms require a common base ring")
-
     ring = _owned_ring(domain.base_ring())
+    assert codomain in domain.module_category(), f"{codomain} is not placed as a module over {ring}"
     parent._preamble_base_ring = ring
     placement = domain.module_category()._hom_parent_placement(
         domain,
@@ -1009,24 +882,16 @@ def _initialize_module_hom_parent(
             FreshFreeModuleOn,
         )
 
-        parent._preamble_free_module_constructor = lambda labels, **options: FreshFreeModuleOn(
-            ring, labels, **options
-        )
+        parent._preamble_free_module_constructor = lambda labels, **options: FreshFreeModuleOn(ring, labels, **options)
     elif full_internal_hom and _represented_finite_presentation(domain) and _represented_finite_presentation(codomain):
         # Hom(M, N) between presented modules is presented by its
         # endpoint-determined model (see ``internal_hom``); the presented-module
         # protocol reads these hooks, each of which reaches the model lazily.
-        parent._preamble_module_generator_function = lambda label: parent._morphism_from_internal_model(
-            parent.internal_hom_model().module_generator(label)
-        )
+        parent._preamble_module_generator_function = lambda label: parent._morphism_from_internal_model(parent.internal_hom_model().module_generator(label))
         parent._preamble_module_coordinate_function = lambda morphism: tuple(
-            parent.internal_hom_model()._framing_coordinates(
-                parent._internal_model_from_morphism(parent(morphism))
-            )
+            parent.internal_hom_model()._framing_coordinates(parent._internal_model_from_morphism(parent(morphism)))
         )
-        parent._preamble_module_from_coordinates_function = lambda coordinates: parent._morphism_from_internal_model(
-            parent.internal_hom_model()._from_coordinates(coordinates)
-        )
+        parent._preamble_module_from_coordinates_function = lambda coordinates: parent._morphism_from_internal_model(parent.internal_hom_model()._from_coordinates(coordinates))
         parent._preamble_pid_engine_factory = lambda: _model_smith_engine(parent)
     CategoricalHomset.__init__(
         parent,
@@ -1065,14 +930,15 @@ class _ModuleHomsetCommonMethods:
                 return images
             if not self.domain().is_framed():
                 return self.elementwise(lambda element: images(element))
-            images = {
-                label: images(self.domain().module_generator(label))
-                for label in self.domain().module_generating_set()
-            }
+            images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
         elif isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError("the morphism has the wrong Hom source or target")
             return self.elementwise(lambda element: images(element))
+        base_ring = self.base_ring()
+        if self.domain() is self.codomain() and (images in base_ring or images in _engine_ring(base_ring)):
+            scalar = base_ring(images)
+            return self.scalar_multiple(scalar, self.identity())
         model = self.__dict__.get("_preamble_internal_hom_model")
         if model is not None and images in model:
             return self._morphism_from_internal_model(model(images))
@@ -1154,7 +1020,6 @@ class _ModuleHomsetCommonMethods:
     def one(self):
         r"""Return the multiplicative unit when this is an endomorphism ring."""
         return self.identity()
-
 
 
 class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
@@ -1272,13 +1137,7 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
                     {
                         target_label: coefficients[pair]
                         for target_label in self.codomain().module_generating_set()
-                        if (
-                            pair := assignment_labels(
-                                lambda index: source_label
-                                if int(index) == 0
-                                else target_label
-                            )
-                        ) in coefficients
+                        if (pair := assignment_labels(lambda index: source_label if int(index) == 0 else target_label)) in coefficients
                     }
                 )
                 for source_label in self.domain().module_generating_set()
@@ -1296,20 +1155,13 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
                 image,
                 self.codomain(),
             ).items():
-                coefficients[
-                    power_labels(
-                        lambda index: source_label
-                        if int(index) == 0
-                        else target_label
-                    )
-                ] = coefficient
+                coefficients[power_labels(lambda index: source_label if int(index) == 0 else target_label)] = coefficient
         assignment = power.linear_combination(coefficients)
         inclusion = self.inclusion_into_generator_maps()
         custom_lift = inclusion.__dict__.get("_preamble_lift")
         if custom_lift is not None:
             return inclusion.lift(assignment)
         return model(assignment)
-
 
     def linear_combination(self, coefficients):
         result = self.zero()
@@ -1321,18 +1173,12 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
                 )
         return result
 
-
-
     def _repr_(self):
         return f"Hom({self.domain()}, {self.codomain()})"
 
 
 def module_homset(domain, codomain) -> ModuleHomset:
-    ring = domain.base_ring()
-    if codomain.base_ring() != ring:
-        raise ValueError("module morphisms require a common base ring")
-    if codomain.module_category() is not domain.module_category():
-        raise ValueError("module morphisms require one owned module category")
+    r"""``Hom_R(domain, codomain)`` for ``R`` the base of ``domain``; both must be placed over ``R``."""
     return domain.module_category().Mor(domain, codomain)
 
 
@@ -1355,7 +1201,6 @@ def module_embedding(
         images,
         verify_linearity=verify_linearity,
     )
-
 
 
 class TensorProductModuleMorphism(ModuleMorphism):
@@ -1411,12 +1256,8 @@ class TensorProductModuleMorphism(ModuleMorphism):
         source = TensorProduct(morphism.domain(), morphism.domain())
         induced = module_homset(source, self.domain())(
             lambda pair: self.domain().pure_tensor(
-                morphism(
-                    morphism.domain().module_generator(pair.component(0))
-                ),
-                morphism(
-                    morphism.domain().module_generator(pair.component(1))
-                ),
+                morphism(morphism.domain().module_generator(pair.component(0))),
+                morphism(morphism.domain().module_generator(pair.component(1))),
             )
         )
         return module_homset(source, self.codomain())(self * induced)
@@ -1425,7 +1266,6 @@ class TensorProductModuleMorphism(ModuleMorphism):
         if self.left_module() is not self.right_module():
             raise TypeError("polar form syntax requires a diagonal bilinear form")
         return self.parent().scalar_multiple(self.domain().base_ring()(2), self)
-
 
 
 class TensorProductModuleHomset(ModuleHomset):
@@ -1442,7 +1282,7 @@ class TensorProductModuleHomset(ModuleHomset):
 
             parameters = signature(function)
             parameters.bind(None, None)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             return False
         try:
             parameters.bind(None)
@@ -1456,15 +1296,12 @@ class TensorProductModuleHomset(ModuleHomset):
         left_labels = left.module_generating_set()
         right_labels = right.module_generating_set()
 
-
         if isinstance(images, IndexedFamily):
             source_indices = images.index_set()
             raw_family = images
 
             def generator_image(pair):
-                source_pair = source_indices(
-                    lambda index: pair.component(index)
-                )
+                source_pair = source_indices(lambda index: pair.component(index))
                 value = raw_family[source_pair]
                 return value if getattr(value, "parent", lambda: None)() is self.codomain() else self.codomain()(value)
 
@@ -1480,24 +1317,14 @@ class TensorProductModuleHomset(ModuleHomset):
                 return value if getattr(value, "parent", lambda: None)() is self.codomain() else self.codomain()(value)
 
             images = generator_image
-        elif (
-            isinstance(images, (tuple, list))
-            and all(isinstance(row, (tuple, list)) for row in images)
-        ):
-
+        elif isinstance(images, (tuple, list)) and all(isinstance(row, (tuple, list)) for row in images):
             left_size = left_labels.cardinality()
             right_size = right_labels.cardinality()
             if not left_size.is_finite() or not right_size.is_finite():
                 raise TypeError("coordinate-array pairing syntax requires finite framings")
-            if len(images) != int(left_size.finite_value()) or any(
-                len(row) != int(right_size.finite_value()) for row in images
-            ):
+            if len(images) != int(left_size.finite_value()) or any(len(row) != int(right_size.finite_value()) for row in images):
                 raise ValueError("the pairing coordinate array has the wrong shape")
-            by_position = {
-                (i, j): images[i][j]
-                for i in range(len(images))
-                for j in range(len(images[i]))
-            }
+            by_position = {(i, j): images[i][j] for i in range(len(images)) for j in range(len(images[i]))}
 
             def generator_image(pair):
                 value = by_position[

@@ -1,68 +1,64 @@
 r"""Sparse tensor and symmetric algebras on infinitely framed free modules."""
 
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from typing import Any, cast
 
-from sage.misc.cachefunc import cached_function
 from sage.categories.category import Category
-from sage.categories.enumerated_sets import EnumeratedSets
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.rings import Rings as SageRings
-from sage.categories.sets_cat import Sets
-from sage.rings.integer_ring import ZZ as SageZZ
+from sage.misc.cachefunc import cached_function
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+)
 from dzack_research.preamble.categories.algebras.algebras import (
-    _AlgebraHomsetCommonMethods,
     Algebras,
     CommutativeAlgebras,
     FramedAlgebras,
+    _AlgebraHomsetCommonMethods,
+    algebra_homset,
 )
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _canonical_smith_representative
 from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     SymmetricAlgebras,
     TensorAlgebras,
 )
-from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
-)
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-    module_homset,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-)
-from dzack_research.preamble.categories.sets.set_categories import (
-    CartesianProductOfFamily,
-    CoproductOfFamily,
-)
-from dzack_research.preamble.categories.sets.set_categories import (
-    NN,
-    Sets as OwnedSets,
-)
-from dzack_research.preamble.categories.sets.cardinals import aleph0
-from dzack_research.preamble.categories.sets.indexed_families import (
-    IndexedFamily,
-    indexed_family,
-)
-from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
-from dzack_research.preamble.categories.algebras.algebras import algebra_homset
-from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _canonical_smith_representative
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _SelectedFinitePresentationModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
     ring_as_module,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_homset,
+)
 from dzack_research.preamble.categories.modules.powers import SymmetricPower
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring as _engine_ring,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _owned_ring,
+    ring_morphism,
+)
+from dzack_research.preamble.categories.sets.fixed_size_selections import multisets_of_size
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
+    CartesianProductOfFamily,
+    CoproductOfFamily,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    Sets as OwnedSets,
+)
 
 
 def _nested_label(labels):
@@ -94,11 +90,7 @@ class SparseFreeAlgebraElement(ModuleElement):
             coefficient = ring(coefficient)
             if coefficient:
                 normalized[label] = normalized.get(label, ring.zero()) + coefficient
-        self._coefficients = {
-            label: coefficient
-            for label, coefficient in normalized.items()
-            if coefficient
-        }
+        self._coefficients = {label: coefficient for label, coefficient in normalized.items() if coefficient}
 
     def monomial_coefficients(self):
         return dict(self._coefficients)
@@ -106,15 +98,11 @@ class SparseFreeAlgebraElement(ModuleElement):
     def _add_(self, other):
         result = self.monomial_coefficients()
         for label, coefficient in other._coefficients.items():
-            result[label] = (
-                result.get(label, self.parent().base_ring().zero()) + coefficient
-            )
+            result[label] = result.get(label, self.parent().base_ring().zero()) + coefficient
         return self.parent()._from_dict(result)
 
     def _neg_(self):
-        return self.parent()._from_dict(
-            {label: -coefficient for label, coefficient in self._coefficients.items()}
-        )
+        return self.parent()._from_dict({label: -coefficient for label, coefficient in self._coefficients.items()})
 
     def _lmul_(self, scalar):
         return self.parent().scalar_multiple(scalar, self)
@@ -130,20 +118,13 @@ class SparseFreeAlgebraElement(ModuleElement):
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        equal = (
-            isinstance(other, SparseFreeAlgebraElement)
-            and other.parent() is self.parent()
-            and other._coefficients == self._coefficients
-        )
+        equal = isinstance(other, SparseFreeAlgebraElement) and other.parent() is self.parent() and other._coefficients == self._coefficients
         return equal if op == op_EQ else not equal
 
     def _repr_(self):
         if not self._coefficients:
             return "0"
-        return " + ".join(
-            f"{coefficient}*{label}"
-            for label, coefficient in self._coefficients.items()
-        )
+        return " + ".join(f"{coefficient}*{label}" for label, coefficient in self._coefficients.items())
 
 
 class SparseFreeAlgebraDegreeElement(ModuleElement):
@@ -152,28 +133,18 @@ class SparseFreeAlgebraDegreeElement(ModuleElement):
     def __init__(self, parent, algebra_element) -> None:
         ModuleElement.__init__(self, parent)
         algebra_element = parent.algebra()(algebra_element)
-        if any(
-            int(label.summand_index()) != parent.degree()
-            for label in algebra_element.monomial_coefficients()
-        ):
-            raise ValueError(
-                "the sparse algebra element has another homogeneous degree"
-            )
+        if any(int(label.summand_index()) != parent.degree() for label in algebra_element.monomial_coefficients()):
+            raise ValueError("the sparse algebra element has another homogeneous degree")
         self._algebra_element = algebra_element
 
     def algebra_element(self):
         return self._algebra_element
 
     def monomial_coefficients(self):
-        return {
-            label.summand_element(): coefficient
-            for label, coefficient in self.algebra_element().monomial_coefficients().items()
-        }
+        return {label.summand_element(): coefficient for label, coefficient in self.algebra_element().monomial_coefficients().items()}
 
     def _add_(self, other):
-        return self.parent().from_algebra_element(
-            self.algebra_element() + other.algebra_element()
-        )
+        return self.parent().from_algebra_element(self.algebra_element() + other.algebra_element())
 
     def _neg_(self):
         return self.parent().from_algebra_element(-self.algebra_element())
@@ -187,11 +158,7 @@ class SparseFreeAlgebraDegreeElement(ModuleElement):
     def _richcmp_(self, other, op):
         if op not in (op_EQ, op_NE):
             return NotImplemented
-        equal = (
-            isinstance(other, SparseFreeAlgebraDegreeElement)
-            and other.parent() is self.parent()
-            and other.algebra_element() == self.algebra_element()
-        )
+        equal = isinstance(other, SparseFreeAlgebraDegreeElement) and other.parent() is self.parent() and other.algebra_element() == self.algebra_element()
         return equal if op == op_EQ else not equal
 
     def _repr_(self):
@@ -228,17 +195,12 @@ class SparseFreeAlgebraDegreeModule(Parent):
     def module_generator(self, label):
         label = self.module_generating_set()(label)
         algebra_label = self.algebra().basis_label(self.degree(), label)
-        return self.from_algebra_element(
-            self.algebra()._from_dict({algebra_label: self.base_ring().one()})
-        )
+        return self.from_algebra_element(self.algebra()._from_dict({algebra_label: self.base_ring().one()}))
 
     def linear_combination(self, coefficients):
         return self.from_algebra_element(
             self.algebra()._from_dict(
-                {
-                    self.algebra().basis_label(self.degree(), self.module_generating_set()(label)): coefficient
-                    for label, coefficient in coefficients.items()
-                }
+                {self.algebra().basis_label(self.degree(), self.module_generating_set()(label)): coefficient for label, coefficient in coefficients.items()}
             )
         )
 
@@ -259,9 +221,7 @@ class SparseFreeAlgebraDegreeModule(Parent):
 
     def scalar_multiple(self, scalar, element):
         element = self(element)
-        return self.from_algebra_element(
-            self.algebra().scalar_multiple(scalar, element.algebra_element())
-        )
+        return self.from_algebra_element(self.algebra().scalar_multiple(scalar, element.algebra_element()))
 
     def realize(self, element):
         return self(element).algebra_element()
@@ -285,11 +245,7 @@ class SparseFreeAlgebra(Parent):
         self._degree_basis_cache: dict[int, Any] = {}
         self._component_cache: dict[Any, Any] = {}
         self._graded_piece_cache: dict[int, SparseFreeAlgebraDegreeModule] = {}
-        flavor_category = (
-            TensorAlgebras(self._base_ring)
-            if flavor == "tensor"
-            else SymmetricAlgebras(self._base_ring)
-        )
+        flavor_category = TensorAlgebras(self._base_ring) if flavor == "tensor" else SymmetricAlgebras(self._base_ring)
         categories: list[Any] = [
             Algebras(self._base_ring),
             flavor_category,
@@ -307,6 +263,13 @@ class SparseFreeAlgebra(Parent):
 
     def flavor(self):
         return self._flavor
+
+    def is_commutative(self) -> bool:
+        r"""The symmetric algebra commutes; the tensor algebra only on at most one generator."""
+        if self._flavor == "symmetric":
+            return True
+        generators = self.algebra_generating_set().cardinality()
+        return generators.is_finite() and int(generators.finite_value()) <= 1
 
     def base_ring(self):
         return self._base_ring
@@ -369,9 +332,7 @@ class SparseFreeAlgebra(Parent):
         return self.basis_label(1, inner)
 
     def algebra_generator(self, label):
-        return self._from_dict(
-            {self._generator_basis_label(label): self.base_ring().one()}
-        )
+        return self._from_dict({self._generator_basis_label(label): self.base_ring().one()})
 
     def module_generating_set(self):
         if self._basis is None:
@@ -390,7 +351,6 @@ class SparseFreeAlgebra(Parent):
         if degree < 0:
             raise ValueError("a graded degree is nonnegative")
         if degree == 0:
-
             return ring_as_module(self.base_ring())
         if degree == 1:
             return self.free_source_module()
@@ -413,16 +373,11 @@ class SparseFreeAlgebra(Parent):
         basis_label = self.module_generating_set()(basis_label)
         inner = basis_label.summand_element()
         if self.flavor() == "tensor":
-            return tuple(
-                source.module_component_key(inner.component(position))
-                for position in inner.parent().index_set()
-            )
+            return tuple(source.module_component_key(inner.component(position)) for position in inner.parent().index_set())
         multiplicities = {}
         for label in inner.support():
             key = source.module_component_key(label)
-            multiplicities[key] = (
-                multiplicities.get(key, 0) + inner.multiplicity(label)
-            )
+            multiplicities[key] = multiplicities.get(key, 0) + inner.multiplicity(label)
         return frozenset(multiplicities.items())
 
     def _component_items(self, key):
@@ -437,19 +392,13 @@ class SparseFreeAlgebra(Parent):
         if self.flavor() == "tensor":
             factors = tuple(source.module_component(source_key) for source_key in key)
         else:
-
-            factors = tuple(
-                SymmetricPower(source.module_component(source_key), multiplicity)
-                for source_key, multiplicity in self._component_items(key)
-            )
+            factors = tuple(SymmetricPower(source.module_component(source_key), multiplicity) for source_key, multiplicity in self._component_items(key))
 
         if not factors:
-
             component = ring_as_module(self.base_ring())
         else:
             component = factors[0]
             if len(factors) > 1:
-
                 for factor in factors[1:]:
                     component = TensorProduct(component, factor)
         self._component_cache[key] = component
@@ -460,10 +409,7 @@ class SparseFreeAlgebra(Parent):
         basis_label = self.module_generating_set()(basis_label)
         inner = basis_label.summand_element()
         if self.flavor() == "tensor":
-            return _nested_label(
-                source.module_component_generator_label(inner.component(position))
-                for position in inner.parent().index_set()
-            )
+            return _nested_label(source.module_component_generator_label(inner.component(position)) for position in inner.parent().index_set())
 
         grouped = {}
         for source_label in inner.support():
@@ -474,19 +420,14 @@ class SparseFreeAlgebra(Parent):
             counts[component_label] = counts.get(component_label, 0) + int(exponent)
 
         factor_labels = []
-        for key, multiplicity in self._component_items(
-            self._monomial_component_key(basis_label)
-        ):
+        for key, multiplicity in self._component_items(self._monomial_component_key(basis_label)):
             counts = grouped[key]
             source_component = source.module_component(key)
             if multiplicity == 1:
                 factor_labels.append(next(iter(counts)))
             else:
-
                 factor = SymmetricPower(source_component, multiplicity)
-                factor_labels.append(
-                    factor.module_generating_set().from_multiplicities(counts)
-                )
+                factor_labels.append(factor.module_generating_set().from_multiplicities(counts))
         return _nested_label(factor_labels)
 
     def _basis_label_from_component(self, key, component_label):
@@ -505,17 +446,12 @@ class SparseFreeAlgebra(Parent):
         items = self._component_items(key)
         factor_labels = _flatten_nested_label(component_label, len(items))
         counts = {}
-        for (source_key, multiplicity), factor_label in zip(
-            items, factor_labels, strict=True
-        ):
+        for (source_key, multiplicity), factor_label in zip(items, factor_labels, strict=True):
             source_component = source.module_component(source_key)
             if multiplicity == 1:
                 labelled_factors = ((factor_label, 1),)
             elif hasattr(factor_label, "support"):
-                labelled_factors = (
-                    (label, factor_label.multiplicity(label))
-                    for label in factor_label.support()
-                )
+                labelled_factors = ((label, factor_label.multiplicity(label)) for label in factor_label.support())
             else:
                 labelled_factors = zip(
                     source_component.module_generating_set(),
@@ -526,9 +462,7 @@ class SparseFreeAlgebra(Parent):
                 exponent = int(exponent)
                 if not exponent:
                     continue
-                source_label = source.module_label_from_component(
-                    source_key, source_component_label
-                )
+                source_label = source.module_label_from_component(source_key, source_component_label)
                 counts[source_label] = counts.get(source_label, 0) + exponent
         degree = sum(counts.values())
         inner = self.degree_basis(degree).from_multiplicities(counts)
@@ -538,18 +472,14 @@ class SparseFreeAlgebra(Parent):
         grouped = {}
         ring = self.base_ring()
         for basis_label, coefficient in coefficients.items():
-            basis_label = self.module_generating_set()._element_constructor_(
-                basis_label
-            )
+            basis_label = self.module_generating_set()._element_constructor_(basis_label)
             coefficient = ring(coefficient)
             if not coefficient:
                 continue
             key = self._monomial_component_key(basis_label)
             component_label = self._component_generator_label(basis_label)
             component_coefficients = grouped.setdefault(key, {})
-            component_coefficients[component_label] = (
-                component_coefficients.get(component_label, ring.zero()) + coefficient
-            )
+            component_coefficients[component_label] = component_coefficients.get(component_label, ring.zero()) + coefficient
 
         normalized = {}
         for key, component_coefficients in grouped.items():
@@ -557,20 +487,11 @@ class SparseFreeAlgebra(Parent):
             element = component.linear_combination(component_coefficients)
 
             if component in _SelectedFinitePresentationModules(self.base_ring()):
-
                 element = _canonical_smith_representative(component, element)
-            for component_label, coefficient in module_coefficients(
-                element, component
-            ).items():
+            for component_label, coefficient in module_coefficients(element, component).items():
                 basis_label = self._basis_label_from_component(key, component_label)
-                normalized[basis_label] = normalized.get(
-                    basis_label, ring.zero()
-                ) + ring(coefficient)
-        return {
-            label: coefficient
-            for label, coefficient in normalized.items()
-            if coefficient
-        }
+                normalized[basis_label] = normalized.get(basis_label, ring.zero()) + ring(coefficient)
+        return {label: coefficient for label, coefficient in normalized.items() if coefficient}
 
     # Present this sparse algebra, as a module, by finite relation components.
     # This makes another sparse free construction on it exact as well.
@@ -594,9 +515,7 @@ class SparseFreeAlgebra(Parent):
 
     def module_label_from_component(self, key, component_label):
         if self._source_has_component_protocol():
-            return self.module_generating_set()._element_constructor_(
-                self._basis_label_from_component(key, component_label)
-            )
+            return self.module_generating_set()._element_constructor_(self._basis_label_from_component(key, component_label))
         if component_label != 0:
             raise ValueError("a rank-one free component has generator label 0")
         return self.module_generating_set()._element_constructor_(key)
@@ -612,14 +531,12 @@ class SparseFreeAlgebra(Parent):
             raise TypeError("the element belongs to a different sparse free algebra")
         if value in self.free_source_module():
             result = self.zero()
-            for label, coefficient in module_coefficients(
-                value, self.free_source_module()
-            ).items():
+            for label, coefficient in module_coefficients(value, self.free_source_module()).items():
                 result += coefficient * self.algebra_generator(label)
             return result
         try:
             scalar = self.base_ring()(value)
-        except (TypeError, ValueError):
+        except TypeError, ValueError:
             if isinstance(value, dict):
                 return self._from_dict(value)
             raise TypeError(f"{value!r} does not define an element of {self}") from None
@@ -627,11 +544,7 @@ class SparseFreeAlgebra(Parent):
 
     def _unit_label(self):
         basis = self.degree_basis(0)
-        inner = (
-            basis(lambda _position: None)
-            if self.flavor() == "tensor"
-            else basis.from_multiplicities({})
-        )
+        inner = basis(lambda _position: None) if self.flavor() == "tensor" else basis.from_multiplicities({})
         return self.basis_label(0, inner)
 
     def zero(self):
@@ -643,12 +556,7 @@ class SparseFreeAlgebra(Parent):
     def scalar_multiple(self, scalar, element):
         element = self(element)
         scalar = self.base_ring()(scalar)
-        return self._from_dict(
-            {
-                label: scalar * coefficient
-                for label, coefficient in element.monomial_coefficients().items()
-            }
-        )
+        return self._from_dict({label: scalar * coefficient for label, coefficient in element.monomial_coefficients().items()})
 
     def _multiply_labels(self, left, right):
         left = self.module_generating_set()(left)
@@ -660,20 +568,12 @@ class SparseFreeAlgebra(Parent):
         right_inner = right.summand_element()
         target = self.degree_basis(degree)
         if self.flavor() == "tensor":
-            inner = target(
-                lambda position: (
-                    left_inner.component(int(position))
-                    if int(position) < left_degree
-                    else right_inner.component(int(position) - left_degree)
-                )
-            )
+            inner = target(lambda position: left_inner.component(int(position)) if int(position) < left_degree else right_inner.component(int(position) - left_degree))
         else:
             counts = {}
             for monomial in (left_inner, right_inner):
                 for label in monomial.support():
-                    counts[label] = (
-                        counts.get(label, 0) + monomial.multiplicity(label)
-                    )
+                    counts[label] = counts.get(label, 0) + monomial.multiplicity(label)
             inner = target.from_multiplicities(counts)
         return self.basis_label(degree, inner)
 
@@ -684,10 +584,7 @@ class SparseFreeAlgebra(Parent):
         for left_label, left_coefficient in left.monomial_coefficients().items():
             for right_label, right_coefficient in right.monomial_coefficients().items():
                 label = self._multiply_labels(left_label, right_label)
-                result[label] = (
-                    result.get(label, self.base_ring().zero())
-                    + left_coefficient * right_coefficient
-                )
+                result[label] = result.get(label, self.base_ring().zero()) + left_coefficient * right_coefficient
         return self._from_dict(result)
 
     def _ring_morphism_defining_algebra_structure(self):
@@ -730,10 +627,7 @@ def compose_with_free_construction(left, right):
     source = right.domain()
     target = left.codomain()
     if _uses_free_construction_homset(source):
-        return free_construction_homset(source, target)(
-            lambda label: left(right(source.algebra_generator(label)))
-        )
-
+        return free_construction_homset(source, target)(lambda label: left(right(source.algebra_generator(label))))
 
     engine_source = _engine_ring(source)
     engine_target = _engine_ring(target)
@@ -758,9 +652,7 @@ class SparseFreeAlgebraMorphism(Morphism):
             )
         elif isinstance(images, dict):
             if not labels.cardinality().is_finite():
-                raise TypeError(
-                    "an infinite generator assignment is specified by a callable or indexed family"
-                )
+                raise TypeError("an infinite generator assignment is specified by a callable or indexed family")
             missing = [label for label in labels if label not in images]
             if missing:
                 raise ValueError(f"algebra-generator assignment omits {missing}")
@@ -776,9 +668,7 @@ class SparseFreeAlgebraMorphism(Morphism):
                 name="Sparse free-algebra morphism generator-image family",
             )
         else:
-            raise TypeError(
-                "an algebra morphism is specified on its algebra generators"
-            )
+            raise TypeError("an algebra morphism is specified on its algebra generators")
         self._raw_image = self._generator_images.value
         self._component_maps: dict[Any, Any] = {}
 
@@ -797,12 +687,7 @@ class SparseFreeAlgebraMorphism(Morphism):
             return cached
         source = self.domain().free_source_module()
         component = source.module_component(key)
-        images = {
-            component_label: self._raw_image(
-                source.module_label_from_component(key, component_label)
-            )
-            for component_label in component.module_generating_set()
-        }
+        images = {component_label: self._raw_image(source.module_label_from_component(key, component_label)) for component_label in component.module_generating_set()}
         certified = module_homset(component, self.codomain())(images)
         self._component_maps[key] = certified
         return certified
@@ -820,25 +705,15 @@ class SparseFreeAlgebraMorphism(Morphism):
         basis_label = self.domain().module_generating_set()(basis_label)
         inner = basis_label.summand_element()
         if self.domain().flavor() == "tensor":
-            factors = (
-                self._image(inner.component(position))
-                for position in inner.parent().index_set()
-            )
+            factors = (self._image(inner.component(position)) for position in inner.parent().index_set())
         else:
-            factors = (
-                self._image(label)
-                for label in inner.support()
-                for _ in range(int(inner.multiplicity(label)))
-            )
+            factors = (self._image(label) for label in inner.support() for _ in range(int(inner.multiplicity(label))))
         return _multiply_in_target(self.codomain(), factors)
 
     def _call_(self, element):
         element = self.domain()(element)
         return sum(
-            (
-                coefficient * self._basis_image(label)
-                for label, coefficient in element.monomial_coefficients().items()
-            ),
+            (coefficient * self._basis_image(label) for label, coefficient in element.monomial_coefficients().items()),
             self.codomain().zero(),
         )
 
@@ -905,11 +780,8 @@ def _sparse_free_algebra_of(module, flavor):
         )
     )
     if not component_protocol:
-
         if module not in FramedFreeModules(module.base_ring()):
-            raise NotImplementedError(
-                "an infinite relationful source requires finite presented module components"
-            )
+            raise NotImplementedError("an infinite relationful source requires finite presented module components")
     algebra = SparseFreeAlgebra(module, flavor)
     return algebra
 
