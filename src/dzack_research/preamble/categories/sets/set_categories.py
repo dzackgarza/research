@@ -398,14 +398,7 @@ class Sets(OwnedCategory):
     def TotallyOrdered(self):
         return TotallyOrderedSets()
 
-    class ParentMethods(OwnedParent, Parent):
-        r"""The owned root of every object chain.
-
-        Only the root owns the host runtime initialization.  A level above
-        declares its own datum and threads into this one with a cooperative
-        ``super().__init__(**rest)``; none of them calls ``Parent.__init__``.
-        """
-
+    class ParentMethods:
         def Mor(self, codomain, category=None):
             if category is None:
                 return Sets().Mor(self, codomain)

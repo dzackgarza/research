@@ -693,7 +693,6 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     scheme_product,
 )
 from dzack_research.preamble.categories.sets import (  # noqa: F401
-    Cardinal,
     CardinalComparison,
     Cardinalities,
     CartesianProductMorphism,
@@ -725,9 +724,7 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     LaurentMonomials,
     NN,
     ObjectSetsOfDiscreteCategories,
-    Ordinal,
     Ordinals,
-    OrdinalSemiring,
     OrdinalSemirings,
     PartiallyOrderedSets,
     PowerSet,
@@ -806,10 +803,9 @@ from dzack_research.preamble.rings import (  # noqa: F401
     Rings,
     ZariskiClosedSubobject,
     UnitInterval,
-    install_session_rings,
     predicate_subring,
 )
-from dzack_research.preamble.rings import install_session_rings as _install_session_rings  # noqa: F401
+from dzack_research.preamble.rings import _restore_session_ring_bindings  # noqa: F401
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
 
@@ -818,7 +814,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     r"""Load a Sage file and restore this session's owned scalar vocabulary."""
     scope = _sys._getframe(1).f_globals if globals is None else globals
     _sage_load(filename, scope, attach)
-    _install_session_rings(scope)
+    _restore_session_ring_bindings(scope)
     scope["GradedLebesgueAlgebra"] = graded_lebesgue_algebra()
     scope["LebesgueConvolutionAlgebra"] = lebesgue_convolution_algebra()
     scope["load"] = load
@@ -827,7 +823,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
 # This is deliberately last.  Internal modules may import backend names while
 # they load; the public session receives only owned scalar objects, owned
 # constructors, and the owned runtime names emitted by the research dialect.
-_install_session_rings(globals())
+_restore_session_ring_bindings(globals())
 Integer = _language_runtime.Integer
 RealNumber = _language_runtime.RealNumber
 ComplexNumber = _language_runtime.ComplexNumber

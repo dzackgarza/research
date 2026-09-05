@@ -2,6 +2,8 @@ r"""Cardinal and ordinal arithmetic in the owned set-theoretic number hierarchy.
 
 from __future__ import annotations
 
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -115,8 +117,12 @@ class CardinalityHomCategoryConstruction(HomCategoryConstruction):
         return CardinalityHomset
 
 
-class Cardinalities(Category):
+class Cardinalities(OwnedCategory):
     r"""The thin category associated to the represented cardinal order."""
+
+    def an_object(self):
+        r"""The cardinal three."""
+        return cardinal(3)
 
     _HomCategory = CardinalityHomCategoryConstruction
 
@@ -132,6 +138,173 @@ class Cardinalities(Category):
         )
 
     class ParentMethods:
+        def __init__(self, expression, **rest) -> None:
+            self._expression = expression
+            super().__init__(**rest)
+
+        def expression(self):
+            return self._expression
+
+        def cardinality(self):
+            return self
+
+        def sort_key(self) -> tuple[int, str]:
+            expression = self.expression()
+            if isinstance(expression, _FiniteCardinal):
+                return (0, str(expression.value))
+            if isinstance(expression, _AlephCardinal):
+                return (1, str(expression.index))
+            if isinstance(expression, _PowerCardinal):
+                return (2, repr(self))
+            if isinstance(expression, _SupremumCardinal):
+                return (3, repr(self))
+            return (4, repr(self))
+
+        def _repr_(self) -> str:
+            expression = self.expression()
+            if isinstance(expression, _FiniteCardinal):
+                return repr(expression.value)
+            if isinstance(expression, _AlephCardinal):
+                return f"ℵ_{expression.index}"
+            if isinstance(expression, _PowerCardinal):
+                return f"({expression.base})^({expression.exponent})"
+            if isinstance(expression, _SupremumCardinal):
+                return "sup(" + ", ".join(map(str, expression.terms)) + ")"
+            if isinstance(expression, _IndexedSumCardinal):
+                return f"sum_{{i in {expression.index_set}}} kappa_i"
+            return f"prod_{{i in {expression.index_set}}} kappa_i"
+
+        def __hash__(self) -> int:
+            if self.is_finite():
+                return hash(self._finite_int())
+            if self.is_countably_infinite():
+                return hash(Infinity)
+            return hash(self.expression())
+
+        def __eq__(self, other) -> bool:
+            try:
+                return self.expression() == cardinal(other).expression()
+            except (TypeError, ValueError):
+                return False
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __lt__(self, other) -> bool:
+            return Cardinalities().lt(self, other)
+
+        def __le__(self, other) -> bool:
+            return Cardinalities().le(self, other)
+
+        def __gt__(self, other) -> bool:
+            return Cardinalities().gt(self, other)
+
+        def __ge__(self, other) -> bool:
+            return Cardinalities().ge(self, other)
+
+        def __add__(self, other):
+            return Cardinalities().sum(self, other)
+
+        __radd__ = __add__
+
+        def __mul__(self, other):
+            return Cardinalities().product(self, other)
+
+        __rmul__ = __mul__
+
+        def __pow__(self, exponent):
+            return Cardinalities().power(self, exponent)
+
+        def __rpow__(self, base):
+            return Cardinalities().power(base, self)
+
+        def is_finite(self) -> bool:
+            expression = self.expression()
+            if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
+                raise NotImplementedError(
+                    "finiteness of an arbitrary indexed cardinal family is not decidable"
+                )
+            return isinstance(expression, _FiniteCardinal)
+
+        def is_infinite(self) -> bool:
+            return not self.is_finite()
+
+        def is_aleph(self) -> bool:
+            return isinstance(self.expression(), _AlephCardinal)
+
+        def is_continuum(self) -> bool:
+            expression = self.expression()
+            return bool(
+                isinstance(expression, _PowerCardinal)
+                and expression.base == 2
+                and expression.exponent.is_countably_infinite()
+            )
+
+        def is_countable(self) -> bool:
+            return self.is_finite() or self.is_countably_infinite()
+
+        def is_uncountable(self) -> bool:
+            expression = self.expression()
+            if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
+                raise NotImplementedError(
+                    "countability of an arbitrary indexed cardinal family is not decidable"
+                )
+            if self.is_finite() or self.is_countably_infinite():
+                return False
+            if isinstance(expression, _SupremumCardinal):
+                return any(term.is_uncountable() for term in expression.terms)
+            return True
+
+        def is_countably_infinite(self) -> bool:
+            expression = self.expression()
+            return isinstance(expression, _AlephCardinal) and expression.index == 0
+
+        def is_uncountably_infinite(self) -> bool:
+            return self.is_infinite() and self.is_uncountable()
+
+        def aleph_index(self):
+            expression = self.expression()
+            if not isinstance(expression, _AlephCardinal):
+                raise ValueError(f"{self} is not an aleph cardinal")
+            return expression.index
+
+        def initial_ordinal(self):
+            return omega(self.aleph_index())
+
+        def _finite_int(self) -> int:
+            expression = self.expression()
+            if not isinstance(expression, _FiniteCardinal):
+                raise ValueError(f"{self} is not a finite cardinal")
+            return expression.value
+
+        def finite_value(self):
+            r"""Return the ordinary nonnegative integer representing this finite cardinal."""
+            expression = self.expression()
+            if not isinstance(expression, _FiniteCardinal):
+                raise ValueError(f"{self} is not a finite cardinal")
+            return expression.value
+
+        def __int__(self) -> int:
+            if not self.is_finite():
+                raise TypeError(f"cannot convert infinite cardinal {self} to integer")
+            return self._finite_int()
+
+        def __index__(self) -> int:
+            return int(self)
+
+        def _integer_(self, ring=None):
+            if not self.is_finite():
+                raise TypeError(f"cannot convert infinite cardinal {self} to an integer")
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            return SageZZ(self._finite_int())
+
+        def _rational_(self):
+            if not self.is_finite():
+                raise TypeError(f"cannot convert infinite cardinal {self} to a rational")
+            from sage.rings.rational_field import QQ as SageQQ
+
+            return SageQQ(self._finite_int())
         def Mor(self, codomain, category=None):
             if category is not None and category is not Cardinalities():
                 raise TypeError("a cardinal morphism lies in Cardinalities")
@@ -328,176 +501,6 @@ class Cardinalities(Category):
         return not self.le(source, target) and not self.le(target, source)
 
 
-class Cardinal(Parent):
-    r"""A cardinal number as an object of the thin cardinal-order category."""
-
-    def __init__(self, expression) -> None:
-        self._expression = expression
-        Parent.__init__(self, category=Cardinalities())
-
-    def expression(self):
-        return self._expression
-
-    def cardinality(self):
-        return self
-
-    def sort_key(self) -> tuple[int, str]:
-        expression = self.expression()
-        if isinstance(expression, _FiniteCardinal):
-            return (0, str(expression.value))
-        if isinstance(expression, _AlephCardinal):
-            return (1, str(expression.index))
-        if isinstance(expression, _PowerCardinal):
-            return (2, repr(self))
-        if isinstance(expression, _SupremumCardinal):
-            return (3, repr(self))
-        return (4, repr(self))
-
-    def _repr_(self) -> str:
-        expression = self.expression()
-        if isinstance(expression, _FiniteCardinal):
-            return repr(expression.value)
-        if isinstance(expression, _AlephCardinal):
-            return f"ℵ_{expression.index}"
-        if isinstance(expression, _PowerCardinal):
-            return f"({expression.base})^({expression.exponent})"
-        if isinstance(expression, _SupremumCardinal):
-            return "sup(" + ", ".join(map(str, expression.terms)) + ")"
-        if isinstance(expression, _IndexedSumCardinal):
-            return f"sum_{{i in {expression.index_set}}} kappa_i"
-        return f"prod_{{i in {expression.index_set}}} kappa_i"
-
-    def __hash__(self) -> int:
-        if self.is_finite():
-            return hash(self._finite_int())
-        if self.is_countably_infinite():
-            return hash(Infinity)
-        return hash(self.expression())
-
-    def __eq__(self, other) -> bool:
-        try:
-            return self.expression() == cardinal(other).expression()
-        except (TypeError, ValueError):
-            return False
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __lt__(self, other) -> bool:
-        return Cardinalities().lt(self, other)
-
-    def __le__(self, other) -> bool:
-        return Cardinalities().le(self, other)
-
-    def __gt__(self, other) -> bool:
-        return Cardinalities().gt(self, other)
-
-    def __ge__(self, other) -> bool:
-        return Cardinalities().ge(self, other)
-
-    def __add__(self, other):
-        return Cardinalities().sum(self, other)
-
-    __radd__ = __add__
-
-    def __mul__(self, other):
-        return Cardinalities().product(self, other)
-
-    __rmul__ = __mul__
-
-    def __pow__(self, exponent):
-        return Cardinalities().power(self, exponent)
-
-    def __rpow__(self, base):
-        return Cardinalities().power(base, self)
-
-    def is_finite(self) -> bool:
-        expression = self.expression()
-        if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
-            raise NotImplementedError(
-                "finiteness of an arbitrary indexed cardinal family is not decidable"
-            )
-        return isinstance(expression, _FiniteCardinal)
-
-    def is_infinite(self) -> bool:
-        return not self.is_finite()
-
-    def is_aleph(self) -> bool:
-        return isinstance(self.expression(), _AlephCardinal)
-
-    def is_continuum(self) -> bool:
-        expression = self.expression()
-        return bool(
-            isinstance(expression, _PowerCardinal)
-            and expression.base == 2
-            and expression.exponent.is_countably_infinite()
-        )
-
-    def is_countable(self) -> bool:
-        return self.is_finite() or self.is_countably_infinite()
-
-    def is_uncountable(self) -> bool:
-        expression = self.expression()
-        if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
-            raise NotImplementedError(
-                "countability of an arbitrary indexed cardinal family is not decidable"
-            )
-        if self.is_finite() or self.is_countably_infinite():
-            return False
-        if isinstance(expression, _SupremumCardinal):
-            return any(term.is_uncountable() for term in expression.terms)
-        return True
-
-    def is_countably_infinite(self) -> bool:
-        expression = self.expression()
-        return isinstance(expression, _AlephCardinal) and expression.index == 0
-
-    def is_uncountably_infinite(self) -> bool:
-        return self.is_infinite() and self.is_uncountable()
-
-    def aleph_index(self):
-        expression = self.expression()
-        if not isinstance(expression, _AlephCardinal):
-            raise ValueError(f"{self} is not an aleph cardinal")
-        return expression.index
-
-    def initial_ordinal(self):
-        return omega(self.aleph_index())
-
-    def _finite_int(self) -> int:
-        expression = self.expression()
-        if not isinstance(expression, _FiniteCardinal):
-            raise ValueError(f"{self} is not a finite cardinal")
-        return expression.value
-
-    def finite_value(self):
-        r"""Return the ordinary nonnegative integer representing this finite cardinal."""
-        expression = self.expression()
-        if not isinstance(expression, _FiniteCardinal):
-            raise ValueError(f"{self} is not a finite cardinal")
-        return expression.value
-
-    def __int__(self) -> int:
-        if not self.is_finite():
-            raise TypeError(f"cannot convert infinite cardinal {self} to integer")
-        return self._finite_int()
-
-    def __index__(self) -> int:
-        return int(self)
-
-    def _integer_(self, ring=None):
-        if not self.is_finite():
-            raise TypeError(f"cannot convert infinite cardinal {self} to an integer")
-        from sage.rings.integer_ring import ZZ as SageZZ
-
-        return SageZZ(self._finite_int())
-
-    def _rational_(self):
-        if not self.is_finite():
-            raise TypeError(f"cannot convert infinite cardinal {self} to a rational")
-        from sage.rings.rational_field import QQ as SageQQ
-
-        return SageQQ(self._finite_int())
 
 
 @dataclass(frozen=True)
@@ -597,15 +600,165 @@ class OrdinalSemiringHomCategoryConstruction(HomCategoryConstruction):
         return OrdinalSemiringHomset
 
 
-class OrdinalSemirings(Category):
+class OrdinalSemirings(OwnedCategory):
     r"""The category containing the ordinal semiring under natural operations."""
+
+    class ElementMethods(Element):
+        r"""What an ordinal is."""
+
+        def __init__(self, parent, expression) -> None:
+            Element.__init__(self, parent)
+            self._expression = expression
+
+        def expression(self):
+            return self._expression
+
+        def __hash__(self) -> int:
+            return hash(self.expression())
+
+        def __eq__(self, other) -> bool:
+            try:
+                other_ordinal = self.parent()(other)
+            except (TypeError, ValueError):
+                return False
+            return self.expression() == other_ordinal.expression()
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __le__(self, other) -> bool:
+            return self.parent().proves_le(self, other)
+
+        def __lt__(self, other) -> bool:
+            target = self.parent()(other)
+            return self != target and self <= target
+
+        def __ge__(self, other) -> bool:
+            return self.parent().proves_le(other, self)
+
+        def __gt__(self, other) -> bool:
+            source = self.parent()(other)
+            return self != source and self >= source
+
+        def _add_(self, other):
+            return self.parent().natural_sum(self, other)
+
+        def _mul_(self, other):
+            return self.parent().natural_product(self, other)
+
+        def __radd__(self, other):
+            return self.parent().natural_sum(other, self)
+
+        def __rmul__(self, other):
+            return self.parent().natural_product(other, self)
+
+        def ordinal_sum(self, other):
+            right = self.parent()(other)
+            left_expression = self.expression()
+            right_expression = right.expression()
+            if isinstance(left_expression, _FiniteOrdinal) and isinstance(
+                right_expression, _FiniteOrdinal
+            ):
+                return self.parent()(left_expression.value + right_expression.value)
+            if right == 0:
+                return self
+            if self == 0:
+                return right
+            return self.parent().from_expression(_OrdinalSum(self, right))
+
+        def ordinal_product(self, other):
+            right = self.parent()(other)
+            left_expression = self.expression()
+            right_expression = right.expression()
+            if isinstance(left_expression, _FiniteOrdinal) and isinstance(
+                right_expression, _FiniteOrdinal
+            ):
+                return self.parent()(left_expression.value * right_expression.value)
+            if self == 0 or right == 0:
+                return self.parent().zero()
+            if right == 1:
+                return self
+            if self == 1:
+                return right
+            return self.parent().from_expression(_OrdinalProduct(self, right))
+
+        def ordinal_power(self, exponent):
+            power = self.parent()(exponent)
+            base_expression = self.expression()
+            exponent_expression = power.expression()
+            if isinstance(base_expression, _FiniteOrdinal) and isinstance(
+                exponent_expression, _FiniteOrdinal
+            ):
+                return self.parent()(base_expression.value ** exponent_expression.value)
+            if power == 0:
+                return self.parent().one()
+            if self == 0:
+                return self.parent().zero()
+            if self == 1:
+                return self
+            return self.parent().from_expression(_OrdinalPower(self, power))
+
+        def is_initial(self) -> bool:
+            return isinstance(self.expression(), _InitialOrdinal)
+
+        def initial_index(self):
+            expression = self.expression()
+            if not isinstance(expression, _InitialOrdinal):
+                raise ValueError(f"{self} is not an initial ordinal")
+            return expression.index
+
+        def cardinality(self):
+            expression = self.expression()
+            if isinstance(expression, _FiniteOrdinal):
+                return cardinal(expression.value)
+            if isinstance(expression, _InitialOrdinal):
+                return aleph(expression.index)
+            if isinstance(expression, (_NaturalSum, _OrdinalSum)):
+                terms = (
+                    expression.terms
+                    if isinstance(expression, _NaturalSum)
+                    else (expression.left, expression.right)
+                )
+                return Cardinalities().sum(*(term.cardinality() for term in terms))
+            if isinstance(expression, (_NaturalProduct, _OrdinalProduct)):
+                factors = (
+                    expression.factors
+                    if isinstance(expression, _NaturalProduct)
+                    else (expression.left, expression.right)
+                )
+                return Cardinalities().product(*(factor.cardinality() for factor in factors))
+            return Cardinalities().power(
+                expression.base.cardinality(), expression.exponent.cardinality()
+            )
+
+        def _repr_(self) -> str:
+            expression = self.expression()
+            if isinstance(expression, _FiniteOrdinal):
+                return repr(expression.value)
+            if isinstance(expression, _InitialOrdinal):
+                return f"ω_{expression.index}"
+            if isinstance(expression, _NaturalSum):
+                return " # ".join(map(repr, expression.terms))
+            if isinstance(expression, _NaturalProduct):
+                return " ⊗ ".join(map(repr, expression.factors))
+            if isinstance(expression, _OrdinalSum):
+                return f"({expression.left} +o {expression.right})"
+            if isinstance(expression, _OrdinalProduct):
+                return f"({expression.left} *o {expression.right})"
+            return f"({expression.base} ^o {expression.exponent})"
+
+    def an_object(self):
+        r"""The semiring of ordinals."""
+        return Ordinals()
 
     _HomCategory = OrdinalSemiringHomCategoryConstruction
 
     def __init__(self) -> None:
         # Sage semiring classes provide Python arithmetic plumbing only; they
         # are not mathematical ancestors in the owned graph.
-        self._super_categories_for_classes = [Semirings().Commutative()]
+        # Objects as well: the owned root is where an object's host
+        # initialization lives, so a class built without it cannot construct.
+        self._super_categories_for_classes = [Objects(), Semirings().Commutative()]
         super().__init__()
 
     def super_categories(self):
@@ -617,263 +770,118 @@ class OrdinalSemirings(Category):
         return OrdinalSemiringHomCategoryConstruction(self).Of(domain, codomain)
 
     class ParentMethods:
+
+        def __init__(self, **rest) -> None:
+            super().__init__(**rest)
+
+        def _repr_(self) -> str:
+            return "Ordinal semiring"
+
+        def from_expression(self, expression) -> Ordinal:
+            return self.element_class(self, expression)
+
+        def _element_constructor_(self, value):
+            if isinstance(value, self.category().ElementType):
+                if value.parent() is self:
+                    return value
+                raise TypeError("an ordinal belongs to the canonical ordinal semiring")
+            integer = ZZ(value)
+            if integer < 0:
+                raise ValueError(f"an ordinal is nonnegative; found {integer}")
+            return self.from_expression(_FiniteOrdinal(integer))
+
+        def zero(self) -> Ordinal:
+            return self(0)
+
+        def one(self) -> Ordinal:
+            return self(1)
+
+        def initial(self, index) -> Ordinal:
+            return self.from_expression(_InitialOrdinal(self(index)))
+
+        def natural_sum(self, *summands) -> Ordinal:
+            terms: list[Ordinal] = []
+            finite_part = ZZ.zero()
+            for summand in map(self, summands):
+                expression = summand.expression()
+                if isinstance(expression, _FiniteOrdinal):
+                    finite_part += expression.value
+                elif isinstance(expression, _NaturalSum):
+                    terms.extend(expression.terms)
+                else:
+                    terms.append(summand)
+            if finite_part:
+                terms.append(self(finite_part))
+            if not terms:
+                return self.zero()
+            terms.sort(key=repr)
+            if len(terms) == 1:
+                return terms[0]
+            return self.from_expression(_NaturalSum(tuple(terms)))
+
+        def natural_product(self, *factors) -> Ordinal:
+            ordinal_factors = tuple(map(self, factors))
+            for index, factor in enumerate(ordinal_factors):
+                expression = factor.expression()
+                if isinstance(expression, _NaturalSum):
+                    preceding = ordinal_factors[:index]
+                    following = ordinal_factors[index + 1 :]
+                    return self.natural_sum(
+                        *(
+                            self.natural_product(*preceding, term, *following)
+                            for term in expression.terms
+                        )
+                    )
+            normalized: list[Ordinal] = []
+            finite_part = ZZ.one()
+            for factor in ordinal_factors:
+                expression = factor.expression()
+                if isinstance(expression, _FiniteOrdinal):
+                    if expression.value == 0:
+                        return self.zero()
+                    finite_part *= expression.value
+                elif isinstance(expression, _NaturalProduct):
+                    normalized.extend(expression.factors)
+                else:
+                    normalized.append(factor)
+            if finite_part != 1 or not normalized:
+                normalized.append(self(finite_part))
+            normalized.sort(key=repr)
+            if len(normalized) == 1:
+                return normalized[0]
+            return self.from_expression(_NaturalProduct(tuple(normalized)))
+
+        def proves_le(self, left, right) -> bool:
+            source = self(left)
+            target = self(right)
+            if source == target:
+                return True
+            source_expression = source.expression()
+            target_expression = target.expression()
+            if isinstance(source_expression, _FiniteOrdinal):
+                if isinstance(target_expression, _FiniteOrdinal):
+                    return source_expression.value <= target_expression.value
+                return True
+            if isinstance(target_expression, _FiniteOrdinal):
+                return False
+            if isinstance(source_expression, _InitialOrdinal) and isinstance(
+                target_expression, _InitialOrdinal
+            ):
+                return self.proves_le(source_expression.index, target_expression.index)
+            return False
         def Mor(self, codomain, category=None):
             if category is not None and category is not OrdinalSemirings():
                 raise TypeError("an ordinal-semiring morphism lies in OrdinalSemirings")
             return OrdinalSemirings().Mor(self, codomain)
 
 
-class Ordinal(Element):
-    r"""An ordinal represented by a symbolic arithmetic expression."""
-
-    def __init__(self, parent, expression) -> None:
-        Element.__init__(self, parent)
-        self._expression = expression
-
-    def expression(self):
-        return self._expression
-
-    def __hash__(self) -> int:
-        return hash(self.expression())
-
-    def __eq__(self, other) -> bool:
-        try:
-            other_ordinal = self.parent()(other)
-        except (TypeError, ValueError):
-            return False
-        return self.expression() == other_ordinal.expression()
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __le__(self, other) -> bool:
-        return self.parent().proves_le(self, other)
-
-    def __lt__(self, other) -> bool:
-        target = self.parent()(other)
-        return self != target and self <= target
-
-    def __ge__(self, other) -> bool:
-        return self.parent().proves_le(other, self)
-
-    def __gt__(self, other) -> bool:
-        source = self.parent()(other)
-        return self != source and self >= source
-
-    def _add_(self, other):
-        return self.parent().natural_sum(self, other)
-
-    def _mul_(self, other):
-        return self.parent().natural_product(self, other)
-
-    def __radd__(self, other):
-        return self.parent().natural_sum(other, self)
-
-    def __rmul__(self, other):
-        return self.parent().natural_product(other, self)
-
-    def ordinal_sum(self, other):
-        right = self.parent()(other)
-        left_expression = self.expression()
-        right_expression = right.expression()
-        if isinstance(left_expression, _FiniteOrdinal) and isinstance(
-            right_expression, _FiniteOrdinal
-        ):
-            return self.parent()(left_expression.value + right_expression.value)
-        if right == 0:
-            return self
-        if self == 0:
-            return right
-        return self.parent().from_expression(_OrdinalSum(self, right))
-
-    def ordinal_product(self, other):
-        right = self.parent()(other)
-        left_expression = self.expression()
-        right_expression = right.expression()
-        if isinstance(left_expression, _FiniteOrdinal) and isinstance(
-            right_expression, _FiniteOrdinal
-        ):
-            return self.parent()(left_expression.value * right_expression.value)
-        if self == 0 or right == 0:
-            return self.parent().zero()
-        if right == 1:
-            return self
-        if self == 1:
-            return right
-        return self.parent().from_expression(_OrdinalProduct(self, right))
-
-    def ordinal_power(self, exponent):
-        power = self.parent()(exponent)
-        base_expression = self.expression()
-        exponent_expression = power.expression()
-        if isinstance(base_expression, _FiniteOrdinal) and isinstance(
-            exponent_expression, _FiniteOrdinal
-        ):
-            return self.parent()(base_expression.value ** exponent_expression.value)
-        if power == 0:
-            return self.parent().one()
-        if self == 0:
-            return self.parent().zero()
-        if self == 1:
-            return self
-        return self.parent().from_expression(_OrdinalPower(self, power))
-
-    def is_initial(self) -> bool:
-        return isinstance(self.expression(), _InitialOrdinal)
-
-    def initial_index(self):
-        expression = self.expression()
-        if not isinstance(expression, _InitialOrdinal):
-            raise ValueError(f"{self} is not an initial ordinal")
-        return expression.index
-
-    def cardinality(self):
-        expression = self.expression()
-        if isinstance(expression, _FiniteOrdinal):
-            return cardinal(expression.value)
-        if isinstance(expression, _InitialOrdinal):
-            return aleph(expression.index)
-        if isinstance(expression, (_NaturalSum, _OrdinalSum)):
-            terms = (
-                expression.terms
-                if isinstance(expression, _NaturalSum)
-                else (expression.left, expression.right)
-            )
-            return Cardinalities().sum(*(term.cardinality() for term in terms))
-        if isinstance(expression, (_NaturalProduct, _OrdinalProduct)):
-            factors = (
-                expression.factors
-                if isinstance(expression, _NaturalProduct)
-                else (expression.left, expression.right)
-            )
-            return Cardinalities().product(*(factor.cardinality() for factor in factors))
-        return Cardinalities().power(
-            expression.base.cardinality(), expression.exponent.cardinality()
-        )
-
-    def _repr_(self) -> str:
-        expression = self.expression()
-        if isinstance(expression, _FiniteOrdinal):
-            return repr(expression.value)
-        if isinstance(expression, _InitialOrdinal):
-            return f"ω_{expression.index}"
-        if isinstance(expression, _NaturalSum):
-            return " # ".join(map(repr, expression.terms))
-        if isinstance(expression, _NaturalProduct):
-            return " ⊗ ".join(map(repr, expression.factors))
-        if isinstance(expression, _OrdinalSum):
-            return f"({expression.left} +o {expression.right})"
-        if isinstance(expression, _OrdinalProduct):
-            return f"({expression.left} *o {expression.right})"
-        return f"({expression.base} ^o {expression.exponent})"
 
 
-class OrdinalSemiring(UniqueRepresentation, Parent):
-    Element = Ordinal
-
-    def __init__(self) -> None:
-        Parent.__init__(self, category=OrdinalSemirings())
-
-    def _repr_(self) -> str:
-        return "Ordinal semiring"
-
-    def from_expression(self, expression) -> Ordinal:
-        return self.element_class(self, expression)
-
-    def _element_constructor_(self, value):
-        if isinstance(value, Ordinal):
-            if value.parent() is self:
-                return value
-            raise TypeError("an ordinal belongs to the canonical ordinal semiring")
-        integer = ZZ(value)
-        if integer < 0:
-            raise ValueError(f"an ordinal is nonnegative; found {integer}")
-        return self.from_expression(_FiniteOrdinal(integer))
-
-    def zero(self) -> Ordinal:
-        return self(0)
-
-    def one(self) -> Ordinal:
-        return self(1)
-
-    def initial(self, index) -> Ordinal:
-        return self.from_expression(_InitialOrdinal(self(index)))
-
-    def natural_sum(self, *summands) -> Ordinal:
-        terms: list[Ordinal] = []
-        finite_part = ZZ.zero()
-        for summand in map(self, summands):
-            expression = summand.expression()
-            if isinstance(expression, _FiniteOrdinal):
-                finite_part += expression.value
-            elif isinstance(expression, _NaturalSum):
-                terms.extend(expression.terms)
-            else:
-                terms.append(summand)
-        if finite_part:
-            terms.append(self(finite_part))
-        if not terms:
-            return self.zero()
-        terms.sort(key=repr)
-        if len(terms) == 1:
-            return terms[0]
-        return self.from_expression(_NaturalSum(tuple(terms)))
-
-    def natural_product(self, *factors) -> Ordinal:
-        ordinal_factors = tuple(map(self, factors))
-        for index, factor in enumerate(ordinal_factors):
-            expression = factor.expression()
-            if isinstance(expression, _NaturalSum):
-                preceding = ordinal_factors[:index]
-                following = ordinal_factors[index + 1 :]
-                return self.natural_sum(
-                    *(
-                        self.natural_product(*preceding, term, *following)
-                        for term in expression.terms
-                    )
-                )
-        normalized: list[Ordinal] = []
-        finite_part = ZZ.one()
-        for factor in ordinal_factors:
-            expression = factor.expression()
-            if isinstance(expression, _FiniteOrdinal):
-                if expression.value == 0:
-                    return self.zero()
-                finite_part *= expression.value
-            elif isinstance(expression, _NaturalProduct):
-                normalized.extend(expression.factors)
-            else:
-                normalized.append(factor)
-        if finite_part != 1 or not normalized:
-            normalized.append(self(finite_part))
-        normalized.sort(key=repr)
-        if len(normalized) == 1:
-            return normalized[0]
-        return self.from_expression(_NaturalProduct(tuple(normalized)))
-
-    def proves_le(self, left, right) -> bool:
-        source = self(left)
-        target = self(right)
-        if source == target:
-            return True
-        source_expression = source.expression()
-        target_expression = target.expression()
-        if isinstance(source_expression, _FiniteOrdinal):
-            if isinstance(target_expression, _FiniteOrdinal):
-                return source_expression.value <= target_expression.value
-            return True
-        if isinstance(target_expression, _FiniteOrdinal):
-            return False
-        if isinstance(source_expression, _InitialOrdinal) and isinstance(
-            target_expression, _InitialOrdinal
-        ):
-            return self.proves_le(source_expression.index, target_expression.index)
-        return False
 
 
 @cached_function
 def Ordinals() -> OrdinalSemiring:
-    return OrdinalSemiring()
+    return object_of(OrdinalSemirings())
 
 
 def ordinal(value) -> Ordinal:
@@ -888,12 +896,12 @@ omega0 = omega(0)
 
 
 @cached_function
-def _cardinal_with_expression(expression) -> Cardinal:
-    return Cardinal(expression)
+def _cardinal_with_expression(expression) -> "Cardinalities.ObjectType":
+    return object_of(Cardinalities(), expression=expression)
 
 
-def cardinal(value) -> Cardinal:
-    if isinstance(value, Cardinal):
+def cardinal(value) -> "Cardinalities.ObjectType":
+    if value in Cardinalities():
         return value
     if value == Infinity:
         return aleph(0)
@@ -911,7 +919,7 @@ def cardinal(value) -> Cardinal:
     return _cardinal_with_expression(_FiniteCardinal(integer))
 
 
-def aleph(index) -> Cardinal:
+def aleph(index) -> "Cardinalities.ObjectType":
     return _cardinal_with_expression(_AlephCardinal(ordinal(index)))
 
 
@@ -920,13 +928,10 @@ continuum = cardinal(2) ** aleph0
 
 
 __all__ = [
-    "Cardinal",
     "CardinalComparison",
     "Cardinalities",
     "CardinalityHomset",
     "CardinalityMorphism",
-    "Ordinal",
-    "OrdinalSemiring",
     "OrdinalSemirings",
     "Ordinals",
     "aleph",

@@ -3,6 +3,8 @@
 from sage.categories.category import Category
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from sage.misc.abstract_method import abstract_method
+from sage.structure.parent import Parent
+from dzack_research.preamble.owned_category import OwnedParent
 from sage.misc.constant_function import ConstantFunction
 from sage.structure.category_object import CategoryObject
 from sage.structure.parent import Parent
@@ -101,6 +103,14 @@ class Objects(OwnedCategory):
     ``Objects``/``Sets`` categories remain runtime substrate only and are not
     semantic ancestors of owned categories.
     """
+
+    class ParentMethods(OwnedParent, Parent):
+        r"""The owned root of every object chain.
+
+        Every owned object is an object, so the host runtime initialization
+        belongs here and nowhere above.  A level declares its own datum and
+        threads into this one with a cooperative ``super().__init__(**rest)``.
+        """
 
     def super_categories(self):
         return []
