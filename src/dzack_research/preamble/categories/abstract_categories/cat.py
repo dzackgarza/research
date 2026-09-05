@@ -10,9 +10,10 @@ from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    ArrowCategory,
+from sage.categories.objects import Objects as SageObjects
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    fold_construction,
 )
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
@@ -94,15 +95,29 @@ class CategoryFunctorHomset(CategoricalHomset):
         return self(IdentityFunctor(self.domain().represented_category()))
 
 
-class Cat(OwnedCategory):
-    r"""The represented category of categories."""
+class Cat(Category):
+    r"""The represented category of categories.
+
+    ``Cat`` deliberately does not take the owned base that makes a category an
+    object of ``Cat``.  Applying it here would assert a self-membership
+    statement and would make ``Cat().Mor(Cat(), Cat())`` an apparent
+    1-categorical construction; that higher level is not modelled.  Every
+    other owned category is such an object.
+    """
 
     def __init__(self) -> None:
         self._arrows = {}
         super().__init__()
 
+
     def super_categories(self):
-        return [Objects()]
+        # A category is an object.  This one edge names Sage's ``Objects`` and
+        # not the owned one: every owned category is an object of ``Cat``, so
+        # an owned supercategory here would have to be constructed while
+        # ``Cat`` itself is still under construction.  The owned ``Objects``
+        # is a category like any other and is an object of ``Cat``; it is this
+        # Sage runtime edge that is Sage's.
+        return [SageObjects()]
 
     def __contains__(self, candidate) -> bool:
         return isinstance(candidate, (Category, CategoryObject))
@@ -141,12 +156,6 @@ class Cat(OwnedCategory):
             raise ValueError("functors are not composable in Cat")
         return second * first
 
-    def an_object(self):
-        r"""The category of sets, as an object of ``Cat``."""
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-
-        return self.object(Sets())
-
     def product(self, factors):
         r"""Return the product of a finite family of categories.
 
@@ -154,7 +163,7 @@ class Cat(OwnedCategory):
         with products, and its objects happen to be categories.  ``C * D`` is
         the operator notation that delegates here.
         """
-        return self._fold_construction(
+        return fold_construction(
             self._categorical_product, factors, name="Product factors"
         )
 

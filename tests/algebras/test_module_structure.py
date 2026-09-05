@@ -13,7 +13,6 @@ from dzack_research.preamble.all import (
     QQ,
     QuadraticField,
     SymmetricAlgebraOn,
-    TensorProduct,
     ZZ,
     algebra_underlying_module_functor,
 )
@@ -29,7 +28,7 @@ def _gaussian_integers():
 
 
 def _multiplication_from_structure_constants(module, images):
-    return TensorProduct(module, module).from_bilinear(
+    return Modules(module.base_ring()).tensor_product([module, module]).from_bilinear(
         BilinearMap(module, module, module, images)
     )
 
@@ -95,7 +94,7 @@ def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -
     tensor = multiplication.domain()
 
     assert multiplication.codomain() is order
-    assert multiplication.parent().Element is ModuleMorphism
+    assert isinstance(multiplication, ModuleMorphism)
     assert tensor.tensor_factor(0) is order
     assert tensor.tensor_factor(1) is order
     assert multiplication(tensor.pure_tensor(one, imag)) == one * imag

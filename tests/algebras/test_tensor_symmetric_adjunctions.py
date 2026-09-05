@@ -3,6 +3,7 @@ from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 
 from dzack_research.preamble.all import (
+    Modules,
     Algebras,
     AlternatingAlgebraOf,
     BasedFreeModule,
@@ -14,7 +15,6 @@ from dzack_research.preamble.all import (
     FinitelyPresentedTorsionModules,
     SymmetricAlgebras,
     TensorAlgebras,
-    TensorProduct,
     ZZ,
     algebra_homset,
     module_homset,
@@ -38,7 +38,7 @@ def _dual_numbers_mod_four():
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4, 4))
     one = module.module_generator(0)
     epsilon = module.module_generator(1)
-    multiplication = TensorProduct(module, module).from_bilinear(
+    multiplication = Modules(module.base_ring()).tensor_product([module, module]).from_bilinear(
         BilinearMap(
             module,
             module,
@@ -362,7 +362,7 @@ def test_iterated_free_algebra_normalizes_relations_in_actual_underlying_pieces(
     dual_module = BasedFreeModule(ZZ, finite_ordered_set(("one", "epsilon")))
     dual_one = dual_module.module_generator("one")
     dual_epsilon = dual_module.module_generator("epsilon")
-    dual_multiplication = TensorProduct(dual_module, dual_module).from_bilinear(
+    dual_multiplication = Modules(dual_module.base_ring()).tensor_product([dual_module, dual_module]).from_bilinear(
         BilinearMap(
             dual_module,
             dual_module,

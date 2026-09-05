@@ -1,5 +1,5 @@
 
-from dzack_research.preamble.all import OppositeCategory, ProductCategory, Sets
+from dzack_research.preamble.all import Cat, Sets
 
 
 def test_opposite_category_reverses_arrows_and_composition() -> None:
@@ -9,7 +9,7 @@ def test_opposite_category_reverses_arrows_and_composition() -> None:
     f = Sets().Mor(a, b)(lambda x: b(min(int(x), 1)))
     g = Sets().Mor(b, c)(lambda _x: c(0))
 
-    opposite = OppositeCategory(Sets())
+    opposite = Sets().opposite()
     op_a = opposite(a)
     op_b = opposite(b)
     op_c = opposite(c)
@@ -26,7 +26,7 @@ def test_opposite_category_reverses_arrows_and_composition() -> None:
 
 
 def test_product_category_has_componentwise_homs_identities_and_composition() -> None:
-    category = ProductCategory(Sets(), Sets())
+    category = Cat().product([Sets(), Sets()])
     left = category(Sets.Δ[2], Sets.Δ[1])
     middle = category(Sets.Δ[1], Sets.Δ[2])
     right = category(Sets.Δ[0], Sets.Δ[0])
