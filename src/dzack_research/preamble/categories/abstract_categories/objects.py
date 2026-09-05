@@ -112,6 +112,18 @@ class Objects(OwnedCategory):
         threads into this one with a cooperative ``super().__init__(**rest)``.
         """
 
+        def __call__(self, *arguments, **options):
+            r"""Construct an element of this object, without coercion discovery.
+
+            The values an owned object accepts are themselves owned, and Sage's
+            coercion graph has never heard of them: asked for a conversion map
+            it tries to build a Hom in its own ``Sets``, finds the domain absent
+            and raises, before this object's own constructor is ever reached.
+            The crossing into owned data happens in ``_element_constructor_``,
+            which is the one boundary that admits foreign values.
+            """
+            return self._element_constructor_(*arguments, **options)
+
     def super_categories(self):
         return []
 

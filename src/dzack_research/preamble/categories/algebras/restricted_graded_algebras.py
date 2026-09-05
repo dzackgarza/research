@@ -157,16 +157,16 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         return self._preamble_algebra_generating_set
 
     def algebra_generator(self, label):
-        kind, source_label = label
-        if kind == "degree zero":
-            return self.from_degree_zero(
-                self.degree_zero_algebra().algebra_generator(source_label)
-            )
-        if kind == "degree one":
-            return self.from_realization(
-                self.extension_algebra().algebra_generator(source_label)
-            )
-        raise ValueError(f"unknown graded-algebra generator label {label!r}")
+        r"""Return the generator at a point of the coproduct framing.
+
+        The framing is the coproduct of the degree-zero algebra's generating
+        set with the extension module's, so a label carries which summand it
+        came from and its point there.
+        """
+        labels = self.algebra_generating_set()
+        if label not in labels:
+            raise ValueError(f"{label!r} is not an algebra-generator label")
+        return self._preamble_algebra_generator_values[label]
 
     def algebra_structure_morphism(self):
         return ring_morphism(
