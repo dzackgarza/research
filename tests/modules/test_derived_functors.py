@@ -15,9 +15,6 @@ from dzack_research.preamble.all import (
     Tor,
     ring_as_module,
 )
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    TensorProduct,
-)
 
 
 def _cyclic(ring, generator):
@@ -55,8 +52,9 @@ def test_tor_remembers_the_tensored_resolution() -> None:
     tor = Tor(1, six, four)
     tensored = tor.cochain_complex()
     assert tor.cohomological_degree() == 0
-    assert tensored.graded_piece(1) is TensorProduct(six.free_resolution().term(0), four)
-    assert tensored.graded_piece(0) is TensorProduct(six.free_resolution().term(1), four)
+    assert tensored.graded_piece(1).tensor_factor(0) is six.free_resolution().term(0)
+    assert tensored.graded_piece(0).tensor_factor(0) is six.free_resolution().term(1)
+    assert tensored.graded_piece(0).tensor_factor(1) is four
     assert Tor(0, six, four).cochain_complex() is tensored
 
 

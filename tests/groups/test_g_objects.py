@@ -21,12 +21,11 @@ from dzack_research.preamble.all import (
     Sets,
     finite_g_set,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
 
 
 def _swap_two_of_three():
     group = Groups.C(2)
-    points = finite_ordered_set((ZZ(0), ZZ(1), ZZ(2)))
+    points = (ZZ(0), ZZ(1), ZZ(2))
     swapped = {ZZ(0): ZZ(1), ZZ(1): ZZ(0), ZZ(2): ZZ(2)}
 
     def action(group_element, point):
@@ -38,7 +37,7 @@ def _swap_two_of_three():
 def _regular_representation(ring):
     r"""The free module on the elements of ``S_3``, acted on by left translation."""
     group = Groups.S(3)
-    module = FreeModule(ring, finite_ordered_set(tuple(group)))
+    module = FreeModule(ring, tuple(group))
 
     def act(group_element, vector):
         return module.Mor(module)(

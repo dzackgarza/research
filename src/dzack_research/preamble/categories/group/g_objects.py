@@ -25,8 +25,38 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.group.groups import _owned_group
+from dzack_research.preamble.categories.group.groups import (
+    GroupsWithChosenFinitePresentation,
+    _owned_group,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+def _verify_relators(action, group, endomorphisms) -> None:
+    r"""Check that the generator images satisfy the group's chosen relators.
+
+    An action is a left action: ``rho(s_1 s_2) = rho(s_1) rho(s_2)``, the
+    product of the matrices acting on an ordered basis.  A function on the
+    generators extends to a group morphism exactly when every defining
+    relator, composed in that order, is the identity.  This decides that the
+    generator images define an action; the datum's values on the other group
+    elements are the caller's assertion and are not enumerated.
+    """
+    if group not in GroupsWithChosenFinitePresentation():
+        return
+    # Private serialization: Tietze letters index the chosen generators in
+    # their recorded order, and a negative letter names an inverse.
+    generators = tuple(group.group_generators())
+    identity = endomorphisms.identity()
+    for relator in group.defining_relations():
+        composite = identity
+        for letter in relator.Tietze():
+            generator = generators[abs(int(letter)) - 1]
+            composite = composite * action(generator if int(letter) > 0 else ~generator)
+        assert composite == identity, (
+            f"the generator images do not satisfy the relator {relator}, "
+            f"so they define no left action of {group}"
+        )
 
 
 class EquivariantMorphism(Morphism):
@@ -186,16 +216,17 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         def action(self):
             r"""Return the chosen action as the set morphism ``G -> Mor_C(X, X)``.
 
-            Its values are automorphisms of ``X`` in ``C``.  That they compose
-            as the group multiplies is the hypothesis the caller's datum
-            asserts; the represented finite ``G``-sets verify it through their
-            permutation representation, and no other specialization checks it.
+            Its values are automorphisms of ``X`` in ``C``, and the action is
+            a left action: ``rho(s_1 s_2) = rho(s_1) rho(s_2)``.  The generator
+            images are checked against the group's chosen relators once, here.
             """
             endomorphisms = self.underlying_category().Mor(self, self)
             datum = self._preamble_action_datum
-            return Sets().Mor(self.acting_group(), endomorphisms)(
+            action = Sets().Mor(self.acting_group(), endomorphisms)(
                 lambda group_element: endomorphisms(datum(group_element))
             )
+            _verify_relators(action, self.acting_group(), endomorphisms)
+            return action
 
         @cached_method
         def action_of(self, group_element):
