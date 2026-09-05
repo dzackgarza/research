@@ -36,6 +36,7 @@ class StructureSheaf(SageObject):
 
     def __init__(self, ringed_space) -> None:
         self._ringed_space = ringed_space
+        self._restriction_maps = {}
 
     def ringed_space(self):
         return self._ringed_space
@@ -66,6 +67,65 @@ class StructureSheaf(SageObject):
             )
         return operation(distinguished_open)
 
+    def restriction_map(self, source_open, target_open):
+        r"""Return the represented restriction ``O(source_open) -> O(target_open)``.
+
+        The active basis consists of the affine scheme itself and its represented
+        distinguished opens.  If both opens are proper, the target is accepted
+        exactly when every selected denominator inverted on the source becomes a
+        unit on the target.  This is the localization universal property, rather
+        than a separate containment heuristic on points.
+        """
+
+        ambient = self.ringed_space()
+        key = (id(source_open), id(target_open))
+        cached = self._restriction_maps.get(key)
+        if cached is not None:
+            cached_source, cached_target, restriction = cached
+            if cached_source is source_open and cached_target is target_open:
+                return restriction
+
+        def remember(restriction):
+            self._restriction_maps[key] = (source_open, target_open, restriction)
+            return restriction
+
+        if source_open is ambient:
+            source_sections = self.global_sections()
+        elif _is_distinguished_open_of(source_open, ambient):
+            source_sections = self.sections_on_distinguished_open(source_open)
+        else:
+            raise ValueError("the restriction source is not a represented distinguished open of this affine scheme")
+
+        if target_open is ambient:
+            if source_open is not ambient:
+                raise ValueError("a restriction map is contravariant in open-set inclusion")
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                ring_homset,
+            )
+
+            return remember(ring_homset(source_sections, source_sections).identity())
+        if not _is_distinguished_open_of(target_open, ambient):
+            raise ValueError("the restriction target is not a represented distinguished open of this affine scheme")
+        target_sections = self.sections_on_distinguished_open(target_open)
+
+        if source_open is ambient:
+            restriction = target_open.inclusion().coordinate_algebra_morphism()
+            if restriction.domain() is not source_sections or restriction.codomain() is not target_sections:
+                raise ArithmeticError("the distinguished-open inclusion has the wrong represented pullback")
+            return remember(restriction)
+        if source_open is target_open:
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                ring_homset,
+            )
+
+            return remember(ring_homset(source_sections, source_sections).identity())
+        return remember(_localization_restriction_map(source_sections, target_sections))
+
+    def associated_module_sheaf(self, module):
+        r"""Return the represented affine sheaf ``M~`` on the distinguished-open basis."""
+
+        return AffineModuleSheaf(self.ringed_space(), module)
+
     def stalk(self, point):
         r"""Return ``O_{X,p}`` for a represented affine prime point."""
         operation = getattr(self.ringed_space(), "_structure_sheaf_stalk", None)
@@ -77,6 +137,190 @@ class StructureSheaf(SageObject):
 
     def _repr_(self) -> str:
         return f"Structure sheaf O_{{{self.scheme()}}}"
+
+
+def _is_distinguished_open_of(open_subscheme, ambient) -> bool:
+    return getattr(open_subscheme, "_preamble_distinguished_open_ambient", None) is ambient
+
+
+def _localization_restriction_map(source, target):
+    r"""Return ``S^{-1}A -> T^{-1}A`` when the target inverts every element of ``S``."""
+
+    from dzack_research.preamble.categories.rings.ring_foundation import (
+        LocalizationRings,
+        ring_homset,
+        ring_morphism,
+    )
+
+    if source is target:
+        return ring_homset(source, source).identity()
+    if source not in LocalizationRings() or target not in LocalizationRings():
+        raise TypeError("principal-open restriction between proper opens requires represented localizations")
+    if source.localization_source() is not target.localization_source():
+        raise ValueError("principal-open restriction requires localizations of one affine coordinate ring")
+
+    target_unit = target.localization_map()
+    try:
+        generators = tuple(source.localization_submonoid().monoid_generators())
+    except NotImplementedError as error:
+        raise NotImplementedError(
+            "principal-open restriction currently requires a chosen finite denominator family"
+        ) from error
+    if any(not target_unit(generator).is_unit() for generator in generators):
+        raise ValueError("the target distinguished open is not contained in the source distinguished open")
+
+    def restrict(element):
+        element = source(element)
+        numerator = target_unit(element.numerator())
+        denominator = target_unit(element.denominator())
+        return numerator * denominator.inverse_of_unit()
+
+    return ring_morphism(source, target, restrict)
+
+
+class DistinguishedAffineCover(SageObject):
+    r"""A finite affine cover ``X = union_i D(f_i)`` on a represented affine scheme."""
+
+    def __init__(self, scheme, elements) -> None:
+        algebra = scheme.coordinate_algebra()
+        elements = tuple(algebra(element) for element in elements)
+        if not elements:
+            raise ValueError("a distinguished affine cover requires at least one open")
+        cover_ideal = algebra.ideal(*elements)
+        if not cover_ideal.contains_ambient_element(algebra.one()):
+            raise ValueError("the stated distinguished opens do not cover the affine scheme")
+        self._scheme = scheme
+        self._elements = elements
+        self._opens = tuple(scheme.distinguished_open(element) for element in elements)
+        self._overlaps = {}
+
+    def ambient_scheme(self):
+        return self._scheme
+
+    def defining_elements(self):
+        return self._elements
+
+    def opens(self):
+        return self._opens
+
+    def open(self, index):
+        return self.opens()[int(index)]
+
+    def overlap(self, left_index, right_index):
+        left_index = int(left_index)
+        right_index = int(right_index)
+        if left_index == right_index:
+            return self.open(left_index)
+        key = tuple(sorted((left_index, right_index)))
+        selected = self._overlaps.get(key)
+        if selected is None:
+            left = self.defining_elements()[key[0]]
+            right = self.defining_elements()[key[1]]
+            selected = self.ambient_scheme().distinguished_open(left * right)
+            self._overlaps[key] = selected
+        return selected
+
+    def structure_sheaf_restriction(self, chart_index, other_index):
+        overlap = self.overlap(chart_index, other_index)
+        return self.ambient_scheme().structure_sheaf().restriction_map(
+            self.open(chart_index),
+            overlap,
+        )
+
+    def _repr_(self):
+        return f"Distinguished affine cover of {self.ambient_scheme()} by {len(self.opens())} opens"
+
+
+class AffineModuleSheaf(SageObject):
+    r"""The quasi-coherent sheaf ``M~`` on the represented distinguished-open basis."""
+
+    def __init__(self, scheme, module) -> None:
+        algebra = scheme.coordinate_algebra()
+        if module.base_ring() is not algebra:
+            raise ValueError("an affine module sheaf requires a module over the scheme coordinate ring")
+        self._scheme = scheme
+        self._module = module
+        self._local_sections = {}
+
+    def ringed_space(self):
+        return self._scheme
+
+    scheme = ringed_space
+
+    def module(self):
+        return self._module
+
+    def global_sections(self):
+        return self.module()
+
+    def sections_on_distinguished_open(self, distinguished_open):
+        if not _is_distinguished_open_of(distinguished_open, self.scheme()):
+            raise ValueError("module sections are requested on a different affine scheme")
+        key = id(distinguished_open)
+        selected = self._local_sections.get(key)
+        if selected is not None and selected.base_ring() is distinguished_open.coordinate_algebra():
+            return selected
+        section_ring = self.scheme().structure_sheaf().sections_on_distinguished_open(
+            distinguished_open
+        )
+        selected = section_ring.localize_module(self.module())
+        self._local_sections[key] = selected
+        return selected
+
+    def restriction_map(self, source_open, target_open):
+        r"""Return the module restriction, linear over the structure-sheaf restriction."""
+
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            module_homset,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            restrict_scalars,
+        )
+
+        ambient = self.scheme()
+        structure_restriction = ambient.structure_sheaf().restriction_map(
+            source_open,
+            target_open,
+        )
+        source_sections = (
+            self.global_sections()
+            if source_open is ambient
+            else self.sections_on_distinguished_open(source_open)
+        )
+        if target_open is ambient:
+            return module_homset(source_sections, source_sections).identity()
+        target_sections = self.sections_on_distinguished_open(target_open)
+
+        if source_open is ambient:
+            localization = target_sections.localization_functor()
+            if localization.ring_map() is not structure_restriction:
+                raise ArithmeticError("module and function restriction selected different localization maps")
+            return localization.unit(self.module(), localized=target_sections)
+        if source_open is target_open:
+            return module_homset(source_sections, source_sections).identity()
+
+        restricted_target = restrict_scalars(target_sections, structure_restriction)
+        source_ring = source_sections.base_ring()
+        original_ring = source_ring.localization_source()
+
+        def restrict(section):
+            section = source_sections(section)
+            inverse_denominator = structure_restriction(
+                source_ring.fraction(original_ring.one(), section.denominator())
+            )
+            target_value = target_sections.scalar_multiple(
+                inverse_denominator,
+                target_sections.fraction(section.numerator()),
+            )
+            return restricted_target.wrap(target_value)
+
+        return module_homset(source_sections, restricted_target).elementwise(
+            restrict,
+            verify_linearity=False,
+        )
+
+    def _repr_(self):
+        return f"Affine module sheaf associated to {self.module()} on {self.scheme()}"
 
 
 class RingedSpaces(CategoryPacketMethods, Category):
@@ -127,6 +371,8 @@ class LocallyRingedSpaces(CategoryPacketMethods, Category):
 
 
 __all__ = [
+    "AffineModuleSheaf",
+    "DistinguishedAffineCover",
     "LocallyRingedSpaces",
     "RingedSpaces",
     "SchemeUnderlyingSpace",

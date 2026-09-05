@@ -507,6 +507,12 @@ class Schemes(OwnedCategoryOverBaseRing):
                 raise NotImplementedError(
                     "distinguished-open structure-sheaf sections are represented for affine schemes"
                 )
+            if getattr(
+                distinguished_open,
+                "_preamble_distinguished_open_ambient",
+                None,
+            ) is self:
+                return distinguished_open.coordinate_algebra()
             spectrum = self.underlying_space()
             if distinguished_open.codomain() is not spectrum:
                 raise ValueError(
@@ -862,7 +868,13 @@ class AffineSchemes(_SchemePropertyCategory):
             """
             from dzack_research.preamble.categories.rings.commutative_algebra import Localization
 
-            localized = Localization(self.coordinate_algebra(), element)
+            algebra = self.coordinate_algebra()
+            element = algebra(element)
+            cache = getattr(self, "_preamble_distinguished_open_cache", ())
+            for cached_element, cached_open in cache:
+                if cached_element == element:
+                    return cached_open
+            localized = Localization(algebra, element)
             localization_map = localized.localization_map()
             spec_inclusion = affine_spec_morphism(localization_map)
             open_subscheme = spec_inclusion.domain()
@@ -873,8 +885,31 @@ class AffineSchemes(_SchemePropertyCategory):
             )
             inclusion._preamble_coordinate_algebra_morphism = localization_map
             open_subscheme._preamble_inclusion = inclusion
+            open_subscheme._preamble_distinguished_open_ambient = self
+            open_subscheme._preamble_distinguished_open_element = element
             base = self.scheme_base_ring()
-            return refine_scheme(open_subscheme, base, [OpenImmersions(self)])
+            open_subscheme = refine_scheme(open_subscheme, base, [OpenImmersions(self)])
+            self._preamble_distinguished_open_cache = (
+                *cache,
+                (element, open_subscheme),
+            )
+            return open_subscheme
+
+        def distinguished_open_cover(self, *elements):
+            r"""Return the finite cover by ``D(f_i)`` when the ``f_i`` generate the unit ideal."""
+
+            if len(elements) == 1 and isinstance(elements[0], (tuple, list)):
+                elements = tuple(elements[0])
+            from dzack_research.preamble.categories.schemes.ringed_spaces import (
+                DistinguishedAffineCover,
+            )
+
+            return DistinguishedAffineCover(self, elements)
+
+        def associated_module_sheaf(self, module):
+            r"""Return ``M~`` on the represented distinguished-open basis of this affine scheme."""
+
+            return self.structure_sheaf().associated_module_sheaf(module)
 
 
 class _AffineGSchemes(OwnedCategory):
@@ -2321,6 +2356,15 @@ class OpenImmersions(_SchemeSubobjectsOf):
         ambient = self.ambient_scheme()
         first = next(iter(ambient.coordinate_algebra().algebra_generators()))
         return ambient.distinguished_open(first)
+
+    class ParentMethods:
+        def is_distinguished_open(self):
+            return getattr(self, "_preamble_distinguished_open_ambient", None) is self.ambient_scheme()
+
+        def distinguished_open_element(self):
+            if not self.is_distinguished_open():
+                raise ValueError("this open immersion is not represented by one distinguished element")
+            return self._preamble_distinguished_open_element
 
 
 class SchemeMonomorphisms(MonoCategoryOf):
