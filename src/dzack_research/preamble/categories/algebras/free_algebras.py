@@ -12,6 +12,8 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function
 from sage.rings.ideal import Ideal_generic
+from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
+from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -263,6 +265,7 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         free_source_module=None,
         commutative_backend=False,
         finite_free_degree=None,
+        presentation_flattening=None,
     ) -> None:
         if extra_construction_data is not None:
             for name, value in extra_construction_data:
@@ -270,15 +273,24 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         self._preamble_presentation_ring = presentation_ring
         self._preamble_presentation_relations = selected_relations
         self._preamble_presentation_ideal = presentation_ideal
-        self._preamble_lift_to_presentation = lambda element: presentation_ring._from_engine_element(
-            quotient_engine(self._engine_element(element)).lift()
+        unflatten = (
+            None if presentation_flattening is None else presentation_flattening.section()
         )
+
+        def lift_to_presentation(element):
+            representative = quotient_engine(self._engine_element(element)).lift()
+            if unflatten is not None:
+                representative = unflatten(representative)
+            return presentation_ring._from_engine_element(representative)
+
+        self._preamble_lift_to_presentation = lift_to_presentation
         if free_source_module is not None:
             self._preamble_free_algebra_source_module = free_source_module
 
         placement = [
             FinitelyPresentedAlgebras(base),
             AlgebrasWithChosenFinitePresentation(base),
+            CommutativeAlgebras(base),
             *tuple(extra_categories),
         ]
         if finite_free_degree is not None:
@@ -296,11 +308,23 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             )
             placement.append(FinitelyGeneratedFreeModules(base))
 
+        generator_values = None
+        if presentation_flattening is not None:
+            presentation_engine = _engine_ring(presentation_ring)
+            # The flattened engine lists parameter variables before these
+            # outer algebra generators, so positional backend generators no
+            # longer represent the selected algebra framing.
+            generator_values = tuple(
+                quotient_engine(presentation_flattening(presentation_engine.gen(position)))
+                for position in range(presentation_engine.ngens())
+            )
+
         _OwnedAlgebraParent.__init__(
             self,
             quotient_engine,
             base,
             labels,
+            generator_values=generator_values,
             categories=tuple(placement),
         )
         self._preamble_algebra_presentation_morphism = algebra_homset(
@@ -342,7 +366,32 @@ def FinitelyPresentedAlgebra(
     presentation_ideal, selected_relations = _relations_to_ideal(
         presentation_ring, relations
     )
-    quotient_engine = _engine_ring(presentation_ring).quotient(presentation_ideal)
+    presentation_engine = _engine_ring(presentation_ring)
+    presentation_flattening = None
+    quotient_presentation_engine = presentation_engine
+    quotient_ideal = presentation_ideal
+    if isinstance(presentation_engine, MPolynomialRing_base) and isinstance(
+        presentation_engine.base_ring(),
+        (PolynomialRing_generic, MPolynomialRing_base),
+    ):
+        # Sage's multivariate quotient reduction over a polynomial
+        # coefficient ring need not have a Gröbner backend.  Keep the owned
+        # relative presentation nested, but compute in the canonically
+        # flattened polynomial ring where the coefficient variables become
+        # ordinary variables over the ultimate coefficient ring.
+        presentation_flattening = presentation_engine.flattening_morphism()
+        quotient_presentation_engine = presentation_flattening.codomain()
+        quotient_ideal = quotient_presentation_engine.ideal(
+            [
+                presentation_flattening(
+                    presentation_ring._engine_element(
+                        selected_relations.value(index)
+                    )
+                )
+                for index in selected_relations.index_set()
+            ]
+        )
+    quotient_engine = quotient_presentation_engine.quotient(quotient_ideal)
     labels = presentation_ring.algebra_generating_set()
     finite_free_degree = None
     label_size = labels.cardinality()
@@ -372,6 +421,7 @@ def FinitelyPresentedAlgebra(
         free_source_module=_free_source_module,
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
+        presentation_flattening=presentation_flattening,
     )
 
 
