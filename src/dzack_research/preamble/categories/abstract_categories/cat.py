@@ -156,6 +156,18 @@ class Cat(Category):
             raise ValueError("functors are not composable in Cat")
         return second * first
 
+    def ArrowCategory(self):
+        r"""Return the arrow category of ``Cat``.
+
+        Its own method because ``Cat`` is not an object of ``Cat``, so it
+        does not inherit the constructions every other category gets.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            ArrowCategory as _ArrowCategory,
+        )
+
+        return _ArrowCategory(self)
+
     def product(self, factors):
         r"""Return the product of a finite family of categories.
 

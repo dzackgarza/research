@@ -52,6 +52,48 @@ def _swap_group_module():
     return group, GroupModule(module, group, swap)
 
 
+def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() -> None:
+    module = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    e = module.module_generator("e")
+    identity = module_homset(module, module).identity()
+    negative_identity = module_homset(module, module)({"e": -e})
+
+    equalizer = Equalizer(identity, negative_identity)
+    coequalizer = Coequalizer(identity, negative_identity)
+
+    assert equalizer.rank() == 0
+    invariant_factors = coequalizer.invariant_factors()
+    assert invariant_factors.cardinality() == 1
+    assert invariant_factors.unrank(0) == ZZ(2)
+
+
+def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> None:
+    group = Groups.V4()
+    first, second = tuple(group.group_generators())
+    product = first * second
+    module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))
+
+    def action(group_element, vector):
+        coefficients = module_coefficients(vector, module)
+        first_sign = -1 if group_element in (first, product) else 1
+        second_sign = -1 if group_element in (second, product) else 1
+        return module.linear_combination(
+            {
+                "e": first_sign * coefficients.get("e", ZZ.zero()),
+                "f": second_sign * coefficients.get("f", ZZ.zero()),
+            }
+        )
+
+    acted = GroupModule(module, group, action)
+    invariants = acted.module_invariants()
+    coinvariants = acted.module_coinvariants()
+
+    assert invariants.rank() == 0
+    invariant_factors = coinvariants.invariant_factors()
+    assert invariant_factors.cardinality() == 2
+    assert tuple(invariant_factors) == (ZZ(2), ZZ(2))
+
+
 def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_and_triangles() -> None:
     adjunction = free_forgetful_adjunction(ZZ)
     free = adjunction.left_adjoint()
@@ -77,7 +119,7 @@ def test_free_module_underlying_set_adjunction_has_the_hom_bijection_naturality_
 
     source_set = finite_ordered_set((ZZ(1), ZZ(2)))
     target_set = finite_ordered_set((ZZ(3), ZZ(4)))
-    set_map = Sets().Mor( sage.cate, ries.homse)(lambda value: ZZ(3) if value == 1 else ZZ(4))
+    set_map = Sets().Mor(source_set, target_set)(lambda value: ZZ(3) if value == 1 else ZZ(4))
     left, right = adjunction.unit_transformation().naturality_square(set_map)
     _assert_maps_agree(left, right, source_set)
 
@@ -347,6 +389,7 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
     target_generator = target.group_generators().unrank(0)
     from dzack_research.preamble.categories.group import group_homset
 
+    assert adjunction.right_adjoint()(target) is target
     sign_to_six = group_homset(group, target)(
         {
             group_generators[0]: target.one(),
@@ -475,10 +518,10 @@ def test_free_and_scalar_extension_functors_preserve_identities_and_composition(
     source_set = finite_ordered_set((ZZ(1), ZZ(2)))
     middle_set = finite_ordered_set((ZZ(3), ZZ(4)))
     target_set = finite_ordered_set((ZZ(5), ZZ(6)))
-    identity = Sets().Mor( sage.cate, ries.homse)(lambda value: value)
-    first = Sets().Mor( sage.cate, ries.homse)(lambda value: ZZ(3) if value == 1 else ZZ(4))
-    second = Sets().Mor( sage.cate, ries.homse)(lambda value: ZZ(6) if value == 3 else ZZ(5))
-    composite = Sets().Mor( sage.cate, ries.homse)(lambda value: second(first(value)))
+    identity = Sets().Mor(source_set, source_set)(lambda value: value)
+    first = Sets().Mor(source_set, middle_set)(lambda value: ZZ(3) if value == 1 else ZZ(4))
+    second = Sets().Mor(middle_set, target_set)(lambda value: ZZ(6) if value == 3 else ZZ(5))
+    composite = Sets().Mor(source_set, target_set)(lambda value: second(first(value)))
 
     free_source = free(source_set)
     carried_identity = free(identity)
