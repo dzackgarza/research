@@ -43,7 +43,7 @@ def test_the_group_algebra_by_subscript_notation() -> None:
 def test_the_regular_representation_is_the_group_algebra_as_a_module() -> None:
     group = Groups.S(3)
     regular = GroupAlgebra(QQ, group).regular_representation()
-    assert regular in GroupModules(QQ, group)
+    assert regular in Modules(QQ[group])
     assert regular.rank() == 6
     assert regular.module_invariants().rank() == 1
     assert regular.character()(group.one()) == 6
@@ -58,24 +58,24 @@ def test_the_regular_representation_is_the_group_algebra_as_a_module() -> None:
 def test_ext_and_tor_over_the_integers() -> None:
     six = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((6,))
     four = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((4,))
-    integers = ring_as_module(ZZ)
-    assert Ext(1, six, integers).cardinality() == 6
-    assert Ext(0, six, integers).cardinality() == 1
-    assert Ext(1, six, four).cardinality() == 2
-    assert Ext(2, six, four).cardinality() == 1
-    assert Tor(1, six, four).cardinality() == 2
-    assert Tor(0, six, four).cardinality() == 2
-    assert Tor(1, six, integers).cardinality() == 1
-    assert Ext(1, integers, six).cardinality() == 1
+    integers = ZZ.regular_module()
+    assert six.ext(integers, 1).cardinality() == 6
+    assert six.ext(integers, 0).cardinality() == 1
+    assert six.ext(four, 1).cardinality() == 2
+    assert six.ext(four, 2).cardinality() == 1
+    assert six.tor(four, 1).cardinality() == 2
+    assert six.tor(four, 0).cardinality() == 2
+    assert six.tor(integers, 1).cardinality() == 1
+    assert integers.ext(six, 1).cardinality() == 1
 
 
 def test_ext_and_tor_as_methods(pid) -> None:
     ring = pid
     torsion = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(6),))
-    assert torsion.ext(ring_as_module(ring), 1).cardinality() == torsion.cardinality()
+    assert torsion.ext(ring.regular_module(), 1).cardinality() == torsion.cardinality()
     assert torsion.tor(torsion, 1).cardinality() == torsion.cardinality()
     assert torsion.projective_dimension() == (0 if ring(6).is_unit() else 1)
-    assert ring_as_module(ring).projective_dimension() == 0
+    assert ring.regular_module().projective_dimension() == 0
 
 
 # ---------------------------------------------------------------------------
@@ -534,8 +534,8 @@ def test_initial_terminal_and_zero_objects_of_the_familiar_categories() -> None:
 
 
 def test_forgetful_and_free_functors_by_their_usual_names() -> None:
-    forget = ForgetfulFunctor(Groups(), Sets())
-    free = FreeFunctor(Sets(), Groups())
+    forget = Groups().underlying_set()
+    free = Sets().free_group()
     assert forget(Groups.S(3)).cardinality() == 6
     assert forget.is_faithful()
     assert not forget.is_full()
@@ -544,7 +544,7 @@ def test_forgetful_and_free_functors_by_their_usual_names() -> None:
     assert forget.left_adjoint() == free
     assert (forget * free)(Sets.Δ[0]).cardinality() == aleph0
     assert forget.compose(free) == forget * free
-    assert ForgetfulFunctor(Modules(ZZ), AbelianGroups())(FreeModule(ZZ, 2)).is_abelian()
-    assert ForgetfulFunctor(OwnedRings(), AbelianGroups())(ZZ) in AbelianGroups()
+    assert Modules(ZZ).underlying_abelian_group()(FreeModule(ZZ, 2)).is_abelian()
+    assert OwnedRings().underlying_abelian_group()(ZZ) in AbelianGroups()
     assert Yoneda(Sets())(Sets.Δ[1]) in FunctorCategory(OppositeCategory(Sets()), Sets())
-    assert HomFunctor(Sets(), Sets.Δ[1])(Sets.Δ[2]).cardinality() == 9
+    assert Sets().hom_functor(Sets.Δ[1])(Sets.Δ[2]).cardinality() == 9

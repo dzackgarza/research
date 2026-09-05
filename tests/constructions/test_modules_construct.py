@@ -93,7 +93,7 @@ def test_free_module_of_countably_infinite_rank(commutative_ring) -> None:
 
 def test_the_ring_as_a_module_over_itself(commutative_ring) -> None:
     ring = commutative_ring
-    regular = ring_as_module(ring)
+    regular = ring.regular_module()
     assert regular in FreeModules(ring)
     assert regular.rank() == 1
     assert regular.base_ring() is ring
@@ -114,7 +114,7 @@ def test_dual_of_a_free_module(commutative_ring) -> None:
 
 def test_internal_hom_between_free_modules(commutative_ring) -> None:
     ring = commutative_ring
-    homs = InternalHom(_free(ring, 2), _free(ring, 3))
+    homs = _free(ring, 2).Hom(_free(ring, 3))
     assert homs in Modules(ring)
     assert homs in FinitelyGeneratedFreeModules(ring)
     assert homs.rank() == 6
@@ -124,7 +124,7 @@ def test_tensor_product_of_free_modules(commutative_ring) -> None:
     ring = commutative_ring
     left = _free(ring, 2)
     right = _free(ring, 3)
-    product = TensorProduct(left, right)
+    product = left.tensor_product(right)
     assert product in TensorProductModules(ring)
     assert product in FinitelyGeneratedFreeModules(ring)
     assert product.rank() == 6
@@ -289,7 +289,7 @@ def test_free_resolution_over_a_principal_ideal_domain(pid) -> None:
     relations = _free(ring, 1)
     presentation = relations.Mor(generators)({0: 6 * generators.module_generator(0)})
     module = FinitelyPresentedModule(presentation)
-    resolution = free_resolution(module)
+    resolution = module.free_resolution()
 
     assert resolution.is_exact()
     assert resolution.term(0) is generators
@@ -307,7 +307,7 @@ def test_a_principal_ideal_as_a_module(dedekind_domain) -> None:
     ideal = Ideal(ring, [ring(3)])
     assert ideal in Modules(ring)
     assert ideal in ModuleSubobjects(ring)
-    assert ideal.inclusion().codomain() is ring_as_module(ring)
+    assert ideal.inclusion().codomain() is ring.regular_module()
     assert ideal.index() == ring.quotient_ring(ring.ideal(ring(3))).cardinality()
     assert ideal.rank() == (0 if ring(3) == ring.zero() else 1)
 

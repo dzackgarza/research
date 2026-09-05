@@ -55,7 +55,7 @@ def test_a_catalogue_involution_session(name) -> None:
     assert involution != k3.O().one()
 
     group = Groups.C(2)
-    acted = GroupLattice(k3, group, lambda g, v: v if g == group.one() else involution(v))
+    acted = Lattices(ZZ[group])(k3, lambda g, v: v if g == group.one() else involution(v))
     rendered(acted)
     invariant = acted.invariant_lattice()
     coinvariant_lattice = acted.formed_coinvariants()

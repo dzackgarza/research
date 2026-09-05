@@ -174,7 +174,7 @@ def test_module_morphisms_as_matrices_and_back(commutative_ring) -> None:
     e0, e1 = module.module_generator(0), module.module_generator(1)
     morphism = module.Mor(module)({0: e0 + e1, 1: 2 * e1})
     matrix = morphism.matrix()
-    homs = InternalHom(module, module)
+    homs = module.Hom(module)
 
     assert matrix in MatrixSpace(ring, 2)
     assert matrix.determinant() == 2 * ring.one()

@@ -73,14 +73,14 @@ def test_abelianization_of_every_finite_catalogue_group(finite_group) -> None:
     name, group, _ = finite_group
     if name not in ABELIANIZATION_ORDER:
         return
-    abelianization = AbelianizationFunctor()(group)
+    abelianization = Groups().abelianization()(group)
     assert abelianization in AbelianGroups()
     assert abelianization in Modules(ZZ)
     assert abelianization.order() == ABELIANIZATION_ORDER[name]
 
 
 def test_abelianization_of_the_free_group_is_free_abelian() -> None:
-    abelianization = AbelianizationFunctor()(Groups.Free(2))
+    abelianization = Groups().abelianization()(Groups.Free(2))
     assert abelianization in AbelianGroups()
     assert abelianization in Modules(ZZ)
     assert not abelianization.is_finite()
@@ -93,8 +93,8 @@ def test_group_elements_and_inverses(finite_group) -> None:
     assert element * element.inverse() == group.one()
     assert element.inverse() * element == group.one()
     assert group.one() * element == element
-    assert cyclic_subgroup(element).order() == element.order()
-    assert cyclic_subgroup(group.one()).order() == 1
+    assert group.subgroup([element]).order() == element.order()
+    assert group.subgroup([group.one()]).order() == 1
 
 
 def test_subgroups_cosets_and_centralizers_of_the_symmetric_group() -> None:
@@ -109,8 +109,8 @@ def test_subgroups_cosets_and_centralizers_of_the_symmetric_group() -> None:
     assert subgroup.inclusion().is_injective()
     assert group.left_cosets(subgroup).cardinality() == 3
     assert group.right_cosets(subgroup).cardinality() == 3
-    assert centralizer(group, transposition).order() == 2
-    assert centralizer(group, group.one()) == group
+    assert group.centralizer(transposition).order() == 2
+    assert group.centralizer(group.one()) == group
     assert group.conjugacy_classes_representatives().cardinality() == 3
     assert Groups.S(4).conjugacy_classes_representatives().cardinality() == 5
 
@@ -171,13 +171,13 @@ def test_presentations() -> None:
 def test_the_natural_action_of_the_symmetric_group_is_transitive() -> None:
     group = Groups.S(3)
     points = (1, 2, 3)
-    natural = finite_g_set(points, group, lambda g, x: g(x))
-    trivial = trivial_g_set(points, group)
+    natural = FiniteGSets(group)(points, lambda g, x: g(x))
+    trivial = FiniteSets().trivial_action(group)(points)
 
     assert natural in FiniteGSets(group)
     assert natural.acting_group() is group
-    assert fixed_point_set(natural).cardinality() == 0
-    assert fixed_point_set(trivial).cardinality() == 3
+    assert natural.fixed_points().cardinality() == 0
+    assert trivial.fixed_points().cardinality() == 3
     assert natural.point_set().cardinality() == 3
     generator = group.group_generators().unrank(0)
     assert natural.act(generator, 1) == generator(1)
@@ -194,7 +194,7 @@ def test_group_modules_and_their_invariants(pid) -> None:
     def action(group_element, vector):
         return vector if group_element == group.one() else swap(vector)
 
-    acted = GroupModule(module, group, action)
+    acted = Modules(ring[group])(module, action)
     assert acted.group() is group
     assert acted.action_of(group.one())(e0) == e0
     assert acted.is_invariant(e0 + e1)

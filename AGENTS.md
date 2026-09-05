@@ -1012,6 +1012,17 @@ Put such tables on the namespace that owns the specimens.
 
 Prefer **one clean export** for a catalogue surface: import `Lattices`, use `Lattices.…`. Do not re-export every attribute at module level.
 
+**Functors, adjunctions and constructions are spelled on categories, never as standalone functions** (ruled 2026-09-05; the expectation files under `tests/constructions/` and `tests/user_simulations/` are written this way and are the spec). One rule per kind:
+
+- A functor is a method of its domain category, named by the construction, taking only what fixes the codomain: `Modules(ZZ[H]).induction(G)`, `FiniteGSets(G).orbits_functor()`, `Groups().abelianization()`, `CommutativeAlgebras(R).spectrum()`.
+- An adjunction is a method of the left adjoint's domain category, named by the pair: `Modules(ZZ[H]).induction_restriction_adjunction(G)`, `FiniteSets().free_underlying_adjunction(G)`.
+- A construction on objects is a method of the category that owns them, or of the object when one argument is distinguished: `M.tensor_product(N)`, `M.Hom(N)`, `M.ext(N, n)`, `C.cohomology(n)`.
+- An object constructor is the category applied to the object's data: `FiniteGSets(G)(points, action)`, `Modules(ZZ[G])(M, action)`, `Subgroups(G)(predicate, description)`.
+
+A standalone `XFunctor(...)`, `x_adjunction(...)`, `Ext(n, M, N)` or `finite_g_set(...)` in the session surface is a placement defect; the name belongs on the category or object above and the function is retired, not aliased.
+
+**Group modules are `Modules(R[G])`**, modules over the group ring, never a category of their own. Induction, coinduction and restriction along `H ≤ G` are scalar extension, coextension and restriction along `ZZ[H] → ZZ[G]`; the trivial action, coinvariants and invariants are restriction, extension and coextension along the augmentation `ZZ[G] → ZZ`. These functors are stated once over `ZZ`, the initial ring, and preserve the finer scalars an `R[G]`-module carries. Actions in categories that are not modules (sets, schemes) are `GObjects(G, C)`, with `GObjects(G, Modules(R)) ≃ Modules(R[G])` as an explicit equivalence when needed. Actions are left actions: `rho(g h) = rho(g) rho(h)`, the product of the matrices acting on an ordered basis, and the owned group law is composition.
+
 ## 4. One source of truth, stated once, inline
 
 Construction **is** the definition.

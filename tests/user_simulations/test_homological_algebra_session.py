@@ -40,7 +40,7 @@ def test_a_homological_algebra_session(name) -> None:
     torsion = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(n),))
     rendered(torsion)
     assert torsion.annihilator() == ring.ideal(ring(n))
-    resolution = free_resolution(torsion)
+    resolution = torsion.free_resolution()
     rendered(resolution)
     assert resolution.is_exact()
     assert resolution.term(0).rank() == 1
@@ -51,39 +51,39 @@ def test_a_homological_algebra_session(name) -> None:
     assert multiplication(resolution.term(1).module_generator(0)) == ring(n) * resolution.term(0).module_generator(0)
 
     # Ext^1(R/n, R) = R/n, by dualizing the resolution.
-    dualize = DualizationFunctor(ring)
+    dualize = Modules(ring).dualization()
     dual_map = dualize(multiplication)
     rendered(dual_map)
     assert dual_map.domain() == dualize(resolution.term(0))
     assert dual_map.codomain() == dualize(resolution.term(1))
-    dual_complex = CochainComplex(ring, {0: dual_map.domain(), 1: dual_map.codomain()}, {0: dual_map})
+    dual_complex = CochainComplexes(ring)({0: dual_map.domain(), 1: dual_map.codomain()}, {0: dual_map})
     rendered(dual_complex)
     assert dual_complex.cohomology(0).cardinality() == 1
     ext = dual_complex.cohomology(1)
     rendered(ext)
     assert ext.cardinality() == torsion.cardinality()
     assert ext.annihilator() == ring.ideal(ring(n))
-    assert InternalHom(torsion, ring_as_module(ring)).cardinality() == 1
+    assert torsion.Hom(ring.regular_module()).cardinality() == 1
 
     # Tor_1(R/n, R/m) = R/gcd(n, m), by tensoring the resolution with R/m.
     other = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(m),))
-    tensored_map = TensorProduct(resolution.term(1), other).Mor(TensorProduct(resolution.term(0), other))(
-        {0: TensorProduct(resolution.term(0), other).pure_tensor(ring(n) * resolution.term(0).module_generator(0), other.module_generator(0))}
+    tensored_map = resolution.term(1).tensor_product(other).Mor(resolution.term(0).tensor_product(other))(
+        {0: resolution.term(0).tensor_product(other).pure_tensor(ring(n) * resolution.term(0).module_generator(0), other.module_generator(0))}
     )
-    tensored_complex = CochainComplex(ring, {0: tensored_map.domain(), 1: tensored_map.codomain()}, {0: tensored_map})
+    tensored_complex = CochainComplexes(ring)({0: tensored_map.domain(), 1: tensored_map.codomain()}, {0: tensored_map})
     rendered(tensored_complex)
     tor = tensored_complex.cohomology(0)
     rendered(tor)
     assert tor.cardinality() == ring.quotient_ring(ring.ideal(ring(g))).cardinality()
     assert tensored_complex.cohomology(1).cardinality() == ring.quotient_ring(ring.ideal(ring(g))).cardinality()
-    assert TensorProduct(torsion, other).cardinality() == ring.quotient_ring(ring.ideal(ring(g))).cardinality()
+    assert torsion.tensor_product(other).cardinality() == ring.quotient_ring(ring.ideal(ring(g))).cardinality()
 
     # A three-term complex with known cohomology.
     line = FreeModule(ring, 1)
     plane = FreeModule(ring, 2)
     inclusion = line.Mor(plane)({0: ring(n) * plane.module_generator(0)})
     projection = plane.Mor(line)({0: line.zero(), 1: line.module_generator(0)})
-    complex_ = CochainComplex(ring, {0: line, 1: plane, 2: line}, {0: inclusion, 1: projection})
+    complex_ = CochainComplexes(ring)({0: line, 1: plane, 2: line}, {0: inclusion, 1: projection})
     rendered(complex_)
     assert complex_.cohomology(0).cardinality() == 1
     assert complex_.cohomology(1).cardinality() == torsion.cardinality()

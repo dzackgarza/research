@@ -57,7 +57,7 @@ def test_a_differential_calculus_session(name, dimension) -> None:
         rendered(de_rham.graded_piece(degree))
 
     # Vector fields, brackets, interior products, Lie derivatives, Cartan's formula.
-    values = ring_as_module(algebra)
+    values = algebra.regular_module()
     vector_fields = VectorFields(algebra)
     rendered(vector_fields)
 

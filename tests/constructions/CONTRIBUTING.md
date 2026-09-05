@@ -61,11 +61,37 @@ test, and that failure is the finding: the universe lacks a word.  The
 vocabulary is never a filter on which expectations get written.
 
 **Use the notebook spelling.**  Integer literals are integers.  `QQ[G]` is a
-group algebra, `M / N` is a quotient, `Hom(M, N)` is a Hom module,
+group algebra, `M / N` is a quotient, `M.Hom(N)` is a Hom module,
 `K.class_group()` is the class group.  Do not wrap, cast, or translate an
 input into a form the implementation happens to want.  A test that has to
 say `ring(ZZ(2))` to be accepted has recorded a defect in the ring, not in
 the test.
+
+**Spell every operation on its category or its object; never as a
+standalone function.**  A standalone name says nothing about where the
+mathematics lives, and a session full of them has no structure to navigate.
+One rule per kind:
+
+- A *functor* is a method of its domain category, named by the
+  construction, taking only what fixes the codomain:
+  `Modules(ZZ[H]).induction(G)`, `FiniteGSets(G).orbits_functor()`,
+  `Groups().abelianization()`, `CommutativeAlgebras(R).spectrum()`.
+- An *adjunction* is a method of the left adjoint's domain category, named
+  by the pair: `Modules(ZZ[H]).induction_restriction_adjunction(G)`,
+  `FiniteSets().free_underlying_adjunction(G)`.
+- A *construction on objects* is a method of the category that owns them,
+  or of the object when one argument is distinguished: `M.tensor_product(N)`,
+  `M.Hom(N)`, `M.ext(N, n)`, `C.cohomology(n)`, `M.free_resolution()`.
+- An *object constructor* is the category applied to the object's data:
+  `FiniteGSets(G)(points, action)`, `Modules(ZZ[G])(M, action)`,
+  `Subgroups(G)(predicate, description)`, `CochainComplexes(R)(pieces, differentials)`.
+
+Group modules are modules over the group ring: `Modules(R[G])`, never a
+category of their own.  Induction, coinduction and restriction along
+`H ≤ G` are scalar change along `ZZ[H] → ZZ[G]`; the trivial action,
+invariants and coinvariants are scalar change along the augmentation
+`ZZ[G] → ZZ`.  These functors are stated over `ZZ`, the initial ring, and
+preserve the finer scalars an `R[G]`-module carries.
 
 **Do not run the tests to shape them.**  Running them while writing invites
 the one failure this subtree exists to avoid: adjusting the expectation to

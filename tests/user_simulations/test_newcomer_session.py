@@ -141,8 +141,8 @@ def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
     assert M.tensor_product(Q).order() == Q.order() ** rank
     assert Hom(M, ZZ).rank() == rank
     assert Hom(Q, ZZ).order() == 1
-    assert Ext(1, Q, ZZ).order() == Q.order()
-    assert Tor(1, Q, Q).order() == Q.order()
+    assert Q.ext(ZZ, 1).order() == Q.order()
+    assert Q.tor(Q, 1).order() == Q.order()
     L = IntegralLattice(A + A.transpose())
     rendered(L)
     assert L.rank() == rank

@@ -76,16 +76,16 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert ring(2) in invariant_factors
 
     # Hom and tensor.
-    homs = InternalHom(module, module)
+    homs = module.Hom(module)
     rendered(homs)
     assert homs.rank() == 9
-    tensor = TensorProduct(module, quotient)
+    tensor = module.tensor_product(quotient)
     rendered(tensor)
     assert tensor in Modules(ring)
     assert tensor.rank() == 3
     dual = module.dual_module()
     assert dual.rank() == 3
-    assert InternalHom(quotient, ring_as_module(ring)).rank() == 1
+    assert quotient.Hom(ring.regular_module()).rank() == 1
 
     # A morphism, its kernel, image and cokernel; the rank–nullity relation.
     morphism = module.Mor(module)({0: e1, 1: e2, 2: 2 * e0})
@@ -111,7 +111,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
         assert localized.rank() == 1
 
     # A free resolution of the quotient.
-    resolution = free_resolution(quotient)
+    resolution = quotient.free_resolution()
     rendered(resolution)
     assert resolution.is_exact()
     assert resolution.term(0).rank() == 3
@@ -123,7 +123,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     plane = FreeModule(ring, 2)
     d0 = line.Mor(plane)({0: 2 * plane.module_generator(0) + 2 * plane.module_generator(1)})
     d1 = plane.Mor(line)({0: line.module_generator(0), 1: -line.module_generator(0)})
-    complex_ = CochainComplex(ring, {0: line, 1: plane, 2: line}, {0: d0, 1: d1})
+    complex_ = CochainComplexes(ring)({0: line, 1: plane, 2: line}, {0: d0, 1: d1})
     rendered(complex_)
     assert complex_ in CochainComplexes(ring)
     assert (d1 * d0)(line.module_generator(0)) == line.zero()

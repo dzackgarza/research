@@ -88,7 +88,7 @@ def test_symmetric_groups(n) -> None:
     assert symmetric.order() == factorial(n)
     assert symmetric.is_abelian() == (n <= 2)
     assert symmetric.center().order() == (2 if n == 2 else 1)
-    assert AbelianizationFunctor()(symmetric).order() == (1 if n == 1 else 2)
+    assert Groups().abelianization()(symmetric).order() == (1 if n == 1 else 2)
     assert symmetric.commutator_subgroup().order() == max(1, factorial(n) // 2)
     assert symmetric.Aut().order() == (factorial(n) if n not in (2, 6) else (1 if n == 2 else 1440))
     assert symmetric.conjugacy_classes_representatives().cardinality() == partitions(n)
@@ -250,8 +250,8 @@ def test_ranks_of_free_module_constructions(name, r, s) -> None:
     left = FreeModule(ring, r)
     right = FreeModule(ring, s)
     assert left.rank() == r
-    assert TensorProduct(left, right).rank() == r * s
-    assert InternalHom(left, right).rank() == r * s
+    assert left.tensor_product(right).rank() == r * s
+    assert left.Hom(right).rank() == r * s
     assert Biproduct(left, right).rank() == r + s
     assert left.dual_module().rank() == r
     assert ExteriorForms(left, 2).rank() == binomial(r, 2)
@@ -279,7 +279,7 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
     space = FreeModule(field, r)
     assert space in VectorSpaces(field)
     assert space.rank() == r
-    assert InternalHom(space, space).rank() == r * r
+    assert space.Hom(space).rank() == r * r
     assert space.Aut().one() == space.Mor(space).identity()
     if field.cardinality().is_finite():
         q = field.cardinality()

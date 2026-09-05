@@ -44,7 +44,7 @@ def test_extension_of_scalars_of_a_free_module(ring_map) -> None:
     source, target = phi.domain(), phi.codomain()
     module = FreeModule(source, 3)
     extended = module.base_change(phi)
-    functorial = ScalarExtensionFunctor(phi)(module)
+    functorial = Modules(source).scalar_extension(phi)(module)
 
     assert extended in Modules(target)
     assert extended in FinitelyGeneratedModules(target)
@@ -73,7 +73,7 @@ def test_restriction_of_scalars(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
     module = FreeModule(target, 2)
-    restricted = RestrictionOfScalarsFunctor(phi)(module)
+    restricted = Modules(target).restriction_of_scalars(phi)(module)
     also = restrict_scalars(module, phi)
 
     assert restricted in Modules(source)
@@ -98,7 +98,7 @@ def test_restriction_of_scalars_of_the_gaussian_integers_to_the_integers() -> No
 def test_the_base_change_adjunction(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
-    adjunction = base_change_adjunction(phi)
+    adjunction = Modules(source).base_change_adjunction(phi)
     module = FreeModule(source, 2)
     target_module = FreeModule(target, 1)
     extended = adjunction.left_adjoint()(module)
@@ -125,11 +125,11 @@ def test_extension_of_scalars_of_an_algebra(ring_map) -> None:
     phi, _, _ = ring_map
     source, target = phi.domain(), phi.codomain()
     polynomials = PolynomialRing(source, "x")
-    extended = AlgebraScalarExtensionFunctor(phi)(polynomials)
+    extended = CommutativeAlgebras(source).scalar_extension(phi)(polynomials)
     assert extended in CommutativeAlgebras(target)
     assert extended.algebra_generators().cardinality() == 1
     assert (extended in IntegralDomains()) == (target in IntegralDomains())
-    adjunction = algebra_base_change_adjunction(phi)
+    adjunction = CommutativeAlgebras(source).base_change_adjunction(phi)
     assert adjunction.left_adjoint()(polynomials) == extended
     assert adjunction.unit(polynomials).domain() is polynomials
 
@@ -176,14 +176,14 @@ def test_twisting_a_module_by_frobenius() -> None:
 def test_the_tensor_hom_adjunction_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
     fixed = FreeModule(ring, 2)
-    adjunction = tensor_hom_adjunction(fixed)
+    adjunction = fixed.tensor_hom_adjunction()
     module = FreeModule(ring, 3)
     other = FreeModule(ring, 1)
 
     tensored = adjunction.left_adjoint()(module)
     homs = adjunction.right_adjoint()(other)
-    assert tensored == TensorProduct(module, fixed)
-    assert homs == InternalHom(fixed, other)
+    assert tensored == module.tensor_product(fixed)
+    assert homs == fixed.Hom(other)
     assert tensored.rank() == 6
     assert homs.rank() == 2
     assert adjunction.unit(module).domain() is module

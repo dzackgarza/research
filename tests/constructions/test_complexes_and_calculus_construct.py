@@ -21,7 +21,7 @@ def _koszul_complex(ring):
     last = FreeModule(plane, 1)
     d0 = first.Mor(middle)({0: x * middle.module_generator(0) + y * middle.module_generator(1)})
     d1 = middle.Mor(last)({0: -y * last.module_generator(0), 1: x * last.module_generator(0)})
-    return plane, CochainComplex(plane, {0: first, 1: middle, 2: last}, {0: d0, 1: d1})
+    return plane, CochainComplexes(plane)({0: first, 1: middle, 2: last}, {0: d0, 1: d1})
 
 
 def test_the_koszul_complex_of_a_regular_sequence(field) -> None:
@@ -32,12 +32,11 @@ def test_the_koszul_complex_of_a_regular_sequence(field) -> None:
     assert koszul.cohomology(0).cardinality() == 1
     assert koszul.cohomology(1).cardinality() == 1
     assert koszul.cohomology(2).cardinality() == field.cardinality()
-    assert Cohomology(koszul, 2) == koszul.cohomology(2)
-    assert Cycles(koszul, 1).rank() == 1
-    assert Boundaries(koszul, 1).rank() == 1
-    assert Cycles(koszul, 1) == Boundaries(koszul, 1)
+    assert koszul.cycles(1).rank() == 1
+    assert koszul.boundaries(1).rank() == 1
+    assert koszul.cycles(1) == koszul.boundaries(1)
     assert cohomology_functor(plane, 2)(koszul) == koszul.cohomology(2)
-    assert CochainUnderlyingGradedModuleFunctor(plane)(koszul) in GradedModules(plane)
+    assert CochainComplexes(plane).underlying_graded_module()(koszul) in GradedModules(plane)
 
 
 def test_the_koszul_complex_over_the_integers() -> None:
@@ -60,14 +59,14 @@ def test_a_complex_with_nonzero_d_squared_is_refused() -> None:
     line = FreeModule(ZZ, 1)
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
     with pytest.raises((ValueError, AssertionError)):
-        CochainComplex(ZZ, {0: line, 1: line, 2: line}, {0: doubling, 1: doubling})
+        CochainComplexes(ZZ)({0: line, 1: line, 2: line}, {0: doubling, 1: doubling})
 
 
 def test_a_cochain_complex_over_every_commutative_ring(commutative_ring) -> None:
     ring = commutative_ring
     line = FreeModule(ring, 1)
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
-    complex_ = CochainComplex(ring, {0: line, 1: line}, {0: doubling})
+    complex_ = CochainComplexes(ring)({0: line, 1: line}, {0: doubling})
     assert complex_ in CochainComplexes(ring)
     assert complex_.cohomology(1).cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
     assert complex_.cohomology(0).rank() == (1 if ring(2) == ring.zero() else 0)
@@ -128,7 +127,7 @@ def test_curvature_of_a_connection_on_the_plane(field) -> None:
 
 def _plane_calculus(field):
     plane = PolynomialRing(field, ("x", "y"))
-    values = ring_as_module(plane)
+    values = plane.regular_module()
     fields_ = VectorFields(plane)
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
@@ -155,8 +154,8 @@ def test_vector_fields_and_lie_brackets(field) -> None:
     euler = LieBracket(y_d_dx, x_d_dy)
     assert euler(x) == -x
     assert euler(y) == y
-    assert Derivations(plane, ring_as_module(plane)).rank() == 2
-    assert d_dx in Derivations(plane, ring_as_module(plane))
+    assert Derivations(plane, plane.regular_module()).rank() == 2
+    assert d_dx in Derivations(plane, plane.regular_module())
 
 
 def test_interior_products_lie_derivatives_and_the_cartan_formula(field) -> None:

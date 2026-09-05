@@ -24,7 +24,7 @@ def test_a_symmetric_bilinear_form_from_a_gram_matrix(commutative_ring) -> None:
     assert form in FormModules(ring)
     assert form in Modules(ring)
     assert form.unformed_module() is module
-    assert form.value_module() == ring_as_module(ring)
+    assert form.value_module() == ring.regular_module()
     assert form.b(e0, e1) == ring.one()
     assert form.b(e0, e0) == 2 * ring.one()
     assert form.b(e0, e1) == form.b(e1, e0)
@@ -98,8 +98,8 @@ def test_the_free_form_adjunctions_over_every_commutative_ring(commutative_ring)
     ring = commutative_ring
     module = FreeModule(ring, 2)
     for adjunction, category in (
-        (bilinear_free_form_adjunction(ring), BilinearFormModules(ring)),
-        (quadratic_free_form_adjunction(ring), QuadraticFormModules(ring)),
+        (Modules(ring).free_bilinear_form_adjunction(), BilinearFormModules(ring)),
+        (Modules(ring).free_quadratic_form_adjunction(), QuadraticFormModules(ring)),
     ):
         free = adjunction.left_adjoint()(module)
         assert free in category

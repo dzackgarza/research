@@ -35,7 +35,7 @@ def _permutation_module(ring, group, degree):
     def act(g, vector):
         return module.Mor(module)({label: module.module_generator(int(g(points[label])) - 1) for label in range(degree)})(vector)
 
-    return GroupModule(module, group, act)
+    return Modules(ring[group])(module, act)
 
 
 @pytest.mark.parametrize("name", sorted(SESSIONS))
@@ -49,7 +49,7 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     # The permutation representation and its invariants.
     permutation = _permutation_module(ring, group, degree)
     rendered(permutation)
-    assert permutation in GroupModules(ring, group)
+    assert permutation in Modules(ring[group])
     assert permutation in Modules(ring)
     assert permutation.rank() == degree
     assert permutation.group() is group
@@ -92,19 +92,19 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     # Restriction to a cyclic subgroup, induction back, Frobenius reciprocity.
     subgroup = group.subgroup([generator])
     rendered(subgroup)
-    restricted = RestrictionOfActingGroupFunctor(subgroup, group)(permutation)
+    restricted = Modules(ZZ[group]).restriction(subgroup)(permutation)
     rendered(restricted)
     assert restricted.group() is subgroup
     assert restricted.rank() == degree
     assert restricted.module_invariants().rank() >= 1
-    trivial = trivial_group_action(FreeModule(ring, 1), subgroup)
-    induced = InductionFunctor(subgroup, group)(trivial)
-    coinduced = CoinductionFunctor(subgroup, group)(trivial)
+    trivial = Modules(ring).trivial_action(subgroup)(FreeModule(ring, 1))
+    induced = Modules(ZZ[subgroup]).induction(group)(trivial)
+    coinduced = Modules(ZZ[subgroup]).coinduction(group)(trivial)
     rendered(induced)
     assert induced.rank() == group.order() // subgroup.order()
     assert coinduced.rank() == induced.rank()
     assert induced.module_invariants().rank() == 1
-    adjunction = induction_restriction_adjunction(subgroup, group)
+    adjunction = Modules(ZZ[subgroup]).induction_restriction_adjunction(group)
     unit = adjunction.unit(trivial)
     counit = adjunction.counit(permutation)
     rendered(unit)

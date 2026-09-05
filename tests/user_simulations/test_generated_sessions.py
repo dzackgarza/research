@@ -113,8 +113,8 @@ def test_a_generated_finite_group_session(n) -> None:
     assert cyclic.Aut().order() == euler_phi(n)
     rendered(dihedral.center())
     assert dihedral.center().order() == (4 if n == 2 else 2 if n % 2 == 0 else 1)
-    rendered(AbelianizationFunctor()(dihedral))
-    assert AbelianizationFunctor()(dihedral).order() == (4 if n % 2 == 0 else 2)
+    rendered(Groups().abelianization()(dihedral))
+    assert Groups().abelianization()(dihedral).order() == (4 if n % 2 == 0 else 2)
     rotation = next(g for g in dihedral.group_generators() if g.order() == n)
     rotations = dihedral.subgroup([rotation])
     rendered(rotations)
@@ -125,10 +125,10 @@ def test_a_generated_finite_group_session(n) -> None:
     rendered(dihedral.conjugacy_classes_representatives())
     assert dihedral.conjugacy_classes_representatives().cardinality() == ((n + 6) // 2 if n % 2 == 0 else (n + 3) // 2)
     points = tuple(range(1, n + 1))
-    polygon = finite_g_set(points, dihedral, lambda g, point: g(point))
+    polygon = FiniteGSets(dihedral)(points, lambda g, point: g(point))
     rendered(polygon)
-    assert GSetOrbitsFunctor(dihedral)(polygon).cardinality() == 1
-    assert fixed_point_set(polygon).cardinality() == 0
+    assert FiniteGSets(dihedral).orbits_functor()(polygon).cardinality() == 1
+    assert polygon.fixed_points().cardinality() == 0
     assert Groups.S(n).order() == factorial(n)
     assert dihedral.Mor(Groups.S(n)).cardinality() >= 1
 

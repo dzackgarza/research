@@ -86,7 +86,7 @@ def test_products_coproducts_and_biproducts_of_modules(commutative_ring) -> None
         both = construction(left, right)
         assert both in Modules(ring)
         assert both.rank() == 5
-    assert TensorProduct(left, right).rank() == 6
+    assert left.tensor_product(right).rank() == 6
     assert Product(left, right) == Coproduct(left, right)
 
 
@@ -190,13 +190,13 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
         assert category in Cat()
     assert module.subobject_on([module.module_generator(0)]) in SliceOver(Modules(ZZ), module)
     assert Sets.Δ[2] in OppositeCategory(Sets())
-    assert IdentityFunctor(Sets()) in FunctorCategory(Sets(), Sets())
+    assert Sets().identity_functor() in FunctorCategory(Sets(), Sets())
     assert Fields() in Cat()
     assert Cat() in Cat()
 
 
 def test_identity_and_inclusion_functors() -> None:
-    identity = IdentityFunctor(Sets())
+    identity = Sets().identity_functor()
     three = Sets.Δ[2]
     assert identity(three) is three
     assert identity(Sets().Mor(three, three).identity()) == Sets().Mor(three, three).identity()
@@ -208,7 +208,7 @@ def test_identity_and_inclusion_functors() -> None:
 
 
 def test_natural_transformations_between_functors() -> None:
-    identity = IdentityFunctor(Sets())
+    identity = Sets().identity_functor()
     transformations = NaturalTransformations(identity, identity)
     assert transformations in Sets()
     three = Sets.Δ[2]

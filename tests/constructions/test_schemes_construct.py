@@ -179,7 +179,7 @@ def test_point_counts_of_a_hypersurface_over_a_finite_field() -> None:
 
 
 def test_spec_is_a_contravariant_functor(field) -> None:
-    spec = SpecFunctor(field)
+    spec = CommutativeAlgebras(field).spectrum()
     polynomials = PolynomialRing(field, "x")
     x = polynomials.algebra_generator("x")
     squaring = polynomials.Mor(polynomials)({"x": x**2})

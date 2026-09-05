@@ -46,7 +46,7 @@ def test_a_finite_group_session(name) -> None:
     g = group.group_generators().unrank(0)
     rendered(g)
     assert g * g.inverse() == group.one()
-    cyclic = cyclic_subgroup(g)
+    cyclic = group.subgroup([g])
     rendered(cyclic)
     assert cyclic in Subgroups(group)
     assert cyclic.order() == g.order()
@@ -62,17 +62,17 @@ def test_a_finite_group_session(name) -> None:
     rendered(cosets)
     assert cosets.cardinality() * subgroup.order() == order
     assert group.right_cosets(subgroup).cardinality() == cosets.cardinality()
-    center_of_g = centralizer(group, g)
+    center_of_g = group.centralizer(g)
     rendered(center_of_g)
     assert g in center_of_g
     assert center_of_g.order() % cyclic.order() == 0
     assert order % center_of_g.order() == 0
-    whole = centralizer(group, group.one())
+    whole = group.centralizer(group.one())
     assert whole.order() == order
     assert whole == group
 
     # Abelianization, automorphisms, homomorphisms.
-    abelianization = AbelianizationFunctor()(group)
+    abelianization = Groups().abelianization()(group)
     rendered(abelianization)
     assert abelianization in AbelianGroups()
     assert abelianization in Modules(ZZ)
@@ -97,11 +97,11 @@ def test_a_finite_group_session(name) -> None:
         action = lambda h, point: h(point)  # noqa: E731
     else:
         action = lambda h, point: point  # noqa: E731
-    g_set = finite_g_set(points, group, action)
+    g_set = FiniteGSets(group)(points, action)
     rendered(g_set)
     assert g_set in FiniteGSets(group)
     assert g_set.point_set().cardinality() == degree
-    fixed = fixed_point_set(g_set)
+    fixed = g_set.fixed_points()
     rendered(fixed)
     if name in ("S3", "S4", "A4", "D4"):
         assert fixed.cardinality() == 0
@@ -121,7 +121,7 @@ def test_a_finite_group_session(name) -> None:
         def act(h, vector, permutation=permutation):
             return permutation(h)(vector)
 
-        representation = GroupModule(module, group, act)
+        representation = Modules(ring[group])(module, act)
         rendered(representation)
         assert representation.group() is group
         assert representation.action_of(group.one())(module.module_generator(0)) == module.module_generator(0)
