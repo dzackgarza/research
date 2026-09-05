@@ -656,289 +656,76 @@ class QuotientLocalizationComparison(SageObject):
         )
 
 
-class GeneralLocalizationRingElement(CommutativeRingElement):
-    r"""A literal fraction ``r/s`` in a represented commutative localization."""
-
-    def __init__(self, parent, numerator, denominator) -> None:
-        self._numerator = parent.localization_source()(numerator)
-        self._denominator = parent.localization_source()(denominator)
-        CommutativeRingElement.__init__(self, parent)
-
-    def numerator(self):
-        return self._numerator
-
-    def denominator(self):
-        return self._denominator
-
-    def _add_(self, other):
-        return self.parent().fraction(
-            self.numerator() * other.denominator()
-            + other.numerator() * self.denominator(),
-            self.denominator() * other.denominator(),
-            _trusted_denominator=True,
-        )
-
-    def _mul_(self, other):
-        return self.parent().fraction(
-            self.numerator() * other.numerator(),
-            self.denominator() * other.denominator(),
-            _trusted_denominator=True,
-        )
-
-    def __mul__(self, other):
-        if isinstance(other, GeneralLocalizationRingElement):
-            if other.parent() is not self.parent():
-                return NotImplemented
-            return self._mul_(other)
-        other_parent = getattr(other, "parent", lambda: None)()
-        if other_parent is not None:
-            try:
-                if other_parent.base_ring() is self.parent():
-                    return other_parent.scalar_multiple(self, other)
-            except (AttributeError, TypeError, ValueError):
-                pass
-        return NotImplemented
-
-    def inverse_of_unit(self):
-        parent = self.parent()
-        engine = _selected_localization_engine(parent)
-        source = parent.localization_source()
-        represented = engine(
-            _engine_element(source, self.numerator())
-        ) / engine(_engine_element(source, self.denominator()))
-        if not represented.is_unit():
-            raise ZeroDivisionError(f"{self} is not a unit")
-        inverse = represented**-1
-        source_engine = _engine_ring(source)
-        return parent.fraction(
-            source._from_engine_element(source_engine(inverse.numerator())),
-            source._from_engine_element(source_engine(inverse.denominator())),
-            _trusted_denominator=True,
-        )
-
-    def is_unit(self):
-        engine = _selected_localization_engine(self.parent())
-        source = self.parent().localization_source()
-        represented = engine(
-            _engine_element(source, self.numerator())
-        ) / engine(_engine_element(source, self.denominator()))
-        return bool(represented.is_unit())
-
-    def __truediv__(self, other):
-        other = self.parent()(other)
-        return self * other.inverse_of_unit()
-
-    def _neg_(self):
-        return self.parent().fraction(
-            -self.numerator(),
-            self.denominator(),
-            _trusted_denominator=True,
-        )
-
-    def equality_status(self, other):
-        if not isinstance(other, GeneralLocalizationRingElement) or other.parent() is not self.parent():
-            return False
-        return self.parent()._fraction_equality_status(self, other)
-
-    def _richcmp_(self, other, op):
-        from sage.misc.unknown import Unknown
-
-        if op not in (op_EQ, op_NE):
-            return NotImplemented
-        status = self.equality_status(other)
-        if status is Unknown:
-            raise NotImplementedError(
-                "equality of these localization fractions is not decidable from the represented data"
-            )
-        return bool(status) if op == op_EQ else not bool(status)
-
-    def _repr_(self):
-        if self.denominator() == self.parent().localization_source().one():
-            return repr(self.numerator())
-        return f"({self.numerator()})/({self.denominator()})"
 
 
-class GeneralLocalizationRingParent(Parent):
-    r"""The universal fraction model ``S^{-1}R`` for a represented submonoid ``S``."""
-
-    Element = GeneralLocalizationRingElement
-
-    def __init__(
-        self,
-        source,
-        submonoid,
-        _engine_ring=None,
-        *,
-        categories=(),
-        algebra_source=None,
-    ) -> None:
-        self._preamble_localization_source = source
-        self._preamble_localization_submonoid = submonoid
-        self._preamble_engine_ring = _engine_ring
-        algebra_categories = []
-        if algebra_source is not None:
-            base = algebra_source.base_ring()
-            self._preamble_algebra_base_ring = base
-            algebra_categories.extend([Algebras(base), OwnedAlgebras(base)])
-            if algebra_source in CommutativeAlgebras(base):
-                algebra_categories.append(CommutativeAlgebras(base))
-        Parent.__init__(
-            self,
-            base=source.base_ring(),
-            category=Category.join(
-                (LocalizationRings(), *tuple(categories), *tuple(algebra_categories))
-            ),
-        )
-
-        self._preamble_localization_map = ring_morphism(
-            source,
-            self,
-            lambda element: self.fraction(element),
-        )
-        if algebra_source is not None:
-            self._preamble_structure_map = (
-                self._preamble_localization_map
-                * algebra_source.algebra_structure_morphism()
-            )
-
-    def localize_module(self, module):
-        r"""Return ``S^{-1}M`` through the module-localization theory."""
-
-        if module.base_ring() is not self.localization_source():
-            raise ValueError("the module has the wrong source ring for this localization")
-        return module_localization_functor(self)(module)
-
-    def _valid_denominator(self, denominator) -> bool:
-        try:
-            return denominator in self.localization_submonoid()
-        except NotImplementedError:
-            return False
-
-    def fraction(self, numerator, denominator=None, *, _trusted_denominator=False):
-        source = self.localization_source()
-        numerator = source(numerator)
-        denominator = source.one() if denominator is None else source(denominator)
-        if not _trusted_denominator and not self._valid_denominator(denominator):
-            raise ValueError(f"{denominator} is not represented in the localization submonoid")
-        return self.element_class(self, numerator, denominator)
-
-    def _element_constructor_(self, value):
-        if isinstance(value, GeneralLocalizationRingElement) and value.parent() is self:
-            return value
-        if isinstance(value, tuple) and len(value) == 2:
-            return self.fraction(value[0], value[1])
-        if self._preamble_engine_ring is not None:
-            try:
-                represented = self._preamble_engine_ring(value)
-                return self.fraction(
-                    self.localization_source()(represented.numerator()),
-                    self.localization_source()(represented.denominator()),
-                    _trusted_denominator=True,
-                )
-            except (AttributeError, TypeError, ValueError):
-                pass
-        return self.fraction(value)
-
-    def __call__(self, value):
-        return self._element_constructor_(value)
-
-    def _from_engine_element(self, value):
-        engine = self._preamble_engine_ring
-        if engine is None:
-            raise NotImplementedError(
-                "this localization has no selected computation realization"
-            )
-        represented = engine(value)
-        source = self.localization_source()
-        return self.fraction(
-            source._from_engine_element(_engine_ring(source)(represented.numerator())),
-            source._from_engine_element(_engine_ring(source)(represented.denominator())),
-            _trusted_denominator=True,
-        )
-
-    def _engine_element(self, value):
-        engine = self._preamble_engine_ring
-        if engine is None:
-            raise NotImplementedError(
-                "this localization has no selected computation realization"
-            )
-        element = self(value)
-        numerator = _engine_element(self.localization_source(), element.numerator())
-        denominator = _engine_element(self.localization_source(), element.denominator())
-        return engine(numerator) / engine(denominator)
-
-    def zero(self):
-        return self.fraction(self.localization_source().zero())
-
-    def one(self):
-        return self.fraction(self.localization_source().one())
-
-    def _fraction_equality_status(self, left, right):
-        from sage.misc.unknown import Unknown
-
-        source = self.localization_source()
-        difference = (
-            left.numerator() * right.denominator()
-            - right.numerator() * left.denominator()
-        )
-        if difference == source.zero():
-            return True
-
-        if source in OwnedIntegralDomains():
-            return False
-
-        if source in QuotientRings():
-            try:
-                source_ring = source.quotient_source()
-                representative = source_ring(_quotient_representative(difference))
-                lifted_generators = tuple(
-                    source_ring(_quotient_representative(generator))
-                    for generator in self.localization_submonoid().monoid_generators()
-                )
-                if lifted_generators:
-                    product = source_ring.one()
-                    for generator in lifted_generators:
-                        product *= generator
-                    saturated = source.defining_ideal().saturation(
-                        source_ring.ideal(product)
-                    )
-                    return saturated.contains_ambient_element(representative)
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                pass
-
-        try:
-            engine = _engine_ring(source)
-            if bool(engine.is_finite()):
-                generators = tuple(self.localization_submonoid().monoid_generators())
-                pending = [difference]
-                seen = []
-                while pending:
-                    current = pending.pop()
-                    if current == source.zero():
-                        return True
-                    if any(current == old for old in seen):
-                        continue
-                    seen.append(current)
-                    pending.extend(source(generator * current) for generator in generators)
-                return False
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        return Unknown
-
-    def _repr_(self):
-        return (
-            f"Localization of {self.localization_source()} at "
-            f"{self.localization_submonoid()}"
-        )
 
 
-class PrimeLocalizations(Category):
+class PrimeLocalizations(OwnedCategory):
     r"""Prime local rings ``R_p`` represented inside ``Frac(R)``."""
 
     def super_categories(self):
         return [OwnedLocalRings(), OwnedIntegralDomains()]
 
     class ParentMethods:
+        def __init__(
+            self,
+            source,
+            submonoid,
+            prime_ideal,
+            fraction_field,
+            *,
+            engine_ring=None,
+            **rest,
+        ) -> None:
+            self._preamble_prime_ideal = prime_ideal
+            self._preamble_fraction_field = fraction_field
+            base = source.base_ring()
+            algebra_source = (
+                source
+                if base is not None and source in Algebras(base)
+                else None
+            )
+            super().__init__(
+                source,
+                submonoid,
+                _engine_ring=engine_ring,
+                algebra_source=algebra_source,
+                **rest,
+            )
+
+            source_engine = _engine_ring(source)
+            generators = tuple(
+                self.fraction(source._from_engine_element(source_engine(generator)))
+                for generator in prime_ideal.gens()
+            )
+            self._preamble_maximal_ideal = LocalizedMaximalIdeal(
+                self,
+                generators,
+                source_ideal=prime_ideal,
+            )
+
+            quotient = QuotientRing(source, prime_ideal)
+            residue = quotient if quotient in OwnedFields() else quotient.fraction_field()
+            self._preamble_residue_field = residue
+            source_to_quotient = quotient.quotient_map()
+            source_to_residue = (
+                source_to_quotient
+                if residue is quotient
+                else _canonical_map(quotient, residue) * source_to_quotient
+            )
+
+            def local_residue_image(element):
+                element = self(element)
+                numerator = source_to_residue(element.numerator())
+                denominator = source_to_residue(element.denominator())
+                return residue(numerator / denominator)
+
+            self._preamble_residue_map = ring_morphism(
+                self,
+                residue,
+                local_residue_image,
+            )
+            self._preamble_source_residue_map = source_to_residue
         def localize_module(self, module):
             r"""Return ``R_p tensor_R M`` through the module-localization theory."""
 
@@ -1061,69 +848,6 @@ class LocalizedMaximalIdeal(GeneratedIdealView):
         return fraction.numerator() in self.source_ideal()
 
 
-class PrimeLocalizationParent(GeneralLocalizationRingParent):
-    r"""A prime localization ``R_p`` with all local-ring data constructor-owned."""
-
-    def __init__(
-        self,
-        source,
-        submonoid,
-        prime_ideal,
-        fraction_field,
-        *,
-        engine_ring=None,
-        categories=(),
-    ) -> None:
-        self._preamble_prime_ideal = prime_ideal
-        self._preamble_fraction_field = fraction_field
-        base = source.base_ring()
-        algebra_source = (
-            source
-            if base is not None and source in Algebras(base)
-            else None
-        )
-        GeneralLocalizationRingParent.__init__(
-            self,
-            source,
-            submonoid,
-            _engine_ring=engine_ring,
-            categories=(PrimeLocalizations(), *tuple(categories)),
-            algebra_source=algebra_source,
-        )
-
-        source_engine = _engine_ring(source)
-        generators = tuple(
-            self.fraction(source._from_engine_element(source_engine(generator)))
-            for generator in prime_ideal.gens()
-        )
-        self._preamble_maximal_ideal = LocalizedMaximalIdeal(
-            self,
-            generators,
-            source_ideal=prime_ideal,
-        )
-
-        quotient = QuotientRing(source, prime_ideal)
-        residue = quotient if quotient in OwnedFields() else quotient.fraction_field()
-        self._preamble_residue_field = residue
-        source_to_quotient = quotient.quotient_map()
-        source_to_residue = (
-            source_to_quotient
-            if residue is quotient
-            else _canonical_map(quotient, residue) * source_to_quotient
-        )
-
-        def local_residue_image(element):
-            element = self(element)
-            numerator = source_to_residue(element.numerator())
-            denominator = source_to_residue(element.denominator())
-            return residue(numerator / denominator)
-
-        self._preamble_residue_map = ring_morphism(
-            self,
-            residue,
-            local_residue_image,
-        )
-        self._preamble_source_residue_map = source_to_residue
 
 
 def QuotientRing(ring, ideal):
@@ -1193,11 +917,17 @@ def _finite_generated_localization(source, submonoid):
         if base is not None and source in Algebras(base)
         else None
     )
-    return GeneralLocalizationRingParent(
-        source,
-        submonoid,
+    algebra_categories = []
+    if algebra_source is not None:
+        algebra_base = algebra_source.base_ring()
+        algebra_categories = [Algebras(algebra_base), OwnedAlgebras(algebra_base)]
+        if algebra_source in CommutativeAlgebras(algebra_base):
+            algebra_categories.append(CommutativeAlgebras(algebra_base))
+    return object_of(
+        Category.join((LocalizationRings(), *placements, *algebra_categories)),
+        source=source,
+        submonoid=submonoid,
         _engine_ring=localization_engine,
-        categories=tuple(placements),
         algebra_source=algebra_source,
     )
 
