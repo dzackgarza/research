@@ -9,31 +9,10 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
-
-class ArrowObject(Parent):
-    r"""A morphism of ``C`` regarded as an object of ``Arr(C)``."""
-
-    def __init__(self, arrow_category, arrow) -> None:
-        self._arrow_category = arrow_category
-        self._arrow = arrow
-        Parent.__init__(self, category=SageSets())
-
-    def arrow_category(self):
-        return self._arrow_category
-
-    def arrow(self):
-        return self._arrow
-
-    def source_object(self):
-        return self.arrow().domain()
-
-    def target_object(self):
-        return self.arrow().codomain()
-
-    def _repr_(self) -> str:
-        return f"Arrow object ({self.source_object()} -> {self.target_object()})"
 
 
 class CommutativeSquare(Morphism):
@@ -121,8 +100,36 @@ class ArrowHomset(CategoricalHomset):
         return self.arrow_category().Mor(obj, obj).identity()
 
 
-class ArrowCategory(Category):
+class ArrowCategory(OwnedCategory):
     r"""The category ``Arr(C)=Fun([1],C)``."""
+
+    def an_object(self):
+        r"""The identity of an object of the base category, as an arrow."""
+        base = self.base_category()
+        witness = base.an_object()
+        return self.object(base.Mor(witness, witness).identity())
+
+    class ParentMethods:
+        r"""A morphism of ``C`` regarded as an object of ``Arr(C)``."""
+
+        def __init__(self, arrow, **rest) -> None:
+            self._arrow = arrow
+            super().__init__(**rest)
+
+        def arrow_category(self):
+            return self.category()
+
+        def arrow(self):
+            return self._arrow
+
+        def source_object(self):
+            return self.arrow().domain()
+
+        def target_object(self):
+            return self.arrow().codomain()
+
+        def _repr_(self) -> str:
+            return f"Arrow object ({self.source_object()} -> {self.target_object()})"
 
     def __init__(self, base_category) -> None:
         self._base_category = base_category
@@ -141,9 +148,12 @@ class ArrowCategory(Category):
         return [Sets()]
 
     def __contains__(self, candidate) -> bool:
+        category = getattr(candidate, "category", lambda: None)()
+        base_category = getattr(category, "base_category", None)
         return (
-            isinstance(candidate, ArrowObject)
-            and candidate.arrow_category().base_category() == self.base_category()
+            base_category is not None
+            and isinstance(category, ArrowCategory)
+            and base_category() == self.base_category()
         )
 
     def object(self, arrow):
@@ -155,7 +165,7 @@ class ArrowCategory(Category):
         cached = self._arrow_objects.get(key)
         if cached is not None and cached.arrow() is arrow:
             return cached
-        result = ArrowObject(self, arrow)
+        result = object_of(self, arrow=arrow)
         self._arrow_objects[key] = result
         return result
 
@@ -225,6 +235,13 @@ class SliceCategory(ArrowCategory):
     def base_object(self):
         return self._base_object
 
+    def an_object(self):
+        r"""The identity of the fixed base object."""
+        base_object = self.base_object()
+        return self.object(
+            self.base_category().Mor(base_object, base_object).identity()
+        )
+
     def __contains__(self, candidate) -> bool:
         return super().__contains__(candidate) and candidate.arrow().codomain() is self.base_object()
 
@@ -266,6 +283,13 @@ class CosliceCategory(ArrowCategory):
 
     def base_object(self):
         return self._base_object
+
+    def an_object(self):
+        r"""The identity of the fixed base object."""
+        base_object = self.base_object()
+        return self.object(
+            self.base_category().Mor(base_object, base_object).identity()
+        )
 
     def __contains__(self, candidate) -> bool:
         return super().__contains__(candidate) and candidate.arrow().domain() is self.base_object()
@@ -678,7 +702,6 @@ __all__ = [
     "EndArrowCategory",
     "AutomorphismArrowCategory",
     "ArrowCategory",
-    "ArrowObject",
     "ArrowHomset",
     "CategoricalIsomorphism",
     "CommutativeSquare",
