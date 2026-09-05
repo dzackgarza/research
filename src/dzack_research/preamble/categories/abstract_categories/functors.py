@@ -20,7 +20,8 @@ from dzack_research.preamble.categories.functors.core import (
     IdentityFunctor,
     NaturalTransformation,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
 from dzack_research.preamble.categories.abstract_categories.category_constructions import (
@@ -160,23 +161,6 @@ class CodomainFunctor(Functor):
         return square.right()
 
 
-class DiscreteObject(Parent):
-    r"""One object of the discrete category on a set."""
-
-    def __init__(self, discrete_category, value) -> None:
-        self._discrete_category = discrete_category
-        self._value = value
-        Parent.__init__(self, category=SageSets())
-
-    def discrete_category(self):
-        return self._discrete_category
-
-    def value(self):
-        return self._value
-
-    def _repr_(self) -> str:
-        return repr(self.value())
-
 
 class DiscreteMorphism(Morphism):
     r"""The unique identity arrow of a discrete-category object."""
@@ -217,8 +201,28 @@ class DiscreteHomset(CategoricalHomset):
         return self()
 
 
-class DiscreteCategory(Category):
+class DiscreteCategory(OwnedCategory):
     r"""The discrete category on one set."""
+
+    def an_object(self):
+        r"""The object at a point of the underlying set."""
+        return self.object(self.object_set().an_element())
+
+    class ParentMethods:
+        r"""One object of the discrete category on a set."""
+
+        def __init__(self, value, **rest) -> None:
+            self._value = value
+            super().__init__(**rest)
+
+        def discrete_category(self):
+            return self.category()
+
+        def value(self):
+            return self._value
+
+        def _repr_(self) -> str:
+            return repr(self.value())
 
     def __init__(self, object_set) -> None:
         if object_set not in Sets():
@@ -240,14 +244,15 @@ class DiscreteCategory(Category):
 
     @cached_method
     def _object_on(self, normalized):
-        return DiscreteObject(self, normalized)
+        return object_of(self, value=normalized)
 
     __call__ = object
 
     def __contains__(self, candidate) -> bool:
+        category = getattr(candidate, "category", lambda: None)()
         return (
-            isinstance(candidate, DiscreteObject)
-            and candidate.discrete_category().object_set() is self.object_set()
+            isinstance(category, DiscreteCategory)
+            and category.object_set() is self.object_set()
         )
 
     def objects(self):
@@ -378,29 +383,43 @@ def compose_functors(second, first):
 ComposedFunctor = CompositeFunctor
 
 
+class NaturalTransformationSpaces(OwnedCategory):
+    r"""Hom-objects of natural transformations between parallel functors."""
+
+    def an_object(self):
+        r"""Transformations from the identity of ``Cat`` to itself."""
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        identity = IdentityFunctor(Cat())
+        return object_of(self, source=identity, target=identity)
+
+    def super_categories(self):
+        return [Objects()]
+
+    class ParentMethods:
+        r"""The represented Hom-object of natural transformations ``F => G``."""
+
+        def __init__(self, source, target, **rest) -> None:
+            self._source = source
+            self._target = target
+            super().__init__(**rest)
+
+        def source(self):
+            return self._source
+
+        def target(self):
+            return self._target
+
+        def _repr_(self) -> str:
+            return f"Natural transformations {self.source()} => {self.target()}"
+
+
 def NaturalTransformations(source, target):
     r"""Return the represented type of natural transformations between parallel functors."""
     if source.domain() != target.domain() or source.codomain() != target.codomain():
         raise ValueError("natural transformations require parallel functors")
-    return NaturalTransformationSpace(source, target)
+    return object_of(NaturalTransformationSpaces(), source=source, target=target)
 
-
-class NaturalTransformationSpace(Parent):
-    r"""The represented Hom-object of natural transformations ``F => G``."""
-
-    def __init__(self, source, target) -> None:
-        self._source = source
-        self._target = target
-        Parent.__init__(self, category=SageSets())
-
-    def source(self):
-        return self._source
-
-    def target(self):
-        return self._target
-
-    def _element_constructor_(self, components):
-        return NaturalTransformation(self.source(), self.target(), components)
 
 
 def NaturalIsomorphism(source, target, components, inverse_components):
@@ -421,7 +440,6 @@ __all__ = [
     "DiscreteFunctor",
     "DomainFunctor",
     "NaturalIsomorphism",
-    "NaturalTransformationSpace",
     "NaturalTransformations",
     "ObjectSetFunctor",
     "compose_functors",
