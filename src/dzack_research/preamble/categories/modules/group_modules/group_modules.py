@@ -3,40 +3,30 @@ r"""Native-backed modules equipped with an action of a specified group."""
 from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.misc.cachefunc import cached_method
-from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    _initialize_module_hom_parent,
-    ModuleHomset,
-    _ModuleHomsetCommonMethods,
-    ModuleMorphism,
-)
-from dzack_research.preamble.categories.modules.pure.modules import (
-    LinearEndCategoryConstruction,
-)
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    CategoryPacketMethods,
-    HomCategoryConstruction,
-)
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     CoequalizerOfFamily,
     EqualizerOfFamily,
 )
-
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
-    _owned_ring,
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoryPacketMethods,
+    HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.functors.scalar_change import ScalarExtensionFunctor
-from dzack_research.preamble.categories.group.class_functions import finite_group_class_function
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.functors.scalar_change import (
+    ScalarExtensionFunctor,
+)
+from dzack_research.preamble.categories.group.class_functions import (
+    finite_group_class_function,
+)
+from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
     _engine_group,
     _owned_group,
 )
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
@@ -45,16 +35,32 @@ from dzack_research.preamble.categories.modules.group_modules.isotypic import (
     isotypic_component,
     isotypic_decomposition,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
+    _initialize_module_hom_parent,
+    _ModuleHomsetCommonMethods,
+    module_homset,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     FinitelyPresentedModules,
+    LinearEndCategoryConstruction,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily, Sets
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+    _owned_ring,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    CoproductOfFamily,
+    Sets,
+)
 
 
 class GroupModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -93,8 +99,10 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
         return f"{self.base_ring()}[{self.acting_group()}]-modules"
 
     def super_categories(self):
-
-        return [Modules(self.base_ring())]
+        return [
+            GObjects(self.acting_group(), Modules(self.base_ring())),
+            Modules(self.base_ring()),
+        ]
 
     _HomCategory = GroupModuleHomCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
@@ -124,14 +132,37 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
             action_is_trivial=False,
             **rest,
         ) -> None:
-            self._preamble_acting_group = acting_group
             self._preamble_unacted_module = unacted_module
-            self._preamble_source_action = source_action
             self._preamble_action_is_trivial = bool(action_is_trivial)
-            super().__init__(**rest)
+
+            def generator_images(group_element):
+                forget_action = self.forget_action_morphism()
+                equip_action = self.equip_action_morphism()
+                return {
+                    label: equip_action(
+                        _apply_action(
+                            source_action,
+                            group_element,
+                            forget_action(self.module_generator(label)),
+                        )
+                    )
+                    for label in self.module_generating_set()
+                }
+
+            super().__init__(
+                acting_group=acting_group,
+                action=generator_images,
+                underlying_category=Modules(unacted_module.base_ring()),
+                **rest,
+            )
 
         def group(self):
             return self._preamble_acting_group
+
+        def acting_group(self):
+            # ``GroupLattices`` enters through refinement and supplies
+            # ``group()`` itself, so the acting group is read through it.
+            return self.group()
 
         def is_trivial_action(self) -> bool:
             return self._preamble_action_is_trivial
@@ -160,56 +191,10 @@ class GroupModules(CategoryPacketMethods, _CategoryOverRingAndActingGroup):
                 }
             )
 
-        @cached_method
-        def action(self):
-            r"""Return the chosen action datum used to construct this group module."""
-            forget_action = self.forget_action_morphism()
-            equip_action = self.equip_action_morphism()
-            source_action = self._preamble_source_action
-
-            def represented_action(group_element, vector):
-                if vector.parent() is not self:
-                    raise TypeError(f"the action must be applied to elements of {self}")
-                source_vector = forget_action(vector)
-                source_image = _apply_action(source_action, group_element, source_vector)
-                return equip_action(source_image)
-
-            return represented_action
-
-        def act(self, group_element, vector):
-            r"""Return ``group_element * vector`` in this group module."""
-            if group_element not in self.group():
-                raise TypeError(f"{group_element} is not an element of {self.group()}")
-            if vector.parent() is not self:
-                raise TypeError(f"the action is on elements of {self}")
-            return _apply_action(self.action(), group_element, vector)
-
         def _Hom_(self, codomain, category=None):
             if codomain not in GroupModules(self.base_ring(), self.group()):
                 raise TypeError("an R[G]-module morphism requires the same acting group")
             return group_module_homset(self, codomain)
-
-        def action_of(self, group_element):
-            r"""Return the linear automorphism induced by ``group_element``."""
-
-            return module_homset(self, self)(
-                {
-                    label: self.act(group_element, self.module_generator(label))
-                    for label in self.module_generating_set()
-                }
-            )
-
-        def is_invariant(self, vector) -> bool:
-
-            group = self.group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError(
-                    "deciding invariance here requires a chosen finite group generating set"
-                )
-            return all(
-                self.act(group_generator, vector) == vector
-                for group_generator in group.group_generators()
-            )
 
         def module_invariants(self):
             r"""Return ``M^G`` as the equalizer subobject of the action and identity."""
@@ -449,19 +434,8 @@ class GroupModuleMorphism(ModuleMorphism):
             elementwise=elementwise,
             verify_linearity=verify_linearity,
         )
-        if verify_equivariance:
-            group = self.domain().group()
-            if group.is_finitely_generated() is not True:
-                raise NotImplementedError(
-                    "checking equivariance requires a chosen finite group generating set"
-                )
-            for group_generator in group.group_generators():
-                for label in self.domain().module_generating_set():
-                    source = self.domain().module_generator(label)
-                    if self(self.domain().act(group_generator, source)) != self.codomain().act(
-                        group_generator, self(source)
-                    ):
-                        raise ValueError("the stated module map is not G-equivariant")
+        if verify_equivariance and parent.is_equivariant(self) is not True:
+            raise ValueError("the stated module map is not G-equivariant")
 
     def __mul__(self, other):
         if not isinstance(other, GroupModuleMorphism):
@@ -477,12 +451,13 @@ class GroupModuleMorphism(ModuleMorphism):
         )
 
 
-class GroupModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
+class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
     Element = GroupModuleMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        if domain.group() != codomain.group():
-            raise ValueError("R[G]-module morphisms require the same acting group")
+        assert domain.group() == codomain.group(), (
+            "R[G]-module morphisms require the same acting group"
+        )
         _initialize_module_hom_parent(self, hom_family, domain, codomain)
 
 

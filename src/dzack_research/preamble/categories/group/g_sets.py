@@ -1,46 +1,55 @@
-r"""Finite represented ``G``-sets, their actions, and equivariant Hom-sets.
+r"""Finite represented ``G``-sets, their orbits, fixed points, and torsors.
 
-A ``G``-set is a set with a group morphism ``G -> Sym(X)``; the categories
-below are stated over the owned sets and the owned acting group.  The finite
-point-set presentation is used only to compute equivariance, fixed points,
-orbits, and the standard finite free/cofree constructions.
+A ``G``-set is an object of ``Sets()`` with a chosen ``G``-action, so
+``GSets(G)`` is ``GObjects(G, Sets())``.  The finite represented objects
+additionally record the action as a group morphism ``G -> Sym(X)``, which is
+the engine used to compute equivariance, fixed points, orbits, and the
+standard finite free/cofree constructions.
 """
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    CategoryPacketMethods,
-    HomCategoryConstruction,
-)
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    OwnedParameterizedCategory,
-)
+from collections import deque
+
 from sage.categories.category import Category
-from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.abstract_method import abstract_method
 from sage.misc.unknown import Unknown
 from sage.structure.element import Element
-from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.sets.set_categories import (
-    FiniteSets,
-    Sets,
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoryPacketMethods,
+    HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedCategory,
+    OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
     _own_group,
     _owned_group,
     group_homset,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_filter
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_filter,
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
+    EnumeratedSets,
+    FiniteSets,
+    Sets,
+)
+from dzack_research.preamble.owned_category import object_of
+
+
+def GSets(group):
+    r"""Return the category of ``group``-sets: objects of ``Sets()`` with a chosen action."""
+    return GObjects(group, Sets())
 
 
 class GSetHomCategoryConstruction(HomCategoryConstruction):
@@ -48,69 +57,19 @@ class GSetHomCategoryConstruction(HomCategoryConstruction):
         return GSetHomset
 
 
-class GSets(CategoryPacketMethods, OwnedParameterizedCategory):
-    def an_object(self):
-        r"""The three-point set with the trivial action of the group."""
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
-
-        return trivial_g_set(finite_ordinal_set(3), self.group())
-
-    @staticmethod
-    def __classcall__(cls, group):
-
-        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
-
-    def __init__(self, group):
-        OwnedParameterizedCategory.__init__(self, group)
-
-    def _make_named_class_key(self, name):
-        return self.group()
-
-    def group(self):
-        return self.parameter()
-
-    acting_group = group
-
-    def super_categories(self):
-        return [Sets()]
-
-    def _repr_object_names(self):
-        return f"{self.group()}-sets"
-
-    _HomCategory = GSetHomCategoryConstruction
-
-    class ParentMethods:
-        @abstract_method
-        def action(self):
-            r"""Return the chosen action morphism ``G -> Sym(X)``."""
-            ...
-
-        def acting_group(self):
-            return self.action().domain()
-
-        def act(self, group_element, point):
-            if group_element not in self.acting_group():
-                raise TypeError(f"{group_element} is not in {self.acting_group()}")
-            if point not in self:
-                raise TypeError(f"{point} is not a point of {self}")
-            permutation_group = self.action().codomain()
-            permutation = self.action()(group_element)
-            backend_permutation = permutation_group._to_engine(permutation)
-            return self(backend_permutation(point))
-
-
 class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""The represented finite objects of ``GSets(G)``."""
 
     def an_object(self):
         r"""The three-point set with the trivial action of the group."""
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+        from dzack_research.preamble.categories.sets.set_categories import (
+            finite_ordinal_set,
+        )
 
         return trivial_g_set(finite_ordinal_set(3), self.group())
 
     @staticmethod
     def __classcall__(cls, group):
-
         return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
 
     def __init__(self, group):
@@ -125,36 +84,57 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     acting_group = group
 
     def super_categories(self):
-        return [GSets(self.group()), FiniteSets()]
+        return [GSets(self.group()), FiniteSets(), EnumeratedSets()]
 
     def _repr_object_names(self):
         return f"finite {self.group()}-sets"
 
+    _HomCategory = GSetHomCategoryConstruction
+
     class ParentMethods:
-        def __init__(self, point_set, action, **rest) -> None:
-            group = action.domain()
-            assert point_set in FiniteEnumeratedSets(), (
-                "a G-set here is on a finite enumerated point set"
-            )
+        def __init__(self, point_set, permutation_representation, **rest) -> None:
+            assert point_set in FiniteSets(), "a represented G-set is on a finite point set"
+            group = permutation_representation.domain()
             assert group.is_finitely_generated() is True, (
                 "the represented equivariant Hom-set requires a chosen finite group "
                 "generating set"
             )
             self._preamble_g_set_points = point_set
-            self._preamble_g_set_action = action
-            permutations = action.codomain()
+            self._preamble_permutation_representation = permutation_representation
+            permutations = permutation_representation.codomain()
             for group_generator in group.group_generators():
-                backend_permutation = permutations._to_engine(action(group_generator))
+                backend_permutation = permutations._to_engine(
+                    permutation_representation(group_generator)
+                )
                 for point in point_set:
-                    if backend_permutation(point) not in point_set:
-                        raise ValueError("the action morphism does not preserve the stated point set")
-            super().__init__(facade=point_set, **rest)
+                    assert backend_permutation(point) in point_set, (
+                        "the action morphism does not preserve the stated point set"
+                    )
+
+            def point_map(group_element):
+                backend_permutation = permutations._to_engine(
+                    permutation_representation(group_element)
+                )
+                return lambda point: self(backend_permutation(point))
+
+            super().__init__(
+                acting_group=group,
+                action=point_map,
+                underlying_category=Sets(),
+                facade=point_set,
+                **rest,
+            )
+
+        def permutation_representation(self):
+            r"""Return the chosen action as the group morphism ``G -> Sym(X)``."""
+            return self._preamble_permutation_representation
+
+        def point_set(self):
+            r"""Return the finite set used to present the points of this ``G``-set."""
+            return self._preamble_g_set_points
 
         def __iter__(self):
             return iter(self.point_set())
-
-        def action(self):
-            return self._preamble_g_set_action
 
         def __contains__(self, point) -> bool:
             return point in self.point_set()
@@ -165,20 +145,20 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             return self._element_constructor_(point)
 
         def _element_constructor_(self, point):
-            if point not in self.point_set():
-                raise ValueError(f"{point!r} is not a point of {self}")
+            assert point in self.point_set(), f"{point!r} is not a point of {self}"
             return self.point_set()(point)
 
         def cardinality(self):
             return cardinal(self.point_set().cardinality())
 
+        def rank(self, point):
+            return self.point_set().rank(point)
+
+        def unrank(self, position):
+            return self.point_set().unrank(position)
+
         def _repr_(self):
             return f"{self.point_set()} with {self.acting_group()}-action"
-        def point_set(self):
-            r"""Return the finite set used to present the points of this ``G``-set."""
-            return self._preamble_g_set_points
-
-
 
 
 class GSetMorphism(SetMorphism):
@@ -186,17 +166,8 @@ class GSetMorphism(SetMorphism):
 
     def __init__(self, parent, function) -> None:
         SetMorphism.__init__(self, parent, function)
-        group = self.domain().acting_group()
-        if group.is_finitely_generated() is not True:
-            raise NotImplementedError(
-                "checking equivariance requires a chosen finite group generating set"
-            )
-        for group_generator in group.group_generators():
-            for point in self.domain():
-                if self(self.domain().act(group_generator, point)) != self.codomain().act(
-                    group_generator, self(point)
-                ):
-                    raise ValueError("the stated set map is not G-equivariant")
+        if parent.is_equivariant(self) is not True:
+            raise ValueError("the stated set map is not G-equivariant")
 
     def __mul__(self, other):
         if other.codomain() is not self.domain():
@@ -206,26 +177,17 @@ class GSetMorphism(SetMorphism):
         )
 
 
-class GSetHomset(CategoricalHomset):
-    r"""The actual equivariant Mor category between represented finite ``G``-sets."""
+class GSetHomset(GObjectHomset):
+    r"""The equivariant Mor category between represented finite ``G``-sets."""
 
     Element = GSetMorphism
-
-    def __init__(self, hom_family, domain, codomain) -> None:
-        if domain.acting_group() != codomain.acting_group():
-            raise ValueError("equivariant maps require a common acting group")
-        CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def _element_constructor_(self, function):
         return self.element_class(self, function)
 
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("identity is defined on an endomorphism Hom-set")
+        assert self.domain() is self.codomain(), "identity is defined on an endomorphism Hom-set"
         return self(lambda point: point)
-
-    def _repr_(self):
-        return f"Mor_{self.domain().acting_group()}({self.domain()}, {self.codomain()})"
 
 
 class OrbitSets(OwnedCategory):
@@ -237,7 +199,6 @@ class OrbitSets(OwnedCategory):
             g_set_orbits_trivial_adjunction,
         )
         from dzack_research.preamble.categories.group.groups import Groups
-        from dzack_research.preamble.categories.sets.set_categories import Sets
 
         group = Groups.S(3)
         return g_set_orbits_trivial_adjunction(group).left_adjoint()(
@@ -245,8 +206,6 @@ class OrbitSets(OwnedCategory):
         )
 
     def super_categories(self):
-        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
-
         return [FiniteSets()]
 
     class ElementMethods(Element):
@@ -263,11 +222,7 @@ class OrbitSets(OwnedCategory):
             return self.parent().orbit_points(self)
 
         def __eq__(self, other) -> bool:
-            return (
-                other.parent() is self.parent()
-                and other.parent() is self.parent()
-                and other._index == self._index
-            )
+            return other in self.parent() and other._index == self._index
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -279,10 +234,7 @@ class OrbitSets(OwnedCategory):
             return "Orbit(" + ", ".join(repr(point) for point in self.points()) + ")"
 
     class ParentMethods:
-
         def __init__(self, g_set, **rest) -> None:
-            from collections import deque
-
             self._g_set = g_set
             group = g_set.acting_group()
             assert group.is_finitely_generated() is True, (
@@ -346,7 +298,10 @@ class OrbitSets(OwnedCategory):
             return iter(self._orbit_classes)
 
         def __contains__(self, orbit) -> bool:
-            return isinstance(orbit, OrbitClass) and orbit.parent() is self
+            try:
+                return orbit.parent() is self
+            except AttributeError:
+                return False
 
         def cardinality(self):
             return self._orbit_classes.cardinality()
@@ -355,21 +310,18 @@ class OrbitSets(OwnedCategory):
             return self._orbit_classes.unrank(position)
 
         def rank(self, orbit):
-            if orbit not in self:
-                raise ValueError(orbit)
+            assert orbit in self, f"{orbit} is not an orbit of {self}"
             return int(orbit._index)
 
         position = rank
         index = rank
 
         def orbit_points(self, orbit):
-            if orbit not in self:
-                raise TypeError("the orbit class belongs to a different quotient")
+            assert orbit in self, "the orbit class belongs to a different quotient"
             return self._orbit_points[orbit._index]
 
         def orbit_of(self, point):
-            if point not in self.g_set():
-                raise TypeError(f"{point} is not a point of {self.g_set()}")
+            assert point in self.g_set(), f"{point} is not a point of {self.g_set()}"
             for orbit in self:
                 if point in self.orbit_points(orbit):
                     return orbit
@@ -378,15 +330,17 @@ class OrbitSets(OwnedCategory):
         def _repr_(self):
             return f"Orbit set of {self.g_set()}"
 
+
 def g_set_homset(domain, codomain) -> GSetHomset:
-    return GSets(domain.acting_group()).Mor(domain, codomain)
+    return FiniteGSets(domain.acting_group()).Mor(domain, codomain)
 
 
 def _permutation_from_point_map(permutation_group, point_set, mapping):
     images = [mapping(point) for point in point_set]
     for point in point_set:
-        if sum(image == point for image in images) != 1:
-            raise ValueError("a group action must send each group element to a permutation")
+        assert sum(image == point for image in images) == 1, (
+            "a group action must send each group element to a permutation"
+        )
 
     remaining = list(point_set)
     cycles = []
@@ -407,26 +361,26 @@ def _permutation_from_point_map(permutation_group, point_set, mapping):
 def _finite_g_set_from_action(group, point_set, action):
     r"""Construct a represented finite ``G``-set from a binary action.
 
-    ``action(g, x)`` is converted once into the defining group morphism
-    ``G -> Sym(X)``; the returned object stores that morphism rather than the
-    temporary binary callback.
+    ``action(g, x)`` is read once, on the chosen group generators, into the
+    defining group morphism ``G -> Sym(X)``; the returned object stores that
+    morphism rather than the temporary binary callback.
     """
 
     if isinstance(point_set, (tuple, list)):
         point_set = finite_ordered_set(point_set)
-    if point_set not in FiniteEnumeratedSets():
-        raise TypeError("the represented G-set constructor requires a finite enumerated point set")
+    assert point_set in FiniteSets(), (
+        "the represented G-set constructor requires a finite point set"
+    )
     group = _owned_group(group)
-    if group.is_finitely_generated() is not True:
-        raise NotImplementedError(
-            "constructing a represented action morphism requires a chosen finite group generating set"
-        )
+    assert group.is_finitely_generated() is True, (
+        "constructing a represented action morphism requires a chosen finite group generating set"
+    )
     # Private finite backend serialization: Sage's SymmetricGroup constructor
     # requires a sliceable concrete domain, while the mathematical point set
-    # remains the owned ordered set above.
+    # remains the owned set above.
     backend_points = list(point_set)
     permutations = _own_group(SymmetricGroup(backend_points))
-    action_morphism = group_homset(group, permutations)(
+    permutation_representation = group_homset(group, permutations)(
         {
             group_generator: _permutation_from_point_map(
                 permutations,
@@ -437,9 +391,9 @@ def _finite_g_set_from_action(group, point_set, action):
         }
     )
     return object_of(
-        FiniteGSets(action_morphism.domain()),
+        FiniteGSets(permutation_representation.domain()),
         point_set=point_set,
-        action=action_morphism,
+        permutation_representation=permutation_representation,
     )
 
 
@@ -453,25 +407,13 @@ def trivial_g_set(point_set, group):
     return finite_g_set(point_set, group, lambda _group_element, point: point)
 
 
-
-
-
-
 def fixed_point_set(g_set):
     r"""Return the finite fixed-point set ``X^G``."""
     group = g_set.acting_group()
-    if group.is_finitely_generated() is not True:
-        raise NotImplementedError(
-            "constructing fixed points requires a chosen finite group generating set"
-        )
-
-    return finite_ordered_filter(
-        finite_ordered_set(g_set),
-        lambda point: all(
-            g_set.act(group_generator, point) == point
-            for group_generator in group.group_generators()
-        ),
+    assert group.is_finitely_generated() is True, (
+        "constructing fixed points requires a chosen finite group generating set"
     )
+    return finite_ordered_filter(finite_ordered_set(g_set), g_set.is_invariant)
 
 
 class Torsors(Category):
@@ -497,7 +439,6 @@ class Torsors(Category):
         @abstract_method
         def an_element(self):
             r"""Return the chosen point trivializing this torsor."""
-            ...
 
         def transporter(self, source, target):
             r"""Return the unique group element carrying ``source`` to ``target`` when computable."""
@@ -506,11 +447,10 @@ class Torsors(Category):
 
 __all__ = [
     "FiniteGSets",
-    "GSets",
     "GSetHomset",
     "GSetMorphism",
-    "OrbitClass",
-    "OrbitSet",
+    "GSets",
+    "OrbitSets",
     "Torsors",
     "finite_g_set",
     "fixed_point_set",
