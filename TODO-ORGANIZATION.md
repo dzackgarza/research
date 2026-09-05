@@ -2,6 +2,9 @@
 
 ## Current organization work
 
+[TODO-WORKSTREAMS.md](TODO-WORKSTREAMS.md) owns the parallel schedule, shared-file boundaries, active reservations, and current progress.
+Consolidation work claims the common owner and its affected consumers through that board.
+
 [TODO-PRIORITIES.md](TODO-PRIORITIES.md#how-much-category-theory-to-implement-here) owns the criteria for work before the `sage-categories` transfer.
 Apply the findings below to the module, affine-local algebra, and general scheme constructions first.
 Recheck each finding at its live owner; the assessment records an earlier source tree.

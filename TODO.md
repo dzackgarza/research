@@ -2,6 +2,9 @@
 
 ## Work selection
 
+Use [the workstream board](TODO-WORKSTREAMS.md) to identify parallel work, claim edit paths, release reservations, and update overall progress.
+Read its active claims before editing a shared mathematical owner.
+
 Follow [the execution priorities](TODO-PRIORITIES.md#current-objective-and-order) and its boundary for local category work.
 The active work is a general scheme-theory toolkit built on coherent module and affine-local algebra constructions.
 Select a reported defect below when it blocks those constructions or causes dependent implementations to repeat an algorithm.
