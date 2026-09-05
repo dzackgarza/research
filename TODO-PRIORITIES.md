@@ -70,6 +70,8 @@ Hom.
 This is the mathematical half of Priority 3 step 10, left undone when the
 mechanical half landed.
 
+**Status: complete.**
+
 ### 0.5.2 Make the `Mor` invariant exhaustive rather than sampled
 
 `tests/categories/test_mor_is_one_category.py` asserts that `A.Mor(B)` is one
@@ -88,6 +90,8 @@ its `_constructions()` table, so that policy is currently unmeetable.
 Restore the sweep on the live tree first.
 Then the `Mor` invariant is checked over construction paths instead of seven
 objects, and one table carries both audits.
+
+**Status: complete.**
 
 ### 0.5.3 One cardinal sweep for `rank` and `cardinality`
 
@@ -128,6 +132,8 @@ Two more members of the same sweep:
   `lower_ranks` are still public names returning tuples; they were documented
   as private plumbing and not renamed.
 
+**Status: complete.**
+
 ### 0.5.4 One owned crossing for numerals entering Sage constructors
 
 `_engine_scalar` (`categories/rings/number_fields.py`), `_engine_dimension`
@@ -142,6 +148,8 @@ why it has three implementations.  `_states_a_rank`'s
 probe.
 
 Give the crossing one owner and delete the three helpers.
+
+**Status: complete.**
 
 ### 0.5.5 Two questions to answer before more code assumes an answer
 
@@ -160,14 +168,20 @@ Give the crossing one owner and delete the three helpers.
   states injectivity instead of a method asserting it.  This is the same shape
   as the `is_form_morphism` question, which was answered.
 
-### 0.5.6 The live tree does not import
+**Status: complete.**
 
-`from dzack_research.preamble.all import *` fails while `catalogue.py` builds
-`NamedLattices.LK3.Aut()(...)` in its `Involutions` body: the block-dict
-images produce a 0-by-0 backend matrix, which `tensors/tensor.py` `pullback`
-then multiplies against the 22-by-22 form.
+### 0.5.6 The live tree import gate
 
-Every specimen below depends on the session import, so this is repaired first.
+**Status: complete.**
+
+The recorded `from dzack_research.preamble.all import *` failure while
+`catalogue.py` built `NamedLattices.LK3.Aut()(...)` was an import-hoist name
+collision: `tensors/tensor.py` imported the module-Hom `_engine_matrix` and then
+overwrote that binding with its own tensor backend helper.  The module-Hom
+helper is now bound as `_engine_module_matrix`; the session import passes and
+the defining-module graph remains acyclic with no deferred project imports.
+
+Every specimen below depends on the session import, so this gate stays first.
 The working tree is dirty across roughly 126 files.  Commits `a7de990b`,
 `1af9bafb` and the checkpoint commit after them carry another agent's
 in-flight work under unrelated commit messages; the work is in history and
@@ -306,6 +320,8 @@ This has no foundational dependency and may be taken at any point in Priority 1.
 
 ## Priority 2 — Expose the true dependency DAG (`ARC-11`)
 
+**Status: complete.**
+
 Only after the large deletion/consolidation pass should dependency cleanup begin in earnest.
 
 `TODO-ORGANIZATION.md` identifies package-aggregator imports and local/deferred imports as the principal organization problem.
@@ -353,33 +369,27 @@ Order within this phase:
 Only after the foundational graph is stable should the same purity audit proceed through graded theories, forms, G-sets, divisors, lattices, Coxeter structures, schemes, and profinite groups.
 
 Step 9 owns `TODO-ORGANIZATION.md` §9 and §12, which are one repair.
-§9 has largely landed: `abstract_categories/arrow_categories.py::_morphisms_agree` is down to 42 lines and its scheme, group, and framed-module special cases are gone.
-What remains there is §12 in miniature — two `getattr`/`callable` capability probes and a `FiniteEnumeratedSets()` test standing where dispatch to the Hom category belongs.
+That repair has landed in the foundational scope: morphism equality is owned by the
+relevant morphism/Hom theory, including presented-algebra maps; the old root
+`_morphisms_agree` dispatcher is gone; foundational public mathematical methods no
+longer use capability probing as a second type system.  Remaining probes in this
+phase are constructor ingress, arbitrary-candidate dunders/membership, or private
+engine adapters, as required by `DEV-36` and `DEV-32`.
 
-§12 is the wider case.
-There are 380 `hasattr`/`getattr`/`callable` sites in the preamble; 178 of them are in **public mathematical methods**, and only 17 are in dunders that genuinely receive an arbitrary argument.
-In a closed universe (`CONTRIBUTING.md` `ARC-00`) a public mathematical method has no ingress to guard, so a probe there is not a check — it is a second, duck-typed type system beside the category graph.
-A public mathematical method asserts categorical membership; capability probing is confined to private engine adapters and to `__eq__`/`__contains__` and their kin.
-
-Step 10 finishes what `ARC-07` started.
-`Sets().Mor` and `OwnedRings().Mor` return categories; 28 classes still extend `OwnedHomset`, the private Sage adapter, and so return bare sets.
-The mechanical part is a Mor family per class -- a `HomCategoryConstruction` subclass whose `fixed_category_class` is that class -- with the category declaring it as `_HomCategory` and building through the family's interning `Of`, which is how `SetMorCategory` was converted in 3eb1c68e.
-
-The mathematical part is that several are not full Mor categories but **subcategories of one, carved by a predicate**, and each should be constructed that way rather than as a Hom object in its own right:
-
-- `DerivationSpace` is $\mathrm{Der}_R(A,M)$, whose own docstring calls it "the actual subobject of $\mathrm{Hom}_R(A, \mathrm{Res}_R M)$" -- the $R$-linear maps satisfying Leibniz.
-- `ConnectionSpace` and `ConnectionHomset`: a connection is a morphism $E \to E \otimes \Omega^1$, again cut out by Leibniz.
-- `AbsoluteGaloisGroup` is $\mathrm{Aut}_{K\text{-Alg}}(\bar K)$, the automorphisms of an object of the coslice $(K/\mathbf{Fields})$ -- stated in its docstring and in the name of its own test.
-
-That is the same shape the packet already has for `Monos`, `Epis`, `Isos` and `Auts`: a predicate on a Mor category.
-None of these is a separate kind of object, and treating them as ones outside the Mor tree is what left them extending the Sage adapter.
-
-Those four classes plus `GradedDerivationSpace` have since taken the mechanical half only: each now declares `HomCategoryConstruction(<ambient category>)`, and so claims to *be* the ambient Mor rather than a subcategory of it.
-Priority 0.5.1 owns that repair, and it comes before the remaining conversions so that the rest are not built the same way.
+Step 10 is also closed.  The earlier predicate-defined cases were repaired by
+Priority 0.5.1/0.5.2 as restricted Hom/Mono/Aut subcategories over their existing
+ambient `Mor` parents.  The live tree has exactly two `OwnedHomset` subclasses:
+`CategoricalHomset`, the Sage-runtime carrier used by owned Hom categories, and
+`UnderlyingSetHomset`, the private underlying-set adapter.  No mathematical
+concrete Hom theory remains outside the owned Mor tree.
 
 Step 9 must follow step 7: a probe cannot be deleted until the operation it gropes for exists at its owned owner.
 Do not set a target count for it — `DEV-36` and `DEV-32` govern.
-The count is 380 because nothing in this ladder owned the defect, not because a threshold was missed.
+
+**Status: complete.**  The regenerated megadoc/category graph contains zero
+reachable `sage.categories.*` mathematical nodes; the foundational architecture,
+abstract-category, Hom, ring/algebra, group/module, and Priority 0.5.5 regression
+gate passes 130/130.
 
 ## Priority 4 — Finish common collection/finiteness architecture on survivors
 
@@ -399,6 +409,12 @@ Priority 0.5.3 is the cardinal-valued half of this phase and runs ahead of it: `
 
 - Bounded convenience methods must state their finite hypothesis explicitly.
 
+**Status: complete.**  Module and algebra generator maps retain lazy
+`IndexedFamily` data, including countably infinite framings; dict/sequence and
+other bounded conveniences require finiteness explicitly, and positional lookup
+uses the owned framing's `rank/unrank` interface rather than duplicate tables.
+The focused framing/presentation/algebra gate passes 25/25.
+
 ### 4.2 Biproduct/tensor/InternalHom
 
 - Biproduct framings are coproducts of framing sets.
@@ -411,11 +427,24 @@ Priority 0.5.3 is the cardinal-valued half of this phase and runs ahead of it: `
 
 - General Hom objects remain constructible without exhausting either framing.
 
+**Status: complete.**  Biproduct/tensor framings use owned coproduct/Cartesian
+index objects; finite matrix realization is gated by the chosen-presentation
+category; `InternalHom` leaves general infinite-framing Hom carriers unmaterialized;
+and tensor/Hom unit, counit, and induced Hom maps use callable/indexed-family
+data rather than eager generator tables.  The focused biproduct/tensor/Hom gate
+passes 13/13.
+
 ### 4.3 Abstract factor/index families
 
 - Migrate `DiscreteCategory.objects`, direct-sum decompositions, abstract products/coproducts, and similar factor collections to owned indexed families.
 
 - A finite theorem may refine cardinality; it does not justify replacing the collection by a Python sequence.
+
+**Status: complete.**  Discrete object collections, selected direct-sum
+decompositions, and abstract product/coproduct/tensor factor collections retain
+their owned index sets and `IndexedFamily` representations.  The focused
+abstract-collection gate passes 9/9, including infinite discrete objects and
+direct retention of a supplied summand family.
 
 ### 4.4 Stop at deletion boundaries
 
@@ -433,6 +462,8 @@ Do not yet perform the final `tuple/list` sweep in:
 
 Migrate only the surviving abstraction after its owner is settled.
 
+**Status: complete through the stated stop boundary.**
+
 ## Priority 5 — Repair semantic APIs before downstream numerical consumers
 
 Follow `ARC-16`, `ARC-17`, `DEV-13`, and `STY-104`–`STY-111`. Mathematical consumers should compose semantic constructions; finite coordinate algorithms belong behind those constructions.
@@ -441,19 +472,106 @@ High-priority conversions:
 
 1. `FreeResolution.is_exact()` should state exactness via image/kernel subobjects, not compare backend row modules.
 
+   **Status: complete.**  Exactness now checks injectivity/surjectivity and the
+   two inclusions `im(d_1) <= ker(epsilon)` and `ker(epsilon) <= im(d_1)` in
+   the represented subobject category.  `FreeResolution` no longer carries a
+   relation-matrix side channel for this predicate.  The live replacement gate
+   is `tests/modules/test_free_resolutions.py` through the central Sage pytest
+   runner, and passes 3/3.
+
 2. Cohomology should be constructed as `ker(d_n) / im(d_{n-1})` through owned kernel/image/quotient operations, not by rebuilding relation matrices in the cohomology layer.
+
+   **Status: complete.**  `Cohomology` now constructs `Cycles` and `Boundaries`
+   through the differentials' owned `kernel()` and `image()` methods, factors
+   the boundary inclusion through the cycle inclusion, and takes that factor
+   map's owned cokernel.  The cohomology layer contains no presentation/matrix
+   reconstruction.  The finite-PID presentation calculation needed by this
+   semantic path now lives behind `ModuleMorphism.kernel()`: for
+   `M=R^n/P -> N=R^m/Q` it computes the free preimage
+   `S={x : F(x) in Q}` and returns the owned kernel `S/P` with its inclusion and
+   exact lift.  Presented-module `subobject_on()` also accepts finite indexed
+   families directly, so `image()` does not materialize them as Python data.
+   The live semantic kernel/cohomology gate passes 5/5, including
+   `Z/4 -> Z/2`, the polynomial-presentation syzygy backend, and cochain-map
+   functoriality.
 
 3. Subobject inverse image/intersection should be pullback/kernel constructions; finite-free matrix stacking belongs in the relevant Hom/subobject backend.
 
+   **Status: complete.**  Inverse image is the right adjoint on fixed-ambient
+   subobjects and is constructed as the source projection of
+   `ker(f,-i)`; module-subobject intersection is the image of the left
+   projection from `ker(i,-j)`.  Neither consumer stacks coordinate matrices.
+   The finite free span/lift backend now restricts itself to the finite union
+   of observed supports without requiring a ranking map for the ambient
+   framing, so the semantic constructions also work inside `FreeModuleOn(ZZ,
+   NN)`.  The live subobject-image/intersection gate passes 3/3.
+
 4. `module_invariants` and `module_coinvariants` should be equalizer/coequalizer constructions of the action; finite group-generation is an algorithmic specialization.
+
+   **Status: complete.**  The abstract construction vocabulary now owns
+   `Equalizer`, `Coequalizer`, and their nonempty-family variants.  In
+   `R-Mod`, the binary constructions are realized as `ker(f-g)` and
+   `coker(f-g)`; finite wide equalizers use kernel/intersection and finite wide
+   coequalizers use image/sum/cokernel.  `module_invariants()` and
+   `module_coinvariants()` now only request the wide equalizer/coequalizer of
+   the action with the identity.  Choosing a finite group generating family is
+   confined to the `FinitelyPresentedGroupModules` backend.  The live action
+   gate passes 5/5, including both adjunctions and a two-generator Klein-four
+   action whose invariants are zero and coinvariants are `(Z/2)^2`.
 
 5. `GroupLattice` form preservation should be expressed by an action into the appropriate formed-module automorphism Hom rather than exhaustive basis-pair checking in the constructor.
 
+   **Status: complete.**  A `GroupLattice` now stores its selected action as a
+   map `G -> Aut(L)`, where `Aut(L)` is the owned lattice-isometry Hom.  The
+   constructor forces the chosen group-generator images through that Hom;
+   Gram-tensor pullback and invertibility are therefore checked by the common
+   lattice-morphism backend rather than by a local basis-pair sweep.
+   `action_of(g)` is literally the resulting element of `Aut(L)`.  The live
+   form-action gate passes 2/2, including rejection of a non-isometric action.
+
 6. `Ann_R(M)` should be the kernel/ideal attached to the scalar action, with exhaustive finite enumeration only as a backend case.
+
+   **Status: complete.**  The common module surface now defines
+   `annihilator()` as `scalar_action().kernel()`, where the scalar action is the
+   owned ring morphism `R -> End_R(M)`.  `RingMorphism.kernel()` delegates to a
+   represented kernel-ideal backend attached to that action.  Smith/presentation
+   calculations for finitely presented modules and exhaustive scalar/carrier
+   enumeration for finite general modules now live only behind that backend;
+   framed free modules provide the faithful free/zero-module kernel directly.
+   The live annihilator gate passes 3/3 and explicitly checks equality with
+   `scalar_action().kernel()` in the represented polynomial, PID, finite-carrier,
+   free, and zero-module regimes.
 
 7. Fiber dimension and minimal-generator/Nakayama operations should construct the semantic fiber/residue module first and ask that object for dimension; matrix rank belongs in the represented vector-space implementation.
 
+   **Status: complete.**  `fiber_dimension(p)` is now literally
+   `fiber(p).dimension()`, and a local module's minimal generator count is
+   `residue_module().dimension()`.  The residue module is explicitly refined as
+   a vector space over the residue field.  Minimal-generator selection asks that
+   vector space for a basis subfamily of its selected generators and lifts the
+   corresponding original generators.  Coordinate rank/echelon calculations
+   now occur only in the selected finite-presentation vector-space backend;
+   finite free vector spaces answer dimension/basis from their framing.
+   Nakayama surjectivity already reduces the morphism and asks the residue
+   morphism for surjectivity.  The live fiber/Nakayama gate passes 3/3 with
+   direct assertions against `fiber().dimension()` and
+   `residue_module().dimension()`.
+
 8. Primitive/saturation/exactness/cohomology/lattice consumers should call the common semantic methods even when repairing those methods is part of the current feature task.
+
+   **Status: complete.**  The downstream consumer audit found and removed the
+   remaining local semantic bypasses in the specialized lattice/orbit layer.
+   `VectorPrimitiveExtension` now constructs the rank-one subobject and asks
+   its common `is_primitive()` predicate instead of recomputing primitivity as
+   a coordinate gcd.  Isotropic transport and backend-witness verification now
+   take direct images as `(g * i).image()` instead of mapping a chosen
+   generating family and rebuilding the subobject locally.  The final census
+   finds no consumer-side matrix/row criterion for exactness or cohomology and
+   no primitive/saturation coordinate criterion; the primitive-embedding
+   engine output is immediately reified as an embedding and validated by the
+   common `embedding.is_primitive()` predicate.  Through the central Sage
+   pytest runner, the live Priority-5 semantic gate passes 15/15 and the
+   specialized primitive/saturation/isotropic-image gate passes 3/3.
 
 This phase deliberately precedes specialized lattice/orbit work so those theories do not acquire another generation of local matrix workarounds.
 
@@ -474,6 +592,8 @@ Collapse the three competing mechanisms:
 Use one chosen-preimage/provenance mechanism.
 Then remove bespoke `source_set()`, `source_algebra()`, `original_group_module()`, etc. where they only recover hidden source attributes.
 
+**Status:** Complete. `Functor` now owns one identity-based provenance store for both object and morphism images; `chosen_preimage()` derives reverse lookup from that same store, including ambiguity detection. The separate `ImageOfFunctor`/`FunctorImageObject` runtime category and `ImageInclusionFunctor` are removed, concrete functors no longer override `chosen_preimage()` by reverse-engineering output structure, and the listed bespoke source accessors/hidden provenance fields are removed. Module-localization kernel transport recovers its source morphism through the localization functor provenance; the explicit fraction model retains only its constructor-owned source module as representation state. Regenerated megadoc/graph contain no runtime functor-image wrapper symbols. Focused Sage gate: 20/20 across functor provenance, inverse/adjunction laws, algebra scalar change, group induction/coinduction, and module localization.
+
 ### 6.2 Engine capability/realization boundary
 
 Implement the `PORT_TODO.md` capability-routing direction:
@@ -486,6 +606,22 @@ Implement the `PORT_TODO.md` capability-routing direction:
   computations move behind dedicated private adapters rather than being orchestrated across many Python crossings;
 
 - repair `sage-julia-bridge` before adding more raw Julia subprocess machinery.
+
+**Status: complete.**  Backend selection now has one ordered capability
+registry with explicit availability and loud failure when no realization is
+present.  The lattice OSCAR backend is a private adapter registered by
+operation; the former raw Julia subprocess, temporary matrix files, and
+stdout protocol are gone.  It uses the persistent `sage-julia-bridge`, its
+structured codec and retained `JuliaHandle`s, and all returned engine data are
+crossed back into owned lattices, morphisms, and finite groups before leaving
+the adapter.  A production-tree census finds no raw process-management calls
+under `src/dzack_research/preamble`; the existing Singular and libGAP crossings
+are already concentrated private realizations rather than public mathematical
+objects.  The bridge runtime negotiates protocol 1 and passes retained-handle
+call/release invalidation; the focused capability/crossing gate passes 3/3.
+The separate even-unimodular embedding specimen is currently blocked before
+its mocked engine seam by the pre-existing owned-cardinal arithmetic defect,
+so it is not counted in that gate.
 
 ### 6.3 `refine()` audit
 
