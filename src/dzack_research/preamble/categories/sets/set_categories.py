@@ -949,8 +949,249 @@ def FiniteSubsets(source):
     return FiniteSubsetsParent(source)
 
 
+def _cartesian_product_of(index_set, family):
+    r"""Build the product and place it.
+
+    Finiteness is a fact about the index set and the factors; the product is
+    built in the category it always belongs to and gains the enumerated
+    placement it earns.
+    """
+    product = object_of(
+        CartesianProductsOfSets(), index_set=index_set, family=family
+    )
+    try:
+        finite = cardinal(index_set.cardinality()).is_finite() and all(
+            cardinal(family(index).cardinality()).is_finite() for index in index_set
+        )
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        finite = False
+    if finite:
+        from dzack_research.preamble.refine import refine
+
+        refine(product, [EnumeratedSets(), FiniteEnumeratedSets()])
+    return product
+
+
 class CartesianProductsOfSets(OwnedCategory):
     r"""Dependent products of families of sets."""
+
+    class ElementMethods(Element):
+        r"""What an element of a product of a family is."""
+
+        def __init__(self, parent, components) -> None:
+            Element.__init__(self, parent)
+            self._components = components
+
+        def component(self, index):
+            normalized = self.parent().index_set()(index)
+            value = self._components(normalized)
+            return self.parent().factor(normalized)(value)
+
+        def __getitem__(self, index):
+            return self.component(index)
+
+        def __iter__(self):
+            return (
+                self.component(index)
+                for index in self.parent().index_set()
+            )
+
+        def _repr_(self) -> str:
+            if not self.parent().has_finite_index_set():
+                return f"Section of {self.parent()}"
+            return "(" + ", ".join(
+                repr(self.component(index)) for index in self.parent().index_set()
+            ) + ")"
+
+        def __eq__(self, other) -> bool:
+            if self is other:
+                return True
+            if other.parent() is not self.parent():
+                return False
+            if not self.parent().has_finite_index_set():
+                return False
+            return all(
+                self.component(index) == other.component(index)
+                for index in self.parent().index_set()
+            )
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __hash__(self) -> int:
+            if not self.parent().has_finite_index_set():
+                return hash((id(self.parent()), id(self._components)))
+            value_hash = 0
+            for index in self.parent().index_set():
+                value_hash = hash((value_hash, self.component(index)))
+            return hash((id(self.parent()), value_hash))
+
+    class ParentMethods:
+
+        def __init__(self, index_set, family, **rest) -> None:
+            assert index_set in Sets(), (
+                "the index object of a product family must be an owned set"
+            )
+            self._index_set = index_set
+            self._family = family
+            super().__init__(**rest)
+
+        def index_set(self):
+            return self._index_set
+
+        def family(self):
+            return self._family
+
+        def has_finite_index_set(self) -> bool:
+            try:
+                return cardinal(self.index_set().cardinality()).is_finite()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+
+        def factor(self, index):
+            normalized = self.index_set()(index)
+            factor = self.family()(normalized)
+            if factor not in Sets():
+                raise TypeError("every factor of a set product must be an owned set")
+            return factor
+
+        def __call__(self, *args, **kwargs):
+            r"""Construct through the owned set representation directly."""
+            return self._element_constructor_(*args, **kwargs)
+
+        def _element_constructor_(self, components):
+            if isinstance(components, self.category().ElementType):
+                if components.parent() is self:
+                    return components
+                raise ValueError("the section belongs to a different product")
+            if callable(components):
+                return self.element_class(self, components)
+            if not self.has_finite_index_set():
+                raise TypeError(
+                    "a product over an infinite index set is specified by a callable section"
+                )
+            values = iter(components)
+            assignment = {}
+            for index in self.index_set():
+                try:
+                    value = next(values)
+                except StopIteration as error:
+                    raise ValueError("a product element needs one component per factor") from error
+                assignment[index] = self.factor(index)(value)
+            try:
+                next(values)
+            except StopIteration:
+                pass
+            else:
+                raise ValueError("a product element needs one component per factor")
+            return self.element_class(self, assignment.__getitem__)
+
+        def unrank(self, position):
+            r"""Return the finite product section in mixed-radix order."""
+            if not self.has_finite_index_set():
+                raise TypeError("an infinite-index product has no finite unranking here")
+            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
+            total = self.cardinality()
+            if not total.is_finite():
+                raise TypeError("this product is not finite")
+            position = int(position)
+            total_size = int(total.finite_value())
+            if position < 0 or position >= total_size:
+                raise IndexError(position)
+            if self.index_set() not in EnumeratedSets():
+                raise TypeError("finite product unranking requires an enumerated index set")
+            assignment = {}
+            quotient = position
+            for offset in range(index_count - 1, -1, -1):
+                index = self.index_set().unrank(offset)
+                factor = self.factor(index)
+                if factor not in EnumeratedSets():
+                    raise TypeError("finite product unranking requires enumerated factors")
+                factor_size = cardinal(factor.cardinality())
+                if not factor_size.is_finite():
+                    raise TypeError("this product is not finite")
+                radix = int(factor_size.finite_value())
+                digit = quotient % radix
+                quotient //= radix
+                value = factor.unrank(digit)
+                assignment[index] = value
+            frozen = dict(assignment)
+            return self(lambda index: frozen[index])
+
+        def rank(self, section):
+            r"""Return the mixed-radix position of a finite product section."""
+            section = self(section)
+            if not self.has_finite_index_set():
+                raise TypeError("an infinite-index product has no finite ranking here")
+            position = 0
+            for index in self.index_set():
+                factor = self.factor(index)
+                factor_size = cardinal(factor.cardinality())
+                if not factor_size.is_finite():
+                    raise TypeError("this product is not finite")
+                if factor not in EnumeratedSets():
+                    raise TypeError("finite product ranking requires enumerated factors")
+                value = section.component(index)
+                digit = int(factor.rank(value))
+                position = position * int(factor_size.finite_value()) + digit
+            return position
+
+        def projection(self, index):
+            normalized = self.index_set()(index)
+            return SetMorphism(
+                Sets().Mor(self, self.factor(normalized)),
+                lambda element: element.component(normalized),
+            )
+
+        def from_maps(self, source, maps):
+            r"""Return the unique map into the product with the stated components."""
+            return SetMorphism(
+                Sets().Mor(source, self),
+                lambda element: self(lambda index: maps(index)(element)),
+            )
+
+        def cardinality(self):
+            return Cardinalities().indexed_product(
+                self.index_set(), lambda index: cardinal(self.factor(index).cardinality())
+            )
+
+        def __iter__(self):
+            if not self.has_finite_index_set():
+                raise TypeError("only a product over a finite index set is enumerated here")
+            for index in self.index_set():
+                try:
+                    if not cardinal(self.factor(index).cardinality()).is_finite():
+                        raise TypeError(
+                            "product enumeration here requires every represented factor to be finite"
+                        )
+                except (AttributeError, NotImplementedError, ValueError) as error:
+                    raise TypeError(
+                        "product enumeration here requires every represented factor to be finite"
+                    ) from error
+
+            def sections(position, assignment):
+                if position == int(cardinal(self.index_set().cardinality()).finite_value()):
+                    frozen = dict(assignment)
+                    yield self(lambda index: frozen[index])
+                    return
+                try:
+                    index = self.index_set().unrank(position)
+                except AttributeError:
+                    index = next(iter(self.index_set())) if position == 0 else None
+                    if index is None:
+                        for offset, candidate in enumerate(self.index_set()):
+                            if offset == position:
+                                index = candidate
+                                break
+                for value in self.factor(index):
+                    assignment[index] = value
+                    yield from sections(position + 1, assignment)
+                assignment.pop(index, None)
+
+            return sections(0, {})
+
+        def _repr_(self) -> str:
+            return f"Product of the family over {self.index_set()}"
 
     def an_object(self):
         r"""The square of the ordinal 2."""
@@ -974,248 +1215,20 @@ class CoproductsOfSets(OwnedCategory):
 DisjointUnionsOfSets = CoproductsOfSets
 
 
-class CartesianProductElement(Element):
-    r"""A section ``i |-> x_i`` of a family of sets."""
-
-    def __init__(self, parent, components) -> None:
-        Element.__init__(self, parent)
-        self._components = components
-
-    def component(self, index):
-        normalized = self.parent().index_set()(index)
-        value = self._components(normalized)
-        return self.parent().factor(normalized)(value)
-
-    def __getitem__(self, index):
-        return self.component(index)
-
-    def __iter__(self):
-        return (
-            self.component(index)
-            for index in self.parent().index_set()
-        )
-
-    def _repr_(self) -> str:
-        if not self.parent().has_finite_index_set():
-            return f"Section of {self.parent()}"
-        return "(" + ", ".join(
-            repr(self.component(index)) for index in self.parent().index_set()
-        ) + ")"
-
-    def __eq__(self, other) -> bool:
-        if self is other:
-            return True
-        if not isinstance(other, CartesianProductElement) or other.parent() is not self.parent():
-            return False
-        if not self.parent().has_finite_index_set():
-            return False
-        return all(
-            self.component(index) == other.component(index)
-            for index in self.parent().index_set()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __hash__(self) -> int:
-        if not self.parent().has_finite_index_set():
-            return hash((id(self.parent()), id(self._components)))
-        value_hash = 0
-        for index in self.parent().index_set():
-            value_hash = hash((value_hash, self.component(index)))
-        return hash((id(self.parent()), value_hash))
 
 
-class CartesianProductOfFamilyParent(Parent):
-    Element = CartesianProductElement
-
-    def __init__(self, index_set, family) -> None:
-        if index_set not in Sets():
-            raise TypeError("the index object of a product family must be an owned set")
-        self._index_set = index_set
-        self._family = family
-        categories = [CartesianProductsOfSets()]
-        try:
-            index_size = cardinal(index_set.cardinality())
-            finite_product = index_size.is_finite() and all(
-                cardinal(self.factor(index).cardinality()).is_finite()
-                for index in index_set
-            )
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            finite_product = False
-        if finite_product:
-            categories.extend([EnumeratedSets(), FiniteEnumeratedSets()])
-        Parent.__init__(self, category=Category.join(categories))
-
-    def index_set(self):
-        return self._index_set
-
-    def family(self):
-        return self._family
-
-    def has_finite_index_set(self) -> bool:
-        try:
-            return cardinal(self.index_set().cardinality()).is_finite()
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
-
-    def factor(self, index):
-        normalized = self.index_set()(index)
-        factor = self.family()(normalized)
-        if factor not in Sets():
-            raise TypeError("every factor of a set product must be an owned set")
-        return factor
-
-    def __call__(self, *args, **kwargs):
-        r"""Construct through the owned set representation directly."""
-        return self._element_constructor_(*args, **kwargs)
-
-    def _element_constructor_(self, components):
-        if isinstance(components, CartesianProductElement):
-            if components.parent() is self:
-                return components
-            raise ValueError("the section belongs to a different product")
-        if callable(components):
-            return self.element_class(self, components)
-        if not self.has_finite_index_set():
-            raise TypeError(
-                "a product over an infinite index set is specified by a callable section"
-            )
-        values = iter(components)
-        assignment = {}
-        for index in self.index_set():
-            try:
-                value = next(values)
-            except StopIteration as error:
-                raise ValueError("a product element needs one component per factor") from error
-            assignment[index] = self.factor(index)(value)
-        try:
-            next(values)
-        except StopIteration:
-            pass
-        else:
-            raise ValueError("a product element needs one component per factor")
-        return self.element_class(self, assignment.__getitem__)
-
-    def unrank(self, position):
-        r"""Return the finite product section in mixed-radix order."""
-        if not self.has_finite_index_set():
-            raise TypeError("an infinite-index product has no finite unranking here")
-        index_count = int(cardinal(self.index_set().cardinality()).finite_value())
-        total = self.cardinality()
-        if not total.is_finite():
-            raise TypeError("this product is not finite")
-        position = int(position)
-        total_size = int(total.finite_value())
-        if position < 0 or position >= total_size:
-            raise IndexError(position)
-        if self.index_set() not in EnumeratedSets():
-            raise TypeError("finite product unranking requires an enumerated index set")
-        assignment = {}
-        quotient = position
-        for offset in range(index_count - 1, -1, -1):
-            index = self.index_set().unrank(offset)
-            factor = self.factor(index)
-            if factor not in EnumeratedSets():
-                raise TypeError("finite product unranking requires enumerated factors")
-            factor_size = cardinal(factor.cardinality())
-            if not factor_size.is_finite():
-                raise TypeError("this product is not finite")
-            radix = int(factor_size.finite_value())
-            digit = quotient % radix
-            quotient //= radix
-            value = factor.unrank(digit)
-            assignment[index] = value
-        frozen = dict(assignment)
-        return self(lambda index: frozen[index])
-
-    def rank(self, section):
-        r"""Return the mixed-radix position of a finite product section."""
-        section = self(section)
-        if not self.has_finite_index_set():
-            raise TypeError("an infinite-index product has no finite ranking here")
-        position = 0
-        for index in self.index_set():
-            factor = self.factor(index)
-            factor_size = cardinal(factor.cardinality())
-            if not factor_size.is_finite():
-                raise TypeError("this product is not finite")
-            if factor not in EnumeratedSets():
-                raise TypeError("finite product ranking requires enumerated factors")
-            value = section.component(index)
-            digit = int(factor.rank(value))
-            position = position * int(factor_size.finite_value()) + digit
-        return position
-
-    def projection(self, index):
-        normalized = self.index_set()(index)
-        return SetMorphism(
-            Sets().Mor(self, self.factor(normalized)),
-            lambda element: element.component(normalized),
-        )
-
-    def from_maps(self, source, maps):
-        r"""Return the unique map into the product with the stated components."""
-        return SetMorphism(
-            Sets().Mor(source, self),
-            lambda element: self(lambda index: maps(index)(element)),
-        )
-
-    def cardinality(self):
-        return Cardinalities().indexed_product(
-            self.index_set(), lambda index: cardinal(self.factor(index).cardinality())
-        )
-
-    def __iter__(self):
-        if not self.has_finite_index_set():
-            raise TypeError("only a product over a finite index set is enumerated here")
-        for index in self.index_set():
-            try:
-                if not cardinal(self.factor(index).cardinality()).is_finite():
-                    raise TypeError(
-                        "product enumeration here requires every represented factor to be finite"
-                    )
-            except (AttributeError, NotImplementedError, ValueError) as error:
-                raise TypeError(
-                    "product enumeration here requires every represented factor to be finite"
-                ) from error
-
-        def sections(position, assignment):
-            if position == int(cardinal(self.index_set().cardinality()).finite_value()):
-                frozen = dict(assignment)
-                yield self(lambda index: frozen[index])
-                return
-            try:
-                index = self.index_set().unrank(position)
-            except AttributeError:
-                index = next(iter(self.index_set())) if position == 0 else None
-                if index is None:
-                    for offset, candidate in enumerate(self.index_set()):
-                        if offset == position:
-                            index = candidate
-                            break
-            for value in self.factor(index):
-                assignment[index] = value
-                yield from sections(position + 1, assignment)
-            assignment.pop(index, None)
-
-        return sections(0, {})
-
-    def _repr_(self) -> str:
-        return f"Product of the family over {self.index_set()}"
 
 
 @cached_function
 def CartesianProductOfFamily(index_set, family):
-    return CartesianProductOfFamilyParent(index_set, family)
+    return _cartesian_product_of(index_set, family)
 
 
 @cached_function
 def _cartesian_product_of_tuple(factors):
     index_set = Sets.Δ[len(factors) - 1]
-    return CartesianProductOfFamilyParent(
-        index_set, lambda index: factors[int(index)]
-    )
+    family = lambda index: factors[int(index)]
+    return _cartesian_product_of(index_set, family)
 
 
 def CartesianProductOfSets(*factors):

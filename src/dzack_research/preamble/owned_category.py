@@ -297,6 +297,13 @@ class CatConstructionsMixin:
         if declaring_class.__name__.endswith("_with_category"):
             declaring_class = declaring_class.__base__
         doccls = provider or declaring_class
+        # A base reached twice -- a join whose members share a super
+        # category -- is one base, in the position it was first required.
+        seen: dict[type, None] = {}
+        for base in bases:
+            seen.setdefault(base, None)
+        bases = tuple(seen)
+
         return dynamic_class(
             f"{declaring_class.__name__}.subcategory_class",
             bases,
@@ -468,6 +475,12 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             if not any(ancestor_provider in base.mro() for base in bases)
         )
         bases = declared + carried + bases
+        # A base reached twice -- a join whose members share a super category --
+        # is one base, in the position it was first required.
+        seen: dict[type, None] = {}
+        for base in bases:
+            seen.setdefault(base, None)
+        bases = tuple(seen)
         if len(bases) > 1 and object in bases:
             # A super category with no methods class of its own contributes
             # ``object``.  Left in place beside a real base it is a base that
@@ -593,6 +606,20 @@ class OwnedParent:
     declares ``Parent`` (see ``refine._IMPLEMENTATION_BASES``), so this never
     enters such a parent's MRO and cannot shadow it.
     """
+
+    def __init__(self, category=None, **rest) -> None:
+        r"""Initialize the host shell without a second class rewrite.
+
+        A chain-built parent already *is* ``category.ObjectType``, which is the
+        category's ``parent_class``.  ``Parent.__init__`` would rewrite
+        ``__class__`` into ``dynamic_class(cls, category.parent_class)`` and so
+        name that class twice.  ``CategoryObject._init_category_`` records the
+        category and rewrites nothing, which is all a chain-built parent wants;
+        this is the same technique ``OwnedCategoryObject`` uses one level up.
+        """
+        SageParent.__init__(self, **rest)
+        if category is not None:
+            CategoryObject._init_category_(self, category)
 
     @lazy_attribute
     def element_class(self) -> type:
