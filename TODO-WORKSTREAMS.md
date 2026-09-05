@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| D-localized-differentials-20260905 | D — realize Kähler differentials of a represented localization as the localized source differential module and extend derivations to fractions | ChatGPT continuation `2026-09-05-localization-recovery`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/algebras/kahler_differentials.py`; `src/dzack_research/preamble/categories/algebras/derivations.py`; `tests/algebras/test_de_rham.py` | `1e43425fe7484f9b149c98b787aa72a78736224b`; R/M now supply exact localized fraction equality, ideal contraction, transported presentations, and localized Fitting ideals. Define `Omega^1_{S^{-1}A/R}` by the canonical base-change theorem `S^{-1}Omega^1_{A/R}`, retain the localization comparison through its source/unit metadata, and extend the universal derivation by `d(a/s)=s^{-1}d(a)-a s^{-2}d(s)`. | 2026-09-05T16:14:13Z |
 
 ### Existing work awaiting adoption
 
