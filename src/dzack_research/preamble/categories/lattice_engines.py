@@ -9,6 +9,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.engine_capabilities import (
+    EngineAbsence,
     EngineCapabilityUnavailable,
     engine_capabilities,
 )
@@ -132,6 +133,14 @@ end
 """
 
 
+_OSCAR_PROVIDER = "oscar-via-sage-julia-bridge"
+_OSCAR_PROVISIONING = (
+    "clone github.com/dzackgarza/sage-julia-bridge and run `just setup` there: it "
+    "installs the bridge into Sage's environment, instantiates the bridge's Julia "
+    "project with its JSON dependency, and loads Oscar from the Julia depot"
+)
+
+
 class _OscarLatticeAdapter:
     r"""One retained-callable OSCAR realization behind ``sage-julia-bridge``."""
 
@@ -174,8 +183,8 @@ class _OscarLatticeAdapter:
                 JuliaError = ()
             if JuliaError and isinstance(error, JuliaError):
                 raise EngineCapabilityUnavailable(
-                    "OSCAR lattice capabilities require a provisioned sage-julia-bridge "
-                    "Julia project; run the bridge Julia-dependency setup"
+                    "lattice.oscar-adapter",
+                    (EngineAbsence(_OSCAR_PROVIDER, _OSCAR_PROVISIONING),),
                 ) from error
             raise
         if (
@@ -281,21 +290,24 @@ _oscar_lattices = _OscarLatticeAdapter()
 
 engine_capabilities.register(
     "lattice.rational_spinor_norm_sign",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.rational_spinor_norm_sign,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
     "lattice.centralizer_discriminant_image",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.centralizer_discriminant_image,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
     "lattice.even_unimodular_primitive_embedding",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.even_unimodular_primitive_embedding,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 
 
