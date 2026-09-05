@@ -100,7 +100,8 @@ class LinearEndCategoryConstruction(EndCategoryConstruction):
             raise TypeError("the endomorphism object must lie in the base category")
         endomorphisms = super().Of(obj)
         endomorphisms.attach_end_family(self)
-        refine(endomorphisms, OwnedRings())
+        if endomorphisms not in OwnedRings():
+            raise TypeError("a module endomorphism Hom must be constructed as an owned ring")
         return endomorphisms
 
     def __contains__(self, candidate) -> bool:
@@ -256,13 +257,28 @@ class Modules(OwnedCategoryOverBaseRing):
             raise TypeError("an R-module Hom requires two R-modules")
         return self.HomCategory().Of(domain, codomain)
 
-    def _refine_hom_parent(self, parent, *, full_internal_hom=False):
-        r"""Install the selected module enrichment on one canonical Hom parent."""
-        placement = [LinearHomModules(self.base_ring())]
-        if full_internal_hom:
-            placement.append(InternalHomModules(self.base_ring()))
-        refine(parent, placement)
-        return _refine_matrix_hom(parent)
+    def _hom_parent_placement(self, domain, codomain, *, full_internal_hom=False):
+        r"""Return the category chosen when the canonical module Hom is constructed."""
+        ring = self.base_ring()
+        placement = [
+            InternalHomModules(ring) if full_internal_hom else LinearHomModules(ring)
+        ]
+        free = FinitelyGeneratedFreeModules(ring)
+        matrix = (
+            domain in free
+            and codomain in free
+            and callable(getattr(domain, "_preamble_free_module_constructor", None))
+            and callable(getattr(codomain, "_preamble_free_module_constructor", None))
+            and callable(getattr(domain, "module_generating_set", None))
+            and callable(getattr(codomain, "module_generating_set", None))
+        )
+        if matrix:
+            placement.append(MatrixSpaces(ring))
+            if domain is codomain:
+                placement.append(MatrixEndomorphismSpaces(ring))
+        elif domain is codomain:
+            placement.append(OwnedRings())
+        return Category.join(tuple(placement))
 
 
 
@@ -296,6 +312,12 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.parent().scalar_multiple(scalar, self)
 
     class ParentMethods:
+        def __init__(self, base_ring, **rest) -> None:
+            ring = _owned_ring(base_ring)
+            self._preamble_base_ring = ring
+            super().__init__(base=ring, **rest)
+            register_module_scalar_action(self)
+
         def Mor(self, codomain, category=None):
             modules = Modules(self.base_ring())
             if category is None:
@@ -349,8 +371,15 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = (other, labels, factors)
             return NotImplemented
 
-        def _presented_module_from_relation_rows(self, labels, rows):
-            _ = (labels, rows)
+        def _presented_module_from_relation_rows(
+            self,
+            labels,
+            rows,
+            *,
+            extra_categories=(),
+            extra_construction_data=None,
+        ):
+            _ = (labels, rows, extra_categories, extra_construction_data)
             return NotImplemented
 
         def _selected_presentation_rows(self):
@@ -543,6 +572,27 @@ class ModuleSubobjects(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            subobject_ambient=None,
+            subobject_generator_images=None,
+            subobject_lift=None,
+            subobject_inclusion_factory=None,
+            subobject_verify_linearity=True,
+            **rest,
+        ) -> None:
+            if (
+                subobject_ambient is None
+                and subobject_inclusion_factory is None
+            ):
+                raise ValueError("a module subobject requires constructor-owned inclusion data")
+            self._preamble_subobject_ambient = subobject_ambient
+            self._preamble_subobject_generator_images = subobject_generator_images
+            self._preamble_subobject_lift = subobject_lift
+            self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
+            self._preamble_subobject_verify_linearity = subobject_verify_linearity
+            super().__init__(**rest)
+
         @cached_method
         def inclusion(self):
             r"""Return the chosen monomorphism represented by constructor data."""
@@ -897,13 +947,13 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def _fresh_free_module_on(self, labels):
+        def _fresh_free_module_on(self, labels, **options):
             constructor = self.__dict__.get("_preamble_free_module_constructor")
             if constructor is None:
                 raise NotImplementedError(
                     "this finite free module has no selected free-module constructor"
                 )
-            return constructor(labels)
+            return constructor(labels, **options)
 
         def _represented_vector_space_dimension(self):
             return self.rank()
@@ -988,6 +1038,24 @@ class FramedModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            module_generating_set,
+            module_generator_function,
+            **rest,
+        ) -> None:
+            self._preamble_module_generating_set = module_generating_set
+            self._preamble_module_generator_function = module_generator_function
+            super().__init__(**rest)
+
+        def module_generating_set(self):
+            return self._preamble_module_generating_set
+
+        def module_generator(self, label):
+            if label not in self.module_generating_set():
+                raise ValueError(f"{label!r} is not a module-generator label")
+            return self._preamble_module_generator_function(label)
+
         def number_of_module_generators(self):
             return self.module_generating_set().cardinality()
 
@@ -1005,6 +1073,23 @@ class FramedModules(OwnedCategoryOverBaseRing):
                 Sets().Mor(self.module_generating_set(), self),
                 self.module_generator,
             )
+
+        def framing_morphism(self):
+            r"""Return the presentation \(F(S) \twoheadrightarrow M\) of the framing.
+
+            The framing datum is a set \(S\) and a generator function on it;
+            the free module on \(S\) is the domain of the epimorphism those two
+            determine, and that epimorphism is what "framed" means.
+            """
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreeModuleOn,
+            )
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                framing_morphism,
+            )
+
+            source = FreeModuleOn(self.base_ring(), self.module_generating_set())
+            return framing_morphism(source, self, self.module_generator)
 
         def linear_combination(self, coefficients, factor_on_left=True):
             if not isinstance(coefficients, dict):
@@ -1571,6 +1656,10 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(self, tensor_factors, **rest) -> None:
+            self._preamble_tensor_factors = tensor_factors
+            super().__init__(**rest)
+
         def _module_homset_class(self):
 
             return TensorProductModuleHomset
@@ -1663,10 +1752,11 @@ def _module_tensor_product(left, right):
     )
 
     if represented_free:
-        result = left._fresh_free_module_on(tensor_labels)
-        result._preamble_tensor_factors = tensor_factors
-        result = refine(result, TensorProductModules(ring))
-        return result
+        return left._fresh_free_module_on(
+            tensor_labels,
+            _extra_categories=(TensorProductModules(ring),),
+            _extra_construction_data={"tensor_factors": tensor_factors},
+        )
 
 
     left_labels = left.module_generating_set()
@@ -1707,6 +1797,8 @@ def _module_tensor_product(left, right):
         result = presentation_owner._presented_module_from_relation_rows(
             tensor_labels,
             rows,
+            extra_categories=(TensorProductModules(ring),),
+            extra_construction_data={"tensor_factors": tensor_factors},
         )
         if result is not NotImplemented:
             break
@@ -1714,8 +1806,6 @@ def _module_tensor_product(left, right):
         raise NotImplementedError(
             "the selected tensor-product presentation has no represented quotient constructor"
         )
-    result._preamble_tensor_factors = tensor_factors
-    result = refine(result, TensorProductModules(ring))
     return result
 
 
@@ -1766,6 +1856,10 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring()), DirectSumObjects()]
 
     class ParentMethods:
+        def __init__(self, biproduct_factors, **rest) -> None:
+            self._preamble_biproduct_factors = biproduct_factors
+            super().__init__(summands=biproduct_factors, **rest)
+
         def biproduct_factors(self):
             return self._preamble_biproduct_factors
 
@@ -2381,7 +2475,7 @@ def _matrix_coefficients(homset, morphism):
 
 
 def _refine_matrix_hom(homset):
-    r"""Install the canonical matrix-unit framing on one finite-free Hom object."""
+    r"""Return the already-constructed matrix Hom for finite free endpoints."""
     ring = homset.base_ring()
     free = FinitelyGeneratedFreeModules(ring)
     domain = homset.domain()
@@ -2395,17 +2489,6 @@ def _refine_matrix_hom(homset):
         or not callable(getattr(codomain, "module_generating_set", None))
     ):
         return homset
-    labels = CartesianProductOfSets(
-        homset.codomain().module_generating_set(),
-        homset.domain().module_generating_set(),
-    )
-    homset._preamble_module_generating_set = labels
-    homset._preamble_module_generator_function = lambda label: _matrix_unit(homset, label)
-    homset._preamble_module_coefficient_function = lambda morphism: _matrix_coefficients(
-        homset, morphism
-    )
-    categories = [MatrixSpaces(ring)]
-    if homset.domain() is homset.codomain():
-        categories.append(MatrixEndomorphismSpaces(ring))
-    refine(homset, categories)
+    if homset not in MatrixSpaces(ring):
+        raise TypeError("a finite-free module Hom must be constructed as a matrix Hom")
     return homset

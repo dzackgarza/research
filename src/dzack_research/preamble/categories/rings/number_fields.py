@@ -39,12 +39,10 @@ from dzack_research.preamble.categories.modules.fractional_ideals import (
     Ideal,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleBaseRings,
     FreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-from dzack_research.preamble.categories.rings.commutative_algebra import refine_commutative_ring_constructions
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
@@ -88,6 +86,7 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
     r"""Finite extensions of ``QQ``."""
 
     _HomCategory = NumberFieldHomCategoryConstruction
+    _certifying_predicate = "_preamble_is_number_field"
 
     @classmethod
     def _repr_object_names(cls):
@@ -244,14 +243,14 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
                 if self in NumberFieldsWithChosenPrimitiveElement()
                 else None
             )
-            algebra = refine_commutative_ring_constructions(
-                refine_algebra(self, _own_ring(SageQQ), labels)
-            )
+            algebra = refine_algebra(self, _own_ring(SageQQ), labels)
             return refine(algebra, FinitelyPresentedAlgebras(algebra.base_ring()))
 
 
 class NumberFieldsWithChosenPrimitiveElement(Category):
     r"""Number fields carrying the primitive element selected by their presentation."""
+
+    _certifying_predicate = "_preamble_has_chosen_primitive_element"
 
     @classmethod
     def _repr_object_names(cls):
@@ -262,7 +261,7 @@ class NumberFieldsWithChosenPrimitiveElement(Category):
 
     class ParentMethods:
         def algebra_generating_set(self):
-            return self._preamble_number_field_generating_set
+            return finite_ordered_set(_engine_ring(self).variable_names())
 
         def primitive_element(self):
             r"""Return the selected primitive element ``alpha``."""
@@ -295,6 +294,8 @@ class NumberFieldsWithChosenPrimitiveElement(Category):
 class OrdersWithChosenIntegralBasis(Category):
     r"""Number-field orders carrying their selected integral basis."""
 
+    _certifying_predicate = "_preamble_is_number_field_order"
+
     @classmethod
     def _repr_object_names(cls):
         return "orders with a chosen integral basis"
@@ -304,7 +305,6 @@ class OrdersWithChosenIntegralBasis(Category):
         integers = _own_ring(SageZZ)
         return [
             OwnedOrders(),
-            FreeModuleBaseRings(),
             Algebras(integers),
             FinitelyGeneratedFreeModules(integers),
         ]
@@ -330,6 +330,24 @@ class OrdersWithChosenIntegralBasis(Category):
         def fractional_ideal(self, *module_generators):
 
             return FractionalIdeal(self, module_generators)
+
+        def localization(self, *elements):
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                Localization,
+            )
+
+            return Localization(self, *elements)
+
+        localize = localization
+
+        def localize_at_prime(self, prime):
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                PrimeLocalization,
+            )
+
+            return PrimeLocalization(self, prime)
+
+        localization_at_prime = localize_at_prime
 
         def base_change(self, ring_map):
             if _engine_ring(ring_map.domain()) is not SageZZ:
@@ -374,42 +392,31 @@ class OrdersWithChosenIntegralBasis(Category):
                 name="Ring-module generator family",
             )
 
-        def framing_morphism(self):
-
-            source = FreeModuleOn(self.base_ring(), self.module_generating_set())
-            return framing_morphism(source, self, self.module_generator)
-
         def rank(self):
             engine = _engine_ring(self)
             return cardinal(1 if engine is SageZZ else engine.rank())
 
 
 def _refine_order_view(order):
-    r"""Attach the selected integral-basis structure to an owned order."""
-    if _engine_ring(order) is SageZZ:
-        order = refine(order, OwnedOrders())
+    r"""Admit an engine-backed order to its constructor-computed order properties."""
     if order not in OwnedOrders():
-        raise TypeError("order refinement expects an owned number-field order")
+        order = refine(order, OwnedOrders())
     order = refine(order, OrdersWithChosenIntegralBasis())
 
-    return refine_commutative_ring_constructions(order)
+    return order
 
 
 def _refine_number_field_view(field):
-    r"""Refine an already-owned field view into its number-field categories."""
+    r"""Admit an engine-backed field to constructor-computed number-field properties."""
     if field not in OwnedRings():
         raise TypeError("number-field refinement expects an owned ring view")
     engine = _engine_ring(field)
     categories = [OwnedNumberFields()]
     if engine is not SageQQ:
-
-        field._preamble_number_field_generating_set = finite_ordered_set(
-            engine.variable_names()
-        )
         categories.append(NumberFieldsWithChosenPrimitiveElement())
     field = refine(field, categories)
 
-    return refine_commutative_ring_constructions(field)
+    return field
 
 
 
