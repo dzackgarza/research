@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.group.class_functions import (
 )
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
+    OwnedGroups,
     _engine_group,
     _owned_group,
 )
@@ -151,48 +152,128 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
         return coinvariants_trivial_adjunction(self.coefficient_ring(), self.acting_group())
 
-    # Scalar change along ZZ[H] -> ZZ[G] for H <= G.
+    # Scalar change along a ring morphism out of, or into, R[G].  Along
+    # R[H] -> R[G] for a subgroup H <= G the functors are induction,
+    # restriction and coinduction, realized on a transversal of G/H; along
+    # any other ring morphism they are the general scalar-change functors.
 
-    def restriction(self, subgroup):
-        r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``."""
+    def _group_algebra_inclusion(self, supergroup):
+        r"""``R[H] -> R[G]`` for the acting group ``H`` inside ``supergroup``."""
+        subgroup = self.acting_group()
+        inclusion = subgroup.inclusion()
+        assert inclusion.codomain() is _owned_group(supergroup), (
+            f"{subgroup} was not constructed as a subgroup of {supergroup}"
+        )
+        return OwnedGroups().group_algebra(self.coefficient_ring())(inclusion)
+
+    def scalar_extension(self, ring_map):
+        r"""``S tensor_{R[G]} - : Modules(R[G]) -> Modules(S)`` along ``ring_map: R[G] -> S``."""
         from dzack_research.preamble.categories.functors.group_induction import (
-            RestrictionOfActingGroupFunctor,
+            InductionFunctor,
+            is_group_algebra_map_of_subgroup_inclusion,
         )
 
-        return RestrictionOfActingGroupFunctor(
-            self.coefficient_ring(), subgroup, self.acting_group()
+        assert _owned_ring(ring_map.domain()) is self.base_ring()
+        match ring_map:
+            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+                return InductionFunctor(ring_map)
+            case _:
+                return ScalarExtensionFunctor(ring_map)
+
+    def restriction_of_scalars(self, ring_map):
+        r"""``Res_f : Modules(R[G]) -> Modules(A)`` along ``ring_map: A -> R[G]``."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            RestrictionOfActingGroupFunctor,
+            is_group_algebra_map_of_subgroup_inclusion,
+        )
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            RestrictionOfScalarsFunctor,
+        )
+
+        assert _owned_ring(ring_map.codomain()) is self.base_ring()
+        match ring_map:
+            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+                return RestrictionOfActingGroupFunctor(ring_map)
+            case _:
+                return RestrictionOfScalarsFunctor(ring_map)
+
+    def coextension_of_scalars(self, ring_map):
+        r"""``Hom_{R[G]}(S, -) : Modules(R[G]) -> Modules(S)`` along ``ring_map: R[G] -> S``."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            CoinductionFunctor,
+            is_group_algebra_map_of_subgroup_inclusion,
+        )
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            CoextensionOfScalarsFunctor,
+        )
+
+        assert _owned_ring(ring_map.domain()) is self.base_ring()
+        match ring_map:
+            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+                return CoinductionFunctor(ring_map)
+            case _:
+                return CoextensionOfScalarsFunctor(ring_map)
+
+    def base_change_adjunction(self, ring_map):
+        r"""``S tensor_{R[G]} - -| Res_f`` along ``ring_map: R[G] -> S``."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            InductionRestrictionAdjunction,
+            is_group_algebra_map_of_subgroup_inclusion,
+        )
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            base_change_adjunction,
+        )
+
+        assert _owned_ring(ring_map.domain()) is self.base_ring()
+        match ring_map:
+            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+                return InductionRestrictionAdjunction(ring_map)
+            case _:
+                return base_change_adjunction(ring_map)
+
+    def restriction_coextension_adjunction(self, ring_map):
+        r"""``Res_f -| Hom_A(R[G], -)`` along ``ring_map: A -> R[G]``."""
+        from dzack_research.preamble.categories.functors.group_induction import (
+            RestrictionCoinductionAdjunction,
+            is_group_algebra_map_of_subgroup_inclusion,
+        )
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            restriction_coextension_adjunction,
+        )
+
+        assert _owned_ring(ring_map.codomain()) is self.base_ring()
+        match ring_map:
+            case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
+                return RestrictionCoinductionAdjunction(ring_map)
+            case _:
+                return restriction_coextension_adjunction(ring_map)
+
+    def restriction(self, subgroup):
+        r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``, restriction along ``R[H] -> R[G]``."""
+        return self.restriction_of_scalars(
+            Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(
+                self.acting_group()
+            )
         )
 
     def induction(self, supergroup):
-        r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``."""
-        from dzack_research.preamble.categories.functors.group_induction import InductionFunctor
-
-        return InductionFunctor(self.coefficient_ring(), self.acting_group(), supergroup)
+        r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``, scalar extension along ``R[H] -> R[G]``."""
+        return self.scalar_extension(self._group_algebra_inclusion(supergroup))
 
     def coinduction(self, supergroup):
-        r"""``CoInd_H^G : Modules(R[H]) -> Modules(R[G])``."""
-        from dzack_research.preamble.categories.functors.group_induction import CoinductionFunctor
-
-        return CoinductionFunctor(self.coefficient_ring(), self.acting_group(), supergroup)
+        r"""``Coind_H^G : Modules(R[H]) -> Modules(R[G])``, coextension along ``R[H] -> R[G]``."""
+        return self.coextension_of_scalars(self._group_algebra_inclusion(supergroup))
 
     def induction_restriction_adjunction(self, supergroup):
         r"""``Ind_H^G -| Res_H^G``."""
-        from dzack_research.preamble.categories.functors.group_induction import (
-            induction_restriction_adjunction,
-        )
-
-        return induction_restriction_adjunction(
-            self.coefficient_ring(), self.acting_group(), supergroup
-        )
+        return self.base_change_adjunction(self._group_algebra_inclusion(supergroup))
 
     def restriction_coinduction_adjunction(self, subgroup):
-        r"""``Res_H^G -| CoInd_H^G``."""
-        from dzack_research.preamble.categories.functors.group_induction import (
-            restriction_coinduction_adjunction,
-        )
-
-        return restriction_coinduction_adjunction(
-            self.coefficient_ring(), subgroup, self.acting_group()
+        r"""``Res_H^G -| Coind_H^G``."""
+        return self.restriction_coextension_adjunction(
+            Modules(GroupAlgebra(self.coefficient_ring(), subgroup))._group_algebra_inclusion(
+                self.acting_group()
+            )
         )
 
     class ParentMethods:
@@ -605,7 +686,16 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
             raise TypeError(
                 "with two arguments, an action morphism whose domain is the acting group is expected"
             )
-        group = _owned_group(action.domain())
+        match action.domain():
+            case group_algebra if group_algebra in GroupAlgebras(base_ring):
+                # ``rho: R[G] -> End_R(M)`` restricted along ``G -> R[G]``.
+                group = group_algebra.group()
+                ring_action = action
+
+                def action(group_element, vector):
+                    return ring_action(group_algebra.module_generator(group_element))(vector)
+            case acting_group:
+                group = _owned_group(acting_group)
     else:
         group = _owned_group(group_or_action)
 

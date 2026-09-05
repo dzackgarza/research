@@ -11,8 +11,6 @@ from dzack_research.preamble.all import (
     free_group_underlying_set_adjunction,
     g_set_homset,
     group_homset,
-    induction_restriction_adjunction,
-    restriction_coinduction_adjunction,
 )
 from dzack_research.preamble.categories.sets import Sets, finite_ordered_set
 
@@ -286,7 +284,7 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
 
 def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturality_and_triangles() -> None:
     supergroup, subgroup, module = _s3_c2_sign_module()
-    adjunction = induction_restriction_adjunction(ZZ, subgroup, supergroup)
+    adjunction = Modules(ZZ[subgroup]).induction_restriction_adjunction(supergroup)
     induced = adjunction.left_adjoint()(module)
 
     doubled = induced.Mor(induced)(
@@ -339,7 +337,7 @@ def test_induction_restriction_adjunction_has_equivariant_hom_bijection_naturali
 
 def test_restriction_coinduction_adjunction_has_equivariant_hom_bijection_naturality_and_triangles() -> None:
     supergroup, subgroup, module = _s3_c2_sign_module()
-    adjunction = restriction_coinduction_adjunction(ZZ, subgroup, supergroup)
+    adjunction = Modules(ZZ[supergroup]).restriction_coinduction_adjunction(subgroup)
     coinduced = adjunction.right_adjoint()(module)
 
     doubled = coinduced.Mor(coinduced)(
@@ -396,7 +394,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     module_generator = module.module_generator(0)
     assert module_generator.additive_order() == 4
 
-    induction = induction_restriction_adjunction(ZZ, subgroup, supergroup)
+    induction = Modules(ZZ[subgroup]).induction_restriction_adjunction(supergroup)
     induced = induction.left_adjoint()(module)
     induced_invariants = induced.invariant_factors()
     assert induced_invariants.cardinality() == 3
@@ -425,7 +423,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
         induced.module_generators(),
     )
 
-    coinduction = restriction_coinduction_adjunction(ZZ, subgroup, supergroup)
+    coinduction = Modules(ZZ[supergroup]).restriction_coinduction_adjunction(subgroup)
     coinduced = coinduction.right_adjoint()(module)
     coinduced_invariants = coinduced.invariant_factors()
     assert coinduced_invariants.cardinality() == 3

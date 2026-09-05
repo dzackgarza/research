@@ -265,9 +265,12 @@ from dzack_research.preamble.categories.functors.free_algebras import (
 )
 from dzack_research.preamble.categories.functors.scalar_change import (
     BaseChangeAdjunction,
+    CoextensionOfScalarsFunctor,
+    RestrictionCoextensionAdjunction,
     RestrictionOfScalarsFunctor,
     ScalarExtensionFunctor,
     base_change_adjunction,
+    restriction_coextension_adjunction,
 )
 from dzack_research.preamble.categories.functors.free_forms import (
     BilinearFreeFormAdjunction,
@@ -296,8 +299,6 @@ from dzack_research.preamble.categories.functors.group_induction import (
     InductionRestrictionAdjunction,
     RestrictionCoinductionAdjunction,
     RestrictionOfActingGroupFunctor,
-    induction_restriction_adjunction,
-    restriction_coinduction_adjunction,
 )
 from dzack_research.preamble.categories.functors.group_actions import (
     CoinvariantsFunctor,

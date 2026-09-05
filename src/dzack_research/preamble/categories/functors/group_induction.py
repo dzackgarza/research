@@ -1,24 +1,26 @@
-r"""Induction, restriction, and coinduction for finite-group modules.
+r"""Induction, restriction and coinduction along a subgroup ``H <= G``.
 
-For a subgroup ``H <= G`` and a coefficient ring ``R`` the represented
-finitely-presented module categories are closed under the standard adjoint triple
-
-``Ind_H^G ⊣ Res_H^G ⊣ Coind_H^G``.
-
-The implementation uses Sage's finite cosets only to choose coordinates for
-``R[G]`` over ``R[H]``.  The returned objects are ordinary public
-``GroupModule`` objects, and all morphisms live in ``GroupModuleHomset``.
+These are scalar extension, restriction and coextension along the ring
+morphism ``R[H] -> R[G]`` that the group-algebra functor assigns to the
+inclusion.  Since ``R[G]`` is free as a right ``R[H]``-module on a transversal
+``T`` of the left cosets ``G/H``, ``R[G] tensor_{R[H]} M`` is the direct sum of
+one copy of ``M`` per coset, ``g`` acting through ``g t = t' h``; dually
+``Hom_{R[H]}(R[G], M)`` is a function on a right transversal (Serre, *Linear
+Representations of Finite Groups*, §3.3 and §7.1).  The functors here are the
+scalar-change functors of ``scalar_change`` specialized to that hypothesis,
+with the transversal as the represented datum.
 """
 
-from sage.misc.cachefunc import cached_function
-
-from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
-from dzack_research.preamble.categories.group.groups import _owned_group
-from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.functors.scalar_change import (
+    BaseChangeAdjunction,
+    CoextensionOfScalarsFunctor,
+    RestrictionCoextensionAdjunction,
+    RestrictionOfScalarsFunctor,
+    ScalarExtensionFunctor,
+)
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     _equip_action,
-
     group_module_homset,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -39,21 +41,40 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
 
-def _subgroup_data(subgroup, supergroup=None):
-    subgroup = _owned_group(subgroup)
-    if supergroup is None:
-        supergroup = subgroup.supergroup()
-    if supergroup is None:
-        raise ValueError("change of acting group requires a specified containing group")
-    supergroup = _owned_group(supergroup)
+def is_group_algebra_map_of_subgroup_inclusion(ring_map) -> bool:
+    r"""Decide whether ``ring_map`` is ``R[H] -> R[G]`` for a subgroup ``H <= G``.
+
+    Both endpoints must be group algebras over one ring, ``H`` must have been
+    constructed inside ``G``, and the map must agree with the inclusion on the
+    chosen generators of ``H``; two algebra morphisms out of ``R[H]`` agreeing
+    there agree everywhere.
+    """
+    source = _owned_ring(ring_map.domain())
+    target = _owned_ring(ring_map.codomain())
+    ring = source.base_ring()
+    if source not in GroupAlgebras(ring) or target not in GroupAlgebras(ring):
+        return False
+    subgroup, supergroup = source.group(), target.group()
+    if subgroup.supergroup() is not supergroup:
+        return False
     inclusion = subgroup.inclusion()
-    if inclusion.codomain() is not supergroup:
-        raise ValueError("the subgroup inclusion has a different containing group")
-    if supergroup.is_finite() is not True:
-        raise NotImplementedError(
-            "the represented induction/coinduction model currently requires a finite containing group"
-        )
-    return subgroup, supergroup, inclusion
+    return all(
+        ring_map(source.module_generator(generator))
+        == target.module_generator(inclusion(generator))
+        for generator in subgroup.group_generators()
+    )
+
+
+def _subgroup_data(ring_map):
+    assert is_group_algebra_map_of_subgroup_inclusion(ring_map), (
+        f"{ring_map} is not the group-algebra map of a subgroup inclusion"
+    )
+    subgroup = _owned_ring(ring_map.domain()).group()
+    supergroup = _owned_ring(ring_map.codomain()).group()
+    assert supergroup.is_finite() is True, (
+        "the transversal realization of induction and coinduction requires a finite containing group"
+    )
+    return subgroup, supergroup, subgroup.inclusion()
 
 
 def _transport_element(element, source, target):
@@ -129,18 +150,12 @@ def _finite_coset_sum(module, representatives):
     return FinitelyPresentedModule(presentation)
 
 
-class RestrictionOfActingGroupFunctor(Functor):
-    r"""``Res_H^G : R[G]-Mod_fp -> R[H]-Mod_fp``."""
+class RestrictionOfActingGroupFunctor(RestrictionOfScalarsFunctor):
+    r"""``Res_H^G : Modules(R[G]) -> Modules(R[H])``, restriction along ``R[H] -> R[G]``."""
 
-    def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._subgroup, self._supergroup, self._inclusion = _subgroup_data(
-            subgroup, supergroup
-        )
-        super().__init__(
-            Modules(GroupAlgebra(self._base_ring, self._supergroup)),
-            Modules(GroupAlgebra(self._base_ring, self._subgroup)),
-        )
+    def __init__(self, ring_map) -> None:
+        super().__init__(ring_map)
+        self._subgroup, self._supergroup, self._inclusion = _subgroup_data(ring_map)
 
     def subgroup(self):
         return self._subgroup
@@ -179,23 +194,17 @@ class RestrictionOfActingGroupFunctor(Functor):
         return f"Restriction from {self.supergroup()} to {self.subgroup()}"
 
 
-class InductionFunctor(Functor):
-    r"""``Ind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``."""
+class InductionFunctor(ScalarExtensionFunctor):
+    r"""``Ind_H^G : Modules(R[H]) -> Modules(R[G])``, scalar extension along ``R[H] -> R[G]``."""
 
-    def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._subgroup, self._supergroup, self._inclusion = _subgroup_data(
-            subgroup, supergroup
-        )
+    def __init__(self, ring_map) -> None:
+        super().__init__(ring_map)
+        self._subgroup, self._supergroup, self._inclusion = _subgroup_data(ring_map)
         self._left_cosets = self._supergroup.left_cosets(self._subgroup)
         self._representatives = finite_ordered_image(
             self._left_cosets,
             lambda coset: coset.unrank(0),
             name="Left-coset representatives",
-        )
-        super().__init__(
-            Modules(GroupAlgebra(self._base_ring, self._subgroup)),
-            Modules(GroupAlgebra(self._base_ring, self._supergroup)),
         )
 
     def subgroup(self):
@@ -231,6 +240,7 @@ class InductionFunctor(Functor):
 
     def _apply_object(self, group_module):
         module = _finite_coset_sum(group_module, self.representatives())
+        zero = group_module.base_ring().zero()
 
         def action(group_element, vector):
             output_coefficients = {}
@@ -252,9 +262,7 @@ class InductionFunctor(Functor):
                         target_label,
                     )
                     output_coefficients[target_label_pair] = (
-                        output_coefficients.get(
-                            target_label_pair, self._base_ring.zero()
-                        )
+                        output_coefficients.get(target_label_pair, zero)
                         + coefficient * acted_coefficient
                     )
             return module.linear_combination(output_coefficients)
@@ -287,23 +295,17 @@ class InductionFunctor(Functor):
         return f"Induction from {self.subgroup()} to {self.supergroup()}"
 
 
-class CoinductionFunctor(Functor):
-    r"""``Coind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``."""
+class CoinductionFunctor(CoextensionOfScalarsFunctor):
+    r"""``Coind_H^G : Modules(R[H]) -> Modules(R[G])``, coextension along ``R[H] -> R[G]``."""
 
-    def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._subgroup, self._supergroup, self._inclusion = _subgroup_data(
-            subgroup, supergroup
-        )
+    def __init__(self, ring_map) -> None:
+        super().__init__(ring_map)
+        self._subgroup, self._supergroup, self._inclusion = _subgroup_data(ring_map)
         self._right_cosets = self._supergroup.right_cosets(self._subgroup)
         self._representatives = finite_ordered_image(
             self._right_cosets,
             lambda coset: coset.unrank(0),
             name="Right-coset representatives",
-        )
-        super().__init__(
-            Modules(GroupAlgebra(self._base_ring, self._subgroup)),
-            Modules(GroupAlgebra(self._base_ring, self._supergroup)),
         )
 
     def subgroup(self):
@@ -433,15 +435,11 @@ class CoinductionFunctor(Functor):
         return f"Coinduction from {self.subgroup()} to {self.supergroup()}"
 
 
-class InductionRestrictionAdjunction(Adjunction):
-    r"""``Ind_H^G ⊣ Res_H^G`` on represented finitely-presented group modules."""
+class InductionRestrictionAdjunction(BaseChangeAdjunction):
+    r"""``Ind_H^G ⊣ Res_H^G``, the base-change adjunction along ``R[H] -> R[G]``."""
 
-    def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        subgroup, supergroup, _inclusion = _subgroup_data(subgroup, supergroup)
-        super().__init__(
-            InductionFunctor(base_ring, subgroup, supergroup),
-            RestrictionOfActingGroupFunctor(base_ring, subgroup, supergroup),
-        )
+    _extension_functor = InductionFunctor
+    _restriction_functor = RestrictionOfActingGroupFunctor
 
     def unit(self, group_module):
         induced = self.left_adjoint()(group_module)
@@ -472,16 +470,11 @@ class InductionRestrictionAdjunction(Adjunction):
         )
 
 
+class RestrictionCoinductionAdjunction(RestrictionCoextensionAdjunction):
+    r"""``Res_H^G ⊣ Coind_H^G``, the restriction/coextension adjunction along ``R[H] -> R[G]``."""
 
-class RestrictionCoinductionAdjunction(Adjunction):
-    r"""``Res_H^G ⊣ Coind_H^G`` on represented finitely-presented group modules."""
-
-    def __init__(self, base_ring, subgroup, supergroup=None) -> None:
-        subgroup, supergroup, _inclusion = _subgroup_data(subgroup, supergroup)
-        super().__init__(
-            RestrictionOfActingGroupFunctor(base_ring, subgroup, supergroup),
-            CoinductionFunctor(base_ring, subgroup, supergroup),
-        )
+    _restriction_functor = RestrictionOfActingGroupFunctor
+    _coextension_functor = CoinductionFunctor
 
     def unit(self, group_module):
         restricted = self.left_adjoint()(group_module)
@@ -519,27 +512,11 @@ class RestrictionCoinductionAdjunction(Adjunction):
         )
 
 
-
-@cached_function
-def induction_restriction_adjunction(
-    base_ring, subgroup, supergroup=None
-) -> InductionRestrictionAdjunction:
-    return InductionRestrictionAdjunction(base_ring, subgroup, supergroup)
-
-
-@cached_function
-def restriction_coinduction_adjunction(
-    base_ring, subgroup, supergroup=None
-) -> RestrictionCoinductionAdjunction:
-    return RestrictionCoinductionAdjunction(base_ring, subgroup, supergroup)
-
-
 __all__ = [
     "CoinductionFunctor",
     "InductionFunctor",
     "InductionRestrictionAdjunction",
     "RestrictionCoinductionAdjunction",
     "RestrictionOfActingGroupFunctor",
-    "induction_restriction_adjunction",
-    "restriction_coinduction_adjunction",
+    "is_group_algebra_map_of_subgroup_inclusion",
 ]
