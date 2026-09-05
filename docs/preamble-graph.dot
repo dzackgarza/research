@@ -250,7 +250,6 @@ digraph preamble {
   "AffineSpaces" -> "FiniteTypeSchemes";
   "AffineSpaces" -> "SmoothSchemes";
   "Algebras" -> "AssociativeAlgebras";
-  "Algebras" -> "Modules";
   "Algebras" -> "OwnedRings";
   "Algebras.Commutative" -> "Algebras";
   "Algebras.Commutative" -> "OwnedRings.Commutative";

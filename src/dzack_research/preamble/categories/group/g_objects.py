@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.groups import (
+    GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
     _owned_group,
 )
@@ -120,7 +121,7 @@ class GObjectHomset(CategoricalHomset):
     def is_equivariant(self, arrow):
         r"""Decide ``f rho_X(s) = rho_Y(s) f`` on the chosen generators ``s``."""
         group = self.domain().acting_group()
-        if group.is_finitely_generated() is not True:
+        if group not in GroupsWithChosenFiniteGeneratingSet():
             return Unknown
         arrow = self.underlying_homset()(arrow)
         return all(
@@ -181,15 +182,50 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     _HomCategory = GObjectHomCategoryConstruction
 
+    def _call_(self, obj, action):
+        r"""Equip a represented object of ``C`` with the stated ``G``-action.
+
+        Each specialization owns the construction boundary needed to keep the
+        underlying mathematical object separate from the newly acted object.
+        The represented scheme specialization is currently affine.
+        """
+        category = self.underlying_category()
+        if obj not in category:
+            raise TypeError(f"{obj} is not an object of {category}")
+
+        from dzack_research.preamble.categories.schemes.schemes import (
+            AffineSchemes,
+            Schemes,
+            affine_g_scheme,
+        )
+
+        match category:
+            case Schemes():
+                base_ring = category.base_ring()
+                if obj not in AffineSchemes(base_ring):
+                    raise NotImplementedError(
+                        "the represented G-scheme constructor currently requires an affine scheme"
+                    )
+                return affine_g_scheme(obj, self.acting_group(), action)
+            case _:
+                raise NotImplementedError(
+                    f"no represented constructor equips an object of {category} with a group action"
+                )
+
     def an_object(self):
         r"""The trivial action on an object of the underlying category."""
         from dzack_research.preamble.categories.group.g_sets import trivial_g_set
         from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
 
         category = self.underlying_category()
         sample = category.an_object()
         if category is Sets():
             return trivial_g_set(sample, self.acting_group())
+        match category:
+            case Schemes():
+                identity = sample.categorical_identity_morphism()
+                return self(sample, lambda _group_element: identity)
         assert category.is_subcategory(Modules(category.base_ring())), (
             f"no owned constructor equips an object of {category} with a group action"
         )
@@ -241,7 +277,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         def is_invariant(self, element):
             r"""Decide ``g . element = element`` for all ``g``, on the chosen generators."""
             group = self.acting_group()
-            if group.is_finitely_generated() is not True:
+            if group not in GroupsWithChosenFiniteGeneratingSet():
                 return Unknown
             return all(
                 self.act(generator, element) == element
