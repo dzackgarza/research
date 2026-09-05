@@ -1874,6 +1874,10 @@ class Subgroups(OwnedParameterizedCategory):
         return "subgroups"
 
     class ParentMethods:
+        def __init__(self, supergroup, **rest) -> None:
+            self._preamble_supergroup = supergroup
+            super().__init__(facade=supergroup, **rest)
+
         def supergroup(self):
             return self._preamble_supergroup
 

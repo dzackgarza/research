@@ -413,7 +413,7 @@ from dzack_research.preamble.categories.group import (  # noqa: F401
     AbsoluteGaloisSliceAutomorphism,
     AbsoluteInertiaGroup,
     ContinuousGroupHomset,
-    CyclicSubgroup,
+    CyclicGroups,
     CyclotomicCharacter,
     DecompositionGroupConjugacyClass,
     ElementConjugacyClass,

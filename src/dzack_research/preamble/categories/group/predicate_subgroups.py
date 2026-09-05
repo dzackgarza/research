@@ -1,9 +1,8 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-from sage.structure.parent import Parent
 
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _canonical_subgroup_inclusion,
@@ -17,24 +16,6 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
     subgroup_vector_orbit_representatives,
     subgroup_vectors_are_equivalent,
 )
-
-
-class _PredicateSubgroupParent(Parent):
-    """Storage for the datum introduced by :class:`PredicateSubgroups`."""
-
-    def __init__(
-        self,
-        containing_group,
-        predicate,
-        description,
-        category,
-        character_data=None,
-    ):
-        self._containing_group = containing_group
-        self._predicate = predicate
-        self._description = description
-        self._character_data = dict(character_data or {})
-        Parent.__init__(self, facade=True, category=category)
 
 
 class PredicateSubgroups(OwnedParameterizedCategory):
@@ -55,6 +36,20 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         return [self.base()]
 
     class ParentMethods:
+        def __init__(
+            self,
+            containing_group,
+            predicate,
+            description,
+            character_data=None,
+            **rest,
+        ) -> None:
+            self._containing_group = containing_group
+            self._predicate = predicate
+            self._description = description
+            self._character_data = dict(character_data or {})
+            super().__init__(facade=True, **rest)
+
         def supergroup(self):
             return self._containing_group
 
@@ -178,15 +173,13 @@ def predicate_subgroup(
     containing_group = _owned_group(containing_group)
     if containing_group not in OwnedGroups():
         raise TypeError(f"{containing_group} is not a group")
-    category = predicate_subgroup_category()
-    subgroup = _PredicateSubgroupParent(
-        containing_group,
-        predicate,
-        description,
-        category,
+    return object_of(
+        predicate_subgroup_category(),
+        containing_group=containing_group,
+        predicate=predicate,
+        description=description,
         character_data=character_data,
     )
-    return refine(subgroup, category)
 
 
 def is_predicate_subgroup(group):
