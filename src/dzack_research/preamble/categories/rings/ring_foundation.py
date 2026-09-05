@@ -430,6 +430,10 @@ class LocalizationRings(OwnedCategory):
 
             if module.base_ring() is not self.localization_source():
                 raise ValueError("the module has the wrong source ring for this localization")
+            from dzack_research.preamble.categories.functors.module_localization import (
+                module_localization_functor,
+            )
+
             return module_localization_functor(self)(module)
 
         def _valid_denominator(self, denominator) -> bool:
