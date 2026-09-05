@@ -52,6 +52,30 @@ def _tensor_view(morphism):
     return tensor.from_morphism(morphism)
 
 
+def _normalize_lattice_generator_images(domain, images):
+    r"""Interpret integer dictionary keys as framing positions when necessary.
+
+    Lattice framings may use formal symbols even though ``module_generator(i)``
+    deliberately accepts the integer position ``i``.  Keep the same positional
+    spelling for explicit image dictionaries before the generic module-morphism
+    layer sees the actual symbolic labels.
+    """
+    if not isinstance(images, dict):
+        return images
+    labels = domain.module_generating_set()
+    normalized = {}
+    for key, value in images.items():
+        if key in labels:
+            label = labels(key)
+        else:
+            try:
+                label = labels.unrank(int(key))
+            except (AttributeError, TypeError, ValueError, IndexError):
+                label = key
+        normalized[label] = value
+    return normalized
+
+
 class LatticeMorphism(ModuleMorphism):
     r"""A module morphism preserving the lattice form."""
 
@@ -557,7 +581,10 @@ class LatticeHomset(CategoricalHomset):
             if images.parent() is self:
                 return images
             return self.elementwise(lambda element: images(element))
-        return self.element_class(self, images)
+        return self.element_class(
+            self,
+            _normalize_lattice_generator_images(self.domain(), images),
+        )
 
     def elementwise(self, function, *, verify_linearity=True):
         if not callable(function):
@@ -612,7 +639,10 @@ class LatticeEmbeddingHomset(CategoricalHomset):
                 self,
                 lambda label: images(source.module_generator(label)),
             )
-        return self.element_class(self, images)
+        return self.element_class(
+            self,
+            _normalize_lattice_generator_images(self.domain(), images),
+        )
 
     def elementwise(self, function, *, verify_linearity=True):
         if not callable(function):
@@ -780,7 +810,10 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 self,
                 lambda label: images(source.module_generator(label)),
             )
-        return self.element_class(self, images)
+        return self.element_class(
+            self,
+            _normalize_lattice_generator_images(self.domain(), images),
+        )
 
     def super_categories(self):
         packet = category_packet(self.base_category())

@@ -40,33 +40,33 @@ def _localized_commutative_ideal(source_ideal, localization_ring):
     )
 
     localization_map = localization_ring.localization_map()
-    source_ambient = ring_as_module(source_ideal.ring())
-    target_ambient = ring_as_module(localization_ring)
-    source_ambient_labels = tuple(source_ambient.module_generating_set())
-    target_ambient_labels = tuple(target_ambient.module_generating_set())
-    if len(source_ambient_labels) != 1 or len(target_ambient_labels) != 1:
+    source_regular_module = ring_as_module(source_ideal.ring())
+    target_regular_module = ring_as_module(localization_ring)
+    source_regular_labels = tuple(source_regular_module.module_generating_set())
+    target_regular_labels = tuple(target_regular_module.module_generating_set())
+    if len(source_regular_labels) != 1 or len(target_regular_labels) != 1:
         raise ArithmeticError("a ring viewed as a module over itself must have rank one")
-    source_ambient_label = source_ambient_labels[0]
-    target_ambient_label = target_ambient_labels[0]
+    source_regular_label = source_regular_labels[0]
+    target_regular_label = target_regular_labels[0]
 
     def embedded(label):
         source_image = source_ideal.inclusion()(
             source_ideal.module_generator(label)
         )
-        coefficient = module_coefficients(source_image, source_ambient).get(
-            source_ambient_label,
+        coefficient = module_coefficients(source_image, source_regular_module).get(
+            source_regular_label,
             source_ideal.ring().zero(),
         )
-        return target_ambient.scalar_multiple(
+        return target_regular_module.scalar_multiple(
             localization_map(coefficient),
-            target_ambient.module_generator(target_ambient_label),
+            target_regular_module.module_generator(target_regular_label),
         )
 
     ideal = LocalizedModule(
         source_ideal,
         localization_ring,
         module_localization_functor(localization_ring),
-        subobject_ambient=target_ambient,
+        subobject_ambient=target_regular_module,
         subobject_generator_images=embedded,
         extra_categories=(CommutativeIdeals(localization_ring),),
     )

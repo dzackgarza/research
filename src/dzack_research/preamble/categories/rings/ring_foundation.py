@@ -32,7 +32,7 @@ from sage.rings.rational_field import QQ as SageQQ
 from sage.rings.ring import Ring
 from sage.structure.element import CommutativeRingElement, Element, RingElement
 from sage.structure.parent import Parent
-from sage.structure.richcmp import richcmp
+from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 
