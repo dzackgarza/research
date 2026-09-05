@@ -192,7 +192,11 @@ class DistinguishedAffineCover(SageObject):
         self._scheme = scheme
         self._elements = elements
         self._opens = tuple(scheme.distinguished_open(element) for element in elements)
-        self._overlaps = {}
+        self._intersections = {
+            (index,): open_subscheme
+            for index, open_subscheme in enumerate(self._opens)
+        }
+        self._restricted_modules = {}
 
     def ambient_scheme(self):
         return self._scheme
@@ -206,19 +210,32 @@ class DistinguishedAffineCover(SageObject):
     def open(self, index):
         return self.opens()[int(index)]
 
-    def overlap(self, left_index, right_index):
-        left_index = int(left_index)
-        right_index = int(right_index)
-        if left_index == right_index:
-            return self.open(left_index)
-        key = tuple(sorted((left_index, right_index)))
-        selected = self._overlaps.get(key)
+    def intersection_indices(self, *indices):
+        if len(indices) == 1 and isinstance(indices[0], (tuple, list)):
+            indices = tuple(indices[0])
+        normalized = tuple(sorted({int(index) for index in indices}))
+        if not normalized:
+            raise ValueError("an affine-cover intersection requires at least one chart")
+        if normalized[0] < 0 or normalized[-1] >= len(self.opens()):
+            raise IndexError("affine-cover chart index is out of range")
+        return normalized
+
+    def intersection(self, *indices):
+        r"""Return ``D(prod_i f_i)``, the represented intersection of selected charts."""
+
+        key = self.intersection_indices(*indices)
+        selected = self._intersections.get(key)
         if selected is None:
-            left = self.defining_elements()[key[0]]
-            right = self.defining_elements()[key[1]]
-            selected = self.ambient_scheme().distinguished_open(left * right)
-            self._overlaps[key] = selected
+            algebra = self.ambient_scheme().coordinate_algebra()
+            element = algebra.one()
+            for index in key:
+                element *= self.defining_elements()[index]
+            selected = self.ambient_scheme().distinguished_open(element)
+            self._intersections[key] = selected
         return selected
+
+    def overlap(self, left_index, right_index):
+        return self.intersection(left_index, right_index)
 
     def structure_sheaf_restriction(self, chart_index, other_index):
         overlap = self.overlap(chart_index, other_index)
@@ -226,6 +243,37 @@ class DistinguishedAffineCover(SageObject):
             self.open(chart_index),
             overlap,
         )
+
+    def restrict_module(self, module, chart_index, *intersection_indices):
+        r"""Return ``M_i|_{U_I}`` by scalar extension along ``O(U_i) -> O(U_I)``."""
+
+        chart_index = int(chart_index)
+        chart = self.open(chart_index)
+        if module.base_ring() is not chart.coordinate_algebra():
+            raise ValueError("a local module must be defined over the selected affine chart")
+        indices = self.intersection_indices(chart_index, *intersection_indices)
+        target = self.intersection(indices)
+        if target is chart:
+            return module
+        key = (id(module), indices)
+        cached = self._restricted_modules.get(key)
+        if cached is not None:
+            cached_module, restricted = cached
+            if cached_module is module:
+                return restricted
+        ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
+        restricted = module.base_change(ring_map)
+        if restricted.base_ring() is not target.coordinate_algebra():
+            raise ArithmeticError("module base change did not land over the intersection section ring")
+        self._restricted_modules[key] = (module, restricted)
+        return restricted
+
+    def glue_modules(self, local_modules, transitions):
+        r"""Return the descent datum and glued module sheaf on this affine cover."""
+
+        from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum
+
+        return ModuleGluingDatum(self, local_modules, transitions)
 
     def _repr_(self):
         return f"Distinguished affine cover of {self.ambient_scheme()} by {len(self.opens())} opens"

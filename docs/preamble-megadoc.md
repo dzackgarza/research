@@ -13022,7 +13022,7 @@ Number fields carrying the primitive element selected by their presentation.
 A category over a ring, normalized to the session's owned ring.
 
 - **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1208`
-- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7f3979025a60>
+- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7f8532351a60>
 
 ### Objects
 
@@ -13459,7 +13459,7 @@ computation engine.
 
 Ringed spaces `(X,O_X)`.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:326`
+- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:374`
 - **probed as** `Category of ringed spaces`
 - **above** [`Sets`](#cat-sets)
 - **below** [`LocallyRingedSpaces`](#cat-locallyringedspaces)
@@ -13545,7 +13545,7 @@ Convex polytopes all of whose vertices are lattice points.
 
 Ringed spaces whose stalks are local rings.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:355`
+- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:403`
 - **probed as** `Category of locally ringed spaces`
 - **above** [`RingedSpaces`](#cat-ringedspaces)
 - **below** [`Schemes(R)`](#cat-schemes)

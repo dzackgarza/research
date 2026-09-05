@@ -17495,7 +17495,7 @@
     "LocallyRingedSpaces": {
       "display": "LocallyRingedSpaces",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:355",
+      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:403",
       "summary": "Ringed spaces whose stalks are local rings.",
       "owned": true,
       "exported": true,
@@ -20975,7 +20975,7 @@
       "operations": {},
       "inherits": [],
       "specimens": [],
-      "problem": "NotImplementedError: <abstract method super_categories at 0x7f3979025a60>"
+      "problem": "NotImplementedError: <abstract method super_categories at 0x7f8532351a60>"
     },
     "OwnedCompleteLocalRings": {
       "display": "OwnedCompleteLocalRings",
@@ -26322,7 +26322,7 @@
     "RingedSpaces": {
       "display": "RingedSpaces",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:326",
+      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:374",
       "summary": "Ringed spaces ``(X,O_X)``.",
       "owned": true,
       "exported": true,
