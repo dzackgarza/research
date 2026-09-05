@@ -851,121 +851,142 @@ def ExponentialOfSets(codomain, exponent):
     return _function_set_of(codomain, exponent)
 
 
-class FixedCardinalitySubsets(Parent):
-    r"""The set \([X]^k\) of subsets of a fixed finite cardinality."""
+class FixedCardinalitySubsetSets(OwnedCategory):
+    r"""The sets \([X]^k\) of subsets of one fixed finite cardinality."""
 
-    def __init__(self, source, subset_cardinality) -> None:
-        self._source = source
-        self._subset_cardinality = int(subset_cardinality)
-        if self._subset_cardinality < 0:
-            raise ValueError("a subset cardinality is nonnegative")
-        Parent.__init__(self, category=SageSets())
+    def an_object(self):
+        r"""One object of this category."""
+        return SubsetsOfSize(Sets.Δ[2], 2)
 
-    def source(self):
-        return self._source
+    def super_categories(self):
+        return [Sets()]
 
-    def subset_cardinality(self):
-        return self._subset_cardinality
+    class ParentMethods:
+        def __init__(self, source, subset_cardinality, **rest) -> None:
+            self._source = source
+            self._subset_cardinality = int(subset_cardinality)
+            assert self._subset_cardinality >= 0, "a subset cardinality is nonnegative"
+            super().__init__(**rest)
 
-    def power_set(self):
-        return PowerSet(self.source())
+        def source(self):
+            return self._source
 
-    def __call__(self, *args, **kwargs):
-        r"""Construct through the owned set representation directly."""
-        return self._element_constructor_(*args, **kwargs)
+        def subset_cardinality(self):
+            return self._subset_cardinality
 
-    def _element_constructor_(self, members):
-        subset = self.power_set()(members)
-        if subset.cardinality() != cardinal(self.subset_cardinality()):
-            raise ValueError(
-                f"a member of {self} has cardinality {self.subset_cardinality()}"
+        def power_set(self):
+            return PowerSet(self.source())
+
+        def __call__(self, *args, **kwargs):
+            r"""Construct through the owned set representation directly."""
+            return self._element_constructor_(*args, **kwargs)
+
+        def _element_constructor_(self, members):
+            subset = self.power_set()(members)
+            if subset.cardinality() != cardinal(self.subset_cardinality()):
+                raise ValueError(
+                    f"a member of {self} has cardinality {self.subset_cardinality()}"
+                )
+            return subset
+
+        def __contains__(self, candidate) -> bool:
+            if candidate not in self.power_set():
+                return False
+            return self.power_set()(candidate).cardinality() == cardinal(
+                self.subset_cardinality()
             )
-        return subset
 
-    def __contains__(self, candidate) -> bool:
-        if candidate not in self.power_set():
-            return False
-        return self.power_set()(candidate).cardinality() == cardinal(
-            self.subset_cardinality()
-        )
-
-    def __iter__(self):
-        if self.source() not in FiniteEnumeratedSets():
-            raise TypeError(
-                "the current enumeration of fixed-cardinality subsets requires a finite source"
+        def __iter__(self):
+            if self.source() not in FiniteEnumeratedSets():
+                raise TypeError(
+                    "the current enumeration of fixed-cardinality subsets requires a finite source"
+                )
+            return (
+                self(tuple(subset))
+                for subset in SageSubsets(self.source(), self.subset_cardinality())
             )
-        return (
-            self(tuple(subset))
-            for subset in SageSubsets(self.source(), self.subset_cardinality())
-        )
 
-    def cardinality(self):
-        from math import comb
+        def cardinality(self):
+            from math import comb
 
-        source_size = cardinal(self.source().cardinality())
-        if self.subset_cardinality() == 0:
-            return cardinal(1)
-        if source_size.is_finite():
-            return cardinal(comb(int(source_size), self.subset_cardinality()))
-        return source_size
+            source_size = cardinal(self.source().cardinality())
+            if self.subset_cardinality() == 0:
+                return cardinal(1)
+            if source_size.is_finite():
+                return cardinal(comb(int(source_size), self.subset_cardinality()))
+            return source_size
 
-    def _repr_(self) -> str:
-        return f"Subsets of {self.source()} of cardinality {self.subset_cardinality()}"
+        def _repr_(self) -> str:
+            return f"Subsets of {self.source()} of cardinality {self.subset_cardinality()}"
+
 
 
 @cached_function
 def SubsetsOfSize(source, subset_cardinality):
-    return FixedCardinalitySubsets(source, subset_cardinality)
+    return object_of(
+        FixedCardinalitySubsetSets(),
+        source=source,
+        subset_cardinality=subset_cardinality,
+    )
 
 
-class FiniteSubsetsParent(Parent):
-    r"""The set \(P_{fin}(X)\) of finite subsets of ``X``."""
+class FinitePowerSets(OwnedCategory):
+    r"""Finite power objects \(P_{fin}(X)\), the finite subsets of \(X\)."""
 
-    def __init__(self, source) -> None:
-        self._source = source
-        Parent.__init__(self, category=SageSets())
+    def an_object(self):
+        r"""One object of this category."""
+        return FiniteSubsets(Sets.Δ[2])
 
-    def source(self):
-        return self._source
+    def super_categories(self):
+        return [Sets()]
 
-    def power_set(self):
-        return PowerSet(self.source())
+    class ParentMethods:
+        def __init__(self, source, **rest) -> None:
+            self._source = source
+            super().__init__(**rest)
 
-    def __call__(self, *args, **kwargs):
-        r"""Construct through the owned set representation directly."""
-        return self._element_constructor_(*args, **kwargs)
+        def source(self):
+            return self._source
 
-    def _element_constructor_(self, members):
-        subset = self.power_set()(members)
-        if not subset.cardinality().is_finite():
-            raise ValueError("a member of the finite powerset must be finite")
-        return subset
+        def power_set(self):
+            return PowerSet(self.source())
 
-    def __contains__(self, candidate) -> bool:
-        if candidate not in self.power_set():
-            return False
-        return self.power_set()(candidate).cardinality().is_finite()
+        def __call__(self, *args, **kwargs):
+            r"""Construct through the owned set representation directly."""
+            return self._element_constructor_(*args, **kwargs)
 
-    def __iter__(self):
-        if self.source() not in FiniteEnumeratedSets():
-            raise TypeError(
-                "the current enumeration of finite subsets requires a finite source"
-            )
-        return (self(tuple(subset)) for subset in SageSubsets(self.source()))
+        def _element_constructor_(self, members):
+            subset = self.power_set()(members)
+            if not subset.cardinality().is_finite():
+                raise ValueError("a member of the finite powerset must be finite")
+            return subset
 
-    def cardinality(self):
-        source_size = cardinal(self.source().cardinality())
-        if source_size.is_finite():
-            return cardinal(2) ** source_size
-        return source_size
+        def __contains__(self, candidate) -> bool:
+            if candidate not in self.power_set():
+                return False
+            return self.power_set()(candidate).cardinality().is_finite()
 
-    def _repr_(self) -> str:
-        return f"Finite subsets of {self.source()}"
+        def __iter__(self):
+            if self.source() not in FiniteEnumeratedSets():
+                raise TypeError(
+                    "the current enumeration of finite subsets requires a finite source"
+                )
+            return (self(tuple(subset)) for subset in SageSubsets(self.source()))
+
+        def cardinality(self):
+            source_size = cardinal(self.source().cardinality())
+            if source_size.is_finite():
+                return cardinal(2) ** source_size
+            return source_size
+
+        def _repr_(self) -> str:
+            return f"Finite subsets of {self.source()}"
+
 
 
 @cached_function
 def FiniteSubsets(source):
-    return FiniteSubsetsParent(source)
+    return object_of(FinitePowerSets(), source=source)
 
 
 def _cartesian_product_of(index_set, family):
@@ -1534,7 +1555,6 @@ def CoproductMorphism(source, target, component_morphisms):
 
 ObjectSetsOfDiscreteCategories = SageSets
 ExponentialsOfSets = FunctionSets
-FinitePowerSets = FiniteSubsetsParent
 
 
 class Homsets(OwnedCategory):
@@ -1846,7 +1866,7 @@ __all__ = [
     "FiniteSets",
     "FiniteSubsets",
     "FinitelySupportedFunctionSets",
-    "FixedCardinalitySubsets",
+    "FixedCardinalitySubsetSets",
     "FunctionSets",
     "ImageSet",
     "InfiniteEnumeratedSets",
