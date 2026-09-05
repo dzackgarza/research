@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| A-induction-cosets-20260905 | A — induction and coinduction decompose along owned left cosets; the cardinal supremum names its class | Claude Code session 014pGhSMwfktxgNks1sDaZeo; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/functors/group_induction.py`; `src/dzack_research/preamble/categories/sets/cardinals.py`; `src/dzack_research/preamble/categories/group/groups.py`; `tests/groups/` | `689fefb1208530e1edcbe5ddc9e71d2874125695` / claimed | 2026-09-05T10:42:07Z |
 
 ### Existing work awaiting adoption
 
