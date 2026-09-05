@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
+    ModuleSubobjects,
     restrict_scalars,
 )
 
@@ -43,15 +44,41 @@ class ModuleLocalizationFunctor(ScalarExtensionFunctor):
         return True
 
     def _apply_object(self, module):
+        source_ring = self.localization_ring().localization_source()
+        subobject_data = {}
+        if (
+            module in ModuleSubobjects(source_ring)
+            and module in FramedModules(source_ring)
+        ):
+            source_inclusion = module.inclusion()
+            localized_ambient = self(source_inclusion.codomain())
+            subobject_data = {
+                "subobject_ambient": localized_ambient,
+                "subobject_generator_images": lambda label: localized_ambient.fraction(
+                    source_inclusion(module.module_generator(label))
+                ),
+                "subobject_verify_linearity": False,
+            }
         return LocalizedModule(
             module,
             self.localization_ring(),
             self,
+            **subobject_data,
         )
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
+
+        if source in ModuleSubobjects(source.base_ring()):
+            source_module = source.localization_source_module()
+            if (
+                morphism is source_module.inclusion()
+                and source.inclusion().codomain() is target
+            ):
+                embedded = source.inclusion()
+                embedded._preamble_localization_functor = self
+                return embedded
 
         if source in LocalizedModules(source.base_ring()):
             if target in LocalizedModules(target.base_ring()):
@@ -241,7 +268,7 @@ class LocalizationKernelComparison(SageObject):
         self._morphism = morphism
         self._localized_morphism = functor(morphism)
         self._source_kernel = morphism.kernel()
-        self._localized_source_kernel = functor(self._source_kernel.inclusion()).image()
+        self._localized_source_kernel = functor(self._source_kernel)
         self._target_kernel = self._localized_morphism.kernel()
         if self._target_kernel is not self._localized_source_kernel:
             raise ArithmeticError(

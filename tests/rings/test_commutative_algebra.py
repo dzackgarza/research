@@ -522,6 +522,78 @@ def test_module_localization_is_first_class_and_fibers_factor_through_it() -> No
     assert local_quotient.localization_prime_point() == origin
 
 
+def test_presented_module_localization_detects_inverted_annihilators() -> None:
+    from dzack_research.preamble.all import FreeModule
+    from dzack_research.preamble.categories.functors.module_localization import (
+        module_localization_functor,
+    )
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        FinitelyPresentedModule,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        module_homset,
+    )
+
+    polynomial = PolynomialRing(QQ, "x")
+    x = polynomial.algebra_generator("x")
+    free = FreeModule(polynomial, 1)
+    generator = free.module_generator(0)
+    localization = polynomial.localization(x)
+    localize = module_localization_functor(localization)
+
+    killed = FinitelyPresentedModule(
+        module_homset(free, free)({0: (x**2) * generator})
+    )
+    surviving = FinitelyPresentedModule(
+        module_homset(free, free)({0: (x + polynomial.one()) * generator})
+    )
+    killed_local = localize(killed)
+    surviving_local = localize(surviving)
+
+    assert killed_local.module_generator(0).equality_status(killed_local.zero()) is True
+    assert killed_local.is_zero() is True
+    assert (
+        surviving_local.module_generator(0).equality_status(surviving_local.zero())
+        is False
+    )
+    assert surviving_local.is_zero() is False
+
+    plane = PolynomialRing(QQ, ("x", "y"))
+    x_plane = plane.algebra_generator("x")
+    y_plane = plane.algebra_generator("y")
+    plane_free = FreeModule(plane, 1)
+    plane_generator = plane_free.module_generator(0)
+    point = plane.spectrum()(plane.ideal(x_plane))
+    localize_at_x = module_localization_functor(point.local_ring())
+
+    supported_at_x = FinitelyPresentedModule(
+        module_homset(plane_free, plane_free)({0: x_plane * plane_generator})
+    )
+    killed_away_from_x = FinitelyPresentedModule(
+        module_homset(plane_free, plane_free)({0: y_plane * plane_generator})
+    )
+    supported_local = localize_at_x(supported_at_x)
+    killed_local = localize_at_x(killed_away_from_x)
+
+    assert supported_local.module_generator(0).equality_status(supported_local.zero()) is False
+    assert supported_local.is_zero() is False
+    assert killed_local.module_generator(0).equality_status(killed_local.zero()) is True
+    assert killed_local.is_zero() is True
+
+    integer_free = FreeModule(ZZ, 1)
+    integer_generator = integer_free.module_generator(0)
+    torsion = FinitelyPresentedModule(
+        module_homset(integer_free, integer_free)({0: 6 * integer_generator})
+    )
+    at_two = module_localization_functor(ZZ.spectrum()(2).local_ring())(torsion)
+    at_five = module_localization_functor(ZZ.spectrum()(5).local_ring())(torsion)
+
+    assert at_two.module_generator(0).equality_status(at_two.zero()) is False
+    assert at_two.is_zero() is False
+    assert at_five.module_generator(0).equality_status(at_five.zero()) is True
+    assert at_five.is_zero() is True
+
+
 def test_elementwise_module_morphism_verification_is_regime_sensitive(caplog) -> None:
     import logging
 

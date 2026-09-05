@@ -673,7 +673,7 @@
     "AdicallyCompleteRings": {
       "display": "AdicallyCompleteRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1102",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1106",
       "summary": "Commutative rings represented as complete for a chosen adic topology.",
       "owned": true,
       "exported": true,
@@ -2085,7 +2085,7 @@
     "ArtinianRings": {
       "display": "ArtinianRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1049",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1053",
       "summary": "Artinian commutative rings.",
       "owned": true,
       "exported": true,
@@ -2783,7 +2783,7 @@
     "BiproductModules": {
       "display": "BiproductModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2050",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2051",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -5038,7 +5038,7 @@
     "CompleteLocalRings": {
       "display": "CompleteLocalRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1122",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1126",
       "summary": "Local rings complete for the represented maximal-ideal/adic topology.",
       "owned": true,
       "exported": true,
@@ -8246,7 +8246,7 @@
     "DivisionRings": {
       "display": "DivisionRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1134",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1138",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -9180,7 +9180,7 @@
     "Fields": {
       "display": "Fields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1143",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1147",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -10138,7 +10138,7 @@
     "FinitelyGeneratedFreeModules": {
       "display": "FinitelyGeneratedFreeModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1117",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1118",
       "summary": "Finite-rank free modules with a chosen ordered basis.",
       "owned": true,
       "exported": true,
@@ -11066,7 +11066,7 @@
     "FinitelyPresentedModules": {
       "display": "FinitelyPresentedModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1022",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1023",
       "summary": "Modules admitting a finite presentation.",
       "owned": true,
       "exported": true,
@@ -12878,7 +12878,7 @@
     "FramedModules": {
       "display": "FramedModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1228",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1229",
       "summary": "Modules carrying a specified generating map from a set.",
       "owned": true,
       "exported": true,
@@ -14385,7 +14385,7 @@
     "GroupModuleHomset": {
       "display": "GroupModuleHomset",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:628",
+      "source": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:646",
       "summary": "Python implementation shared by module-enriched Hom parents.",
       "owned": true,
       "exported": true,
@@ -15043,7 +15043,7 @@
     "IntegralDomains": {
       "display": "IntegralDomains",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:989",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:993",
       "summary": "Commutative rings without zero divisors.",
       "owned": true,
       "exported": true,
@@ -17133,7 +17133,7 @@
     "LocalRings": {
       "display": "LocalRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1064",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1068",
       "summary": "Commutative rings equipped with their unique maximal ideal.",
       "owned": true,
       "exported": true,
@@ -17871,7 +17871,7 @@
     "MatrixEndomorphismSpaces": {
       "display": "MatrixEndomorphismSpaces(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2592",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2593",
       "summary": "The matrix realization of ``End_R(F)`` for a finite framed free module ``F``.",
       "owned": true,
       "exported": true,
@@ -18111,7 +18111,7 @@
     "MatrixSpaces": {
       "display": "MatrixSpaces(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2236",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2237",
       "summary": "Hom objects between finitely generated framed free ``R``-modules.",
       "owned": true,
       "exported": true,
@@ -18857,7 +18857,7 @@
     "ModulesWithChosenFinitePresentation": {
       "display": "ModulesWithChosenFinitePresentation(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1044",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1045",
       "summary": "Finitely presented modules carrying one selected finite presentation.",
       "owned": true,
       "exported": true,
@@ -19165,7 +19165,7 @@
     "NoetherianRings": {
       "display": "NoetherianRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1031",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1035",
       "summary": "Noetherian commutative rings.",
       "owned": true,
       "exported": true,
@@ -20155,7 +20155,7 @@
     "OrderedRings": {
       "display": "OrderedRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:973",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:977",
       "summary": "Totally ordered rings in the owned scalar hierarchy.",
       "owned": true,
       "exported": true,
@@ -20925,7 +20925,7 @@
     "OwnedCategoryOverBaseRing": {
       "display": "OwnedCategoryOverBaseRing(R)",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1208",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1212",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -20937,7 +20937,7 @@
       "operations": {},
       "inherits": [],
       "specimens": [],
-      "problem": "NotImplementedError: <abstract method super_categories at 0x7fb48cb59900>"
+      "problem": "NotImplementedError: <abstract method super_categories at 0x7f09edc2da60>"
     },
     "OwnedCompleteLocalRings": {
       "display": "OwnedCompleteLocalRings",
@@ -21090,7 +21090,7 @@
     "OwnedDivisionRings": {
       "display": "OwnedDivisionRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1134",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1138",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -21225,7 +21225,7 @@
     "OwnedFields": {
       "display": "OwnedFields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1143",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1147",
       "summary": "Base class for categories belonging to the owned mathematical graph.",
       "owned": true,
       "exported": true,
@@ -22789,7 +22789,7 @@
     "OwnedOrders": {
       "display": "OwnedOrders",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1169",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1173",
       "summary": "Orders in number fields as a ring-theoretic property category.",
       "owned": true,
       "exported": true,
@@ -23102,7 +23102,7 @@
     "OwnedRings": {
       "display": "OwnedRings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:704",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:708",
       "summary": "Unital rings whose notebook-facing ring interface is owned here.",
       "owned": true,
       "exported": true,
@@ -23406,7 +23406,7 @@
     "OwnedRngs": {
       "display": "OwnedRngs",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:693",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:697",
       "summary": "Rngs on the owned operation spine.",
       "owned": true,
       "exported": true,
@@ -23514,7 +23514,7 @@
     "OwnedSemirings": {
       "display": "OwnedSemirings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:682",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:686",
       "summary": "Semirings on the owned operation spine.",
       "owned": true,
       "exported": true,
@@ -24221,7 +24221,7 @@
     "PrimeFields": {
       "display": "PrimeFields",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1197",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1201",
       "summary": "Prime fields \\(\\mathbf F_p\\).",
       "owned": true,
       "exported": true,
@@ -24572,7 +24572,7 @@
     "PrincipalIdealDomains": {
       "display": "PrincipalIdealDomains",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1004",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:1008",
       "summary": "Principal ideal domains in the owned ring hierarchy.",
       "owned": true,
       "exported": true,
@@ -25092,7 +25092,7 @@
     "ProjectiveModules": {
       "display": "ProjectiveModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1200",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1201",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -26162,7 +26162,7 @@
     "RestrictedScalarsModules": {
       "display": "RestrictedScalarsModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1343",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1344",
       "summary": "Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``.",
       "owned": true,
       "exported": true,
@@ -26354,7 +26354,7 @@
     "Rings": {
       "display": "Rings",
       "subsystem": "rings",
-      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:704",
+      "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:708",
       "summary": "Unital rings whose notebook-facing ring interface is owned here.",
       "owned": true,
       "exported": true,
@@ -28390,7 +28390,7 @@
     "TensorProductModules": {
       "display": "TensorProductModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1852",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1853",
       "summary": "Modules carrying a selected tensor-product universal object.",
       "owned": true,
       "exported": true,
@@ -29911,7 +29911,7 @@
       "name": "BaseChangeAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:224",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:246",
       "summary": "``S tensor_R - \u22a3 Res_f``.",
       "domain": "",
       "codomain": "",
@@ -30001,7 +30001,7 @@
       "name": "CoextensionOfScalarsFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:125",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:147",
       "summary": "``Hom_R(S, -) : Mod_R -> Mod_S`` along ``f: R -> S``, the right adjoint of ``Res_f``.",
       "domain": "",
       "codomain": "",
@@ -30491,7 +30491,7 @@
       "name": "ModuleLocalizationFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/module_localization.py:24",
+      "source": "src/dzack_research/preamble/categories/functors/module_localization.py:25",
       "summary": "The functor ``S^{-1}R tensor_R - : Mod_R -> Mod_{S^{-1}R}``.",
       "domain": "",
       "codomain": "",
@@ -30551,7 +30551,7 @@
       "name": "RestrictionCoextensionAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:260",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:282",
       "summary": "``Res_f \u22a3 Hom_R(S, -)``.",
       "domain": "",
       "codomain": "",

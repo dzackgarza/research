@@ -968,6 +968,7 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     "base change to a residue field must construct a vector space"
                 )
+            fiber._preamble_fiber_localization = localized
             return fiber
 
         def fiber_dimension(self, point):

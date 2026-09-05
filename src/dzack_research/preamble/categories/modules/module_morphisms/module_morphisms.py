@@ -649,14 +649,27 @@ class ModuleMorphism(Morphism):
         r"""Return ``ker(self)`` as a subobject of the domain."""
         localization_functor = self._preamble_localization_functor
         if localization_functor is not None:
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                ModuleSubobjects,
+            )
+
             source_morphism = localization_functor.chosen_preimage(self)
             source_kernel = source_morphism.kernel()
+            localized_kernel = localization_functor(source_kernel)
             localized_inclusion = localization_functor(source_kernel.inclusion())
             if localized_inclusion.codomain() is not self.domain():
                 raise ArithmeticError(
                     "localized kernel inclusion does not land in the cached localized domain"
                 )
-            return localized_inclusion.image()
+            if localized_kernel not in ModuleSubobjects(self.domain().base_ring()):
+                raise ArithmeticError(
+                    "localization did not preserve the represented source-kernel subobject"
+                )
+            if localized_kernel.inclusion() is not localized_inclusion:
+                raise ArithmeticError(
+                    "localized kernel inclusion is not the inclusion carried by the transported subobject"
+                )
+            return localized_kernel
 
         for owner in (self.domain(), self.codomain()):
             represented = owner._represented_kernel_of_morphism(self)

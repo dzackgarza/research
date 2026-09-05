@@ -139,9 +139,12 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             self._preamble_localization_submonoid = localization_ring.localization_submonoid()
             self._preamble_localization_functor = localization_functor
             source_ring = localization_ring.localization_source()
-            if source_module in FramedModules(source_ring):
-                # Localization chooses no framing: it carries the source's
-                # generators to their images, which generate S^{-1}M.
+            framed_source = source_module in FramedModules(source_ring)
+            super().__init__(base_ring=localization_ring, **rest)
+            if framed_source:
+                # Localization chooses no new framing: after the generic framed
+                # initializer has run, carry the source generators to their
+                # images in S^{-1}M.
                 self._preamble_module_generating_set = (
                     source_module.module_generating_set()
                 )
@@ -149,7 +152,6 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     source_module.module_generator(label)
                 )
                 self._preamble_module_coefficient_function = self._framing_coefficients
-            super().__init__(base_ring=localization_ring, **rest)
             self._preamble_scalar_action_morphism = self._build_scalar_action_morphism()
 
         def _framing_coefficients(self, element):
@@ -228,6 +230,46 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 except (NotImplementedError, TypeError, ValueError):
                     pass
 
+            # For a presented module, d/1 vanishes after localization exactly
+            # when Ann_R(d) meets the localization submonoid.  The cyclic
+            # submodule R*d represents Ann_R(d) through the existing scalar-
+            # action kernel, so no second presentation backend is needed here.
+            try:
+                if source in _SelectedFinitePresentationModules(self.source_ring()):
+                    annihilator = source.subobject_on((cross_difference,)).annihilator()
+                    structure = self.localization_submonoid().structure_data()
+
+                    if structure.get("kind") == "prime_complement":
+                        prime = structure.get("prime_ideal")
+                        if prime is not None:
+                            return any(
+                                not prime.contains_ambient_element(generator)
+                                for generator in annihilator.ideal_generators()
+                            )
+
+                    generators = tuple(
+                        self.localization_submonoid().monoid_generators()
+                    )
+                    if not generators:
+                        return False
+                    product = self.source_ring().one()
+                    for generator in generators:
+                        product *= generator
+
+                    # If S=<s_1,...,s_r> and p=prod s_i, then
+                    # Ann(d) meets S iff p lies in radical(Ann(d)): an
+                    # annihilating monomial divides a sufficiently large
+                    # power of p, and p^N itself is an S-witness conversely.
+                    try:
+                        return annihilator.radical().contains_ambient_element(product)
+                    except (AttributeError, NotImplementedError, TypeError, ValueError):
+                        # A direct annihilator witness is still exact even when
+                        # the represented ideal backend has no radical operation.
+                        if annihilator.contains_ambient_element(product):
+                            return True
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+
             # If M is finite and S has finitely many selected generators, the
             # orbit of the cross-difference under S is finite.  Search that orbit
             # exactly for an element killed by some denominator witness.
@@ -280,8 +322,28 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             return answer if answer is Unknown else bool(answer)
 
         def is_zero(self):
-            r"""Decide whether this localization is zero when the source is finite."""
+            r"""Decide whether this localization is zero from finite generators or a finite source."""
             source = self.localization_source_module()
+
+            # A finitely generated module localizes to zero exactly when its
+            # chosen finite generating family does.  Fraction equality carries
+            # the denominator witness, so this also covers infinite presented
+            # modules such as R/(f) localized at f.
+            try:
+                if source in FinitelyGeneratedModules(self.source_ring()):
+                    statuses = tuple(
+                        self.fraction(source.module_generator(label)).equality_status(
+                            self.zero()
+                        )
+                        for label in source.module_generating_set()
+                    )
+                    if any(status is False for status in statuses):
+                        return False
+                    if all(status is True for status in statuses):
+                        return True
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+
             if self.is_finite() is not True:
                 return Unknown
             try:

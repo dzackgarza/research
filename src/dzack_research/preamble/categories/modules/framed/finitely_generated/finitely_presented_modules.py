@@ -623,6 +623,13 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
 
         def is_zero(self):
+            if self.base_ring() not in PrincipalIdealDomains():
+                inherited = getattr(super(), "is_zero", None)
+                if inherited is None:
+                    raise NotImplementedError(
+                        "zero testing from selected invariant factors is represented here over a PID"
+                    )
+                return inherited()
             return all(
                 invariant.is_unit() for invariant in self._invariants_with_units()
             )
