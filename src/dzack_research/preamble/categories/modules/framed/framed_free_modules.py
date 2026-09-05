@@ -384,6 +384,10 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def cardinality(self):
             r"""Return ``|R^(S)|``: ``|R|^|S|`` for finite ``S``, else ``max(|R|, |S|)`` by finite support."""
 
+            if self.base_ring() is self:
+                # A ring as the rank-one free module over itself: its
+                # underlying set is the ring's, which the ring level answers.
+                return super().cardinality()
             scalars = self.base_ring().cardinality()
             labels = self.module_generating_set().cardinality()
             if labels.is_finite():

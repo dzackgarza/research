@@ -7,6 +7,7 @@ from sage.all import (
     NumberField as _SageNumberField,
     QuadraticField as _SageQuadraticField,
 )
+from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
