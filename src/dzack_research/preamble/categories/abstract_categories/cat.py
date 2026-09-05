@@ -176,6 +176,40 @@ class Cat(Category):
             r"""Return the complete implementation type for their elements."""
             return self.element_class
 
+        def fiber_product(self, left_leg, right_leg):
+            r"""Return the fiber product of the cospan these two legs form.
+
+            \(A\times_C B\) is the equalizer of \(f p_A\) and \(g p_B\) on
+            \(A\times B\): the subobject on which the two legs agree.  A
+            category with products and equalizers has this, so it is defined
+            here once, from those; a category with a better construction of its
+            own supplies it instead.
+            """
+            assert left_leg.codomain() is right_leg.codomain(), (
+                "a cospan has one common codomain"
+            )
+            total = self.product([left_leg.domain(), right_leg.domain()])
+            return self.equalizer(
+                left_leg * total.left_projection(),
+                right_leg * total.right_projection(),
+            )
+
+        def pushout(self, left_leg, right_leg):
+            r"""Return the pushout of the span these two legs form.
+
+            Dual to the fiber product: the coequalizer of \(\iota_A f\) and
+            \(\iota_B g\) on \(A\sqcup B\), which identifies \(f(c)\) with
+            \(g(c)\).  A category with coproducts and coequalizers has this.
+            """
+            assert left_leg.domain() is right_leg.domain(), (
+                "a span has one common domain"
+            )
+            total = self.coproduct([left_leg.codomain(), right_leg.codomain()])
+            return self.coequalizer(
+                total.left_injection() * left_leg,
+                total.right_injection() * right_leg,
+            )
+
         def opposite(self):
             r"""Return \(C^{op}\)."""
             from dzack_research.preamble.categories.abstract_categories.category_constructions import (
@@ -211,14 +245,14 @@ class Cat(Category):
             )
 
             return CosliceCategory(self, base_object)
-        def Subobjects(self, base_object):
+        def SubobjectCategory(self, base_object):
             r"""Return the category of subobjects of ``base_object`` here."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
                 SubobjectCategory,
             )
 
             return SubobjectCategory(self, base_object)
-        def Superobjects(self, base_object):
+        def SuperobjectCategory(self, base_object):
             r"""Return the category of superobjects of ``base_object`` here."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
                 SuperobjectCategory,

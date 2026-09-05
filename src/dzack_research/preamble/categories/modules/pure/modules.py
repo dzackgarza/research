@@ -39,7 +39,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
     module_homset,
 )
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category, refine
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Biproduct,
     Subobjects,
@@ -133,26 +133,6 @@ class Modules(OwnedCategoryOverBaseRing):
             return self._fold_construction(
                 self._categorical_biproduct, factors, name="Biproduct factors"
             )
-
-        def pushout(self, left_leg, right_leg):
-            r"""Return the pushout of the span these two legs form.
-
-            \(R\)-Mod is cocomplete, and the pushout of
-            \(A \xleftarrow{f} C \xrightarrow{g} B\) is the coequalizer of
-            \(\iota_A f\) and \(\iota_B g\) into \(A \oplus B\), which
-            identifies \(f(c)\) with \(g(c)\) for every \(c\).
-            """
-            assert left_leg.domain() is right_leg.domain(), (
-                "a span has one common domain"
-            )
-            total = self._categorical_biproduct(left_leg.codomain(), right_leg.codomain())
-            return self._categorical_coequalizer(
-                total.left_injection() * left_leg,
-                total.right_injection() * right_leg,
-            )
-
-        def _categorical_pushout(self, left_leg, right_leg):
-            return self.pushout(left_leg, right_leg)
 
         def _categorical_biproduct(self, left, right):
             if left not in self or right not in self:
@@ -906,10 +886,12 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
 
     def super_categories(self):
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FramedFreeModules,
+        )
+
         return [
-            FreeModules(self.base_ring()),
-            FramedModules(self.base_ring()),
-            FinitelyGeneratedModules(self.base_ring()),
+            FramedFreeModules(self.base_ring()),
             ModulesWithChosenFinitePresentation(self.base_ring()),
             ProjectiveModules(self.base_ring()),
         ]
@@ -1213,7 +1195,7 @@ class RestrictedScalarsModuleView(Parent):
             base=base_ring,
             category=Category.join(tuple(categories)),
         )
-        refine(self, categories)
+        realize_owned_category(self)
 
     def __call__(self, value):
         r"""Construct through the owned restriction-of-scalars element parser."""

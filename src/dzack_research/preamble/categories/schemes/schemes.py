@@ -34,7 +34,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.categories.rings.rings import refine_ring_constructions
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     SchemeUnderlyingSpace,
@@ -854,7 +853,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
             from sage.rings.rational_field import QQ as SageQQ
 
             rationals = _own_ring(SageQQ)
-            polynomial = refine_ring_constructions(PolynomialRing(rationals, "T"))
+            polynomial = PolynomialRing(rationals, "T")
             rational_functions = refine_commutative_algebra(
                 polynomial.fraction_field(), rationals, ("T",)
             )
@@ -896,7 +895,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
             from sage.rings.rational_field import QQ as SageQQ
 
             rationals = _own_ring(SageQQ)
-            polynomial = refine_ring_constructions(PolynomialRing(rationals, "T"))
+            polynomial = PolynomialRing(rationals, "T")
             rational_functions = refine_commutative_algebra(
                 polynomial.fraction_field(), rationals, ("T",)
             )
@@ -1323,7 +1322,7 @@ class _SchemeSubobjectsOf(OwnedParameterizedCategory):
 
     def super_categories(self):
         ambient = self.ambient_scheme()
-        return [Schemes(ambient.scheme_base_ring()).Subobjects(ambient)]
+        return [Schemes(ambient.scheme_base_ring()).SubobjectCategory(ambient)]
 
     class ParentMethods:
         def inclusion(self):

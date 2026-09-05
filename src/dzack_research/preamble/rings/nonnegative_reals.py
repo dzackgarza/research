@@ -10,6 +10,7 @@ The additive monoid \((\mathbb{N},+)\) is the discrete submonoid.
 """
 
 from sage.categories.commutative_additive_monoids import CommutativeAdditiveMonoids
+from sage.categories.category import Category
 from sage.rings.infinity import Infinity, minus_infinity
 from sage.rings.rational_field import QQ
 from sage.rings.semirings.non_negative_integer_semiring import NN
@@ -19,7 +20,7 @@ from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
 from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.categories.sets.cardinals import continuum
 
@@ -82,8 +83,13 @@ class NonNegativeReals(UniqueRepresentation, Parent):
     Element = NonNegativeReal
 
     def __init__(self) -> None:
-        Parent.__init__(self, category=CommutativeAdditiveMonoids().Infinite())
-        refine(self, AdditiveMonoids())
+        Parent.__init__(
+            self,
+            category=Category.join(
+                (CommutativeAdditiveMonoids().Infinite(), AdditiveMonoids())
+            ),
+        )
+        realize_owned_category(self)
 
     def _repr_(self) -> str:
         return "Nonnegative extended real numbers"
@@ -124,7 +130,12 @@ class NonNegativeReals(UniqueRepresentation, Parent):
         return True
 
     def zero(self):
-        return self(RR.zero())
+        # Built directly, not through ``self(...)``.  Sage reaches a generic
+        # convert map for an argument whose parent it does not already know,
+        # and that map's Hom is taken in ``SetsWithPartialMaps`` -- a Sage
+        # category, which an owned parent is not in.  Zero is this parent's own
+        # element and needs no conversion to reach it.
+        return self.element_class(self, RR.zero())
 
     def _an_element_(self):
         return self.zero()

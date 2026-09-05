@@ -13,10 +13,16 @@ from sage.categories.category import Category
 from sage.structure.category_object import CategoryObject
 from sage.categories.morphism import Morphism
 from sage.structure.dynamic_class import dynamic_class
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
+
+
+# A methods class naming one of these among its bases is an implementation
+# class, not a mixin: it is the class an owned category is tied to.
+_IMPLEMENTATION_BASES = (Parent, Element, Morphism)
 
 
 def _owned_mixins(category: Category, attr: str) -> tuple[type, ...]:
@@ -27,8 +33,16 @@ def _owned_mixins(category: Category, attr: str) -> tuple[type, ...]:
             if not category_type.__module__.startswith(_PREAMBLE_PACKAGE):
                 continue
             provider = vars(category_type).get(attr)
-            if isinstance(provider, type) and provider not in providers:
-                providers.append(provider)
+            if not isinstance(provider, type) or provider in providers:
+                continue
+            if issubclass(provider, _IMPLEMENTATION_BASES):
+                # The root of an owned construction chain declares its methods
+                # class over the host runtime base, so that class *is* the
+                # implementation rather than a mixin over one.  An adopted Sage
+                # parent already has its own, and hoisting this one would
+                # shadow it.
+                continue
+            providers.append(provider)
     return tuple(providers)
 
 
@@ -111,15 +125,33 @@ def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> N
         )
 
 
+def realize_owned_category(obj: SageObject):
+    r"""Realize the owned methods of the category already chosen at construction.
+
+    This is runtime plumbing, not mathematical refinement.  In particular it
+    never changes ``obj.category()`` and therefore cannot be used to add
+    construction data or category membership after instantiation.
+    """
+    category = obj.category()
+    if isinstance(obj, Morphism):
+        _rebuild_morphism_class(obj, category)
+        return obj
+    if isinstance(obj, Parent):
+        _rebuild_parent_class(obj, category)
+        _rebuild_element_class(obj, category)
+    return obj
+
+
 def refine(obj: SageObject, category: Category | Iterable[Category]):
-    """Join ``category`` into ``obj`` and give owned methods precedence."""
+    r"""Add a verified property/axiom category to an already constructed object."""
     target = category if isinstance(category, Category) else Category.join(tuple(category))
     _assert_certifying_predicates_hold(obj, target)
     if isinstance(obj, Morphism):
+        # A morphism's mathematical membership is determined by its Hom
+        # parent.  There is no independent Sage category slot to mutate here;
+        # the target only supplies the owned morphism-method surface selected
+        # by that already-constructed Hom theory.
         _rebuild_morphism_class(obj, target)
         return obj
     CategoryObject._refine_category_(obj, target)
-    if isinstance(obj, Parent):
-        _rebuild_parent_class(obj, obj.category())
-        _rebuild_element_class(obj, obj.category())
-    return obj
+    return realize_owned_category(obj)

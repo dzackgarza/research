@@ -76,7 +76,7 @@ def _lebesgue_exponent(degree):
     value = degree.as_extended_real()
     if value is Infinity:
         raise TypeError(f"degree {degree} is ∞, so the graded piece would be L^0")
-    if value == 0:
+    if value == RR.zero():
         return Infinity
     return _integrability(RR.one() / RR(value))
 

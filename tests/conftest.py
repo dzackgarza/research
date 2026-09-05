@@ -55,11 +55,11 @@ _OWNED_SPELLINGS = {
     "OppositeCategory": lambda category: category.opposite(),
     "SliceOver": lambda category, base_object: category.SliceOver(base_object),
     "CosliceUnder": lambda category, base_object: category.CosliceUnder(base_object),
-    "SubobjectsOf": lambda category, base_object: category.Subobjects(base_object),
-    "SuperobjectsOf": lambda category, base_object: category.Superobjects(base_object),
+    "SubobjectsOf": lambda category, base_object: category.SubobjectCategory(base_object),
+    "SuperobjectsOf": lambda category, base_object: category.SuperobjectCategory(base_object),
     "Subobjects": lambda base_object, category=None: (
         base_object.category() if category is None else category
-    ).Subobjects(base_object),
+    ).SubobjectCategory(base_object),
     "ProductCategory": lambda left, right: Cat().product([left, right]),
     # A span owns its pushout, and the category publishes it too; the legs are
     # the span's data, not an arity.
