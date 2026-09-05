@@ -149,7 +149,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| organize-workstreams | Scheduling and ownership board | Current organization task; `/home/dzack/research` | write: `TODO-WORKSTREAMS.md`, `TODO.md`, `TODO-ORGANIZATION.md` | `d96d55c6` | 2026-09-05T07:51:32Z |
 
 ### Existing work awaiting adoption
 
