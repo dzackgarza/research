@@ -1,5 +1,7 @@
 """Owned categories and basic constructors for schemes over a base ring."""
 
+from typing import Any, cast
+
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
@@ -27,7 +29,11 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    FinitelyPresentedAlgebra,
+    PolynomialRing,
+    SymmetricAlgebraOn,
+)
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
     refine_commutative_algebra,
@@ -992,6 +998,128 @@ class _AffineGSchemes(OwnedCategory):
                 tuple(self.fixed_ideal().ideal_generators())
             )
 
+        @cached_method
+        def _invariant_algebra_data(
+            self: Any,
+        ) -> tuple[Any, Any, tuple[Any, ...]]:
+            r"""Return the selected represented ``(A^G, A^G -> A, generators)``."""
+            return _affine_linear_invariant_algebra_data(self)
+
+        def invariant_algebra(self: Any) -> Any:
+            r"""Return the represented invariant algebra ``A^G``.
+
+            The current backend supports finite linear actions on a polynomial
+            algebra over a field accepted by Sage's Singular invariant-ring
+            interface.  The result carries a chosen finite polynomial
+            presentation, not merely a membership predicate.
+            """
+            return self._invariant_algebra_data()[0]
+
+        def invariant_algebra_inclusion(self: Any) -> Any:
+            r"""Return the represented inclusion ``A^G -> A``."""
+            return self._invariant_algebra_data()[1]
+
+        @cached_method
+        def affine_quotient(self: Any) -> Any:
+            r"""Return ``Spec(A^G)`` for the supported affine linear action."""
+            return Spec(self.invariant_algebra(), base_ring=self.scheme_base_ring())
+
+        @cached_method
+        def quotient_morphism(self: Any) -> SchemeMorphism:
+            r"""Return the represented affine quotient map ``Spec(A) -> Spec(A^G)``."""
+            return _affine_morphism_from_pullback(
+                self,
+                self.affine_quotient(),
+                self.invariant_algebra_inclusion(),
+            )
+
+        def factor_through_affine_quotient(
+            self: Any,
+            morphism: Any,
+        ) -> SchemeMorphism:
+            r"""Factor one invariant affine morphism uniquely through ``Spec(A^G)``.
+
+            If ``f : Spec(A) -> Spec(C)`` is invariant, every selected
+            generator of ``C`` pulls back to an element of ``A^G``.  The
+            Singular-backed subalgebra-membership certificate expresses that
+            pullback in the selected invariant generators.  These expressions
+            define ``C -> A^G`` and hence the required factor
+            ``Spec(A^G) -> Spec(C)``.  Uniqueness follows because the selected
+            presentation of ``A^G`` was obtained from the kernel of the map
+            from the polynomial algebra on those invariant generators to
+            ``A``; its represented inclusion is therefore injective.
+            """
+            if not isinstance(morphism, SchemeMorphism) or morphism.domain() is not self:
+                raise ValueError("the quotient factorization starts at this acted affine scheme")
+            target = morphism.codomain()
+            base = self.scheme_base_ring()
+            if target not in AffineSchemes(base):
+                raise NotImplementedError(
+                    "the represented quotient universal property currently targets affine schemes"
+                )
+            target_algebra = target.coordinate_algebra()
+            if target_algebra not in FramedAlgebras(base):
+                raise NotImplementedError(
+                    "the represented quotient factorization requires a framed target coordinate algebra"
+                )
+            labels = target_algebra.algebra_generating_set()
+            if not labels.cardinality().is_finite():
+                raise NotImplementedError(
+                    "the represented quotient factorization requires finitely many target generators"
+                )
+
+            source_algebra = self.coordinate_algebra()
+            pullback = morphism.coordinate_algebra_morphism()
+            if pullback.domain() is not target_algebra or pullback.codomain() is not source_algebra:
+                raise ValueError("the affine morphism has the wrong represented coordinate pullback")
+
+            invariant_algebra, inclusion, engine_invariants = self._invariant_algebra_data()
+            group_generators = tuple(self.acting_group().group_generators())
+            engine_source = _engine_ring(source_algebra)
+
+            generator_images = {}
+            for label in labels:
+                image = pullback(target_algebra.algebra_generator(label))
+                if any(
+                    self.action_of(group_generator).coordinate_algebra_morphism()(image)
+                    != image
+                    for group_generator in group_generators
+                ):
+                    raise ValueError("the stated affine morphism is not invariant under the represented group action")
+                if not engine_invariants:
+                    generator_images[label] = invariant_algebra(image)
+                    continue
+                engine_image = engine_source(_engine_element(source_algebra, image))
+                certificate = engine_image.in_subalgebra(
+                    engine_invariants,
+                    algorithm="groebner",
+                    certificate="invariant",
+                )
+                if certificate is None:
+                    raise ArithmeticError(
+                        "the invariant-ring backend did not express a verified invariant in its selected generators"
+                    )
+                generator_images[label] = _evaluate_polynomial_in_algebra(
+                    certificate,
+                    invariant_algebra,
+                )
+
+            factor_pullback = target_algebra.Mor(invariant_algebra)(generator_images)
+            factor = _affine_morphism_from_pullback(
+                self.affine_quotient(),
+                target,
+                factor_pullback,
+            )
+            if factor * self.quotient_morphism() != morphism:
+                raise ArithmeticError("the represented affine quotient factorization failed its defining triangle")
+            if any(
+                inclusion(factor_pullback(target_algebra.algebra_generator(label)))
+                != pullback(target_algebra.algebra_generator(label))
+                for label in labels
+            ):
+                raise ArithmeticError("the represented quotient factorization disagrees on a target generator")
+            return factor
+
 
 class QuasiAffineSchemes(_SchemePropertyCategory):
     property_name = "quasi-affine"
@@ -1339,23 +1467,265 @@ def _engine_affine_pullback(pullback):
     return _engine_algebra_morphism(pullback)
 
 
-def _affine_endomorphism_from_pullback(scheme, pullback):
-    r"""Site a represented coordinate pullback on the stated affine scheme."""
-    algebra = scheme.coordinate_algebra()
-    if pullback.domain() is not algebra or pullback.codomain() is not algebra:
+def _affine_morphism_from_pullback(
+    domain: Any,
+    codomain: Any,
+    pullback: Any,
+) -> SchemeMorphism:
+    r"""Site one represented coordinate pullback on the stated affine endpoints."""
+    domain_algebra = domain.coordinate_algebra()
+    codomain_algebra = codomain.coordinate_algebra()
+    if pullback.domain() is not codomain_algebra or pullback.codomain() is not domain_algebra:
         raise ValueError(
-            "an affine scheme endomorphism requires a pullback on its coordinate algebra"
+            "an affine scheme morphism requires a pullback from the codomain algebra to the domain algebra"
         )
-    native = _native_scheme_homset(scheme, scheme)(
+    native = _native_scheme_homset(domain, codomain)(
         _engine_affine_pullback(pullback),
         check=False,
     )
     return SchemeMorphism(
         native,
-        domain=scheme,
-        codomain=scheme,
+        domain=domain,
+        codomain=codomain,
         pullback=pullback,
     )
+
+
+def _affine_endomorphism_from_pullback(
+    scheme: Any,
+    pullback: Any,
+) -> SchemeMorphism:
+    r"""Site a represented coordinate pullback on the stated affine scheme."""
+    return _affine_morphism_from_pullback(scheme, scheme, pullback)
+
+
+def _polynomial_exponents(exponent: Any, variable_count: int) -> tuple[int, ...]:
+    r"""Normalize a Sage polynomial dictionary exponent to a tuple."""
+    if variable_count == 1 and not isinstance(exponent, tuple):
+        return (int(exponent),)
+    return tuple(int(value) for value in exponent)
+
+
+def _copy_polynomial_by_exponents(
+    polynomial: Any,
+    target_ring: Any,
+    target_variables: tuple[Any, ...],
+) -> Any:
+    r"""Copy a polynomial to named-independent variables by its exponent dictionary."""
+    source = polynomial.parent()
+    variable_count = len(source.gens())
+    if len(target_variables) != variable_count:
+        raise ValueError("polynomial transport requires the same number of variables")
+    result = target_ring.zero()
+    for exponent, coefficient in polynomial.dict().items():
+        powers = _polynomial_exponents(exponent, variable_count)
+        term = target_ring(coefficient)
+        for variable, power in zip(target_variables, powers):
+            term *= variable**power
+        result += term
+    return result
+
+
+def _evaluate_polynomial_in_algebra(polynomial: Any, algebra: Any) -> Any:
+    r"""Evaluate a backend polynomial on the selected generators of ``algebra``."""
+    labels = tuple(algebra.algebra_generating_set())
+    source = polynomial.parent()
+    if len(source.gens()) != len(labels):
+        raise ValueError("the polynomial certificate has the wrong number of invariant variables")
+    base = algebra.base_ring()
+    engine_base = _engine_ring(base)
+    result = algebra.zero()
+    for exponent, coefficient in polynomial.dict().items():
+        powers = _polynomial_exponents(exponent, len(labels))
+        term = algebra.algebra_structure_morphism()(base._from_engine_element(engine_base(coefficient)))
+        for label, power in zip(labels, powers):
+            term *= algebra.algebra_generator(label) ** power
+        result += term
+    return algebra(result)
+
+
+def _affine_linear_invariant_algebra_data(
+    scheme: Any,
+) -> tuple[Any, Any, tuple[Any, ...]]:
+    r"""Return a finite presentation of ``A^G`` and its inclusion into ``A``.
+
+    This is the private computation boundary for the first supported affine
+    quotient regime: ``A`` is a polynomial algebra over a field, ``G`` is
+    finite with chosen generators, and the represented pullbacks are linear on
+    the selected polynomial generators.  Sage's matrix-group interface routes
+    invariant generation to Singular; Sage's elimination ideal computes the
+    kernel of the polynomial map on the returned invariant generators.
+    """
+    from sage.groups.matrix_gps.finitely_generated import MatrixGroup
+    from sage.matrix.constructor import matrix as sage_matrix
+    from sage.rings.polynomial.polynomial_ring_constructor import (
+        PolynomialRing as SagePolynomialRing,
+    )
+
+    from dzack_research.preamble.categories.group.groups import (
+        GroupsWithChosenFiniteGeneratingSet,
+    )
+
+    group = scheme.acting_group()
+    if group.is_finite() is not True or group not in GroupsWithChosenFiniteGeneratingSet():
+        raise NotImplementedError(
+            "the represented invariant algebra currently requires a finite group with a chosen finite generating set"
+        )
+    algebra = scheme.coordinate_algebra()
+    base = scheme.scheme_base_ring()
+    if algebra not in SymmetricAlgebras(base) or algebra not in FramedAlgebras(base):
+        raise NotImplementedError(
+            "the represented invariant-ring backend currently requires a polynomial coordinate algebra"
+        )
+    labels = tuple(algebra.algebra_generating_set())
+    if not algebra.algebra_generating_set().cardinality().is_finite():
+        raise NotImplementedError(
+            "the represented invariant-ring backend requires finitely many polynomial generators"
+        )
+    engine_algebra = _engine_ring(algebra)
+    variables = tuple(engine_algebra.gens())
+    if len(variables) != len(labels):
+        raise ArithmeticError("the selected polynomial framing disagrees with its computation engine")
+    engine_base = _engine_ring(base)
+    if not bool(engine_base.is_field()):
+        raise NotImplementedError(
+            "the selected Singular invariant-ring backend currently requires a field of coefficients"
+        )
+
+    # The polynomial algebra on no generators is the scalar field itself.
+    # Every represented scheme automorphism is over the stated base, hence its
+    # pullback fixes that algebra pointwise; there is nothing for Singular to
+    # generate in this zero-dimensional case.
+    if not variables:
+        return (
+            algebra,
+            algebra.Mor(algebra).identity(),
+            (),
+        )
+
+    group_generators = tuple(group.group_generators())
+    if not group_generators:
+        return (
+            algebra,
+            algebra.Mor(algebra).identity(),
+            tuple(variables),
+        )
+
+    backend_matrices = []
+    pullbacks = []
+    for group_generator in group_generators:
+        pullback = scheme.action_of(group_generator).coordinate_algebra_morphism()
+        pullbacks.append(pullback)
+        image_rows = []
+        for label in labels:
+            image = engine_algebra(
+                _engine_element(algebra, pullback(algebra.algebra_generator(label)))
+            )
+            row = []
+            linear_part = engine_algebra.zero()
+            for variable in variables:
+                coefficient = image.monomial_coefficient(variable)
+                row.append(engine_base(coefficient))
+                linear_part += coefficient * variable
+            if image != linear_part:
+                raise NotImplementedError(
+                    "the selected invariant-ring backend currently requires a linear action on polynomial generators"
+                )
+            # Sage/Singular's matrix-group invariant convention acts on the
+            # coordinate variables by the transpose of the supplied matrix.
+            # Rows here are therefore the actual pullback images of the chosen
+            # variables, so the backend receives the needed transpose matrix.
+            image_rows.append(row)
+        backend_matrices.append(sage_matrix(engine_base, image_rows))
+
+    backend_group = cast(Any, MatrixGroup(backend_matrices))
+    try:
+        backend_invariants = tuple(backend_group.invariant_generators())
+    except (NotImplementedError, TypeError, ValueError) as error:
+        raise NotImplementedError(
+            "Sage/Singular does not support invariant generation for this coefficient field and linear action"
+        ) from error
+    if not backend_invariants:
+        raise ArithmeticError("a positive-dimensional polynomial invariant ring needs algebra generators")
+
+    engine_invariants = tuple(
+        _copy_polynomial_by_exponents(
+            invariant,
+            engine_algebra,
+            variables,
+        )
+        for invariant in backend_invariants
+    )
+    invariant_elements = tuple(
+        algebra._from_engine_element(invariant)
+        for invariant in engine_invariants
+    )
+    if any(
+        pullback(invariant) != invariant
+        for pullback in pullbacks
+        for invariant in invariant_elements
+    ):
+        raise ArithmeticError(
+            "the backend invariant generators do not match the represented coordinate action"
+        )
+
+    invariant_labels = tuple(f"invariant_{index}" for index in range(len(engine_invariants)))
+    presentation = SymmetricAlgebraOn(base, invariant_labels)
+    presentation_engine = _engine_ring(presentation)
+
+    ambient_count = len(variables)
+    invariant_count = len(engine_invariants)
+    combined = SagePolynomialRing(
+        engine_base,
+        ambient_count + invariant_count,
+        names=tuple(f"ambient_{index}" for index in range(ambient_count))
+        + tuple(f"invariant_{index}" for index in range(invariant_count)),
+    )
+    ambient_variables = tuple(combined.gens()[:ambient_count])
+    invariant_variables = tuple(combined.gens()[ambient_count:])
+    graph_ideal = combined.ideal(
+        tuple(
+            invariant_variables[index]
+            - _copy_polynomial_by_exponents(
+                invariant,
+                combined,
+                ambient_variables,
+            )
+            for index, invariant in enumerate(engine_invariants)
+        )
+    )
+    kernel = cast(Any, graph_ideal).elimination_ideal(ambient_variables)
+    relations = []
+    for relation in kernel.gens():
+        if relation == combined.zero():
+            continue
+        relation_terms = {}
+        for exponent, coefficient in relation.dict().items():
+            powers = _polynomial_exponents(
+                exponent,
+                ambient_count + invariant_count,
+            )
+            if any(powers[:ambient_count]):
+                raise ArithmeticError("the elimination backend returned a non-eliminated relation")
+            relation_terms[powers[ambient_count:]] = coefficient
+        relations.append(
+            presentation._from_engine_element(
+                presentation_engine(relation_terms)
+            )
+        )
+    invariant_algebra = (
+        presentation
+        if not relations
+        else FinitelyPresentedAlgebra(presentation, tuple(relations))
+    )
+    invariant_labels = tuple(invariant_algebra.algebra_generating_set())
+    inclusion = invariant_algebra.Mor(algebra)(
+        {
+            label: invariant_elements[index]
+            for index, label in enumerate(invariant_labels)
+        }
+    )
+    return invariant_algebra, inclusion, engine_invariants
 
 
 def affine_g_scheme(scheme, group, action):
