@@ -276,6 +276,60 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return source_ideal
 
             source_ring = localization_ring.localization_source()
+
+            # If the source is represented as A = P/I, compute contraction in
+            # the selected presentation ring P rather than asking Singular to
+            # saturate an ideal inside Sage's generic quotient parent.  For
+            # S=<s_1,...,s_r>, the contraction of S^{-1}J is
+            #
+            #     (I + J~) : (s~_1 ... s~_r)^infinity / I,
+            #
+            # where tildes denote the selected lifts to P.  This is the same
+            # exact presentation data used by quotient-coefficient module
+            # equality and by localization fraction equality.
+            try:
+                has_presentation = source_ring._has_selected_exact_coefficient_presentation()
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                has_presentation = False
+            if has_presentation:
+                presentation_ring = source_ring._exact_coefficient_presentation_ring()
+                lifted_ideal_generators = tuple(
+                    presentation_ring(
+                        source_ring._lift_coefficient_to_presentation(generator)
+                    )
+                    for generator in source_ideal.ideal_generators()
+                )
+                presentation_relations = tuple(
+                    presentation_ring(relation)
+                    for relation in source_ring._exact_coefficient_presentation_relations()
+                )
+                lifted_denominators = tuple(
+                    presentation_ring(
+                        source_ring._lift_coefficient_to_presentation(generator)
+                    )
+                    for generator in generators
+                )
+                product = presentation_ring.one()
+                for denominator in lifted_denominators:
+                    product *= denominator
+                lifted_ideal = presentation_ring.ideal(
+                    *(
+                        presentation_relations
+                        + lifted_ideal_generators
+                        or (presentation_ring.zero(),)
+                    )
+                )
+                saturated = lifted_ideal.saturation(
+                    presentation_ring.ideal(product)
+                )
+                descended_generators = tuple(
+                    source_ring._descend_coefficient_from_presentation(generator)
+                    for generator in saturated.ideal_generators()
+                )
+                return source_ring.ideal(
+                    *(descended_generators or (source_ring.zero(),))
+                )
+
             engine = _engine_ring(source_ring)
             source_backend = source_ideal._engine_ideal()
             saturation_method = _optional_engine_method(source_backend, "saturation")

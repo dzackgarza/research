@@ -752,6 +752,11 @@ def test_selected_presented_algebra_localization_has_exact_fraction_equality() -
     assert localized(xbar) != localized.zero()
     assert localized.one() != localized.zero()
 
+    origin = axes.ideal(xbar, ybar)
+    localized_origin = origin.extension(localized)
+    assert localized_origin.contraction() == axes.ideal(axes.one())
+    assert localized_origin.contains_ambient_element(localized.one())
+
 
 def test_module_localization_exactness_preserves_kernels_and_cokernels() -> None:
     from dzack_research.preamble.categories.modules import FreeModule, module_homset
