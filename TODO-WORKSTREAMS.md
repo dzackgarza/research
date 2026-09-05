@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| R-quotient-localization-equality-20260905 | R — exact fraction equality for selected quotient presentations and quotient/localization round trips, unblocking D differential localization | ChatGPT continuation `2026-09-05-localization-recovery`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/rings/ring_foundation.py`; `src/dzack_research/preamble/categories/rings/commutative_algebra.py`; `tests/rings/test_commutative_algebra.py` | `76f6c8227d381deaadbf6d09d45769d36ac7b88d`; D probe has `Fitt_1(Omega_{k[x,y]/(xy)/k})=(x,y)` already, but localizing the selected presentation at `x` returns `Unknown` for exact fraction equality. The clean-HEAD quotient/localization regression also fails on the inverse round trip when subtraction is attempted between represented quotient classes. Repair exact ring equality before resuming D. | 2026-09-05T15:55:49Z |
 
 ### Existing work awaiting adoption
 
