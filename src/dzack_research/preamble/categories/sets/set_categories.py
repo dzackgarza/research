@@ -321,6 +321,14 @@ class Sets(OwnedCategory):
 
 
     class SubcategoryMethods:
+        def Finite(self):
+            r"""Return this category with the axiom that its objects are finite."""
+            return self._with_axiom("Finite")
+
+        def Infinite(self):
+            r"""Return this category with the axiom that its objects are infinite."""
+            return self._with_axiom("Infinite")
+
         def product(self, family):
             r"""Return $\prod_{i \in I} X_i$ for an indexed family of objects.
 

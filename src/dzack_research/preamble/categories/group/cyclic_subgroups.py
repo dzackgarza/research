@@ -12,7 +12,8 @@ from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     OwnedAbelianGroups,
-    OwnedFiniteGroups,
+    FiniteAbelianGroups,
+    FiniteGroups,
     Subgroups,
     _owned_group,
 )
@@ -31,9 +32,8 @@ def cyclic_subgroup(generator):
     """
     supergroup = _owned_group(generator.parent())
     placement = [CyclicGroups(), Subgroups(supergroup)]
-    if supergroup in OwnedFiniteGroups():
-        # Finite because the ambient group is; abelian already, from cyclic.
-        placement.append(OwnedFiniteGroups())
+    if supergroup in FiniteGroups():
+        placement.append(FiniteAbelianGroups())
     return object_of(
         Category.join(placement),
         supergroup=supergroup,
@@ -91,7 +91,7 @@ class CyclicGroups(OwnedCategory):
 
         def is_finite(self):
 
-            if self.supergroup() in OwnedFiniteGroups():
+            if self.supergroup() in FiniteGroups():
                 return True
             return Unknown
 

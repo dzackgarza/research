@@ -74,6 +74,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     aleph,
     cardinal,
 )
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import realize_owned_category, refine
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
@@ -1585,6 +1586,92 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             found = _gap_model(self).IsomorphismGroups(_gap_model(other))
             return str(found) != "fail"
 
+    class Commutative(CategoryWithAxiom):
+        def an_object(self):
+            r"""The cyclic group of order two."""
+            return OwnedGroups().C(2)
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "abelian groups"
+
+        class ElementMethods:
+            def __rmul__(self, exponent):
+                r"""Return the canonical integer multiple of an abelian-group element."""
+                return self.parent().scalar_multiple(exponent, self)
+
+        class ParentMethods:
+            def is_abelian(self):
+                return True
+
+            @cached_method
+            def endomorphism_ring(self):
+                return _AbelianEndomorphismRingParent(self)
+
+            @cached_method
+            def scalar_action(self):
+
+                integers = _own_ring(ZZ)
+                endomorphisms = self.endomorphism_ring()
+                additive = self.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
+
+                def multiple(exponent, element):
+                    return exponent * element if additive else element ** int(exponent)
+
+                return ring_morphism(
+                    integers,
+                    endomorphisms,
+                    lambda exponent: endomorphisms(
+                        lambda element: multiple(exponent, element)
+                    ),
+                )
+
+            def scalar_multiple(self, exponent, element):
+
+                return self.scalar_action()(_own_ring(ZZ)(exponent))(element)
+
+    class Finite(CategoryWithAxiom):
+        def an_object(self):
+            r"""The cyclic group of order two."""
+            return OwnedGroups().C(2)
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "finite groups"
+
+        class ParentMethods:
+            def is_finite(self):
+                return True
+
+            def conjugacy_classes_representatives(self):
+                classes = _gap_model(self).ConjugacyClasses()
+                return finite_ordered_image(
+                    Sets.Δ[len(classes) - 1],
+                    lambda position: _element_from_engine(
+                        self,
+                        classes[int(position)].Representative(),
+                    ),
+                    name="Conjugacy-class representatives",
+                )
+
+            def left_cosets(self, subgroup):
+                r"""Return the set of left cosets ``gH``, each an ordered set of elements."""
+                return _engine_cosets(self, subgroup, "left")
+
+            def right_cosets(self, subgroup):
+                r"""Return the set of right cosets ``Hg``, each an ordered set of elements."""
+                return _engine_cosets(self, subgroup, "right")
+
+    class Infinite(CategoryWithAxiom):
+        @classmethod
+        def _repr_object_names(cls):
+            return "infinite groups"
+
+        class ParentMethods:
+            def is_finite(self):
+                return False
+
+
 
 class TopologicalGroups(OwnedCategory):
     r"""Owned groups equipped with a represented compatible topology."""
@@ -1596,20 +1683,6 @@ class TopologicalGroups(OwnedCategory):
         def is_topological_group(self) -> bool:
             return True
 
-
-class OwnedInfiniteGroups(OwnedCategory):
-    """Groups whose underlying set is known infinite."""
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "infinite groups"
-
-    def super_categories(self):
-        return [OwnedGroups()]
-
-    class ParentMethods:
-        def is_finite(self):
-            return False
 
 
 class OwnedFinitelyGeneratedGroups(OwnedCategory):
@@ -1804,53 +1877,6 @@ class _AbelianEndomorphismRingParent(Parent):
         realize_owned_category(self)
 
 
-class OwnedAbelianGroups(OwnedCategory):
-    def an_object(self):
-        r"""The cyclic group of order two."""
-        return OwnedGroups().C(2)
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "abelian groups"
-
-    def super_categories(self):
-        return [OwnedGroups()]
-
-    class ElementMethods:
-        def __rmul__(self, exponent):
-            r"""Return the canonical integer multiple of an abelian-group element."""
-            return self.parent().scalar_multiple(exponent, self)
-
-    class ParentMethods:
-        def is_abelian(self):
-            return True
-
-        @cached_method
-        def endomorphism_ring(self):
-            return _AbelianEndomorphismRingParent(self)
-
-        @cached_method
-        def scalar_action(self):
-
-            integers = _own_ring(ZZ)
-            endomorphisms = self.endomorphism_ring()
-            additive = self.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
-
-            def multiple(exponent, element):
-                return exponent * element if additive else element ** int(exponent)
-
-            return ring_morphism(
-                integers,
-                endomorphisms,
-                lambda exponent: endomorphisms(
-                    lambda element: multiple(exponent, element)
-                ),
-            )
-
-        def scalar_multiple(self, exponent, element):
-
-            return self.scalar_action()(_own_ring(ZZ)(exponent))(element)
-
 
 class Subgroups(OwnedParameterizedCategory):
     r"""Groups represented as a specified subgroup of one ambient owned group."""
@@ -1885,53 +1911,6 @@ class Subgroups(OwnedParameterizedCategory):
             return _canonical_subgroup_inclusion(self)
 
 
-class OwnedFiniteGroups(OwnedCategory):
-    def an_object(self):
-        r"""The cyclic group of order two."""
-        return OwnedGroups().C(2)
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finite groups"
-
-    def super_categories(self):
-        return [OwnedFinitelyPresentedGroups()]
-
-    class ParentMethods:
-        def is_finite(self):
-            return True
-
-        def conjugacy_classes_representatives(self):
-            classes = _gap_model(self).ConjugacyClasses()
-            return finite_ordered_image(
-                Sets.Δ[len(classes) - 1],
-                lambda position: _element_from_engine(
-                    self,
-                    classes[int(position)].Representative(),
-                ),
-                name="Conjugacy-class representatives",
-            )
-
-        def left_cosets(self, subgroup):
-            r"""Return the set of left cosets ``gH``, each an ordered set of elements."""
-            return _engine_cosets(self, subgroup, "left")
-
-        def right_cosets(self, subgroup):
-            r"""Return the set of right cosets ``Hg``, each an ordered set of elements."""
-            return _engine_cosets(self, subgroup, "right")
-
-
-class OwnedFiniteAbelianGroups(OwnedCategory):
-    def an_object(self):
-        r"""The cyclic group of order two."""
-        return OwnedGroups().C(2)
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "finite abelian groups"
-
-    def super_categories(self):
-        return [OwnedFiniteGroups(), OwnedAbelianGroups()]
 
 
 def coxeter_presentation(coxeter_matrix, names=None):
@@ -1952,7 +1931,30 @@ def coxeter_presentation(coxeter_matrix, names=None):
 Groups = groups = OwnedGroups
 FinitelyGeneratedGroups = OwnedFinitelyGeneratedGroups
 FinitelyPresentedGroups = OwnedFinitelyPresentedGroups
-FiniteGroups = OwnedFiniteGroups
-InfiniteGroups = OwnedInfiniteGroups
-AbelianGroups = OwnedAbelianGroups
-FiniteAbelianGroups = OwnedFiniteAbelianGroups
+def FiniteGroups():
+    r"""The category of finite groups."""
+    return OwnedGroups().Finite()
+
+
+def InfiniteGroups():
+    r"""The category of infinite groups."""
+    return OwnedGroups().Infinite()
+
+
+def AbelianGroups():
+    r"""The category of abelian groups."""
+    return OwnedGroups().Commutative()
+
+
+def FiniteAbelianGroups():
+    r"""The category of finite abelian groups.
+
+    One category cut out by two axioms, not a third class beside them.
+    """
+    return OwnedGroups().Commutative().Finite()
+
+
+OwnedFiniteGroups = FiniteGroups
+OwnedInfiniteGroups = InfiniteGroups
+OwnedAbelianGroups = AbelianGroups
+OwnedFiniteAbelianGroups = FiniteAbelianGroups
