@@ -2,6 +2,7 @@
 
 from sage.categories.category import Category
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 
@@ -10,6 +11,16 @@ class Magmas(OwnedCategory):
         from dzack_research.preamble.categories.sets.set_categories import Sets
 
         return [Sets()]
+
+    class SubcategoryMethods:
+        def Commutative(self):
+            r"""Return this category with the axiom ``xy = yx``.
+
+            Commutativity is a property of the operation, so it is stated once
+            here, at the level that introduces the operation, and every
+            subcategory reaches it.
+            """
+            return self._with_axiom("Commutative")
 
 
 class Semigroups(OwnedCategory):
@@ -41,6 +52,11 @@ class AdditiveMagmas(OwnedCategory):
 
         return [Sets()]
 
+    class SubcategoryMethods:
+        def AdditiveCommutative(self):
+            r"""Return this category with the axiom ``x + y = y + x``."""
+            return self._with_axiom("AdditiveCommutative")
+
 
 class AdditiveSemigroups(OwnedCategory):
     def super_categories(self):
@@ -60,12 +76,12 @@ class AdditiveGroups(OwnedCategory):
     def super_categories(self):
         return [AdditiveMonoids()]
 
+    class AdditiveCommutative(CategoryWithAxiom):
+        """Additive groups whose addition is commutative."""
 
-class CommutativeAdditiveGroups(OwnedCategory):
-    """Additive groups whose addition is commutative."""
-
-    def super_categories(self):
-        return [AdditiveGroups()]
+        @classmethod
+        def _repr_object_names(cls):
+            return "commutative additive groups"
 
 
 class MonoidMorphism(Morphism):

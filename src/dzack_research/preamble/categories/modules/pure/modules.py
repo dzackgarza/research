@@ -13,7 +13,7 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.group.magmas import CommutativeAdditiveGroups
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     _category_homset,
     EndCategoryConstruction,
@@ -249,7 +249,7 @@ class Modules(OwnedCategoryOverBaseRing):
         return FreeModuleFunctor(self.base_ring())(finite_ordinal_set(1))
 
     def super_categories(self):
-        return [CommutativeAdditiveGroups()]
+        return [AdditiveGroups().AdditiveCommutative()]
 
     def Mor(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_R(domain,codomain)``."""

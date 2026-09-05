@@ -47,7 +47,7 @@ from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.group.magmas import (
-    CommutativeAdditiveGroups,
+    AdditiveGroups,
     Monoids,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -1799,7 +1799,7 @@ class _AbelianEndomorphismRingParent(Parent):
 
     def __init__(self, group):
         self._group = group
-        self._additive = group.category().is_subcategory(CommutativeAdditiveGroups())
+        self._additive = group.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
         Parent.__init__(self, category=AbelianGroupEndomorphismRings())
         realize_owned_category(self)
 
@@ -1834,7 +1834,7 @@ class OwnedAbelianGroups(OwnedCategory):
 
             integers = _own_ring(ZZ)
             endomorphisms = self.endomorphism_ring()
-            additive = self.category().is_subcategory(CommutativeAdditiveGroups())
+            additive = self.category().is_subcategory(AdditiveGroups().AdditiveCommutative())
 
             def multiple(exponent, element):
                 return exponent * element if additive else element ** int(exponent)
