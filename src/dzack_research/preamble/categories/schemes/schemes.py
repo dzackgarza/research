@@ -62,6 +62,7 @@ from dzack_research.preamble.categories.sets.finite_families import finite_famil
 
 
 _SCHEME_MORPHISM_WRAPPERS = {}
+_AFFINE_SPECTRA = {}
 
 
 class SchemeMorphism(Morphism):
@@ -84,8 +85,20 @@ class SchemeMorphism(Morphism):
         if pullback is not None:
             self._preamble_coordinate_algebra_morphism = pullback
         if homset is None:
-            engine = native_morphism.parent()
-            homset = _scheme_mor_category(engine.domain(), engine.codomain())
+            if (domain is None) != (codomain is None):
+                raise ValueError(
+                    "an owned scheme-morphism endpoint override requires both endpoints"
+                )
+            if domain is None:
+                engine = native_morphism.parent()
+                homset = _scheme_mor_category(engine.domain(), engine.codomain())
+            else:
+                homset = _scheme_mor_category(domain, codomain)
+        else:
+            if domain is not None and domain is not homset.domain():
+                raise ValueError("the stated scheme-morphism domain disagrees with its Hom")
+            if codomain is not None and codomain is not homset.codomain():
+                raise ValueError("the stated scheme-morphism codomain disagrees with its Hom")
         Morphism.__init__(self, homset)
 
     def native_morphism(self):
@@ -124,6 +137,10 @@ class SchemeMorphism(Morphism):
             return other
         if other._is_the_identity():
             return self
+        if self._is_the_structure_morphism():
+            structure = other.domain().structure_morphism()
+            if structure.codomain() is self.codomain():
+                return structure
         # The composite is a morphism between the stated endpoints, whichever
         # engine route computes it.  Reading the endpoints off the engine's
         # answer lands it on Spec of a coordinate ring instead.
@@ -147,6 +164,10 @@ class SchemeMorphism(Morphism):
             return False
         return self is self.parent().identity()
 
+    def _is_the_structure_morphism(self) -> bool:
+        r"""Return whether this is the selected map to the domain's base scheme."""
+        return getattr(self.domain(), "_preamble_structure_morphism", None) is self
+
     def compose(self, before):
         result = self * before
         if result is NotImplemented:
@@ -166,7 +187,11 @@ class SchemeMorphism(Morphism):
                 if stored_points is not None:
                     for index, factor in enumerate(factors):
                         if factor is self.codomain():
-                            return categorical_scheme_morphism(stored_points[index])
+                            return categorical_scheme_morphism(
+                                stored_points[index],
+                                domain=point.domain(),
+                                codomain=factor,
+                            )
         return self.compose(point)
 
     def coordinate_algebra_morphism(self):
@@ -293,10 +318,26 @@ def _native_scheme_homset(domain, codomain):
     return _SageScheme._Hom_(domain, codomain)
 
 
-def refine_scheme_morphism(morphism, base_ring):
-    r"""Return a categorical wrapper of the native computational morphism."""
-    _ = base_ring
-    return categorical_scheme_morphism(morphism)
+def refine_scheme_morphism(
+    morphism,
+    base_ring,
+    *,
+    domain=None,
+    codomain=None,
+):
+    r"""Return the native morphism in the Hom of its stated owned schemes."""
+    base = _own_ring(base_ring)
+    if (domain is None) != (codomain is None):
+        raise ValueError("scheme-morphism refinement requires both stated endpoints")
+    if domain is not None:
+        schemes = Schemes(base)
+        if domain not in schemes or codomain not in schemes:
+            raise TypeError("scheme-morphism endpoints must be schemes over the stated base")
+    return categorical_scheme_morphism(
+        morphism,
+        domain=domain,
+        codomain=codomain,
+    )
 
 
 def refine_scheme(scheme, base_ring=None, categories=()):
@@ -478,12 +519,37 @@ class Schemes(OwnedCategoryOverBaseRing):
             base = self.base_scheme()
             if self is base:
                 return self.categorical_identity_morphism()
-            morphism = _SageScheme.base_morphism(self)
+            try:
+                morphism = _SageScheme.base_morphism(self)
+            except (AttributeError, NotImplementedError):
+                scheme_base = self.scheme_base_ring()
+                if self not in AffineSchemes(scheme_base):
+                    raise
+                algebra = self.coordinate_algebra()
+                engine_map = _engine_ring(algebra).coerce_map_from(
+                    _engine_ring(scheme_base)
+                )
+                if engine_map is None:
+                    raise NotImplementedError(
+                        "the affine structure morphism requires the scalar-base injection"
+                    ) from None
+                morphism = _native_scheme_homset(self, base)(engine_map, check=False)
             if morphism.codomain() is not base:
                 raise ArithmeticError(
                     "the native structure morphism does not land in the represented base scheme"
                 )
-            return refine_scheme_morphism(morphism, self.scheme_base_ring())
+            wrapped = refine_scheme_morphism(
+                morphism,
+                self.scheme_base_ring(),
+                domain=self,
+                codomain=base,
+            )
+            if self in AffineSchemes(self.scheme_base_ring()):
+                wrapped._preamble_coordinate_algebra_morphism = (
+                    self.coordinate_algebra().algebra_structure_morphism()
+                )
+            self._preamble_structure_morphism = wrapped
+            return wrapped
 
         def relative_dimension(self):
             if self is self.base_scheme():
@@ -546,7 +612,33 @@ class Schemes(OwnedCategoryOverBaseRing):
                 if _integral_placement(base):
                     categories.append(IntegralSchemes(base))
                 refine_scheme(point_domain, base, categories)
-            return refine_scheme_morphism(point, base)
+            wrapped = refine_scheme_morphism(
+                point,
+                base,
+                domain=point_domain,
+                codomain=self,
+            )
+            if self in AffineSchemes(base):
+                source_algebra = self.coordinate_algebra()
+                target_algebra = point_domain.coordinate_algebra()
+                if source_algebra in FramedAlgebras(base):
+                    labels = tuple(source_algebra.algebra_generating_set())
+                    if len(labels) != len(engine_coordinates):
+                        raise ValueError(
+                            "an affine point needs one coordinate per algebra generator"
+                        )
+                    pullback = source_algebra.Mor(target_algebra)(
+                        {
+                            label: target_algebra._from_engine_element(coordinate)
+                            for label, coordinate in zip(
+                                labels,
+                                engine_coordinates,
+                                strict=True,
+                            )
+                        }
+                    )
+                    wrapped._preamble_coordinate_algebra_morphism = pullback
+            return wrapped
 
         def categorical_identity_morphism(self):
             selected = getattr(self, "_preamble_identity_morphism", None)
@@ -555,6 +647,8 @@ class Schemes(OwnedCategoryOverBaseRing):
             return refine_scheme_morphism(
                 self.identity_morphism(),
                 self.scheme_base_ring(),
+                domain=self,
+                codomain=self,
             )
 
         def product(self, *others):
@@ -994,7 +1088,6 @@ def _integral_placement(base_ring):
         return False
 
 
-@cached_function
 def Spec(ring_or_algebra):
     r"""Return the affine scheme ``Spec(A)`` over the represented scalar base.
 
@@ -1004,11 +1097,24 @@ def Spec(ring_or_algebra):
     itself, so ``Spec(R)`` remains the terminal affine ``R``-scheme.
     """
     algebra = _own_ring(ring_or_algebra)
+    cached = _AFFINE_SPECTRA.get(id(algebra))
+    if cached is not None and cached.coordinate_algebra() is algebra:
+        return cached
     try:
-        base = algebra.algebra_base_ring()
+        declared_base = algebra.algebra_base_ring()
     except AttributeError:
         base = algebra
-    base = _own_ring(base)
+    else:
+        # A bare owned ring is canonically an algebra over itself.  Some
+        # constructor-owned refinements (notably the public QQ view) share an
+        # engine with the foundational owned ring returned by the generic
+        # algebra-base accessor, but are a different owned parent.  Spec(R)
+        # must stay over the stated R, not silently switch to that second view.
+        base = (
+            algebra
+            if _engine_ring(declared_base) is _engine_ring(algebra)
+            else _own_ring(declared_base)
+        )
 
     scheme = _SageSpec(_engine_ring(algebra))
     categories = [AffineSchemes(base)]
@@ -1024,7 +1130,10 @@ def Spec(ring_or_algebra):
     scheme._preamble_coordinate_algebra = algebra
     engine_identity = _engine_ring(algebra).hom(_engine_ring(algebra))
     scheme._preamble_identity_morphism = refine_scheme_morphism(
-        _native_scheme_homset(scheme, scheme)(engine_identity, check=False), base
+        _native_scheme_homset(scheme, scheme)(engine_identity, check=False),
+        base,
+        domain=scheme,
+        codomain=scheme,
     )
     if algebra is base:
 
@@ -1045,10 +1154,16 @@ def Spec(ring_or_algebra):
                 "the affine Spec structure morphism currently requires an exact engine realization of the algebra structure map"
             )
         native = _native_scheme_homset(scheme, base_scheme)(engine_map, check=False)
-        scheme._preamble_structure_morphism = refine_scheme_morphism(native, base)
+        scheme._preamble_structure_morphism = refine_scheme_morphism(
+            native,
+            base,
+            domain=scheme,
+            codomain=base_scheme,
+        )
         scheme._preamble_structure_morphism._preamble_coordinate_algebra_morphism = (
             algebra.algebra_structure_morphism()
         )
+    _AFFINE_SPECTRA[id(algebra)] = scheme
     return scheme
 
 
@@ -1067,7 +1182,12 @@ def affine_spec_morphism(algebra_morphism):
     native = _native_scheme_homset(source_scheme, target_scheme)(
         _engine_algebra_morphism(algebra_morphism), check=False
     )
-    morphism = refine_scheme_morphism(native, source_algebra.base_ring())
+    morphism = refine_scheme_morphism(
+        native,
+        source_algebra.base_ring(),
+        domain=source_scheme,
+        codomain=target_scheme,
+    )
     morphism._preamble_coordinate_algebra_morphism = algebra_morphism
     return morphism
 
@@ -1101,7 +1221,13 @@ def AffineSpace(dimension, base_ring, names=None):
         SymmetricAlgebras(base),
     )
     scheme._preamble_identity_morphism = refine_scheme_morphism(
-        _native_scheme_homset(scheme, scheme)(list(engine_coordinate_ring.gens()), check=False), base
+        _native_scheme_homset(scheme, scheme)(
+            list(engine_coordinate_ring.gens()),
+            check=False,
+        ),
+        base,
+        domain=scheme,
+        codomain=scheme,
     )
     scheme._preamble_identity_morphism._preamble_coordinate_algebra_morphism = (
         scheme.coordinate_algebra().Mor(scheme.coordinate_algebra()).identity()
@@ -1113,7 +1239,10 @@ def AffineSpace(dimension, base_ring, names=None):
             "the affine-space structure morphism requires the scalar base injection"
         )
     scheme._preamble_structure_morphism = refine_scheme_morphism(
-        _native_scheme_homset(scheme, base_scheme)(engine_map, check=False), base
+        _native_scheme_homset(scheme, base_scheme)(engine_map, check=False),
+        base,
+        domain=scheme,
+        codomain=base_scheme,
     )
     scheme._preamble_structure_morphism._preamble_coordinate_algebra_morphism = (
         scheme.coordinate_algebra().algebra_structure_morphism()
@@ -1137,7 +1266,11 @@ def ProjectiveSpace(dimension, base_ring, names=None):
 
 def _product_projection(product, factor, coordinates):
     native = _native_scheme_homset(product, factor)(list(coordinates), check=False)
-    projection = categorical_scheme_morphism(native)
+    projection = categorical_scheme_morphism(
+        native,
+        domain=product,
+        codomain=factor,
+    )
     if (
         product in AffineSchemes(product.scheme_base_ring())
         and factor in AffineSchemes(factor.scheme_base_ring())

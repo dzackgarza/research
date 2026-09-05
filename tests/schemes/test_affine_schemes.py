@@ -176,6 +176,63 @@ def test_general_affine_scheme_product_is_spec_of_algebra_coproduct() -> None:
     assert second.coordinate_algebra_morphism() is tensor.right_coproduct_map()
 
 
+def test_affine_spec_and_fiber_product_maps_keep_their_owned_endpoints() -> None:
+    from dzack_research.preamble.all import PolynomialRing, SpecFunctor
+    from dzack_research.preamble.categories.abstract_categories import FiberProduct
+
+    base = Spec(QQ)
+    assert base.scheme_base_ring() is QQ
+    assert base.structure_morphism().domain() is base
+    assert base.structure_morphism().codomain() is base
+    assert Spec(QQ) is base
+
+    common = PolynomialRing(QQ, "s")
+    left_algebra = PolynomialRing(QQ, "x")
+    right_algebra = PolynomialRing(QQ, "y")
+    target_algebra = PolynomialRing(QQ, "t")
+    s = common.algebra_generator("s")
+    x = left_algebra.algebra_generator("x")
+    y = right_algebra.algebra_generator("y")
+    t = target_algebra.algebra_generator("t")
+
+    spec = SpecFunctor(QQ)
+    left = spec(left_algebra)
+    assert left.structure_morphism().domain() is left
+    assert left.structure_morphism().codomain() is base
+    assert left.categorical_identity_morphism().domain() is left
+    assert left.categorical_identity_morphism().codomain() is left
+
+    left_map = spec(common.Mor(left_algebra)({"s": x**2}))
+    right_map = spec(common.Mor(right_algebra)({"s": y**3}))
+    assert left_map.domain() is left
+    assert left_map.codomain() is spec(common)
+
+    pullback = FiberProduct(left_map, right_map)
+    left_projection, right_projection = pullback.fiber_product_projections()
+    assert left_projection.domain() is pullback
+    assert left_projection.codomain() is left
+    assert right_projection.domain() is pullback
+    assert right_projection.codomain() is spec(right_algebra)
+    assert (
+        left_projection.coordinate_algebra_morphism()(x) ** 2
+        == right_projection.coordinate_algebra_morphism()(y) ** 3
+    )
+
+    target_to_left = spec(left_algebra.Mor(target_algebra)({"x": t**3}))
+    target_to_right = spec(right_algebra.Mor(target_algebra)({"y": t**2}))
+    induced = pullback.from_pullback_cone(target_to_left, target_to_right)
+    assert induced.domain() is spec(target_algebra)
+    assert induced.codomain() is pullback
+    assert (
+        (left_projection * induced).coordinate_algebra_morphism()(x)
+        == target_to_left.coordinate_algebra_morphism()(x)
+    )
+    assert (
+        (right_projection * induced).coordinate_algebra_morphism()(y)
+        == target_to_right.coordinate_algebra_morphism()(y)
+    )
+
+
 def test_affine_fiber_product_is_spec_of_algebra_pushout_with_universal_map() -> None:
     from dzack_research.preamble.all import FiberProduct, PolynomialRing, SpecFunctor
 
