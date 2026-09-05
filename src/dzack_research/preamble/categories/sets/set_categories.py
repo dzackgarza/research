@@ -1204,6 +1204,235 @@ class CartesianProductsOfSets(OwnedCategory):
 class CoproductsOfSets(OwnedCategory):
     r"""Dependent coproducts (disjoint unions) of families of sets."""
 
+    class ElementMethods(Element):
+        r"""What an element of a coproduct of a family is."""
+
+        def __init__(self, parent, index, value) -> None:
+            Element.__init__(self, parent)
+            normalized = parent.index_set()(index)
+            self._index = normalized
+            self._value = parent.cofactor(normalized)(value)
+
+        def summand_index(self):
+            return self._index
+
+        def summand_element(self):
+            return self._value
+
+        def _repr_(self) -> str:
+            return f"ι_{self.summand_index()}({self.summand_element()})"
+
+        def __eq__(self, other) -> bool:
+            return (
+                other.parent() is self.parent()
+                and other.parent() is self.parent()
+                and other.summand_index() == self.summand_index()
+                and other.summand_element() == self.summand_element()
+            )
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __hash__(self) -> int:
+            return hash((id(self.parent()), self.summand_index(), self.summand_element()))
+
+    class ParentMethods:
+
+        def __init__(self, index_set, family, **rest) -> None:
+            assert index_set in Sets(), (
+                "the index object of a coproduct family must be an owned set"
+            )
+            self._index_set = index_set
+            self._family = family
+            super().__init__(**rest)
+
+        def index_set(self):
+            return self._index_set
+
+        def family(self):
+            return self._family
+
+        def cofactor(self, index):
+            normalized = self.index_set()(index)
+            cofactor = self.family()(normalized)
+            if cofactor not in Sets():
+                raise TypeError("every cofactor of a set coproduct must be an owned set")
+            return cofactor
+
+        def __call__(self, *args, **kwargs):
+            r"""Construct through the owned set representation directly."""
+            return self._element_constructor_(*args, **kwargs)
+
+        def _element_constructor_(self, datum, value=None):
+            if isinstance(datum, self.category().ElementType):
+                if datum.parent() is self:
+                    return datum
+                raise ValueError("the element belongs to a different coproduct")
+            if value is None:
+                index, value = datum
+            else:
+                index = datum
+            return self.element_class(self, index, value)
+
+        def injection(self, index):
+            normalized = self.index_set()(index)
+            return SetMorphism(
+                Sets().Mor(self.cofactor(normalized), self),
+                lambda element: self(normalized, element),
+            )
+
+        def from_maps(self, target, maps):
+            r"""Return the unique map out of the coproduct extending the stated maps."""
+            return SetMorphism(
+                Sets().Mor(self, target),
+                lambda element: maps(element.summand_index())(element.summand_element()),
+            )
+
+        def cardinality(self):
+            return Cardinalities().indexed_sum(
+                self.index_set(), lambda index: cardinal(self.cofactor(index).cardinality())
+            )
+
+        def _finite_index_count(self):
+            try:
+                size = cardinal(self.index_set().cardinality())
+                if size.is_finite():
+                    return int(size.finite_value())
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+            return None
+
+        @staticmethod
+        def _factor_unrank(factor, position):
+            from itertools import islice
+
+            if hasattr(factor, "unrank"):
+                return factor.unrank(position)
+            try:
+                return next(islice(iter(factor), position, position + 1))
+            except StopIteration as error:
+                raise IndexError(position) from error
+
+        @staticmethod
+        def _factor_rank(factor, value):
+            if hasattr(factor, "rank"):
+                return int(factor.rank(value))
+            if hasattr(factor, "position"):
+                return int(factor.position(value))
+            for position, candidate in enumerate(factor):
+                if candidate == value:
+                    return position
+            raise ValueError(value)
+
+        @staticmethod
+        def _factor_has_position(factor, position) -> bool:
+            try:
+                size = cardinal(factor.cardinality())
+                if size.is_finite():
+                    return position < int(size.finite_value())
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+            try:
+                CoproductOfFamilyParent._factor_unrank(factor, position)
+            except (IndexError, ValueError):
+                return False
+            return True
+
+        def _known_finite_size(self):
+            try:
+                size = self.cardinality()
+                if size.is_finite():
+                    return int(size.finite_value())
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+            return None
+
+        def _enumeration_pairs(self):
+            r"""Yield ``(index_position, factor_position)`` in a total rank order."""
+            finite_index_count = self._finite_index_count()
+            if finite_index_count is not None:
+                layer = 0
+                while True:
+                    emitted = False
+                    for index_position in range(finite_index_count):
+                        index = self.index_set().unrank(index_position)
+                        factor = self.cofactor(index)
+                        if self._factor_has_position(factor, layer):
+                            emitted = True
+                            yield index_position, layer
+                    if not emitted and self._known_finite_size() is not None:
+                        return
+                    layer += 1
+                return
+
+            # Countably indexed coproduct: diagonalize N x N.  Missing positions in
+            # finite/empty summands are skipped; no index family is materialized.
+            diagonal = 0
+            while True:
+                for index_position in range(diagonal + 1):
+                    factor_position = diagonal - index_position
+                    try:
+                        index = self.index_set().unrank(index_position)
+                    except (IndexError, ValueError):
+                        continue
+                    factor = self.cofactor(index)
+                    if self._factor_has_position(factor, factor_position):
+                        yield index_position, factor_position
+                diagonal += 1
+
+        def unrank(self, position):
+            r"""Return a coproduct element in lazy rank-layer/diagonal order."""
+            position = int(position)
+            if position < 0:
+                raise IndexError(position)
+            finite_size = self._known_finite_size()
+            if finite_size is not None and position >= finite_size:
+                raise IndexError(position)
+            for rank, (index_position, factor_position) in enumerate(
+                self._enumeration_pairs()
+            ):
+                if rank != position:
+                    continue
+                index = self.index_set().unrank(index_position)
+                return self(
+                    index,
+                    self._factor_unrank(self.cofactor(index), factor_position),
+                )
+            raise IndexError(position)
+
+        def rank(self, element):
+            r"""Return the lazy enumeration rank of one coproduct element."""
+            element = self(element)
+            target_index_position = int(self.index_set().rank(element.summand_index()))
+            target_factor = self.cofactor(element.summand_index())
+            target_factor_position = self._factor_rank(
+                target_factor,
+                element.summand_element(),
+            )
+            for position, pair in enumerate(self._enumeration_pairs()):
+                if pair == (target_index_position, target_factor_position):
+                    return position
+            raise ValueError(element)
+
+        position = rank
+        index = rank
+
+        def __contains__(self, element) -> bool:
+            return element.parent() is self
+
+        is_parent_of = __contains__
+
+        def __getitem__(self, position):
+            return self.unrank(position)
+
+        def __iter__(self):
+            finite_size = self._known_finite_size()
+            positions = range(finite_size) if finite_size is not None else count()
+            return (self.unrank(position) for position in positions)
+
+        def _repr_(self) -> str:
+            return f"Coproduct of the family over {self.index_set()}"
+
     def an_object(self):
         r"""The disjoint union of the ordinal 2 with itself."""
         return CoproductOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
@@ -1251,247 +1480,19 @@ def CartesianProductMorphism(source, target, component_morphisms):
     )
 
 
-class CoproductElement(Element):
-    r"""An element of a dependent sum, carrying its summand index."""
-
-    def __init__(self, parent, index, value) -> None:
-        Element.__init__(self, parent)
-        normalized = parent.index_set()(index)
-        self._index = normalized
-        self._value = parent.cofactor(normalized)(value)
-
-    def summand_index(self):
-        return self._index
-
-    def summand_element(self):
-        return self._value
-
-    def _repr_(self) -> str:
-        return f"ι_{self.summand_index()}({self.summand_element()})"
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, CoproductElement)
-            and other.parent() is self.parent()
-            and other.summand_index() == self.summand_index()
-            and other.summand_element() == self.summand_element()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __hash__(self) -> int:
-        return hash((id(self.parent()), self.summand_index(), self.summand_element()))
 
 
-class CoproductOfFamilyParent(Parent):
-    Element = CoproductElement
-
-    def __init__(self, index_set, family) -> None:
-        if index_set not in Sets():
-            raise TypeError("the index object of a coproduct family must be an owned set")
-        self._index_set = index_set
-        self._family = family
-        Parent.__init__(self, category=CoproductsOfSets())
-
-    def index_set(self):
-        return self._index_set
-
-    def family(self):
-        return self._family
-
-    def cofactor(self, index):
-        normalized = self.index_set()(index)
-        cofactor = self.family()(normalized)
-        if cofactor not in Sets():
-            raise TypeError("every cofactor of a set coproduct must be an owned set")
-        return cofactor
-
-    def __call__(self, *args, **kwargs):
-        r"""Construct through the owned set representation directly."""
-        return self._element_constructor_(*args, **kwargs)
-
-    def _element_constructor_(self, datum, value=None):
-        if isinstance(datum, CoproductElement):
-            if datum.parent() is self:
-                return datum
-            raise ValueError("the element belongs to a different coproduct")
-        if value is None:
-            index, value = datum
-        else:
-            index = datum
-        return self.element_class(self, index, value)
-
-    def injection(self, index):
-        normalized = self.index_set()(index)
-        return SetMorphism(
-            Sets().Mor(self.cofactor(normalized), self),
-            lambda element: self(normalized, element),
-        )
-
-    def from_maps(self, target, maps):
-        r"""Return the unique map out of the coproduct extending the stated maps."""
-        return SetMorphism(
-            Sets().Mor(self, target),
-            lambda element: maps(element.summand_index())(element.summand_element()),
-        )
-
-    def cardinality(self):
-        return Cardinalities().indexed_sum(
-            self.index_set(), lambda index: cardinal(self.cofactor(index).cardinality())
-        )
-
-    def _finite_index_count(self):
-        try:
-            size = cardinal(self.index_set().cardinality())
-            if size.is_finite():
-                return int(size.finite_value())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        return None
-
-    @staticmethod
-    def _factor_unrank(factor, position):
-        from itertools import islice
-
-        if hasattr(factor, "unrank"):
-            return factor.unrank(position)
-        try:
-            return next(islice(iter(factor), position, position + 1))
-        except StopIteration as error:
-            raise IndexError(position) from error
-
-    @staticmethod
-    def _factor_rank(factor, value):
-        if hasattr(factor, "rank"):
-            return int(factor.rank(value))
-        if hasattr(factor, "position"):
-            return int(factor.position(value))
-        for position, candidate in enumerate(factor):
-            if candidate == value:
-                return position
-        raise ValueError(value)
-
-    @staticmethod
-    def _factor_has_position(factor, position) -> bool:
-        try:
-            size = cardinal(factor.cardinality())
-            if size.is_finite():
-                return position < int(size.finite_value())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        try:
-            CoproductOfFamilyParent._factor_unrank(factor, position)
-        except (IndexError, ValueError):
-            return False
-        return True
-
-    def _known_finite_size(self):
-        try:
-            size = self.cardinality()
-            if size.is_finite():
-                return int(size.finite_value())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            pass
-        return None
-
-    def _enumeration_pairs(self):
-        r"""Yield ``(index_position, factor_position)`` in a total rank order."""
-        finite_index_count = self._finite_index_count()
-        if finite_index_count is not None:
-            layer = 0
-            while True:
-                emitted = False
-                for index_position in range(finite_index_count):
-                    index = self.index_set().unrank(index_position)
-                    factor = self.cofactor(index)
-                    if self._factor_has_position(factor, layer):
-                        emitted = True
-                        yield index_position, layer
-                if not emitted and self._known_finite_size() is not None:
-                    return
-                layer += 1
-            return
-
-        # Countably indexed coproduct: diagonalize N x N.  Missing positions in
-        # finite/empty summands are skipped; no index family is materialized.
-        diagonal = 0
-        while True:
-            for index_position in range(diagonal + 1):
-                factor_position = diagonal - index_position
-                try:
-                    index = self.index_set().unrank(index_position)
-                except (IndexError, ValueError):
-                    continue
-                factor = self.cofactor(index)
-                if self._factor_has_position(factor, factor_position):
-                    yield index_position, factor_position
-            diagonal += 1
-
-    def unrank(self, position):
-        r"""Return a coproduct element in lazy rank-layer/diagonal order."""
-        position = int(position)
-        if position < 0:
-            raise IndexError(position)
-        finite_size = self._known_finite_size()
-        if finite_size is not None and position >= finite_size:
-            raise IndexError(position)
-        for rank, (index_position, factor_position) in enumerate(
-            self._enumeration_pairs()
-        ):
-            if rank != position:
-                continue
-            index = self.index_set().unrank(index_position)
-            return self(
-                index,
-                self._factor_unrank(self.cofactor(index), factor_position),
-            )
-        raise IndexError(position)
-
-    def rank(self, element):
-        r"""Return the lazy enumeration rank of one coproduct element."""
-        element = self(element)
-        target_index_position = int(self.index_set().rank(element.summand_index()))
-        target_factor = self.cofactor(element.summand_index())
-        target_factor_position = self._factor_rank(
-            target_factor,
-            element.summand_element(),
-        )
-        for position, pair in enumerate(self._enumeration_pairs()):
-            if pair == (target_index_position, target_factor_position):
-                return position
-        raise ValueError(element)
-
-    position = rank
-    index = rank
-
-    def __contains__(self, element) -> bool:
-        return isinstance(element, CoproductElement) and element.parent() is self
-
-    is_parent_of = __contains__
-
-    def __getitem__(self, position):
-        return self.unrank(position)
-
-    def __iter__(self):
-        finite_size = self._known_finite_size()
-        positions = range(finite_size) if finite_size is not None else count()
-        return (self.unrank(position) for position in positions)
-
-    def _repr_(self) -> str:
-        return f"Coproduct of the family over {self.index_set()}"
 
 
 @cached_function
 def CoproductOfFamily(index_set, family):
-    return CoproductOfFamilyParent(index_set, family)
+    return object_of(CoproductsOfSets(), index_set=index_set, family=family)
 
 
 @cached_function
 def _coproduct_of_tuple(cofactors):
     index_set = Sets.Δ[len(cofactors) - 1]
-    return CoproductOfFamilyParent(
-        index_set, lambda index: cofactors[int(index)]
+    return object_of(CoproductsOfSets(), index_set=index_set, family=lambda index: cofactors[int(index)]
     )
 
 
