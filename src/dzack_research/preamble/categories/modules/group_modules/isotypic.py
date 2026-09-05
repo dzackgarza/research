@@ -77,7 +77,7 @@ class IsotypicDecompositions(OwnedCategory):
             )
 
         def isotypic_characters(self):
-            return self._preamble_isotypic_characters
+            return finite_ordered_set(self._preamble_isotypic_characters)
 
         def isotypic_component(self, character):
             labels = self.isotypic_characters()
@@ -181,8 +181,12 @@ def _central_projector(module, character: IsotypicCharacter):
             irreducible.degree() * irreducible(group_element**-1)
             for irreducible in character.characters
         )
+        # A Galois-orbit sum of character values is rational, so it lands in
+        # the computation ring through the value field's engine.
         coefficient = computation_ring._from_engine_element(
-            computation_engine(backend_coefficient)
+            computation_engine(
+                _engine_element(backend_coefficient.parent(), backend_coefficient)
+            )
         ) / order
         source = module.action_of(group_element).matrix()
         transported = matrices.from_rows(

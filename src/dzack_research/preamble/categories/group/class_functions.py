@@ -74,6 +74,10 @@ class FiniteGroupClassFunction(SetMorphism):
     def conjugacy_class_representatives(self):
         return self._representatives
 
+    def degree(self):
+        r"""The value at the identity: for a character, the dimension of its representation."""
+        return self(self.domain().one())
+
     def values(self):
         return self._values
 

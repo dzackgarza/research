@@ -318,10 +318,45 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 return self.unacted_module()
             return CoequalizerOfFamily(self._finite_action_endomorphism_family())
 
-        def isotypic_characters(self):
-            r"""Return the irreducible-character indices appropriate to the coefficient ring."""
+        @cached_method
+        def equivariant_endomorphism_module(self):
+            r"""``End_{R[G]}(M) = Hom_R(M, M)^G``: the invariants of conjugation.
 
-            return _split_irreducible_characters(self)
+            ``G`` acts on ``Hom_R(M, M)`` by ``g . f = rho(g) f rho(g)^{-1}``,
+            and the equivariant endomorphisms are its fixed points.
+            """
+            from dzack_research.preamble.categories.modules.internal_hom import InternalHom
+
+            endomorphisms = InternalHom(self, self)
+
+            def conjugation(group_element, endomorphism):
+                return (
+                    self.action_of(group_element)
+                    * endomorphism
+                    * self.action_of(group_element.inverse())
+                )
+
+            return _equip_action(endomorphisms, self.group(), conjugation).module_invariants()
+
+        def isotypic_characters(self):
+            r"""The characters of the isotypic components present in this module.
+
+            Over the coefficient ring the index is the set of irreducible
+            characters, or their rational Galois orbits over ``ZZ`` and
+            ``QQ``; a character is present when its isotypic component is
+            nonzero.
+            """
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                finite_ordered_set,
+            )
+
+            return finite_ordered_set(
+                tuple(
+                    character
+                    for character in _split_irreducible_characters(self)
+                    if isotypic_component(self, character).rank() != 0
+                )
+            )
 
         def isotypic_component(self, character):
             r"""Return the integral/base-ring isotypic component as a subobject."""

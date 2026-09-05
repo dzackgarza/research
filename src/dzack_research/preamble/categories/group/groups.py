@@ -23,6 +23,7 @@ from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
 from sage.groups.indexed_free_group import IndexedFreeGroup
 from sage.groups.libgap_morphism import GroupHomset_libgap, GroupMorphism_libgap
+from sage.rings.number_field.galois_group import GaloisGroup_v2 as SageGaloisGroup
 from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.matrix_gps.coxeter_group import CoxeterMatrixGroup
 from sage.groups.matrix_gps.finitely_generated import (
@@ -567,9 +568,20 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
         return parent._from_engine(left * right)
 
     def __call__(self, point):
-        r"""Apply this permutation to a point of the set it permutes."""
+        r"""Apply this element to a point of the set it acts on.
+
+        A Galois group acts on its field by automorphisms; any other
+        permutation group acts on the points it permutes.
+        """
         parent = self.parent()
         engine = _engine_group(parent)
+        match engine:
+            case SageGaloisGroup():
+                field = _own_ring(engine.number_field())
+                assert point in field, f"{point} is not an element of {field}"
+                return field._from_engine_element(
+                    self._backend().as_hom()(_engine_element(field, point))
+                )
         assert isinstance(engine, PermutationGroup_generic), (
             f"{parent} is not realized as a permutation group, so its elements do not act on points"
         )
@@ -1837,6 +1849,63 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                         classes[int(position)].Representative(),
                     ),
                     name="Conjugacy-class representatives",
+                )
+
+            @cached_method
+            def irreducible_characters(self):
+                r"""The complex irreducible characters, as class functions.
+
+                Values lie in the cyclotomic field of the group's exponent
+                and are read on the chosen conjugacy-class representatives,
+                in the order GAP's ``Irr`` lists them.
+                """
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
+                )
+                from dzack_research.preamble.categories.rings.number_fields import (
+                    CyclotomicField,
+                )
+
+                gap_group = _gap_model(self)
+                exponent = int(gap_group.Exponent())
+                field = CyclotomicField(exponent)
+                engine_field = _engine_ring(field)
+                representatives = self.conjugacy_classes_representatives()
+                # One class-function object per character: the set is the
+                # index of isotypic components and is compared by identity.
+                return finite_ordered_set(
+                    tuple(
+                        finite_group_class_function(
+                            self,
+                            field,
+                            tuple(
+                                field._from_engine_element(engine_field(value.sage()))
+                                for value in character.List()
+                            ),
+                            representatives=representatives,
+                        )
+                        for character in gap_group.Irr()
+                    )
+                )
+
+            @cached_method
+            def character_table(self):
+                r"""The character table: rows the irreducible characters, columns the classes.
+
+                A square matrix over the cyclotomic field of the group's
+                exponent, the row and column orders being those of
+                ``irreducible_characters()`` and
+                ``conjugacy_classes_representatives()``.
+                """
+                from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                    MatrixSpace,
+                )
+
+                characters = self.irreducible_characters()
+                size = int(characters.cardinality())
+                field = characters.unrank(0).codomain()
+                return MatrixSpace(field, size, size).from_rows(
+                    tuple(tuple(character.values()) for character in characters)
                 )
 
             def left_cosets(self, subgroup):
