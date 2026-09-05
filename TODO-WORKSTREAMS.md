@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| A-ring-self-algebra-20260906 | A with named C dependency — place every commutative owned ring as a commutative algebra over itself so `R[G].augmentation()` is an `R`-algebra morphism, while preserving the regular `R[G]`-module/action path and common Hom/category construction needed by that placement | ChatGPT continuation `2026-09-06-localization-recovery`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/algebras/algebras.py`; `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py`; `src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py`; `src/dzack_research/preamble/categories/modules/pure/modules.py`; `src/dzack_research/preamble/categories/rings/ring_foundation.py`; `src/dzack_research/preamble/owned_category.py`; `tests/rings/test_rings_are_algebras_over_themselves.py` | `9f6de386259b6d40360ff4ac1458db2766312af3`; inherited dirty tranche from the stopped owner, matching TODO.md's explicit self-algebra witness and A's augmentation blocker. Complete the shared constructor/runtime path rather than special-casing augmentation. | 2026-09-05T16:46:17Z |
 
 ### Existing work awaiting adoption
 
