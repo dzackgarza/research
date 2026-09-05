@@ -35,7 +35,11 @@ from dzack_research.preamble.categories.forms.forms import (
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+)
 from dzack_research.preamble.categories.modules.powers import DividedSquare
+from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
 
 def _identity_on(source: Parent):
@@ -249,6 +253,12 @@ def _constructions() -> "dict[str, Callable[[], Parent]]":
         ),
         # ---- modules ----
         "fractional ideal": lambda: FractionalIdeal(ZZ, [2]),
+        # An S-module from its scalar action, and the coextension of scalars
+        # that produces one: both along ZZ -> ZZ[C2].
+        "module from a scalar action": lambda: _module_from_scalar_action(),
+        "coextension of scalars": lambda: Modules(ZZ).coextension_of_scalars(
+            _group_algebra_structure_map(Groups.C(2))
+        )(FreeModuleOn(ZZ, Sets.Δ[0])),
         # The two square constructions on an arbitrary module rather than on a
         # free algebra's graded piece: they are where a form's domain comes
         # from, so a lattice is the specimen that matters.
@@ -268,6 +278,34 @@ def _constructions() -> "dict[str, Callable[[], Parent]]":
         "bilinear form homset": lambda: BilinearForms(Lattices(ZZ)("A2"), ZZ),
         "quadratic form homset": lambda: QuadraticForms(Lattices(ZZ)("A2"), ZZ),
     }
+
+
+def _group_algebra_structure_map(group):
+    group_algebra = ZZ[group]
+    return ring_morphism(ZZ, group_algebra, lambda integer: integer * group_algebra.one())
+
+
+def _module_from_scalar_action():
+    r"""``ZZ^2`` as a ``ZZ[C2]``-module, the generator swapping the coordinates."""
+    group_algebra = ZZ[Groups.C(2)]
+    plane = FreeModuleOn(ZZ, Sets.Δ[1])
+    endomorphisms = Modules(ZZ).End(plane)
+    swap = endomorphisms({0: plane.module_generator(1), 1: plane.module_generator(0)})
+
+    def action(scalar):
+        coefficients = module_coefficients(scalar, group_algebra)
+        return endomorphisms.elementwise(
+            lambda vector: sum(
+                (
+                    coefficient * (vector if label == group_algebra.group().one() else swap(vector))
+                    for label, coefficient in coefficients.items()
+                ),
+                plane.zero(),
+            ),
+            verify_linearity=False,
+        )
+
+    return Modules(group_algebra)(plane, ring_morphism(group_algebra, endomorphisms, action))
 
 
 def _derivation_algebra():

@@ -9,7 +9,6 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
     _engine_ring,
     _owned_ring,
 )
@@ -113,9 +112,7 @@ class GeneralModuleParent(Parent):
             if isinstance(rho, Map):
                 if _engine_ring(rho.domain()) is not _engine_ring(self._preamble_base_ring):
                     raise ValueError("the supplied scalar-action morphism has the wrong domain ring")
-                self._preamble_raw_scalar_action = (
-                    lambda scalar, value: rho(_engine_ring(self._preamble_base_ring)(scalar))(value)
-                )
+                self._preamble_raw_scalar_action = lambda scalar, value: rho(scalar)(value)
             elif callable(rho):
                 self._preamble_raw_scalar_action = lambda scalar, value: rho(scalar)(value)
             else:
@@ -220,7 +217,7 @@ class GeneralModuleParent(Parent):
 
     def _raw_scalar_multiple(self, scalar, element):
         value = self._preamble_raw_scalar_action(
-            _engine_element(self.base_ring(), self.base_ring()(scalar)),
+            self.base_ring()(scalar),
             self(element).underlying_element(),
         )
         return self(value)

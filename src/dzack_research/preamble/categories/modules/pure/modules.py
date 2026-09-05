@@ -163,6 +163,79 @@ class Modules(OwnedCategoryOverBaseRing):
 
         return trivial_invariants_adjunction(self.base_ring(), group)
 
+    def _call_(self, module, scalar_action):
+        r"""The ``R``-module on the additive group of ``module`` with the action ``rho: R -> End(M)``.
+
+        An ``R``-module is an abelian group with a ring morphism ``R -> End(M)``;
+        the abelian group here is that of ``module``, an object of any module
+        category, and ``scalar_action`` is that morphism.
+        """
+        from dzack_research.preamble.categories.modules.general_modules import GeneralModule
+
+        assert _owned_ring(scalar_action.domain()) is self.base_ring(), (
+            f"the scalar action must be a ring morphism out of {self.base_ring()}"
+        )
+        assert scalar_action.codomain().domain() is module, (
+            f"the scalar action must land in the endomorphisms of {module}"
+        )
+        return GeneralModule(
+            self.base_ring(),
+            module,
+            addition=lambda left, right: left + right,
+            zero=module.zero(),
+            negation=lambda element: -element,
+            rho=scalar_action,
+        )
+
+    # Scalar change along a ring morphism ``f: R -> S``: the adjoint triple
+    # ``S tensor_R - -| Res_f -| Hom_R(S, -)``, each functor spelled on its
+    # domain category and each adjunction on its left adjoint's domain.
+
+    def scalar_extension(self, ring_map):
+        r"""``S tensor_R - : Modules(R) -> Modules(S)`` along ``ring_map: R -> S``."""
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            ScalarExtensionFunctor,
+        )
+
+        assert _owned_ring(ring_map.domain()) is self.base_ring()
+        return ScalarExtensionFunctor(ring_map)
+
+    def restriction_of_scalars(self, ring_map):
+        r"""``Res_f : Modules(S) -> Modules(R)`` along ``ring_map: R -> S``."""
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            RestrictionOfScalarsFunctor,
+        )
+
+        assert _owned_ring(ring_map.codomain()) is self.base_ring()
+        return RestrictionOfScalarsFunctor(ring_map)
+
+    def coextension_of_scalars(self, ring_map):
+        r"""``Hom_R(S, -) : Modules(R) -> Modules(S)`` along ``ring_map: R -> S``."""
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            CoextensionOfScalarsFunctor,
+        )
+
+        assert _owned_ring(ring_map.domain()) is self.base_ring()
+        return CoextensionOfScalarsFunctor(ring_map)
+
+    def base_change_adjunction(self, ring_map):
+        r"""``S tensor_R - -| Res_f`` along ``ring_map: R -> S``."""
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            base_change_adjunction,
+        )
+
+        assert _owned_ring(ring_map.domain()) is self.base_ring()
+        return base_change_adjunction(ring_map)
+
+    def restriction_coextension_adjunction(self, ring_map):
+        r"""``Res_f -| Hom_R(S, -)`` along ``ring_map: R -> S``."""
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            restriction_coextension_adjunction,
+        )
+
+        assert _owned_ring(ring_map.codomain()) is self.base_ring()
+        return restriction_coextension_adjunction(ring_map)
+
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""
 
