@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| M-localized-fitting-20260905 | M — transport Fitting ideals through localization so finite-presentation invariants do not require a new coefficient-ring engine | ChatGPT continuation `2026-09-05-localization-recovery`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py`; `tests/rings/test_commutative_algebra.py` | `ff398ae54c860678440090c3b01e929d6a85346f`; `Omega_{k[x,y]/(xy)/k}` localizes as a presented module, but `fitting_ideal(1)` then crosses to a nonexistent engine for `A_x`. Use `Fitt_i(S^{-1}M)=S^{-1}Fitt_i(M)` from the retained localization source instead of recomputing minors. | 2026-09-05T16:08:24Z |
 
 ### Existing work awaiting adoption
 
