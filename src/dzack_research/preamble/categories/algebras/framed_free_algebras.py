@@ -24,10 +24,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    FiniteOrderedSet,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
 from dzack_research.preamble.categories.algebras.free_algebras import FinitelyPresentedAlgebra
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
@@ -43,7 +42,6 @@ from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
-from dzack_research.preamble.categories.rings.commutative_algebra import refine_commutative_ring_constructions
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -85,17 +83,9 @@ def TensorAlgebraOf(module):
     base = module.base_ring()
     presentation_ring = TensorAlgebraOn(base, module.module_generating_set())
     algebra = _tensor_algebra_from_module_presentation(presentation_ring, module)
-    algebra._preamble_free_algebra_source_module = module
     if algebra is presentation_ring:
-        return algebra
-    return refine(
-        algebra,
-        [
-            GradedFreeAlgebras(base),
-            TensorAlgebras(base),
-            GradedAlgebras(base),
-        ],
-    )
+        algebra._preamble_free_algebra_source_module = module
+    return algebra
 
 
 def SymmetricAlgebraOf(module):
@@ -127,15 +117,13 @@ def SymmetricAlgebraOf(module):
             names=_variable_names(labels),
         )
 
-        presentation_ring = refine_commutative_ring_constructions(
-            refine_algebra(
-                presentation_engine,
-                base,
-                labels,
-                FreeAlgebras(base),
-                GradedFreeAlgebras(base),
-                SymmetricAlgebras(base),
-            )
+        presentation_ring = refine_algebra(
+            presentation_engine,
+            base,
+            labels,
+            FreeAlgebras(base),
+            GradedFreeAlgebras(base),
+            SymmetricAlgebras(base),
         )
     else:
         presentation_ring = SymmetricAlgebraOn(base, labels)
@@ -158,16 +146,16 @@ def SymmetricAlgebraOf(module):
         relation_value,
         name="Symmetric-algebra defining relations",
     )
-    algebra = FinitelyPresentedAlgebra(presentation_ring, relations)
-    algebra._preamble_free_algebra_source_module = module
-    return refine(
-        algebra,
-        [
+    return FinitelyPresentedAlgebra(
+        presentation_ring,
+        relations,
+        _extra_categories=(
             GradedFreeAlgebras(base),
             SymmetricAlgebras(base),
             CommutativeAlgebras(base),
             GradedAlgebras(base),
-        ],
+        ),
+        _free_source_module=module,
     )
 
 

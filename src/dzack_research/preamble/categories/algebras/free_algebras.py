@@ -10,9 +10,7 @@ from sage.all import (
 from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.misc.cachefunc import cached_function
-from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.ideal import Ideal_generic
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -38,21 +36,17 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleBaseRings,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
     _engine_element,
     _engine_ring,
-    _own_if_ring,
     _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    FiniteOrderedSet,
+    FiniteOrderedSets,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -71,54 +65,17 @@ from dzack_research.preamble.categories.modules.powers import (
     TensorPower,
 )
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-from dzack_research.preamble.categories.rings.commutative_algebra import refine_commutative_ring_constructions
-from dzack_research.preamble.categories.rings.number_fields import (
-    _refine_number_field_view,
-    _refine_order_view,
-)
 
 
-class RingAdjunctionConstructions(Category):
-    r"""Rings equipped with selected polynomial/algebraic adjunction syntax."""
-
-    def super_categories(self):
-        return [FreeModuleBaseRings()]
-
-    class ParentMethods:
-        def __getitem__(self, names):
-            match names:
-                case str():
-                    return refine(PolynomialRing(self, names), RingAdjunctionConstructions())
-                case tuple() if all(isinstance(part, str) for part in names):
-                    return refine(PolynomialRing(self, names), RingAdjunctionConstructions())
-                case list():
-                    result = _own_if_ring(_engine_ring(self)[names])
-                case _ if names in self:
-                    return self
-                case _:
-                    result = _own_if_ring(_engine_ring(self)[names])
-
-            if result not in OwnedRings():
-                return result
-            engine = _engine_ring(result)
-            if isinstance(engine, SageNumberFieldOrder):
-
-                result = _refine_order_view(result)
-            elif engine in SageNumberFields():
-
-                result = _refine_number_field_view(result)
-            return refine(result, RingAdjunctionConstructions())
-
-
-def _finite_labels(labels) -> FiniteOrderedSet:
-    if isinstance(labels, FiniteOrderedSet):
+def _finite_labels(labels):
+    if labels in FiniteOrderedSets():
         return labels
     if isinstance(labels, int):
         return finite_ordered_set(range(labels))
     return finite_ordered_set(labels)
 
 
-def _variable_names(labels: FiniteOrderedSet) -> tuple[str, ...]:
+def _variable_names(labels) -> tuple[str, ...]:
     names = []
     used: set[str] = set()
     for index, label in enumerate(labels):
@@ -150,7 +107,7 @@ def PolynomialRing(base_ring, *args, **kwargs):
         SymmetricAlgebras(base),
     )
 
-    return refine_commutative_ring_constructions(algebra)
+    return algebra
 
 
 def LaurentPolynomialRing(base_ring, *args, **kwargs):
@@ -161,7 +118,7 @@ def LaurentPolynomialRing(base_ring, *args, **kwargs):
     labels = tuple(_engine_ring(result).variable_names())
     algebra = refine_algebra(result, base, labels)
 
-    return refine_commutative_ring_constructions(algebra)
+    return algebra
 
 
 def SymmetricAlgebraOn(base_ring, algebra_generating_set):
@@ -169,15 +126,13 @@ def SymmetricAlgebraOn(base_ring, algebra_generating_set):
     base = _owned_ring(base_ring)
     algebra = PolynomialRing(base, _variable_names(labels))
 
-    return refine_commutative_ring_constructions(
-        refine_algebra(
-            algebra,
-            base,
-            labels,
-            FreeAlgebras(base),
-            GradedFreeAlgebras(base),
-            SymmetricAlgebras(base),
-        )
+    return refine_algebra(
+        algebra,
+        base,
+        labels,
+        FreeAlgebras(base),
+        GradedFreeAlgebras(base),
+        SymmetricAlgebras(base),
     )
 
 
@@ -292,7 +247,87 @@ def _base_change_commutative_presentation(algebra, ring_map):
     return FinitelyPresentedAlgebra(target_presentation_ring, mapped_relations)
 
 
-def FinitelyPresentedAlgebra(presentation_ring, relations):
+class _PresentedAlgebraParent(_OwnedAlgebraParent):
+    r"""An algebra with one selected finite presentation fixed at construction."""
+
+    def __init__(
+        self,
+        quotient_engine,
+        base,
+        labels,
+        presentation_ring,
+        selected_relations,
+        presentation_ideal,
+        *,
+        extra_categories=(),
+        free_source_module=None,
+        commutative_backend=False,
+        finite_free_degree=None,
+    ) -> None:
+        self._preamble_presentation_ring = presentation_ring
+        self._preamble_presentation_relations = selected_relations
+        self._preamble_presentation_ideal = presentation_ideal
+        self._preamble_lift_to_presentation = lambda element: presentation_ring._from_engine_element(
+            quotient_engine(self._engine_element(element)).lift()
+        )
+        if free_source_module is not None:
+            self._preamble_free_algebra_source_module = free_source_module
+
+        placement = [
+            FinitelyPresentedAlgebras(base),
+            AlgebrasWithChosenFinitePresentation(base),
+            *tuple(extra_categories),
+        ]
+        if finite_free_degree is not None:
+            module_labels = Sets.Δ[finite_free_degree - 1]
+            self._preamble_base_ring = base
+            self._preamble_module_generating_set = module_labels
+            self._preamble_module_generator_values = indexed_family(
+                module_labels,
+                lambda exponent: self._from_engine_element(quotient_engine.gen()) ** int(exponent),
+                name="Quotient module generator values",
+            )
+            self._preamble_module_coordinate_function = lambda element: (
+                base._from_engine_element(coefficient)
+                for coefficient in quotient_engine(self._engine_element(self(element)))
+            )
+            placement.append(FinitelyGeneratedFreeModules(base))
+
+        _OwnedAlgebraParent.__init__(
+            self,
+            quotient_engine,
+            base,
+            labels,
+            categories=tuple(placement),
+        )
+        self._preamble_algebra_presentation_morphism = algebra_homset(
+            presentation_ring,
+            self,
+        )(
+            lambda label: self.algebra_generator(label)
+        )
+        if commutative_backend:
+            self._preamble_base_change_selected_presentation = lambda ring_map: (
+                _base_change_commutative_presentation(self, ring_map)
+            )
+            self._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
+                _commutative_algebra_coproduct_backend(left, right)
+            )
+            self._preamble_quotient_by_algebra_elements_backend = lambda elements: (
+                _quotient_by_algebra_elements_backend(self, elements)
+            )
+            self._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
+                _commutative_algebra_pushout_backend(left_map, right_map)
+            )
+
+
+def FinitelyPresentedAlgebra(
+    presentation_ring,
+    relations,
+    *,
+    _extra_categories=(),
+    _free_source_module=None,
+):
     r"""Return the selected quotient ``R[S] / (relations)``."""
     base = presentation_ring.base_ring()
     if presentation_ring not in SymmetricAlgebras(base):
@@ -305,33 +340,7 @@ def FinitelyPresentedAlgebra(presentation_ring, relations):
     )
     quotient_engine = _engine_ring(presentation_ring).quotient(presentation_ideal)
     labels = presentation_ring.algebra_generating_set()
-    presented = _OwnedAlgebraParent(
-        quotient_engine,
-        base,
-        labels,
-        quotient_engine.coerce_map_from(_engine_ring(base)),
-    )
-    presented._preamble_structure_map = _default_structure_map(base, presented)
-    presented._preamble_presentation_ring = presentation_ring
-    presented._preamble_presentation_relations = selected_relations
-    presented._preamble_presentation_ideal = presentation_ideal
-    presented._preamble_lift_to_presentation = lambda element: presentation_ring._from_engine_element(
-        quotient_engine(presented._engine_element(element)).lift()
-    )
-    presented._preamble_base_change_selected_presentation = lambda ring_map: (
-        _base_change_commutative_presentation(presented, ring_map)
-    )
-    presented._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
-        _commutative_algebra_coproduct_backend(left, right)
-    )
-    presented._preamble_quotient_by_algebra_elements_backend = lambda elements: (
-        _quotient_by_algebra_elements_backend(presented, elements)
-    )
-    presented._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
-        _commutative_algebra_pushout_backend(left_map, right_map)
-    )
-
-    module_categories = []
+    finite_free_degree = None
     label_size = labels.cardinality()
     if (
         label_size.is_finite()
@@ -341,44 +350,20 @@ def FinitelyPresentedAlgebra(presentation_ring, relations):
         modulus = quotient_engine.modulus()
         degree = int(modulus.degree())
         if degree > 0:
+            finite_free_degree = degree
 
-            module_labels = Sets.Δ[degree - 1]
-            quotient_generator = presented._from_engine_element(quotient_engine.gen())
-            presented._preamble_base_ring = base
-            presented._preamble_module_generating_set = module_labels
-            presented._preamble_module_generator_values = indexed_family(
-                module_labels,
-                lambda exponent: quotient_generator ** int(exponent),
-                name="Quotient module generator values",
-            )
-            presented._preamble_module_coordinate_function = lambda element: (
-                base._from_engine_element(coefficient)
-                for coefficient in quotient_engine(
-                    presented._engine_element(presented(element))
-                )
-            )
-            module_categories.append(FinitelyGeneratedFreeModules(base))
-
-    presented = refine(
-        presented,
-        [
-            Algebras(base),
-            OwnedAlgebras(base),
-            CommutativeAlgebras(base),
-            FramedAlgebras(base),
-            FinitelyPresentedAlgebras(base),
-            AlgebrasWithChosenFinitePresentation(base),
-        ]
-        + module_categories,
-    )
-    presented._preamble_algebra_presentation_morphism = algebra_homset(
+    return _PresentedAlgebraParent(
+        quotient_engine,
+        base,
+        labels,
         presentation_ring,
-        presented,
-    )(
-        lambda label: presented.algebra_generator(label)
+        selected_relations,
+        presentation_ideal,
+        extra_categories=tuple(_extra_categories),
+        free_source_module=_free_source_module,
+        commutative_backend=True,
+        finite_free_degree=finite_free_degree,
     )
-
-    return refine_commutative_ring_constructions(presented)
 
 
 class FreeAlgebras(OwnedCategoryOverBaseRing):
