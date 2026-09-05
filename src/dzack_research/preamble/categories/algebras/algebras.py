@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_ring,
+    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _OwnedRingElement, _OwnedRingParent
@@ -180,7 +181,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             base = self.__dict__.get("_preamble_algebra_base_ring")
             if base is not None:
                 return base
-            return _owned_ring(_engine_ring(self).base_ring())
+            # A crossing out of the engine, so the result is adopted rather
+            # than asserted to be owned already: for a ring that is its own
+            # base -- QQ, GF(p) -- the engine hands back its own Sage parent.
+            return _own_ring(_engine_ring(self).base_ring())
 
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):

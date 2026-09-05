@@ -844,8 +844,39 @@ class OwnedCommutativeRings(OwnedCategory):
         return [OwnedRings()]
 
     class ParentMethods:
+        def __init__(self, **rest) -> None:
+            super().__init__(**rest)
+            self._place_as_algebra_over_itself()
+
         def is_commutative(self):
             return True
+
+        def _place_as_algebra_over_itself(self):
+            r"""Place this ring in ``CommutativeAlgebras(self)``.
+
+            A commutative ring is a commutative algebra over itself: its centre
+            is all of it, and the identity is the structure morphism.  The
+            category is self-referential, so it can only be named once the ring
+            exists, which is why this is a refinement rather than a placement
+            chosen at construction.
+
+            A ring that already declares a different base -- ``R[x]`` declares
+            ``R`` -- keeps that one.  It is an algebra over itself as well, but
+            ``CommutativeAlgebras`` shares one dynamic class across its bases,
+            so a join naming two of its objects asks C3 for that class at two
+            incompatible positions and the class cannot be built.
+            """
+            from dzack_research.preamble.categories.algebras.algebras import (
+                CommutativeAlgebras,
+            )
+
+            for placement in self.category().all_super_categories(proper=False):
+                if (
+                    isinstance(placement, CommutativeAlgebras)
+                    and placement.base_ring() is not self
+                ):
+                    return
+            refine(self, CommutativeAlgebras(self))
 
         def as_algebra_over(self, base_ring):
             from dzack_research.preamble.categories.algebras.algebras import refine_algebra
@@ -1451,6 +1482,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             placement = Category.join((placement, category))
         Parent.__init__(self, category=placement)
         realize_owned_category(self)
+        if self in OwnedCommutativeRings():
+            self._place_as_algebra_over_itself()
 
     def _from_engine_element(self, value):
         if getattr(value, "parent", lambda: None)() is not self._engine:
