@@ -63,10 +63,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_homset,
     ring_morphism,
 )
-from dzack_research.preamble.categories.rings.rings import (
-    RingConstructions,
-    refine_ring_constructions,
-)
 from dzack_research.preamble.categories.rings.commutative_ideals import (
     CommutativeIdeal,
     CommutativeIdeals,
@@ -80,16 +76,14 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     GeneratedIdealView,
     Localization,
     PowerSeriesRing,
-    PrimeIdealPoint,
     PrimeLocalization,
     PrimeLocalizations,
-    PrimeSpectrum,
+    PrimeSpectra,
     QuotientRing,
     QuotientRings,
     ResidueField,
     ZariskiClosedSubobject,
     Zp,
-    refine_commutative_ring_constructions,
 )
 from dzack_research.preamble.categories.rings.number_fields import (
     CyclotomicField as _CyclotomicField,
@@ -106,13 +100,12 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace as _MatrixSpace
 from dzack_research.preamble.categories.algebras.algebras import refine_matrix_algebra
-from dzack_research.preamble.refine import refine
 
 
 def _public_commutative_ring(ring):
-    return refine_ring_constructions(
-        refine_commutative_ring_constructions(ring)
-    )
+    if ring not in OwnedCommutativeRings():
+        raise TypeError("the public commutative-ring surface requires an owned commutative ring")
+    return ring
 
 
 def GF(*args, **kwargs):
@@ -147,25 +140,23 @@ def ComplexField(*args, **kwargs):
 
 
 def CyclotomicField(*args, **kwargs):
-    return refine_ring_constructions(_CyclotomicField(*args, **kwargs))
+    return _CyclotomicField(*args, **kwargs)
 
 
 def QuadraticField(*args, **kwargs):
-    return refine_ring_constructions(_QuadraticField(*args, **kwargs))
+    return _QuadraticField(*args, **kwargs)
 
 
 def NumberField(polynomial, *args, **kwargs):
-    return refine_ring_constructions(_NumberField(polynomial, *args, **kwargs))
+    return _NumberField(polynomial, *args, **kwargs)
 
 
 def PolynomialRing(base_ring, *args, **kwargs):
-    return refine_ring_constructions(_PolynomialRing(base_ring, *args, **kwargs))
+    return _PolynomialRing(base_ring, *args, **kwargs)
 
 
 def LaurentPolynomialRing(base_ring, *args, **kwargs):
-    return refine_ring_constructions(
-        _LaurentPolynomialRing(base_ring, *args, **kwargs)
-    )
+    return _LaurentPolynomialRing(base_ring, *args, **kwargs)
 
 
 def FractionField(ring, *args, **kwargs):
@@ -191,12 +182,8 @@ def session_ring_objects() -> dict[str, object]:
     from sage.all import RDF as SageRDF
     from sage.all import ZZ as SageZZ
 
-    refine(RR, OwnedFields())
-    _public_commutative_ring(RR)
-    integers = refine_ring_constructions(_refine_order_view(_own_ring(SageZZ)))
-    rationals = refine_ring_constructions(
-        _refine_number_field_view(_own_ring(SageQQ))
-    )
+    integers = _refine_order_view(_own_ring(SageZZ))
+    rationals = _refine_number_field_view(_own_ring(SageQQ))
     return {
         "ZZ": integers,
         "QQ": rationals,
@@ -234,8 +221,12 @@ def ring_constructor_surface() -> dict[str, object]:
     }
 
 
-def install_session_rings(scope: dict) -> None:
-    r"""Restore owned scalar objects and public ring constructors in ``scope``."""
+def _restore_session_ring_bindings(scope: dict) -> None:
+    r"""Restore public scalar names after Sage code has modified a namespace.
+
+    This is namespace repair only: the objects returned by
+    :func:`session_ring_objects` are already fully constructed owned objects.
+    """
     scope.update(session_ring_objects())
     scope.update(ring_constructor_surface())
 
@@ -297,10 +288,9 @@ __all__ = [
     "PredicateSubrings",
     "PrimeField",
     "PrimeFields",
-    "PrimeIdealPoint",
     "PrimeLocalization",
     "PrimeLocalizations",
-    "PrimeSpectrum",
+    "PrimeSpectra",
     "PrincipalIdealDomains",
     "Qp",
     "QuadraticField",
@@ -318,7 +308,6 @@ __all__ = [
     "ZariskiClosedSubobject",
     "Zmod",
     "Zp",
-    "install_session_rings",
     "predicate_subring",
     "ring_constructor_surface",
     "ring_homset",

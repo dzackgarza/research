@@ -16,10 +16,12 @@ from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 from sage.rings.integer_ring import ZZ as SageZZ
 
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     CommutativeAlgebras,
     OwnedAlgebras,
+    _OwnedAlgebraParent,
     refine_algebra,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -58,74 +60,145 @@ from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
-class CommutativeRingConstructions(Category):
-    r"""Commutative rings equipped with the represented standard constructions."""
+def refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
+    r"""Construct the commutative owned algebra view over ``base_ring``."""
+    return refine_algebra(algebra, base_ring, labels, *categories)
+
+
+class PrimeSpectra(OwnedCategory):
+    r"""The prime spectra \(\operatorname{Spec}R\), ordered by inclusion."""
+
+    def an_object(self):
+        r"""\(\operatorname{Spec}\mathbb{Z}\)."""
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        return _own_ring(SageZZ).spectrum()
 
     def super_categories(self):
-        return [OwnedCommutativeRings()]
+        return [PartiallyOrderedSets()]
 
-    class ParentMethods:
-        def as_algebra_over(self, base_ring):
-            base = _own_ring(base_ring)
-            engine = _engine_ring(self)
-            if not engine.has_coerce_map_from(_engine_ring(base)):
-                raise ValueError(
-                    f"{self} has no represented canonical algebra structure over {base}"
-                )
-            return refine_commutative_ring_constructions(refine_algebra(self, base))
+    class ElementMethods(Element):
+        r"""What a prime point is."""
 
-        def as_ZZ_algebra(self):
-            return self.as_algebra_over(_own_ring(SageZZ))
+        def __init__(self, parent, ideal) -> None:
+            self._ideal = ideal
+            Element.__init__(self, parent)
 
-        def ideal(self, *generators):
-            if self in PrimeLocalizations():
-                normalized = tuple(self(generator) for generator in generators)
-                source = self.localization_source()
-                fraction_engine = _engine_ring(self.fraction_field())
-                numerators = tuple(
-                    source._from_engine_element(
-                        _engine_ring(source)(
-                            fraction_engine(_engine_element(self, generator)).numerator()
-                        )
-                    )
-                    for generator in normalized
-                )
-                source_ideal = source.ideal(*numerators)
-                return LocalizedMaximalIdeal(
-                    self, normalized, source_ideal=source_ideal
-                )
+        def ideal(self):
+            return self._ideal
 
-            return CommutativeIdeal(self, *generators)
-
-        def quotient_ring(self, ideal):
-            return QuotientRing(self, ideal)
-
-        def localization(self, *elements):
-            return Localization(self, *elements)
-
-        def localize_at_prime(self, prime):
-            return PrimeLocalization(self, prime)
-
-        def adic_completion(self, ideal, precision=20):
-            return AdicCompletion(self, ideal, precision=precision)
+        prime_ideal = ideal
 
         @cached_method
-        def spectrum(self):
-            return PrimeSpectrum(self)
+        def local_ring(self):
+            return self.parent().ring().localize_at_prime(self.ideal())
 
+        stalk = local_ring
 
-def refine_commutative_ring_constructions(ring):
-    r"""Attach the represented standard construction surface to ``ring``."""
-    if ring not in OwnedCommutativeRings():
-        raise TypeError("commutative-ring constructions require a commutative ring")
-    return refine(ring, CommutativeRingConstructions())
+        @cached_method
+        def residue_field(self):
+            return self.local_ring().residue_field()
 
+        @cached_method
+        def residue_map(self):
+            r"""Return the canonical map ``R -> kappa(p)`` attached to this point."""
+            local = self.local_ring()
+            selected = local.__dict__.get("_preamble_source_residue_map")
+            if selected is not None:
+                return selected
+            return local.residue_map() * local.localization_map()
 
-def refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
-    r"""Place a commutative algebra with its standard ring constructions."""
-    return refine_commutative_ring_constructions(
-        refine_algebra(algebra, base_ring, labels, *categories)
-    )
+        def specializes_to(self, other) -> bool:
+            if other.parent() is not self.parent():
+                raise ValueError("specialization compares points of one spectrum")
+            ring = self.parent().ring()
+            return bool(_engine_ideal(ring, self.ideal()) <= _engine_ideal(ring, other.ideal()))
+
+        def _richcmp_(self, other, op):
+            if not other.parent() is self.parent() or other.parent() is not self.parent():
+                return NotImplemented
+            from sage.structure.richcmp import op_EQ, op_LE, op_LT, op_NE
+
+            ring = self.parent().ring()
+            left_ideal = _engine_ideal(ring, self.ideal())
+            right_ideal = _engine_ideal(ring, other.ideal())
+            if op == op_EQ:
+                return left_ideal == right_ideal
+            if op == op_NE:
+                return left_ideal != right_ideal
+            if op == op_LE:
+                return self.specializes_to(other)
+            if op == op_LT:
+                return left_ideal != right_ideal and self.specializes_to(other)
+            return NotImplemented
+
+        def __hash__(self):
+            r"""Hash the prime ideal equality compares, so a point may key a cache."""
+            return hash(_engine_ideal(self.parent().ring(), self.ideal()))
+
+        def _repr_(self):
+            return f"Point {self.ideal()} of {self.parent()}"
+
+    class ParentMethods:
+
+        def __init__(self, ring, **rest) -> None:
+            self._ring = _own_ring(ring)
+            assert self._ring in OwnedCommutativeRings(), (
+                "Spec(R) requires a commutative ring"
+            )
+            super().__init__(**rest)
+
+        def ring(self):
+            return self._ring
+
+        coordinate_ring = ring
+
+        def __call__(self, ideal):
+            r"""Construct a prime point directly from its represented ideal."""
+            return self._element_constructor_(ideal)
+
+        def _element_constructor_(self, ideal):
+            if isinstance(ideal, self.category().ElementType) and ideal.parent() is self:
+                return ideal
+            candidate = _engine_ideal(self.ring(), ideal)
+            if not bool(candidate.is_prime()):
+                raise ValueError(f"{candidate} is not a prime ideal of {self.ring()}")
+            return self.element_class(self, _owned_ideal(self.ring(), candidate))
+
+        def __contains__(self, candidate) -> bool:
+            if isinstance(candidate, self.category().ElementType):
+                return candidate.parent() is self
+            try:
+                ideal = _engine_ideal(self.ring(), candidate)
+                return bool(ideal.is_prime())
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                return False
+
+        def le(self, left, right) -> bool:
+            return self._element_constructor_(left).specializes_to(
+                self._element_constructor_(right)
+            )
+
+        def closed_set(self, ideal):
+            return ZariskiClosedSubobject(self, _owned_ideal(self.ring(), ideal))
+
+        V = closed_set
+
+        def distinguished_open(self, function):
+            return DistinguishedOpenSubobject(self, function)
+
+        D = distinguished_open
+
+        def generic_point(self):
+            engine = _engine_ring(self.ring())
+            zero = engine.ideal(0)
+            if not bool(zero.is_prime()):
+                raise ValueError(f"{self.ring()} is not integral, so Spec has no unique generic point")
+            return self._element_constructor_(zero)
+
+        def _repr_(self):
+            return f"Spec({self.ring()})"
 
 
 def _engine_ring_value(ring, value):
@@ -225,67 +298,6 @@ def _canonical_map(domain, codomain, engine_map=None):
     )
 
 
-class PrimeIdealPoint(Element):
-    r"""A point ``p in Spec(R)``, represented by its prime ideal ``p <= R``."""
-
-    def __init__(self, parent, ideal) -> None:
-        self._ideal = ideal
-        Element.__init__(self, parent)
-
-    def ideal(self):
-        return self._ideal
-
-    prime_ideal = ideal
-
-    @cached_method
-    def local_ring(self):
-        return self.parent().ring().localize_at_prime(self.ideal())
-
-    stalk = local_ring
-
-    @cached_method
-    def residue_field(self):
-        return self.local_ring().residue_field()
-
-    @cached_method
-    def residue_map(self):
-        r"""Return the canonical map ``R -> kappa(p)`` attached to this point."""
-        local = self.local_ring()
-        selected = local.__dict__.get("_preamble_source_residue_map")
-        if selected is not None:
-            return selected
-        return local.residue_map() * local.localization_map()
-
-    def specializes_to(self, other) -> bool:
-        if other.parent() is not self.parent():
-            raise ValueError("specialization compares points of one spectrum")
-        ring = self.parent().ring()
-        return bool(_engine_ideal(ring, self.ideal()) <= _engine_ideal(ring, other.ideal()))
-
-    def _richcmp_(self, other, op):
-        if not isinstance(other, PrimeIdealPoint) or other.parent() is not self.parent():
-            return NotImplemented
-        from sage.structure.richcmp import op_EQ, op_LE, op_LT, op_NE
-
-        ring = self.parent().ring()
-        left_ideal = _engine_ideal(ring, self.ideal())
-        right_ideal = _engine_ideal(ring, other.ideal())
-        if op == op_EQ:
-            return left_ideal == right_ideal
-        if op == op_NE:
-            return left_ideal != right_ideal
-        if op == op_LE:
-            return self.specializes_to(other)
-        if op == op_LT:
-            return left_ideal != right_ideal and self.specializes_to(other)
-        return NotImplemented
-
-    def __hash__(self):
-        r"""Hash the prime ideal equality compares, so a point may key a cache."""
-        return hash(_engine_ideal(self.parent().ring(), self.ideal()))
-
-    def _repr_(self):
-        return f"Point {self.ideal()} of {self.parent()}"
 
 
 class ZariskiClosedSubobject(SetInclusion):
@@ -354,65 +366,6 @@ class DistinguishedOpenSubobject(SetInclusion):
         return f"D({self.function()}) in {self.codomain()}"
 
 
-class PrimeSpectrum(Parent):
-    Element = PrimeIdealPoint
-
-    def __init__(self, ring) -> None:
-        self._ring = _own_ring(ring)
-        if self._ring not in OwnedCommutativeRings():
-            raise TypeError("Spec(R) requires a commutative ring")
-        Parent.__init__(self, category=PartiallyOrderedSets())
-
-    def ring(self):
-        return self._ring
-
-    coordinate_ring = ring
-
-    def __call__(self, ideal):
-        r"""Construct a prime point directly from its represented ideal."""
-        return self._element_constructor_(ideal)
-
-    def _element_constructor_(self, ideal):
-        if isinstance(ideal, PrimeIdealPoint) and ideal.parent() is self:
-            return ideal
-        candidate = _engine_ideal(self.ring(), ideal)
-        if not bool(candidate.is_prime()):
-            raise ValueError(f"{candidate} is not a prime ideal of {self.ring()}")
-        return self.element_class(self, _owned_ideal(self.ring(), candidate))
-
-    def __contains__(self, candidate) -> bool:
-        if isinstance(candidate, PrimeIdealPoint):
-            return candidate.parent() is self
-        try:
-            ideal = _engine_ideal(self.ring(), candidate)
-            return bool(ideal.is_prime())
-        except (AttributeError, NotImplementedError, TypeError, ValueError):
-            return False
-
-    def le(self, left, right) -> bool:
-        return self._element_constructor_(left).specializes_to(
-            self._element_constructor_(right)
-        )
-
-    def closed_set(self, ideal):
-        return ZariskiClosedSubobject(self, _owned_ideal(self.ring(), ideal))
-
-    V = closed_set
-
-    def distinguished_open(self, function):
-        return DistinguishedOpenSubobject(self, function)
-
-    D = distinguished_open
-
-    def generic_point(self):
-        engine = _engine_ring(self.ring())
-        zero = engine.ideal(0)
-        if not bool(zero.is_prime()):
-            raise ValueError(f"{self.ring()} is not integral, so Spec has no unique generic point")
-        return self._element_constructor_(zero)
-
-    def _repr_(self):
-        return f"Spec({self.ring()})"
 
 class QuotientRings(Category):
     r"""Commutative quotient rings equipped with their quotient map."""
@@ -521,14 +474,23 @@ class GeneralQuotientRingParent(Parent):
 
     Element = GeneralQuotientRingElement
 
-    def __init__(self, source, defining_ideal, _engine_ring=None) -> None:
+    def __init__(
+        self,
+        source,
+        defining_ideal,
+        _engine_ring=None,
+        *,
+        categories=(),
+    ) -> None:
         self._preamble_quotient_source = source
         self._preamble_defining_ideal = defining_ideal
         self._preamble_engine_ring = _engine_ring
+        self._preamble_algebra_base_ring = source
+        self._preamble_base_ring = source
         Parent.__init__(
             self,
             category=Category.join(
-                (QuotientRings(), CommutativeRingConstructions())
+                (QuotientRings(), CommutativeAlgebras(source), *tuple(categories))
             ),
         )
 
@@ -805,15 +767,30 @@ class GeneralLocalizationRingParent(Parent):
 
     Element = GeneralLocalizationRingElement
 
-    def __init__(self, source, submonoid, _engine_ring=None) -> None:
+    def __init__(
+        self,
+        source,
+        submonoid,
+        _engine_ring=None,
+        *,
+        categories=(),
+        algebra_source=None,
+    ) -> None:
         self._preamble_localization_source = source
         self._preamble_localization_submonoid = submonoid
         self._preamble_engine_ring = _engine_ring
+        algebra_categories = []
+        if algebra_source is not None:
+            base = algebra_source.base_ring()
+            self._preamble_algebra_base_ring = base
+            algebra_categories.extend([Algebras(base), OwnedAlgebras(base)])
+            if algebra_source in CommutativeAlgebras(base):
+                algebra_categories.append(CommutativeAlgebras(base))
         Parent.__init__(
             self,
             base=source.base_ring(),
             category=Category.join(
-                (LocalizationRings(), CommutativeRingConstructions())
+                (LocalizationRings(), *tuple(categories), *tuple(algebra_categories))
             ),
         )
 
@@ -822,6 +799,11 @@ class GeneralLocalizationRingParent(Parent):
             self,
             lambda element: self.fraction(element),
         )
+        if algebra_source is not None:
+            self._preamble_structure_map = (
+                self._preamble_localization_map
+                * algebra_source.algebra_structure_morphism()
+            )
 
     def localize_module(self, module):
         r"""Return ``S^{-1}M`` through the module-localization theory."""
@@ -1001,6 +983,37 @@ class AdicCompletions(Category):
             return self._preamble_computation_precision
 
 
+class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
+    r"""An engine-backed adic completion with its defining data fixed at construction."""
+
+    def __init__(self, engine, source, defining_ideal, precision) -> None:
+        self._preamble_completion_source = source
+        self._preamble_ideal_of_definition = defining_ideal
+        self._preamble_computation_precision = int(precision)
+        placements = [AdicCompletions()]
+        if source in OwnedNoetherianRings():
+            placements.append(OwnedNoetherianRings())
+        is_maximal = bool(defining_ideal.is_maximal())
+        if is_maximal:
+            placements.append(OwnedCompleteLocalRings())
+        _OwnedAlgebraParent.__init__(
+            self,
+            engine,
+            source,
+            None,
+            categories=tuple(placements),
+        )
+        self._preamble_completion_map = _canonical_map(source, self)
+        if is_maximal:
+            uniformizer = self._from_engine_element(engine.uniformizer())
+            self._preamble_maximal_ideal = GeneratedIdealView(
+                self,
+                (uniformizer,),
+                source_ideal=defining_ideal,
+            )
+            self._preamble_residue_field = ResidueField(source, defining_ideal)
+
+
 class GeneratedIdealView(SageObject):
     r"""An ideal remembered by its ambient ring and chosen generators."""
 
@@ -1045,15 +1058,76 @@ class LocalizedMaximalIdeal(GeneratedIdealView):
         ring = self.ring()
         if element not in ring:
             return False
+        if ring in LocalizationRings():
+            numerator, _ = ring.localization_fraction_data(element)
+            return _engine_element(ring.localization_source(), numerator) in self.source_ideal()
         fraction = _engine_ring(ring.fraction_field())(element)
-        numerator = fraction.numerator()
-        return numerator in self.source_ideal()
+        return fraction.numerator() in self.source_ideal()
 
 
-def _refine_noetherian_from_source(result, source):
-    if source in OwnedNoetherianRings():
-        refine(result, OwnedNoetherianRings())
-    return result
+class PrimeLocalizationParent(GeneralLocalizationRingParent):
+    r"""A prime localization ``R_p`` with all local-ring data constructor-owned."""
+
+    def __init__(
+        self,
+        source,
+        submonoid,
+        prime_ideal,
+        fraction_field,
+        *,
+        engine_ring=None,
+        categories=(),
+    ) -> None:
+        self._preamble_prime_ideal = prime_ideal
+        self._preamble_fraction_field = fraction_field
+        base = source.base_ring()
+        algebra_source = (
+            source
+            if base is not None and source in Algebras(base)
+            else None
+        )
+        GeneralLocalizationRingParent.__init__(
+            self,
+            source,
+            submonoid,
+            _engine_ring=engine_ring,
+            categories=(PrimeLocalizations(), *tuple(categories)),
+            algebra_source=algebra_source,
+        )
+
+        source_engine = _engine_ring(source)
+        generators = tuple(
+            self.fraction(source._from_engine_element(source_engine(generator)))
+            for generator in prime_ideal.gens()
+        )
+        self._preamble_maximal_ideal = LocalizedMaximalIdeal(
+            self,
+            generators,
+            source_ideal=prime_ideal,
+        )
+
+        quotient = QuotientRing(source, prime_ideal)
+        residue = quotient if quotient in OwnedFields() else quotient.fraction_field()
+        self._preamble_residue_field = residue
+        source_to_quotient = quotient.quotient_map()
+        source_to_residue = (
+            source_to_quotient
+            if residue is quotient
+            else _canonical_map(quotient, residue) * source_to_quotient
+        )
+
+        def local_residue_image(element):
+            element = self(element)
+            numerator = source_to_residue(element.numerator())
+            denominator = source_to_residue(element.denominator())
+            return residue(numerator / denominator)
+
+        self._preamble_residue_map = ring_morphism(
+            self,
+            residue,
+            local_residue_image,
+        )
+        self._preamble_source_residue_map = source_to_residue
 
 
 def QuotientRing(ring, ideal):
@@ -1067,13 +1141,9 @@ def QuotientRing(ring, ideal):
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         quotient_engine = None
 
-    quotient = GeneralQuotientRingParent(
-        source,
-        defining_ideal,
-        _engine_ring=quotient_engine,
-    )
-    placements = [OwnedCommutativeRings(), QuotientRings()]
-    _refine_noetherian_from_source(quotient, source)
+    placements = []
+    if source in OwnedNoetherianRings():
+        placements.append(OwnedNoetherianRings())
     if quotient_engine is not None:
         try:
             if bool(quotient_engine.is_field()):
@@ -1093,32 +1163,12 @@ def QuotientRing(ring, ideal):
                 placements.append(OwnedArtinianRings())
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             pass
-    quotient._preamble_algebra_base_ring = source
-    quotient._preamble_base_ring = source
-    refine(quotient, placements)
-    refine(quotient, CommutativeAlgebras(source))
-    return quotient
-
-
-def _localized_algebra_placement(source, localization):
-    r"""Return the algebra placement ``A[S^{-1}]`` inherits from ``A``.
-
-    For an \(R\)-algebra \(A\) the localization is again an \(R\)-algebra: its
-    structure morphism is the localization map composed with the structure
-    morphism of \(A\), so \(R \to A \to A[S^{-1}]\) commutes.  A source that is a
-    bare ring rather than an algebra contributes nothing.
-    """
-    base = source.base_ring()
-    if base is None or source not in Algebras(base):
-        return ()
-    localization._preamble_algebra_base_ring = base
-    localization._preamble_structure_map = (
-        localization.localization_map() * source.algebra_structure_morphism()
+    return GeneralQuotientRingParent(
+        source,
+        defining_ideal,
+        _engine_ring=quotient_engine,
+        categories=tuple(placements),
     )
-    placement = [Algebras(base), OwnedAlgebras(base)]
-    if source in CommutativeAlgebras(base):
-        placement.append(CommutativeAlgebras(base))
-    return placement
 
 
 def _finite_generated_localization(source, submonoid):
@@ -1136,19 +1186,24 @@ def _finite_generated_localization(source, submonoid):
         localization_engine = engine.localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         localization_engine = None
-    localization = GeneralLocalizationRingParent(
-        source,
-        submonoid,
-        _engine_ring=localization_engine,
-    )
-    placements = [LocalizationRings()]
+    placements = []
     if source in OwnedIntegralDomains():
         placements.append(OwnedIntegralDomains())
     if source in OwnedNoetherianRings():
         placements.append(OwnedNoetherianRings())
-    placements.extend(_localized_algebra_placement(source, localization))
-    refine(localization, placements)
-    return localization
+    base = source.base_ring()
+    algebra_source = (
+        source
+        if base is not None and source in Algebras(base)
+        else None
+    )
+    return GeneralLocalizationRingParent(
+        source,
+        submonoid,
+        _engine_ring=localization_engine,
+        categories=tuple(placements),
+        algebra_source=algebra_source,
+    )
 
 
 def Localization(ring, *datum):
@@ -1300,94 +1355,17 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         raise ValueError("prime-complement localization requires its represented prime ideal")
     fraction_field = source.fraction_field()
     fraction_engine = _engine_ring(fraction_field)
-    zero_prime = _engine_ring(source).ideal(_engine_ring(source).zero())
-
-    if prime_ideal == zero_prime:
-        placements = [
-            PrimeLocalizations(),
-            LocalizationRings(),
-            CommutativeRingConstructions(),
-        ]
-        if source in OwnedNoetherianRings():
-            placements.append(OwnedNoetherianRings())
-        refine(fraction_field, placements)
-        fraction_field._preamble_localization_source = source
-        fraction_field._preamble_localization_submonoid = submonoid
-        fraction_field._preamble_prime_ideal = prime_ideal
-        fraction_field._preamble_fraction_field = fraction_field
-        fraction_field._preamble_localization_map = _canonical_map(source, fraction_field)
-        fraction_field._preamble_source_residue_map = fraction_field._preamble_localization_map
-        return fraction_field
-
-    def denominator_avoids_prime(element):
-        fraction = fraction_engine(_engine_element(fraction_field, fraction_field(element)))
-        return fraction.denominator() not in prime_ideal
-
-
-    placements = [
-        PrimeLocalizations(),
-        LocalizationRings(),
-        CommutativeRingConstructions(),
-    ]
+    placements = []
     if source in OwnedNoetherianRings():
         placements.append(OwnedNoetherianRings())
-    local = predicate_subring(
+    return PrimeLocalizationParent(
+        source,
+        submonoid,
+        prime_ideal,
         fraction_field,
-        denominator_avoids_prime,
-        f"denominator is not in {prime_ideal}",
-        Category.join(tuple(placements)),
+        engine_ring=fraction_engine,
+        categories=tuple(placements),
     )
-    local._preamble_localization_source = source
-    local._preamble_localization_submonoid = submonoid
-    local._preamble_prime_ideal = prime_ideal
-    local._preamble_fraction_field = fraction_field
-    local._preamble_localization_map = _canonical_map(source, local)
-    generators = tuple(
-        local(
-            fraction_field(
-                source._from_engine_element(_engine_ring(source)(generator))
-            )
-        )
-        for generator in prime_ideal.gens()
-    )
-    local._preamble_maximal_ideal = LocalizedMaximalIdeal(
-        local,
-        generators,
-        source_ideal=prime_ideal,
-    )
-    quotient = QuotientRing(source, prime_ideal)
-    if bool(_engine_ring(quotient).is_field()):
-        residue = quotient
-    else:
-        residue = quotient.fraction_field()
-    refine(residue, OwnedFields())
-    local._preamble_residue_field = residue
-    source_to_quotient = quotient.quotient_map()
-    source_to_residue = (
-        source_to_quotient
-        if residue is quotient
-        else _canonical_map(quotient, residue) * source_to_quotient
-    )
-
-    def local_residue_image(element):
-        fraction = fraction_engine(_engine_element(fraction_field, fraction_field(element)))
-        source_engine = _engine_ring(source)
-        numerator = source_to_residue(
-            source._from_engine_element(source_engine(fraction.numerator()))
-        )
-        denominator = source_to_residue(
-            source._from_engine_element(source_engine(fraction.denominator()))
-        )
-        return residue(numerator / denominator)
-
-
-    local._preamble_residue_map = ring_morphism(
-        local,
-        residue,
-        local_residue_image,
-    )
-    local._preamble_source_residue_map = source_to_residue
-    return local
 
 
 def PrimeLocalization(ring, prime):
@@ -1429,32 +1407,12 @@ def AdicCompletion(ring, ideal, *, precision=20):
         completion_engine = engine.completion(prime, int(precision))
     else:
         completion_engine = engine.completion(generator, prec=precision)
-    completion = refine_algebra(_own_ring(completion_engine), source)
-    placements = [
-        OwnedCommutativeRings(),
-        OwnedAdicallyCompleteRings(),
-        AdicCompletions(),
-        CommutativeRingConstructions(),
-    ]
-    if source in OwnedNoetherianRings():
-        placements.append(OwnedNoetherianRings())
-    is_maximal = bool(defining.is_maximal())
-    if is_maximal:
-        placements.append(OwnedCompleteLocalRings())
-    refine(completion, placements)
-    completion._preamble_completion_source = source
-    completion._preamble_ideal_of_definition = defining
-    completion._preamble_computation_precision = precision
-    completion._preamble_completion_map = _canonical_map(source, completion)
-    if is_maximal:
-        uniformizer = completion._from_engine_element(completion_engine.uniformizer())
-        completion._preamble_maximal_ideal = GeneratedIdealView(
-            completion,
-            (uniformizer,),
-            source_ideal=defining,
-        )
-        completion._preamble_residue_field = ResidueField(source, defining)
-    return completion
+    return _AdicCompletionAlgebraParent(
+        completion_engine,
+        source,
+        defining,
+        precision,
+    )
 
 
 class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
@@ -1499,118 +1457,115 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
             return self.coefficient(degree)
 
 
-def refine_power_series_ring(power_series_ring, base_ring, variable=None):
-    r"""Record ``R[[t]]`` as a ``(t)``-adically complete ``R``-algebra."""
-    ring = power_series_ring
-    base = _own_ring(base_ring)
-    engine = _engine_ring(ring)
-    uniformizer = engine.gen() if variable is None else engine(variable)
-    ring._preamble_ideal_of_definition = GeneratedIdealView(
-        ring,
-        (ring._from_engine_element(uniformizer),),
-    )
-    refine(
-        ring,
-        [
-            OwnedAdicallyCompleteRings(),
-            FormalPowerSeriesRings(base),
-            CommutativeRingConstructions(),
-        ],
-    )
-    if base in OwnedNoetherianRings():
-        refine(ring, OwnedNoetherianRings())
-    if base in OwnedLocalRings():
-        refine(ring, OwnedCompleteLocalRings())
-        ring._preamble_maximal_ideal = GeneratedIdealView(
-            ring,
-            (ring._from_engine_element(uniformizer),),
+class _FormalPowerSeriesAlgebraParent(_OwnedAlgebraParent):
+    r"""A formal power-series algebra whose adic data are constructor-owned."""
+
+    def __init__(self, engine, base, labels, variable=None) -> None:
+        placements = [FormalPowerSeriesRings(base)]
+        if base in OwnedNoetherianRings():
+            placements.append(OwnedNoetherianRings())
+        if base in OwnedLocalRings():
+            placements.append(OwnedCompleteLocalRings())
+        _OwnedAlgebraParent.__init__(
+            self,
+            engine,
+            base,
+            labels,
+            categories=tuple(placements),
         )
-        ring._preamble_residue_field = base.residue_field()
-    return ring
+        uniformizer = engine.gen() if variable is None else engine(variable)
+        selected_uniformizer = self._from_engine_element(uniformizer)
+        self._preamble_ideal_of_definition = GeneratedIdealView(
+            self,
+            (selected_uniformizer,),
+        )
+        if base in OwnedLocalRings():
+            self._preamble_maximal_ideal = GeneratedIdealView(
+                self,
+                (selected_uniformizer,),
+            )
+            self._preamble_residue_field = base.residue_field()
 
 
 def Zp(*args, **kwargs):
-    result = _own_ring(_SageZp(*args, **kwargs))
+    engine = _SageZp(*args, **kwargs)
     prime = SageZZ(args[0] if args else kwargs.get("p"))
-    refine(
-        result,
-        [
-            OwnedNoetherianRings(),
-            OwnedCompleteLocalRings(),
-            AdicCompletions(),
-            CommutativeRingConstructions(),
-        ],
+    source = _own_ring(SageZZ)
+    defining = SageZZ.ideal(prime)
+    return _AdicCompletionAlgebraParent(
+        engine,
+        source,
+        defining,
+        int(engine.precision_cap()),
     )
-    result._preamble_ideal_of_definition = SageZZ.ideal(prime)
-    result._preamble_maximal_ideal = GeneratedIdealView(
-        result,
-        (result._from_engine_element(_engine_ring(result).uniformizer()),),
-        source_ideal=SageZZ.ideal(prime),
-    )
-    result._preamble_residue_field = _own_ring(SageZZ.residue_field(prime))
-    result._preamble_completion_source = _own_ring(SageZZ)
-    result._preamble_completion_map = _canonical_map(
-        result._preamble_completion_source,
-        result,
-    )
-    return result
 
 
 def PowerSeriesRing(base_ring, *args, **kwargs):
     base = _own_ring(base_ring)
-    result = _own_ring(_SagePowerSeriesRing(_engine_ring(base), *args, **kwargs))
-    labels = tuple(_engine_ring(result).variable_names())
-    algebra = refine_algebra(result, base, labels)
-    return refine_power_series_ring(
-        algebra,
+    engine = _SagePowerSeriesRing(_engine_ring(base), *args, **kwargs)
+    labels = tuple(engine.variable_names())
+    return _FormalPowerSeriesAlgebraParent(
+        engine,
         base,
+        labels,
     )
+
+
+class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
+    r"""The dual-number quotient with its defining quotient data fixed at construction."""
+
+    def __init__(self, engine, base, polynomial, defining_ideal, label) -> None:
+        self._preamble_quotient_source = polynomial
+        self._preamble_defining_ideal = defining_ideal
+        placements = [QuotientRings()]
+        if base in OwnedNoetherianRings():
+            placements.append(OwnedNoetherianRings())
+        if base in OwnedArtinianRings():
+            placements.append(OwnedArtinianRings())
+        if base in OwnedLocalRings():
+            placements.append(OwnedLocalRings())
+        _OwnedAlgebraParent.__init__(
+            self,
+            engine,
+            base,
+            (label,),
+            categories=tuple(placements),
+        )
+        self._preamble_quotient_map = _canonical_map(
+            polynomial,
+            self,
+            engine.coerce_map_from(_engine_ring(polynomial)),
+        )
+        if base in OwnedLocalRings():
+            epsilon_bar = self._from_engine_element(engine.gen())
+            self._preamble_maximal_ideal = GeneratedIdealView(self, (epsilon_bar,))
+            self._preamble_residue_field = base.residue_field()
 
 
 def DualNumbers(base_ring, name="epsilon"):
     r"""Return the dual-number algebra ``R[epsilon]/(epsilon^2)``."""
     base = _own_ring(base_ring)
-    polynomial = refine_commutative_ring_constructions(
-        refine_algebra(
-            _own_ring(_SagePolynomialRing(_engine_ring(base), name)),
-            base,
-            (name,),
-        )
+    polynomial = refine_algebra(
+        _own_ring(_SagePolynomialRing(_engine_ring(base), name)),
+        base,
+        (name,),
     )
     engine_polynomial = _engine_ring(polynomial)
     epsilon = engine_polynomial.gen()
-    quotient_engine = engine_polynomial.quotient(engine_polynomial.ideal(epsilon**2))
-    dual = refine_algebra(_own_ring(quotient_engine), base, (name,))
-    placements = [
-        OwnedCommutativeRings(),
-        QuotientRings(),
-        CommutativeRingConstructions(),
-    ]
-    if base in OwnedNoetherianRings():
-        placements.append(OwnedNoetherianRings())
-    if base in OwnedArtinianRings():
-        placements.append(OwnedArtinianRings())
-    if base in OwnedLocalRings():
-        placements.append(OwnedLocalRings())
-    refine(dual, placements)
-    dual._preamble_quotient_source = polynomial
-    dual._preamble_defining_ideal = engine_polynomial.ideal(epsilon**2)
-    dual._preamble_quotient_map = _canonical_map(
+    defining_ideal = engine_polynomial.ideal(epsilon**2)
+    quotient_engine = engine_polynomial.quotient(defining_ideal)
+    return _DualNumbersAlgebraParent(
+        quotient_engine,
+        base,
         polynomial,
-        dual,
-        quotient_engine.coerce_map_from(engine_polynomial),
+        defining_ideal,
+        name,
     )
-    if base in OwnedLocalRings():
-        epsilon_bar = dual._from_engine_element(quotient_engine.gen())
-        dual._preamble_maximal_ideal = GeneratedIdealView(dual, (epsilon_bar,))
-        dual._preamble_residue_field = base.residue_field()
-    return dual
 
 
 __all__ = [
     "AdicCompletion",
     "AdicCompletions",
-    "CommutativeRingConstructions",
     "DualNumbers",
     "GeneratedIdealView",
     "Localization",
@@ -1621,7 +1576,5 @@ __all__ = [
     "QuotientRing",
     "QuotientRings",
     "ResidueField",
-    "refine_commutative_ring_constructions",
     "Zp",
-    "refine_power_series_ring",
 ]

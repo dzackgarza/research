@@ -51,7 +51,7 @@ from dzack_research.preamble.categories.group.magmas import (
     Monoids,
     Semigroups,
 )
-from dzack_research.preamble.refine import refine
+from dzack_research.preamble.refine import realize_owned_category, refine
 from dzack_research.preamble.categories.sets.cardinals import (
     aleph0,
     cardinal,
@@ -316,7 +316,7 @@ class _PredicateSubringParent(Parent):
         self._one = ambient_ring.one()
         self._zero = ambient_ring.zero()
         Parent.__init__(self, facade=ambient_ring, category=category)
-        refine(self, category)
+        realize_owned_category(self)
 
     def __call__(self, element):
         r"""Construct an element of the predicate subring directly."""
@@ -401,6 +401,53 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         return _ring_mor_category(domain, codomain)
 
     class ParentMethods:
+        def _fresh_free_module_on(self, labels):
+            r"""Return the selected free module on ``labels`` over this ring."""
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreshFreeModuleOn,
+            )
+
+            return FreshFreeModuleOn(self, labels)
+
+        def __pow__(self, exponent):
+            r"""Return the free module ``R^n`` through the owned module constructor."""
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreeModule,
+            )
+
+            return FreeModule(self, exponent)
+
+        def __getitem__(self, names):
+            r"""Use standard polynomial/algebraic adjunction syntax on an owned ring."""
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                PolynomialRing,
+            )
+            from dzack_research.preamble.categories.rings.number_fields import (
+                _refine_number_field_view,
+                _refine_order_view,
+            )
+
+            match names:
+                case str():
+                    return PolynomialRing(self, names)
+                case tuple() if all(isinstance(part, str) for part in names):
+                    return PolynomialRing(self, names)
+                case list():
+                    result = _own_if_ring(_engine_ring(self)[names])
+                case _ if names in self:
+                    return self
+                case _:
+                    result = _own_if_ring(_engine_ring(self)[names])
+
+            if result not in OwnedRings():
+                return result
+            engine = _engine_ring(result)
+            if isinstance(engine, SageNumberFieldOrder):
+                return _refine_order_view(result)
+            if engine in SageNumberFields():
+                return _refine_number_field_view(result)
+            return result
+
         def Mor(self, codomain, category=None):
             rings = OwnedRings()
             if category is None or (
@@ -528,6 +575,76 @@ class OwnedCommutativeRings(OwnedCategory):
     class ParentMethods:
         def is_commutative(self):
             return True
+
+        def as_algebra_over(self, base_ring):
+            from dzack_research.preamble.categories.algebras.algebras import refine_algebra
+
+            base = _own_ring(base_ring)
+            engine = _engine_ring(self)
+            if not engine.has_coerce_map_from(_engine_ring(base)):
+                raise ValueError(
+                    f"{self} has no represented canonical algebra structure over {base}"
+                )
+            return refine_algebra(self, base)
+
+        def as_ZZ_algebra(self):
+            return self.as_algebra_over(_own_ring(SageZZ))
+
+        def ideal(self, *generators):
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                LocalizedMaximalIdeal,
+                PrimeLocalizations,
+            )
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeal,
+            )
+
+            if self in PrimeLocalizations():
+                normalized = tuple(self(generator) for generator in generators)
+                source = self.localization_source()
+                fraction_engine = _engine_ring(self.fraction_field())
+                numerators = tuple(
+                    source._from_engine_element(
+                        _engine_ring(source)(
+                            fraction_engine(_engine_element(self, generator)).numerator()
+                        )
+                    )
+                    for generator in normalized
+                )
+                source_ideal = source.ideal(*numerators)
+                return LocalizedMaximalIdeal(
+                    self, normalized, source_ideal=source_ideal
+                )
+            return CommutativeIdeal(self, *generators)
+
+        def quotient_ring(self, ideal):
+            from dzack_research.preamble.categories.rings.commutative_algebra import QuotientRing
+
+            return QuotientRing(self, ideal)
+
+        def localization(self, *elements):
+            from dzack_research.preamble.categories.rings.commutative_algebra import Localization
+
+            return Localization(self, *elements)
+
+        def localize_at_prime(self, prime):
+            from dzack_research.preamble.categories.rings.commutative_algebra import PrimeLocalization
+
+            return PrimeLocalization(self, prime)
+
+        def adic_completion(self, ideal, precision=20):
+            from dzack_research.preamble.categories.rings.commutative_algebra import AdicCompletion
+
+            return AdicCompletion(self, ideal, precision=precision)
+
+        @cached_method
+        def spectrum(self):
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                PrimeSpectra,
+            )
+            from dzack_research.preamble.owned_category import object_of
+
+            return object_of(PrimeSpectra(), ring=self)
 
 
 class OwnedOrderedRings(OwnedCategory):
@@ -720,6 +837,8 @@ class OwnedFields(OwnedCategory):
 
 class OwnedOrders(OwnedCategory):
     r"""Orders in number fields as a ring-theoretic property category."""
+
+    _certifying_predicate = "_preamble_is_number_field_order"
 
     def an_object(self):
         r"""The integers, the ring of integers of the rationals."""
@@ -1054,10 +1173,13 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     Element = _OwnedRingElement
 
-    def __init__(self, engine: Ring) -> None:
+    def __init__(self, engine: Ring, *, category=None) -> None:
         self._engine = engine
-        Parent.__init__(self, category=_owned_ring_category(engine))
-        refine(self, self.category())
+        placement = _owned_ring_category(engine)
+        if category is not None:
+            placement = Category.join((placement, category))
+        Parent.__init__(self, category=placement)
+        realize_owned_category(self)
 
     def _from_engine_element(self, value):
         if getattr(value, "parent", lambda: None)() is not self._engine:
@@ -1128,6 +1250,15 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def is_finite(self):
         return self._engine.is_finite()
 
+    def _preamble_is_number_field_order(self):
+        return self._engine is SageZZ or isinstance(self._engine, SageNumberFieldOrder)
+
+    def _preamble_is_number_field(self):
+        return self._engine in SageNumberFields()
+
+    def _preamble_has_chosen_primitive_element(self):
+        return self._engine in SageNumberFields() and self._engine is not SageQQ
+
     def base_ring(self):
         base = self._engine.base_ring()
         if base is self._engine:
@@ -1171,11 +1302,9 @@ def _owned_ring_category(engine: Ring) -> Category:
     else:
         placement = OwnedRings()
     joined = Category.join((placement, _owned_ring_size(engine), *extra))
-    match engine:
-        case SageNumberFieldOrder():
-            return Category.join((joined, OwnedOrders()))
-        case _:
-            return joined
+    if engine is SageZZ or isinstance(engine, SageNumberFieldOrder):
+        return Category.join((joined, OwnedOrders()))
+    return joined
 
 
 def _owned_ring_size(engine):
