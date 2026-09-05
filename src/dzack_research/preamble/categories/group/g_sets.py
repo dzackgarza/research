@@ -14,6 +14,7 @@ from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.abstract_method import abstract_method
 from sage.misc.unknown import Unknown
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -26,10 +27,14 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
+    _engine_group,
+    _integer_engine_point,
     _own_group,
     _owned_group,
+    _owned_point,
     group_homset,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
@@ -102,20 +107,22 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             self._preamble_g_set_points = point_set
             self._preamble_permutation_representation = permutation_representation
             permutations = permutation_representation.codomain()
-            for group_generator in group.group_generators():
+            engine = _engine_group(permutations)
+
+            def permute(group_element, point):
                 backend_permutation = permutations._to_engine(
-                    permutation_representation(group_generator)
+                    permutation_representation(group_element)
                 )
+                return _owned_point(engine, backend_permutation(_integer_engine_point(point)))
+
+            for group_generator in group.group_generators():
                 for point in point_set:
-                    assert backend_permutation(point) in point_set, (
+                    assert permute(group_generator, point) in point_set, (
                         "the action morphism does not preserve the stated point set"
                     )
 
             def point_map(group_element):
-                backend_permutation = permutations._to_engine(
-                    permutation_representation(group_element)
-                )
-                return lambda point: self(backend_permutation(point))
+                return lambda point: self(permute(group_element, point))
 
             super().__init__(
                 acting_group=group,
@@ -150,6 +157,14 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
         def cardinality(self):
             return cardinal(self.point_set().cardinality())
+
+        def orbits(self):
+            r"""The orbit set ``X / G``."""
+            from dzack_research.preamble.categories.functors.g_sets import (
+                GSetOrbitsFunctor,
+            )
+
+            return GSetOrbitsFunctor(self.acting_group())(self)
 
         def rank(self, point):
             return self.point_set().rank(point)
@@ -354,7 +369,8 @@ def _permutation_from_point_map(permutation_group, point_set, mapping):
             remaining.remove(current)
             current = mapping(current)
         if len(cycle) > 1:
-            cycles.append(tuple(cycle))
+            # The engine permutes the engine's points; owned integers cross here.
+            cycles.append(tuple(_integer_engine_point(point) for point in cycle))
     return permutation_group(cycles)
 
 
@@ -367,7 +383,12 @@ def _finite_g_set_from_action(group, point_set, action):
     """
 
     if isinstance(point_set, (tuple, list)):
-        point_set = finite_ordered_set(point_set)
+        # Integer literals are integers: points written as Python ints are
+        # owned integers, the same points a permutation group's elements return.
+        integers = _own_ring(SageZZ)
+        point_set = finite_ordered_set(
+            tuple(integers(point) if isinstance(point, int) else point for point in point_set)
+        )
     assert point_set in FiniteSets(), (
         "the represented G-set constructor requires a finite point set"
     )
@@ -376,9 +397,9 @@ def _finite_g_set_from_action(group, point_set, action):
         "constructing a represented action morphism requires a chosen finite group generating set"
     )
     # Private finite backend serialization: Sage's SymmetricGroup constructor
-    # requires a sliceable concrete domain, while the mathematical point set
-    # remains the owned set above.
-    backend_points = list(point_set)
+    # requires a sliceable concrete domain of engine points, while the
+    # mathematical point set remains the owned set above.
+    backend_points = [_integer_engine_point(point) for point in point_set]
     permutations = _own_group(SymmetricGroup(backend_points))
     permutation_representation = group_homset(group, permutations)(
         {

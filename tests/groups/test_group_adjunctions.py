@@ -1,7 +1,6 @@
 
 from dzack_research.preamble.all import (
     BasedFreeModule,
-    FiniteGSet,
     finite_g_set,
     FinitelyPresentedTorsionModules,
     GroupModule,

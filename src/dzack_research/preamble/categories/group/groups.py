@@ -22,11 +22,15 @@ from sage.groups.abelian_gps.abelian_group import (
 from sage.groups.finitely_presented import FinitelyPresentedGroup
 from sage.groups.free_group import FreeGroup_class
 from sage.groups.indexed_free_group import IndexedFreeGroup
-from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.libgap_morphism import GroupHomset_libgap, GroupMorphism_libgap
+from sage.groups.libgap_wrapper import ParentLibGAP
 from sage.groups.matrix_gps.coxeter_group import CoxeterMatrixGroup
-from sage.groups.matrix_gps.finitely_generated import FinitelyGeneratedMatrixGroup_generic
-from sage.groups.matrix_gps.finitely_generated_gap import FinitelyGeneratedMatrixGroup_gap
+from sage.groups.matrix_gps.finitely_generated import (
+    FinitelyGeneratedMatrixGroup_generic,
+)
+from sage.groups.matrix_gps.finitely_generated_gap import (
+    FinitelyGeneratedMatrixGroup_gap,
+)
 from sage.groups.matrix_gps.named_group import NamedMatrixGroup_generic
 from sage.groups.matrix_gps.named_group_gap import NamedMatrixGroup_gap
 from sage.groups.perm_gps.permgroup import (
@@ -40,43 +44,31 @@ from sage.misc.classcall_metaclass import typecall
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import infinity
+from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
-from sage.structure.parent import Parent
 from sage.structure.category_object import CategoryObject
 from sage.structure.element import MultiplicativeGroupElement, RingElement
+from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.categories.group.magmas import (
-    AdditiveGroups,
-    Monoids,
-)
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    OwnedCategory,
-    OwnedParameterizedCategory,
-)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    _category_homset,
     CategoricalHomset,
     CategoryPacketMethods,
     EndCategoryConstruction,
     HomCategoryConstruction,
     IsoCategoryConstruction,
+    _category_homset,
     category_packet,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_filter,
-    finite_ordered_image,
-    finite_ordered_set,
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedCategory,
+    OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.sets.cardinals import (
-    Cardinalities,
-    aleph,
-    cardinal,
+from dzack_research.preamble.categories.group.magmas import (
+    AdditiveGroups,
+    Monoids,
 )
-from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     _engine_matrix,
@@ -89,7 +81,19 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     ring_morphism,
 )
-
+from dzack_research.preamble.categories.sets.cardinals import (
+    Cardinalities,
+    aleph,
+    cardinal,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_filter,
+    finite_ordered_image,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import realize_owned_category
 
 # --------------------------------------------------------------------------
 # Engine crossings.  These are the only sites that read the Sage group behind
@@ -240,6 +244,9 @@ def _engine_cosets(group, subgroup, side):
         cosets = engine.cosets
     except AttributeError:
         raise NotImplementedError(f"{group} does not enumerate cosets in this engine") from None
+    if _law_reversed(group):
+        # The owned coset gH is {g h} = {h *_engine g}: the engine's coset on the other side.
+        side = "right" if side == "left" else "left"
     backend_cosets = cosets(_engine_group(subgroup), side=side)
     coset_positions = Sets.Δ[len(backend_cosets) - 1]
 
@@ -332,16 +339,82 @@ def _free_generator(group, index):
 
 
 def _reduced_word(group, element):
-    """Return the reduced word with generator labels in the owned free basis."""
+    """Return the reduced word with generator labels in the owned free basis.
+
+    Letters are listed in the order they multiply in the owned group, which
+    is the engine's word reversed when the engine multiplies left to right.
+    """
     owned_label = getattr(
         group,
         "_preamble_free_basis_owned_label",
         lambda label: label,
     )
-    return tuple(
+    letters = tuple(
         (owned_label(backend_index), sign)
         for backend_index, sign in group._to_engine(group(element)).to_word_list()
     )
+    return letters[::-1] if _law_reversed(group) else letters
+
+
+def _law_reversed(group) -> bool:
+    """Whether the owned product is the engine product reversed.
+
+    The owned product is composition of the maps a group's elements act as.
+    Matrix engines already multiply as such maps on column vectors.  Sage's
+    permutation groups and GAP's word and automorphism groups multiply left
+    to right, ``(g h)(x) = h(g(x))``, so their owned product is reversed.
+    """
+    match group:
+        case GroupAutomorphismGroup():
+            return True
+    try:
+        engine = _engine_group(group)
+    except NotImplementedError:
+        return False
+    match engine:
+        case (
+            CoxeterMatrixGroup()
+            | NamedMatrixGroup_generic()
+            | FinitelyGeneratedMatrixGroup_generic()
+        ):
+            return False
+        case (
+            PermutationGroup_generic()
+            | FreeGroup_class()
+            | FinitelyPresentedGroup()
+            | IndexedFreeGroup()
+            | AbelianGroup_class()
+            | ParentLibGAP()
+        ):
+            return True
+    return False
+
+
+def _engine_point(engine, point):
+    """Cross an owned point into the domain of a Sage permutation group.
+
+    An owned integer becomes the engine's integer when the group permutes
+    integers; any other point is already one the engine's domain holds.
+    """
+    engine_point = _integer_engine_point(point)
+    return engine_point if engine_point in engine.domain() else point
+
+
+def _integer_engine_point(point):
+    """An owned integer as the engine's integer; any other point unchanged."""
+    integers = _own_ring(ZZ)
+    if not isinstance(point, int) and point in integers:
+        return _engine_element(integers, point)
+    return point
+
+
+def _owned_point(engine, point):
+    """Read a point of a Sage permutation group's domain as an owned point."""
+    _ = engine
+    match point:
+        case Integer():
+            return _own_ring(ZZ)._from_engine_element(point)
+    return point
 
 
 def _presentation_of(group):
@@ -462,6 +535,8 @@ def _owned_group_category(engine) -> Category:
         categories.append(GroupsWithChosenFinitePresentation())
     if isinstance(engine, IndexedFreeGroup):
         categories.append(GroupsWithChosenFreeBasis())
+    if isinstance(engine, PermutationGroup_generic):
+        categories.append(PermutationGroups())
     return Category.join(tuple(categories))
 
 
@@ -476,7 +551,36 @@ class _OwnedGroupElement(MultiplicativeGroupElement):
         return self._backend_element
 
     def _mul_(self, other):
-        return self.parent()._from_engine(self._backend() * other._backend())
+        r"""``self * other`` is the composition ``self ∘ other``.
+
+        A group acts on the left: ``rho(g h) = rho(g) rho(h)``, the product of
+        the matrices acting on an ordered basis.  Sage's permutation groups and
+        GAP's word groups multiply left to right, ``(g h)(x) = h(g(x))``, so
+        for those engines the owned product is the engine product reversed.
+        """
+        parent = self.parent()
+        left, right = self._backend(), other._backend()
+        if _law_reversed(parent):
+            left, right = right, left
+        return parent._from_engine(left * right)
+
+    def __call__(self, point):
+        r"""Apply this permutation to a point of the set it permutes."""
+        parent = self.parent()
+        engine = _engine_group(parent)
+        assert isinstance(engine, PermutationGroup_generic), (
+            f"{parent} is not realized as a permutation group, so its elements do not act on points"
+        )
+        engine_point = _engine_point(engine, point)
+        if engine_point not in engine.domain():
+            # A permutation of a set fixes every point outside that set.
+            return point
+        return _owned_point(engine, self._backend()(engine_point))
+
+    def Tietze(self):
+        r"""The word of this element in the chosen generators, as signed generator positions."""
+        word = tuple(int(letter) for letter in self._backend().Tietze())
+        return word[::-1] if _law_reversed(self.parent()) else word
 
     def _invert_(self):
         return self.parent()._from_engine(~self._backend())
@@ -1071,17 +1175,20 @@ class GroupHomomorphism(GroupMorphism_libgap):
         )
 
     def _call_(self, element):
-        image = self.gap().Image(_element_to_engine(self.domain(), element))
-        return _element_from_engine(self.codomain(), image)
+        model = _element_to_engine(self.domain(), element)
+        if self.parent()._twisted:
+            model = model.Inverse()
+        return _element_from_engine(self.codomain(), self.gap().Image(model))
 
     def lift(self, element):
         r"""Return one preimage of ``element``."""
         _engine_element = _element_to_engine(self.codomain(), element)
         if _engine_element not in self.gap().Image():
             raise ValueError(f"{element} is not in the image of {self}")
-        return _element_from_engine(
-            self.domain(), self.gap().PreImagesRepresentative(_engine_element)
-        )
+        preimage = self.gap().PreImagesRepresentative(_engine_element)
+        if self.parent()._twisted:
+            preimage = preimage.Inverse()
+        return _element_from_engine(self.domain(), preimage)
 
     def kernel(self):
 
@@ -1113,6 +1220,10 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         self._aut_family = None
         self._domain_object = domain
         self._codomain_object = codomain
+        # When exactly one endpoint multiplies as its engine reversed, an owned
+        # morphism Phi is an engine anti-morphism; it is represented by the
+        # engine morphism phi(x) = Phi(x^-1), and read back through inverses.
+        self._twisted = _law_reversed(domain) != _law_reversed(codomain)
         self._super_categories_for_classes = [Objects()]
         Category.__init__(self)
         GroupHomset_libgap.__init__(
@@ -1152,6 +1263,8 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
 
         source = _gap_model(self.domain())
         target = _gap_model(self.codomain())
+        if self._twisted:
+            image_models = [model.Inverse() for model in image_models]
         if check:
             engine = libgap.GroupHomomorphismByImages(
                 source, target, generator_models, image_models
@@ -1403,41 +1516,89 @@ class GroupIsoCategoryConstruction(IsoCategoryConstruction):
 class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     """Groups whose notebook-facing group interface is owned by the preamble."""
 
+    from sage.groups.abelian_gps.abelian_group import AbelianGroup as _SageAbelianGroup
     from sage.groups.lie_gps.catalog import Nilpotent as _SageNilpotent
     from sage.groups.misc_gps.misc_groups_catalog import (
         Artin as _SageArtin,
-        Braid as _SageBraid,
-        Cactus as _SageCactus,
-        Free as _SageFree,
-        PureCactus as _SagePureCactus,
-        ReflectionGroup as _SageReflection,
-        RightAngledArtin as _SageRightAngledArtin,
-        WeylGroup as _SageWeyl,
     )
-    from sage.groups.perm_gps.permutation_groups_catalog import (
-        ComplexReflection as _SageComplexReflection,
-        Janko as _SageJanko,
-        Mathieu as _SageMathieu,
-        PGL as _SagePGL,
-        PGU as _SagePGU,
-        PSL as _SagePSL,
-        PSp as _SagePSp,
-        PSU as _SagePSU,
-        RubiksCube as _SageRubiksCube,
-        Suzuki as _SageSuzuki,
-        SuzukiSporadic as _SageSuzukiSporadic,
-        Transitive as _SageTransitive,
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        Braid as _SageBraid,
+    )
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        Cactus as _SageCactus,
+    )
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        Free as _SageFree,
+    )
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        PureCactus as _SagePureCactus,
+    )
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        ReflectionGroup as _SageReflection,
+    )
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        RightAngledArtin as _SageRightAngledArtin,
+    )
+    from sage.groups.misc_gps.misc_groups_catalog import (
+        WeylGroup as _SageWeyl,
     )
     from sage.groups.perm_gps.permgroup_named import (
         AlternatingGroup as _SageAlternatingGroup,
+    )
+    from sage.groups.perm_gps.permgroup_named import (
         CyclicPermutationGroup as _SageCyclicGroup,
+    )
+    from sage.groups.perm_gps.permgroup_named import (
         DiCyclicGroup as _SageDiCyclicGroup,
+    )
+    from sage.groups.perm_gps.permgroup_named import (
         DihedralGroup as _SageDihedralGroup,
+    )
+    from sage.groups.perm_gps.permgroup_named import (
         KleinFourGroup as _SageKleinFourGroup,
+    )
+    from sage.groups.perm_gps.permgroup_named import (
         QuaternionGroup as _SageQuaternionGroup,
+    )
+    from sage.groups.perm_gps.permgroup_named import (
         SymmetricGroup as _SageSymmetricGroup,
     )
-    from sage.groups.abelian_gps.abelian_group import AbelianGroup as _SageAbelianGroup
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        PGL as _SagePGL,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        PGU as _SagePGU,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        PSL as _SagePSL,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        PSU as _SagePSU,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        ComplexReflection as _SageComplexReflection,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        Janko as _SageJanko,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        Mathieu as _SageMathieu,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        PSp as _SagePSp,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        RubiksCube as _SageRubiksCube,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        Suzuki as _SageSuzuki,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        SuzukiSporadic as _SageSuzukiSporadic,
+    )
+    from sage.groups.perm_gps.permutation_groups_catalog import (
+        Transitive as _SageTransitive,
+    )
 
     def an_object(self):
         r"""The cyclic group of order two.
@@ -1770,6 +1931,72 @@ class GroupsWithChosenFreeBasis(OwnedCategory):
             return _reduced_word(self, element)
 
 
+class PermutationGroups(OwnedCategory):
+    """Groups carrying a chosen faithful action on a finite set of points.
+
+    A data subcategory: the natural action on the points is the chosen datum,
+    and the methods below consume it.  Elements act on the left, so
+    ``(g h)(x) = g(h(x))``.
+    """
+
+    def an_object(self):
+        r"""The symmetric group on two points."""
+        return OwnedGroups().S(2)
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "permutation groups"
+
+    def super_categories(self):
+        return [OwnedGroups()]
+
+    class ParentMethods:
+        def natural_points(self):
+            r"""The finite set the group permutes."""
+            engine = _engine_group(self)
+            return finite_ordered_set(
+                tuple(_owned_point(engine, point) for point in engine.domain())
+            )
+
+        def action_on(self, points):
+            r"""The ``G``-set on ``points`` with the natural action ``g . x = g(x)``."""
+            from dzack_research.preamble.categories.group.g_sets import finite_g_set
+
+            return finite_g_set(points, self, lambda group_element, point: group_element(point))
+
+        def natural_g_set(self):
+            r"""The natural ``G``-set on the points the group permutes."""
+            return self.action_on(self.natural_points())
+
+        def orbit(self, point):
+            r"""The orbit ``G . point`` of the natural action."""
+            engine = _engine_group(self)
+            return finite_ordered_set(
+                tuple(
+                    _owned_point(engine, image)
+                    for image in engine.orbit(_engine_point(engine, point))
+                )
+            )
+
+        def orbits(self, points=None):
+            r"""The orbit set of the natural action on ``points`` (all natural points by default)."""
+            g_set = self.natural_g_set() if points is None else self.action_on(points)
+            return g_set.orbits()
+
+        def stabilizer(self, point):
+            r"""The subgroup ``G_x`` fixing ``point``, computed by the permutation engine."""
+            engine = _engine_group(self)
+            engine_point = _engine_point(engine, point)
+            return _subgroup_from_gap(
+                self,
+                libgap.Stabilizer(_gap_model(self), libgap(engine_point), libgap.OnPoints),
+            )
+
+        def is_transitive(self) -> bool:
+            r"""Whether the natural action has one orbit."""
+            return bool(_engine_group(self).is_transitive())
+
+
 class OwnedFinitelyPresentedGroups(OwnedCategory):
     """Finitely presented groups, as a property of the group."""
 
@@ -1806,8 +2033,9 @@ class GroupsWithChosenFinitePresentation(OwnedCategory):
 
         @cached_method
         def defining_relations(self):
-            _, relations = _presentation_of(self)
-            return finite_ordered_set(relations)
+            r"""The chosen relators, as elements of the presenting free group."""
+            free, relations = _presentation_of(self)
+            return finite_ordered_set(tuple(free._from_engine(relation) for relation in relations))
 
         def quotient_by_relators(self, relators):
             r"""Return ``G / <<relators>>``, the quotient by the normal closure of ``relators``."""
