@@ -6,6 +6,7 @@ point-set presentation is used only to compute equivariance, fixed points,
 orbits, and the standard finite free/cofree constructions.
 """
 
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -227,6 +228,156 @@ class GSetHomset(CategoricalHomset):
         return f"Mor_{self.domain().acting_group()}({self.domain()}, {self.codomain()})"
 
 
+class OrbitSets(OwnedCategory):
+    r"""The finite orbit quotients \(X/G\) of a finite \(G\)-set."""
+
+    def an_object(self):
+        r"""The orbits of a trivial action on three points."""
+        from dzack_research.preamble.categories.functors.g_sets import (
+            g_set_orbits_trivial_adjunction,
+        )
+        from dzack_research.preamble.categories.group.groups import Groups
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        group = Groups.S(3)
+        return g_set_orbits_trivial_adjunction(group).left_adjoint()(
+            trivial_g_set(Sets.Δ[2], group)
+        )
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+        return [FiniteSets()]
+
+    class ElementMethods(Element):
+        r"""What an orbit is."""
+
+        def __init__(self, parent, index) -> None:
+            Element.__init__(self, parent)
+            self._index = index
+
+        def representative(self):
+            return self.parent().orbit_points(self).unrank(0)
+
+        def points(self):
+            return self.parent().orbit_points(self)
+
+        def __eq__(self, other) -> bool:
+            return (
+                other.parent() is self.parent()
+                and other.parent() is self.parent()
+                and other._index == self._index
+            )
+
+        def __ne__(self, other) -> bool:
+            return not self == other
+
+        def __hash__(self):
+            return hash((id(self.parent()), self._index))
+
+        def _repr_(self):
+            return "Orbit(" + ", ".join(repr(point) for point in self.points()) + ")"
+
+    class ParentMethods:
+
+        def __init__(self, g_set, **rest) -> None:
+            from collections import deque
+
+            self._g_set = g_set
+            group = g_set.acting_group()
+            assert group.is_finitely_generated() is True, (
+                "constructing finite orbits requires a chosen finite group "
+                "generating set"
+            )
+
+            point_set = finite_ordered_set(g_set)
+            point_count = int(point_set.cardinality())
+            unseen = {position for position in range(point_count)}
+            orbit_families = {}
+            orbit_count = 0
+            while unseen:
+                seed_rank = min(unseen)
+                unseen.remove(seed_rank)
+                orbit_ranks = {seed_rank}
+                frontier = deque((seed_rank,))
+                while frontier:
+                    point_rank = frontier.popleft()
+                    point = point_set.unrank(point_rank)
+                    for group_generator in group.group_generators():
+                        image_rank = int(
+                            point_set.rank(g_set.act(group_generator, point))
+                        )
+                        if image_rank in orbit_ranks:
+                            continue
+                        orbit_ranks.add(image_rank)
+                        unseen.discard(image_rank)
+                        frontier.append(image_rank)
+
+                rank_by_position = {
+                    position: rank
+                    for position, rank in enumerate(sorted(orbit_ranks))
+                }
+                orbit_families[orbit_count] = finite_ordered_image(
+                    Sets.Δ[len(rank_by_position) - 1],
+                    lambda position, rank_by_position=rank_by_position: point_set.unrank(
+                        rank_by_position[int(position)]
+                    ),
+                    name=f"Orbit {orbit_count}",
+                )
+                orbit_count += 1
+
+            self._orbit_indices = Sets.Δ[orbit_count - 1]
+            self._orbit_points = finite_indexed_family(
+                self._orbit_indices,
+                lambda index: orbit_families[int(index)],
+                name="Orbit point families",
+            )
+            super().__init__(**rest)
+            self._orbit_classes = finite_ordered_image(
+                self._orbit_indices,
+                lambda index: self.element_class(self, index),
+                name="Orbit classes",
+            )
+
+        def g_set(self):
+            return self._g_set
+
+        def __iter__(self):
+            return iter(self._orbit_classes)
+
+        def __contains__(self, orbit) -> bool:
+            return isinstance(orbit, OrbitClass) and orbit.parent() is self
+
+        def cardinality(self):
+            return self._orbit_classes.cardinality()
+
+        def unrank(self, position):
+            return self._orbit_classes.unrank(position)
+
+        def rank(self, orbit):
+            if orbit not in self:
+                raise ValueError(orbit)
+            return int(orbit._index)
+
+        position = rank
+        index = rank
+
+        def orbit_points(self, orbit):
+            if orbit not in self:
+                raise TypeError("the orbit class belongs to a different quotient")
+            return self._orbit_points[orbit._index]
+
+        def orbit_of(self, point):
+            if point not in self.g_set():
+                raise TypeError(f"{point} is not a point of {self.g_set()}")
+            for orbit in self:
+                if point in self.orbit_points(orbit):
+                    return orbit
+            raise AssertionError("every point of a finite G-set belongs to an orbit")
+
+        def _repr_(self):
+            return f"Orbit set of {self.g_set()}"
+
 def g_set_homset(domain, codomain) -> GSetHomset:
     return GSets(domain.acting_group()).Mor(domain, codomain)
 
@@ -302,138 +453,8 @@ def trivial_g_set(point_set, group):
     return finite_g_set(point_set, group, lambda _group_element, point: point)
 
 
-class OrbitClass(Element):
-    r"""One orbit in the quotient set ``X/G``."""
-
-    def __init__(self, parent, index) -> None:
-        Element.__init__(self, parent)
-        self._index = index
-
-    def representative(self):
-        return self.parent().orbit_points(self).unrank(0)
-
-    def points(self):
-        return self.parent().orbit_points(self)
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, OrbitClass)
-            and other.parent() is self.parent()
-            and other._index == self._index
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __hash__(self):
-        return hash((id(self.parent()), self._index))
-
-    def _repr_(self):
-        return "Orbit(" + ", ".join(repr(point) for point in self.points()) + ")"
 
 
-class OrbitSet(Parent):
-    r"""The finite orbit quotient ``X/G`` of a represented finite ``G``-set."""
-
-    Element = OrbitClass
-
-    def __init__(self, g_set) -> None:
-        from collections import deque
-
-        self._g_set = g_set
-        group = g_set.acting_group()
-        if group.is_finitely_generated() is not True:
-            raise NotImplementedError(
-                "constructing finite orbits requires a chosen finite group generating set"
-            )
-
-        point_set = finite_ordered_set(g_set)
-        point_count = int(point_set.cardinality())
-        unseen = {position for position in range(point_count)}
-        orbit_families = {}
-        orbit_count = 0
-        while unseen:
-            seed_rank = min(unseen)
-            unseen.remove(seed_rank)
-            orbit_ranks = {seed_rank}
-            frontier = deque((seed_rank,))
-            while frontier:
-                point_rank = frontier.popleft()
-                point = point_set.unrank(point_rank)
-                for group_generator in group.group_generators():
-                    image_rank = int(
-                        point_set.rank(g_set.act(group_generator, point))
-                    )
-                    if image_rank in orbit_ranks:
-                        continue
-                    orbit_ranks.add(image_rank)
-                    unseen.discard(image_rank)
-                    frontier.append(image_rank)
-
-            rank_by_position = {
-                position: rank
-                for position, rank in enumerate(sorted(orbit_ranks))
-            }
-            orbit_families[orbit_count] = finite_ordered_image(
-                Sets.Δ[len(rank_by_position) - 1],
-                lambda position, rank_by_position=rank_by_position: point_set.unrank(
-                    rank_by_position[int(position)]
-                ),
-                name=f"Orbit {orbit_count}",
-            )
-            orbit_count += 1
-
-        self._orbit_indices = Sets.Δ[orbit_count - 1]
-        self._orbit_points = finite_indexed_family(
-            self._orbit_indices,
-            lambda index: orbit_families[int(index)],
-            name="Orbit point families",
-        )
-        Parent.__init__(self, category=FiniteEnumeratedSets())
-        self._orbit_classes = finite_ordered_image(
-            self._orbit_indices,
-            lambda index: self.element_class(self, index),
-            name="Orbit classes",
-        )
-
-    def g_set(self):
-        return self._g_set
-
-    def __iter__(self):
-        return iter(self._orbit_classes)
-
-    def __contains__(self, orbit) -> bool:
-        return isinstance(orbit, OrbitClass) and orbit.parent() is self
-
-    def cardinality(self):
-        return self._orbit_classes.cardinality()
-
-    def unrank(self, position):
-        return self._orbit_classes.unrank(position)
-
-    def rank(self, orbit):
-        if orbit not in self:
-            raise ValueError(orbit)
-        return int(orbit._index)
-
-    position = rank
-    index = rank
-
-    def orbit_points(self, orbit):
-        if orbit not in self:
-            raise TypeError("the orbit class belongs to a different quotient")
-        return self._orbit_points[orbit._index]
-
-    def orbit_of(self, point):
-        if point not in self.g_set():
-            raise TypeError(f"{point} is not a point of {self.g_set()}")
-        for orbit in self:
-            if point in self.orbit_points(orbit):
-                return orbit
-        raise AssertionError("every point of a finite G-set belongs to an orbit")
-
-    def _repr_(self):
-        return f"Orbit set of {self.g_set()}"
 
 
 def fixed_point_set(g_set):
