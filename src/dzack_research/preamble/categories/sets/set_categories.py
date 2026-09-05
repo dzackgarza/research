@@ -19,6 +19,7 @@ from sage.structure.element import Element, parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.owned_category import OwnedParent, object_of
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     _category_homset,
@@ -393,7 +394,14 @@ class Sets(OwnedCategory):
     def TotallyOrdered(self):
         return TotallyOrderedSets()
 
-    class ParentMethods:
+    class ParentMethods(OwnedParent, Parent):
+        r"""The owned root of every object chain.
+
+        Only the root owns the host runtime initialization.  A level above
+        declares its own datum and threads into this one with a cooperative
+        ``super().__init__(**rest)``; none of them calls ``Parent.__init__``.
+        """
+
         def Mor(self, codomain, category=None):
             if category is None:
                 return Sets().Mor(self, codomain)
@@ -625,143 +633,153 @@ class SetInclusion(OwnedSetMorphism):
         return f"Subobject of {self.codomain()} defined by {self.domain()}"
 
 
-class PowerSetParent(Parent):
+class PowerSets(OwnedCategory):
     r"""The power object \(P(X)\), represented by subobjects of ``X``."""
 
-    def __init__(self, base_set) -> None:
-        if base_set not in Sets():
-            raise TypeError("a power set is formed from an owned set")
-        self._base_set = base_set
-        Parent.__init__(self, category=SageSets())
+    def an_object(self):
+        r"""One object of this category."""
+        return PowerSet(Sets.Δ[2])
 
-    def base_set(self):
-        return self._base_set
+    def super_categories(self):
+        return [Sets()]
 
-    def truth_values(self):
-        return Sets.Δ[1]
+    class ParentMethods:
+        def __init__(self, base_set, **rest) -> None:
+            if base_set not in Sets():
+                raise TypeError("a power set is formed from an owned set")
+            self._base_set = base_set
+            Parent.__init__(self, category=SageSets())
 
-    def characteristic_homset(self):
-        return Sets().Mor(self.base_set(), self.truth_values())
+        def base_set(self):
+            return self._base_set
 
-    characteristic_hom_category = characteristic_homset
+        def truth_values(self):
+            return Sets.Δ[1]
 
-    def _subset_from_predicate(self, predicate: Callable):
-        truth_values = self.truth_values()
-        characteristic = SetMorphism(
-            self.characteristic_homset(),
-            lambda member: truth_values(ZZ.one() if predicate(member) else ZZ.zero()),
-        )
-        domain = ConditionSet(self.base_set(), predicate)
-        return SetInclusion(domain, self.base_set(), characteristic)
+        def characteristic_homset(self):
+            return Sets().Mor(self.base_set(), self.truth_values())
 
-    def from_predicate(self, predicate: Callable):
-        return self._subset_from_predicate(predicate)
+        characteristic_hom_category = characteristic_homset
 
-    def from_characteristic_morphism(self, characteristic_morphism):
-        if characteristic_morphism.parent() is not self.characteristic_homset():
-            raise ValueError("a characteristic morphism must lie in Hom(X, Δ[1])")
-        truth = self.truth_values()(1)
+        def _subset_from_predicate(self, predicate: Callable):
+            truth_values = self.truth_values()
+            characteristic = SetMorphism(
+                self.characteristic_homset(),
+                lambda member: truth_values(ZZ.one() if predicate(member) else ZZ.zero()),
+            )
+            domain = ConditionSet(self.base_set(), predicate)
+            return SetInclusion(domain, self.base_set(), characteristic)
 
-        def predicate(member):
-            return characteristic_morphism(member) == truth
+        def from_predicate(self, predicate: Callable):
+            return self._subset_from_predicate(predicate)
 
-        domain = ConditionSet(self.base_set(), predicate)
-        return SetInclusion(domain, self.base_set(), characteristic_morphism)
+        def from_characteristic_morphism(self, characteristic_morphism):
+            if characteristic_morphism.parent() is not self.characteristic_homset():
+                raise ValueError("a characteristic morphism must lie in Hom(X, Δ[1])")
+            truth = self.truth_values()(1)
 
-    def _from_finite_members(self, members):
-        normalized = []
-        for member in members:
-            try:
-                member = self.base_set()(member)
-            except (TypeError, ValueError) as error:
-                raise ValueError(f"{member!r} is not in {self.base_set()}") from error
-            if member not in normalized:
-                normalized.append(member)
-        frozen = tuple(normalized)
-        truth_values = self.truth_values()
-        characteristic = SetMorphism(
-            self.characteristic_homset(),
-            lambda member: truth_values(ZZ.one() if member in frozen else ZZ.zero()),
-        )
-        domain = ConditionSet(self.base_set(), lambda member: member in frozen)
-        return SetInclusion(domain, self.base_set(), characteristic, frozen)
+            def predicate(member):
+                return characteristic_morphism(member) == truth
 
-    def __call__(self, *args, **kwargs):
-        r"""Construct through the owned set representation directly."""
-        return self._element_constructor_(*args, **kwargs)
+            domain = ConditionSet(self.base_set(), predicate)
+            return SetInclusion(domain, self.base_set(), characteristic_morphism)
 
-    def _element_constructor_(self, candidate):
-        if isinstance(candidate, SetInclusion):
-            if candidate.codomain() is not self.base_set():
-                raise ValueError("the subobject has a different base set")
-            return candidate
-        if candidate is self.base_set():
-            return self.from_predicate(lambda _member: True)
-        if candidate in Sets() and candidate in FiniteEnumeratedSets():
-            return self._from_finite_members(candidate)
-        if isinstance(candidate, Iterable):
-            return self._from_finite_members(candidate)
-        raise TypeError(f"{candidate!r} does not present a subset of {self.base_set()}")
+        def _from_finite_members(self, members):
+            normalized = []
+            for member in members:
+                try:
+                    member = self.base_set()(member)
+                except (TypeError, ValueError) as error:
+                    raise ValueError(f"{member!r} is not in {self.base_set()}") from error
+                if member not in normalized:
+                    normalized.append(member)
+            frozen = tuple(normalized)
+            truth_values = self.truth_values()
+            characteristic = SetMorphism(
+                self.characteristic_homset(),
+                lambda member: truth_values(ZZ.one() if member in frozen else ZZ.zero()),
+            )
+            domain = ConditionSet(self.base_set(), lambda member: member in frozen)
+            return SetInclusion(domain, self.base_set(), characteristic, frozen)
 
-    def __contains__(self, candidate) -> bool:
-        if isinstance(candidate, SetInclusion):
-            return candidate.codomain() is self.base_set()
-        if candidate is self.base_set():
-            return True
-        if candidate in Sets() and candidate in FiniteEnumeratedSets():
-            return all(member in self.base_set() for member in candidate)
-        if isinstance(candidate, Iterable):
-            return all(member in self.base_set() for member in candidate)
-        return False
+        def __call__(self, *args, **kwargs):
+            r"""Construct through the owned set representation directly."""
+            return self._element_constructor_(*args, **kwargs)
 
-    def top(self):
-        return self(self.base_set())
+        def _element_constructor_(self, candidate):
+            if isinstance(candidate, SetInclusion):
+                if candidate.codomain() is not self.base_set():
+                    raise ValueError("the subobject has a different base set")
+                return candidate
+            if candidate is self.base_set():
+                return self.from_predicate(lambda _member: True)
+            if candidate in Sets() and candidate in FiniteEnumeratedSets():
+                return self._from_finite_members(candidate)
+            if isinstance(candidate, Iterable):
+                return self._from_finite_members(candidate)
+            raise TypeError(f"{candidate!r} does not present a subset of {self.base_set()}")
 
-    def bottom(self):
-        return self(())
+        def __contains__(self, candidate) -> bool:
+            if isinstance(candidate, SetInclusion):
+                return candidate.codomain() is self.base_set()
+            if candidate is self.base_set():
+                return True
+            if candidate in Sets() and candidate in FiniteEnumeratedSets():
+                return all(member in self.base_set() for member in candidate)
+            if isinstance(candidate, Iterable):
+                return all(member in self.base_set() for member in candidate)
+            return False
 
-    def inverse_image_morphism(self, morphism):
-        if morphism.codomain() is not self.base_set():
-            raise ValueError("inverse image requires the morphism codomain to be the base set")
-        target = PowerSet(morphism.domain())
-        return SetMorphism(
-            Sets().Mor(self, target),
-            lambda subset: target.from_predicate(lambda member: morphism(member) in subset),
-        )
+        def top(self):
+            return self(self.base_set())
 
-    def direct_image_morphism(self, morphism):
-        if morphism.domain() is not self.base_set():
-            raise ValueError("direct image requires the morphism domain to be the base set")
-        target = PowerSet(morphism.codomain())
+        def bottom(self):
+            return self(())
 
-        def direct_image(subset):
-            size = subset.cardinality()
-            if not size.is_finite():
-                image_domain = ImageSet(morphism, subset.domain())
-                return SetInclusion(image_domain, morphism.codomain())
-            return target(tuple(morphism(member) for member in subset))
+        def inverse_image_morphism(self, morphism):
+            if morphism.codomain() is not self.base_set():
+                raise ValueError("inverse image requires the morphism codomain to be the base set")
+            target = PowerSet(morphism.domain())
+            return SetMorphism(
+                Sets().Mor(self, target),
+                lambda subset: target.from_predicate(lambda member: morphism(member) in subset),
+            )
 
-        return SetMorphism(Sets().Mor(self, target), direct_image)
+        def direct_image_morphism(self, morphism):
+            if morphism.domain() is not self.base_set():
+                raise ValueError("direct image requires the morphism domain to be the base set")
+            target = PowerSet(morphism.codomain())
 
-    def __iter__(self):
-        if self.base_set() not in FiniteEnumeratedSets():
-            raise TypeError("only a finite power set has a chosen enumeration")
-        return (self(subset) for subset in SageSubsets(self.base_set()))
+            def direct_image(subset):
+                size = subset.cardinality()
+                if not size.is_finite():
+                    image_domain = ImageSet(morphism, subset.domain())
+                    return SetInclusion(image_domain, morphism.codomain())
+                return target(tuple(morphism(member) for member in subset))
 
-    def cardinality(self):
-        return cardinal(2) ** cardinal(self.base_set().cardinality())
+            return SetMorphism(Sets().Mor(self, target), direct_image)
 
-    def cardinality_comparison(self):
-        size = self.cardinality()
-        return Cardinalities().Mor(size, size).identity()
+        def __iter__(self):
+            if self.base_set() not in FiniteEnumeratedSets():
+                raise TypeError("only a finite power set has a chosen enumeration")
+            return (self(subset) for subset in SageSubsets(self.base_set()))
 
-    def _repr_(self) -> str:
-        return f"Power set of {self.base_set()}"
+        def cardinality(self):
+            return cardinal(2) ** cardinal(self.base_set().cardinality())
+
+        def cardinality_comparison(self):
+            size = self.cardinality()
+            return Cardinalities().Mor(size, size).identity()
+
+        def _repr_(self) -> str:
+            return f"Power set of {self.base_set()}"
+
+
 
 
 @cached_function
 def PowerSet(base_set):
-    return PowerSetParent(base_set)
+    return object_of(PowerSets(), base_set=base_set)
 
 
 class FunctionSet(Parent):
@@ -1483,7 +1501,6 @@ def CoproductMorphism(source, target, component_morphisms):
 
 ObjectSetsOfDiscreteCategories = SageSets
 ExponentialsOfSets = FunctionSet
-PowerSets = PowerSetParent
 FinitePowerSets = FiniteSubsetsParent
 
 
@@ -1687,12 +1704,19 @@ class NaturalNumbers(Parent):
     Element = NaturalNumber
 
     def __init__(self) -> None:
+        from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+
         Parent.__init__(
             self,
             # Enumerated as well as countably infinite: the identity ranking is
             # the chosen enumeration, and `__iter__` below is it.
             category=Category.join(
-                (CountablyInfiniteSets(), TotallyOrderedSets(), InfiniteEnumeratedSets())
+                (
+                    CountablyInfiniteSets(),
+                    TotallyOrderedSets(),
+                    InfiniteEnumeratedSets(),
+                    AdditiveMonoids(),
+                )
             ),
         )
 
@@ -1800,7 +1824,7 @@ __all__ = [
     "ObjectSetsOfDiscreteCategories",
     "PartiallyOrderedSets",
     "PowerSet",
-    "PowerSetParent",
+    "PowerSets",
     "PowerSets",
     "Set",
     "SetInclusion",

@@ -596,7 +596,15 @@ class OwnedParent:
 
     @lazy_attribute
     def element_class(self) -> type:
-        return self.category().ElementType
+        # A chain-built parent declares no ``Element``: the category's
+        # ``ElementMethods`` is the element implementation, for the same reason
+        # ``ParentMethods`` is the parent one.  A parent still declaring its own
+        # -- one not yet migrated onto the chain -- keeps it, which is Sage's
+        # own rule and what lets the two coexist while the migration runs.
+        declared = getattr(type(self), "Element", None)
+        if declared is None:
+            return self.category().ElementType
+        return SageParent.element_class.f(self)
 
 
 class _BaseRingOfACategoryOverABase:
