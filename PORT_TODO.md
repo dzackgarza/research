@@ -1,13 +1,50 @@
 # Archive Port Outstanding Work
 
-Unresolved semantic-migration work from `archives/preamble/` into
-`src/dzack_research/preamble/`. Completed work and standing guidance are omitted.
+Mathematical requirements for the preamble, including work originating in `archives/preamble/`.
+An unchecked row can include an implemented case whose extension remains open.
+Inspect the current source before selecting its missing mathematical output.
+Original section numbers are retained for source references.
 
-Execution order is breadth-first: restore broadly useful categorical/module and
-scheme/geometry foundations before returning to specialized lattice, orbit, and
-Coxeter/Vinberg algorithms. Original section numbers are retained for provenance.
+[TODO-PRIORITIES.md](TODO-PRIORITIES.md#current-objective-and-order) owns execution order and the boundary for local category work.
+Scheme theory for AEGS notebooks is the first application, developed alongside `sage-categories`.
+Its module, algebra, functor, and initialization dependencies belong to that application.
+
+## Geometry delivery sequence
+
+- [ ] Begin with the distinguished-open requirement in §9.2: construct the open immersion, localization map, and restriction of functions.
+- [ ] Complete affine `Spec` on ring morphisms, closed immersions, and fiber products through the algebra constructions in §§8.4–10.
+- [ ] Supply structure sheaves, localized modules, projective affine charts, and gluing from §8.4, with their restriction and transition maps.
+- [ ] Build the line bundles and section maps from §11 needed for the selected AEGS construction.
+- [ ] Continue through the required covers, involutions, fixed subschemes, quotients, and toric/ADE pairs in §§12–14 and 16–17.
+- [ ] Express each selected AEGS example in `computations/notebooks/` using these scheme objects and morphisms.
+  Retain its source locator and hypotheses with the mathematical calculation.
+
+The sequence selects small complete constructions from the sections below.
+Generalizing every algebraic operation to every base ring is separate from completing the cases required by the geometry.
+The public mathematical domains and computational hypotheses remain explicit in each case.
+
+## Existing mathematical implementations to extend
+
+These source locations establish implementation scope, not current execution results:
+
+| Construction | Current owner under `src/dzack_research/preamble/` | Extension boundary |
+| --- | --- | --- |
+| Algebra structure and underlying module | `categories/algebras/algebras.py`, `categories/functors/algebra_modules.py` | Complete constructor threading and inherited module operations for each geometric algebra. |
+| Isotropic subobjects, flags, orbit representatives, transporters, and stabilizers | `categories/isotropic_orbits.py`, `categories/lattice_morphisms.py` | Compose the existing operations into the required incidence and research calculations. |
+| Arithmetic-subgroup orbit splitting | `categories/orthogonal_quotients.py`, `categories/group/predicate_subgroups.py` | Extend the represented character-subgroup cases to the subgroup required by the application. |
+| Centralizer image on the discriminant form | `categories/lattice_morphisms.py::centralizer_discriminant_image`, `categories/lattice_engines.py` | The full arithmetic centralizer and equivariant orbit calculations are distinct outputs. |
+| Embeddings and isometries | `categories/lattice_morphisms.py`, `categories/lattices.py` | Extend supported target and witness regimes; distinguish existence, a morphism, and orbit classification. |
+| Rooted Coxeter diagrams and elliptic/parabolic subdiagrams | `categories/coxeter_diagrams.py` | Extend to required chamber, reflection, and subdiagram-orbit constructions. |
+
+Retain the existing definite-lattice, finite-form, gluing, module, and algebra algorithms when categories become framework leaves.
+Their defining data and exact engine calculations remain useful across the transfer.
 
 ## 0. Owned-category and backend-neutral architecture
+
+Apply these obligations to the active construction and its shared dependencies under the local Cat work criteria in `TODO-PRIORITIES.md`.
+Reuse the existing implementations; earlier completion notes are retained there.
+General automatic interpretation of declared functors and constructor inheritance is developed in `sage-categories`.
+Local repairs provide coherent reuse until the corresponding framework consumer is ready.
 
 - [ ] Complete the graph-purity migration: every mathematical `super_categories()` edge in the live preamble must run only between owned categories. Sage category nodes (`sage.categories.*`) may be queried privately to recognize capabilities of a concrete engine object, but must never be semantic supercategories, public theorem hypotheses, or part of the owned category graph.
 - [ ] Replace remaining subclasses/usages of Sage parameterized category bases whose constructors impose Sage mathematical-category membership. In particular, categories parameterized by a ring/module/group/etc. must store the owned base object directly; the owned base need not itself lie in Sage's corresponding category graph.

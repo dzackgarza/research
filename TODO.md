@@ -1,6 +1,28 @@
 # Preamble remediation queue
 
+## Work selection
+
+Follow [the execution priorities](TODO-PRIORITIES.md#current-objective-and-order) and its boundary for local category work.
+The first application is scheme theory for AEGS notebooks, with its required module and algebra inheritance.
+Select a reported defect below when it blocks that construction or causes dependent implementations to repeat an algorithm.
+The witness observations record earlier findings; inspect the current owner before treating one as an outstanding defect.
+
+## Active scheme and inheritance work
+
+- [ ] Complete the underlying-module construction for each algebra used by the geometry, including its action on morphisms and initialized module state.
+  Reuse module arithmetic, presentations, and linear-map algorithms through that structure.
+  Inspect `categories/algebras/algebras.py` together with `categories/functors/algebra_modules.py`.
+- [ ] Repair the shared constructor or functor path when an inherited operation cannot use its required state.
+  Keep the repair in `owned_category.py`, `refine.py`, or the owning functor as appropriate.
+  Use the [local Cat work criteria](TODO-PRIORITIES.md#how-much-category-theory-to-implement-here) to decide between automatic inheritance and explicit functor application.
+- [ ] Complete the distinguished-open, affine-morphism, structure-sheaf, and projective-gluing requirements in `PORT_TODO.md` §§8.4–10.
+  Expose the resulting schemes and maps through the notebook session.
+- [ ] Continue the line-bundle, section, cover, involution, and toric/ADE requirements needed by the AEGS calculations.
+  `PORT_TODO.md` §§11–14, 16–17, and 20 own the detailed mathematics.
+
 ## Collection and finiteness remediation
+
+Apply this queue to the active construction and its shared owners. Broad sweeps follow the surviving framework interfaces.
 
 `CONTRIBUTING.md` policies `SET-01` and `CAT-08` are authoritative for this queue: mathematical collections in the preamble are owned sets/families, not Python sequences; iteration is lazy; whole-family `list`/`tuple` materialization is allowed only as transient private serialization after finiteness and order have been established mathematically.
 
@@ -26,15 +48,10 @@
 cannot construct, it reports.  Both causes below are the same defect seen twice: the code
 does not say, in a form anything can read, what a mathematical parameter *is*.
 
-- [ ] **URGENT — `LEX-12`, `LEX-14`: annotate the preamble.**  Of 4931 public functions
-  and methods under `src/dzack_research/preamble`, 2422 take an argument beyond `self`,
-  and 52 of those — 2.1% — annotate every argument; 12.6% carry a return annotation.  The
-  Sage QC tier reports 7142 mypy errors across 137 preamble files.  An annotation names
-  the codomain and its reader is a mathematician (`LEX-12`), so an unannotated parameter
-  is missing mathematics, not missing ceremony.  Annotate from the owned category graph,
-  never from the framework's class tree (`LEX-14`), and never with `object` or `Any`.
-  Everything below depends on this: a signature is the only place a tool can learn which
-  category an operation takes and returns.
+- [ ] **`LEX-12`, `LEX-14`: annotate the active construction and its shared interfaces.**
+  Name the mathematical parameter domains and result categories as their owners are repaired.
+  Preserve those domains when categories become `sage-categories` leaves.
+  Complete the broad annotation pass against the surviving interfaces after transfer.
 
 - [ ] **`LEX-01`, `LEX-12`: `OwnedParameterizedCategory` erases what its parameter is.**
   Every subclass declares `(parameter)` whatever the mathematics is, and the four in the
@@ -48,15 +65,10 @@ does not say, in a form anything can read, what a mathematical parameter *is*.
   `categories/group/groups.py`, `categories/group/predicate_subgroups.py`,
   `categories/modules/dg_modules.py`.
 
-- [ ] **`DEV-11`: give every owned category an `an_object()`.**  `OwnedCategory` now
-  declares it as an `abstract_method`; `OwnedGroups` and `OwnedRings` supply it, which is
-  what makes `Subgroups(OwnedGroups().an_object())` and `Lattices(OwnedRings().an_object())`
-  build.  Every other owned category still has none, so it cannot exhibit an inhabitant and
-  nothing generic can construct over it.  Sage's inherited `Category.example` is not a
-  substitute: it looks for a template under `sage.categories.examples` and returns the
-  `NotImplemented` **singleton** when it finds none — silent where it must be loud, and
-  answering for Sage's graph rather than the owned one.
-  `categories/abstract_categories/objects.py`.
+- [ ] **`DEV-11`: complete the owned `an_object()` implementations needed by each construction.**
+  `OwnedCategory` declares the contract in `categories/abstract_categories/objects.py`.
+  Each specimen must inhabit its stated category and use its own constructors and inherited operations.
+  The remaining witness observations below identify candidates for this work.
 
 - [ ] **`STY-49`: graded-commutative algebras hard-refuse every grading but `ZZ`.**
   `GradedCommutativeAlgebras(R, M)` and `StrictlyGradedCommutativeAlgebras(R, M)` compare

@@ -1,14 +1,95 @@
 # Preamble execution priorities
 
-This file orders the outstanding preamble work across `TODO.md`, `TODO-ORGANIZATION.md`, `PORT_TODO.md`, the archived preamble TODOs, and the repository architecture policies.
-It is an execution order, not a duplicate inventory: the detailed mathematical requirements remain in their owning TODO files.
+This file owns work selection across `TODO.md`, `TODO-ORGANIZATION.md`, and `PORT_TODO.md`.
+The detailed mathematical requirements remain in those files.
 
-The governing rule is **delete/consolidate before refactoring survivors**. Do not spend time cleaning representation, imports, file layout, or collection handling inside an implementation that a higher-priority step is expected to remove or merge into another mathematical owner.
+## Current objective and order
+
+Develop principled scheme constructions that support AEGS geometry in `computations/notebooks/`.
+This research proceeds while `~/gitclones/sage-categories` develops the replacement category framework.
+The preamble must remain usable, organized, and extensible throughout that work.
+
+1. Complete the scheme, algebra, and module constructions needed by the next AEGS notebook calculation.
+2. Repair their shared categorical inheritance and initialization wherever the calculation would otherwise duplicate an implementation.
+3. Extend geometric algorithms through those owners: sheaves, sections, covers, involutions, singularities, and toric or ADE pairs.
+4. Continue arithmetic lattice orbits, centralizers, embeddings, and reflection geometry as subsequent research applications.
+
+Steps 1–3 form one dependency-driven work stream. Notebook geometry can advance before the framework transfer.
+An arithmetic calculation moves earlier when that geometry requires its result.
+Integrate with `sage-categories` alongside this application order when it supports the complete construction being transferred.
+Each work unit ends at a mathematical construction usable by the notebook, including its maps and inherited operations.
+
+## How much category theory to implement here
+
+The preamble's category layer supplies the reuse needed by its mathematical algorithms.
+`sage-categories` develops the more general replacement: declared structure functors, property subcategories, and functor-driven class and constructor inheritance.
+Its intended scope and current public behavior are separate facts.
+Consult its `specs/system.md`, `specs/leaves.md`, `specs/functor.md`, and `specs/leaf-scaffolding.md` at each relevant transfer boundary.
+
+Classify the responsibility being changed, rather than the directory containing it:
+
+| Responsibility | Work here before transfer | What the later leaf retains |
+| --- | --- | --- |
+| Mathematical ownership | Put each operation at the category where it is defined; consolidate repeated algorithms there. | Domains, codomains, hypotheses, algorithms, and their mathematical owner. |
+| Underlying structures | Define the needed forgetful functor on objects and morphisms; make its image usable by inherited operations. | The functor, its actions, and the structure data. |
+| Constructor threading | Repair the existing common construction path when dependent categories cannot initialize their inherited state. | The defining data at each level; framework-specific class assembly is replaced. |
+| Universal constructions | Complete the product, tensor, quotient, kernel, or other construction needed by a real consumer, with its maps. | The domain-specific realization and universal data, using the framework's generic construction after transfer. |
+| Property placement | Distinguish a property of an existing object from additional chosen structure. Place each at its mathematical owner. | The property or structure declaration and justified functor properties. |
+| General framework machinery | Develop general functor classification, compiler, inheritance, and static-projection machinery in `sage-categories`. | The preamble consumes the resulting framework. |
+
+### Repairs that earn their cost now
+
+For a proposed shared repair, name the failing construction, the state or algorithm it needs, and the owner that supplies it.
+Then trace the dependent constructor and at least one inherited operation through that owner.
+A repair is useful when it completes that path and removes the reason for downstream implementations to repeat it.
+The repair can span several files: its scope is the shared responsibility and affected consumers.
+
+For example, an algebra built on a represented module must use that module's additive operations, presentation, and linear-map algorithms.
+The algebra contributes multiplication, unit, and the conditions on algebra morphisms.
+`categories/algebras/algebras.py` and `categories/functors/algebra_modules.py` are the current owners to inspect together.
+An available method name alone is insufficient if it reads uninitialized state or uses the wrong underlying module.
+
+Retain mathematical distinctions during reuse.
+Forgetting an algebra morphism gives a module morphism, while the algebra Hom still imposes its own preservation conditions.
+A forgetful functor does not imply full categorical inclusion, and a supercategory edge alone does not specify its action.
+Record only functor properties justified for that functor; the new framework's general interpretation belongs upstream.
+In particular, distinguish property-subcategory inclusions from functors forgetting selected structure, and state (op)fibration hypotheses where used.
+
+### Implementation limitations to contain
+
+Use `owned_category.py`, `refine.py`, and the existing functor implementation as the common runtime boundaries.
+An explicit application of an underlying-structure functor can provide correct reuse while automatic inheritance remains incomplete.
+Keep any required initialization or representation adaptation at that common boundary or the functor's owning implementation.
+Public objects, morphisms, and results still have their stated mathematical meaning.
+
+Accept manual declarations or explicit forwarding through the correct functor when they avoid copying an algorithm.
+Existing centralized class-construction machinery can remain until the replacement supports the same consumer.
+Its removal should leave the mathematical algorithm and defining data intact.
+If an adaptation needs a separate copy in each leaf, repair the common owner instead.
+If that repair becomes a new general compiler or functor calculus, develop it in `sage-categories` and retain explicit reuse here.
+
+The stopping point for local Cat work is a coherent consumer with one owner for each operation and initialized inherited state.
+Universal automation across unused categories can follow the replacement framework.
+Implementation awkwardness at one isolated boundary is acceptable; incorrect mathematics or repeated domain algorithms require repair.
+Replacement of a runtime repair later does not by itself make that repair wasted work.
+It earns its place when it keeps current categories reusable and enables the needed mathematical construction before transfer.
+
+### Transfer by complete mathematical dependency
+
+Before replacing a preamble subsystem, establish the required public constructors, underlying-structure functors, and morphism actions in `sage-categories`.
+Include an inherited operation and the domain-specific algorithm needed by its notebook consumer.
+The presence of a similarly named category or a production specification alone does not establish readiness.
+
+Rewrite the subsystem's categories as leaves using the declared functors and constructor protocol.
+Preserve its mathematics, exact engine algorithms, and notebook constructions.
+Replace the preamble runtime responsibilities covered by that transfer in the same unit.
+Transfer related dependency chains together where mixed object systems would require duplicate mathematical owners.
+Broad annotation, collection, and package-layout sweeps follow the surviving interfaces; annotate and consolidate each active construction as it changes.
 
 Before editing `src/dzack_research/preamble/**`, follow `AGENTS.md`: read all current root `*TODO*.md` files and the generated `docs/preamble-megadoc.md`; regenerate the megadoc first when it is stale relative to the live tree.
 Preserve the dirty authoritative tree and unrelated work throughout.
 
-## Priority 0 — Re-ground and identify deletion boundaries
+## Selecting the next construction
 
 Before a structural edit in a subsystem:
 
@@ -22,12 +103,20 @@ Before a structural edit in a subsystem:
 
 5. Do not split files or reorganize packages until ownership and dependencies have stabilized enough that the split reflects mathematics rather than current implementation accidents.
 
-In particular, **pause the broad per-file `tuple/list` cleanup** whenever the file is scheduled for deletion/consolidation below.
-The collection spine already landed should be used by surviving abstractions; it should not motivate polishing code that will disappear.
+Use the existing collection implementations in each active construction.
+Consolidate representations when this restores mathematical reuse or supports the notebook result.
 
 Judge progress by `CONTRIBUTING.md` `DEV-36`.  The goal is source a mathematician can read against a definition; every count is a weak proxy for that.
 A measure is usable only as a differential signal beside its upstream Sage comparator, and only when it makes someone open a file and read it.
 Sage itself would fail several measures that look like defects here — its category package runs 154 of 229 modules in one dependency cycle — so an uncalibrated number is not evidence.
+
+## Recorded consolidation work
+
+The following record preserves the earlier work units and their reported completion notes.
+Use the current objective above to select work; check a recorded claim against its live owner when the next construction depends on it.
+
+<details>
+<summary>Earlier priorities 0.5–6.2 and completion notes</summary>
 
 ## Priority 0.5 — Standing repairs, before the phase order resumes
 
@@ -623,9 +712,11 @@ The separate even-unimodular embedding specimen is currently blocked before
 its mocked engine seam by the pre-existing owned-cardinal arithmetic defect,
 so it is not counted in that gate.
 
-### 6.3 `refine()` audit
+</details>
 
-Only after construction/provenance simplification, execute `archives/preamble/src-TODO.md`:
+## Constructor and refinement repairs
+
+Apply `archives/preamble/src-TODO.md` to the construction needed by the active geometry work:
 
 - constructors provide construction data;
 
@@ -637,11 +728,13 @@ Only after construction/provenance simplification, execute `archives/preamble/sr
 
 - eliminate import-order-dependent ring/module/algebra structure installation.
 
-Auditing `refine()` earlier would waste effort on objects and source/provenance machinery expected to disappear in Priorities 1 and 6.1.
+Repair shared initialization before adding dependent implementations. Use the local Cat boundary defined above to bound the repair.
 
-## Priority 7 — Normalize affine algebra/scheme architecture
+## Scheme theory for AEGS notebooks
 
-Do this only after ring Hom, generic categorical constructions, provenance, and runtime construction are stable.
+This is the first active application. Complete its ring Hom, module, functor, and constructor dependencies with each geometric construction.
+Detailed requirements are in `PORT_TODO.md` §§8.4–14, 16–17, and 20.
+The first foundational specimen is a distinguished open of the affine line, with its localization map and restriction of functions.
 
 Order:
 
@@ -659,11 +752,15 @@ Order:
 
 7. Then complete remaining scheme/polytope collection ownership, facets/fans, and general affine/projective cases.
 
-Only after the affine/local algebra prerequisites land should work proceed to regularity, smoothness, local intersection multiplicity, `Proj`, sheaves, line bundles, cyclic covers, blowups, etc., as already ordered in `PORT_TODO.md`.
+Continue through affine structure sheaves and module localization, then projective charts and gluing, line bundles, and section maps.
+Use these constructions for the cover, involution, fixed-locus, quotient, and toric/ADE calculations selected by the AEGS notebooks.
+Local geometry uses the stated localization and stalk hypotheses from `PORT_TODO.md`.
+Notebook computations retain the source example, base, scheme objects, and actual morphisms so they can use the later leaf implementations.
 
-## Priority 8 — Specialized group, lattice, orbit, Coxeter, and profinite work
+## Arithmetic and reflection applications after the geometry prerequisites
 
-`PORT_TODO.md` explicitly orders work breadth-first: these branches come after the common foundations above.
+Use existing implementations before selecting an unchecked port item. `PORT_TODO.md` records the relevant current source locations.
+The first orbit application is a specified lattice's line/plane incidence and arithmetic-subgroup splitting, when required by the research.
 
 Within this phase:
 
@@ -677,15 +774,16 @@ Within this phase:
 
 5. Only then clean finite Hodge/lattice/orbit/Coxeter collections and application catalogue data into owned sets/families.
 
-6. Implement arithmetic-group, isotropic-orbit, centralizer, Vinberg/reduction, and higher-Witt-index algorithms only after their subobject, action, Hom, discriminant, and backend foundations are stable.
+6. Extend arithmetic-group, isotropic-orbit, centralizer, Vinberg/reduction, and higher-Witt-index algorithms through their existing owners and established engines.
+   Distinguish a centralizer's discriminant image from the full arithmetic centralizer, and existence from a constructed embedding or isometry.
 
 7. Profinite/Galois stage/embedding/conjugacy collection cleanup belongs here unless a needed fix is foundational for general groups/ring Homs.
 
-The remaining archive-derived lattice gaps in `archives/preamble/TODO.md` are late specialized work, not prerequisites for foundational cleanup.
+The archive-derived lattice gaps remain mathematical requirements. Select one when its missing output is needed by an application.
 
-## Priority 9 — Filesystem/package decomposition
+## Filesystem and package organization
 
-Only after Priorities 1–8 have exposed stable mathematical ownership and a real module DAG:
+Organize each active subsystem around its surviving mathematical owners:
 
 - split domain monoliths where the split corresponds to independent mathematical owners;
 
@@ -697,9 +795,10 @@ Only after Priorities 1–8 have exposed stable mathematical ownership and a rea
 
 Do not use LOC thresholds by themselves as split criteria.
 
-## Priority 10 — Final collection and Python cleanup
+## Broad collection and Python cleanup
 
-This is deliberately last.
+Run broad cleanup after the framework transfer establishes the surviving interfaces.
+The active construction's collection semantics, types, and reuse remain part of its implementation now.
 
 1. Run the final mechanical audit of every `tuple(...)` / `list(...)` occurrence under `src/dzack_research/preamble`.
 
@@ -715,24 +814,24 @@ This is deliberately last.
 
 5. Do final package/export cleanup only after all deletions and moves are complete.
 
-Mechanical cleanup earlier in the process is explicitly lower value because it would polish code scheduled for deletion or alter import/layout details that the semantic refactors will rewrite anyway.
+Choose cleanup by the correctness and readability of the surviving mathematical construction.
 
 ## Dependency summary
 
-The intended dependency chain is:
+The active dependency chain is:
 
 ```text
-known deletion/consolidation
-    -> real defining-module DAG
-        -> owned category/Hom graph
-            -> common collection/finiteness foundations
-                -> semantic kernel/image/quotient/action/etc. APIs
-                    -> provenance/backend/refinement cleanup
-                        -> affine algebra + scheme normalization
-                            -> specialized lattice/group/orbit/geometry work
-                                -> package splits
-                                    -> mechanical collection/Python cleanup
+AEGS scheme construction
+    -> required algebra/module operations and underlying-structure functors
+        -> bounded shared inheritance and constructor repairs
+            -> usable scheme objects and morphisms in notebooks
+                -> further geometry and required arithmetic applications
+
+sage-categories framework development proceeds alongside this chain
+    -> complete prerequisite implementations for a preamble subsystem
+        -> subsystem rewritten as leaves, retaining its mathematical algorithms
+            -> cleanup of the resulting interfaces
 ```
 
-A downstream task may move earlier only when it is needed to make an upstream semantic abstraction correct.
-In that case, implement the minimum mathematical foundation at the upstream owner; do not bypass it with a local coordinate or engine workaround.
+Follow mathematical dependencies within the selected construction.
+A shared repair belongs with the consumer that needs it, and its implementation belongs at the shared owner.

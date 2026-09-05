@@ -1,5 +1,36 @@
 # Preamble organization assessment
 
+## Current organization work
+
+[TODO-PRIORITIES.md](TODO-PRIORITIES.md#how-much-category-theory-to-implement-here) owns the criteria for work before the `sage-categories` transfer.
+Apply the findings below to the scheme, algebra, and module constructions serving AEGS notebooks first.
+Recheck each finding at its live owner; the assessment records an earlier source tree.
+
+The useful unit of consolidation is one mathematical responsibility and its dependent constructions.
+An algebra should obtain module operations from its underlying module; geometric constructions should use the resulting algebra and module maps.
+Fix the shared construction path when this reuse requires initialized inherited state.
+The current `owned_category.py` adapter makes implementation classes available through the category inheritance chain.
+Treat repairs to that common path according to the consumer they enable and the duplication they remove.
+
+- [ ] Consolidate repeated mathematical operations at the owner used by the active geometry construction.
+- [ ] Make each required underlying-structure functor explicit on objects and morphisms, with the correct initialized image.
+- [ ] Keep framework-specific initialization and class assembly within the existing common runtime boundaries.
+- [ ] Use explicit functor application where it gives correct shared implementation before automatic threading is available.
+- [ ] Organize the active subsystem around its defining data, mathematical maps, algorithms, and private engine realizations.
+- [ ] Transfer the subsystem to framework leaves when its required constructors and inherited operations are available.
+
+Mathematical definitions, algorithm placement, exact engine computations, and coherent dependency organization survive the transfer.
+General compiler and functor-classification mechanisms belong to the replacement framework.
+Broad package, annotation, and collection sweeps follow the surviving interfaces.
+
+## Earlier assessment
+
+The measurements, source locations, and proposed repairs below describe the tree at the time of assessment.
+Use them to locate a responsibility for inspection. Current work selection is defined above and in `TODO-PRIORITIES.md`.
+
+<details>
+<summary>Source assessment and mathematical consolidation examples</summary>
+
 The current live tree at `src/dzack_research/preamble` is already a medium-sized mathematical software system, not a “preamble” in the usual sense.
 
 | Metric | Current tree |
@@ -569,3 +600,5 @@ This behavior amplifies when the semantic API is incomplete. An agent that finds
 The corrective architecture is the reverse. Mathematical consumers compose semantic operations; those semantic owners route among finite-coordinate, sparse/infinite, theorem-backed, or external-engine algorithms. Thus `is_primitive(i)` should read as `i.cokernel().is_torsion_free()`, not as a gcd/minor criterion in a lattice consumer. Exactness should compare `image()` and `kernel()` subobjects, not row modules. Cohomology should be `ker/im`, not an augmented-matrix program. If these semantic calls cannot yet support the requested feature, repairing them is part of the feature task rather than out-of-scope refactoring.
 
 This is especially important for LLM-authored changes: minimizing the geographical size of the diff is not the objective. The review question is whether the new code would mostly disappear if the common semantic API were complete. If yes, strengthen that API first. `CONTRIBUTING.md` policies `ARC-17`, `DEV-13`, and `STY-104`--`STY-111` are authoritative for this failure mode.
+
+</details>
