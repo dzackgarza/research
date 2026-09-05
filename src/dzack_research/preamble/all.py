@@ -184,7 +184,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F
     MatrixEndomorphismSpaces,
     MatrixSpaces,
 )
-from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagram, CoxeterDiagrams  # noqa: F401
+from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams  # noqa: F401
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
     CartierDivisorGroup,
     CartierDivisorGroups,
