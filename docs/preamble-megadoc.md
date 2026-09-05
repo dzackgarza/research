@@ -54,8 +54,8 @@ The poset is drawn in `docs/preamble-graph.html` (pan and zoom), from
 | categories in the poset | 278 |
 | of those, built and interrogated | 196 |
 | operations, each written once at its owner | 1105 |
-| functors | 68, 11 of them with a domain and codomain resolved here |
-| adjunctions | 20 |
+| functors | 69, 11 of them with a domain and codomain resolved here |
+| adjunctions | 21 |
 
 ## The category poset
 
@@ -96,7 +96,7 @@ different categories.
 | [`FreeGroupUnderlyingSetAdjunction`](#fun-freegroupunderlyingsetadjunction) | Free-group functor | ⊣ | Underlying-set functor on groups |
 | [`OrderNumberFieldAdjunction`](#fun-ordernumberfieldadjunction) | Fraction-field functor | ⊣ | Ring-of-integers functor |
 
-74 further functors take data the survey does not choose for you (a ring map, a group, a subgroup pair); they are written out in their chapters with the arguments they want.
+76 further functors take data the survey does not choose for you (a ring map, a group, a subgroup pair); they are written out in their chapters with the arguments they want.
 
 ## Named specimens
 
@@ -2623,7 +2623,7 @@ No ordinary free/forgetful adjunction is asserted for this construction.
 
 `S tensor_R - ⊣ Res_f`.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:110`
+- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:224`
 - **built by** `BaseChangeAdjunction(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
@@ -2691,6 +2691,27 @@ Forget the differential while retaining the same graded module.
 - **built by** `CochainUnderlyingGradedModuleFunctor(base_ring)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
+#### `CoextensionOfScalarsFunctor` {#fun-coextensionofscalarsfunctor}
+
+`Hom_R(S, -) : Mod_R -> Mod_S` along `f: R -> S`, the right adjoint of `Res_f`.
+
+```text
+``S`` acts on ``Hom_R(S, M)`` through its right regular action,
+``(s . phi)(t) = phi(t s)``.  The Hom is represented when ``S`` is a
+finitely framed ``R``-module; ``Hom_ZZ(ZZ[x], M)`` is a countable product
+the module layer does not build, and is refused.
+```
+
+- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:125`
+- **built by** `CoextensionOfScalarsFunctor(ring_map)`
+- **not resolved here**: parameterized by data the survey does not choose for you
+
+**Operations**
+
+- `ring_map()`
+- `scalars_as_module()`
+  - ``S`` as an ``R``-module, the domain of every ``Hom_R(S, M)``.
+
 #### `CohomologyAlgebraFunctor` {#fun-cohomologyalgebrafunctor}
 
 The graded cohomology-algebra functor `H^*` on strict CDGAs.
@@ -2718,10 +2739,10 @@ The degree-`p` cohomology functor `H^p : Coch_R -> Mod_R`.
 
 #### `CoinductionFunctor` {#fun-coinductionfunctor}
 
-`Coind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp`.
+`Coind_H^G : Modules(R[H]) -> Modules(R[G])`, coextension along `R[H] -> R[G]`.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:290`
-- **built by** `CoinductionFunctor(base_ring, subgroup, supergroup=None)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:298`
+- **built by** `CoinductionFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -2736,18 +2757,22 @@ The degree-`p` cohomology functor `H^p : Coch_R -> Mod_R`.
 
 #### `CoinvariantsFunctor` {#fun-coinvariantsfunctor}
 
-`(-)_G` on represented finitely-presented `R[G]`-modules.
+`(-)_G : Modules(R[G]) -> Modules(R)`, scalar extension along the augmentation.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:111`
-- **built by** `CoinvariantsFunctor(base_ring, group)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:135`
+- **built by** `CoinvariantsFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
+
+**Operations**
+
+- `group()`
 
 #### `CoinvariantsTrivialAdjunction` {#fun-coinvariantstrivialadjunction}
 
-`(-)_G ⊣ Triv_G`.
+`(-)_G ⊣ Triv_G`, base change along the augmentation.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:176`
-- **built by** `CoinvariantsTrivialAdjunction(base_ring, group)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:193`
+- **built by** `CoinvariantsTrivialAdjunction(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -3141,10 +3166,10 @@ The functor `Hom_C(A,B) -> Hom_D(F(A),F(B))` induced by `F`.
 
 #### `InductionFunctor` {#fun-inductionfunctor}
 
-`Ind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp`.
+`Ind_H^G : Modules(R[H]) -> Modules(R[G])`, scalar extension along `R[H] -> R[G]`.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:182`
-- **built by** `InductionFunctor(base_ring, subgroup, supergroup=None)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:197`
+- **built by** `InductionFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -3157,10 +3182,10 @@ The functor `Hom_C(A,B) -> Hom_D(F(A),F(B))` induced by `F`.
 
 #### `InductionRestrictionAdjunction` {#fun-inductionrestrictionadjunction}
 
-`Ind_H^G ⊣ Res_H^G` on represented finitely-presented group modules.
+`Ind_H^G ⊣ Res_H^G`, the base-change adjunction along `R[H] -> R[G]`.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:436`
-- **built by** `InductionRestrictionAdjunction(base_ring, subgroup, supergroup=None)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:438`
+- **built by** `InductionRestrictionAdjunction(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -3182,11 +3207,15 @@ The endofunctor `Hom_R(M,-)` represented by internal Hom modules.
 
 #### `InvariantsFunctor` {#fun-invariantsfunctor}
 
-`(-)^G` on represented finitely-presented `R[G]`-modules.
+`(-)^G : Modules(R[G]) -> Modules(R)`, coextension along the augmentation.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:75`
-- **built by** `InvariantsFunctor(base_ring, group)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:100`
+- **built by** `InvariantsFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
+
+**Operations**
+
+- `group()`
 
 #### `InverseImagePowerSetFunctor` {#fun-inverseimagepowersetfunctor}
 
@@ -3279,12 +3308,29 @@ Forget the selected form while retaining the module object itself.
 - **built by** `QuadraticUnderlyingModuleFunctor(base_ring)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
+#### `RestrictionCoextensionAdjunction` {#fun-restrictioncoextensionadjunction}
+
+`Res_f ⊣ Hom_R(S, -)`.
+
+```text
+The unit sends ``n`` to ``s |-> s n`` and the counit evaluates at ``1``.
+```
+
+- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:260`
+- **built by** `RestrictionCoextensionAdjunction(ring_map)`
+- **not resolved here**: parameterized by data the survey does not choose for you
+
+**Operations**
+
+- `counit(module)`
+- `unit(module)`
+
 #### `RestrictionCoinductionAdjunction` {#fun-restrictioncoinductionadjunction}
 
-`Res_H^G ⊣ Coind_H^G` on represented finitely-presented group modules.
+`Res_H^G ⊣ Coind_H^G`, the restriction/coextension adjunction along `R[H] -> R[G]`.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:476`
-- **built by** `RestrictionCoinductionAdjunction(base_ring, subgroup, supergroup=None)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:473`
+- **built by** `RestrictionCoinductionAdjunction(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -3294,10 +3340,10 @@ Forget the selected form while retaining the module object itself.
 
 #### `RestrictionOfActingGroupFunctor` {#fun-restrictionofactinggroupfunctor}
 
-`Res_H^G : R[G]-Mod_fp -> R[H]-Mod_fp`.
+`Res_H^G : Modules(R[G]) -> Modules(R[H])`, restriction along `R[H] -> R[G]`.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:132`
-- **built by** `RestrictionOfActingGroupFunctor(base_ring, subgroup, supergroup=None)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:153`
+- **built by** `RestrictionOfActingGroupFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -3310,7 +3356,7 @@ Forget the selected form while retaining the module object itself.
 
 `Res_f : Mod_S -> Mod_R` along `f:R -> S`.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:76`
+- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:91`
 - **built by** `RestrictionOfScalarsFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
@@ -3336,7 +3382,7 @@ presently materializes the represented framed/free/presented cases for
 which the module layer has an exact constructor.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:23`
+- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:38`
 - **built by** `ScalarExtensionFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
@@ -3417,10 +3463,10 @@ The adjunction `- tensor_R M ⊣ Hom_R(M,-)`.
 
 #### `TrivialActionFunctor` {#fun-trivialactionfunctor}
 
-`Triv_G` on represented finitely-presented `R`-modules.
+`Triv_G : Modules(R) -> Modules(R[G])`, restriction along the augmentation.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:45`
-- **built by** `TrivialActionFunctor(base_ring, group)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:74`
+- **built by** `TrivialActionFunctor(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -3429,10 +3475,10 @@ The adjunction `- tensor_R M ⊣ Hom_R(M,-)`.
 
 #### `TrivialInvariantsAdjunction` {#fun-trivialinvariantsadjunction}
 
-`Triv_G ⊣ (-)^G`.
+`Triv_G ⊣ (-)^G`, restriction/coextension along the augmentation.
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:143`
-- **built by** `TrivialInvariantsAdjunction(base_ring, group)`
+- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:166`
+- **built by** `TrivialInvariantsAdjunction(ring_map)`
 - **not resolved here**: parameterized by data the survey does not choose for you
 
 **Operations**
@@ -3489,7 +3535,7 @@ A natural transformation `source => target` given by its components.
 
 #### `base_change_adjunction` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:143`
+- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:312`
 - **built by** `base_change_adjunction(ring_map) -> dzack_research.preamble.categories.functors.scalar_change.BaseChangeAdjunction`
 
 #### `bilinear_free_form_adjunction` <sub>FUNCTION</sub>
@@ -3523,11 +3569,6 @@ Return the canonical functor attached to `subcategory <= supercategory`.
 
 - **defined at** `src/dzack_research/preamble/categories/functors/cohomology.py:147`
 - **built by** `cohomology_functor(base_ring, degree) -> dzack_research.preamble.categories.functors.cohomology.CohomologyFunctor`
-
-#### `coinvariants_trivial_adjunction` <sub>FUNCTION</sub>
-
-- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:221`
-- **built by** `coinvariants_trivial_adjunction(base_ring, group) -> dzack_research.preamble.categories.functors.group_actions.CoinvariantsTrivialAdjunction`
 
 #### `compose_adjunctions` <sub>FUNCTION</sub>
 
@@ -3604,11 +3645,6 @@ Return the canonical functor attached to `subcategory <= supercategory`.
 - **defined at** `src/dzack_research/preamble/categories/functors/hom_packets.py:150`
 - **built by** `induced_hom_functor(functor, domain_object, codomain_object) -> dzack_research.preamble.categories.functors.hom_packets.InducedHomFunctor`
 
-#### `induction_restriction_adjunction` <sub>FUNCTION</sub>
-
-- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:523`
-- **built by** `induction_restriction_adjunction(base_ring, subgroup, supergroup=None) -> dzack_research.preamble.categories.functors.group_induction.InductionRestrictionAdjunction`
-
 #### `inverse_image_power_set_functor` <sub>FUNCTION</sub>
 
 - **defined at** `src/dzack_research/preamble/categories/functors/set_constructions.py:139`
@@ -3629,10 +3665,10 @@ Return the canonical functor attached to `subcategory <= supercategory`.
 - **defined at** `src/dzack_research/preamble/categories/functors/free_forms.py:241`
 - **built by** `quadratic_free_form_adjunction(base_ring) -> dzack_research.preamble.categories.functors.free_forms.QuadraticFreeFormAdjunction`
 
-#### `restriction_coinduction_adjunction` <sub>FUNCTION</sub>
+#### `restriction_coextension_adjunction` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/functors/group_induction.py:530`
-- **built by** `restriction_coinduction_adjunction(base_ring, subgroup, supergroup=None) -> dzack_research.preamble.categories.functors.group_induction.RestrictionCoinductionAdjunction`
+- **defined at** `src/dzack_research/preamble/categories/functors/scalar_change.py:317`
+- **built by** `restriction_coextension_adjunction(ring_map) -> dzack_research.preamble.categories.functors.scalar_change.RestrictionCoextensionAdjunction`
 
 #### `subobject_image_adjunction` <sub>FUNCTION</sub>
 
@@ -3663,11 +3699,6 @@ Return the canonical functor attached to `subcategory <= supercategory`.
 
 - **defined at** `src/dzack_research/preamble/categories/functors/tensor_hom.py:127`
 - **built by** `tensor_hom_adjunction(fixed_module) -> dzack_research.preamble.categories.functors.tensor_hom.TensorHomAdjunction`
-
-#### `trivial_invariants_adjunction` <sub>FUNCTION</sub>
-
-- **defined at** `src/dzack_research/preamble/categories/functors/group_actions.py:216`
-- **built by** `trivial_invariants_adjunction(base_ring, group) -> dzack_research.preamble.categories.functors.group_actions.TrivialInvariantsAdjunction`
 
 ## Lattices, Quadratic Forms & Invariants
 
@@ -4340,7 +4371,7 @@ Modules over a ring, on the owned additive and scalar spines.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:831`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:939`
 - **probed as** `Category of finitely generated modules`
 - **above** [`Modules(R)`](#cat-modules)
 - **below** [`FinitelyGeneratedFormModules(R)`](#cat-finitelygeneratedformmodules), [`FinitelyPresentedModules(R)`](#cat-finitelypresentedmodules)
@@ -4455,7 +4486,7 @@ Modules over `R` equipped with a form.
 
 Modules carrying a specified generating map from a set.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1120`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1228`
 - **probed as** `Category of framed modules`
 - **above** [`Modules(R)`](#cat-modules)
 - **below** [`CartierDivisorGroups`](#cat-cartierdivisorgroups), [`ClassGroups`](#cat-classgroups), [`FractionFieldQuotients(R)`](#cat-fractionfieldquotients), [`FramedFreeModules(R)`](#cat-framedfreemodules), [`KahlerDifferentialModules(R)`](#cat-kahlerdifferentialmodules), [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation), [`PicardGroups`](#cat-picardgroups)
@@ -4498,7 +4529,7 @@ Modules carrying a specified generating map from a set.
 
 Represented Hom parents closed under pointwise `R`-linear operations.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:559`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:667`
 - **probed as** `Category of linear Hom modules`
 - **above** [`Modules(R)`](#cat-modules)
 - **below** [`InternalHomModules(R)`](#cat-internalhommodules)
@@ -4554,7 +4585,7 @@ Modules represented as `S^{-1}M` for a chosen localization `S^{-1}R`.
 - `fraction(numerator, denominator=None, *, _trusted_denominator=False)`
 - `is_finite()`
 - `is_zero()`
-  - Decide whether this localization is zero when the source is finite.
+  - Decide whether this localization is zero from finite generators or a finite source.
 - `localization_functor()`
 - `localization_prime_point()`
 - `localization_ring()`
@@ -4592,7 +4623,7 @@ Modules represented as `S^{-1}M` for a chosen localization `S^{-1}R`.
 
 Modules carrying a chosen monomorphism into another module.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:635`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:743`
 - **probed as** `Category of module subobjects`
 - **above** [`Modules(R)`](#cat-modules)
 - **below** [`FractionalIdeals(R)`](#cat-fractionalideals)
@@ -4642,7 +4673,7 @@ Modules carrying a chosen monomorphism into another module.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1092`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1200`
 - **probed as** `Category of projective modules`
 - **above** [`Modules(R)`](#cat-modules)
 - **below** [`FinitelyGeneratedFreeModules(R)`](#cat-finitelygeneratedfreemodules), [`FreeModules(R)`](#cat-freemodules)
@@ -4678,7 +4709,7 @@ A category over a ring, normalized to the session's owned ring.
 
 Modules obtained by reading an `S`-module over `R` along `R -> S`.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1235`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1343`
 - **probed as** `Category of restricted-scalars modules`
 - **above** [`Modules(R)`](#cat-modules)
 - **refines**, transitively, in Sage's linearization order: [`Modules(R)`](#cat-modules) · [`AdditiveGroups.AdditiveCommutative`](#cat-additivegroups-additivecommutative) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -4716,7 +4747,7 @@ Modules obtained by reading an `S`-module over `R` along `R -> S`.
 
 Modules carrying a selected tensor-product universal object.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1744`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1852`
 - **probed as** `Category of chosen tensor-product modules`
 - **above** [`Modules(R)`](#cat-modules)
 - **refines**, transitively, in Sage's linearization order: [`Modules(R)`](#cat-modules) · [`AdditiveGroups.AdditiveCommutative`](#cat-additivegroups-additivecommutative) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -4789,7 +4820,7 @@ A category over a ring, normalized to the session's owned ring.
 
 Vector spaces over a field.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:770`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:878`
 - **probed as** `Category of vector spaces`
 - **above** [`Modules(R)`](#cat-modules)
 - **refines**, transitively, in Sage's linearization order: [`Modules(R)`](#cat-modules) · [`AdditiveGroups.AdditiveCommutative`](#cat-additivegroups-additivecommutative) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -4859,7 +4890,7 @@ A category over a ring, normalized to the session's owned ring.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1942`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2050`
 - **probed as** `Category of chosen module biproducts`
 - **above** [`DirectSumObjects`](#cat-directsumobjects), [`Modules(R)`](#cat-modules)
 - **refines**, transitively, in Sage's linearization order: [`Modules(R)`](#cat-modules) · [`AdditiveGroups.AdditiveCommutative`](#cat-additivegroups-additivecommutative) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`DirectSumObjects`](#cat-directsumobjects) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -4983,7 +5014,7 @@ Degree-two divided powers, classifying quadratic maps.
 
 Modules admitting a finite presentation.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:914`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1022`
 - **probed as** `Category of finitely presented modules`
 - **above** [`FinitelyGeneratedModules(R)`](#cat-finitelygeneratedmodules)
 - **below** [`CohomologyModules(R)`](#cat-cohomologymodules), [`FinitelyPresentedFormModules(R)`](#cat-finitelypresentedformmodules), [`FinitelyPresentedTorsionModules(R)`](#cat-finitelypresentedtorsionmodules), [`KahlerDifferentialModules(R)`](#cat-kahlerdifferentialmodules), [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation)
@@ -5126,7 +5157,7 @@ Fractional ideals of an integral domain, as modules in its fraction field.
 
 Modules admitting a basis.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:806`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:914`
 - **probed as** `Category of free modules`
 - **above** [`Modules(R)`](#cat-modules), [`ProjectiveModules(R)`](#cat-projectivemodules)
 - **below** [`FramedFreeModules(R)`](#cat-framedfreemodules)
@@ -5161,7 +5192,7 @@ Modules admitting a basis.
 
 The canonical full enriched Hom modules `Hom_R(M,N)`.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:606`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:714`
 - **probed as** `Category of internal Hom modules`
 - **above** [`LinearHomModules(R)`](#cat-linearhommodules)
 - **below** [`MatrixSpaces(R)`](#cat-matrixspaces)
@@ -5519,7 +5550,7 @@ Integral ideals `I <= R`.
 
 Finitely presented modules carrying one selected finite presentation.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:936`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1044`
 - **probed as** `Category of modules with a chosen finite presentation`
 - **above** [`FinitelyPresentedModules(R)`](#cat-finitelypresentedmodules), [`FramedModules(R)`](#cat-framedmodules)
 - **below** [`FinitelyGeneratedFreeModules(R)`](#cat-finitelygeneratedfreemodules)
@@ -5725,7 +5756,7 @@ A category over a ring, normalized to the session's owned ring.
 
 Finite-rank free modules with a chosen ordered basis.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1009`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1117`
 - **probed as** `Category of finitely generated free modules`
 - **above** [`FramedFreeModules(R)`](#cat-framedfreemodules), [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation), [`ProjectiveModules(R)`](#cat-projectivemodules)
 - **below** [`FiniteRankLattices(R)`](#cat-finiteranklattices), [`FinitelyGeneratedFreeFormModules(R)`](#cat-finitelygeneratedfreeformmodules), [`MatrixSpaces(R)`](#cat-matrixspaces)
@@ -5975,7 +6006,7 @@ Discriminant modules with `K/R`-valued bilinear form.
 
 Hom objects between finitely generated framed free `R`-modules.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2128`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2236`
 - **probed as** `Category of matrix Hom objects`
 - **above** [`FinitelyGeneratedFreeModules(R)`](#cat-finitelygeneratedfreemodules), [`InternalHomModules(R)`](#cat-internalhommodules)
 - **below** [`MatrixEndomorphismSpaces(R)`](#cat-matrixendomorphismspaces)
@@ -6196,7 +6227,7 @@ Even-lattice discriminant modules with quadratic form in `K/2R`.
 
 The matrix realization of `End_R(F)` for a finite framed free module `F`.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2484`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2592`
 - **probed as** `Category of matrix endomorphism objects`
 - **above** [`MatrixSpaces(R)`](#cat-matrixspaces), [`OwnedRings`](#cat-ownedrings)
 - **below** [`MatrixAlgebras(R)`](#cat-matrixalgebras)
@@ -6415,7 +6446,7 @@ distinct categories and use this class only to share ordinary module-Hom
 operations.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:534`
+- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:628`
 - **not placed**: `GroupModuleHomset(hom_family, domain, codomain)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
 #### `ModulesWithConnection` {#cat-moduleswithconnection}
@@ -6494,7 +6525,7 @@ action.  After construction the action is stored as the actual morphism
 parent.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:75`
+- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:74`
 - **built by** `GeneralModuleParent(ring, underlying_set, *, addition, zero, negation, scalar_action=None, rho=None, verify=True)`
 
 **Operations**
@@ -6516,7 +6547,7 @@ parent.
 
 A distinct parent for the same additive group with a restricted scalar action.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1281`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1389`
 - **built by** `RestrictedScalarsModuleView(module, ring_map, *, subobject_ambient=None, subobject_generator_images=None, subobject_lift=None, subobject_inclusion_factory=None, subobject_verify_linearity=True)`
 
 **Operations**
@@ -6582,7 +6613,7 @@ An `A`-linear map horizontal for the selected connections.
 
 One element of a module presented on an arbitrary underlying set.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:28`
+- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:27`
 - **built by** `GeneralModuleElement(parent, value)`
 
 **Operations**
@@ -6685,7 +6716,7 @@ exactly when ``h`` is the identity; :func:`is_form_morphism` asks that.
 
 An `R`-linear map commuting with the chosen `G`-actions.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:499`
+- **defined at** `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:593`
 - **built by** `GroupModuleMorphism(parent, images, *, elementwise=False, verify_linearity=True, verify_equivariance=True)`
 
 #### `ModuleEmbedding` <sub>MORPHISM</sub>
@@ -6755,7 +6786,7 @@ An explicit isomorphism of finite framed torsion modules preserving a form.
 
 A bilinear map specified on the selected product framing.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1613`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1721`
 - **built by** `BilinearMap(left, right, codomain, generator_images)`
 
 **Operations**
@@ -6802,7 +6833,7 @@ Factory namespace for a flat connection's de Rham DG-module.
 
 The exact resolution `0 -> F_1 -> F_0 -> M -> 0` over a PID.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:956`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1064`
 - **built by** `FreeResolution(_module: object, _degree_zero: object, _degree_one: object, _differential_one: object, _augmentation: object, _zero_term: object)`
 
 **Operations**
@@ -6914,7 +6945,7 @@ Return `Lambda^degree(module^vee)`.
 
 Return `coker(presentation)` in `R-Mod` with its selected module presentation.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py:1875`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py:1882`
 - **built by** `FinitelyPresentedModule(presentation, *, _cokernel_morphism=None, _extra_categories=(), _extra_construction_data=None, _subobject_ambient=None, _subobject_generator_images=None, _subobject_lift=None, _subobject_inclusion_factory=None, _subobject_verify_linearity=True, _biproduct_factors=None)`
 
 #### `FormModule` <sub>FUNCTION</sub>
@@ -6976,7 +7007,7 @@ Return \(F_R(S)\), retaining the actual labels in `S`.
 
 Construct a general represented `R`-module from its structure data.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:324`
+- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:321`
 - **built by** `GeneralModule(ring, underlying_set, *, addition, zero, negation, scalar_action=None, rho=None, verify=True)`
 
 #### `HodgeDiscriminant` <sub>FUNCTION</sub>
@@ -7086,7 +7117,7 @@ merely verifies two already represented mutually inverse module maps.
 
 #### `biproduct_morphism` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2098`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:2206`
 - **built by** `biproduct_morphism(left_morphism, right_morphism, source=None, target=None)`
 
 #### `cochain_homset` <sub>FUNCTION</sub>
@@ -7136,7 +7167,7 @@ being wrappers around one.
 
 #### `free_resolution` <sub>FUNCTION</sub>
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1005`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1113`
 - **built by** `free_resolution(module)`
 
 #### `internal_hom_morphism` <sub>FUNCTION</sub>
@@ -7163,7 +7194,7 @@ Construct a declared module monomorphism on a chosen framing.
 
 Construct a general represented `R`-module from its structure data.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:324`
+- **defined at** `src/dzack_research/preamble/categories/modules/general_modules.py:321`
 - **built by** `module_from_action(ring, underlying_set, *, addition, zero, negation, scalar_action=None, rho=None, verify=True)`
 
 #### `module_homset` <sub>FUNCTION</sub>
@@ -7182,7 +7213,7 @@ Read a DGA as its canonical right DG-module over itself.
 
 Return `Res_R^S(module)` along the specified morphism `R -> S`.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1548`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1656`
 - **built by** `restrict_scalars(module, ring_map, *, _subobject_ambient=None, _subobject_generator_images=None, _subobject_lift=None, _subobject_inclusion_factory=None, _subobject_verify_linearity=True)`
 
 #### `ring_as_module` <sub>FUNCTION</sub>
@@ -7209,7 +7240,7 @@ it is unrelated to ``L.twist(a)``, which rescales a lattice form while
 leaving its scalar action unchanged.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1575`
+- **defined at** `src/dzack_research/preamble/categories/modules/pure/modules.py:1683`
 - **built by** `twist_scalar_action(module, ring_endomorphism)`
 
 ## Algebras & Differential Graded Algebras
@@ -12982,7 +13013,7 @@ Number fields carrying the primitive element selected by their presentation.
 A category over a ring, normalized to the session's owned ring.
 
 - **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1208`
-- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7f0591fd9a60>
+- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7fb48cb59900>
 
 ### Objects
 
@@ -17686,7 +17717,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Load a Sage file and restore this session's owned scalar vocabulary.
 
-- **defined at** `src/dzack_research/preamble/all.py:792`
+- **defined at** `src/dzack_research/preamble/all.py:791`
 - **built by** `load(filename: str, globals: dict | None = None, attach: bool = False) -> None`
 
 #### `lzip` <sub>FUNCTION</sub>
@@ -17814,6 +17845,7 @@ Return the sum of pairwise terms from two equally sized iterables.
 | `Cocone` | function | Abstract Category Theory & Universal Constructions |
 | [`CoconeCategory`](#cat-coconecategory) | category | Abstract Category Theory & Universal Constructions |
 | [`CodomainFunctor`](#fun-codomainfunctor) | functor | Abstract Category Theory & Universal Constructions |
+| [`CoextensionOfScalarsFunctor`](#fun-coextensionofscalarsfunctor) | functor | Functors & Adjunctions |
 | `Cohomology` | function | Modules, Complexes & Homological Algebra |
 | `CohomologyAlgebra` | function | Algebras & Differential Graded Algebras |
 | `CohomologyAlgebraElement` | element | Algebras & Differential Graded Algebras |
@@ -18234,6 +18266,7 @@ Return the sum of pairwise terms from two equally sized iterables.
 | [`RestrictedScalarsAlgebras`](#cat-restrictedscalarsalgebras) | category | Algebras & Differential Graded Algebras |
 | `RestrictedScalarsModuleView` | object | Modules, Complexes & Homological Algebra |
 | [`RestrictedScalarsModules`](#cat-restrictedscalarsmodules) | category | Modules, Complexes & Homological Algebra |
+| [`RestrictionCoextensionAdjunction`](#fun-restrictioncoextensionadjunction) | adjunction | Functors & Adjunctions |
 | [`RestrictionCoinductionAdjunction`](#fun-restrictioncoinductionadjunction) | adjunction | Functors & Adjunctions |
 | [`RestrictionOfActingGroupFunctor`](#fun-restrictionofactinggroupfunctor) | functor | Functors & Adjunctions |
 | [`RestrictionOfScalarsFunctor`](#fun-restrictionofscalarsfunctor) | functor | Functors & Adjunctions |
@@ -18338,7 +18371,6 @@ Return the sum of pairwise terms from two equally sized iterables.
 | `cohomology_algebra_functor` | function | Functors & Adjunctions |
 | `cohomology_algebra_homset` | function | Algebras & Differential Graded Algebras |
 | `cohomology_functor` | function | Functors & Adjunctions |
-| `coinvariants_trivial_adjunction` | function | Functors & Adjunctions |
 | `common_category` | function | Abstract Category Theory & Universal Constructions |
 | `commutative_algebra_coproduct` | function | Algebras & Differential Graded Algebras |
 | `commutative_algebra_pushout` | function | Algebras & Differential Graded Algebras |
@@ -18394,7 +18426,6 @@ Return the sum of pairwise terms from two equally sized iterables.
 | `induced_aut_functor` | function | Functors & Adjunctions |
 | `induced_end_functor` | function | Functors & Adjunctions |
 | `induced_hom_functor` | function | Functors & Adjunctions |
-| `induction_restriction_adjunction` | function | Functors & Adjunctions |
 | `internal_hom_morphism` | function | Modules, Complexes & Homological Algebra |
 | `inverse_image_power_set_functor` | function | Functors & Adjunctions |
 | `lebesgue_convolution_algebra` | function | Function Spaces & Analysis |
@@ -18422,7 +18453,7 @@ Return the sum of pairwise terms from two equally sized iterables.
 | `restrict_along` | function | Groups, Profinite Groups & Galois Theory |
 | `restrict_graded_algebra_scalars` | function | Algebras & Differential Graded Algebras |
 | `restrict_scalars` | function | Modules, Complexes & Homological Algebra |
-| `restriction_coinduction_adjunction` | function | Functors & Adjunctions |
+| `restriction_coextension_adjunction` | function | Functors & Adjunctions |
 | `ring_as_module` | function | Modules, Complexes & Homological Algebra |
 | `scheme_fiber_product` | function | Schemes & Algebraic Geometry |
 | `scheme_product` | function | Schemes & Algebraic Geometry |
@@ -18443,7 +18474,6 @@ Return the sum of pairwise terms from two equally sized iterables.
 | `tensor_product_morphism` | function | Modules, Complexes & Homological Algebra |
 | `to_var_names` | function | Preamble Entrypoints & Utilities |
 | `trivial_g_set` | function | Groups, Profinite Groups & Galois Theory |
-| `trivial_invariants_adjunction` | function | Functors & Adjunctions |
 | `twist_scalar_action` | function | Modules, Complexes & Homological Algebra |
 | `two_elementary_orthogonal_sums` | function | Named Catalogue & Classification Tables |
 | `validate_negative_def_two_elementary_table` | function | Named Catalogue & Classification Tables |

@@ -2783,7 +2783,7 @@
     "BiproductModules": {
       "display": "BiproductModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1942",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2050",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -10138,7 +10138,7 @@
     "FinitelyGeneratedFreeModules": {
       "display": "FinitelyGeneratedFreeModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1009",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1117",
       "summary": "Finite-rank free modules with a chosen ordered basis.",
       "owned": true,
       "exported": true,
@@ -10390,7 +10390,7 @@
     "FinitelyGeneratedModules": {
       "display": "FinitelyGeneratedModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:831",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:939",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -11066,7 +11066,7 @@
     "FinitelyPresentedModules": {
       "display": "FinitelyPresentedModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:914",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1022",
       "summary": "Modules admitting a finite presentation.",
       "owned": true,
       "exported": true,
@@ -12878,7 +12878,7 @@
     "FramedModules": {
       "display": "FramedModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1120",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1228",
       "summary": "Modules carrying a specified generating map from a set.",
       "owned": true,
       "exported": true,
@@ -13354,7 +13354,7 @@
     "FreeModules": {
       "display": "FreeModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:806",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:914",
       "summary": "Modules admitting a basis.",
       "owned": true,
       "exported": true,
@@ -14385,7 +14385,7 @@
     "GroupModuleHomset": {
       "display": "GroupModuleHomset",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:534",
+      "source": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py:628",
       "summary": "Python implementation shared by module-enriched Hom parents.",
       "owned": true,
       "exported": true,
@@ -15264,7 +15264,7 @@
     "InternalHomModules": {
       "display": "InternalHomModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:606",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:714",
       "summary": "The canonical full enriched Hom modules ``Hom_R(M,N)``.",
       "owned": true,
       "exported": true,
@@ -16997,7 +16997,7 @@
     "LinearHomModules": {
       "display": "LinearHomModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:559",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:667",
       "summary": "Represented Hom parents closed under pointwise ``R``-linear operations.",
       "owned": true,
       "exported": true,
@@ -17318,7 +17318,7 @@
           {
             "name": "is_zero",
             "signature": "()",
-            "summary": "Decide whether this localization is zero when the source is finite.",
+            "summary": "Decide whether this localization is zero from finite generators or a finite source.",
             "mark": ""
           },
           {
@@ -17871,7 +17871,7 @@
     "MatrixEndomorphismSpaces": {
       "display": "MatrixEndomorphismSpaces(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2484",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2592",
       "summary": "The matrix realization of ``End_R(F)`` for a finite framed free module ``F``.",
       "owned": true,
       "exported": true,
@@ -18111,7 +18111,7 @@
     "MatrixSpaces": {
       "display": "MatrixSpaces(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2128",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:2236",
       "summary": "Hom objects between finitely generated framed free ``R``-modules.",
       "owned": true,
       "exported": true,
@@ -18476,7 +18476,7 @@
     "ModuleSubobjects": {
       "display": "ModuleSubobjects(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:635",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:743",
       "summary": "Modules carrying a chosen monomorphism into another module.",
       "owned": true,
       "exported": true,
@@ -18857,7 +18857,7 @@
     "ModulesWithChosenFinitePresentation": {
       "display": "ModulesWithChosenFinitePresentation(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:936",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1044",
       "summary": "Finitely presented modules carrying one selected finite presentation.",
       "owned": true,
       "exported": true,
@@ -20937,7 +20937,7 @@
       "operations": {},
       "inherits": [],
       "specimens": [],
-      "problem": "NotImplementedError: <abstract method super_categories at 0x7f0591fd9a60>"
+      "problem": "NotImplementedError: <abstract method super_categories at 0x7fb48cb59900>"
     },
     "OwnedCompleteLocalRings": {
       "display": "OwnedCompleteLocalRings",
@@ -25092,7 +25092,7 @@
     "ProjectiveModules": {
       "display": "ProjectiveModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1092",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1200",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -26162,7 +26162,7 @@
     "RestrictedScalarsModules": {
       "display": "RestrictedScalarsModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1235",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1343",
       "summary": "Modules obtained by reading an ``S``-module over ``R`` along ``R -> S``.",
       "owned": true,
       "exported": true,
@@ -28390,7 +28390,7 @@
     "TensorProductModules": {
       "display": "TensorProductModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1744",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1852",
       "summary": "Modules carrying a selected tensor-product universal object.",
       "owned": true,
       "exported": true,
@@ -29483,7 +29483,7 @@
     "VectorSpaces": {
       "display": "VectorSpaces(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:770",
+      "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:878",
       "summary": "Vector spaces over a field.",
       "owned": true,
       "exported": true,
@@ -29911,7 +29911,7 @@
       "name": "BaseChangeAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:110",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:224",
       "summary": "``S tensor_R - \u22a3 Res_f``.",
       "domain": "",
       "codomain": "",
@@ -29998,6 +29998,16 @@
       "problem": "parameterized by data the survey does not choose for you"
     },
     {
+      "name": "CoextensionOfScalarsFunctor",
+      "kind": "FUNCTOR",
+      "subsystem": "functors",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:125",
+      "summary": "``Hom_R(S, -) : Mod_R -> Mod_S`` along ``f: R -> S``, the right adjoint of ``Res_f``.",
+      "domain": "",
+      "codomain": "",
+      "problem": "parameterized by data the survey does not choose for you"
+    },
+    {
       "name": "CohomologyAlgebraFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
@@ -30021,8 +30031,8 @@
       "name": "CoinductionFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:290",
-      "summary": "``Coind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``.",
+      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:298",
+      "summary": "``Coind_H^G : Modules(R[H]) -> Modules(R[G])``, coextension along ``R[H] -> R[G]``.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30031,8 +30041,8 @@
       "name": "CoinvariantsFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:111",
-      "summary": "``(-)_G`` on represented finitely-presented ``R[G]``-modules.",
+      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:135",
+      "summary": "``(-)_G : Modules(R[G]) -> Modules(R)``, scalar extension along the augmentation.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30041,8 +30051,8 @@
       "name": "CoinvariantsTrivialAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:176",
-      "summary": "``(-)_G \u22a3 Triv_G``.",
+      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:193",
+      "summary": "``(-)_G \u22a3 Triv_G``, base change along the augmentation.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30411,8 +30421,8 @@
       "name": "InductionFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:182",
-      "summary": "``Ind_H^G : R[H]-Mod_fp -> R[G]-Mod_fp``.",
+      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:197",
+      "summary": "``Ind_H^G : Modules(R[H]) -> Modules(R[G])``, scalar extension along ``R[H] -> R[G]``.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30421,8 +30431,8 @@
       "name": "InductionRestrictionAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:436",
-      "summary": "``Ind_H^G \u22a3 Res_H^G`` on represented finitely-presented group modules.",
+      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:438",
+      "summary": "``Ind_H^G \u22a3 Res_H^G``, the base-change adjunction along ``R[H] -> R[G]``.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30441,8 +30451,8 @@
       "name": "InvariantsFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:75",
-      "summary": "``(-)^G`` on represented finitely-presented ``R[G]``-modules.",
+      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:100",
+      "summary": "``(-)^G : Modules(R[G]) -> Modules(R)``, coextension along the augmentation.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30538,11 +30548,21 @@
       "problem": "parameterized by data the survey does not choose for you"
     },
     {
+      "name": "RestrictionCoextensionAdjunction",
+      "kind": "ADJUNCTION",
+      "subsystem": "functors",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:260",
+      "summary": "``Res_f \u22a3 Hom_R(S, -)``.",
+      "domain": "",
+      "codomain": "",
+      "problem": "parameterized by data the survey does not choose for you"
+    },
+    {
       "name": "RestrictionCoinductionAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:476",
-      "summary": "``Res_H^G \u22a3 Coind_H^G`` on represented finitely-presented group modules.",
+      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:473",
+      "summary": "``Res_H^G \u22a3 Coind_H^G``, the restriction/coextension adjunction along ``R[H] -> R[G]``.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30551,8 +30571,8 @@
       "name": "RestrictionOfActingGroupFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:132",
-      "summary": "``Res_H^G : R[G]-Mod_fp -> R[H]-Mod_fp``.",
+      "source": "src/dzack_research/preamble/categories/functors/group_induction.py:153",
+      "summary": "``Res_H^G : Modules(R[G]) -> Modules(R[H])``, restriction along ``R[H] -> R[G]``.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30561,7 +30581,7 @@
       "name": "RestrictionOfScalarsFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:76",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:91",
       "summary": "``Res_f : Mod_S -> Mod_R`` along ``f:R -> S``.",
       "domain": "",
       "codomain": "",
@@ -30581,7 +30601,7 @@
       "name": "ScalarExtensionFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:23",
+      "source": "src/dzack_research/preamble/categories/functors/scalar_change.py:38",
       "summary": "``S tensor_R - : Mod_R -> Mod_S`` along ``f:R -> S``.",
       "domain": "",
       "codomain": "",
@@ -30661,8 +30681,8 @@
       "name": "TrivialActionFunctor",
       "kind": "FUNCTOR",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:45",
-      "summary": "``Triv_G`` on represented finitely-presented ``R``-modules.",
+      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:74",
+      "summary": "``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
@@ -30671,8 +30691,8 @@
       "name": "TrivialInvariantsAdjunction",
       "kind": "ADJUNCTION",
       "subsystem": "functors",
-      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:143",
-      "summary": "``Triv_G \u22a3 (-)^G``.",
+      "source": "src/dzack_research/preamble/categories/functors/group_actions.py:166",
+      "summary": "``Triv_G \u22a3 (-)^G``, restriction/coextension along the augmentation.",
       "domain": "",
       "codomain": "",
       "problem": "parameterized by data the survey does not choose for you"
