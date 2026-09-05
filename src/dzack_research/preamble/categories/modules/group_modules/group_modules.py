@@ -132,25 +132,20 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
     # The three scalar-change functors along the augmentation R[G] -> R.
 
-    def invariants(self):
-        r"""``(-)^G = Hom_{R[G]}(R, -) : Modules(R[G]) -> Modules(R)``."""
-        from dzack_research.preamble.categories.functors.group_actions import InvariantsFunctor
+    def _augmentation(self):
+        return Modules(self.coefficient_ring())._augmentation(self.acting_group())
 
-        return InvariantsFunctor(self.coefficient_ring(), self.acting_group())
+    def invariants(self):
+        r"""``(-)^G = Hom_{R[G]}(R, -) : Modules(R[G]) -> Modules(R)``, coextension along the augmentation."""
+        return self.coextension_of_scalars(self._augmentation())
 
     def coinvariants(self):
-        r"""``(-)_G = R tensor_{R[G]} - : Modules(R[G]) -> Modules(R)``."""
-        from dzack_research.preamble.categories.functors.group_actions import CoinvariantsFunctor
-
-        return CoinvariantsFunctor(self.coefficient_ring(), self.acting_group())
+        r"""``(-)_G = R tensor_{R[G]} - : Modules(R[G]) -> Modules(R)``, scalar extension along the augmentation."""
+        return self.scalar_extension(self._augmentation())
 
     def coinvariants_trivial_adjunction(self):
-        r"""``(-)_G -| Triv_G``."""
-        from dzack_research.preamble.categories.functors.group_actions import (
-            coinvariants_trivial_adjunction,
-        )
-
-        return coinvariants_trivial_adjunction(self.coefficient_ring(), self.acting_group())
+        r"""``(-)_G -| Triv_G``, base change along the augmentation."""
+        return self.base_change_adjunction(self._augmentation())
 
     # Scalar change along a ring morphism out of, or into, R[G].  Along
     # R[H] -> R[G] for a subgroup H <= G the functors are induction,
@@ -168,6 +163,10 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
     def scalar_extension(self, ring_map):
         r"""``S tensor_{R[G]} - : Modules(R[G]) -> Modules(S)`` along ``ring_map: R[G] -> S``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            CoinvariantsFunctor,
+            is_augmentation_of_group_algebra,
+        )
         from dzack_research.preamble.categories.functors.group_induction import (
             InductionFunctor,
             is_group_algebra_map_of_subgroup_inclusion,
@@ -177,6 +176,8 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         match ring_map:
             case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
                 return InductionFunctor(ring_map)
+            case _ if is_augmentation_of_group_algebra(ring_map):
+                return CoinvariantsFunctor(ring_map)
             case _:
                 return ScalarExtensionFunctor(ring_map)
 
@@ -199,6 +200,10 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
     def coextension_of_scalars(self, ring_map):
         r"""``Hom_{R[G]}(S, -) : Modules(R[G]) -> Modules(S)`` along ``ring_map: R[G] -> S``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            InvariantsFunctor,
+            is_augmentation_of_group_algebra,
+        )
         from dzack_research.preamble.categories.functors.group_induction import (
             CoinductionFunctor,
             is_group_algebra_map_of_subgroup_inclusion,
@@ -211,11 +216,17 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         match ring_map:
             case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
                 return CoinductionFunctor(ring_map)
+            case _ if is_augmentation_of_group_algebra(ring_map):
+                return InvariantsFunctor(ring_map)
             case _:
                 return CoextensionOfScalarsFunctor(ring_map)
 
     def base_change_adjunction(self, ring_map):
         r"""``S tensor_{R[G]} - -| Res_f`` along ``ring_map: R[G] -> S``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            CoinvariantsTrivialAdjunction,
+            is_augmentation_of_group_algebra,
+        )
         from dzack_research.preamble.categories.functors.group_induction import (
             InductionRestrictionAdjunction,
             is_group_algebra_map_of_subgroup_inclusion,
@@ -228,6 +239,8 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         match ring_map:
             case _ if is_group_algebra_map_of_subgroup_inclusion(ring_map):
                 return InductionRestrictionAdjunction(ring_map)
+            case _ if is_augmentation_of_group_algebra(ring_map):
+                return CoinvariantsTrivialAdjunction(ring_map)
             case _:
                 return base_change_adjunction(ring_map)
 

@@ -149,19 +149,32 @@ class Modules(OwnedCategoryOverBaseRing):
             return ModulesOverGroupAlgebra(base_ring)
         return OwnedCategoryOverBaseRing.__classcall__(cls, base_ring, *args, **kwargs)
 
-    def trivial_action(self, group):
-        r"""``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation."""
-        from dzack_research.preamble.categories.functors.group_actions import TrivialActionFunctor
+    def _augmentation(self, group):
+        r"""The augmentation ``epsilon: R[G] -> R``, ``g |-> 1``, read in Rings.
 
-        return TrivialActionFunctor(self.base_ring(), group)
+        Scalar change is stated along ring morphisms, so the datum is the
+        ring morphism; ``R[G].augmentation()`` is the same map as an
+        ``R``-algebra morphism.
+        """
+        from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
 
-    def trivial_invariants_adjunction(self, group):
-        r"""``Triv_G -| (-)^G``."""
-        from dzack_research.preamble.categories.functors.group_actions import (
-            trivial_invariants_adjunction,
+        ring = self.base_ring()
+        group_algebra = GroupAlgebra(ring, group)
+        return ring_morphism(
+            group_algebra,
+            ring,
+            lambda element: sum(
+                module_coefficients(element, group_algebra).values(), ring.zero()
+            ),
         )
 
-        return trivial_invariants_adjunction(self.base_ring(), group)
+    def trivial_action(self, group):
+        r"""``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation."""
+        return self.restriction_of_scalars(self._augmentation(group))
+
+    def trivial_invariants_adjunction(self, group):
+        r"""``Triv_G -| (-)^G``, restriction/coextension along the augmentation."""
+        return self.restriction_coextension_adjunction(self._augmentation(group))
 
     def _call_(self, module, scalar_action):
         r"""The ``R``-module on the additive group of ``module`` with the action ``rho: R -> End(M)``.
@@ -201,13 +214,24 @@ class Modules(OwnedCategoryOverBaseRing):
         return ScalarExtensionFunctor(ring_map)
 
     def restriction_of_scalars(self, ring_map):
-        r"""``Res_f : Modules(S) -> Modules(R)`` along ``ring_map: R -> S``."""
+        r"""``Res_f : Modules(S) -> Modules(R)`` along ``ring_map: R -> S``.
+
+        Along the augmentation ``R[G] -> R`` this is the trivial action.
+        """
+        from dzack_research.preamble.categories.functors.group_actions import (
+            TrivialActionFunctor,
+            is_augmentation_of_group_algebra,
+        )
         from dzack_research.preamble.categories.functors.scalar_change import (
             RestrictionOfScalarsFunctor,
         )
 
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
-        return RestrictionOfScalarsFunctor(ring_map)
+        match ring_map:
+            case _ if is_augmentation_of_group_algebra(ring_map):
+                return TrivialActionFunctor(ring_map)
+            case _:
+                return RestrictionOfScalarsFunctor(ring_map)
 
     def coextension_of_scalars(self, ring_map):
         r"""``Hom_R(S, -) : Modules(R) -> Modules(S)`` along ``ring_map: R -> S``."""
@@ -228,13 +252,24 @@ class Modules(OwnedCategoryOverBaseRing):
         return base_change_adjunction(ring_map)
 
     def restriction_coextension_adjunction(self, ring_map):
-        r"""``Res_f -| Hom_R(S, -)`` along ``ring_map: R -> S``."""
+        r"""``Res_f -| Hom_R(S, -)`` along ``ring_map: R -> S``.
+
+        Along the augmentation ``R[G] -> R`` this is ``Triv_G -| (-)^G``.
+        """
+        from dzack_research.preamble.categories.functors.group_actions import (
+            TrivialInvariantsAdjunction,
+            is_augmentation_of_group_algebra,
+        )
         from dzack_research.preamble.categories.functors.scalar_change import (
             restriction_coextension_adjunction,
         )
 
         assert _owned_ring(ring_map.codomain()) is self.base_ring()
-        return restriction_coextension_adjunction(ring_map)
+        match ring_map:
+            case _ if is_augmentation_of_group_algebra(ring_map):
+                return TrivialInvariantsAdjunction(ring_map)
+            case _:
+                return restriction_coextension_adjunction(ring_map)
 
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""

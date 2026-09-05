@@ -306,8 +306,6 @@ from dzack_research.preamble.categories.functors.group_actions import (
     InvariantsFunctor,
     TrivialActionFunctor,
     TrivialInvariantsAdjunction,
-    coinvariants_trivial_adjunction,
-    trivial_invariants_adjunction,
 )
 from dzack_research.preamble.categories.functors.cochain_complexes import (
     CochainUnderlyingGradedModuleFunctor,

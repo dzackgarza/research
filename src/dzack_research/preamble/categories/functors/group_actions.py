@@ -1,25 +1,54 @@
-r"""The adjoint triple around the trivial ``G``-action.
+r"""The trivial action, invariants and coinvariants as scalar change along the augmentation.
 
-For a fixed ring ``R`` and group ``G``:
-
-``(-)_G ⊣ Triv_G ⊣ (-)^G``.
-
-The Hom-sets on the acted side are the actual equivariant Hom-sets supplied by
-``GroupModuleHomset``; ordinary module maps are not silently substituted.
+For the augmentation ``epsilon: R[G] -> R`` the adjoint triple
+``R tensor_{R[G]} - -| Res_epsilon -| Hom_{R[G]}(R, -)`` is
+``(-)_G -| Triv_G -| (-)^G``: restriction along ``epsilon`` equips a module
+with the trivial action, scalar extension along it is the coinvariants
+``M_G = R tensor_{R[G]} M`` and coextension the invariants
+``M^G = Hom_{R[G]}(R, M)`` (Weibel, *An Introduction to Homological
+Algebra*, §6.1).  The functors here are the scalar-change functors of
+``scalar_change`` specialized to that hypothesis, with the group module's
+represented equalizer and coequalizer as the computation.
 """
 
-from sage.misc.cachefunc import cached_function
-
-from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
-from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.functors.scalar_change import (
+    BaseChangeAdjunction,
+    CoextensionOfScalarsFunctor,
+    RestrictionCoextensionAdjunction,
+    RestrictionOfScalarsFunctor,
+    ScalarExtensionFunctor,
+)
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-
     group_module_homset,
     _trivial_action,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+
+
+def is_augmentation_of_group_algebra(ring_map) -> bool:
+    r"""Decide whether ``ring_map`` is the augmentation ``R[G] -> R``.
+
+    The domain must be a group algebra over the codomain, and the map must
+    send the chosen generators of ``G`` to ``1``; an algebra morphism out of
+    ``R[G]`` is determined by its values on those generators.
+    """
+    source = _owned_ring(ring_map.domain())
+    target = _owned_ring(ring_map.codomain())
+    if source not in GroupAlgebras(target):
+        return False
+    return all(
+        ring_map(source.module_generator(generator)) == target.one()
+        for generator in source.group().group_generators()
+    )
+
+
+def _augmentation_data(ring_map):
+    assert is_augmentation_of_group_algebra(ring_map), (
+        f"{ring_map} is not the augmentation of a group algebra"
+    )
+    return _owned_ring(ring_map.domain()).group()
 
 
 def _invariant_element(group_module, invariant_module, element):
@@ -42,16 +71,12 @@ def _coinvariant_projection(group_module, coinvariants, element):
     return coinvariants.presentation_projection()(element)
 
 
-class TrivialActionFunctor(Functor):
-    r"""``Triv_G`` on represented finitely-presented ``R``-modules."""
+class TrivialActionFunctor(RestrictionOfScalarsFunctor):
+    r"""``Triv_G : Modules(R) -> Modules(R[G])``, restriction along the augmentation."""
 
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._group = group
-        super().__init__(
-            Modules(self._base_ring),
-            Modules(GroupAlgebra(self._base_ring, group)),
-        )
+    def __init__(self, ring_map) -> None:
+        super().__init__(ring_map)
+        self._group = _augmentation_data(ring_map)
 
     def group(self):
         return self._group
@@ -72,16 +97,15 @@ class TrivialActionFunctor(Functor):
         return f"Trivial {self.group()}-action functor"
 
 
-class InvariantsFunctor(Functor):
-    r"""``(-)^G`` on represented finitely-presented ``R[G]``-modules."""
+class InvariantsFunctor(CoextensionOfScalarsFunctor):
+    r"""``(-)^G : Modules(R[G]) -> Modules(R)``, coextension along the augmentation."""
 
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._group = group
-        super().__init__(
-            Modules(GroupAlgebra(self._base_ring, group)),
-            Modules(self._base_ring),
-        )
+    def __init__(self, ring_map) -> None:
+        super().__init__(ring_map)
+        self._group = _augmentation_data(ring_map)
+
+    def group(self):
+        return self._group
 
     def _apply_object(self, group_module):
         return group_module.module_invariants()
@@ -105,19 +129,18 @@ class InvariantsFunctor(Functor):
         return module_homset(source_invariants, target_invariants)(image)
 
     def _repr_(self):
-        return f"{self._group}-invariants functor"
+        return f"{self.group()}-invariants functor"
 
 
-class CoinvariantsFunctor(Functor):
-    r"""``(-)_G`` on represented finitely-presented ``R[G]``-modules."""
+class CoinvariantsFunctor(ScalarExtensionFunctor):
+    r"""``(-)_G : Modules(R[G]) -> Modules(R)``, scalar extension along the augmentation."""
 
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._group = group
-        super().__init__(
-            Modules(GroupAlgebra(self._base_ring, group)),
-            Modules(self._base_ring),
-        )
+    def __init__(self, ring_map) -> None:
+        super().__init__(ring_map)
+        self._group = _augmentation_data(ring_map)
+
+    def group(self):
+        return self._group
 
     def _apply_object(self, group_module):
         return group_module.module_coinvariants()
@@ -137,19 +160,14 @@ class CoinvariantsFunctor(Functor):
         return module_homset(source_coinvariants, target_coinvariants)(image)
 
     def _repr_(self):
-        return f"{self._group}-coinvariants functor"
+        return f"{self.group()}-coinvariants functor"
 
 
-class TrivialInvariantsAdjunction(Adjunction):
-    r"""``Triv_G ⊣ (-)^G``."""
+class TrivialInvariantsAdjunction(RestrictionCoextensionAdjunction):
+    r"""``Triv_G ⊣ (-)^G``, restriction/coextension along the augmentation."""
 
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._group = group
-        super().__init__(
-            TrivialActionFunctor(self._base_ring, group),
-            InvariantsFunctor(self._base_ring, group),
-        )
+    _restriction_functor = TrivialActionFunctor
+    _coextension_functor = InvariantsFunctor
 
     def unit(self, module):
         invariants = self.right_adjoint()(self.left_adjoint()(module))
@@ -168,21 +186,15 @@ class TrivialInvariantsAdjunction(Adjunction):
             )
         )
 
-
     def _repr_(self):
-        return f"Trivial-action/invariants adjunction for {self._group}"
+        return f"Trivial-action/invariants adjunction for {self.left_adjoint().group()}"
 
 
-class CoinvariantsTrivialAdjunction(Adjunction):
-    r"""``(-)_G ⊣ Triv_G``."""
+class CoinvariantsTrivialAdjunction(BaseChangeAdjunction):
+    r"""``(-)_G ⊣ Triv_G``, base change along the augmentation."""
 
-    def __init__(self, base_ring, group) -> None:
-        self._base_ring = _owned_ring(base_ring)
-        self._group = group
-        super().__init__(
-            CoinvariantsFunctor(self._base_ring, group),
-            TrivialActionFunctor(self._base_ring, group),
-        )
+    _extension_functor = CoinvariantsFunctor
+    _restriction_functor = TrivialActionFunctor
 
     def unit(self, group_module):
         coinvariants = self.left_adjoint()(group_module)
@@ -208,16 +220,15 @@ class CoinvariantsTrivialAdjunction(Adjunction):
             raise ValueError("coinvariants of the trivial action must be the original module")
         return module_homset(module, module).identity()
 
-
     def _repr_(self):
-        return f"Coinvariants/trivial-action adjunction for {self._group}"
+        return f"Coinvariants/trivial-action adjunction for {self.left_adjoint().group()}"
 
 
-@cached_function
-def trivial_invariants_adjunction(base_ring, group) -> TrivialInvariantsAdjunction:
-    return TrivialInvariantsAdjunction(base_ring, group)
-
-
-@cached_function
-def coinvariants_trivial_adjunction(base_ring, group) -> CoinvariantsTrivialAdjunction:
-    return CoinvariantsTrivialAdjunction(base_ring, group)
+__all__ = [
+    "CoinvariantsFunctor",
+    "CoinvariantsTrivialAdjunction",
+    "InvariantsFunctor",
+    "TrivialActionFunctor",
+    "TrivialInvariantsAdjunction",
+    "is_augmentation_of_group_algebra",
+]
