@@ -21,7 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
 )
-from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytopeParent
+from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytope
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.rings.real import RR
@@ -361,7 +361,7 @@ def voronoi_cell(lattice, bound=None):
     rank = gram.tensor_shape()[0]
     rationals = lattice.base_ring().fraction_field()
     if rank == 0:
-        return ConvexPolytopeParent(
+        return ConvexPolytope(
             Polyhedron(vertices=[[]], base_ring=SageQQ)
         )
     gram_q = gram.change_ring(rationals)
@@ -394,7 +394,7 @@ def voronoi_cell(lattice, bound=None):
                 inequalities.append(
                     [_engine_element(rationals, entry) for entry in owned_entries]
                 )
-        return ConvexPolytopeParent(
+        return ConvexPolytope(
             Polyhedron(ieqs=inequalities, base_ring=SageQQ)
         )
 
@@ -566,7 +566,7 @@ def contact_polytope(lattice):
         ]
         for vector in shortest_vectors(lattice)
     ]
-    return ConvexPolytopeParent(
+    return ConvexPolytope(
         Polyhedron(vertices=vertices, base_ring=SageQQ)
     )
 
