@@ -1295,7 +1295,9 @@ class _OwnedRingElement(RingElement):
         try:
             other = self.parent()(other)
         except (TypeError, ValueError):
-            return False
+            # Not this ring's decision: a cardinal, say, knows whether it
+            # equals a natural number of the ring, so Python asks it next.
+            return NotImplemented
         return bool(self._backend() == other._backend())
 
     def __ne__(self, other):
