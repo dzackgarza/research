@@ -16,6 +16,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 from sage.rings.integer_ring import ZZ as SageZZ
 
+from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -367,13 +368,195 @@ class DistinguishedOpenSubobject(SetInclusion):
 
 
 
-class QuotientRings(Category):
+class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
 
-    def super_categories(self):
-        return [OwnedCommutativeRings()]
+    class ElementMethods(Element):
+        r"""What a class in \(R/I\) is."""
+
+        def __init__(self, parent, representative) -> None:
+            self._representative = parent.quotient_source()(representative)
+            CommutativeRingElement.__init__(self, parent)
+
+        def lift(self):
+            return self._representative
+
+        representative = lift
+
+        def _add_(self, other):
+            return self.parent()(self.lift() + other.lift())
+
+        def _mul_(self, other):
+            return self.parent()(self.lift() * other.lift())
+
+        def _neg_(self):
+            return self.parent()(-self.lift())
+
+        def is_unit(self):
+            parent = self.parent()
+            if parent._preamble_engine_ring is None:
+                raise NotImplementedError(
+                    "unit testing in this quotient has no selected computation realization"
+                )
+            return bool(parent._engine_element(self).is_unit())
+
+        def inverse_of_unit(self):
+            parent = self.parent()
+            if parent._preamble_engine_ring is None:
+                raise NotImplementedError(
+                    "unit inversion in this quotient has no selected computation realization"
+                )
+            represented = parent._engine_element(self)
+            if not represented.is_unit():
+                raise ZeroDivisionError(f"{self} is not a unit")
+            return parent(represented**-1)
+
+        def __truediv__(self, other):
+            return self * self.parent()(other).inverse_of_unit()
+
+        def _richcmp_(self, other, op):
+            if not other.parent() is self.parent() or other.parent() is not self.parent():
+                return NotImplemented
+            if op not in (op_EQ, op_NE):
+                return NotImplemented
+            equal = self.parent().defining_ideal().contains_ambient_element(
+                self.lift() - other.lift()
+            )
+            return equal if op == op_EQ else not equal
+
+        def _repr_(self):
+            return f"{self.lift()} mod {self.parent().defining_ideal()}"
 
     class ParentMethods:
+
+        def __init__(
+            self,
+            source,
+            defining_ideal,
+            _engine_ring=None,
+            **rest,
+        ) -> None:
+            self._preamble_quotient_source = source
+            self._preamble_defining_ideal = defining_ideal
+            self._preamble_engine_ring = _engine_ring
+            self._preamble_algebra_base_ring = source
+            self._preamble_base_ring = source
+            # The module level above needs the ring this quotient is an
+            # algebra over; a level supplies what the one above declares.
+            super().__init__(base_ring=source, **rest)
+
+            self._preamble_quotient_map = ring_morphism(
+                source,
+                self,
+                lambda element: self(element),
+            )
+
+        def _element_constructor_(self, value):
+            if isinstance(value, self.category().ElementType) and value.parent() is self:
+                return value
+            source = self.quotient_source()
+            source_engine = _engine_ring(source)
+            value_parent = getattr(value, "parent", lambda: None)()
+            quotient_engine = self._preamble_engine_ring
+            if quotient_engine is not None and value_parent is quotient_engine:
+                backend_value = quotient_engine(value)
+                lift = getattr(backend_value, "lift", None)
+                if lift is None:
+                    raise TypeError(
+                        "the selected quotient-engine element has no lift to the source ring"
+                    )
+                value = source._from_engine_element(source_engine(lift()))
+            elif quotient_engine is not None and value_parent in OwnedRings():
+                try:
+                    same_engine = _engine_ring(value_parent) is quotient_engine
+                except (TypeError, ValueError, AttributeError):
+                    same_engine = False
+                if same_engine:
+                    backend_value = quotient_engine(_engine_element(value_parent, value))
+                    lift = getattr(backend_value, "lift", None)
+                    if lift is None:
+                        raise TypeError(
+                            "the equivalent owned quotient element has no lift to the source ring"
+                        )
+                    value = source._from_engine_element(source_engine(lift()))
+            elif value_parent is source_engine:
+                value = source._from_engine_element(source_engine(value))
+            return self.element_class(self, value)
+
+        def __call__(self, value):
+            return self._element_constructor_(value)
+
+        def _from_engine_element(self, value):
+            r"""Cross one element of the selected quotient engine into this quotient."""
+            engine = self._preamble_engine_ring
+            if engine is None:
+                raise NotImplementedError(
+                    "this quotient ring has no selected computation realization"
+                )
+            return self._element_constructor_(engine(value))
+
+        def _engine_element(self, value):
+            engine = self._preamble_engine_ring
+            if engine is None:
+                raise NotImplementedError(
+                    "this quotient ring has no selected computation realization"
+                )
+            element = self(value)
+            source_value = _engine_element(self.quotient_source(), element.lift())
+            try:
+                return engine(source_value)
+            except (TypeError, ValueError):
+                quotient_map = engine.coerce_map_from(_engine_ring(self.quotient_source()))
+                if quotient_map is None:
+                    raise
+                return quotient_map(source_value)
+
+        def zero(self):
+            return self(self.quotient_source().zero())
+
+        def one(self):
+            return self(self.quotient_source().one())
+
+        def an_element(self):
+            return self.one()
+
+        def is_finite(self):
+            if self._preamble_engine_ring is None:
+                from sage.misc.unknown import Unknown
+
+                return Unknown
+            return bool(self._preamble_engine_ring.is_finite())
+
+        def cardinality(self):
+            if self._preamble_engine_ring is not None:
+                return cardinal(self._preamble_engine_ring.cardinality())
+            assert False, (
+                "cardinality is defined for every quotient ring, but this represented "
+                "quotient has no selected exact-cardinality computation"
+            )
+
+        def is_field(self):
+            if self._preamble_engine_ring is None:
+                return False
+            return bool(self._preamble_engine_ring.is_field())
+
+        def is_integral_domain(self):
+            if self._preamble_engine_ring is None:
+                raise NotImplementedError(
+                    "integral-domain testing for this quotient has no selected computation"
+                )
+            return bool(self._preamble_engine_ring.is_integral_domain())
+
+        def krull_dimension(self):
+            if self._preamble_engine_ring is None:
+                raise NotImplementedError(
+                    "Krull dimension of this quotient has no selected computation"
+                )
+            return self._preamble_engine_ring.krull_dimension()
+
+        def _repr_(self):
+            return f"{self.quotient_source()} / {self.defining_ideal()}"
+
         def quotient_source(self):
             return self._preamble_quotient_source
 
@@ -411,200 +594,13 @@ class QuotientRings(Category):
                     "characteristic of this quotient requires contraction of the defining ideal to the prime subring"
                 ) from error
 
-
-class GeneralQuotientRingElement(CommutativeRingElement):
-    r"""A coset in a represented quotient ``R/I`` without a native CAS parent."""
-
-    def __init__(self, parent, representative) -> None:
-        self._representative = parent.quotient_source()(representative)
-        CommutativeRingElement.__init__(self, parent)
-
-    def lift(self):
-        return self._representative
-
-    representative = lift
-
-    def _add_(self, other):
-        return self.parent()(self.lift() + other.lift())
-
-    def _mul_(self, other):
-        return self.parent()(self.lift() * other.lift())
-
-    def _neg_(self):
-        return self.parent()(-self.lift())
-
-    def is_unit(self):
-        parent = self.parent()
-        if parent._preamble_engine_ring is None:
-            raise NotImplementedError(
-                "unit testing in this quotient has no selected computation realization"
-            )
-        return bool(parent._engine_element(self).is_unit())
-
-    def inverse_of_unit(self):
-        parent = self.parent()
-        if parent._preamble_engine_ring is None:
-            raise NotImplementedError(
-                "unit inversion in this quotient has no selected computation realization"
-            )
-        represented = parent._engine_element(self)
-        if not represented.is_unit():
-            raise ZeroDivisionError(f"{self} is not a unit")
-        return parent(represented**-1)
-
-    def __truediv__(self, other):
-        return self * self.parent()(other).inverse_of_unit()
-
-    def _richcmp_(self, other, op):
-        if not isinstance(other, GeneralQuotientRingElement) or other.parent() is not self.parent():
-            return NotImplemented
-        if op not in (op_EQ, op_NE):
-            return NotImplemented
-        equal = self.parent().defining_ideal().contains_ambient_element(
-            self.lift() - other.lift()
-        )
-        return equal if op == op_EQ else not equal
-
-    def _repr_(self):
-        return f"{self.lift()} mod {self.parent().defining_ideal()}"
+    def super_categories(self):
+        return [OwnedCommutativeRings()]
 
 
-class GeneralQuotientRingParent(Parent):
-    r"""The literal quotient ring ``R/I`` using the ideal congruence."""
 
-    Element = GeneralQuotientRingElement
 
-    def __init__(
-        self,
-        source,
-        defining_ideal,
-        _engine_ring=None,
-        *,
-        categories=(),
-    ) -> None:
-        self._preamble_quotient_source = source
-        self._preamble_defining_ideal = defining_ideal
-        self._preamble_engine_ring = _engine_ring
-        self._preamble_algebra_base_ring = source
-        self._preamble_base_ring = source
-        Parent.__init__(
-            self,
-            category=Category.join(
-                (QuotientRings(), CommutativeAlgebras(source), *tuple(categories))
-            ),
-        )
 
-        self._preamble_quotient_map = ring_morphism(
-            source,
-            self,
-            lambda element: self(element),
-        )
-
-    def _element_constructor_(self, value):
-        if isinstance(value, GeneralQuotientRingElement) and value.parent() is self:
-            return value
-        source = self.quotient_source()
-        source_engine = _engine_ring(source)
-        value_parent = getattr(value, "parent", lambda: None)()
-        quotient_engine = self._preamble_engine_ring
-        if quotient_engine is not None and value_parent is quotient_engine:
-            backend_value = quotient_engine(value)
-            lift = getattr(backend_value, "lift", None)
-            if lift is None:
-                raise TypeError(
-                    "the selected quotient-engine element has no lift to the source ring"
-                )
-            value = source._from_engine_element(source_engine(lift()))
-        elif quotient_engine is not None and value_parent in OwnedRings():
-            try:
-                same_engine = _engine_ring(value_parent) is quotient_engine
-            except (TypeError, ValueError, AttributeError):
-                same_engine = False
-            if same_engine:
-                backend_value = quotient_engine(_engine_element(value_parent, value))
-                lift = getattr(backend_value, "lift", None)
-                if lift is None:
-                    raise TypeError(
-                        "the equivalent owned quotient element has no lift to the source ring"
-                    )
-                value = source._from_engine_element(source_engine(lift()))
-        elif value_parent is source_engine:
-            value = source._from_engine_element(source_engine(value))
-        return self.element_class(self, value)
-
-    def __call__(self, value):
-        return self._element_constructor_(value)
-
-    def _from_engine_element(self, value):
-        r"""Cross one element of the selected quotient engine into this quotient."""
-        engine = self._preamble_engine_ring
-        if engine is None:
-            raise NotImplementedError(
-                "this quotient ring has no selected computation realization"
-            )
-        return self._element_constructor_(engine(value))
-
-    def _engine_element(self, value):
-        engine = self._preamble_engine_ring
-        if engine is None:
-            raise NotImplementedError(
-                "this quotient ring has no selected computation realization"
-            )
-        element = self(value)
-        source_value = _engine_element(self.quotient_source(), element.lift())
-        try:
-            return engine(source_value)
-        except (TypeError, ValueError):
-            quotient_map = engine.coerce_map_from(_engine_ring(self.quotient_source()))
-            if quotient_map is None:
-                raise
-            return quotient_map(source_value)
-
-    def zero(self):
-        return self(self.quotient_source().zero())
-
-    def one(self):
-        return self(self.quotient_source().one())
-
-    def an_element(self):
-        return self.one()
-
-    def is_finite(self):
-        if self._preamble_engine_ring is None:
-            from sage.misc.unknown import Unknown
-
-            return Unknown
-        return bool(self._preamble_engine_ring.is_finite())
-
-    def cardinality(self):
-        if self._preamble_engine_ring is not None:
-            return cardinal(self._preamble_engine_ring.cardinality())
-        assert False, (
-            "cardinality is defined for every quotient ring, but this represented "
-            "quotient has no selected exact-cardinality computation"
-        )
-
-    def is_field(self):
-        if self._preamble_engine_ring is None:
-            return False
-        return bool(self._preamble_engine_ring.is_field())
-
-    def is_integral_domain(self):
-        if self._preamble_engine_ring is None:
-            raise NotImplementedError(
-                "integral-domain testing for this quotient has no selected computation"
-            )
-        return bool(self._preamble_engine_ring.is_integral_domain())
-
-    def krull_dimension(self):
-        if self._preamble_engine_ring is None:
-            raise NotImplementedError(
-                "Krull dimension of this quotient has no selected computation"
-            )
-        return self._preamble_engine_ring.krull_dimension()
-
-    def _repr_(self):
-        return f"{self.quotient_source()} / {self.defining_ideal()}"
 
 
 class QuotientLocalizationComparison(SageObject):
@@ -1163,11 +1159,11 @@ def QuotientRing(ring, ideal):
                 placements.append(OwnedArtinianRings())
         except (AttributeError, NotImplementedError, TypeError, ValueError):
             pass
-    return GeneralQuotientRingParent(
-        source,
-        defining_ideal,
+    return object_of(
+        Category.join((QuotientRings(), CommutativeAlgebras(source), *placements)),
+        source=source,
+        defining_ideal=defining_ideal,
         _engine_ring=quotient_engine,
-        categories=tuple(placements),
     )
 
 
