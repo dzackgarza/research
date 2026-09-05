@@ -729,18 +729,27 @@ def _quotient_by_algebra_elements_backend(
 
 @cached_function
 def _commutative_algebra_pushout_backend(left_map, right_map):
-    if not isinstance(left_map, AlgebraMorphism) or not isinstance(
-        right_map, AlgebraMorphism
-    ):
-        raise TypeError("a commutative-algebra pushout is specified by algebra morphisms")
-    if left_map.domain() is not right_map.domain():
+    try:
+        common = left_map.domain()
+        left = left_map.codomain()
+        right_common = right_map.domain()
+        right = right_map.codomain()
+    except AttributeError as error:
+        raise TypeError(
+            "a commutative-algebra pushout is specified by represented algebra morphisms"
+        ) from error
+    if common is not right_common:
         raise ValueError("pushout maps require one common domain")
-    common = left_map.domain()
-    left = left_map.codomain()
-    right = right_map.codomain()
     base = common.base_ring()
     if left.base_ring() is not base or right.base_ring() is not base:
         raise ValueError("the pushout span must lie over one scalar base")
+    if left_map.parent() is not common.Mor(left) or right_map.parent() is not common.Mor(
+        right
+    ):
+        raise TypeError(
+            "the pushout span maps must belong to the represented algebra Homs "
+            "of their endpoints"
+        )
     if common not in FramedAlgebras(base):
         raise NotImplementedError(
             "the active pushout backend requires a finite algebra framing on the common source"

@@ -1,7 +1,9 @@
 from dzack_research.preamble.all import QQ
 from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
+    CommutativeAlgebraPushouts,
     CommutativeAlgebras,
+    commutative_algebra_pushout,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
@@ -46,3 +48,25 @@ def test_xy_equals_t_relative_presentation_and_special_fiber() -> None:
         fiber_presentation.algebra_generator("x")
         * fiber_presentation.algebra_generator("y"),
     )
+
+
+def test_pushout_accepts_maps_from_a_presented_source() -> None:
+    source_presentation = PolynomialRing(QQ, "t")
+    t = source_presentation.algebra_generator("t")
+    source = FinitelyPresentedAlgebra(source_presentation, (t**2,))
+    tbar = source.algebra_generator("t")
+
+    target_presentation = PolynomialRing(QQ, "x")
+    x = target_presentation.algebra_generator("x")
+    target = FinitelyPresentedAlgebra(target_presentation, (x**2,))
+    xbar = target.algebra_generator("x")
+
+    left = source.Mor(source).identity()
+    right = source.Mor(target)({"t": xbar})
+    assert left.parent() is source.Mor(source)
+    assert right.parent() is source.Mor(target)
+
+    pushout = commutative_algebra_pushout(left, right)
+    assert pushout in CommutativeAlgebraPushouts(QQ)
+    left_pushout, right_pushout = pushout.pushout_maps()
+    assert left_pushout(left(tbar)) == right_pushout(right(tbar))
