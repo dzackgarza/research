@@ -799,6 +799,8 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             from dzack_research.preamble.categories.algebras.free_algebras import (
                 PolynomialRing,
             )
+            from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
             from dzack_research.preamble.categories.rings.number_fields import (
                 _refine_number_field_view,
                 _refine_order_view,
@@ -807,6 +809,8 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             match names:
                 case str():
                     return PolynomialRing(self, names)
+                case _ if names in OwnedGroups():
+                    return GroupAlgebra(self, names)
                 case tuple() if all(isinstance(part, str) for part in names):
                     return PolynomialRing(self, names)
                 case list():
@@ -1567,6 +1571,18 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _preamble_is_number_field_order(self):
         return self._engine is SageZZ or isinstance(self._engine, SageNumberFieldOrder)
 
+    def is_projective(self) -> bool:
+        r"""Projectivity as a module over the base ring.
+
+        A ring is free of rank one over itself, and a number-field order is
+        free of finite rank over the integers (its integral basis).
+        """
+        if self.base_ring() is self or self._preamble_is_number_field_order():
+            return True
+        raise AssertionError(
+            f"projectivity of {self} over {self.base_ring()} is not decided here"
+        )
+
     def _preamble_is_number_field(self):
         return self._engine in SageNumberFields()
 
@@ -1648,14 +1664,17 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
 
 
 def _own_ring(ring):
-    r"""Private backend adapter: build the preamble ring represented by ``ring``."""
+    r"""Private backend adapter: build the preamble ring represented by ``ring``.
+
+    One engine has one owned view: the number-field and order views refine
+    this object in place, so ``ZZ.base_ring() is ZZ`` and every morphism
+    ``R[G] -> R`` finds one common base ring.
+    """
     if ring in OwnedRings():
-        owned = ring
-    else:
-        if ring not in SageRings():
-            raise TypeError(f"{ring} is not a ring")
-        owned = _owned_engine_ring(ring)
-    return owned
+        return ring
+    if ring not in SageRings():
+        raise TypeError(f"{ring} is not a ring")
+    return _owned_engine_ring(ring)
 
 
 def _owned_ring(ring):

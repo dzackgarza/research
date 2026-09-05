@@ -23,11 +23,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedOrders,
     OwnedRings,
-    _OwnedRingParent,
     _engine_element,
     _engine_numeral,
     _engine_ring,
+    _owned_engine_ring,
 )
+from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.fractional_ideals import (
@@ -452,20 +453,23 @@ def _refine_number_field_view(field):
 
 @cached_function
 def _owned_order_view(engine):
-    r"""Construct the selected-integral-basis view of one engine order."""
-    probe = _OwnedRingParent(engine)
-    if probe._preamble_is_number_field_order() is not True:
+    r"""The selected-integral-basis view of one engine order.
+
+    One engine has one owned ring, so the view refines that ring in place
+    rather than constructing a second parent on the same engine.
+    """
+    if not (engine is SageZZ or isinstance(engine, SageNumberFieldOrder)):
         raise TypeError("the selected integral-basis view requires a number-field order")
-    return _OwnedRingParent(engine, category=OrdersWithChosenIntegralBasis())
+    return refine(_owned_engine_ring(engine), OrdersWithChosenIntegralBasis())
 
 
 @cached_function
 def _owned_number_field_view(engine):
-    r"""Construct the strongest number-field view determined by ``engine``."""
+    r"""The strongest number-field view determined by ``engine``, refined in place."""
     categories = [OwnedNumberFields()]
     if engine is not SageQQ:
         categories.append(NumberFieldsWithChosenPrimitiveElement())
-    return _OwnedRingParent(engine, category=Category.join(tuple(categories)))
+    return refine(_owned_engine_ring(engine), Category.join(tuple(categories)))
 
 
 

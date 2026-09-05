@@ -113,10 +113,12 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             multiplication_source_module,
             source_multiplication,
             algebra_base_ring,
+            source_algebra_unit=None,
             **rest,
         ) -> None:
             self._preamble_multiplication_source_module = multiplication_source_module
             self._preamble_source_multiplication = source_multiplication
+            self._preamble_source_algebra_unit = source_algebra_unit
             self._preamble_algebra_base_ring = algebra_base_ring
             super().__init__(**rest)
 
@@ -311,6 +313,41 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return algebras.Mor(self, codomain)
             return _category_homset(category, self, codomain)
 
+        @cached_method
+        def center(self):
+            r"""The centre \(Z(A)=\{z : za = az \text{ for all } a\}\) as a submodule of \(A\).
+
+            An element commutes with all of \(A\) exactly when it commutes
+            with a module generating set, so \(Z(A)\) is the wide equalizer
+            of the pairs (left multiplication by \(b\), right multiplication
+            by \(b\)) over that set, computed in \(R\)-modules.
+            """
+            from dzack_research.preamble.categories.abstract_categories.constructions import (
+                Equalizer,
+            )
+
+            labels = self.module_generating_set()
+            assert labels.cardinality().is_finite(), (
+                "the centre is computed here from a finite module generating set"
+            )
+            endomorphisms = module_homset(self, self)
+
+            def commutation_equalizer(label):
+                element = self.module_generator(label)
+                left = endomorphisms(
+                    {other: element * self.module_generator(other) for other in labels}
+                )
+                right = endomorphisms(
+                    {other: self.module_generator(other) * element for other in labels}
+                )
+                return Equalizer(left, right)
+
+            equalizers = iter(labels)
+            center = commutation_equalizer(next(equalizers))
+            for label in equalizers:
+                center = center.intersection(commutation_equalizer(label))
+            return center
+
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(
                 Algebras(self.base_ring())
@@ -454,11 +491,13 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
                 return selected
             source = self._preamble_multiplication_source_module
             multiplication = self._preamble_source_multiplication
-            unit_source = (
-                source.one()
-                if source in Algebras(self.base_ring())
-                else _unit_from_multiplication(multiplication)
-            )
+            unit_source = self._preamble_source_algebra_unit
+            if unit_source is None:
+                unit_source = (
+                    source.one()
+                    if source in Algebras(self.base_ring())
+                    else _unit_from_multiplication(multiplication)
+                )
             _forget, equip = self._multiplication_transport_maps()
             return equip(unit_source)
 
@@ -1640,8 +1679,17 @@ def algebra_from_multiplication(
     unital=True,
     *,
     extra_categories=(),
+    extra_construction_data=None,
+    unit=None,
+    commutative=None,
 ):
-    r"""Return the algebra presented by an \(R\)-module morphism \(A\otimes_R A\to A\)."""
+    r"""Return the algebra presented by an \(R\)-module morphism \(A\otimes_R A\to A\).
+
+    ``unit`` and ``commutative`` state what the caller already knows about
+    the multiplication.  When ``unit`` is ``None`` the two-sided unit is
+    solved for on the module generating set; when ``commutative`` is
+    ``None`` commutativity is decided there.
+    """
     from sage.categories.map import Map
 
     module = multiplication.codomain()
@@ -1665,12 +1713,16 @@ def algebra_from_multiplication(
         return specialized(multiplication, unital=unital)
     placement = []
     if unital:
-        if module in Algebras(ring):
-            module.one()
-        else:
-            _unit_from_multiplication(multiplication)
+        if unit is None:
+            unit = (
+                module.one()
+                if module in Algebras(ring)
+                else _unit_from_multiplication(multiplication)
+            )
         placement.append(AlgebrasWithChosenMultiplication(ring))
-        if _multiplication_is_commutative(multiplication):
+        if commutative is None:
+            commutative = _multiplication_is_commutative(multiplication)
+        if commutative:
             placement.append(CommutativeAlgebras(ring))
     else:
         placement.append(AssociativeAlgebrasWithChosenMultiplication(ring))
@@ -1681,7 +1733,9 @@ def algebra_from_multiplication(
         extra_construction_data={
             "multiplication_source_module": module,
             "source_multiplication": multiplication,
+            "source_algebra_unit": unit,
             "algebra_base_ring": ring,
+            **(extra_construction_data or {}),
         },
     )
 

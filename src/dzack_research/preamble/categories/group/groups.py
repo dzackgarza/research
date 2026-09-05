@@ -1658,6 +1658,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             raise TypeError("a group Hom requires two owned groups")
         return self.HomCategory().Of(domain, codomain)
 
+    def group_algebra(self, base_ring):
+        r"""The functor \(R[-]\colon \mathbf{Grp}\to\mathbf{Alg}_R\)."""
+        from dzack_research.preamble.categories.algebras.group_algebras import (
+            GroupAlgebraFunctor,
+        )
+
+        return GroupAlgebraFunctor(base_ring)
+
     _HomCategory = GroupHomCategoryConstruction
     _EndCategory = GroupEndCategoryConstruction
     _IsoCategory = GroupIsoCategoryConstruction

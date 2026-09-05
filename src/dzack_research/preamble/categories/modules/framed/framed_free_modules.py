@@ -226,6 +226,11 @@ class _SparseFreeModuleParent:
                     self,
                     {labels.unrank(0): scalar} if scalar != self.base_ring().zero() else {},
                 )
+        if value in labels:
+            # A label is its basis element: the unit ``S -> F(S)`` of the
+            # free-forgetful adjunction, as in Sage's
+            # ``CombinatorialFreeModule._element_constructor_``.
+            return self._basis_element(value)
         raise TypeError(f"{value!r} does not describe an element of {self}")
 
     def zero(self):
