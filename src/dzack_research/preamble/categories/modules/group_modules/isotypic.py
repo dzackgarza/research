@@ -93,14 +93,16 @@ class IsotypicDecompositions(OwnedCategory):
             raise ValueError("this decomposition has no trivial character")
 
         def nontrivial_components(self):
-            return tuple(
-                component
-                for character, component in zip(
-                    self.isotypic_characters(),
-                    self._preamble_isotypic_components,
-                    strict=True,
+            return finite_ordered_set(
+                tuple(
+                    component
+                    for character, component in zip(
+                        self._preamble_isotypic_characters,
+                        self._preamble_isotypic_components,
+                        strict=True,
+                    )
+                    if not character.is_trivial()
                 )
-                if not character.is_trivial()
             )
 
 
@@ -258,8 +260,8 @@ def isotypic_component(module, character):
 
 
 def isotypic_decomposition(module):
-    r"""Return ``⊕ M_chi -> M`` with its selected summand structure."""
-    characters = _split_irreducible_characters(module)
+    r"""Return ``⊕ M_chi -> M`` over the characters present in ``M``."""
+    characters = tuple(module.isotypic_characters())
     components = tuple(isotypic_component(module, character) for character in characters)
     spanning = tuple(
         component.inclusion()(generator)
