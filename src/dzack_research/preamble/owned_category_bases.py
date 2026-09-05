@@ -227,11 +227,25 @@ class Category_singleton(
 class CategoryWithAxiom(
     OwnedCategoryMixin, OwnedCategoryObject, SageCategoryWithAxiom, Parent
 ):
-    r"""Owned base over Sage's category-with-axiom base."""
+    r"""Owned base over Sage's category-with-axiom base.
+
+    Sage's ``CategoryWithAxiom_over_base_ring`` is not the base to use for an
+    axiom on an owned category over a ring: it asks Sage's own ``Rings()``
+    about the base, and an owned ring is not placed there.  An owned category
+    over a base ring carries the ring itself as its parameter, so the axiom
+    category reads it from the category it refines.
+    """
 
     def __init__(self, base_category: SageCategory) -> None:
         self._init_cat_object()
         SageCategoryWithAxiom.__init__(self, base_category)
+
+    def base_ring(self):
+        r"""Return the base ring of the category this axiom refines."""
+        return self._base_category.base_ring()
+
+    def base(self):
+        return self._base_category.base()
 
 
 class CategoryWithAxiom_singleton(

@@ -89,7 +89,7 @@ class SymmetricAlgebraFunctor(_ModuleAlgebraFunctor):
     r"""The functor \(\operatorname{Sym}_R:\mathbf{Mod}_R\to\mathbf{CAlg}_R\)."""
 
     _constructor = staticmethod(SymmetricAlgebraOf)
-    _codomain_category = CommutativeAlgebras
+    _codomain_category = staticmethod(CommutativeAlgebras)
     _name = "Symmetric algebra"
 
 
