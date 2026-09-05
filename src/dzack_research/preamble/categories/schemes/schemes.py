@@ -1189,7 +1189,19 @@ def scheme_product(*schemes):
             )
             offset += dimension
     elif all(scheme in ProjectiveSpaces(base) for scheme in schemes):
-        product = _SageProductProjectiveSpaces(list(schemes))
+        # Each factor brings its own homogeneous coordinates x0..xn, so the
+        # product needs one name per coordinate of the whole; the affine branch
+        # above indexes them by factor for the same reason.
+        names = tuple(
+            f"x{factor}_{coordinate}"
+            for factor, scheme in enumerate(schemes)
+            for coordinate in range(int(scheme.relative_dimension()) + 1)
+        )
+        product = _SageProductProjectiveSpaces(
+            [int(scheme.relative_dimension()) for scheme in schemes],
+            _engine_ring(base),
+            names=names,
+        )
         categories = [ProductProjectiveSpaces(base)]
         if _integral_placement(base):
             categories.append(IntegralSchemes(base))

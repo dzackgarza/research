@@ -35,12 +35,16 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
     r"""Selected modules ``Omega^1_{A/R}`` for the coefficient algebra ``A``."""
 
     def an_object(self):
-        r"""``Omega^1_{A/R}`` for the coefficient algebra ``A`` this category is over.
+        r"""``Omega^1_{R[x]/R}``, the differentials of the polynomial algebra.
 
-        An object here is a module over ``A``, so the differentials are taken of
-        the parameter itself rather than of an algebra built above it.
+        Kähler differentials are taken of a commutative algebra over the
+        parameter.  The parameter is such an algebra over itself through the
+        identity, but that placement is not represented, so the witness is the
+        polynomial algebra on one generator.
         """
-        return KahlerDifferentials(self.base_ring())
+        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+
+        return KahlerDifferentials(CommutativeAlgebras(self.base_ring()).an_object())
 
     @classmethod
     def _repr_object_names(cls):
