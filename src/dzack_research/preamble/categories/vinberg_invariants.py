@@ -409,14 +409,21 @@ class VinbergInvariantMatrices(OwnedCategory):
         with no mirrors behind it.  The denominators are all one, which is what
         makes these values themselves the projective points.
         """
-        rank = len(values)
-        if index_set is None:
-            index_set = range(rank)
+        rows = tuple(tuple(row) for row in values)
+        # The rows carry their own enumeration; the mirrors are indexed by it
+        # unless the caller names them otherwise.
+        row_positions = finite_ordered_set(
+            tuple(position for position, _row in enumerate(rows))
+        )
+        mirrors = row_positions if index_set is None else finite_ordered_set(index_set)
+        assert mirrors.cardinality() == row_positions.cardinality(), (
+            "an invariant matrix has one mirror per row of invariants"
+        )
         return _vinberg_invariant_matrix(
             base_ring,
-            tuple(index_set),
-            [[base_ring(entry) for entry in row] for row in values],
-            [[base_ring.one() for _ in range(rank)] for _ in range(rank)],
+            tuple(mirrors),
+            [[base_ring(entry) for entry in row] for row in rows],
+            [[base_ring.one() for _ in mirrors] for _ in mirrors],
         )
 
 

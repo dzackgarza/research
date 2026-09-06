@@ -71,14 +71,15 @@ class CoxeterDiagrams(OwnedCategory):
             self._coxeter_matrix = CoxeterMatrix(coxeter_matrix)
             self._index_set = finite_ordered_set(tuple(self._coxeter_matrix.index_set()))
             if names is None:
-                names = tuple(f"s_{index}" for index in self._index_set)
+                names = (f"s_{index}" for index in self._index_set)
             elif isinstance(names, str):
-                names = tuple(part.strip() for part in names.split(","))
-            else:
-                names = tuple(names)
-            if self._index_set.cardinality() != len(names):
-                raise ValueError("a Coxeter diagram needs one name per vertex")
-            self._names = names
+                names = (part.strip() for part in names.split(","))
+            # One name per vertex, stated as the pairing of the names with the
+            # vertices rather than by measuring the names against the vertex
+            # cardinality.
+            self._names = tuple(
+                name for _vertex, name in zip(self._index_set, names, strict=True)
+            )
             self._roots = None if roots is None else tuple(roots)
             self._root_gram = root_gram
             if positions is None:
@@ -193,15 +194,17 @@ class CoxeterDiagrams(OwnedCategory):
             names = tuple(self._names[self.index_set().position(vertex)] for vertex in vertices)
             preferred_positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in vertices}
             if self.is_rooted():
-                positions = tuple(self.index_set().position(vertex) for vertex in vertices)
-                roots = tuple(self._roots[position] for position in positions)
+                selected = finite_ordered_set(
+                    tuple(self.index_set().position(vertex) for vertex in vertices)
+                )
+                roots = tuple(self._roots[position] for position in selected)
                 gram = tensor(
                     self._root_gram.base_ring(),
                     (),
-                    (len(positions), len(positions)),
+                    (selected.cardinality(), selected.cardinality()),
                     [
-                        [self._root_gram[i, j] for j in positions]
-                        for i in positions
+                        [self._root_gram[i, j] for j in selected]
+                        for i in selected
                     ],
                 )
             else:
@@ -609,7 +612,10 @@ class CoxeterDiagrams(OwnedCategory):
     def from_coxeter_matrix(self, coxeter_matrix, names=None, positions=None):
         if isinstance(coxeter_matrix, (list, tuple)):
             entries = tuple(tuple(row) for row in coxeter_matrix)
-            coxeter_matrix = CoxeterMatrix(entries, index_set=tuple(range(len(entries))))
+            coxeter_matrix = CoxeterMatrix(
+                entries,
+                index_set=tuple(position for position, _row in enumerate(entries)),
+            )
         return _coxeter_diagram(coxeter_matrix, names=names, positions=positions)
 
     def from_cartan_type(self, cartan_type, names=None, *, rooted=False, positions=None):
@@ -627,16 +633,18 @@ class CoxeterDiagrams(OwnedCategory):
         realization = roots[0].parent()
         if any(root.parent() is not realization for root in roots):
             raise ValueError("all diagram roots must belong to one lattice")
-        if index_set is None:
-            index_set = tuple(range(len(roots)))
-        index_set = finite_ordered_set(index_set)
-        if index_set.cardinality() != len(roots):
+        # The roots carry their own enumeration; the vertices are indexed by it
+        # unless the caller names them otherwise.
+        root_positions = finite_ordered_set(
+            tuple(position for position, _root in enumerate(roots))
+        )
+        mirrors = root_positions if index_set is None else finite_ordered_set(index_set)
+        if mirrors.cardinality() != root_positions.cardinality():
             raise ValueError("the index set must have one vertex per root")
-        mirrors = index_set.cardinality()
         gram = tensor(
             realization.base_ring(),
             (),
-            (mirrors, mirrors),
+            (mirrors.cardinality(), mirrors.cardinality()),
             [[left.b(right) for right in roots] for left in roots],
         )
         entries = [
@@ -644,12 +652,12 @@ class CoxeterDiagrams(OwnedCategory):
                 SageZZ.one()
                 if i == j
                 else _coxeter_entry(gram[i, i], gram[j, j], gram[i, j])
-                for j in range(mirrors)
+                for j, _right in enumerate(roots)
             ]
-            for i in range(mirrors)
+            for i, _left in enumerate(roots)
         ]
         return _coxeter_diagram(
-            CoxeterMatrix(entries, index_set=tuple(index_set)),
+            CoxeterMatrix(entries, index_set=tuple(mirrors)),
             names=names,
             roots=roots,
             root_gram=gram,
