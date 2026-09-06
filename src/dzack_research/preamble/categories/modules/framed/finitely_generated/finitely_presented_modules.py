@@ -187,9 +187,36 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             return TensorProduct(self, other)
 
+        def free_resolution(self, steps=None):
+            r"""Return a free resolution of the selected presentation.
+
+            Over a principal ideal domain the relation submodule is free, so
+            one step suffices and the resolution is the length-one complex
+            ``0 -> F_1 -> F_0 -> M -> 0`` built from an independent set of
+            relations.
+
+            Over any other base the syzygies of the chosen presentation are the
+            next relations, and the resolution continues by resolving them: the
+            kernel of a differential is a finitely presented submodule of its
+            domain, and its own free cover composed with that inclusion is the
+            next differential.  The tower stops on its own where the syzygies
+            vanish, and ``is_exact`` then holds; where they do not, ``steps``
+            says how far to compute, because a resolution over a general ring
+            need not be finite and no bound may be assumed.
+            """
+
+            ring = self.base_ring()
+            if ring in PrincipalIdealDomains():
+                return self._relation_submodule_resolution()
+            assert steps is not None, (
+                f"a free resolution over {ring} is not known to be finite, so the "
+                "number of steps to compute must be supplied"
+            )
+            return self._syzygy_resolution(int(steps))
+
         @cached_method
-        def free_resolution(self):
-            r"""Return the selected length-one free resolution over the represented PID."""
+        def _relation_submodule_resolution(self):
+            r"""Resolve over a PID, where the relation submodule is already free."""
 
             ring = self.base_ring()
             degree_zero = self.presentation().codomain()
@@ -207,9 +234,33 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             return FreeResolution(
                 self,
-                degree_zero,
-                degree_one,
-                module_embedding(degree_one, degree_zero, image),
+                (degree_zero, degree_one),
+                (module_embedding(degree_one, degree_zero, image),),
+                self.presentation_projection(),
+                zero,
+            )
+
+        @cached_method
+        def _syzygy_resolution(self, steps):
+            r"""Resolve by iterated syzygies, stopping early where they vanish."""
+
+            assert steps >= 1, "a syzygy resolution computes at least the relation step"
+            degree_zero = self.presentation().codomain()
+            zero = degree_zero._fresh_free_module_on(Sets.Δ[-1])
+            terms = [degree_zero]
+            differentials = []
+            differential = self.presentation()
+            for _ in range(steps):
+                terms.append(differential.domain())
+                differentials.append(differential)
+                syzygies = differential.kernel()
+                if int(syzygies.number_of_module_generators()) == 0:
+                    break
+                differential = syzygies.inclusion() * syzygies.presentation_projection()
+            return FreeResolution(
+                self,
+                tuple(terms),
+                tuple(differentials),
                 self.presentation_projection(),
                 zero,
             )

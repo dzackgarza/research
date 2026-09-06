@@ -1038,12 +1038,19 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
 @dataclass(frozen=True)
 class FreeResolution:
-    r"""The exact resolution ``0 -> F_1 -> F_0 -> M -> 0`` over a PID."""
+    r"""The exact resolution ``0 -> F_n -> ... -> F_0 -> M -> 0`` by free modules.
+
+    The terms are the chosen free covers and the differentials are the maps
+    between them, so the datum is the whole tower rather than a single relation
+    map: a module over a principal ideal domain resolves in one step, while
+    ``k = R/(x,y)`` over ``R = k[x,y]`` needs the Koszul complex and two.
+    Beyond the last term everything is the zero module and the zero map, which
+    is what makes the resolution finite.
+    """
 
     _module: object
-    _degree_zero: object
-    _degree_one: object
-    _differential_one: object
+    _terms: tuple
+    _differentials: tuple
     _augmentation: object
     _zero_term: object
 
@@ -1054,10 +1061,8 @@ class FreeResolution:
         degree = int(degree)
         if degree < 0:
             raise ValueError("a homological degree is nonnegative")
-        if degree == 0:
-            return self._degree_zero
-        if degree == 1:
-            return self._degree_one
+        if degree < len(self._terms):
+            return self._terms[degree]
         return self._zero_term
 
     def differential(self, degree):
@@ -1065,28 +1070,56 @@ class FreeResolution:
         degree = int(degree)
         if degree <= 0:
             raise ValueError("resolution differentials are indexed in positive degree")
-        if degree == 1:
-            return self._differential_one
+        if degree <= len(self._differentials):
+            return self._differentials[degree - 1]
         return module_homset(self.term(degree), self.term(degree - 1)).zero()
 
     def augmentation(self):
         return self._augmentation
 
     def length(self):
-        return 0 if self._degree_one.rank() == 0 else 1
+        r"""Return the largest degree carrying a nonzero term."""
+        return len(self._terms) - 1
 
     def is_exact(self):
-        d1 = self.differential(1)
-        if not d1.is_injective() or not self.augmentation().is_surjective():
+        r"""Decide exactness of ``0 -> F_n -> ... -> F_0 -> M -> 0``.
+
+        Exactness is checked where it is stated: the augmentation is onto, the
+        last differential is injective, and at every intermediate spot the
+        image of the incoming map equals the kernel of the outgoing one, each
+        equality decided as a pair of subobject containments.
+        """
+
+        if not self.augmentation().is_surjective():
             return False
-        image = d1.image()
-        kernel = self.augmentation().kernel()
-        subobjects = Subobjects(self._degree_zero, Modules(self._degree_zero.base_ring()))
-        return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
+        length = self.length()
+        if length == 0:
+            return self.augmentation().is_injective()
+        if not self.differential(length).is_injective():
+            return False
+
+        def agree(image, kernel, term):
+            subobjects = Subobjects(term, Modules(term.base_ring()))
+            return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
+
+        if not agree(
+            self.differential(1).image(),
+            self.augmentation().kernel(),
+            self.term(0),
+        ):
+            return False
+        return all(
+            agree(
+                self.differential(degree + 1).image(),
+                self.differential(degree).kernel(),
+                self.term(degree),
+            )
+            for degree in range(1, length)
+        )
 
 
-def free_resolution(module):
-    return module.free_resolution()
+def free_resolution(module, steps=None):
+    return module.free_resolution(steps)
 
 
 class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
@@ -1165,14 +1198,23 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=_extra_construction_data,
             )
 
+        def free_resolution(self, steps=None):
+            r"""A free module is its own resolution, in degree zero alone.
+
+            The number of steps a caller is willing to compute does not enter:
+            the identity already resolves a free module, so the same resolution
+            answers however far it is asked to go.
+            """
+            _ = steps
+            return self._identity_resolution()
+
         @cached_method
-        def free_resolution(self):
+        def _identity_resolution(self):
             zero = self._fresh_free_module_on(finite_ordered_set(()))
             return FreeResolution(
                 self,
-                self,
-                zero,
-                module_embedding(zero, self, {}),
+                (self,),
+                (),
                 module_homset(self, self).identity(),
                 zero,
             )
