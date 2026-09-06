@@ -177,6 +177,25 @@ class IsometryPrimitiveExtension:
             for element in gluing.elements()
         )
 
+    def _discriminant_action(self, automorphism, ambient, element):
+        r"""Return the image of a class of ``ambient`` under ``Disc(automorphism)``.
+
+        An automorphism of a summand induces an automorphism of that summand's
+        discriminant module, and that module is what underlies whichever
+        finite form the glue map put the graph in: the discriminant module
+        itself, its bilinear reading when an even summand sits inside an odd
+        ``L``, or the twist ``A_R(-1)``.  Polarizing and rescaling both leave
+        the underlying map alone -- an isometry of ``q`` is an isometry of its
+        polar form and of any rescaling of either -- so the action is read by
+        forgetting the ambient form, applying the induced automorphism, and
+        equipping the ambient form again.
+        """
+        return ambient.equip_form_morphism()(
+            automorphism.discriminant_morphism()(
+                ambient.forget_form_morphism()(element)
+            )
+        )
+
     def pair_preserves_glue_graph(self, invariant_part, coinvariant_part) -> bool:
         r"""Return whether ``(g_+, g_-)`` carries the graph of ``gamma`` onto itself.
 
@@ -187,17 +206,26 @@ class IsometryPrimitiveExtension:
         graph, which is Nikulin's criterion for a primitive extension.  Both
         maps are automorphisms of finite forms, so preserving the graph
         setwise is the same as permuting it.
-        """
-        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-            TorsionQuadraticFormModules,
-        )
 
-        twist = TorsionQuadraticFormModules(self.lattice.base_ring()).twist_functor(-1)
-        invariant_action = invariant_part.discriminant_morphism()
-        coinvariant_action = twist(coinvariant_part.discriminant_morphism())
+        The criterion reads the same in either parity of ``L``; only the
+        finite forms the graph lives in change, and which ones those are is
+        settled once, by ``glue_map``, from the parity of ``L``.  An even
+        ``L`` glues its quadratic discriminant forms and an odd one its
+        bilinear forms, so the two ambients are taken from the endpoints of
+        the glue arrow rather than chosen a second time here.
+        """
+        invariant_ambient = self.glue().domain().inclusion().codomain()
+        coinvariant_ambient = self.glue().codomain().inclusion().codomain()
         graph = self.glue_graph()
         return all(
-            (invariant_action(invariant_class), coinvariant_action(coinvariant_class))
+            (
+                self._discriminant_action(
+                    invariant_part, invariant_ambient, invariant_class
+                ),
+                self._discriminant_action(
+                    coinvariant_part, coinvariant_ambient, coinvariant_class
+                ),
+            )
             in graph
             for invariant_class, coinvariant_class in graph
         )
