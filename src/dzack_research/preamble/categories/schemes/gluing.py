@@ -70,7 +70,7 @@ def _chart_pair(cover, left_index, right_index):
     labels = (cover.chart_label(left_index), cover.chart_label(right_index))
     if labels[0] == labels[1]:
         raise ValueError("descent data is keyed by two distinct charts")
-    return tuple(sorted(labels, key=cover.atlas().rank))
+    return tuple(sorted(labels, key=cover.atlas().ranking_map()))
 
 
 def _family_on_finite_ordered_set(index_set, values, *, name, noun):
@@ -775,7 +775,7 @@ class _FiniteSchemeGluingDatum(SageObject):
             raise ValueError("a triple overlap requires three distinct chart indices")
         others = sorted(
             (middle_index, target_index),
-            key=self.chart_index_set().rank,
+            key=chart_ranking,
         )
         return source_index, others[0], others[1]
 
