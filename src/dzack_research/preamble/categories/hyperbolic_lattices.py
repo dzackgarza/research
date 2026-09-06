@@ -27,9 +27,13 @@ from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.modules.free_module_element import vector as engine_vector
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _own_ring,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.refine import refine
@@ -148,7 +152,20 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _vinberg_search(self, controlling_vector, max_roots, max_decompositions):
-            r"""Run Vinberg's algorithm and return completeness with the roots."""
+            r"""Run Vinberg's algorithm and return completeness with the roots.
+
+            The algorithm is stated for a lattice over any totally real ring of
+            integers, where a root row is a vector over that ring and the
+            height comparison is made in every real embedding.  The available
+            realization works over the integers only, so the wider case is a
+            stated absence rather than a silent coercion.
+            """
+            assert self.base_ring() is _own_ring(SageZZ), (
+                "the available realization of Vinberg's algorithm works over "
+                "the integers; over a totally real ring of integers the "
+                "algorithm is the same and the root rows carry entries of that "
+                "ring, and no engine here computes them"
+            )
             gram, negated = self._engine_gram_of_signature_n_1()
             coordinates = (
                 None if controlling_vector is None else list(controlling_vector.to_vector())

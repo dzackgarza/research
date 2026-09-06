@@ -63,6 +63,43 @@ def test_vinbergs_criterion_bounds_the_root_lengths_of_the_bogachev_kolpakov_lat
         assert candidate in lengths, "a candidate length the paper had to exclude"
 
 
+def test_the_root_length_forty_nine_case_is_excluded_by_a_local_obstruction() -> None:
+    r"""The shortest candidate length of the section 6.2 lattice fails over \(\mathbb Z_7\).
+
+    Bogachev and Kolpakov, arXiv:2112.14642v4 section 6.2: for \(f(r)=49\) the
+    crystallographic conditions force \(k_1=m_1\), \(k_2=7m_2-3m_3\) and
+    \(k_3=7m_3\), leaving
+
+    .. MATH::
+
+        q(r) = f(r)/49 = 49m_2^2 + 14m_1m_3 - 28m_2m_3 + 6m_3^2,
+
+    and the paper concludes that \(q\) does not integrally represent \(1\).
+    The certificate is checked here rather than quoted: modulo \(7\) the first
+    three coefficients vanish and \(q\equiv 6m_3^2\); the squares modulo \(7\)
+    are \(\{0,1,2,4\}\), so \(q\) takes only \(\{0,3,5,6\}\) and never \(1\).
+    It therefore fails to represent \(1\) already over \(\mathbb Z_7\), hence
+    over \(\mathbb Z\).  The remaining candidate lengths \(98\), \(2401\) and
+    \(4802\) are excluded by analogous arguments in the paper.
+
+    This is how a root-length bound becomes a proof that a lattice has no
+    roots: the bound makes the candidate set finite, and each candidate falls
+    to a local obstruction.
+    """
+    residues = {
+        (49 * m2**2 + 14 * m1 * m3 - 28 * m2 * m3 + 6 * m3**2) % 7
+        for m1 in range(7)
+        for m2 in range(7)
+        for m3 in range(7)
+    }
+
+    assert residues == {0, 3, 5, 6}, "q reduces to 6 m_3^2 modulo 7"
+    assert 1 not in residues, "q represents 1 over neither ZZ_7 nor ZZ"
+
+    without_roots = HyperbolicLattices(ZZ)(Lattices.BogachevKolpakovWithoutRoots)
+    assert 49 in without_roots.possible_root_lengths(), "49 was a candidate to exclude"
+
+
 def test_vinberg_enumeration_closes_the_polyhedron_of_u_plus_a1() -> None:
     r"""The search on \(U\oplus A_1\) completes, which certifies reflectivity.
 
