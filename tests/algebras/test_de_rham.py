@@ -88,6 +88,54 @@ def test_kahler_differentials_use_the_jacobian_relation_and_universal_property()
     )
 
 
+def test_relative_conormal_and_tangent_comparison_for_xy_equals_t() -> None:
+    from dzack_research.preamble.all import PolynomialRing
+
+    parameter = PolynomialRing(QQ, "t")
+    t = parameter.algebra_generator("t")
+    presentation = PolynomialRing(parameter, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    y = presentation.algebra_generator("y")
+    algebra = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    xbar = algebra.algebra_generator("x")
+    ybar = algebra.algebra_generator("y")
+
+    omega = KahlerDifferentials(algebra)
+    conormal = omega.conormal_module()
+    conormal_map = omega.conormal_morphism()
+    relation_label = next(iter(conormal.module_generating_set()))
+    relation = conormal.module_generator(relation_label)
+
+    assert conormal_map.domain() is conormal
+    assert conormal_map.codomain() is omega.ambient_differentials()
+    assert conormal_map(relation) == (
+        ybar * omega.ambient_differentials().module_generator(("d", "x"))
+        + xbar * omega.ambient_differentials().module_generator(("d", "y"))
+    )
+    assert omega.differential_projection()(conormal_map(relation)) == omega.zero()
+    assert omega.fitting_ideal(1) == algebra.ideal(xbar, ybar)
+
+    spectrum = algebra.spectrum()
+    origin = spectrum(algebra.ideal(xbar, ybar))
+    smooth_point = spectrum(algebra.ideal(xbar - algebra.one(), ybar))
+
+    origin_cotangent = omega.cotangent_space(origin)
+    smooth_cotangent = omega.cotangent_space(smooth_point)
+    assert origin_cotangent.dimension() == 2
+    assert smooth_cotangent.dimension() == 1
+    assert omega.tangent_dimension(origin) == 2
+    assert omega.tangent_dimension(smooth_point) == 1
+    assert omega.tangent_space(origin).source_module() is origin_cotangent
+    assert omega.tangent_space(smooth_point).source_module() is smooth_cotangent
+
+    origin_conormal = omega.conormal_morphism_at(origin)
+    smooth_conormal = omega.conormal_morphism_at(smooth_point)
+    assert origin_conormal(origin_conormal.domain().module_generator(relation_label)).is_zero()
+    assert not smooth_conormal(
+        smooth_conormal.domain().module_generator(relation_label)
+    ).is_zero()
+
+
 def test_de_rham_algebra_is_the_existing_exterior_algebra_with_differential_constants() -> None:
     algebra = SymmetricAlgebraOn(QQ, ("x", "y"))
     x = algebra.algebra_generator("x")
