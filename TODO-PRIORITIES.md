@@ -75,8 +75,8 @@ graph TD
 
 | Node | Unit | Depends on | Relative size | State |
 | --- | --- | --- | --- | --- |
-| A | A cover becomes an atlas of open immersions rather than distinguished opens of one affine, and invertible sheaves re-site onto it | — | 1.5 | needs a decision, not an implementer |
-| B | The toric variety becomes an owned glued scheme, its face-localization transitions written through the localization's universal property | — | 0.5 | ready |
+| A | A cover is a covering family; invertible sheaves re-site onto one. **Decided 2026-09-06, see below.** The scheme half has landed; the sheaf half has not | — | 0.75 remaining | ready |
+| B | The toric variety becomes an owned glued scheme, its face-localization transitions written through the localization's universal property | — | 0.5 | done |
 | C | The odd bilinear analogue of the primitive-extension correspondence, so the glue map is not even-only | — | 0.5 | ready |
 | D | The general module through `rho: R -> End(M)`, linearity dispatch, rank stratifications on the spectrum | — | 0.75 | ready |
 | E | The remediation queue in `TODO.md`: scheme and inheritance items, collection and finiteness, typing, and the defects the category witnesses found | — | 1 | ready |
@@ -88,6 +88,47 @@ graph TD
 | K | The purity migration: owned categories only in the mathematical graph, and the dynamic-peek surface | — | 2.5 | ready, run last |
 | L | Port-completion audit, megadoc regeneration, fresh-context terminology audit | every content node | 0.75 | closing |
 | M | The one verification pass | L | 0.5 to a day | terminal |
+
+### Node A, decided: a cover is a covering family
+
+Ruled by the owner, 2026-09-06:
+
+> Atlases are classical. The modern notions come from étale cohomology,
+> covering families. Smooth manifolds are just locally ringed spaces, atlases
+> are covering families $\{X_i \to X\}$ with $\coprod_i X_i \to X$ a cover
+> (⇒ locally diffeomorphic for smooth manifolds, locally homeomorphic for
+> topological manifolds, generalize to $C^k$ manifolds).
+
+So a cover is a covering family $\{X_i \to X\}$ whose coproduct maps onto $X$
+by a cover. The classical atlas is the special case, not the general notion,
+and the question the node used to pose — whether an atlas replaces the
+distinguished affine cover or the affine cover adapts into an atlas — does not
+arise: both are covering families differing in which maps they use.
+
+**The scheme half has landed.** `glue_affine_atlas` takes arbitrary affine
+charts, each pairwise overlap an object of `OpenImmersions(chart_i)`, verifies
+the transitions invertible, transports triple overlaps and enforces the ordered
+cocycle. The punctured plane demonstrates it: `overlap(0,1)` sits in chart 0
+and `overlap(1,0)` in chart 1, and they are different objects. A glued scheme
+has no `coordinate_algebra`, so it can never be handed to
+`DistinguishedAffineCover`, which is affine-only by construction — it asks the
+scheme for a coordinate algebra, forms an ideal from the elements and demands
+the unit ideal.
+
+**The sheaf half has not.** `ModuleGluingDatum` restricts both sides of a
+transition to `cover.intersection(i, j)`, one shared ring, so a module
+transition is an isomorphism over a single ring — which a covering family has
+no notion of. `cover().intersection(...)` appears at eight sites in
+`gluing.py`, and `InvertibleSheaf` inherits the assumption twice more, in
+`trivial()` and in the transition-unit indexing. On a covering family the
+transition must become $M_i|_{U_{ij}} \to \varphi_{ij}^*(M_j|_{U_{ji}})$, base
+changing $M_j$ along the scheme transition's pullback.
+
+**The ingredients are present.** `cover.restrict_module` already base changes
+along a ring map, and the scheme-level analogue of the whole manoeuvre is in
+`_FiniteSchemeGluingDatum`, which transports transitions to triple domains and
+checks the cocycle there. This is a change of shape in the descent datum, not a
+missing construction, and it is the only thing between here and F, G, H and I.
 
 Relative size is calibrated against observed cadence rather than guessed: one
 operation with its test has been running five to fifteen minutes on one agent,
