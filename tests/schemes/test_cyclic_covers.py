@@ -94,6 +94,21 @@ def test_the_trivial_cover_is_the_unramified_torsor_with_a_free_deck_action() ->
     assert cover.action_is_free() is True
 
 
+def test_a_scalar_change_of_the_base_carries_the_cover_presentation() -> None:
+    algebra, x, covers, cover = _hyperelliptic_double_cover()
+    one = algebra.one()
+    shift = algebra.Mor(algebra)({"x": x + one})
+
+    changed = cover.coordinate_algebra().base_change(shift)
+    shifted_cover = covers((x + one) ** 4 - one)
+
+    # Base change of the cyclic algebra is the cyclic algebra of the shifted
+    # section: one construction, read after the scalar change.
+    assert tuple(changed.relations()) == tuple(
+        shifted_cover.coordinate_algebra().relations()
+    )
+
+
 def test_a_degree_three_cover_needs_a_primitive_cube_root_of_unity() -> None:
     rational_line = PolynomialRing(QQ, "x")
     with pytest.raises(AssertionError):
