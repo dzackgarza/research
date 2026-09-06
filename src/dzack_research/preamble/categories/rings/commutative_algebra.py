@@ -1071,8 +1071,50 @@ def _quotient_ring(source, defining_ideal):
     )
 
 
+def _localization_descent(source, elements):
+    r"""Return the ring under a tower of localizations and these elements there.
+
+    ``a/s`` is a unit exactly when ``a`` is, ``s`` being one already, so
+    inverting ``a/s`` over the tower is inverting the numerator over the ring
+    at its bottom.  The descent stops at a localization that inverts a set with
+    no chosen finite generating set, such as the complement of a prime.
+    """
+    while source in LocalizationRings() and source not in PrimeLocalizations():
+        elements = tuple(
+            source.localization_fraction_data(element)[0] for element in elements
+        )
+        source = source.localization_source()
+    return source, elements
+
+
+def _one_step_inverted_family(source, generators):
+    r"""Return the ring and the family that invert in one step what this does.
+
+    Localizing ``S^{-1}A`` at ``g = a/s`` inverts ``S`` together with ``a``:
+    ``s`` is a unit already, so ``a/s`` is a unit exactly when ``a`` is.  Then
+    ``(S^{-1}A)[1/g]`` and ``(S union {a})^{-1}A`` invert the same subset of
+    ``A``, each factors uniquely through the other by the universal property,
+    and the canonical isomorphism between them identifies the two.
+
+    Sage localizes ``A`` at a family and refuses to localize ``A[1/x]`` at
+    anything, so the one-step family over the bottom ring is the presentation
+    a realization can hold.  The owned source and map are unaffected: they
+    record the ring that was localized, not the ring underneath.
+
+    The descent stops at a localization that inverts a set with no chosen
+    finite generating set, such as the complement of a prime, which no family
+    presents.
+    """
+    inverted = tuple(generators)
+    while source in LocalizationRings() and source not in PrimeLocalizations():
+        inverted = tuple(
+            source.localization_fraction_data(element)[0] for element in inverted
+        ) + tuple(source.inverted_elements())
+        source = source.localization_source()
+    return source, inverted
+
+
 def _finite_generated_localization(source, submonoid):
-    engine = _engine_ring(source)
     try:
         generators = tuple(submonoid.monoid_generators())
     except NotImplementedError as error:
@@ -1081,9 +1123,10 @@ def _finite_generated_localization(source, submonoid):
         ) from error
     if not generators:
         return source
-    values = tuple(_engine_element(source, value) for value in generators)
+    bottom, inverted = _one_step_inverted_family(source, generators)
+    values = tuple(_engine_element(bottom, value) for value in inverted)
     try:
-        localization_engine = engine.localization(values)
+        localization_engine = _engine_ring(bottom).localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         localization_engine = None
     placements = []
