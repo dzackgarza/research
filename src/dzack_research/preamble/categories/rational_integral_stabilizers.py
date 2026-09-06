@@ -53,10 +53,15 @@ decides membership in the ``ZZ``-span of finitely many elements of an unframed
 module, which is the rational linear solve followed by an integrality test,
 and it belongs beside the coordinate lift it generalizes.
 
-The restriction functor's action on morphisms refuses on the same missing
-framing, so ``Res(g)`` cannot be materialized either.  That is not the binding
-constraint: ``g`` applies to an element of ``Res(V)`` without it, and the
-decision is what is missing, not the map.
+The arrow is not missing either.  Mathematically ``Res(g)`` is ``g``:
+restriction changes which ring acts, never the underlying map, so the
+functor's action on morphisms is the identity and there is nothing to
+construct.  This preamble's functor does not say it that way -- it
+materializes a morphism by naming images of a framing, so on the unframed
+``Res(V)`` it refuses an arrow that exists, and that repair belongs to the
+scalar-change functor, where the obstacle is.  Either way it is not the
+binding constraint: ``g`` applies to an element of ``Res(V)`` without it, and
+what is missing is the decision, not the map.
 
 Then the algorithm.  ``polyhedral_common`` carries it as
 ``01_RatIntAutomorphy``, the rational matrix group integralization, and
@@ -89,7 +94,13 @@ What *is* owned, so a caller does not come here for it:
 _ABSENCE = (
     "the objects exist: Res(V), the rational space read over ZZ through the "
     "restriction functor, holds L and M as two subobjects, and d M <= L <= M "
-    "is a comparison between them.  What refuses is ModuleMorphism.lift in "
+    "is a comparison between them.  The arrow exists too: Res(g) is g, since "
+    "restriction changes which ring acts and never the underlying map, so "
+    "there is nothing to construct and functoriality is free; this preamble's "
+    "scalar-change functor writes its morphism action through framings and so "
+    "refuses an arrow that exists, which is an implementation limitation to "
+    "repair in functors/scalar_change.py.  What refuses the mathematics is "
+    "ModuleMorphism.lift in "
     "modules/module_morphisms/module_morphisms.py, which solves coordinates "
     "against the framings of both endpoints; Res(V) has no finite free "
     "framing over ZZ because a rational vector space is divisible, so "
