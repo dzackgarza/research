@@ -515,6 +515,12 @@ from dzack_research.preamble.categories.eichler_criterion import (  # noqa: F401
 from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F401
     lorentzian_reduction_complex,
 )
+from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
+    integral_double_cosets,
+    integral_right_cosets,
+    integral_stabilizer,
+    integral_transporter,
+)
 from dzack_research.preamble.categories.lattices import (  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
