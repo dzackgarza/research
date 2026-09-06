@@ -338,6 +338,29 @@ def _quadratic_gram_on(form, generators):
     return tuple(rows)
 
 
+def _torsion_form_modules(base_ring, *, quadratic: bool):
+    r"""Return the category of finite forms of the stated flavour over ``base_ring``."""
+    if quadratic:
+        return TorsionQuadraticFormModules(base_ring)
+    return TorsionBilinearFormModules(base_ring)
+
+
+def _form_gram_on(form, generators, *, quadratic: bool):
+    r"""Return the Gram data of ``form`` on a selected generating family.
+
+    The quadratic reading carries ``q`` on the diagonal and a lift of ``b``
+    off it, valued in ``K/2R``; the bilinear reading is ``b`` throughout,
+    valued in ``K/R``.  Which one is asked for is a fact about the
+    mathematics of the caller, never about the family.
+    """
+    if quadratic:
+        return _quadratic_gram_on(form, generators)
+    return tuple(
+        tuple(form.b(left, right) for right in generators)
+        for left in generators
+    )
+
+
 def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     r"""Return ``form -> form'`` for the same finite form on a new framing."""
 
@@ -349,22 +372,11 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
     labels = finite_ordered_set(range(len(generators)))
     relations = _relations_among_generators(form, generators)
     regenerated_module = _torsion_module_presented_by_matrix(relations, labels)
-    if quadratic:
-        regenerated = TorsionQuadraticFormModules(form.base_ring()).from_module(
-            regenerated_module,
-            _quadratic_gram_on(form, generators),
-            _value_module(form, quadratic=True),
-        )
-    else:
-        gram = tuple(
-            tuple(form.b(left, right) for right in generators)
-            for left in generators
-        )
-        regenerated = TorsionBilinearFormModules(form.base_ring()).from_module(
-            regenerated_module,
-            gram,
-            _value_module(form, quadratic=False),
-        )
+    regenerated = _torsion_form_modules(form.base_ring(), quadratic=quadratic).from_module(
+        regenerated_module,
+        _form_gram_on(form, generators, quadratic=quadratic),
+        _value_module(form, quadratic=quadratic),
+    )
 
     inverse = module_homset(regenerated, form)(
         {label: generator for label, generator in zip(labels, generators, strict=True)}
@@ -576,25 +588,14 @@ def _p_adic_jordan_form(form, *, quadratic: bool):
 
 def _twisted_torsion_form(form, scalar, *, quadratic: bool):
     generators = tuple(form.module_generators())
-    module = _underlying_presented_module(form)
-    if quadratic:
-        gram = tuple(
-            tuple(scalar * entry for entry in row)
-            for row in _quadratic_gram_on(form, generators)
-        )
-        return TorsionQuadraticFormModules(form.base_ring()).from_module(
-            module,
-            gram,
-            _value_module(form, quadratic=True),
-        )
     gram = tuple(
-        tuple(scalar * form.b(left, right) for right in generators)
-        for left in generators
+        tuple(scalar * entry for entry in row)
+        for row in _form_gram_on(form, generators, quadratic=quadratic)
     )
-    return TorsionBilinearFormModules(form.base_ring()).from_module(
-        module,
+    return _torsion_form_modules(form.base_ring(), quadratic=quadratic).from_module(
+        _underlying_presented_module(form),
         gram,
-        _value_module(form, quadratic=False),
+        _value_module(form, quadratic=quadratic),
     )
 
 

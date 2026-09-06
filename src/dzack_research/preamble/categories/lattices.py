@@ -101,9 +101,9 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     form_embedding,
 )
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
-    TorsionQuadraticFormModules,
-    _quadratic_gram_on,
+    _form_gram_on,
     _relations_among_generators,
+    _torsion_form_modules,
     torsion_form_isometry,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -1859,7 +1859,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             return embedding
 
         def glue_map(self, first, second):
-            r"""Return the Nikulin glue anti-isometry for a primitive extension.
+            r"""Return the glue anti-isometry presenting a primitive extension.
 
             ``first`` and ``second`` are primitive orthogonal subobjects
             ``S,R <= L`` with ranks summing to ``rk(L)``.  Then
@@ -1867,37 +1867,70 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``L/(S + R)``
 
             embeds in ``A_S ⊕ A_R`` as the graph of an anti-isometry
-            ``H_S -> H_R``.  The returned arrow is that anti-isometry written
-            as an ordinary isometry ``H_S -> H_R(-1)``.  Its domain and
-            codomain are actual formed subobjects carrying their inclusions
-            into ``A_S`` and ``A_R(-1)``.
+            ``H_S -> H_R`` between subgroups of the two discriminant forms.
+            The returned arrow is that anti-isometry written as an ordinary
+            isometry ``H_S -> H_R(-1)``.  Its domain and codomain are actual
+            formed subobjects carrying their inclusions into ``A_S`` and
+            ``A_R(-1)``.
 
-            This is the even-lattice primitive-extension correspondence of
-            Nikulin.  The odd bilinear analogue remains separate.
+            Which discriminant form states this is the parity of ``L``, and
+            the returned arrow says which one it used.
+
+            - ``L`` even.  Its sublattices are even, both discriminants carry
+              their ``K/2R``-valued quadratic forms, and the glue satisfies
+              ``q_R(gamma x) = -q_S(x)``.  Domain and codomain are torsion
+              quadratic forms and ``is_quadratic()`` holds.
+            - ``L`` odd.  Only the ``K/R``-valued bilinear forms are defined
+              on both discriminants -- one of ``S``, ``R`` may itself be even,
+              while the extension is not -- and the glue satisfies
+              ``b_R(gamma x, gamma y) = -b_S(x,y)``.  Domain and codomain are
+              torsion bilinear forms and ``is_quadratic()`` fails.
+
+            The odd statement asks no hypothesis the even one does not; it
+            concludes less.  A quadratic-isotropic subgroup is
+            bilinear-isotropic and not conversely, so reading an even ``L``
+            through its bilinear form would lose exactly the distinction
+            between an integral overlattice and an even one.
+
+            Peters and Sterk, *Symmetric and Quadratic Forms, with
+            Applications to Coding Theory, Algebraic Geometry and Topology*
+            (version of June 2024) state both parities at once, as "symmetric
+            (respectively quadratic)": Prop. 15.1.1 for the glue criterion
+            ``b_R(psi -, psi -) + b_S(-,-) = 0`` and its reading as an
+            anti-isometry, Prop. 15.1.3 for the converse construction with
+            ``[L:S+R] = |H_S|`` and ``S``, ``R`` primitive in the result,
+            Prop. 1.7.4 for the overlattice correspondence in each parity,
+            and Example 1.7.5.1 for a subgroup of ``A_{U(2)}`` that is
+            bilinear-isotropic and not quadratic-isotropic.
             """
-            if _engine_ring(self.base_ring()) is not SageZZ:
+            ring = self.base_ring()
+            if _engine_ring(ring) is not SageZZ:
                 raise NotImplementedError("primitive-extension glue is currently implemented over ZZ")
-            if not self.is_even():
-                raise NotImplementedError(
-                    "the current primitive-extension glue map uses discriminant quadratic forms and requires L even"
-                )
             for subobject in (first, second):
-                if not hasattr(subobject, "inclusion") or subobject.inclusion().codomain() is not self:
-                    raise ValueError("glue_map requires two subobjects of this lattice")
-                if not subobject.is_primitive():
-                    raise ValueError("glue_map requires primitive sublattices")
-            if first.rank() + second.rank() != self.rank():
-                raise ValueError("glue_map requires rk(S)+rk(R)=rk(L)")
-            if any(
-                self.b(left, right) != self.base_ring().zero()
+                assert (
+                    subobject in ModuleSubobjects(ring)
+                    and subobject.inclusion().codomain() is self
+                ), "a glue map is taken between two subobjects of this lattice"
+                assert subobject.is_primitive(), (
+                    "a primitive extension is presented by primitive sublattices"
+                )
+            assert first.rank() + second.rank() == self.rank(), (
+                "a primitive extension of L needs rk(S)+rk(R)=rk(L)"
+            )
+            assert all(
+                self.b(left, right) == ring.zero()
                 for left in first.embedded_module_generators()
                 for right in second.embedded_module_generators()
-            ):
-                raise ValueError("glue_map requires mutually orthogonal sublattices")
+            ), "a primitive extension is presented by mutually orthogonal sublattices"
 
-
-            first_discriminant = first.discriminant_quadratic_form()
-            second_discriminant = second.discriminant_quadratic_form()
+            quadratic = self.is_even()
+            if quadratic:
+                first_discriminant = first.discriminant_quadratic_form()
+                second_discriminant = second.discriminant_quadratic_form()
+            else:
+                first_discriminant = first.discriminant_bilinear_form()
+                second_discriminant = second.discriminant_bilinear_form()
+            glue_forms = _torsion_form_modules(ring, quadratic=quadratic)
             first_inclusion = tensor.from_morphism(first.inclusion())
             second_inclusion = tensor.from_morphism(second.inclusion())
             ambient_gram = self.gram_tensor()
@@ -1909,7 +1942,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 second_covector = ambient_covector * second_inclusion
                 first_class = first_discriminant.linear_combination(
                     {
-                        label: self.base_ring()(coefficient)
+                        label: ring(coefficient)
                         for label, coefficient in zip(
                             first_discriminant.module_generating_set(),
                             first_covector,
@@ -1920,7 +1953,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
                 second_class = second_discriminant.linear_combination(
                     {
-                        label: self.base_ring()(coefficient)
+                        label: ring(coefficient)
                         for label, coefficient in zip(
                             second_discriminant.module_generating_set(),
                             second_covector,
@@ -1948,7 +1981,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             relations = _relations_among_generators(first_discriminant, source_classes)
             abstract_glue = _torsion_module_presented_by_matrix(relations, labels)
 
-            quadratic_values = first_discriminant.quadratic_value_module()
+            glue_values = first_discriminant.value_module()
             source_images = {
                 label: source_class
                 for label, source_class in zip(labels, source_classes, strict=True)
@@ -1959,24 +1992,29 @@ class Lattices(OwnedCategoryOverBaseRing):
                     source,
                     first_discriminant,
                     source_images,
-                    quadratic=True,
+                    quadratic=quadratic,
                 )
 
-            source_form = TorsionQuadraticFormModules(self.base_ring()).from_module(
+            source_form = glue_forms.from_module(
                 abstract_glue,
-                _quadratic_gram_on(first_discriminant, source_classes),
-                quadratic_values,
+                _form_gram_on(first_discriminant, source_classes, quadratic=quadratic),
+                glue_values,
                 _subobject_ambient=first_discriminant,
                 _subobject_generator_images=source_images,
                 _subobject_inclusion_factory=source_inclusion,
             )
             target_gram = tuple(
                 tuple(-entry for entry in row)
-                for row in _quadratic_gram_on(second_discriminant, target_classes)
+                for row in _form_gram_on(second_discriminant, target_classes, quadratic=quadratic)
             )
+            # The twist is taken on the module underlying A_R, which is A_R
+            # itself when it is the discriminant module and its bilinear
+            # reading when the summand is even inside an odd L, so the classes
+            # cross into the twist the same way in both parities.
+            second_forget = second_discriminant.forget_form_morphism()
             second_twist = second_discriminant.twist(-1)
             target_images = {
-                label: second_twist.equip_form_morphism()(target_class)
+                label: second_twist.equip_form_morphism()(second_forget(target_class))
                 for label, target_class in zip(labels, target_classes, strict=True)
             }
 
@@ -1985,19 +2023,21 @@ class Lattices(OwnedCategoryOverBaseRing):
                     target,
                     second_twist,
                     target_images,
-                    quadratic=True,
+                    quadratic=quadratic,
                 )
 
-            target_form = TorsionQuadraticFormModules(self.base_ring()).from_module(
+            target_form = glue_forms.from_module(
                 abstract_glue,
                 target_gram,
-                quadratic_values,
+                glue_values,
                 _subobject_ambient=second_twist,
                 _subobject_generator_images=target_images,
                 _subobject_inclusion_factory=target_inclusion,
             )
 
-            target_subgroup = second_discriminant.subgroup_on(target_classes)
+            target_subgroup = second_discriminant.unformed_module().subgroup_on(
+                tuple(second_forget(target_class) for target_class in target_classes)
+            )
             extension_index = first.sum(second).index()
             if source_form.cardinality() != extension_index:
                 raise ArithmeticError(
@@ -2020,7 +2060,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     for label in labels
                 }
             )
-            return torsion_form_isometry(forward, inverse, quadratic=True)
+            return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
         @cached_method
         def discriminant_bilinear_form(self):
