@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| M-pid-free-trivialization-20260906 | M — for a torsion-free finitely presented module over a represented PID, construct an actual isomorphism to a finite free module, expose projectivity/local freeness from that witness, and localize the isomorphism to explicit pointwise trivializations | ChatGPT continuation `2026-09-06-pid-free-trivialization`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py`; `tests/modules/test_invariant_factor_framing.py`; `docs/preamble-megadoc.md`; `docs/preamble-graph.json`; `docs/preamble-graph.dot`; `docs/preamble-graph.html` | `39bef659`; consumes PID flatness release `da64cc2e` and existing invariant-factor/Smith normalization | 2026-09-06T05:15:17Z |
 
 ### Existing work awaiting adoption
 
