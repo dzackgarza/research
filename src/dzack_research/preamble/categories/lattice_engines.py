@@ -1,6 +1,7 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
 from functools import partial
+from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
 import shutil
@@ -349,15 +350,115 @@ def even_unimodular_primitive_embedding(gram, positive, negative):
 
 
 # ---------------------------------------------------------------------------
-# polyhedral_common, reached through the ``py_polyhedral`` wrapper.
+# The indefinite-lattice algorithms, in the order the layer offers them.
 #
-# The wrapper owns the boundary: it writes the matrix files the programs read
-# and resolves each program from ``PATH`` at call time, so nothing here names
-# a build directory or an absolute executable.  Registering the operations
-# here puts them in the same ordered layer as the Sage-native and OSCAR
-# realizations, so a caller asks for the operation and receives either the
-# result or an absence that states what provisions it.
+# ``sage-indefinite-port`` is where these algorithms are going: it ports the
+# ``INDEF_FORM_*`` kernels onto the owned formed-lattice category, so a ported
+# operation computes in the session instead of through a file protocol.  It is
+# the first provider of every capability below.
+#
+# ``polyhedral_common``, reached through the ``py_polyhedral`` wrapper, is the
+# realization being replaced, and it is what computes today.  The wrapper owns
+# that boundary: it writes the matrix files the programs read and resolves each
+# program from ``PATH`` at call time, so nothing here names a build directory
+# or an absolute executable.
+#
+# The second entry is not a fallback.  It is the realization the layer reaches
+# while the port of that operation is outstanding, and when neither provider is
+# available the refusal carries both absences with both remedies.
+#
+# The port depends on this package, so it is imported lazily, inside the
+# availability predicate, the same way the OSCAR adapter reaches the Julia
+# bridge.  A capability the port does not expose yet names its own module and
+# attribute as ``None``; filling those in is what turns the port on for that
+# operation.
 # ---------------------------------------------------------------------------
+
+_PORT_PROVIDER = "sage-indefinite-port"
+_PORT_PACKAGE = "sage_indefinite_port"
+_PORT_INSTALL = (
+    "sage -pip install --no-deps -e /home/dzack/gitclones/sage-indefinite-port"
+)
+
+
+def _port_provisioning(kernel, ported):
+    r"""State how ``kernel`` becomes available from the port."""
+    if ported:
+        return f"install the port into Sage's environment with `{_PORT_INSTALL}`"
+    return (
+        f"install the port into Sage's environment with `{_PORT_INSTALL}`; the "
+        f"operation itself arrives with sage-indefinite-port's port of {kernel}"
+    )
+
+
+def _port_available(module_name, attribute) -> bool:
+    r"""Return whether the port exposes this operation in this session."""
+    if module_name is None or find_spec(_PORT_PACKAGE) is None:
+        return False
+    return attribute in vars(import_module(module_name))
+
+
+def _port_operation(module_name, attribute, /, *args, **kwargs):
+    return vars(import_module(module_name))[attribute](*args, **kwargs)
+
+
+# capability, INDEF_FORM_ kernel the port carries it under, module, attribute.
+_PORT_REALIZATIONS = (
+    (
+        "lattice.indefinite_isometry_prefilter",
+        "INDEF_FORM_Invariant",
+        "sage_indefinite_port.invariants",
+        "lattice_prefilter",
+    ),
+    (
+        "lattice.indefinite_automorphism_group",
+        "INDEF_FORM_AutomorphismGroup",
+        None,
+        None,
+    ),
+    ("lattice.indefinite_isometry_witness", "INDEF_FORM_TestEquivalence", None, None),
+    (
+        "lattice.indefinite_vector_isometry_witness",
+        "INDEF_FORM_TestEquivalenceVector",
+        None,
+        None,
+    ),
+    (
+        "lattice.indefinite_orbit_representative",
+        "INDEF_FORM_GetOrbitRepresentative",
+        None,
+        None,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_orbits",
+        "INDEF_FORM_GetOrbit_IsotropicKplane",
+        None,
+        None,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_stabilizer",
+        "INDEF_FORM_StabilizerIsotropicPlane",
+        None,
+        None,
+    ),
+    ("lattice.indefinite_vector_stabilizer", "INDEF_FORM_StabilizerVector", None, None),
+    (
+        "lattice.indefinite_isotropic_subspace_isometry_witness",
+        "INDEF_FORM_Equivalence_IsotropicKplane",
+        None,
+        None,
+    ),
+)
+
+for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
+    engine_capabilities.register(
+        _capability,
+        _PORT_PROVIDER,
+        partial(_port_operation, _module, _attribute),
+        available=partial(_port_available, _module, _attribute),
+        provisioning=_port_provisioning(_kernel, _module is not None),
+    )
+
 
 _POLYHEDRAL_PROVIDER = "polyhedral-common-via-py-polyhedral"
 
@@ -366,12 +467,18 @@ _POLYHEDRAL_BUILD = (
     "programs with `make -C src_indefinite`, and link them into a directory on PATH"
 )
 
-_POLYHEDRAL_NO_PROGRAM = (
-    "polyhedral_common builds no program of this name: `src_indefinite/Makefile` "
-    "lists the drivers it compiles and this is not among them.  The routine "
-    "itself is in `src_indefinite/CombinedAlgorithms.h`, so the operation "
-    "arrives with a command-line driver added upstream, not with any install"
-)
+def _polyhedral_no_program(kernel):
+    r"""State that this operation has no program, and where it comes from instead.
+
+    ``src_indefinite/Makefile`` lists the drivers polyhedral_common compiles and
+    these are not among them, so no build or install produces them.  The kernel
+    exists in `src_indefinite/CombinedAlgorithms.h`, and the operation reaches
+    the session through the port of that kernel.
+    """
+    return (
+        f"polyhedral_common builds no program of this name, so the operation "
+        f"arrives with sage-indefinite-port's port of {kernel}"
+    )
 
 _POLYHEDRAL_REALIZATIONS = (
     (
@@ -414,13 +521,13 @@ _POLYHEDRAL_REALIZATIONS = (
         "lattice.indefinite_vector_stabilizer",
         "INDEF_FORM_StabilizerVector",
         indefinite_form_stabilizer_vector,
-        _POLYHEDRAL_NO_PROGRAM,
+        _polyhedral_no_program("INDEF_FORM_StabilizerVector"),
     ),
     (
         "lattice.indefinite_isotropic_subspace_isometry_witness",
         "INDEF_FORM_TestEquivalenceIsotropicKplane",
         indefinite_form_test_equivalence_isotropic_k_plane,
-        _POLYHEDRAL_NO_PROGRAM,
+        _polyhedral_no_program("INDEF_FORM_Equivalence_IsotropicKplane"),
     ),
 )
 
