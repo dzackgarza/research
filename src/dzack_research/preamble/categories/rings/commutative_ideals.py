@@ -1,5 +1,6 @@
 """Finitely generated commutative ideals as module subobjects of the ring."""
 
+from sage.misc.cachefunc import cached_function
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
@@ -33,8 +34,14 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+@cached_function
 def _localized_commutative_ideal(source_ideal, localization_ring):
-    r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal."""
+    r"""Return ``S^{-1}I <= S^{-1}R``, the localization of one ideal.
+
+    Interned on the source ideal and the localization, which together
+    determine it, so an ideal of a localization is one object however often
+    it is asked for.
+    """
     from dzack_research.preamble.categories.functors.module_localization import (
         module_localization_functor,
     )
@@ -153,6 +160,20 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         def __ne__(self, other) -> bool:
             return not self == other
+
+        def __hash__(self):
+            r"""Hash on the ring alone, which equality then refines.
+
+            Equal ideals must hash equally, and equality here is containment
+            each way: ``(2)`` and ``(2,4)`` are one ideal of the integers
+            written twice, so no invariant of a generating set can be hashed.
+            The ring is the coarsest thing every equal pair shares, and the
+            decision is left to ``__eq__``.
+
+            ponytail: every ideal of one ring collides, so a dict keyed on
+            ideals scans that ring's entries; refine only if such a dict grows.
+            """
+            return hash(self.ring())
 
         def _richcmp_(self, other, op):
             if op not in (op_EQ, op_NE):
@@ -599,9 +620,21 @@ def _owned_engine_value(ring, value):
 def CommutativeIdeal(ring, *generators):
     r"""Return ``(generators) <= R`` with its selected module inclusion."""
     source = _own_ring(ring)
-    engine = _engine_ring(source)
     if len(generators) == 1 and isinstance(generators[0], (tuple, list)):
         generators = tuple(generators[0])
+    return _commutative_ideal(source, generators)
+
+
+@cached_function
+def _commutative_ideal(source, generators):
+    r"""Return the one ideal of ``R`` built from this generating family.
+
+    An ideal is determined by its ring and its elements, so two calls that
+    write the same generators name one subobject and get one object.  The key
+    is the family as written: ``(2)`` and ``(2,4)`` are equal ideals but reach
+    two entries here, and they compare equal afterwards.
+    """
+    engine = _engine_ring(source)
     values = tuple(_engine_ring_value(source, generator) for generator in generators)
     if not values:
         values = (engine.zero(),)
