@@ -11,6 +11,8 @@ tensors of type $(0,2)$.
 """
 
 import re
+from bisect import bisect_right
+from itertools import accumulate
 
 from sage.arith.misc import factor
 from sage.categories.category import Category
@@ -286,18 +288,9 @@ class Lattice(Parent, IndexedGenerators):
             from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
                 DirectSumObjects,
             )
-            from dzack_research.preamble.categories.sets.indexed_families import (
-                indexed_family,
-            )
 
-            labels = Sets.Δ[1]
-            summands = indexed_family(
-                labels,
-                lambda index: gram._left if int(index) == 0 else gram._right,
-                name="Constructor-owned lattice summands",
-            )
-            self._preamble_direct_sum_summands = summands
-            self._preamble_direct_sum_index_set = labels
+            self._preamble_direct_sum_summands = gram._summands
+            self._preamble_direct_sum_index_set = gram._summands.index_set()
             parent_category = Category.join((parent_category, DirectSumObjects()))
         IndexedGenerators.__init__(
             self,
@@ -728,94 +721,91 @@ class _IdentityGram(_DiagonalGram):
 class _BiproductGram(_PairingGram):
     r"""The Gram of an orthogonal sum, in the concatenated basis.
 
-    The left summand has finite rank \(n\); the right summand may be
-    infinite.  Indices \(0,\ldots,n-1\) are the left basis, and the
-    right basis is shifted by \(n\).
+    The form on \(\bigoplus_{i\in I} L_i\) is the orthogonal sum of the
+    summands' forms: each summand's own form on its own block of
+    coordinates, and zero across two distinct blocks.  The bases are
+    concatenated in index order, so the summand at the \(k\)-th index
+    occupies the coordinates from its offset up to the next one.
+
+    Every summand but the last has finite rank, which is what lets the
+    bases be concatenated at all; the last may be infinite.
     """
 
-    def __init__(self, module, left, right, split) -> None:
-        self._left = left
-        self._right = right
-        self._split = split
+    def __init__(self, module, summands, offsets) -> None:
+        self._summands = summands
+        self._blocks = tuple(summands)
+        self._offsets = offsets
         self._become_tensor_on(module)
 
+    def _block_of(self, position):
+        r"""The summand a concatenated position lies in, and its place there."""
+        which = bisect_right(self._offsets, position) - 1
+        return which, position - self._offsets[which]
+
+    def _by_block(self, coefficients):
+        r"""Split coefficients on the sum's basis into one part per summand."""
+        keys = _basis_keys(self._module)
+        parts = {}
+        for key, value in coefficients.items():
+            which, place = self._block_of(_basis_position(keys, key))
+            parts.setdefault(which, {})[place] = value
+        return parts
+
     def __getitem__(self, index):
-        i, j = int(index[0]), int(index[1])
-        n = self._split
-        if i < n and j < n:
-            return self._left.gram_tensor()[i, j]
-        if i >= n and j >= n:
-            return self._right.gram_tensor()[i - n, j - n]
-        return self.base_ring().zero()
+        row_block, row_place = self._block_of(int(index[0]))
+        column_block, column_place = self._block_of(int(index[1]))
+        if row_block != column_block:
+            return self.base_ring().zero()
+        return self._blocks[row_block].gram_tensor()[row_place, column_place]
 
     def pairings_against(self, vector):
-        n = self._split
         keys = _basis_keys(self._module)
-        coefficients = _vector_coefficients(vector, self._module)
-        left_part = {}
-        right_part = {}
-        for key, value in coefficients.items():
-            position = _basis_position(keys, key)
-            if position < n:
-                left_part[position] = value
-            else:
-                right_part[position - n] = value
         result = {}
-        for label, value in generator_pairings(
-            self._left,
-            _lattice_vector_from_coefficients(self._left, left_part),
+        for which, part in self._by_block(
+            _vector_coefficients(vector, self._module)
         ).items():
-            left_keys = _basis_keys(self._left._module)
-            position = _basis_position(left_keys, label)
-            result[keys[position]] = value
-        for label, value in generator_pairings(
-            self._right,
-            _lattice_vector_from_coefficients(self._right, right_part),
-        ).items():
-            right_keys = _basis_keys(self._right._module)
-            position = _basis_position(right_keys, label)
-            result[keys[n + position]] = value
+            block = self._blocks[which]
+            block_keys = _basis_keys(block._module)
+            for label, value in generator_pairings(
+                block, _lattice_vector_from_coefficients(block, part)
+            ).items():
+                position = self._offsets[which] + _basis_position(block_keys, label)
+                result[keys[position]] = value
         return result
 
     def __call__(self, left, right):
-        n = self._split
-        keys = _basis_keys(self._module)
-        coefficients_left = _vector_coefficients(left, self._module)
-        coefficients_right = _vector_coefficients(right, self._module)
-
-        def _split_coefficients(coefficients):
-            left_part = {}
-            right_part = {}
-            for key, value in coefficients.items():
-                position = _basis_position(keys, key)
-                if position < n:
-                    left_part[position] = value
-                else:
-                    right_part[position - n] = value
-            return left_part, right_part
-
-        left_on_left, left_on_right = _split_coefficients(coefficients_left)
-        right_on_left, right_on_right = _split_coefficients(coefficients_right)
-        return _lattice_vector_from_coefficients(self._left, left_on_left).b(_lattice_vector_from_coefficients(self._left, right_on_left)) + _lattice_vector_from_coefficients(
-            self._right, left_on_right
-        ).b(_lattice_vector_from_coefficients(self._right, right_on_right))
+        left_parts = self._by_block(_vector_coefficients(left, self._module))
+        right_parts = self._by_block(_vector_coefficients(right, self._module))
+        # Distinct summands pair to zero, so only the blocks both vectors
+        # meet contribute.
+        return sum(
+            (
+                _lattice_vector_from_coefficients(
+                    self._blocks[which], left_parts[which]
+                ).b(
+                    _lattice_vector_from_coefficients(
+                        self._blocks[which], right_parts[which]
+                    )
+                )
+                for which in left_parts.keys() & right_parts.keys()
+            ),
+            self.base_ring().zero(),
+        )
 
     def signature_pair(self):
-        left = self._left.signature_pair()
-        right = self._right.signature_pair()
+        pairs = tuple(block.signature_pair() for block in self._blocks)
         return signature_pair(
-            left.first() + right.first(),
-            left.second() + right.second(),
+            sum(pair.first() for pair in pairs),
+            sum(pair.second() for pair in pairs),
         )
 
     def _latex_(self) -> str:
-        return (
-            rf"{latex(self._left.gram_tensor())} \oplus "
-            rf"{latex(self._right.gram_tensor())}"
+        return r" \oplus ".join(
+            str(latex(block.gram_tensor())) for block in self._blocks
         )
 
     def _pairing_name(self) -> str:
-        return f"{_gram_name(self._left.gram_tensor())} ⊕ {_gram_name(self._right.gram_tensor())}"
+        return " ⊕ ".join(_gram_name(block.gram_tensor()) for block in self._blocks)
 
 
 class _ColimitGram(_PairingGram):
@@ -926,27 +916,45 @@ def diagonal_gram(module, exceptions, default=1):
     return _DiagonalGram(resolved, stored, resolved.base_ring()(default))
 
 
-def orthogonal_sum(left, right, *, category):
-    r"""The orthogonal direct sum, in the concatenated basis.
+def orthogonal_sum(summands):
+    r"""\(\bigoplus_{i\in I} L_i\), in the concatenated basis.
 
-    The left summand must have finite rank, so its basis occupies the
-    first \(n\) coordinates and the right basis is shifted by \(n\).
-    That covers finite \(\oplus\) finite and finite \(\oplus\) infinite.
-    Infinite \(\oplus\) infinite is not this concatenation, and is not
-    constructed.
+    The sum is taken over the family's index set, so three summands are
+    three: the summand at each index has its own block of coordinates and
+    its own projection, rather than being reached through a nest of
+    two-summand sums.
+
+    The bases are concatenated in index order, so every summand but the last
+    must have finite rank.  That covers finite \(\oplus\cdots\oplus\) finite
+    and a trailing infinite summand.  Two infinite summands are not this
+    concatenation, and are not constructed.
+
+    The sum of \(R\)-lattices is an \(R\)-lattice, so the base ring is read
+    off the summands rather than supplied.
     """
-    ring = category.base_ring()
-    left_rank = left.module_rank()
-    assert left_rank != Infinity, "the orthogonal sum concatenates the left basis first; put the finite-rank summand on the left"
-    split = int(left_rank)
-    right_rank = right.module_rank()
-    if right_rank == Infinity:
-        generating_set = _as_generating_set(None, Infinity)
-    else:
-        generating_set = _as_generating_set(None, split + int(right_rank))
+    from dzack_research.preamble.categories.abstract_categories.products import (
+        _finite_factor_family,
+    )
+    from dzack_research.preamble.categories.lattices import Lattices
 
-    module = FreeModuleOn(ring, generating_set)
-    gram = _BiproductGram(module, left, right, split)
+    summands = _finite_factor_family(summands, name="Orthogonal summands")
+    blocks = tuple(summands)
+    assert blocks, "an orthogonal sum is taken over a nonempty family of summands"
+    ring = blocks[0].base_ring()
+    category = Lattices(ring)
+    assert all(block in category for block in blocks), (
+        "an orthogonal sum requires lattices over one common base ring"
+    )
+    ranks = tuple(block.module_rank() for block in blocks)
+    assert all(rank != Infinity for rank in ranks[:-1]), (
+        "the orthogonal sum concatenates the bases in index order, so only "
+        "the summand at the last index may have infinite rank"
+    )
+    offsets = tuple(accumulate((int(rank) for rank in ranks[:-1]), initial=0))
+    total = Infinity if ranks[-1] == Infinity else offsets[-1] + int(ranks[-1])
+
+    module = FreeModuleOn(ring, _as_generating_set(None, total))
+    gram = _BiproductGram(module, summands, offsets)
     return _lattice_parent(module, gram, category, None, names=None)
 
 

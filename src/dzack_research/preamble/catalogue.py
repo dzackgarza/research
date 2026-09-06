@@ -249,12 +249,25 @@ _TWO_ELEMENTARY_RECIPES = {
 
 
 def _orthogonal_sum(recipe):
-    result = None
-    for name, multiplicity in recipe:
-        block = getattr(NamedLattices, name)
-        for _index in range(multiplicity):
-            result = block if result is None else result + block
-    return NamedLattices.Zero if result is None else result
+    r"""Realize a recipe of named blocks with multiplicities as one sum.
+
+    The blocks are the mathematical content of a two-elementary realization,
+    so the sum is taken over the index set that has one index per block: a
+    realization by five blocks has five summands, not a nest of two-summand
+    sums that ``indecomposable_summands`` would have to walk back apart.
+    """
+    blocks = tuple(
+        getattr(NamedLattices, name)
+        for name, multiplicity in recipe
+        for _index in range(multiplicity)
+    )
+    match blocks:
+        case ():
+            return NamedLattices.Zero
+        case (only,):
+            return only
+        case _:
+            return Lattices(ZZ).biproduct(blocks)
 
 
 @cache

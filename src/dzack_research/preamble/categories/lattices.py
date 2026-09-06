@@ -797,6 +797,32 @@ class Lattices(OwnedCategoryOverBaseRing):
     _MonoCategory = LatticeMonoCategoryConstruction
     _IsoCategory = LatticeIsoCategoryConstruction
 
+    class SubcategoryMethods:
+        def biproduct(self, summands):
+            r"""Return $\bigoplus_{i \in I} L_i$, the orthogonal sum of a family.
+
+            A lattice is a module with a form, so the biproduct of lattices is
+            the biproduct of the underlying modules carrying the orthogonal
+            sum of the forms.  It is taken over the index set: the summand at
+            each index has its own block of coordinates, so three summands are
+            three and not a two-summand sum whose first summand is a sum.
+
+            ``L + M`` is the two-index case, and ``L ** n`` the constant
+            family over an $n$-element index set.
+            """
+            return orthogonal_sum(summands)
+
+        def _categorical_biproduct(self, left, right):
+            return self.biproduct((left, right))
+
+        def product(self, summands):
+            r"""Return $\prod_{i \in I} L_i$, which over a finite index set is the biproduct."""
+            return self.biproduct(summands)
+
+        def coproduct(self, summands):
+            r"""Return $\coprod_{i \in I} L_i$, which over a finite index set is the biproduct."""
+            return self.biproduct(summands)
+
     def _repr_(self):
         r"""Return ``Lattices(R)`` with the session name of the base ring.
 
@@ -1020,17 +1046,13 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def biproduct_factors(self):
-            r"""Return the indexed family of factors when this lattice was built by ``+``."""
+            r"""Return the indexed family of summands of an orthogonal sum."""
 
             gram = self.gram_tensor()
             if not isinstance(gram, _BiproductGram):
                 raise ValueError("this lattice has no represented biproduct factors")
 
-            return indexed_family(
-                Sets.Δ[1],
-                lambda index: gram._left if int(index) == 0 else gram._right,
-                name=f"Biproduct factors of {self}",
-            )
+            return gram._summands
 
         @cached_method
         def decomposition(self):
@@ -1057,9 +1079,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         def indecomposable_summands(self):
             r"""Return the family of indecomposable summands, in order.
 
-            The biproduct of three lattices associates, so its immediate
-            factors are two, not three.  This descends through the represented
-            decompositions until every summand is indecomposable.
+            A summand may itself be an orthogonal sum -- as every summand of
+            ``L + M + N`` is, ``+`` being binary -- so this descends through
+            the represented decompositions until every summand is
+            indecomposable.
             """
 
             if self.decomposition() is None:
@@ -1327,7 +1350,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _ScaledGram():
                     return gram._scalar != 0 and Lattices(self.base_ring())(gram._gram).is_nondegenerate()
                 case _BiproductGram():
-                    return gram._left.is_nondegenerate() and gram._right.is_nondegenerate()
+                    return all(
+                        summand.is_nondegenerate() for summand in gram._summands
+                    )
                 case _ColimitGram():
                     # The represented colimit forms used here are orthogonal
                     # unions of nondegenerate finite stages.
@@ -2464,11 +2489,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
 
         def __add__(self, other):
-            r"""Return the orthogonal direct sum.
+            r"""Return the orthogonal direct sum of the two summands.
 
-            Finite \(\oplus\) finite and finite \(\oplus\) infinite, in
-            the concatenated basis.  Infinite \(\oplus\) infinite is
-            not constructed.  ``sum([...])`` uses ``0 + L``.
+            The two-index case of ``Lattices(R).biproduct``, in the
+            concatenated basis.  Being binary, ``L + M + N`` is a
+            two-summand sum whose first summand is a sum; the sum of three
+            summands over a three-element index set is
+            ``Lattices(R).biproduct([L, M, N])``.  Infinite \(\oplus\)
+            infinite is not constructed.  ``sum([...])`` uses ``0 + L``.
 
             EXAMPLES::
 
@@ -2479,10 +2507,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             if other == 0:
                 return self
 
-            ring = self.base_ring()
-            category = Lattices(ring)
+            category = Lattices(self.base_ring())
             assert other in category
-            return orthogonal_sum(self, other, category=category)
+            return category.biproduct((self, other))
 
         def __radd__(self, other):
             if other == 0:
@@ -2492,8 +2519,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         def __pow__(self, exponent):
             r"""Return \(L^{\oplus n}\), the \(n\)-fold orthogonal direct sum.
 
-            It is the sum of the constant family over \(\Delta[n-1]\), so
-            ``L ** 0`` is the empty sum: the zero lattice, the unit of ``+``.
+            It is the biproduct of the constant family over \(\Delta[n-1]\),
+            so \(L^{\oplus 3}\) has three summands, one per index.  ``L ** 0``
+            is the empty sum: the zero lattice, the unit of ``+``.
 
             EXAMPLES::
 
@@ -2503,9 +2531,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             count = int(exponent)
             assert count >= 0, "an orthogonal power L^n takes a natural number n"
+            category = Lattices(self.base_ring())
             if count == 0:
-                return Lattices(self.base_ring())(0)
-            return sum(
+                return category(0)
+            return category.biproduct(
                 indexed_family(
                     Sets.Δ[count - 1],
                     lambda _position: self,
