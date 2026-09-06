@@ -126,16 +126,32 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
         def ideal_generators(self):
             return self._preamble_ideal_generators
 
-        def __eq__(self, other):
+        def __eq__(self, other) -> bool:
+            r"""Two ideals of one ring are equal when each contains the other.
+
+            Over a localization the equality is decided that way rather than by
+            the computation realization.  ``R_p`` is realized by ``Frac(R)``,
+            where every nonzero ideal is the unit ideal, so an engine
+            comparison there would identify ideals that differ; mutual
+            containment is decided in ``R`` by the localization criterion in
+            :meth:`contains_ambient_element`.
+            """
             try:
-                return (
-                    other in CommutativeIdeals(self.ring())
-                    and self._engine_ideal() == other._engine_ideal()
-                )
+                if other not in CommutativeIdeals(self.ring()):
+                    return False
+                if self.ring() in LocalizationRings():
+                    return all(
+                        other.contains_ambient_element(generator)
+                        for generator in self.ideal_generators()
+                    ) and all(
+                        self.contains_ambient_element(generator)
+                        for generator in other.ideal_generators()
+                    )
+                return bool(self._engine_ideal() == other._engine_ideal())
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 return False
 
-        def __ne__(self, other):
+        def __ne__(self, other) -> bool:
             return not self == other
 
         def _richcmp_(self, other, op):
@@ -143,18 +159,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return NotImplemented
             equal = self == other
             return equal if op == op_EQ else not equal
-
-        def __eq__(self, other) -> bool:
-            try:
-                return bool(
-                    other in CommutativeIdeals(self.ring())
-                    and self._engine_ideal() == other._engine_ideal()
-                )
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return False
-
-        def __ne__(self, other) -> bool:
-            return not self == other
 
         def _engine_ideal(self):
             represented = getattr(self, "_preamble_engine_ideal", None)
@@ -397,11 +401,26 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
-            if (
-                ring in LocalizationRings()
-                and self.__dict__.get("_preamble_localization_source_ideal") is not None
-            ):
+            source_ideal = self.__dict__.get("_preamble_localization_source_ideal")
+            if ring in LocalizationRings() and source_ideal is not None:
                 numerator, _denominator = ring.localization_fraction_data(value)
+                structure = ring.localization_submonoid().structure_data()
+                if structure.get("kind") == "prime_complement":
+                    # ``a/s`` lies in ``I R_p`` exactly when some element
+                    # outside ``p`` carries ``a`` into ``I``, and the elements
+                    # that carry ``a`` into ``I`` are the colon ideal
+                    # ``(I : a)``.  So membership says that ``(I : a)`` is not
+                    # contained in ``p``, and an ideal lies in a prime exactly
+                    # when its generators do.  The complement of a prime has no
+                    # finite generating set, so no contraction is available to
+                    # ask instead.
+                    prime = structure["prime_ideal"]
+                    source = source_ideal.ring()
+                    carriers = source_ideal.colon(source.ideal(numerator))
+                    return any(
+                        not prime.contains_ambient_element(generator)
+                        for generator in carriers.ideal_generators()
+                    )
                 contracted = self.contraction_from_localization()
                 return _engine_ring_value(contracted.ring(), numerator) in contracted._engine_ideal()
             try:
