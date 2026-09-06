@@ -493,7 +493,42 @@ from dzack_research.preamble.categories.lattice_morphisms import (  # noqa: F401
     LatticeIsometry,
     LatticeMorphism,
 )
-from dzack_research.preamble.categories.isotropic_orbits import IsotropicFlag  # noqa: F401
+from dzack_research.preamble.categories.isotropic_orbits import (  # noqa: F401
+    Cusp,
+    IsotropicFlag,
+    cusps,
+    primitive_isotropic_vectors,
+    transport_isotropic_object,
+)
+from dzack_research.preamble.categories.isotropic_parabolics import (  # noqa: F401
+    PrimitiveIsotropicSubobjects,
+    primitive_isotropic,
+)
+from dzack_research.preamble.categories.lattice_centralizers import (  # noqa: F401
+    IsometryPrimitiveExtension,
+    cyclotomic_summand,
+    isometry_primitive_extension,
+)
+from dzack_research.preamble.categories.vector_configurations import (  # noqa: F401
+    VectorConfigurations,
+    vector_configuration,
+)
+from dzack_research.preamble.categories.eichler_criterion import (  # noqa: F401
+    are_in_one_stable_orbit,
+    covering_discriminant_classes,
+    eichler_criterion_applies,
+    hyperbolic_plane_summand_count,
+    splits_two_hyperbolic_planes,
+)
+from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F401
+    lorentzian_reduction_complex,
+)
+from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
+    integral_double_cosets,
+    integral_right_cosets,
+    integral_stabilizer,
+    integral_transporter,
+)
 from dzack_research.preamble.categories.lattices import (  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
