@@ -149,6 +149,26 @@ class IsometryPrimitiveExtension:
             "the owned torsion form modules do not supply"
         )
 
+    def equivariant_vector_orbit_representatives(self, square):
+        r"""Return ``O(L,f)``-orbit representatives of the vectors of ``square``."""
+        assert False, (
+            f"the O(L,f)-orbits of the vectors of square {square} in "
+            f"{self.lattice} are not computed.  The owned subgroup-orbit route "
+            "splits a full O(L) orbit through the finite quotient of a "
+            "character of O(L) -- discriminant, determinant or real spinor "
+            "norm -- and the centralizer of an isometry is not cut out by such "
+            "a character, so that route does not describe it.  The "
+            "equivariant orbits are read off the pair description instead: a "
+            "vector of L is a pair of vectors of L^f and (L^f)^perp glued "
+            "across gamma, and its orbit is the orbit of that pair under the "
+            "subgroup of O(L^f) x O((L^f)^perp) preserving the glue.  The "
+            "forward half of that description is invariant_restriction and "
+            "coinvariant_restriction; the missing half is the one stated on "
+            "centralizer_element, the action of a discriminant automorphism on "
+            "the twist A(-1).  For the orbits under the full O(L) use "
+            "L.O().vector_orbit_representatives(square)"
+        )
+
     def __repr__(self) -> str:
         return f"Primitive extension of {self.lattice} cut out by {self.isometry}"
 
