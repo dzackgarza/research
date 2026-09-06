@@ -139,11 +139,18 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=_extra_construction_data,
             )
 
-        def _presented_biproduct_with(self, other, labels, factors):
-            r"""Return the finite-presentation realization of ``self direct_sum other``."""
+        def _presented_biproduct_over(self, labels, factors):
+            r"""Return the finite-presentation realization of $\bigoplus_{i \in I} M_i$.
+
+            A relation of one factor is a relation of the biproduct, read at
+            that factor's own block of generators; over the index set those
+            blocks are disjoint, so the relation rows are their union.
+            """
             try:
-                left_relations = _presentation_rows(self)
-                right_relations = _presentation_rows(other)
+                relations_of = {
+                    index: _presentation_rows(factors.value(index))
+                    for index in factors.index_set()
+                }
             except AttributeError, NotImplementedError, TypeError, ValueError:
                 return NotImplemented
             size = labels.cardinality()
@@ -151,23 +158,16 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return NotImplemented
             width = int(size.finite_value())
             ring = self.base_ring()
-            left_labels = self.module_generating_set()
-            right_labels = other.module_generating_set()
             rows = []
-            for relation in left_relations:
-                row = [ring.zero()] * width
-                for position, coefficient in enumerate(relation):
-                    if coefficient:
-                        left_label = left_labels[position]
-                        row[labels.ranking_map()(_biproduct_label(labels, 0, left_label))] = coefficient
-                rows.append(row)
-            for relation in right_relations:
-                row = [ring.zero()] * width
-                for position, coefficient in enumerate(relation):
-                    if coefficient:
-                        right_label = right_labels[position]
-                        row[labels.ranking_map()(_biproduct_label(labels, 1, right_label))] = coefficient
-                rows.append(row)
+            for index in factors.index_set():
+                factor_labels = factors.value(index).module_generating_set()
+                for relation in relations_of[index]:
+                    row = [ring.zero()] * width
+                    for position, coefficient in enumerate(relation):
+                        if coefficient:
+                            label = _biproduct_label(labels, index, factor_labels[position])
+                            row[labels.ranking_map()(label)] = coefficient
+                    rows.append(row)
             relations = _matrix_space_like(self, len(rows), width).from_rows(tuple(tuple(row) for row in rows))
             presentation = _presentation_from_relation_rows(
                 ring,

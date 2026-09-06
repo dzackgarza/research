@@ -459,12 +459,12 @@ class Sets(OwnedCategory):
             the caller may hand over either.
             """
             from dzack_research.preamble.categories.abstract_categories.products import (
-                _finite_factor_family,
+                _factor_family,
             )
 
-            family = _finite_factor_family(family, name="Product factors")
+            family = _factor_family(family, name="Product factors")
             index_set = family.index_set()
-            if index_set.is_finite():
+            if family.cardinality().is_finite():
                 return _cartesian_product_of_tuple(
                     tuple(family.value(index) for index in index_set)
                 )
@@ -473,11 +473,35 @@ class Sets(OwnedCategory):
         def _categorical_product(self, left, right):
             return CartesianProductOfSets(left, right)
 
-        def coproduct(self, factors):
-            r"""Return the coproduct of a finite family of objects of this category."""
-            return self._fold_construction(
-                self._categorical_coproduct, factors, name="Coproduct factors"
+        def coproduct(self, family):
+            r"""Return $\coprod_{i \in I} X_i$ for an indexed family of objects.
+
+            The dual of :meth:`product`, and built the same way.  Folding the
+            binary coproduct over three sets gives $(X_0\sqcup X_1)\sqcup
+            X_2$, which satisfies the same universal property but is a
+            different object: its index set has two elements, one of which is
+            itself a coproduct, so an injection is named by a path rather than
+            by an index.  Both are coproducts and only one is the coproduct
+            over $I$ (`CON-14`).
+
+            Two constructions of the same coproduct are the same object, for
+            the reason :meth:`product` gives -- an element of one would
+            otherwise never equal an element of the other.
+
+            A bare sequence of factors is the family on the canonical labels,
+            so the caller may hand over either.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _factor_family,
             )
+
+            family = _factor_family(family, name="Coproduct factors")
+            index_set = family.index_set()
+            if family.cardinality().is_finite():
+                return _coproduct_of_tuple(
+                    tuple(family.value(index) for index in index_set)
+                )
+            return CoproductOfFamily(index_set, family.value)
 
         def _categorical_coproduct(self, left, right):
             return CoproductOfSets(left, right)
@@ -588,35 +612,6 @@ class Sets(OwnedCategory):
             )
 
             return finite_power_set_functor()
-
-    def coproduct(self, family):
-        r"""Return $\coprod_{i \in I} X_i$ for an indexed family of sets.
-
-        The coproduct over an index set, built directly, the way ``product``
-        already builds the product.  Folding the binary coproduct over three
-        sets gives $(X_0\sqcup X_1)\sqcup X_2$, which satisfies the same
-        universal property but is a different object: its index set has two
-        elements, one of which is itself a coproduct, so an injection is
-        named by a path rather than by an index.  Both are coproducts and
-        only one is the coproduct over $I$ (`CON-14`).
-
-        On ``Sets`` rather than on ``Sets.SubcategoryMethods``, because this
-        is the coproduct of *sets*.  A subcategory keeps the fold of its own
-        binary coproduct until it builds its own over an index set, which is
-        where a free product or a direct sum belongs.
-
-        A bare sequence of factors is the family on the canonical labels, so
-        the caller may hand over either.
-        """
-        from dzack_research.preamble.categories.abstract_categories.products import (
-            _finite_factor_family,
-        )
-
-        family = _finite_factor_family(family, name="Coproduct factors")
-        index_set = family.index_set()
-        return _coproduct_of_tuple(
-            tuple(family.value(index) for index in index_set)
-        )
 
     def identity(self, set_object):
         return self.Mor(set_object, set_object).identity()

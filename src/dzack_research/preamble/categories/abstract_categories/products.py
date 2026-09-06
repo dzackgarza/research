@@ -365,20 +365,50 @@ class CoproductsOfCategory(ColimitsOfCategory):
     pass
 
 
-def _finite_factor_family(factors, *, name="Selected factors"):
+def _factor_family(factors, *, name="Selected factors"):
+    r"""Return the indexed family a construction is taken over.
+
+    A construction is taken over an index set, so its datum is the family and
+    never an arity.  A bare sequence is syntactic ingress: it denotes the
+    family on the canonical labels ``Sets.Δ[n-1]``, and this is the one
+    boundary at which that normalization happens.
+    """
     if isinstance(factors, IndexedFamily):
-        family = factors
-    else:
-        values = tuple(factors)
-        labels = Sets.Δ[len(values) - 1]
-        family = indexed_family(
-            labels,
-            lambda label: values[int(labels.ranking_map()(label))],
-            name=name,
-        )
+        return factors
+    values = tuple(factors)
+    labels = Sets.Δ[len(values) - 1]
+    return indexed_family(
+        labels,
+        lambda label: values[int(labels.ranking_map()(label))],
+        name=name,
+    )
+
+
+def _finite_factor_family(factors, *, name="Selected factors"):
+    r"""Return the family, where the construction is represented over finite index sets."""
+    family = _factor_family(factors, name=name)
     if not family.cardinality().is_finite():
         raise TypeError("the current product/coproduct construction requires finitely many factors")
     return family
+
+
+def _two_factors_of(factors, *, name="Selected factors"):
+    r"""Return the two factors, where the construction is represented binary.
+
+    A backend that takes exactly two objects cannot answer over a larger
+    index set.  Folding it would return an object satisfying the same
+    universal property, but a different one: its projections and injections
+    are composites through a nest, so there is no arrow to or from the factor
+    at a given index.  A site with such a backend names that hypothesis here
+    rather than folding.
+    """
+    family = _factor_family(factors, name=name)
+    assert family.cardinality() == cardinal(2), (
+        f"{name.lower()} over an index set other than a two-element one is "
+        "defined, but the represented construction takes exactly two factors"
+    )
+    labels = tuple(family.index_set())
+    return family[labels[0]], family[labels[1]]
 
 
 class BiproductCategory(Category):
