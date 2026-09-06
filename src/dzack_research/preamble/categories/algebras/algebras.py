@@ -1455,6 +1455,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         _OwnedRingParent.__init__(
             self,
             engine,
+            base=base,
             category=Category.join(tuple(placement)),
         )
         self._preamble_structure_map = _default_structure_map(base, self) if structure_map is None else structure_map

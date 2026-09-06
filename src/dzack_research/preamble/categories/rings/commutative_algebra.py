@@ -500,9 +500,9 @@ class QuotientRings(OwnedCategory):
             self._preamble_defining_ideal = defining_ideal
             self._preamble_engine_ring = _engine_ring
             self._preamble_algebra_base_ring = source
-            self._preamble_base_ring = source
             # The module level above needs the ring this quotient is an
-            # algebra over; a level supplies what the one above declares.
+            # algebra over; a level supplies what the one above declares, and
+            # the module level records it.
             super().__init__(base_ring=source, **rest)
 
             self._preamble_quotient_map = ring_morphism(

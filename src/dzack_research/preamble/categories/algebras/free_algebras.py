@@ -304,7 +304,6 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
         ]
         if finite_free_degree is not None:
             module_labels = Sets.Δ[finite_free_degree - 1]
-            self._preamble_base_ring = base
             self._preamble_module_generating_set = module_labels
             module_primitive = (
                 quotient_engine.gen()

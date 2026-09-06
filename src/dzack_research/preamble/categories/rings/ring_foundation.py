@@ -22,7 +22,7 @@ from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.map import Map
-from sage.categories.morphism import Morphism
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains as SagePrincipalIdealDomains
 from sage.categories.rings import Rings as SageRings
@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
     membership_by_definition,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
     AdditiveMonoids,
@@ -904,6 +905,12 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             raise TypeError("a ring morphism object requires two owned rings")
         return _ring_mor_category(domain, codomain)
 
+    # Functors out of rings, sited on their domain.
+
+    def unit_group(self):
+        r"""``R |-> R^x : Ring -> Grp``."""
+        return UnitGroupFunctor()
+
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
 
@@ -1046,18 +1053,32 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             refine(self, placements)
 
         def _fresh_free_module_on(self, labels, **options):
-            r"""Return the selected free module on ``labels`` over this ring."""
+            r"""Return the free module on ``labels`` over this ring's own scalars.
+
+            A ring is free of rank one over itself, so its sibling free modules
+            are free over it.  A ring the construction placed as a finite free
+            module over a smaller base -- a number field presented over the
+            rationals -- has that base for its scalars, and the question is
+            asked of the placement rather than of state a leaf restated.
+            """
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 FreshFreeModuleOn,
             )
-
-            module_base = self.__dict__.get("_preamble_base_ring")
-            base = (
-                module_base
-                if module_base is not None and module_base is not self
-                else self
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                FinitelyGeneratedFreeModules,
             )
-            return FreshFreeModuleOn(base, labels, **options)
+
+            scalars = self.base()
+            over_a_smaller_base = (
+                scalars is not None
+                and scalars is not self
+                and self in FinitelyGeneratedFreeModules(scalars)
+            )
+            return FreshFreeModuleOn(
+                scalars if over_a_smaller_base else self,
+                labels,
+                **options,
+            )
 
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""
@@ -1458,6 +1479,64 @@ class PrimeFields(OwnedCategory):
         return [OwnedFields()]
 
 
+@cached_function
+def unit_group(ring):
+    r"""Return \(R^\times\), the group of units of the owned ring ``ring``.
+
+    A ring is a monoid under multiplication, and its invertible elements are a
+    submonoid: the identity is invertible, and a product of invertibles is
+    invertible.  That submonoid is a group, because every one of its elements
+    has an inverse by the very predicate that admitted it, so the group law is
+    the ring's multiplication and nothing is chosen.
+
+    Invertibility is asked of the ring element.  A ring whose elements do not
+    decide it has no represented unit group, and that absence is a gap on the
+    element interface rather than a second construction here.
+    """
+    from dzack_research.preamble.categories.group.groups import OwnedGroups
+    from dzack_research.preamble.categories.group.submonoids import predicate_submonoid
+
+    assert ring in OwnedRings(), f"the unit group of {ring} requires an owned ring"
+    units = predicate_submonoid(
+        ring,
+        lambda element: element.is_unit(),
+        f"{ring}^×",
+    )
+    return refine(units, OwnedGroups())
+
+
+class UnitGroupFunctor(Functor):
+    r"""\(R\mapsto R^\times\) and \(f\mapsto f|_{R^\times}\), from rings to groups.
+
+    A ring morphism carries a unit to a unit: from \(rs = 1\) it gives
+    \(f(r)f(s) = 1\), so the restriction is defined with no further data, and
+    functoriality is the functoriality of restriction.
+
+    Applied to \(\operatorname{End}_{\mathbf C}(X)\) this is
+    \(\operatorname{Aut}_{\mathbf C}(X)\): an endomorphism is invertible in the
+    endomorphism ring exactly when it is an isomorphism of \(X\).
+    """
+
+    def __init__(self) -> None:
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        super().__init__(OwnedRings(), OwnedGroups())
+
+    def _apply_object(self, ring):
+        return unit_group(ring)
+
+    def _apply_morphism(self, morphism):
+        source = self.object_image(morphism.domain())
+        target = self.object_image(morphism.codomain())
+        return SetMorphism(
+            source.Mor(target),
+            lambda unit: target(morphism(unit)),
+        )
+
+    def _repr_(self):
+        return "Unit group functor"
+
+
 class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""A category over a ring, normalized to the session's owned ring."""
 
@@ -1792,12 +1871,21 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     Element = _OwnedRingElement
 
-    def __init__(self, engine: Ring, *, category=None) -> None:
+    def __init__(self, engine: Ring, *, base=None, category=None) -> None:
+        r"""Construct over the scalar ring the level above declares.
+
+        ``base`` is that ring.  A level sitting over a ring states its own base
+        when it constructs through the level below -- the algebra level does --
+        and carrying it to the host here is what makes the module level's
+        ``base_ring()`` an answer of the construction rather than state a leaf
+        restates.  A ring which is its own base declares none, and reads its
+        scalars off the engine.
+        """
         self._engine = engine
         placement = _owned_ring_category(engine)
         if category is not None:
             placement = Category.join((placement, category))
-        Parent.__init__(self, category=placement)
+        Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
 
     def _from_engine_element(self, value):
