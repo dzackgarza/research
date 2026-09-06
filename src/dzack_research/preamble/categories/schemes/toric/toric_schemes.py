@@ -247,6 +247,43 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 int(self.dimension()) - int(orbit_dimension)
             )
 
+        @cached_method
+        def torus_invariant_divisor_group(self):
+            r"""``Div_T(X) = ⊕_rho ZZ D_rho``, free on the rays (CLS §4.1).
+
+            The prime divisors are indexed by the rays themselves, which is the
+            orbit-cone correspondence restricted to codimension one: ``D_rho``
+            is the closure of the orbit of ``rho``.
+            """
+            from dzack_research.preamble.categories.divisors.divisor_groups import (
+                FormalDivisorGroup,
+            )
+
+            return FormalDivisorGroup(_integers(), tuple(self.fan().cones(1)))
+
+        def torus_invariant_prime_divisor(self, ray):
+            r"""The prime divisor ``D_rho`` of one ray of the fan."""
+            assert ray in self.fan(), "a torus-invariant prime divisor is indexed by a ray"
+            return self.torus_invariant_divisor_group().module_generator(ray)
+
+        @cached_method
+        def toric_boundary_divisor(self):
+            r"""The toric boundary ``sum_rho D_rho``, the complement of the torus."""
+            group = self.torus_invariant_divisor_group()
+            return group.linear_combination(
+                {ray: _integers().one() for ray in self.fan().cones(1)}
+            )
+
+        def canonical_divisor(self):
+            r"""``K_X = -sum_rho D_rho`` (CLS Thm. 8.2.3)."""
+            return -self.toric_boundary_divisor()
+
+        def log_pair(self):
+            r"""The toric log pair ``(X, sum_rho D_rho)``."""
+            from dzack_research.preamble.categories.schemes.log_pairs import ToricLogPair
+
+            return ToricLogPair(self, self.toric_boundary_divisor())
+
         def is_polarized(self) -> bool:
             r"""Whether this variety was constructed from a polytope."""
             return self._preamble_toric_polarizing_polytope is not None
