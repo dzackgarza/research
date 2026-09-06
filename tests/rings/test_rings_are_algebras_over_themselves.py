@@ -14,10 +14,12 @@ from dzack_research.preamble.all import (
     Algebras,
     CommutativeAlgebras,
     Fields,
+    FinitelyGeneratedFreeModules,
     FreeModule,
     Groups,
     Modules,
     OwnedRings,
+    ring_as_module,
 )
 from dzack_research.preamble.rings import (
     predicate_subring,
@@ -151,9 +153,35 @@ def test_a_ring_over_nothing_smaller_is_its_own_scalar_ring(promoted_ring: Any) 
 
 
 def test_the_integers_are_an_algebra_over_themselves() -> None:
-    r"""The integers have nothing smaller beneath them, so they are their own base."""
+    r"""The integers have nothing smaller beneath them, so they are their own base.
+
+    The module membership is not a separate fact: the algebras over a ring
+    have the modules over it among their supercategories, so the placement
+    made at construction carries it.
+    """
     assert ZZ.algebra_base_ring() is ZZ
     assert ZZ.base_ring() is ZZ
     assert ZZ in CommutativeAlgebras(ZZ)
     assert ZZ in Modules(ZZ)
-    assert ZZ.rank() == 1
+
+
+def test_a_ring_is_the_rank_one_free_module_over_itself(promoted_ring: Any) -> None:
+    r"""A ring *is* its own regular module, rather than having one beside it.
+
+    One object sits in several categories: a ring is a ring, a rank-one free
+    module over itself, and a rank-one algebra over itself.  So the ring
+    answers for its own rank, and the canonical free rank-one module over it
+    is the ring, not a second object built to stand for it.
+
+    This is expected to fail today, and the failure is the point.  Nothing
+    places a ring among the finitely generated free modules over itself, so
+    ``ring_as_module`` takes its second branch and returns a separate
+    ``BasedFreeModule`` of rank one.  The branch above it already expects the
+    identification and is unreachable.  What would supply it is that
+    placement, with the framing on the ring's own unit, made where the ring is
+    placed as an algebra over itself.
+    """
+    ring = promoted_ring
+    assert ring in FinitelyGeneratedFreeModules(ring)
+    assert ring.rank() == 1
+    assert ring_as_module(ring) is ring
