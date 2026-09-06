@@ -1,4 +1,4 @@
-r"""The primitive extension cut out by an involution, and its centralizer data.
+r"""The primitive extension cut out by a lattice isometry, and its centralizer data.
 
 The cited specimen is the Enriques involution on the K3 lattice: its invariant
 lattice is ``U(2) + E8(-2)``, two-elementary of type ``(10, 10, 0)``, and its
@@ -7,6 +7,13 @@ coinvariant lattice is ``T_En`` of rank twelve (Barth--Peters--Van de Ven,
 two-elementary involutions).  Both discriminant groups then have order
 ``2^10``, and since the K3 lattice is unimodular the glue subgroup is all of
 ``A_{S_En}``, so the orthogonal sum has index ``2^10`` in the K3 lattice.
+
+The odd specimen is the cyclic permutation of the coordinates of ``I_3``.  Its
+invariant lattice is the diagonal, of square three, and its coinvariant
+lattice is the rank-two root lattice orthogonal to that diagonal.  ``I_3`` is
+odd while that coinvariant summand is even, so the glue of this extension is
+an anti-isometry of the ``QQ/ZZ``-valued bilinear discriminant forms, and the
+same criterion and the same assembly must answer there as in the even case.
 """
 
 from dzack_research.preamble.all import (
@@ -148,6 +155,11 @@ def test_a_compatible_pair_reassembles_the_swap_of_the_hyperbolic_plane() -> Non
     lattice, swap = _hyperbolic_swap()
     extension = isometry_primitive_extension(swap)
 
+    # U is even, so this extension is glued by its quadratic discriminant
+    # forms and the criterion below is read there.
+    assert lattice.is_even()
+    assert extension.glue().is_quadratic()
+
     invariant_part = extension.invariant_restriction(swap)
     coinvariant_part = extension.coinvariant_restriction(swap)
     assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
@@ -271,3 +283,109 @@ def test_the_a2_centralizer_separates_two_roots_that_o_a2_identifies() -> None:
     assert centralizer.vectors_are_equivalent(invariant_root, -invariant_root)
     assert not centralizer.vectors_are_equivalent(first, invariant_root)
     assert not centralizer.vectors_are_equivalent(second, invariant_root)
+
+
+def _cubic_cyclic_permutation():
+    r"""Return ``I_3`` with the cyclic permutation of its three coordinates.
+
+    The permutation ``e1 -> e2 -> e3 -> e1`` is an isometry of ``I_3`` of
+    order three.  It fixes exactly the diagonal ``ZZ(e1 + e2 + e3)``, of
+    square three, and its coinvariant lattice is the rank-two root lattice
+    orthogonal to that diagonal, whose Gram matrix is ``[[2,-1],[-1,2]]``.
+    Both discriminant groups are cyclic of order three, and the orthogonal
+    sum of the two summands has index three in ``I_3``.
+
+    ``I_3`` is odd and its coinvariant summand is even, so this is the
+    specimen on which the glue and the pair criterion have to be read on the
+    ``QQ/ZZ``-valued bilinear discriminant forms although one summand
+    supports a quadratic one.
+    """
+    lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    labels = tuple(lattice.module_generating_set())
+    first, second, third = tuple(lattice.module_generators())
+    return lattice, lattice.Aut()(
+        {labels[0]: second, labels[1]: third, labels[2]: first}
+    )
+
+
+def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
+    lattice, rotation = _cubic_cyclic_permutation()
+    extension = isometry_primitive_extension(rotation)
+
+    assert not lattice.is_even()
+    assert extension.invariant.rank() == 1
+    assert extension.coinvariant.rank() == 2
+    assert extension.coinvariant.inclusion().domain().is_even()
+
+    assert not extension.glue().is_quadratic()
+    assert extension.invariant.discriminant_group().cardinality() == 3
+    assert extension.coinvariant.discriminant_group().cardinality() == 3
+    assert extension.index() == 3
+    assert extension.gluing_subgroup().cardinality() == 3
+
+
+def test_a_compatible_pair_reassembles_the_cubic_cyclic_permutation() -> None:
+    lattice, rotation = _cubic_cyclic_permutation()
+    extension = isometry_primitive_extension(rotation)
+    invariant_summand = extension.invariant.inclusion().domain()
+
+    # The rotation is the identity on the diagonal and lies in the Weyl group
+    # of the coinvariant root lattice, which acts trivially on its
+    # discriminant group; the pair of its two restrictions therefore acts as
+    # the identity on the glue graph.
+    invariant_part = extension.invariant_restriction(rotation)
+    coinvariant_part = extension.coinvariant_restriction(rotation)
+    assert invariant_part == invariant_summand.Aut().one()
+    assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
+
+    assembled = extension.centralizer_element(invariant_part, coinvariant_part)
+    assert assembled.parent() is lattice.Aut()
+    assert assembled in extension.centralizer_group()
+    assert all(
+        assembled(generator) == rotation(generator)
+        for generator in lattice.module_generators()
+    )
+
+
+def test_the_negation_pair_reassembles_minus_one_on_the_cubic_lattice() -> None:
+    lattice, rotation = _cubic_cyclic_permutation()
+    extension = isometry_primitive_extension(rotation)
+    invariant_summand = extension.invariant.inclusion().domain()
+    coinvariant_summand = extension.coinvariant.inclusion().domain()
+
+    # The graph of gamma is a subgroup of the sum of the two discriminant
+    # forms, so negation on both factors permutes it.  The assembled isometry
+    # is -1 on I_3, reached by clearing the denominator three of the
+    # orthogonal sum.
+    invariant_part = _negation(invariant_summand)
+    coinvariant_part = _negation(coinvariant_summand)
+    assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
+
+    assembled = extension.centralizer_element(invariant_part, coinvariant_part)
+    assert assembled.parent() is lattice.Aut()
+    assert assembled in extension.centralizer_group()
+    assert all(
+        assembled(generator) == -generator
+        for generator in lattice.module_generators()
+    )
+    assert extension.invariant_restriction(assembled) == invariant_part
+    assert extension.coinvariant_restriction(assembled) == coinvariant_part
+
+
+def test_negating_one_summand_of_the_cubic_split_breaks_the_glue_graph() -> None:
+    _lattice, rotation = _cubic_cyclic_permutation()
+    extension = isometry_primitive_extension(rotation)
+    invariant_summand = extension.invariant.inclusion().domain()
+    coinvariant_summand = extension.coinvariant.inclusion().domain()
+
+    # gamma is injective on a group of order three, so ``(x, -gamma x)`` lies
+    # on the graph only where ``gamma x = -gamma x``, that is only at zero.
+    # A pair that is the identity on one summand and negation on the other is
+    # therefore an isometry of the orthogonal sum that does not extend to
+    # I_3, and Nikulin's criterion says so.
+    assert not extension.pair_preserves_glue_graph(
+        invariant_summand.Aut().one(), _negation(coinvariant_summand)
+    )
+    assert not extension.pair_preserves_glue_graph(
+        _negation(invariant_summand), coinvariant_summand.Aut().one()
+    )

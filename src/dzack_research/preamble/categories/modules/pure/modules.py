@@ -253,6 +253,92 @@ class Modules(OwnedCategoryOverBaseRing):
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""
 
+        # Functors out of ``Mod_R``, each spelled as a method of this, their
+        # domain category, and named by the construction it performs.
+
+        def underlying_set(self):
+            r"""``U : Mod_R -> Set``, the underlying-set functor.
+
+            The right adjoint of the free-module functor spelled on ``Set``.
+            On an object it is the identity: a module already is a set object,
+            and forgetting the scalar action removes structure, not elements.
+            """
+            from dzack_research.preamble.categories.functors.free_forgetful import (
+                underlying_set_functor,
+            )
+
+            return underlying_set_functor(self.base_ring())
+
+        def dualization(self):
+            r"""``(-)^* = Hom_R(-, R)``, the contravariant ``R``-linear dualization.
+
+            Which duality this is, is named by the category it is a method of:
+            it is the ``R``-linear one, into the free module of rank one.  The
+            represented functor has the finitely generated free modules for
+            domain and codomain, where the dual basis frames ``M^*``.
+            """
+            from dzack_research.preamble.categories.functors.linear_constructions import (
+                dualization_functor,
+            )
+
+            return dualization_functor(self.base_ring())
+
+        def symmetric_algebra(self):
+            r"""``Sym_R : Mod_R -> CAlg_R``, the symmetric-algebra functor.
+
+            Left adjoint of the underlying-module functor on commutative
+            ``R``-algebras; the adjunction is ``symmetric_algebra_adjunction``.
+            """
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                symmetric_algebra_functor,
+            )
+
+            return symmetric_algebra_functor(self.base_ring())
+
+        def tensor_algebra(self):
+            r"""``T_R : Mod_R -> Alg_R``, the tensor-algebra functor.
+
+            Left adjoint of the underlying-module functor on associative unital
+            ``R``-algebras; the adjunction is ``tensor_algebra_adjunction``.
+            """
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                tensor_algebra_functor,
+            )
+
+            return tensor_algebra_functor(self.base_ring())
+
+        def exterior_algebra(self):
+            r"""``Lambda_R : Mod_R -> AltAlg_R``, the exterior-algebra functor.
+
+            The alternating quotient of the tensor algebra, graded by the
+            exterior powers ``Lambda^n M``.
+            """
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                alternating_algebra_functor,
+            )
+
+            return alternating_algebra_functor(self.base_ring())
+
+        # An adjunction is a method of its left adjoint's domain category.
+        # ``Sym_R`` and ``T_R`` are left adjoints out of ``Mod_R``, so their
+        # adjunctions are asked for here.  ``Lambda_R`` has none.
+
+        def symmetric_algebra_adjunction(self):
+            r"""``Sym_R -| U``, between ``Mod_R`` and commutative ``R``-algebras."""
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                symmetric_algebra_adjunction,
+            )
+
+            return symmetric_algebra_adjunction(self.base_ring())
+
+        def tensor_algebra_adjunction(self):
+            r"""``T_R -| U``, between ``Mod_R`` and associative unital ``R``-algebras."""
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                tensor_algebra_adjunction,
+            )
+
+            return tensor_algebra_adjunction(self.base_ring())
+
         def tensor_product(self, factors):
             r"""Return the tensor product of a finite family of objects of this category."""
             return self._fold_construction(self._categorical_tensor_product, factors, name="Tensor product factors")
@@ -875,6 +961,15 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return Modules(self.base_ring()).an_object()
+
+    def additional_condition(self):
+        r"""None: over a field, a vector space is exactly a module.
+
+        The condition is on the parameter, not on the object.  Every module
+        over a field is a vector space over it, so nothing has to be placed
+        here to be here.
+        """
+        return None
 
     @classmethod
     def _repr_object_names(cls):

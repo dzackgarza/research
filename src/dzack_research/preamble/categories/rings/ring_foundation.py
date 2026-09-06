@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
+    membership_by_definition,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import (
@@ -1561,9 +1562,17 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
 
     def __contains__(self, candidate) -> bool:
         try:
-            return self in candidate.category().all_super_categories(proper=False)
+            if self in candidate.category().all_super_categories(proper=False):
+                return True
         except AttributeError, TypeError, ValueError:
             return False
+        # Placement has not put the candidate here.  A category that states no
+        # condition of its own is not decided by placement: its objects are
+        # exactly those in every supercategory, and asking that is the whole
+        # question.  Every owned category over a ring reaches membership
+        # through this method, so the statement is read here as well as in
+        # ``OwnedCategory.__contains__``.
+        return membership_by_definition(self, candidate)
 
 
 def _cross_engine_ring_value(value):

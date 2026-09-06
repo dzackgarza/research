@@ -36,6 +36,9 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets
 from dzack_research.preamble.owned_category import object_of
 
@@ -393,6 +396,18 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             assert other.parent() is self.parent(), "faces are compared within one fan"
             return bool(self._engine_cone().is_face_of(other._engine_cone()))
 
+        def intersection(self, other):
+            r"""``sigma cap tau``, a cone of the same fan (CLS Def. 3.1.2).
+
+            A fan is closed under pairwise intersections and the intersection
+            of two of its cones is a face of each, so this is the common face
+            along which their two affine charts are glued.
+            """
+            assert other.parent() is self.parent(), "cones are intersected within one fan"
+            return self.parent()._cone(
+                self._engine_cone().intersection(other._engine_cone())
+            )
+
         def contains(self, element) -> bool:
             return bool(self._engine_cone().contains(_engine_vector(self.lattice(), element)))
 
@@ -422,6 +437,33 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
                     _owned_vector(characters, generator)
                     for generator in self._engine_cone().dual().Hilbert_basis()
                 )
+            )
+
+        def semigroup_coefficients(self, character):
+            r"""The multiplicities writing ``m`` over the chosen generators of ``S_sigma``.
+
+            Every ``m`` in ``S_sigma`` is a nonnegative integer combination of
+            the Hilbert basis, so the character ``chi^m`` is the corresponding
+            monomial in the chart's coordinate algebra.  The Hilbert basis need
+            not be linearly independent, so the multiplicities are not unique;
+            two expansions of one ``m`` differ by the toric ideal and name the
+            same element of ``k[S_sigma]``.  The integer program that selects
+            one is Sage's ``Cone.Hilbert_coefficients``.
+            """
+            assert self.dual_cone_contains(character), (
+                "a semigroup expansion is taken of a character of S_sigma"
+            )
+            integers = _integers()
+            generators = self.semigroup_generators()
+            multiplicities = self._engine_cone().dual().Hilbert_coefficients(
+                list(_engine_vector(self.character_lattice(), character))
+            )
+            return finite_indexed_family(
+                generators,
+                lambda generator: integers(
+                    int(multiplicities[int(generators.rank(generator))])
+                ),
+                name="Semigroup multiplicities of a character",
             )
 
         def pair_with(self, character):

@@ -109,6 +109,11 @@ class Cat(Category):
         self._arrows = {}
         super().__init__()
 
+    def an_object(self):
+        r"""The category of sets, which every owned chain roots at."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        return Sets()
 
     def super_categories(self):
         # A category is an object.  This one edge names Sage's ``Objects`` and
@@ -194,6 +199,19 @@ class Cat(Category):
                 right_leg * total.right_projection(),
             )
 
+        def span(self, left_leg, right_leg):
+            r"""Return the span these two legs form, as an object of this category.
+
+            The span is an object: it has an apex, two legs, a diagram over
+            the shape \(\cdot\leftarrow\cdot\rightarrow\cdot\), and its own
+            colimit, which it asks this category for.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                Span,
+            )
+
+            return Span(left_leg, right_leg)
+
         def pushout(self, left_leg, right_leg):
             r"""Return the pushout of the span these two legs form.
 
@@ -274,6 +292,44 @@ class Cat(Category):
         )
 
         return _ArrowCategory(self)
+
+    def meet(self, categories):
+        r"""Return the largest category contained in all of ``categories``.
+
+        Categories are ordered here by inclusion: a subcategory is below its
+        supercategories, which is what ``super_categories`` and
+        ``is_subcategory`` already say throughout the owned graph.  In that
+        order the greatest lower bound of a family is the category of the
+        objects lying in every member, so this is the meet, and
+        ``Modules(ZZ)`` met with ``FiniteSets()`` is the finite
+        ``ZZ``-modules.
+
+        The backend spells it ``Category.join`` because it orders categories
+        the other way round, by their axioms: joining the axiom sets gives the
+        more structured category, which is the smaller class of objects.
+        Neither order is wrong and they are opposite, so the owned graph
+        states its own rather than inheriting the backend's words.  The
+        backend's *operators* already read in the owned order -- ``A & B`` is
+        this meet and ``A | B`` is the join below -- and only the two names
+        are inverted.
+        """
+        members = tuple(categories)
+        assert members, "the meet of no categories is not represented"
+        return Category.join(members)
+
+    def join(self, categories):
+        r"""Return the smallest category containing all of ``categories``.
+
+        The least upper bound in the inclusion order: the objects of every
+        member are objects of it, and it asks of them only what all of them
+        ask.  ``Modules(ZZ)`` joined with ``FiniteSets()`` is ``Sets``.
+
+        The backend spells it ``Category.meet``; see :meth:`meet` for why the
+        two names arrive inverted.
+        """
+        members = tuple(categories)
+        assert members, "the join of no categories is not represented"
+        return Category.meet(members)
 
     def product(self, factors):
         r"""Return the product of a finite family of categories.
