@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     _category_homset,
     CategoricalHomset,
+    CategoricalIsomorphism,
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
@@ -48,13 +49,19 @@ class EnumeratedSets(OwnedCategory):
         return [Sets()]
 
     class ParentMethods:
-        def rank(self, element):
-            _ = element
+        def ranking_map(self):
+            r"""Return the isomorphism onto the ordinal counting this set.
+
+            An enumeration is a bijection $X \xrightarrow{\ \sim\ }
+            \operatorname{Ord}(|X|)$, so both directions a caller wants are
+            this one arrow: it takes a point to its position, and its
+            :meth:`inverse` takes a position back to the point there.
+            """
             raise NotImplementedError("this enumerated set has no represented ranking map")
 
-        def unrank(self, position):
-            _ = position
-            raise NotImplementedError("this enumerated set has no represented unranking map")
+        def __getitem__(self, position):
+            r"""Return the point at ``position``, the ranking map run backwards."""
+            return self.ranking_map().inverse()(position)
 
 
 class InfiniteEnumeratedSets(OwnedCategory):
@@ -92,23 +99,26 @@ class FiniteOrdinalSets(OwnedCategory):
         def __iter__(self):
             return (NN(index) for index in range(self._size))
 
-        def unrank(self, position):
-            position = int(position)
-            if position < 0 or position >= self._size:
-                raise IndexError(position)
-            return NN(position)
+        @cached_method
+        def ranking_map(self):
+            r"""The identity: an ordinal already *is* the ordinal counting it."""
 
-        def rank(self, element):
-            try:
-                position = int(element)
-            except (TypeError, ValueError) as error:
-                raise ValueError(element) from error
-            if position < 0 or position >= self._size:
-                raise ValueError(element)
-            return position
+            def point_at(position):
+                position = int(position)
+                if position < 0 or position >= self._size:
+                    raise IndexError(position)
+                return NN(position)
 
-        position = rank
-        index = rank
+            def position_of(element):
+                try:
+                    position = int(element)
+                except (TypeError, ValueError) as error:
+                    raise ValueError(element) from error
+                if position < 0 or position >= self._size:
+                    raise ValueError(element)
+                return position
+
+            return ranking_isomorphism(self, position_of, point_at)
 
         def __contains__(self, element) -> bool:
             try:
@@ -120,13 +130,13 @@ class FiniteOrdinalSets(OwnedCategory):
         is_parent_of = __contains__
 
         def __call__(self, element):
-            return self.unrank(self.rank(element))
-
-        def __getitem__(self, position):
-            return self.unrank(position)
+            r"""Normalize a natural number to the point of this ordinal it names."""
+            ranking = self.ranking_map()
+            return ranking.inverse()(ranking(element))
 
         def le(self, left, right):
-            return self.rank(left) <= self.rank(right)
+            ranking = self.ranking_map()
+            return ranking(left) <= ranking(right)
 
         def __len__(self):
             return self._size
@@ -138,14 +148,63 @@ class FiniteOrdinalSets(OwnedCategory):
 
 
 
+@cached_function
 def finite_ordinal_set(size):
-    return object_of(FiniteOrdinalSets(), size=size)
+    r"""The ordinal $\{0,\dots,n-1\}$.
+
+    Interned by its size, because an ordinal is determined by how much it
+    counts: two sets of the same cardinality must reach the *same* codomain
+    or their enumerations do not compose.
+    """
+    return object_of(FiniteOrdinalSets(), size=int(size))
+
+
+def counting_ordinal(source):
+    r"""Return the ordinal that counts ``source``.
+
+    That is $\{0,\dots,n-1\}$ when $|X| = n$ and $\omega$ when $X$ is
+    countably infinite.  An uncountable set has no such ordinal here, and
+    a set whose cardinality is undecided cannot name one either: both
+    refuse rather than guess.
+    """
+    size = cardinal(source.cardinality())
+    if size.is_finite():
+        return finite_ordinal_set(size.finite_value())
+    assert size.is_countably_infinite(), (
+        f"{source} is not countable, so no ordinal represented here counts it"
+    )
+    return NN
+
+
+def ranking_isomorphism(source, position_of, point_at):
+    r"""Return the enumeration of ``source`` as one isomorphism onto its ordinal.
+
+    An enumeration is a bijection $X \xrightarrow{\ \sim\ }
+    \operatorname{Ord}(|X|)$; ranking and unranking are that arrow and its
+    inverse, not two operations a convention has to keep agreeing.  The two
+    directions are handed over together here and are mutually inverse by the
+    construction that supplied them, so the pair is transported rather than
+    re-derived point by point -- which for an infinite source is not a
+    decidable question at all.
+
+    It is an isomorphism of *sets* and of nothing further: a $G$-set's
+    enumeration is not equivariant and a lattice's is not linear.  So it lives
+    in the core of $\mathbf{Set}$, where the isomorphisms are the bijections.
+    """
+    ordinal = counting_ordinal(source)
+    forward = Sets().Mor(source, ordinal)(lambda element: NN(position_of(element)))
+    backward = Sets().Mor(ordinal, source)(lambda position: point_at(int(position)))
+    return CategoricalIsomorphism(
+        _set_core().Mor(source, ordinal), forward, backward, verify=False
+    )
 
 
 @cached_function
-def _finite_delta(dimension):
-    dimension = int(dimension)
-    return finite_ordinal_set(dimension + 1)
+def _set_core():
+    r"""The core of $\mathbf{Set}$, interned so every enumeration shares one home."""
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
+
+    return Core(Sets())
 
 
 class _Delta:
@@ -153,13 +212,13 @@ class _Delta:
 
     def __getitem__(self, dimension):
         if isinstance(dimension, (int, SageInteger)):
-            return _finite_delta(int(dimension))
+            return finite_ordinal_set(int(dimension) + 1)
         size = cardinal(dimension)
         if size == aleph0:
             return NN
         if not size.is_finite():
             raise ValueError("the represented simplex index is finite or countably infinite")
-        return _finite_delta(size.finite_value())
+        return finite_ordinal_set(int(size.finite_value()) + 1)
 
     def __repr__(self) -> str:
         return "Δ"
@@ -1349,55 +1408,60 @@ class CartesianProductsOfSets(OwnedCategory):
                 raise ValueError("a product element needs one component per factor")
             return self.element_class(self, assignment.__getitem__)
 
-        def unrank(self, position):
-            r"""Return the finite product section in mixed-radix order."""
-            if not self.has_finite_index_set():
-                raise TypeError("an infinite-index product has no finite unranking here")
-            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
-            total = self.cardinality()
-            if not total.is_finite():
-                raise TypeError("this product is not finite")
-            position = int(position)
-            total_size = int(total.finite_value())
-            if position < 0 or position >= total_size:
-                raise IndexError(position)
-            if self.index_set() not in EnumeratedSets():
-                raise TypeError("finite product unranking requires an enumerated index set")
-            assignment = {}
-            quotient = position
-            for offset in range(index_count - 1, -1, -1):
-                index = self.index_set().unrank(offset)
-                factor = self.factor(index)
-                if factor not in EnumeratedSets():
-                    raise TypeError("finite product unranking requires enumerated factors")
-                factor_size = cardinal(factor.cardinality())
-                if not factor_size.is_finite():
-                    raise TypeError("this product is not finite")
-                radix = int(factor_size.finite_value())
-                digit = quotient % radix
-                quotient //= radix
-                value = factor.unrank(digit)
-                assignment[index] = value
-            frozen = dict(assignment)
-            return self(lambda index: frozen[index])
+        @cached_method
+        def ranking_map(self):
+            r"""The mixed-radix enumeration of a finite product of finite factors."""
 
-        def rank(self, section):
-            r"""Return the mixed-radix position of a finite product section."""
-            section = self(section)
-            if not self.has_finite_index_set():
-                raise TypeError("an infinite-index product has no finite ranking here")
-            position = 0
-            for index in self.index_set():
-                factor = self.factor(index)
-                factor_size = cardinal(factor.cardinality())
-                if not factor_size.is_finite():
+            def point_at(position):
+                if not self.has_finite_index_set():
+                    raise TypeError("an infinite-index product is not enumerated by position here")
+                index_count = int(cardinal(self.index_set().cardinality()).finite_value())
+                total = self.cardinality()
+                if not total.is_finite():
                     raise TypeError("this product is not finite")
-                if factor not in EnumeratedSets():
-                    raise TypeError("finite product ranking requires enumerated factors")
-                value = section.component(index)
-                digit = int(factor.rank(value))
-                position = position * int(factor_size.finite_value()) + digit
-            return position
+                position = int(position)
+                total_size = int(total.finite_value())
+                if position < 0 or position >= total_size:
+                    raise IndexError(position)
+                if self.index_set() not in EnumeratedSets():
+                    raise TypeError(
+                        "a finite product is enumerated only over an enumerated index set"
+                    )
+                index_ranking = self.index_set().ranking_map().inverse()
+                assignment = {}
+                quotient = position
+                for offset in range(index_count - 1, -1, -1):
+                    index = index_ranking(offset)
+                    factor = self.factor(index)
+                    if factor not in EnumeratedSets():
+                        raise TypeError("a finite product is enumerated only over enumerated factors")
+                    factor_size = cardinal(factor.cardinality())
+                    if not factor_size.is_finite():
+                        raise TypeError("this product is not finite")
+                    radix = int(factor_size.finite_value())
+                    digit = quotient % radix
+                    quotient //= radix
+                    assignment[index] = factor.ranking_map().inverse()(digit)
+                frozen = dict(assignment)
+                return self(lambda index: frozen[index])
+
+            def position_of(section):
+                section = self(section)
+                if not self.has_finite_index_set():
+                    raise TypeError("an infinite-index product has no finite ranking here")
+                position = 0
+                for index in self.index_set():
+                    factor = self.factor(index)
+                    factor_size = cardinal(factor.cardinality())
+                    if not factor_size.is_finite():
+                        raise TypeError("this product is not finite")
+                    if factor not in EnumeratedSets():
+                        raise TypeError("a finite product is enumerated only over enumerated factors")
+                    digit = int(factor.ranking_map()(section.component(index)))
+                    position = position * int(factor_size.finite_value()) + digit
+                return position
+
+            return ranking_isomorphism(self, position_of, point_at)
 
         def projection(self, index):
             normalized = self.index_set()(index)
@@ -1437,15 +1501,7 @@ class CartesianProductsOfSets(OwnedCategory):
                     frozen = dict(assignment)
                     yield self(lambda index: frozen[index])
                     return
-                try:
-                    index = self.index_set().unrank(position)
-                except AttributeError:
-                    index = next(iter(self.index_set())) if position == 0 else None
-                    if index is None:
-                        for offset, candidate in enumerate(self.index_set()):
-                            if offset == position:
-                                index = candidate
-                                break
+                index = self.index_set().ranking_map().inverse()(position)
                 for value in self.factor(index):
                     assignment[index] = value
                     yield from sections(position + 1, assignment)
@@ -1566,22 +1622,20 @@ class CoproductsOfSets(OwnedCategory):
             return None
 
         @staticmethod
-        def _factor_unrank(factor, position):
+        def _factor_point_at(factor, position):
             from itertools import islice
 
-            if hasattr(factor, "unrank"):
-                return factor.unrank(position)
+            if factor in EnumeratedSets():
+                return factor.ranking_map().inverse()(position)
             try:
                 return next(islice(iter(factor), position, position + 1))
             except StopIteration as error:
                 raise IndexError(position) from error
 
         @staticmethod
-        def _factor_rank(factor, value):
-            if hasattr(factor, "rank"):
-                return int(factor.rank(value))
-            if hasattr(factor, "position"):
-                return int(factor.position(value))
+        def _factor_position_of(factor, value):
+            if factor in EnumeratedSets():
+                return int(factor.ranking_map()(value))
             for position, candidate in enumerate(factor):
                 if candidate == value:
                     return position
@@ -1596,7 +1650,7 @@ class CoproductsOfSets(OwnedCategory):
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 pass
             try:
-                CoproductOfFamilyParent._factor_unrank(factor, position)
+                CoproductOfFamilyParent._factor_point_at(factor, position)
             except (IndexError, ValueError):
                 return False
             return True
@@ -1617,8 +1671,9 @@ class CoproductsOfSets(OwnedCategory):
                 layer = 0
                 while True:
                     emitted = False
+                    index_at = self.index_set().ranking_map().inverse()
                     for index_position in range(finite_index_count):
-                        index = self.index_set().unrank(index_position)
+                        index = index_at(index_position)
                         factor = self.cofactor(index)
                         if self._factor_has_position(factor, layer):
                             emitted = True
@@ -1630,12 +1685,13 @@ class CoproductsOfSets(OwnedCategory):
 
             # Countably indexed coproduct: diagonalize N x N.  Missing positions in
             # finite/empty summands are skipped; no index family is materialized.
+            index_at = self.index_set().ranking_map().inverse()
             diagonal = 0
             while True:
                 for index_position in range(diagonal + 1):
                     factor_position = diagonal - index_position
                     try:
-                        index = self.index_set().unrank(index_position)
+                        index = index_at(index_position)
                     except (IndexError, ValueError):
                         continue
                     factor = self.cofactor(index)
@@ -1643,55 +1699,54 @@ class CoproductsOfSets(OwnedCategory):
                         yield index_position, factor_position
                 diagonal += 1
 
-        def unrank(self, position):
-            r"""Return a coproduct element in lazy rank-layer/diagonal order."""
-            position = int(position)
-            if position < 0:
+        @cached_method
+        def ranking_map(self):
+            r"""The lazy enumeration by rank layer, diagonalized when infinite."""
+
+            def point_at(position):
+                position = int(position)
+                if position < 0:
+                    raise IndexError(position)
+                finite_size = self._known_finite_size()
+                if finite_size is not None and position >= finite_size:
+                    raise IndexError(position)
+                index_at = self.index_set().ranking_map().inverse()
+                for reached, (index_position, factor_position) in enumerate(
+                    self._enumeration_pairs()
+                ):
+                    if reached != position:
+                        continue
+                    index = index_at(index_position)
+                    return self(
+                        index,
+                        self._factor_point_at(self.cofactor(index), factor_position),
+                    )
                 raise IndexError(position)
-            finite_size = self._known_finite_size()
-            if finite_size is not None and position >= finite_size:
-                raise IndexError(position)
-            for rank, (index_position, factor_position) in enumerate(
-                self._enumeration_pairs()
-            ):
-                if rank != position:
-                    continue
-                index = self.index_set().unrank(index_position)
-                return self(
-                    index,
-                    self._factor_unrank(self.cofactor(index), factor_position),
+
+            def position_of(element):
+                element = self(element)
+                summand = element.summand_index()
+                target = (
+                    int(self.index_set().ranking_map()(summand)),
+                    self._factor_position_of(self.cofactor(summand), element.summand_element()),
                 )
-            raise IndexError(position)
+                for position, pair in enumerate(self._enumeration_pairs()):
+                    if pair == target:
+                        return position
+                raise ValueError(element)
 
-        def rank(self, element):
-            r"""Return the lazy enumeration rank of one coproduct element."""
-            element = self(element)
-            target_index_position = int(self.index_set().rank(element.summand_index()))
-            target_factor = self.cofactor(element.summand_index())
-            target_factor_position = self._factor_rank(
-                target_factor,
-                element.summand_element(),
-            )
-            for position, pair in enumerate(self._enumeration_pairs()):
-                if pair == (target_index_position, target_factor_position):
-                    return position
-            raise ValueError(element)
-
-        position = rank
-        index = rank
+            return ranking_isomorphism(self, position_of, point_at)
 
         def __contains__(self, element) -> bool:
             return element.parent() is self
 
         is_parent_of = __contains__
 
-        def __getitem__(self, position):
-            return self.unrank(position)
-
         def __iter__(self):
             finite_size = self._known_finite_size()
             positions = range(finite_size) if finite_size is not None else count()
-            return (self.unrank(position) for position in positions)
+            point_at = self.ranking_map().inverse()
+            return (point_at(position) for position in positions)
 
         def _repr_(self) -> str:
             return f"Coproduct of the family over {self.index_set()}"
@@ -1885,11 +1940,10 @@ class NaturalNumberSets(OwnedCategory):
                 yield self(index)
                 index += 1
 
-        def unrank(self, index):
-            return self(int(index))
-
-        def rank(self, value):
-            return int(self(value))
+        @cached_method
+        def ranking_map(self):
+            r"""The identity: $\mathbb N$ is the ordinal $\omega$ that counts it."""
+            return ranking_isomorphism(self, lambda value: int(self(value)), self)
 
         def cardinality(self):
             return aleph0
@@ -2084,8 +2138,10 @@ __all__ = [
     "TotallyOrderedSets",
     "UncountableSets",
     "cartesian_product_of",
+    "counting_ordinal",
     "placement_of",
     "finite_ordinal_set",
+    "ranking_isomorphism",
     "register_set_axioms",
     "set_injection",
     "set_surjection",

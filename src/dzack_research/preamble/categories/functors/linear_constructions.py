@@ -161,7 +161,7 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
         target_labels = target.module_generating_set()
         return target.linear_combination(
             {
-                target_labels.unrank(offset + int(summand_labels.rank(label))): coefficient
+                target_labels[offset + int(summand_labels.ranking_map()(label))]: coefficient
                 for label, coefficient in coefficients.items()
             }
         )
@@ -177,16 +177,16 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
         left_target_rank = int(left_morphism.codomain().module_generating_set().cardinality())
 
         def image(source_label):
-            position = int(source_labels.rank(source_label))
+            position = int(source_labels.ranking_map()(source_label))
             if position < left_source_rank:
-                label = left_source_labels.unrank(position)
+                label = left_source_labels[position]
                 return self._embed_summand(
                     left_morphism(left_morphism.domain().module_generator(label)),
                     left_morphism.codomain(),
                     target,
                     0,
                 )
-            label = right_source_labels.unrank(position - left_source_rank)
+            label = right_source_labels[position - left_source_rank]
             return self._embed_summand(
                 right_morphism(right_morphism.domain().module_generator(label)),
                 right_morphism.codomain(),

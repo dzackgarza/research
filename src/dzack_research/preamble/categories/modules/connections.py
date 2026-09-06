@@ -176,7 +176,7 @@ class Connection(Element):
                 position: generator_images[position]
                 for position in range(len(generator_images))
             }
-            raw_image = lambda label: by_position[int(labels.rank(label))]
+            raw_image = lambda label: by_position[int(labels.ranking_map()(label))]
         else:
             raise TypeError(
                 "a connection is specified by a generator-indexed function or finite assignment"
@@ -237,7 +237,7 @@ class Connection(Element):
         for row in _presentation_rows(module):
             value = self._from_coefficients(
                 {
-                    labels.unrank(position): coefficient
+                    labels[position]: coefficient
                     for position, coefficient in enumerate(row)
                     if coefficient
                 }

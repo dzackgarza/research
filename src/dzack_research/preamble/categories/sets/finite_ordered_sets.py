@@ -5,6 +5,7 @@ from itertools import islice
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.categories.posets import Posets
+from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -15,6 +16,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
     TotallyOrderedSets,
     finite_ordinal_set,
+    ranking_isomorphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 
@@ -24,13 +26,13 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 
 def _finite_ordered_presentation(elements):
-    r"""Return lazy rank/unrank data for one known-finite ordered source."""
+    r"""Return the enumeration data of one known-finite ordered source."""
 
     if elements in FiniteOrderedSets():
         return (
             elements.index_set(),
-            elements._unrank_function,
-            elements._rank_function,
+            elements._element_at_function,
+            elements._index_of_function,
             elements._contains_function,
         )
 
@@ -44,7 +46,7 @@ def _finite_ordered_presentation(elements):
             by_position[len(by_position)] = element
         index_set = finite_ordinal_set(len(by_position))
 
-        def rank(element):
+        def index_of(element):
             for position in index_set:
                 if by_position[int(position)] == element:
                     return position
@@ -53,7 +55,7 @@ def _finite_ordered_presentation(elements):
         return (
             index_set,
             lambda position: by_position[int(position)],
-            rank,
+            index_of,
             lambda element: any(element == known for known in by_position.values()),
         )
 
@@ -69,49 +71,48 @@ def _finite_ordered_presentation(elements):
     finite_size = int(size.finite_value())
     index_set = finite_ordinal_set(finite_size)
 
-    if hasattr(elements, "unrank"):
-        unrank = lambda position: elements.unrank(int(position))
+    if elements in EnumeratedSets():
+        # The source states its own enumeration, so this reads it off rather
+        # than searching: both directions come from that one isomorphism.
+        source_ranking = elements.ranking_map()
+        element_at = lambda position: source_ranking.inverse()(int(position))
+        index_of = lambda element: source_ranking(element)
     else:
-        def unrank(position):
+        def element_at(position):
             try:
                 return next(islice(iter(elements), int(position), int(position) + 1))
             except StopIteration as error:
                 raise IndexError(position) from error
 
-    if hasattr(elements, "rank"):
-        rank = lambda element: elements.rank(element)
-    elif hasattr(elements, "position"):
-        rank = lambda element: elements.position(element)
-    else:
-        def rank(element):
+        def index_of(element):
             for position, candidate in enumerate(elements):
                 if candidate == element:
                     return position
             raise ValueError(element)
 
-    return index_set, unrank, rank, lambda element: element in elements
+    return index_set, element_at, index_of, lambda element: element in elements
 
 
 
 
-def ordered_enumerated_set(index_set, unrank, *, rank=None, contains=None, name=None):
+def ordered_enumerated_set(index_set, element_at, *, index_of=None, contains=None, name=None):
     r"""Return the ordered image of ``index_set`` under the stated enumeration."""
     return object_of(
         OrderedEnumeratedSets(),
         index_set,
-        unrank,
-        rank=rank,
+        element_at,
+        index_of=index_of,
         contains=contains,
         name=name,
     )
 
 
-def finite_ordered_image(index_set, unrank, *, rank=None, contains=None, name=None):
+def finite_ordered_image(index_set, element_at, *, index_of=None, contains=None, name=None):
     r"""Return a finite ordered image without materializing its members."""
     return FiniteOrderedSets().ObjectType.from_indexed(
         index_set,
-        unrank,
-        rank=rank,
+        element_at,
+        index_of=index_of,
         contains=contains,
         name=name,
     )
@@ -125,7 +126,7 @@ def finite_ordered_filter(source, predicate, *, name=None):
 
 
 class OrderedEnumeratedSets(OwnedCategory):
-    r"""Ordered sets presented by an index set with rank and unrank."""
+    r"""Ordered sets presented by an index set and a bijection out of it."""
 
     def an_object(self):
         r"""The ordinal on three points."""
@@ -138,18 +139,20 @@ class OrderedEnumeratedSets(OwnedCategory):
         def __init__(
             self,
             index_set,
-            unrank,
+            element_at,
             *,
-            rank=None,
+            index_of=None,
             contains=None,
             name=None,
             finite=False,
             **rest,
         ) -> None:
-            assert callable(unrank), "an ordered enumerated set requires an unrank map"
+            assert callable(element_at), (
+                "an ordered enumerated set requires a map from its index set"
+            )
             self._index_set = index_set
-            self._unrank_function = unrank
-            self._rank_function = rank
+            self._element_at_function = element_at
+            self._index_of_function = index_of
             self._contains_function = contains
             self._name = name
             super().__init__(facade=True, **rest)
@@ -166,39 +169,41 @@ class OrderedEnumeratedSets(OwnedCategory):
         def cardinality(self):
             return cardinal(self.index_set().cardinality())
 
-        def unrank(self, position):
-            try:
-                index = self.index_set().unrank(int(position))
-            except AttributeError:
-                index = self.index_set()[int(position)]
-            return self._unrank_function(index)
+        @cached_method
+        def ranking_map(self):
+            r"""The chosen enumeration of this image, as one isomorphism.
 
-        def rank(self, element):
-            if self._rank_function is None:
-                raise NotImplementedError(
-                    "this ordered set has no represented inverse ranking map"
-                )
-            result = self._rank_function(element)
-            if result is None:
-                raise ValueError(f"{element!r} is not in {self}")
-            try:
-                return int(self.index_set().rank(result))
-            except AttributeError:
-                return int(result)
+            The presentation gives a bijection from the index set, and the
+            index set already knows its own ordinal, so this composes the two
+            rather than counting the image a second time.
+            """
+            index_ranking = self.index_set().ranking_map()
 
-        position = rank
-        index = rank
+            def point_at(position):
+                return self._element_at_function(index_ranking.inverse()(int(position)))
+
+            def position_of(element):
+                if self._index_of_function is None:
+                    raise NotImplementedError(
+                        "this ordered set has no represented inverse ranking map"
+                    )
+                index = self._index_of_function(element)
+                if index is None:
+                    raise ValueError(f"{element!r} is not in {self}")
+                return int(index_ranking(index))
+
+            return ranking_isomorphism(self, position_of, point_at)
 
         def __iter__(self):
-            return (self._unrank_function(index) for index in self.index_set())
+            return (self._element_at_function(index) for index in self.index_set())
 
         def __contains__(self, element) -> bool:
             if self._contains_function is not None:
                 return bool(self._contains_function(element))
-            if self._rank_function is None:
+            if self._index_of_function is None:
                 return False
             try:
-                self.rank(element)
+                self.ranking_map()(element)
             except (TypeError, ValueError):
                 return False
             return True
@@ -211,13 +216,12 @@ class OrderedEnumeratedSets(OwnedCategory):
         def _element_constructor_(self, element):
             if element not in self:
                 raise ValueError(f"{element!r} is not in {self}")
-            return self.unrank(self.rank(element))
-
-        def __getitem__(self, position):
-            return self.unrank(position)
+            ranking = self.ranking_map()
+            return ranking.inverse()(ranking(element))
 
         def le(self, left, right) -> bool:
-            return self.rank(left) <= self.rank(right)
+            ranking = self.ranking_map()
+            return ranking(left) <= ranking(right)
 
         def _repr_(self) -> str:
             return self._name or f"Ordered image of {self.index_set()}"
@@ -239,41 +243,40 @@ class FiniteOrderedSets(OwnedCategory):
 
     class ParentMethods:
         def __init__(self, elements, **rest) -> None:
-            index_set, unrank, rank, contains = _finite_ordered_presentation(elements)
+            index_set, element_at, index_of, contains = _finite_ordered_presentation(elements)
             super().__init__(
                 index_set,
-                unrank,
-                rank=rank,
+                element_at,
+                index_of=index_of,
                 contains=contains,
                 finite=True,
                 **rest,
             )
 
         @staticmethod
-        def from_indexed(index_set, unrank, *, rank=None, contains=None, name=None):
+        def from_indexed(index_set, element_at, *, index_of=None, contains=None, name=None):
             r"""Return the finite ordered set on a chosen indexed presentation."""
             assert cardinal(index_set.cardinality()).is_finite(), (
                 "a finite ordered set requires a finite index set"
             )
-            image = unrank
-            if rank is None:
-                def rank(element):
+            if index_of is None:
+                def index_of(element):
                     for index in index_set:
-                        if image(index) == element:
+                        if element_at(index) == element:
                             return index
                     raise ValueError(element)
             if contains is None:
                 def contains(element):
                     try:
-                        rank(element)
+                        index_of(element)
                     except (TypeError, ValueError):
                         return False
                     return True
             return object_of(
                 OrderedEnumeratedSets(),
                 index_set=index_set,
-                unrank=image,
-                rank=rank,
+                element_at=element_at,
+                index_of=index_of,
                 contains=contains,
                 name=name,
                 finite=True,
@@ -331,12 +334,12 @@ class FiniteFilteredOrderedSets(OwnedCategory):
             self._source = source
             self._predicate = predicate
             self._filtered_name = name
-            # This level supplies its own unrank, rank and cardinality, so the
-            # base takes the source as index set and this level's unrank.
+            # This level supplies its own ranking map and cardinality, so the
+            # base takes the source as index set and this level's enumeration.
             super().__init__(
                 source,
-                self.unrank,
-                rank=self.rank,
+                lambda position: self.ranking_map().inverse()(position),
+                index_of=lambda element: self.ranking_map()(element),
                 contains=lambda element: predicate(element),
                 name=name,
                 finite=True,
@@ -355,20 +358,23 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         def cardinality(self):
             return cardinal(sum(1 for _element in self))
 
-        def unrank(self, position):
-            try:
-                return next(islice(iter(self), int(position), int(position) + 1))
-            except StopIteration as error:
-                raise IndexError(position) from error
+        @cached_method
+        def ranking_map(self):
+            r"""The enumeration the surviving members inherit from the source order."""
 
-        def rank(self, element):
-            for position, candidate in enumerate(self):
-                if candidate == element:
-                    return position
-            raise ValueError(f"{element!r} is not in {self}")
+            def point_at(position):
+                try:
+                    return next(islice(iter(self), int(position), int(position) + 1))
+                except StopIteration as error:
+                    raise IndexError(position) from error
 
-        position = rank
-        index = rank
+            def position_of(element):
+                for position, candidate in enumerate(self):
+                    if candidate == element:
+                        return position
+                raise ValueError(f"{element!r} is not in {self}")
+
+            return ranking_isomorphism(self, position_of, point_at)
 
         def __contains__(self, element) -> bool:
             return element in self.source() and bool(self.predicate()(element))
@@ -380,11 +386,9 @@ class FiniteFilteredOrderedSets(OwnedCategory):
                 raise ValueError(f"{element!r} is not in {self}")
             return self.source()(element)
 
-        def __getitem__(self, position):
-            return self.unrank(position)
-
         def le(self, left, right) -> bool:
-            return self.rank(left) <= self.rank(right)
+            ranking = self.ranking_map()
+            return ranking(left) <= ranking(right)
 
         def __len__(self):
             return int(self.cardinality())

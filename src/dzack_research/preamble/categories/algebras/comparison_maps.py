@@ -100,7 +100,7 @@ def _evaluate_tensor_representative(source, target, element):
             for index, candidate in enumerate(engine.monoid().gens())
             if candidate == generator
         )
-        return labels.unrank(position)
+        return labels[position]
 
     result = target.zero()
     for monomial, coefficient in engine(backend).monomial_coefficients().items():
@@ -127,7 +127,7 @@ def _evaluate_symmetric_representative(source, target, element):
         value = target.one()
         for position, exponent in enumerate(exponents):
             if exponent:
-                value *= target.algebra_generator(labels.unrank(position)) ** int(exponent)
+                value *= target.algebra_generator(labels[position]) ** int(exponent)
         result += _owned_backend_coefficient(target, coefficient) * value
     return result
 

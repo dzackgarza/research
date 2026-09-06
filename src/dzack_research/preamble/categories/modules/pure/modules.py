@@ -417,10 +417,10 @@ class Modules(OwnedCategoryOverBaseRing):
             count = int(size.finite_value())
             if count == 0:
                 raise ValueError("a wide equalizer family must be nonempty")
-            reference = morphisms.unrank(0)
+            reference = morphisms[0]
             equalizer = self._categorical_equalizer(reference, reference)
             for position in range(1, count):
-                equalizer = equalizer.intersection(self._categorical_equalizer(morphisms.unrank(position), reference))
+                equalizer = equalizer.intersection(self._categorical_equalizer(morphisms[position], reference))
             return equalizer
 
         def _categorical_coequalizer_family(self, morphisms):
@@ -431,10 +431,10 @@ class Modules(OwnedCategoryOverBaseRing):
             count = int(size.finite_value())
             if count == 0:
                 raise ValueError("a wide coequalizer family must be nonempty")
-            reference = morphisms.unrank(0)
+            reference = morphisms[0]
             relations = (reference - reference).image()
             for position in range(1, count):
-                relations = relations.sum((morphisms.unrank(position) - reference).image())
+                relations = relations.sum((morphisms[position] - reference).image())
             return relations.inclusion().cokernel()
 
         def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
@@ -500,7 +500,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 placement.append(_SelectedFinitePresentationModules(ring))
         if full_internal_hom and domain in TensorProductModules(ring):
             factors = domain.tensor_factors()
-            if factors.cardinality().is_finite() and int(factors.cardinality().finite_value()) == 2 and factors.unrank(0) is factors.unrank(1):
+            if factors.cardinality().is_finite() and int(factors.cardinality().finite_value()) == 2 and factors[0] is factors[1]:
                 from dzack_research.preamble.categories.forms.forms import BilinearFormHoms
 
                 placement.append(BilinearFormHoms(ring))
@@ -1795,7 +1795,7 @@ class RestrictedScalarsModuleView(Parent):
                         continue
                     product = extension_ring(scalar_generator * extension_ring(coefficient))
                     for output_scalar_label, output_coefficient in module_coefficients(product, extension_ring).items():
-                        column = restricted_labels.rank(restricted_labels(lambda index: output_scalar_label if int(index) == 0 else module_label))
+                        column = restricted_labels.ranking_map()(restricted_labels(lambda index: output_scalar_label if int(index) == 0 else module_label))
                         row[column] += ring(output_coefficient)
                 if any(row):
                     relation_rows.append(row)
@@ -2084,9 +2084,9 @@ def _module_tensor_product(left, right):
             row = [ring.zero()] * width
             for left_position, coefficient in enumerate(relation):
                 if coefficient:
-                    left_label = left_labels.unrank(left_position)
+                    left_label = left_labels[left_position]
                     pair = _tensor_pair(tensor_labels, left_label, right_label)
-                    row[tensor_labels.rank(pair)] = coefficient
+                    row[tensor_labels.ranking_map()(pair)] = coefficient
             rows.append(row)
 
     for left_label in left_labels:
@@ -2094,9 +2094,9 @@ def _module_tensor_product(left, right):
             row = [ring.zero()] * width
             for right_position, coefficient in enumerate(relation):
                 if coefficient:
-                    right_label = right_labels.unrank(right_position)
+                    right_label = right_labels[right_position]
                     pair = _tensor_pair(tensor_labels, left_label, right_label)
-                    row[tensor_labels.rank(pair)] = coefficient
+                    row[tensor_labels.ranking_map()(pair)] = coefficient
             rows.append(row)
 
     result = NotImplemented
@@ -2420,7 +2420,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             try:
                 column_label = columns(column_label)
             except TypeError, ValueError:
-                column_label = columns.unrank(int(column_label))
+                column_label = columns[int(column_label)]
             generator_image = self.__dict__.get("_generator_image")
             image = generator_image(column_label) if generator_image is not None else self(self.domain().module_generator(column_label))
             return module_coefficients(image, self.codomain())
@@ -2431,11 +2431,11 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             try:
                 row_label = rows(row_label)
             except TypeError, ValueError:
-                row_label = rows.unrank(int(row_label))
+                row_label = rows[int(row_label)]
             try:
                 column_label = columns(column_label)
             except TypeError, ValueError:
-                column_label = columns.unrank(int(column_label))
+                column_label = columns[int(column_label)]
             return self._matrix_column_coefficients(column_label).get(
                 row_label,
                 self.parent().base_ring().zero(),
@@ -2452,7 +2452,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             try:
                 row_label = rows(row_label)
             except TypeError, ValueError:
-                row_label = rows.unrank(int(row_label))
+                row_label = rows[int(row_label)]
             dual = self.domain().dual_module()
             return dual.linear_combination(
                 {column_label: self.matrix_entry(row_label, column_label) for column_label in self.parent().column_index_set() if self.matrix_entry(row_label, column_label)}
@@ -2463,7 +2463,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             try:
                 column_label = columns(column_label)
             except TypeError, ValueError:
-                column_label = columns.unrank(int(column_label))
+                column_label = columns[int(column_label)]
             return self(self.domain().module_generator(column_label))
 
         def rows(self):

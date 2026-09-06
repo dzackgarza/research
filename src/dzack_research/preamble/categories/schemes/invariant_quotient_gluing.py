@@ -388,7 +388,8 @@ class FiniteGluedInvariantQuotient(SageObject):
         right_index = self.normalize_chart_index(right_index)
         if left_index == right_index:
             raise ValueError("an overlap transition is between two distinct charts")
-        if self.chart_index_set().rank(left_index) < self.chart_index_set().rank(right_index):
+        chart_ranking = self.chart_index_set().ranking_map()
+        if chart_ranking(left_index) < chart_ranking(right_index):
             return left_index, right_index
         return right_index, left_index
 

@@ -49,7 +49,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -1129,13 +1129,11 @@ class AlgebraMorphism(Morphism):
             values = tuple(images)
             if len(values) != int(size.finite_value()):
                 raise ValueError("the number of algebra-generator images must equal the framing size")
-            try:
-                labels.rank(labels.unrank(0)) if values else None
-            except AttributeError as error:
-                raise TypeError("sequence algebra-generator syntax requires a ranked framing") from error
+            if labels not in EnumeratedSets():
+                raise TypeError("sequence algebra-generator syntax requires a ranked framing")
             self._generator_images = indexed_family(
                 labels,
-                lambda label: codomain(values[int(labels.rank(label))]),
+                lambda label: codomain(values[int(labels.ranking_map()(label))]),
                 name="Algebra-morphism generator-image family",
             )
         elif callable(images):
@@ -1273,7 +1271,7 @@ class PresentedAlgebraMorphism(Morphism):
                 raise ValueError("the number of algebra-generator images must equal the framing size")
             selected = indexed_family(
                 labels,
-                lambda label: self.codomain()(values[int(labels.rank(label))]),
+                lambda label: self.codomain()(values[int(labels.ranking_map()(label))]),
                 name="Presented-algebra morphism generator-image family",
             )
         elif callable(images):
@@ -1492,7 +1490,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         if generator_values is None:
 
             def value(label):
-                position = int(selected_labels.rank(label))
+                position = int(selected_labels.ranking_map()(label))
                 return self._from_engine_element(engine.gen(position))
         else:
             if hasattr(generator_values, "index_set") and callable(getattr(generator_values, "value", None)):
@@ -1500,7 +1498,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     raise ValueError("the number of algebra-generator values must equal the framing size")
 
                 def value(label):
-                    return self(generator_values.value(selected_labels.rank(label)))
+                    return self(generator_values.value(selected_labels.ranking_map()(label)))
             elif callable(generator_values):
 
                 def value(label):
@@ -1514,7 +1512,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 by_position = {position: generator_values[position] for position in range(len(generator_values))}
 
                 def value(label):
-                    raw = by_position[int(selected_labels.rank(label))]
+                    raw = by_position[int(selected_labels.ranking_map()(label))]
                     return raw if getattr(raw, "parent", lambda: None)() is self else self._from_engine_element(raw)
             else:
                 raise TypeError("algebra-generator values are a callable/indexed family or explicit finite ingress")
@@ -1630,10 +1628,10 @@ def _unit_from_multiplication(multiplication):
     system_entries = [[engine.zero() for _ in range(rank)] for _ in range(rank * rank)]
     target_entries = [engine.zero() for _ in range(rank * rank)]
     for right_index in range(rank):
-        right_label = labels.unrank(right_index)
+        right_label = labels[right_index]
         target_entries[right_index * rank + right_index] = engine.one()
         for left_index in range(rank):
-            left_label = labels.unrank(left_index)
+            left_label = labels[left_index]
             product = multiplication(
                 tensor_square.pure_tensor(
                     module.module_generator(left_label),
@@ -1642,7 +1640,7 @@ def _unit_from_multiplication(multiplication):
             )
             coefficients = module_coefficients(product, module)
             for out_index in range(rank):
-                out_label = labels.unrank(out_index)
+                out_label = labels[out_index]
                 system_entries[right_index * rank + out_index][left_index] = _engine_element(ring, coefficients.get(out_label, ring.zero()))
     system = sage_matrix(engine, rank * rank, rank, system_entries)
     target = sage_vector(engine, target_entries)
@@ -1650,7 +1648,7 @@ def _unit_from_multiplication(multiplication):
         coefficients = system.solve_right(target)
     except (ValueError, ArithmeticError) as error:
         raise TypeError("the multiplication morphism has no left unit") from error
-    unit = module.linear_combination({labels.unrank(index): ring._from_engine_element(engine(coefficients[index])) for index in range(rank) if coefficients[index]})
+    unit = module.linear_combination({labels[index]: ring._from_engine_element(engine(coefficients[index])) for index in range(rank) if coefficients[index]})
     for label in labels:
         generator = module.module_generator(label)
         if multiplication(tensor_square.pure_tensor(generator, unit)) != generator:

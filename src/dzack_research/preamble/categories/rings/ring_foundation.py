@@ -677,7 +677,7 @@ class LocalizationRings(OwnedCategory):
                 f"{self} inverts {inverted.cardinality()} elements, and an inverted element "
                 "is named here only for a localization at a single element"
             )
-            return inverted.unrank(0)
+            return inverted[0]
 
         def induced_morphism(self, morphism):
             r"""Return the unique ``S^{-1}R -> T`` extending ``g: R -> T``.

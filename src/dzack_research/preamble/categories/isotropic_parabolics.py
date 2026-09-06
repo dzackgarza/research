@@ -64,7 +64,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.lattices import Lattices
 
         plane = Lattices(self.base_ring())("U")
-        return primitive_isotropic(plane, (plane.module_generators().unrank(0),))
+        return primitive_isotropic(plane, (plane.module_generators()[0],))
 
     def super_categories(self):
         return [ModuleSubobjects(self.base_ring())]
@@ -280,7 +280,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
                 "even lattice; this lattice is not even"
             )
             isotropic_vector = self.embedded_module_generators()[
-                self.module_generating_set().unrank(0)
+                self.module_generating_set()[0]
             ]
             assert (
                 lattice.b(isotropic_vector, orthogonal_vector) == ring.zero()

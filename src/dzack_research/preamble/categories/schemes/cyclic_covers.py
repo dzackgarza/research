@@ -183,7 +183,7 @@ class CyclicCovers(OwnedCategory):
         image = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
 
         group = self.deck_group()
-        generator = group.group_generators().unrank(0)
+        generator = group.group_generators()[0]
         exponents = {}
         element = group.one()
         for exponent in range(degree):

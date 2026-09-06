@@ -13,6 +13,7 @@ from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.abstract_method import abstract_method
+from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
@@ -48,6 +49,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     FiniteSets,
     Sets,
+    ranking_isomorphism,
 )
 from dzack_research.preamble.owned_category import object_of
 
@@ -200,11 +202,16 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             r"""The fixed-point set ``X^G``."""
             return FiniteGSets(self.acting_group()).fixed_points_functor()(self)
 
-        def rank(self, point):
-            return self.point_set().rank(point)
+        @cached_method
+        def ranking_map(self):
+            r"""The point set's own enumeration, read on this $G$-set.
 
-        def unrank(self, position):
-            return self.point_set().unrank(position)
+            An enumeration of the points is a bijection of sets and nothing
+            more: it is not equivariant, since a group element moves a point
+            to one of another position.
+            """
+            points = self.point_set().ranking_map()
+            return ranking_isomorphism(self, points, points.inverse())
 
         def _repr_(self):
             return f"{self.point_set()} with {self.acting_group()}-action"
@@ -277,7 +284,7 @@ class OrbitSets(OwnedCategory):
             self._index = index
 
         def representative(self):
-            return self.parent().orbit_points(self).unrank(0)
+            return self.parent().orbit_points(self)[0]
 
         def points(self):
             return self.parent().orbit_points(self)
@@ -304,6 +311,8 @@ class OrbitSets(OwnedCategory):
             )
 
             point_set = finite_ordered_set(g_set)
+            point_ranking = point_set.ranking_map()
+            point_at = point_ranking.inverse()
             point_count = int(point_set.cardinality())
             unseen = {position for position in range(point_count)}
             orbit_families = {}
@@ -315,10 +324,10 @@ class OrbitSets(OwnedCategory):
                 frontier = deque((seed_rank,))
                 while frontier:
                     point_rank = frontier.popleft()
-                    point = point_set.unrank(point_rank)
+                    point = point_at(point_rank)
                     for group_generator in group.group_generators():
                         image_rank = int(
-                            point_set.rank(g_set.act(group_generator, point))
+                            point_ranking(g_set.act(group_generator, point))
                         )
                         if image_rank in orbit_ranks:
                             continue
@@ -332,7 +341,7 @@ class OrbitSets(OwnedCategory):
                 }
                 orbit_families[orbit_count] = finite_ordered_image(
                     Sets.Δ[len(rank_by_position) - 1],
-                    lambda position, rank_by_position=rank_by_position: point_set.unrank(
+                    lambda position, rank_by_position=rank_by_position: point_at(
                         rank_by_position[int(position)]
                     ),
                     name=f"Orbit {orbit_count}",
@@ -371,15 +380,17 @@ class OrbitSets(OwnedCategory):
         def cardinality(self):
             return self._orbit_classes.cardinality()
 
-        def unrank(self, position):
-            return self._orbit_classes.unrank(position)
+        @cached_method
+        def ranking_map(self):
+            r"""The enumeration the orbit classes were built with."""
 
-        def rank(self, orbit):
-            assert orbit in self, f"{orbit} is not an orbit of {self}"
-            return int(orbit._index)
+            def position_of(orbit):
+                assert orbit in self, f"{orbit} is not an orbit of {self}"
+                return int(orbit._index)
 
-        position = rank
-        index = rank
+            return ranking_isomorphism(
+                self, position_of, self._orbit_classes.ranking_map().inverse()
+            )
 
         def orbit_points(self, orbit):
             assert orbit in self, "the orbit class belongs to a different quotient"

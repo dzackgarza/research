@@ -159,8 +159,8 @@ def _torsion_module_presented_by_matrix(
     source = BasedFreeModule(ring, relation_count)
 
     def relation_entry(row_position, column_position):
-        row_label = relations.parent().row_index_set().unrank(row_position)
-        column_label = relations.parent().column_index_set().unrank(column_position)
+        row_label = relations.parent().row_index_set()[row_position]
+        column_label = relations.parent().column_index_set()[column_position]
         return relations.matrix_entry(row_label, column_label)
 
     def relation_image(row_position):

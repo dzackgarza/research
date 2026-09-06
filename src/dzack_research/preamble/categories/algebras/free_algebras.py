@@ -939,7 +939,7 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
                 )
             self._images = indexed_family(
                 labels,
-                lambda label: self.codomain()(values[int(labels.rank(label))]),
+                lambda label: self.codomain()(values[int(labels.ranking_map()(label))]),
                 name="Free-algebra morphism generator-image family",
             )
         elif callable(images):

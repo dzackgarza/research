@@ -41,7 +41,6 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
 from sage.schemes.projective.projective_space import ProjectiveSpace
-from sage.sets.positive_integers import PositiveIntegers
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
@@ -49,7 +48,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
     ordered_enumerated_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import object_of
 
 
@@ -89,22 +88,33 @@ def _reflection_cosine_index(cosine):
     return index if root_of_unity**index == -1 else None
 
 
+def _reflection_cosine_position(cosine):
+    r"""Return the position of ``cosine`` in the enumeration, or ``None``.
+
+    Position \(k\) carries \(n=k+1\), which is the one step between \(\omega\)
+    and the positive integers that index the cosines.
+    """
+    index = _reflection_cosine_index(cosine)
+    return None if index is None else NN(index - 1)
+
+
 def reflection_cosines():
     r"""Return \(X_{\mathrm{ref}}=\{\cos(\pi/n) : n\in\mathbb Z_{\geq 1}\}\).
 
     The values a Coxeter bond can take as a cosine, as an owned set: countably
     infinite, enumerated by \(n\), and with exact membership through
     :func:`_reflection_cosine_index`.  Position \(k\) of the enumeration
-    carries \(n=k+1\), since the index set is the positive integers.
+    carries \(n=k+1\): the index set is \(\omega\) and the cosines start at
+    \(n=1\).
 
     Membership is decided in \(\overline{\mathbb Q}\) and never by rounding,
     so \(1/2\) and \((1+\sqrt 5)/4\) belong, being \(\cos(\pi/3)\) and
     \(\cos(\pi/5)\), while \(1/3\) does not.
     """
     return ordered_enumerated_set(
-        PositiveIntegers(),
-        _reflection_cosine,
-        rank=_reflection_cosine_index,
+        NN,
+        lambda position: _reflection_cosine(int(position) + 1),
+        index_of=_reflection_cosine_position,
         contains=lambda value: _reflection_cosine_index(value) is not None,
         name="Reflection cosines { cos(pi/n) : n >= 1 }",
     )
@@ -170,7 +180,8 @@ class VinbergInvariantMatrices(OwnedCategory):
             return self._projective_line
 
         def _positions(self, left, right):
-            return self._index_set.position(left), self._index_set.position(right)
+            ranking = self._index_set.ranking_map()
+            return ranking(left), ranking(right)
 
         def vinberg_invariant(self, left, right):
             r"""Return \([4b(r,s)^2 : q(r)q(s)]\in\mathbb P^1(R)\) for the two mirrors.
@@ -237,7 +248,8 @@ class VinbergInvariantMatrices(OwnedCategory):
         def submatrix(self, mirrors):
             r"""Return the invariant matrix on the selected mirrors."""
             vertices = tuple(mirrors)
-            positions = tuple(self._index_set.position(vertex) for vertex in vertices)
+            ranking = self._index_set.ranking_map()
+            positions = tuple(ranking(vertex) for vertex in vertices)
             return _vinberg_invariant_matrix(
                 self._base_ring,
                 vertices,

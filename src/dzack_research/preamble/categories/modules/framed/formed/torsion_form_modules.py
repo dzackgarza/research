@@ -222,7 +222,7 @@ def _representative_gram(form, *, quadratic: bool):
 
     def representative(i, j):
         pair = values.index_set()(
-            lambda index: labels.unrank(i) if int(index) == 0 else labels.unrank(j)
+            lambda index: labels[i] if int(index) == 0 else labels[j]
         )
         return value_module.lift(values[pair])
 
@@ -405,13 +405,13 @@ def _regenerate_form_on_generators(form, generators, *, quadratic: bool):
             (
                 regenerated.scalar_multiple(
                     generator_coefficients.get(
-                        lift_labels.unrank(index), ring.zero()
+                        lift_labels[index], ring.zero()
                     ),
                     generator,
                 )
                 for index, generator in enumerate(regenerated_generators)
                 if generator_coefficients.get(
-                    lift_labels.unrank(index), ring.zero()
+                    lift_labels[index], ring.zero()
                 )
             ),
             regenerated.zero(),

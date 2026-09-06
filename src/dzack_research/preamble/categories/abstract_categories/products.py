@@ -373,7 +373,7 @@ def _finite_factor_family(factors, *, name="Selected factors"):
         labels = Sets.Δ[len(values) - 1]
         family = indexed_family(
             labels,
-            lambda label: values[int(labels.rank(label))],
+            lambda label: values[int(labels.ranking_map()(label))],
             name=name,
         )
     if not family.cardinality().is_finite():

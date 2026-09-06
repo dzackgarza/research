@@ -122,11 +122,11 @@ def _finite_coset_sum(module, representatives):
     ring = module.base_ring()
 
     def entry(row_position, column_position):
-        relation_label = relation_labels.unrank(row_position)
-        column_label = labels.unrank(column_position)
+        relation_label = relation_labels[row_position]
+        column_label = labels[column_position]
         if relation_label.component(0) != column_label.component(0):
             return ring.zero()
-        source_position = int(source_labels.rank(column_label.component(1)))
+        source_position = int(source_labels.ranking_map()(column_label.component(1)))
         relation_position = int(relation_label.component(1))
         return source_relations[relation_position, source_position]
 
@@ -203,7 +203,7 @@ class InductionFunctor(ScalarExtensionFunctor):
         self._left_cosets = self._supergroup.left_cosets(self._subgroup)
         self._representatives = finite_ordered_image(
             self._left_cosets,
-            lambda coset: coset.unrank(0),
+            lambda coset: coset[0],
             name="Left-coset representatives",
         )
 
@@ -304,7 +304,7 @@ class CoinductionFunctor(CoextensionOfScalarsFunctor):
         self._right_cosets = self._supergroup.right_cosets(self._subgroup)
         self._representatives = finite_ordered_image(
             self._right_cosets,
-            lambda coset: coset.unrank(0),
+            lambda coset: coset[0],
             name="Right-coset representatives",
         )
 

@@ -2,7 +2,7 @@
 
 from itertools import count
 
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.arith.misc import binomial
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
@@ -14,7 +14,7 @@ from dzack_research.preamble.categories.sets.set_categories import TotallyOrdere
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets, ranking_isomorphism
 
 
 def _largest_combinadic_entry(rank: int, size: int) -> int:
@@ -90,7 +90,7 @@ class FixedSizeSelectionElement(Element):
             requested = int(index)
             for position, source_position in enumerate(self._source_positions()):
                 if position == requested:
-                    return self.parent().source().unrank(source_position)
+                    return self.parent().source()[source_position]
             raise IndexError(requested)
 
         return indexed_family(indices, value, name="Selection word")
@@ -99,7 +99,7 @@ class FixedSizeSelectionElement(Element):
         return iter(self.word())
 
     def multiplicity(self, label) -> int:
-        source_position = int(self.parent().source().rank(label))
+        source_position = int(self.parent().source().ranking_map()(label))
         return sum(
             1 for position in self._source_positions() if position == source_position
         )
@@ -122,7 +122,7 @@ class FixedSizeSelectionElement(Element):
             requested = int(index)
             for offset, position in enumerate(distinct_positions()):
                 if offset == requested:
-                    return self.parent().source().unrank(position)
+                    return self.parent().source()[position]
             raise IndexError(requested)
 
         return finite_ordered_image(
@@ -133,7 +133,7 @@ class FixedSizeSelectionElement(Element):
 
     def add_label(self, label):
         target = self.parent().with_size(self.degree() + 1)
-        position = int(self.parent().source().rank(label))
+        position = int(self.parent().source().ranking_map()(label))
         if not self.allows_repetition() and self.multiplicity(label):
             raise ValueError("a subset cannot contain one label twice")
         return target.from_source_rank_positions(
@@ -209,7 +209,7 @@ class FixedSizeSelections(Parent):
         self._repetition = bool(repetition)
         if self._selection_size < 0:
             raise ValueError("a selection size is nonnegative")
-        if not hasattr(source, "rank") or not hasattr(source, "unrank"):
+        if source not in EnumeratedSets():
             raise TypeError(
                 "fixed-size ordered selections require a ranked source set"
             )
@@ -266,39 +266,39 @@ class FixedSizeSelections(Parent):
             pass
         return source_size
 
-    def unrank(self, position):
+    @cached_method
+    def ranking_map(self):
+        r"""The combinadic enumeration: a selection *is* its combinatorial rank."""
 
-        position = int(position)
-        if position < 0:
-            raise IndexError(position)
+        def selection_at(position):
+            position = int(position)
+            if position < 0:
+                raise IndexError(position)
+            finite_size = self._finite_size()
+            if finite_size is not None and position >= finite_size:
+                raise IndexError(position)
+            # For finite source sets the cardinality bound above is precisely
+            # the combinadic range in which every selected position lies in
+            # the source.
+            return self.element_class(self, position)
+
+        return ranking_isomorphism(
+            self, lambda selection: self(selection).combinatorial_rank(), selection_at
+        )
+
+    def _finite_size(self):
+        r"""This selection set's size as an ``int``, or ``None`` when undecided."""
         size = self.cardinality()
         try:
-            finite_size = int(size.finite_value()) if size.is_finite() else None
+            return int(size.finite_value()) if size.is_finite() else None
         except NotImplementedError:
-            finite_size = None
-        if finite_size is not None and position >= finite_size:
-            raise IndexError(position)
-        result = self.element_class(self, position)
-        # For finite source sets the cardinality bound above is precisely the
-        # combinadic range in which every selected position lies in the source.
-        return result
-
-    def rank(self, selection):
-        selection = self(selection)
-        return selection.combinatorial_rank()
-
-    position = rank
-    index = rank
+            return None
 
     def __iter__(self):
-
-        size = self.cardinality()
-        try:
-            finite_size = int(size.finite_value()) if size.is_finite() else None
-        except NotImplementedError:
-            finite_size = None
+        finite_size = self._finite_size()
         positions = range(finite_size) if finite_size is not None else count()
-        return (self.unrank(position) for position in positions)
+        selection_at = self.ranking_map().inverse()
+        return (selection_at(position) for position in positions)
 
     def __contains__(self, candidate) -> bool:
         return (
@@ -314,9 +314,6 @@ class FixedSizeSelections(Parent):
         raise TypeError(
             "a fixed-size selection is constructed by rank, source positions, or multiplicities"
         )
-
-    def __getitem__(self, position):
-        return self.unrank(position)
 
     def from_source_rank_positions(self, positions):
         degree = self.selection_size()
@@ -347,11 +344,11 @@ class FixedSizeSelections(Parent):
             raise ValueError(
                 f"a member of {self} requires exactly {degree} source positions"
             )
-        return self.unrank(rank)
+        return self[rank]
 
     def from_labels(self, labels):
         return self.from_source_rank_positions(
-            self.source().rank(label) for label in labels
+            self.source().ranking_map()(label) for label in labels
         )
 
     def from_multiplicities(self, multiplicities):
@@ -369,12 +366,12 @@ class FixedSizeSelections(Parent):
             multiplicity = int(raw_multiplicity)
             if multiplicity <= 0:
                 continue
-            source_position = int(self.source().rank(label))
+            source_position = int(self.source().ranking_map()(label))
             preceding = sum(
                 int(other_multiplicity)
                 for other_label, other_multiplicity in multiplicities.items()
                 if int(other_multiplicity) > 0
-                and int(self.source().rank(other_label)) < source_position
+                and int(self.source().ranking_map()(other_label)) < source_position
             )
             for occurrence in range(multiplicity):
                 offset = preceding + occurrence
@@ -384,7 +381,7 @@ class FixedSizeSelections(Parent):
                     else source_position
                 )
                 rank += int(binomial(strict_position, offset + 1))
-        return self.unrank(rank)
+        return self[rank]
 
     def singleton_power(self, label):
         if self.selection_size() == 0:
