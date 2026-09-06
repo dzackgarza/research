@@ -828,6 +828,40 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
                 return object_of(PrimeSpectra(), ring=self)
 
+            def total_quotient_ring(self):
+                r"""Return ``Q(R) = S^{-1}R`` for ``S`` the regular elements of ``R``.
+
+                Inverting every non-zerodivisor is the largest localization that
+                stays injective on ``R``, which is what a Cartier divisor and a
+                rational function are stated in.  Over an integral domain the
+                regular elements are exactly the nonzero ones, so ``Q(R)`` is
+                the fraction field.
+                """
+
+                assert self in OwnedIntegralDomains(), (
+                    f"the total quotient ring of {self} inverts a submonoid given by a "
+                    "predicate, and the selected localization engine represents only a "
+                    "finitely generated one; over an integral domain it is Frac(R)"
+                )
+                return self.fraction_field()
+
+        class ElementMethods:
+            def is_regular(self) -> bool:
+                r"""Return whether this scalar is a non-zerodivisor.
+
+                Multiplication by ``r`` is injective exactly when nothing
+                nonzero is killed by it, that is when the colon ideal
+                ``(0 : r)`` is zero.  Over a domain that reduces to being
+                nonzero, which is a theorem about domains rather than a second
+                definition.
+                """
+
+                ring = self.parent()
+                if ring in OwnedIntegralDomains():
+                    return not self.is_zero()
+                zero_ideal = ring.ideal(ring.zero())
+                return zero_ideal.colon(ring.ideal(self)) == zero_ideal
+
     class ParentMethods:
         def __init_extra__(self) -> None:
             r"""Place this ring as an algebra: over ``ZZ`` always, over itself when commutative.
