@@ -29,9 +29,11 @@ import pytest
 from dzack_research.preamble.all import (
     NamedLattices,
     Sterk,
+    cusps,
     nikulin_invariants,
     primitive_isotropic,
     primitive_isotropic_vectors,
+    transport_isotropic_object,
 )
 
 # cusp name: (named reduction lattice, Nikulin invariants of the reduction)
@@ -97,6 +99,74 @@ def test_primitive_isotropic_vectors_are_cut_out_by_their_definition() -> None:
         vector not in primitive_isotropic_vectors(definite)
         for vector in definite.module_generators()
     )
+
+
+def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
+    # II_{1,9} is even unimodular, and the isotropic reduction of a primitive
+    # isotropic line in an even unimodular Lorentzian lattice is even
+    # unimodular positive definite of rank eight.  E8 is the only such lattice,
+    # and the cusp is determined by it, so there is exactly one cusp.
+    lattice = NamedLattices.E10
+    assert lattice.is_even()
+    assert lattice.discriminant_group().cardinality() == 1
+
+    cusp_set = cusps(lattice)
+    assert cusp_set.cardinality() == 1
+    cusp = cusp_set.unrank(0)
+    assert cusp.rank() == 1
+
+    reduction = cusp.reduction_lattice()
+    assert reduction.rank() == 8
+    assert reduction.discriminant_group().cardinality() == 1
+    assert reduction.is_isometric(NamedLattices.E8)
+
+    generators = lattice.module_generators()
+    for index in (0, 1):
+        line = primitive_isotropic(lattice, (generators.unrank(index),))
+        assert line in cusp
+
+
+def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
+    lattice = NamedLattices.E10
+    generators = lattice.module_generators()
+    isotropic, partner, root = (generators.unrank(index) for index in range(3))
+    # b(e, f) = 1 and q(r) = -2, so q(e + f + r) = 2 + (-2) = 0, and the
+    # coefficient one on e makes the vector primitive.
+    vector = isotropic + partner + root
+    assert vector.q() == 0
+    line = primitive_isotropic(lattice, (vector,))
+    assert line.rank() == 1
+
+    cusp = cusps(lattice).unrank(0)
+    witness = cusp.transporter_witness(line)
+    assert witness is not None
+    assert witness.domain() is lattice
+    assert witness.codomain() is lattice
+
+    image = transport_isotropic_object(witness, line)
+    representative = cusp.representative()
+    inclusion = representative.inclusion()
+    embedded = image.embedded_module_generators()
+    assert image.rank() == representative.rank()
+    assert all(
+        inclusion.is_in_image(embedded[label])
+        for label in image.module_generating_set()
+    )
+
+
+def test_the_reduction_lattice_separates_two_sterk_cusps() -> None:
+    # An isometry carrying one isotropic line onto another carries the first
+    # reduction lattice isometrically onto the second, so lines with
+    # non-isometric reductions cannot share a cusp.  The exact backend is asked
+    # the same question independently.
+    period_lattice = NamedLattices.TEn
+    vectors = Sterk.selected_isotropic_vectors()
+    first = primitive_isotropic(period_lattice, (vectors["Sterk_1"],))
+    second = primitive_isotropic(period_lattice, (vectors["Sterk_2"],))
+
+    assert not first.isotropic_reduction().is_isometric(second.isotropic_reduction())
+    assert not first.is_equivalent_to(second)
+    assert first.is_equivalent_to(first)
 
 
 def test_minus_one_and_the_cone_character_split_a_lorentzian_group() -> None:

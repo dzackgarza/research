@@ -99,6 +99,93 @@ class IsotropicFlag:
         return f"Primitive totally isotropic flag of rank {self.rank()} in {self.lattice()}"
 
 
+class Cusp:
+    r"""One ``O(L)``-orbit of primitive totally isotropic subobjects of a rank.
+
+    A cusp is the orbit itself, so membership is its primary operation:
+    ``subobject in cusp`` asks the exact indefinite backend for an isometry
+    carrying the stated subobject to this orbit and answers whether one
+    exists.  ``representative`` is the member that backend chose, and
+    ``transporter_witness`` returns one isometry realizing a membership.
+
+    The set of primitive isotropic subobjects is infinite whenever the lattice
+    is indefinite and isotropic, so this orbit is not a finite ``G``-set
+    quotient and does not present its points.  What is finite is the number of
+    cusps, which is why ``cusps`` enumerates them and no cusp enumerates its
+    members.
+
+    For rank one the stabilizer is the cusp's arithmetic group ``Gamma_v =
+    P_v``, delivered as the representative's ``parabolic_subgroup``; its
+    ``unipotent_radical`` and Eichler transvections describe the boundary
+    component, and ``reduction_lattice`` is the lattice ``v^perp/v`` in which
+    that component's reflection group acts.
+    """
+
+    def __init__(self, representative) -> None:
+        self._representative = representative
+
+    def lattice(self):
+        return self._representative.ambient_lattice()
+
+    def rank(self):
+        return self._representative.rank()
+
+    def representative(self):
+        r"""Return the member of this orbit the backend chose."""
+        return self._representative
+
+    def parabolic_subgroup(self):
+        r"""Return ``Gamma = Stab_{O(L)}(I)`` of the representative."""
+        return self._representative.parabolic_subgroup()
+
+    def stabilizer_generators(self):
+        r"""Return backend generators of the representative's stabilizer."""
+        return self.lattice().Aut().isotropic_stabilizer_generators(
+            self._representative
+        )
+
+    def reduction_lattice(self):
+        r"""Return ``I^perp/I``, the lattice this boundary component acts in."""
+        return self._representative.isotropic_reduction()
+
+    def transporter_witness(self, subobject):
+        r"""Return one ``g`` in ``O(L)`` carrying ``subobject`` to the representative.
+
+        The full transporter is a coset of the subobject's own parabolic
+        subgroup, infinite whenever that group is; one witness together with
+        ``parabolic_subgroup`` presents it.
+        """
+        return subobject.transporter_witness_to(self._representative)
+
+    def __contains__(self, subobject) -> bool:
+        assert subobject.ambient_lattice() is self.lattice(), (
+            "a cusp decides membership for isotropic subobjects of its own lattice"
+        )
+        if subobject.rank() != self.rank():
+            return False
+        return self.transporter_witness(subobject) is not None
+
+    def __repr__(self) -> str:
+        return f"Cusp of rank {self.rank()} in {self.lattice()}"
+
+
+def cusps(lattice, rank=1):
+    r"""Return the cusps of ``lattice``: its ``O(L)``-orbits of rank-``k`` subobjects.
+
+    The orbits are finite in number and come back as an ordered set, each
+    carrying its representative, that representative's parabolic subgroup and
+    stabilizer generators, and the transporter witnessing any membership.  For
+    rank one these are the zero-dimensional cusps of the arithmetic quotient,
+    for rank two the one-dimensional ones.
+    """
+    return finite_ordered_set(
+        tuple(
+            Cusp(representative)
+            for representative in lattice.Aut().isotropic_orbit_representatives(rank)
+        )
+    )
+
+
 def _embedded_basis(subobject):
     inclusion = subobject.inclusion()
     return tuple(inclusion(generator) for generator in subobject.module_generators())
@@ -237,7 +324,9 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 
 
 __all__ = [
+    "Cusp",
     "IsotropicFlag",
+    "cusps",
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
     "isotropic_stabilizer_generators",
