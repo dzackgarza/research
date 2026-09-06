@@ -82,6 +82,11 @@ class FreeForgetfulAdjunction(Adjunction):
 
 
 @cached_function
+def free_module_functor(base_ring) -> FreeModuleFunctor:
+    return FreeModuleFunctor(base_ring)
+
+
+@cached_function
 def underlying_set_functor(base_ring) -> UnderlyingSetFunctor:
     return UnderlyingSetFunctor(base_ring)
 

@@ -410,6 +410,97 @@ class Sets(OwnedCategory):
             r"""A Hom object of any owned category is a set."""
             return Homsets()
 
+        # Functors out of ``Set``, each spelled as a method of this, their
+        # domain category, and named by the construction it performs.
+
+        def free_module(self, base_ring):
+            r"""``F_R : Set -> Mod_R``, the free ``R``-module functor.
+
+            The free module on a set has that set for its module generating
+            set, so a set map is carried to the linear map sending generator
+            to generator.  Left adjoint of the underlying-set functor on
+            ``R``-modules; the adjunction is ``free_module_adjunction``.
+            """
+            from dzack_research.preamble.categories.functors.free_forgetful import (
+                free_module_functor,
+            )
+
+            return free_module_functor(base_ring)
+
+        def free_module_adjunction(self, base_ring):
+            r"""``F_R -| U`` between ``Set`` and ``Mod_R``.
+
+            An adjunction is a method of its left adjoint's domain category,
+            and ``F_R`` is the left adjoint.  Its unit at ``S`` sends a label
+            to the module generator on that label, and its counit at ``M``
+            evaluates a formal ``R``-combination of elements of ``M``.
+            """
+            from dzack_research.preamble.categories.functors.free_forgetful import (
+                free_forgetful_adjunction,
+            )
+
+            return free_forgetful_adjunction(base_ring)
+
+        def free_group(self):
+            r"""``F : Set -> Grp``, the free-group functor.
+
+            The free group on a set carries that set as its chosen free basis,
+            so a set map is carried to the group morphism it determines on the
+            free generators.  Left adjoint of the underlying-set functor on
+            groups; the adjunction is ``free_group_adjunction``.
+            """
+            from dzack_research.preamble.categories.functors.free_groups import (
+                free_group_functor,
+            )
+
+            return free_group_functor()
+
+        def free_group_adjunction(self):
+            r"""``F -| U`` between ``Set`` and ``Grp``.
+
+            An adjunction is a method of its left adjoint's domain category,
+            and ``F`` is the left adjoint.  Its unit at ``S`` sends a letter to
+            the free generator on it, and its counit at ``G`` multiplies out a
+            word in the elements of ``G``.
+            """
+            from dzack_research.preamble.categories.functors.free_groups import (
+                free_group_underlying_set_adjunction,
+            )
+
+            return free_group_underlying_set_adjunction()
+
+        def cardinality_functor(self):
+            r"""``# : core(Set) -> Card``, the cardinality functor.
+
+            Cardinality is an isomorphism invariant: a bijection of sets fixes
+            it, and an arbitrary set map does not respect it at all, so this
+            functor is defined on the core groupoid of ``Set`` and not on
+            ``Set``.  The method is sited here because ``Set`` is the category
+            whose core that is, and ``domain()`` reports ``core(Set)``.
+            """
+            from dzack_research.preamble.categories.functors.cardinality import (
+                cardinality_functor,
+            )
+
+            return cardinality_functor()
+
+        def power_set_functor(self):
+            r"""``P_fin : Set -> Set``, the finite subsets under direct image.
+
+            Defined on every set and not only the finite ones: the finite
+            subsets of an infinite set are again a set, and a set map carries
+            a finite subset to its direct image, which is finite.  Every
+            subset of a finite set is finite, so reached from ``FiniteSets()``
+            this is the full power set.  Inverse image does not preserve
+            finiteness, so the contravariant power set is a separate functor
+            on the opposite category.
+            """
+            from dzack_research.preamble.categories.functors.set_constructions import (
+                finite_power_set_functor,
+            )
+
+            return finite_power_set_functor()
+
     def coproduct(self, family):
         r"""Return $\coprod_{i \in I} X_i$ for an indexed family of sets.
 

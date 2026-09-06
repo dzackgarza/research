@@ -1612,6 +1612,53 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     def super_categories(self):
         return [Monoids()]
 
+    class SubcategoryMethods:
+        r"""Constructions this category owns, reachable from any subcategory."""
+
+        # Functors out of ``Grp``, each spelled as a method of this, their
+        # domain category, and named by the construction it performs.
+
+        def abelianization(self):
+            r"""``(-)^ab : Grp -> Ab``, the abelianization functor.
+
+            A group is sent to its quotient by the derived subgroup, and a
+            group morphism to the morphism the universal property of that
+            quotient determines.  Left adjoint of the inclusion of abelian
+            groups; the adjunction is ``abelianization_adjunction``.
+            """
+            from dzack_research.preamble.categories.functors.abelianization import (
+                abelianization_functor,
+            )
+
+            return abelianization_functor()
+
+        def abelianization_adjunction(self):
+            r"""``(-)^ab -| i`` between ``Grp`` and ``Ab``.
+
+            An adjunction is a method of its left adjoint's domain category,
+            and ``(-)^ab`` is the left adjoint.  Its unit at ``G`` is the
+            quotient projection onto ``G/[G,G]``, and its counit identifies an
+            abelian group with its own abelianization.
+            """
+            from dzack_research.preamble.categories.functors.abelianization import (
+                abelianization_adjunction,
+            )
+
+            return abelianization_adjunction()
+
+        def underlying_set(self):
+            r"""``U : Grp -> Set``, the underlying-set functor.
+
+            The right adjoint of the free-group functor spelled on ``Set``.
+            On an object it is the identity: a group already is a set object,
+            and forgetting the multiplication removes structure, not elements.
+            """
+            from dzack_research.preamble.categories.functors.free_groups import (
+                group_underlying_set_functor,
+            )
+
+            return group_underlying_set_functor()
+
     class ElementMethods:
         def inverse(self):
             r"""Return the group inverse."""
