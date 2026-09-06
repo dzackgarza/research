@@ -109,6 +109,11 @@ class Cat(Category):
         self._arrows = {}
         super().__init__()
 
+    def an_object(self):
+        r"""The category of sets, which every owned chain roots at."""
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        return Sets()
 
     def super_categories(self):
         # A category is an object.  This one edge names Sage's ``Objects`` and

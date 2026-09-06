@@ -279,6 +279,10 @@ class DiscreteCategory(OwnedCategory):
 class DiscreteCategories(Category):
     r"""The category of represented discrete categories."""
 
+    def an_object(self):
+        r"""The discrete category on a set."""
+        return DiscreteCategory(Sets().an_object())
+
     def super_categories(self):
         return [Objects()]
 

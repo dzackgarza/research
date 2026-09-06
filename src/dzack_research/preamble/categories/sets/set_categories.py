@@ -1812,6 +1812,11 @@ class NaturalNumberSets(OwnedCategory):
 class Homsets(OwnedCategory):
     r"""Hom objects \(\operatorname{Hom}(X,Y)\), which are sets."""
 
+    def an_object(self):
+        r"""The endomorphisms of a set, which hold at least its identity."""
+        witness = Sets().an_object()
+        return Sets().Mor(witness, witness)
+
     def super_categories(self):
         return [Sets()]
 
