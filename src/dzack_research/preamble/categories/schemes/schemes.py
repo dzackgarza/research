@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     refine_commutative_algebra,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedCategoryOverBaseRing,
     RingMorphism,
     _engine_element,
@@ -160,14 +161,19 @@ class SchemeMorphism(Morphism):
         left_pullback = self._preamble_coordinate_algebra_morphism
         right_pullback = other._preamble_coordinate_algebra_morphism
         if left_pullback is not None and right_pullback is not None:
-            composite = affine_spec_morphism(right_pullback * left_pullback)
-            # Re-siting the composite in the Hom of the stated endpoints must
-            # not drop the pullback it was computed from.
-            return SchemeMorphism(
-                composite.native_morphism(),
-                homset=homset,
-                pullback=composite.coordinate_algebra_morphism(),
+            composite_pullback = ring_homset(
+                left_pullback.domain(),
+                right_pullback.codomain(),
+            ).elementwise(
+                lambda element: right_pullback(left_pullback(element))
             )
+            return _RepresentedAffineSchemeMorphism(
+                homset,
+                composite_pullback,
+            )
+        structured = other._postcompose_with(self)
+        if structured is not NotImplemented:
+            return structured
         return homset(self.native_morphism() * other.native_morphism())
 
     def _is_the_identity(self) -> bool:
@@ -179,6 +185,12 @@ class SchemeMorphism(Morphism):
     def _is_the_structure_morphism(self) -> bool:
         r"""Return whether this is the selected map to the domain's base scheme."""
         return getattr(self.domain(), "_preamble_structure_morphism", None) is self
+
+    def _postcompose_with(self, after):
+        r"""Return ``after ∘ self`` for structured maps without a native composite."""
+
+        _ = after
+        return NotImplemented
 
     def compose(self, before):
         result = self * before
@@ -371,6 +383,36 @@ class SchemeMorphism(Morphism):
         left_pullback = self._preamble_coordinate_algebra_morphism
         right_pullback = other._preamble_coordinate_algebra_morphism
         if left_pullback is not None and right_pullback is not None:
+            base = _scheme_base_ring(self.codomain())
+            if self.codomain() in AffineSchemes(base):
+                algebra = self.codomain().coordinate_algebra()
+                if algebra in FramedAlgebras(base):
+                    labels = algebra.algebra_generating_set()
+                    if labels.cardinality().is_finite():
+                        return all(
+                            left_pullback(algebra.algebra_generator(label))
+                            == right_pullback(algebra.algebra_generator(label))
+                            for label in labels
+                        )
+                if algebra in LocalizationRings():
+                    source_algebra = algebra.localization_source()
+                    if source_algebra in FramedAlgebras(base):
+                        labels = source_algebra.algebra_generating_set()
+                        if labels.cardinality().is_finite():
+                            localization_map = algebra.localization_map()
+                            return all(
+                                left_pullback(
+                                    localization_map(
+                                        source_algebra.algebra_generator(label)
+                                    )
+                                )
+                                == right_pullback(
+                                    localization_map(
+                                        source_algebra.algebra_generator(label)
+                                    )
+                                )
+                                for label in labels
+                            )
             return bool(left_pullback == right_pullback)
         from sage.schemes.generic.morphism import SchemeMorphism_id
 
@@ -390,6 +432,28 @@ class SchemeMorphism(Morphism):
 
     def _repr_(self) -> str:
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
+
+
+class _RepresentedAffineSchemeMorphism(SchemeMorphism):
+    r"""An affine scheme morphism carried exactly by its coordinate pullback."""
+
+    def __init__(self, parent, pullback) -> None:
+        Morphism.__init__(self, parent)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        self._preamble_coordinate_algebra_morphism = pullback
+        self._native_realization = None
+
+    def native_morphism(self):
+        if self._native_realization is None:
+            self._native_realization = _affine_morphism_from_pullback(
+                self.domain(),
+                self.codomain(),
+                self.coordinate_algebra_morphism(),
+            ).native_morphism()
+        return self._native_realization
+
+    __hash__ = None
 
 
 def categorical_scheme_morphism(native_morphism, *, domain=None, codomain=None):
@@ -433,6 +497,14 @@ class SchemeMorCategory(CategoricalHomset):
             if datum.parent() is self:
                 return datum
             datum = datum.native_morphism()
+        if (
+            isinstance(datum, Morphism)
+            and self.domain() in AffineSchemes(_scheme_base_ring(self.domain()))
+            and self.codomain() in AffineSchemes(_scheme_base_ring(self.domain()))
+            and datum.domain() is self.codomain().coordinate_algebra()
+            and datum.codomain() is self.domain().coordinate_algebra()
+        ):
+            return _RepresentedAffineSchemeMorphism(self, datum)
         return SchemeMorphism(datum, homset=self)
 
     @cached_method
@@ -584,7 +656,7 @@ class Schemes(OwnedCategoryOverBaseRing):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a scheme Hom requires two schemes over the stated base")
-        return SchemeMorCategory(self, domain, codomain)
+        return domain._scheme_homset(self, codomain)
 
     _MonoCategory = None  # set below, once SchemeMonomorphisms is defined
 
@@ -694,6 +766,33 @@ class Schemes(OwnedCategoryOverBaseRing):
             raise TypeError(f"{scheme} is not an object of {self}")
         return self.slice_category()(scheme.structure_morphism())
 
+    def glue_affine_charts(self, left_chart, right_chart, transition):
+        r"""Glue two affine charts along the represented open isomorphism ``transition``."""
+
+        from dzack_research.preamble.categories.schemes.gluing import (
+            _TwoChartSchemeGluingDatum,
+        )
+
+        return _TwoChartSchemeGluingDatum(
+            self,
+            left_chart,
+            right_chart,
+            transition,
+        ).scheme()
+
+    def glue_affine_atlas(self, charts, transitions):
+        r"""Glue a finite affine atlas with represented distinguished-open transitions."""
+
+        from dzack_research.preamble.categories.schemes.gluing import (
+            _FiniteSchemeGluingDatum,
+        )
+
+        return _FiniteSchemeGluingDatum(
+            self,
+            charts,
+            transitions,
+        ).scheme()
+
 
 
 
@@ -725,6 +824,12 @@ class Schemes(OwnedCategoryOverBaseRing):
         return SmoothSchemes(self.base_ring())
 
     class ParentMethods:
+        def _scheme_homset(self, schemes, codomain):
+            homset_class = self.__dict__.get("_preamble_scheme_homset_class")
+            if homset_class is None:
+                homset_class = SchemeMorCategory
+            return homset_class(schemes, self, codomain)
+
         def Mor(self, codomain, category=None):
             schemes = Schemes(self.scheme_base_ring())
             if category is None or category.is_subcategory(schemes):
@@ -1192,6 +1297,110 @@ class AffineSchemes(_SchemePropertyCategory):
                 self,
                 defining_equations=equations,
             )
+
+        @cached_method
+        def relative_differentials(self):
+            r"""Return the affine module of relative Kähler differentials."""
+
+            from dzack_research.preamble.categories.algebras.kahler_differentials import (
+                KahlerDifferentials,
+            )
+
+            return KahlerDifferentials(self.coordinate_algebra())
+
+        def is_flat(self) -> bool:
+            r"""Return whether this represented affine scheme is flat over its base."""
+
+            return bool(self.coordinate_algebra().is_flat())
+
+        def differential_rank_drop_subscheme(self, rank):
+            r"""Return the closed Fitting stratum ``V(Fitt_rank(Omega^1_{X/S}))``."""
+
+            ideal = self.relative_differentials().fitting_ideal(int(rank))
+            return self.closed_subscheme(tuple(ideal.ideal_generators()))
+
+        def singular_subscheme(self):
+            r"""Return the nonsmooth closed subscheme in the supported equidimensional field case.
+
+            This uses ``Fitt_d(Omega^1_{X/k})`` only when the represented
+            affine morphism is flat and finitely presented with equidimensional
+            fibres of dimension ``d``.  Here the base is a field, so flatness
+            is automatic, and the selected finite algebra presentation and
+            backend minimal components verify the remaining hypotheses.
+            """
+
+            base = self.scheme_base_ring()
+            engine_base = _engine_ring(base)
+            if not bool(engine_base.is_field()):
+                raise NotImplementedError(
+                    "the represented singular subscheme currently requires a field base"
+                )
+            algebra = self.coordinate_algebra()
+            if algebra not in AlgebrasWithChosenFinitePresentation(base):
+                raise NotImplementedError(
+                    "the represented singular subscheme requires a chosen finite algebra presentation"
+                )
+            dimension = int(algebra.krull_dimension())
+            engine_algebra = _engine_ring(algebra)
+            defining_ideal = getattr(engine_algebra, "defining_ideal", lambda: None)()
+            if defining_ideal is not None:
+                try:
+                    minimal_components = defining_ideal.minimal_associated_primes()
+                except (AttributeError, NotImplementedError) as error:
+                    raise NotImplementedError(
+                        "the represented singular subscheme requires a represented equidimensionality check"
+                    ) from error
+                if any(
+                    int(component.dimension()) != dimension
+                    for component in minimal_components
+                ):
+                    raise NotImplementedError(
+                        "the represented singular subscheme requires equidimensional fibres"
+                    )
+            return self.differential_rank_drop_subscheme(dimension)
+
+        def relative_nonsmooth_subscheme(self):
+            r"""Return the relative nonsmooth locus in the supported flat hypersurface regime.
+
+            For a flat morphism locally of finite presentation, smoothness at a
+            point is equivalent to smoothness of the fibre there (Stacks
+            Project, Tags 01V8 and 01V9).  For a primitive hypersurface over a
+            univariate polynomial ring over a perfect field, every fibre is a
+            hypersurface of the same represented dimension and the Jacobian
+            criterion is detected by the corresponding Fitting ideal of
+            relative differentials.
+            """
+
+            if not self.is_flat():
+                raise NotImplementedError(
+                    "the relative nonsmooth Fitting criterion requires represented flatness"
+                )
+            base = self.scheme_base_ring()
+            algebra = self.coordinate_algebra()
+            if algebra not in AlgebrasWithChosenFinitePresentation(base):
+                raise NotImplementedError(
+                    "the relative nonsmooth locus requires a chosen finite algebra presentation"
+                )
+
+            base_engine = _engine_ring(base)
+            try:
+                coefficient_field = base_engine.base_ring()
+                supported_perfect_base = (
+                    base_engine.ngens() == 1
+                    and bool(coefficient_field.is_field())
+                    and bool(coefficient_field.is_perfect())
+                )
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                supported_perfect_base = False
+            if not supported_perfect_base:
+                raise NotImplementedError(
+                    "the relative hypersurface smoothness criterion currently requires k[t] with k perfect"
+                )
+
+            relative_dimension = (
+                algebra._represented_primitive_hypersurface_relative_dimension()
+            )
+            return self.differential_rank_drop_subscheme(relative_dimension)
 
         def distinguished_open(self, element):
             r"""Return \(D(f)\subseteq X\), the open locus where ``element`` is a unit.
@@ -1836,6 +2045,21 @@ def _initialize_owned_affine_spectrum(
         pullback=structure_pullback,
     )
     return scheme
+
+
+def _fresh_affine_spectrum(algebra, base, *, extra_categories=()):
+    r"""Return a fresh affine spectrum carrying the stated owned coordinate algebra."""
+
+    return _initialize_owned_affine_spectrum(
+        typecall(
+            _SageAffineScheme,
+            _engine_ring(algebra),
+            _engine_ring(base),
+        ),
+        algebra,
+        base,
+        extra_categories=extra_categories,
+    )
 
 
 def Spec(ring_or_algebra, base_ring=None):
@@ -2925,7 +3149,19 @@ class SchemeMonomorphisms(MonoCategoryOf):
     def accepts(self, arrow) -> bool:
         ambient = arrow.codomain()
         source = arrow.domain()
-        return source in ClosedEmbeddings(ambient) or source in OpenImmersions(ambient)
+        if source in ClosedEmbeddings(ambient) or source in OpenImmersions(ambient):
+            return True
+        open_image = arrow.__dict__.get("_preamble_open_image")
+        open_image_isomorphism = arrow.__dict__.get(
+            "_preamble_open_image_isomorphism"
+        )
+        if open_image is None or open_image_isomorphism is None:
+            return False
+        return (
+            open_image in OpenImmersions(ambient)
+            and open_image_isomorphism.forward().domain() is source
+            and open_image_isomorphism.forward().codomain() is open_image
+        )
 
 
 def refine_closed_subscheme(

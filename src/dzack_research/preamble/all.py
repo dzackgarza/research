@@ -113,6 +113,7 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     CommutativeAlgebraPushouts,
     CommutativeAlgebras,
     CommutatorLieAlgebras,
+    CyclicCoverAlgebra,
     commutative_algebra_coproduct,
     commutative_algebra_pushout,
     CommutativeDifferentialGradedAlgebras,
@@ -195,8 +196,10 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     DivisorGroups,
     FormalDivisor,
     FormalDivisorGroups,
+    InvertibleSheaf,
     PicardGroup,
     PicardGroups,
+    TrivialInvertibleSheaf,
     WeilDivisorGroup,
     WeilDivisorGroups,
 )

@@ -200,6 +200,7 @@ class DistinguishedAffineCover(SageObject):
             for index, open_subscheme in enumerate(self._opens)
         }
         self._restricted_modules = {}
+        self._restricted_algebras = {}
 
     def ambient_scheme(self):
         return self._scheme
@@ -271,6 +272,44 @@ class DistinguishedAffineCover(SageObject):
         self._restricted_modules[key] = (module, restricted)
         return restricted
 
+    def restrict_algebra(self, algebra, chart_index, *intersection_indices):
+        r"""Return ``A_i|_{U_I}`` by algebra scalar extension along ``O(U_i) -> O(U_I)``."""
+
+        from dzack_research.preamble.categories.algebras.algebras import Algebras
+        from dzack_research.preamble.categories.functors.algebra_scalar_change import (
+            AlgebraScalarExtensionFunctor,
+        )
+
+        chart_index = int(chart_index)
+        chart = self.open(chart_index)
+        chart_ring = chart.coordinate_algebra()
+        if algebra not in Algebras(chart_ring):
+            raise ValueError("a local algebra must be defined over the selected affine chart")
+        indices = self.intersection_indices(chart_index, *intersection_indices)
+        target = self.intersection(indices)
+        if target is chart:
+            return algebra
+        key = (id(algebra), indices)
+        cached = self._restricted_algebras.get(key)
+        if cached is not None:
+            cached_algebra, restricted = cached
+            if cached_algebra is algebra:
+                return restricted
+
+        ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
+        restricted = AlgebraScalarExtensionFunctor(ring_map)(algebra)
+        target_ring = target.coordinate_algebra()
+        if restricted not in Algebras(target_ring):
+            raise ArithmeticError(
+                "algebra scalar extension did not land over the intersection section ring"
+            )
+        self._restricted_algebras[key] = (algebra, restricted)
+        # Forgetting algebra structure must not manufacture a second copy of
+        # the same scalar extension. Module descent therefore reuses this exact
+        # restricted algebra as its underlying module object.
+        self._restricted_modules[key] = (algebra, restricted)
+        return restricted
+
     def glue_modules(self, local_modules, transitions):
         r"""Return the descent datum and glued module sheaf on this affine cover."""
 
@@ -278,14 +317,12 @@ class DistinguishedAffineCover(SageObject):
 
         return ModuleGluingDatum(self, local_modules, transitions)
 
-    def glue_invertible_module(self, transition_units):
-        r"""Return the rank-one locally free sheaf glued by a 1-cocycle of units."""
+    def glue_algebras(self, local_algebras, transitions):
+        r"""Return finite algebra descent data on this affine cover."""
 
-        from dzack_research.preamble.categories.schemes.gluing import (
-            glue_invertible_module,
-        )
+        from dzack_research.preamble.categories.schemes.gluing import AlgebraGluingDatum
 
-        return glue_invertible_module(self, transition_units)
+        return AlgebraGluingDatum(self, local_algebras, transitions)
 
     def common_refinement(self, other):
         r"""The refinement ``{D(f_i g_j)}`` of this cover and ``other``, with its comparison maps."""
