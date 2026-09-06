@@ -14,6 +14,7 @@ chosen category and endpoints.
 """
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+    CategoryPacketMethods,
     OwnedHomset,
     underlying_set_homset,
 )
@@ -48,45 +49,6 @@ def _category_homset(category, domain, codomain):
 
 
 
-
-class CategoryPacketMethods:
-    r"""The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface."""
-
-    def HomCategory(self):
-        return category_packet(self).Homs()
-
-    def EndCategory(self):
-        return category_packet(self).Ends()
-
-    def MonoCategory(self):
-        return category_packet(self).Monos()
-
-    def EpiCategory(self):
-        return category_packet(self).Epis()
-
-    def IsoCategory(self):
-        return category_packet(self).Isos()
-
-    def AutCategory(self):
-        return category_packet(self).Auts()
-
-    def Mor(self, source, target):
-        return self.HomCategory().Of(source, target)
-
-    def End(self, obj):
-        return self.EndCategory().Of(obj)
-
-    def Mono(self, source, target):
-        return self.MonoCategory().Of(source, target)
-
-    def Epi(self, source, target):
-        return self.EpiCategory().Of(source, target)
-
-    def Iso(self, source, target):
-        return self.IsoCategory().Of(source, target)
-
-    def Aut(self, obj):
-        return self.AutCategory().Of(obj)
 
 
 

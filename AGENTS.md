@@ -59,6 +59,43 @@ These are implementation prerequisites: use them to identify already-planned rem
 
 The only edit these subtrees admit is one that changes the mathematics an expectation states, because the mathematics was wrong, recorded as such in its commit. Everything else about them, including that they are written blind, take every name from the session's star import, and are never run in order to shape them, is in `tests/constructions/CONTRIBUTING.md`.
 
+## A doc naming what does not exist is a requirement, not an error (always-on)
+
+Every doc in this repository — this file, `CLAUDE.md`, `CONTRIBUTING.md`, the
+`.agents/` references, a design note — states what the system is **supposed to
+be**. It is the design, written down. When the code does not match it, **the
+code is missing something.** The doc is right.
+
+So: **never edit a doc to record an absence.** Not "there is no X", not "X is
+not implemented yet", not "X is the shape to aim at", not replacing the example
+that names X with one that exists. The requirement was written down in exactly
+one place; after that edit it is written down nowhere, and the work it named is
+gone with it. Deleting a requirement is not the same act as satisfying it, and
+it leaves no trace that anything was owed.
+
+**Why this one is dangerous and the other goal-source edits are not.** Editing
+a TODO to defer an item feels like deferring. Editing a doc to describe the code
+feels like *honesty* — like removing a false claim, like tidying, like the exact
+diligence this repository asks for everywhere else. It is the opposite. The
+claim was never false; it was unmet. "Making the docs accurate" is the most
+disguised form of substituting an administrative artifact for the work, because
+the artifact produced is one the doctrine otherwise rewards.
+
+The condition is observable and requires no judgment of your own intent:
+
+> **You are about to edit a doc because the code does not match it.**
+
+Stop there. The mismatch is a finding and a work item. Say what the doc requires,
+say what the code has, and put the difference in the work queue. Then do it, or
+report it.
+
+A subagent reporting the mismatch as "one correction to a premise" is this same
+failure at one remove. The observation is valuable and wanted; the conclusion
+drawn from it is not the agent's to make and not yours to accept.
+
+The doc edits that *are* yours: recording completion the delivered artifact
+proves, and changes the user instructed in this session. Nothing else.
+
 ## Notebook workflow note
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.
