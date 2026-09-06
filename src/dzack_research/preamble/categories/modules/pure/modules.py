@@ -27,6 +27,9 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _factor_family,
     _finite_factor_family,
 )
+from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
+    AssociativeAlgebraHomCategoryConstruction,
+)
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
@@ -2679,7 +2682,24 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
         return "matrix endomorphism objects"
 
     def super_categories(self):
-        return [MatrixSpaces(self.base_ring()), OwnedRings()]
+        from dzack_research.preamble.categories.algebras.algebras import (
+            AssociativeAlgebras,
+        )
+
+        # End_R(F) is a ring under composition and linear over the base, and a
+        # map preserving everything it is preserves both -- which is what an
+        # associative algebra morphism is.  ``MatrixSpaces`` states only the
+        # linear half and ``OwnedRings`` only the multiplicative half, so
+        # neither supplies the Hom; this is where both first hold at once.
+        return [
+            MatrixSpaces(self.base_ring()),
+            OwnedRings(),
+            AssociativeAlgebras(self.base_ring()),
+        ]
+
+    # The three above state three different morphisms, so this names which of
+    # them End_R(F) means: the one that preserves everything it is.
+    _HomCategory = AssociativeAlgebraHomCategoryConstruction
 
     class ParentMethods:
         def is_commutative(self):
