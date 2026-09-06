@@ -1,5 +1,6 @@
 """Owned categories and basic constructors for schemes over a base ring."""
 
+from itertools import combinations
 from typing import Any, cast
 
 from sage.categories.category import Category
@@ -19,7 +20,10 @@ from sage.schemes.product_projective.space import (
 )
 from sage.structure.category_object import CategoryObject
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import SliceOver
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+    SliceOver,
+)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -70,7 +74,10 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     GradedFreeAlgebras,
     SymmetricAlgebras,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import ring_homset
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    ring_homset,
+    ring_morphism,
+)
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 
 
@@ -1816,6 +1823,130 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         return _placed_over_stated_base(candidate, self, ProjectiveSpaces)
 
     class ParentMethods:
+        def _standard_chart_coordinate_name(self, chart_index, numerator_index):
+            r"""The name of the coordinate ``x_k / x_i`` on the ``i``-th standard chart."""
+            return f"x{int(numerator_index)}_over_x{int(chart_index)}"
+
+        def _standard_chart_coordinate(self, chart_index, numerator_index):
+            r"""``x_k / x_i`` as a generator of the ``i``-th chart's coordinate algebra."""
+            algebra = self.standard_affine_chart(chart_index).coordinate_algebra()
+            return algebra.algebra_generator(
+                self._standard_chart_coordinate_name(chart_index, numerator_index)
+            )
+
+        @cached_method
+        def standard_affine_charts(self):
+            r"""The family ``(U_0, ..., U_n)`` of standard affine charts of ``P^n_R``.
+
+            ``P^n_R = Proj R[x_0,...,x_n]`` and ``U_i = D_+(x_i)`` is the
+            spectrum of the degree-zero part of the graded localization at
+            ``x_i``.  That degree-zero part is the polynomial ring on the ``n``
+            ratios ``x_k/x_i`` with ``k`` other than ``i``, because
+            ``x_i/x_i = 1``, so each chart is affine ``n``-space and the
+            coordinate names record which ratio each variable is (Stacks, Tag
+            01M3).
+            """
+            dimension = int(self.relative_dimension())
+            base = self.scheme_base_ring()
+            charts = tuple(
+                AffineSpace(
+                    dimension,
+                    base,
+                    names=tuple(
+                        self._standard_chart_coordinate_name(index, numerator)
+                        for numerator in range(dimension + 1)
+                        if numerator != index
+                    ),
+                )
+                for index in range(dimension + 1)
+            )
+            return finite_family(charts, name="Standard affine charts")
+
+        def standard_affine_chart(self, index):
+            r"""``U_i = D_+(x_i)``, the ``i``-th standard affine chart."""
+            return self.standard_affine_charts()[int(index)]
+
+        def standard_chart_overlap(self, chart_index, other_index):
+            r"""``U_i cap U_j = D(x_j/x_i)``, an open of the ``i``-th chart.
+
+            Inside ``U_i`` the locus where ``x_j`` does not vanish is where the
+            ratio ``x_j/x_i`` is invertible, so the overlap is the
+            distinguished open of that coordinate.
+            """
+            chart = self.standard_affine_chart(chart_index)
+            return chart.distinguished_open(
+                self._standard_chart_coordinate(chart_index, other_index)
+            )
+
+        def _standard_chart_change(self, source_index, target_index):
+            r"""``U_i cap U_j -> U_j cap U_i``, read on coordinates."""
+            source_index = int(source_index)
+            target_index = int(target_index)
+            assert source_index != target_index, (
+                "a chart change joins two distinct standard charts"
+            )
+            dimension = int(self.relative_dimension())
+            source_overlap = self.standard_chart_overlap(source_index, target_index)
+            target_overlap = self.standard_chart_overlap(target_index, source_index)
+            target_chart = self.standard_affine_chart(target_index)
+            restriction = source_overlap.inclusion().coordinate_algebra_morphism()
+            inverse_ratio = restriction(
+                self._standard_chart_coordinate(source_index, target_index)
+            ).inverse_of_unit()
+            images = {}
+            for numerator in range(dimension + 1):
+                if numerator == target_index:
+                    continue
+                name = self._standard_chart_coordinate_name(target_index, numerator)
+                if numerator == source_index:
+                    images[name] = inverse_ratio
+                else:
+                    images[name] = (
+                        restriction(
+                            self._standard_chart_coordinate(source_index, numerator)
+                        )
+                        * inverse_ratio
+                    )
+            into_target_chart = source_overlap.Mor(target_chart)(
+                target_chart.coordinate_algebra().Mor(
+                    source_overlap.coordinate_algebra()
+                )(images)
+            )
+            return target_overlap.corestriction(into_target_chart)
+
+        def standard_chart_transition(self, source_index, target_index):
+            r"""``phi_{ji}: U_i cap U_j -> U_j cap U_i``, the chart change and its inverse.
+
+            On coordinates ``x_k/x_j = (x_k/x_i)(x_j/x_i)^{-1}`` and
+            ``x_i/x_j = (x_j/x_i)^{-1}``, which is defined because ``x_j/x_i``
+            is invertible on the overlap.  Exchanging the two indices gives the
+            inverse map, so the overlaps are isomorphic and these are the
+            transitions of the standard atlas (Stacks, Tag 01MM).
+            """
+            return Isomorphism(
+                self._standard_chart_change(source_index, target_index),
+                self._standard_chart_change(target_index, source_index),
+            )
+
+        def glued_from_standard_charts(self):
+            r"""``P^n_R`` presented as the gluing of its standard affine charts.
+
+            The atlas verifies the inverse and triple-cocycle conditions on the
+            represented overlaps, so this is the scheme those charts and
+            transitions determine (Stacks, Tag 01JA).  It is the owned
+            construction of projective space, as opposed to the adopted
+            backend space this method is called on.
+            """
+            dimension = int(self.relative_dimension())
+            indices = range(dimension + 1)
+            return Schemes(self.scheme_base_ring()).glue_affine_atlas(
+                tuple(self.standard_affine_chart(index) for index in indices),
+                tuple(
+                    self.standard_chart_transition(left, right)
+                    for left, right in combinations(indices, 2)
+                ),
+            )
+
         def zeta_function(self):
             r"""Return ``Z(P^d/F_q,T)=prod_{i=0}^d(1-q^i T)^(-1)``."""
             base = _engine_ring(self.scheme_base_ring())
@@ -3100,6 +3231,54 @@ class OpenImmersions(_SchemeSubobjectsOf):
             if not self.is_distinguished_open():
                 raise ValueError("this open immersion is not represented by one distinguished element")
             return self._preamble_distinguished_open_element
+
+        def corestriction(self, morphism):
+            r"""The factorization ``T -> D(f)`` of a morphism ``T -> X`` landing in ``D(f)``.
+
+            A morphism ``g: T -> X`` factors through the open ``D(f)`` exactly
+            when ``g^#(f)`` is a unit on ``T``, and the factor is unique: the
+            universal property of ``O(D(f)) = A[1/f]`` sends ``a/f^k`` to
+            ``g^#(a) g^#(f)^{-k}``, which is the only map compatible with the
+            localization (Stacks, Tag 01HR).  This is the open-immersion
+            counterpart of the closed-immersion corestriction, and it is the
+            same statement: a subobject absorbs the morphisms that land in it.
+            """
+            codomain = self.inclusion().codomain()
+            assert morphism.codomain() is codomain, (
+                "a corestriction is taken of a morphism into the codomain of the inclusion"
+            )
+            assert self.is_distinguished_open(), (
+                "the represented open corestriction requires a distinguished open"
+            )
+            source = morphism.domain()
+            assert source in AffineSchemes(codomain.scheme_base_ring()), (
+                "the represented open corestriction currently requires an affine source"
+            )
+            source_algebra = source.coordinate_algebra()
+            open_algebra = self.coordinate_algebra()
+            pullback = morphism.coordinate_algebra_morphism()
+            defining_element = codomain.coordinate_algebra()(
+                self.distinguished_open_element()
+            )
+            assert source_algebra(pullback(defining_element)).is_unit(), (
+                "the morphism does not land in this distinguished open: it does not send the "
+                "defining element to a unit"
+            )
+
+            def factor_pullback(element):
+                numerator, denominator = open_algebra.localization_fraction_data(element)
+                return (
+                    source_algebra(pullback(numerator))
+                    * source_algebra(pullback(denominator)).inverse_of_unit()
+                )
+
+            factor = source.Mor(self)(
+                ring_morphism(open_algebra, source_algebra, factor_pullback)
+            )
+            assert self.inclusion() * factor == morphism, (
+                "the corestriction does not recover the morphism through the inclusion"
+            )
+            return factor
 
         def inclusion_into(self, larger_open):
             r"""The open immersion ``D(g) -> D(f)`` when ``D(g) <= D(f)`` in one affine scheme.
