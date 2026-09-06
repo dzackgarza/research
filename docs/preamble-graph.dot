@@ -12,13 +12,18 @@ digraph preamble {
     "DirectSumObjects" [label="DirectSumObjects", fillcolor="#dbeafe"];
     "DiscreteCategories" [label="DiscreteCategories", fillcolor="#dbeafe"];
     "HomCategories" [label="HomCategories", fillcolor="#dbeafe"];
+    "HyperbolicLattices" [label="HyperbolicLattices(R)", fillcolor="#dbeafe"];
     "Objects" [label="Objects", fillcolor="#dbeafe"];
+    "PrimitiveIsotropicSubobjects" [label="PrimitiveIsotropicSubobjects(R)", fillcolor="#dbeafe"];
     "RationalLattices" [label="RationalLattices(R)", fillcolor="#dbeafe"];
+    "VectorConfigurations" [label="VectorConfigurations(R)", fillcolor="#dbeafe"];
+    "VinbergInvariantMatrices" [label="VinbergInvariantMatrices", fillcolor="#dbeafe"];
   }
   subgraph cluster_2 {
     label="Lattices, Quadratic Forms &amp; Invariants"; fontsize=13; color="#cbd5e1"; style=rounded;
     "EvenLattices" [label="EvenLattices(R)", fillcolor="#fef3c7"];
     "FiniteRankLattices" [label="FiniteRankLattices(R)", fillcolor="#fef3c7"];
+    "IsotropicReductions" [label="IsotropicReductions(R)", fillcolor="#fef3c7"];
     "Lattices" [label="Lattices(R)", fillcolor="#fef3c7"];
     "NondegenerateLattices" [label="NondegenerateLattices(R)", fillcolor="#fef3c7"];
     "RootLattices" [label="RootLattices", fillcolor="#fef3c7"];
@@ -50,6 +55,7 @@ digraph preamble {
     "FramedModules" [label="FramedModules(R)", fillcolor="#fae8ff"];
     "FreeFormModules" [label="FreeFormModules(R)", fillcolor="#fae8ff"];
     "FreeModules" [label="FreeModules(R)", fillcolor="#fae8ff"];
+    "GeneralModules" [label="GeneralModules(R)", fillcolor="#fae8ff"];
     "Ideals" [label="Ideals(R)", fillcolor="#fae8ff"];
     "InternalHomModules" [label="InternalHomModules(R)", fillcolor="#fae8ff"];
     "LinearHomModules" [label="LinearHomModules(R)", fillcolor="#fae8ff"];
@@ -166,8 +172,10 @@ digraph preamble {
   }
   subgraph cluster_7 {
     label="Schemes &amp; Algebraic Geometry"; fontsize=13; color="#cbd5e1"; style=rounded;
+    "ADELogPairs" [label="ADELogPairs(R)", fillcolor="#fee2e2"];
     "AffineSchemes" [label="AffineSchemes(R)", fillcolor="#fee2e2"];
     "AffineSpaces" [label="AffineSpaces(R)", fillcolor="#fee2e2"];
+    "ClosedSubschemes" [label="ClosedSubschemes(R)", fillcolor="#fee2e2"];
     "ConvexPolygons" [label="ConvexPolygons", fillcolor="#fee2e2"];
     "ConvexPolytopes" [label="ConvexPolytopes", fillcolor="#fee2e2"];
     "Curves" [label="Curves(R)", fillcolor="#fee2e2"];
@@ -177,6 +185,7 @@ digraph preamble {
     "LatticePolygons" [label="LatticePolygons", fillcolor="#fee2e2"];
     "LatticePolytopes" [label="LatticePolytopes", fillcolor="#fee2e2"];
     "LocallyRingedSpaces" [label="LocallyRingedSpaces", fillcolor="#fee2e2"];
+    "LogPairs" [label="LogPairs(R)", fillcolor="#fee2e2"];
     "NormalSchemes" [label="NormalSchemes(R)", fillcolor="#fee2e2"];
     "ProductProjectiveSpaces" [label="ProductProjectiveSpaces(R)", fillcolor="#fee2e2"];
     "ProductSchemes" [label="ProductSchemes(R)", fillcolor="#fee2e2"];
@@ -189,6 +198,8 @@ digraph preamble {
     "SeparatedSchemes" [label="SeparatedSchemes(R)", fillcolor="#fee2e2"];
     "SmoothSchemes" [label="SmoothSchemes(R)", fillcolor="#fee2e2"];
     "Surfaces" [label="Surfaces(R)", fillcolor="#fee2e2"];
+    "ToricLogPairs" [label="ToricLogPairs(R)", fillcolor="#fee2e2"];
+    "ToricSchemes" [label="ToricSchemes(R)", fillcolor="#fee2e2"];
     "Varieties" [label="Varieties(R)", fillcolor="#fee2e2"];
   }
   subgraph cluster_8 {
@@ -234,6 +245,7 @@ digraph preamble {
     "ObjectSetsOfDiscreteCategories" [label="ObjectSetsOfDiscreteCategories", fillcolor="#ffedd5", style="rounded,filled,dashed"];
     "SetsWithPartialMaps" [label="SetsWithPartialMaps", fillcolor="#ffedd5", style="rounded,filled,dashed"];
   }
+  "ADELogPairs" -> "ToricLogPairs";
   "AbsoluteGaloisGroups" -> "ProfiniteGroups";
   "AbsoluteGaloisGroupsOfFiniteFields" -> "AbsoluteGaloisGroups";
   "AbsoluteGaloisGroupsOfFiniteFields" -> "OwnedGroups.Commutative";
@@ -258,6 +270,7 @@ digraph preamble {
   "AlgebrasWithChosenMultiplication" -> "Algebras";
   "AlgebrasWithChosenMultiplication" -> "AssociativeAlgebrasWithChosenMultiplication";
   "ArtinianRings" -> "OwnedNoetherianRings";
+  "AssociativeAlgebras" -> "CommutatorLieAlgebras";
   "AssociativeAlgebras" -> "Modules";
   "AssociativeAlgebrasWithChosenMultiplication" -> "AssociativeAlgebras";
   "AugmentedAlgebras" -> "Algebras";
@@ -269,12 +282,12 @@ digraph preamble {
   "CartierDivisorGroups" -> "FramedModules";
   "Cat" -> "Objects";
   "ClassGroups" -> "FramedModules";
+  "ClosedSubschemes" -> "Schemes";
   "CohomologyModules" -> "FinitelyPresentedModules";
   "CommutativeAlgebraCoproducts" -> "Algebras.Commutative";
   "CommutativeAlgebraPushouts" -> "Algebras.Commutative";
   "CommutativeDifferentialGradedAlgebras" -> "DifferentialGradedAlgebras";
   "CommutativeIdeals" -> "Modules";
-  "CommutatorLieAlgebras" -> "AssociativeAlgebras";
   "CommutatorLieAlgebras" -> "LieAlgebras";
   "CompleteLocalRings" -> "OwnedAdicallyCompleteRings";
   "CompleteLocalRings" -> "OwnedLocalRings";
@@ -356,6 +369,7 @@ digraph preamble {
   "FreeModules" -> "Modules";
   "FreeModules" -> "ProjectiveModules";
   "FunctionEnumeratedSets" -> "EnumeratedSets";
+  "GeneralModules" -> "Modules";
   "GradedFreeAlgebras" -> "FreeAlgebras";
   "GradedTensorProductModules" -> "Modules";
   "GroupAlgebras" -> "AlgebrasWithChosenMultiplication";
@@ -365,12 +379,14 @@ digraph preamble {
   "GroupsWithChosenFinitePresentation" -> "GroupsWithChosenFiniteGeneratingSet";
   "GroupsWithChosenFinitePresentation" -> "OwnedFinitelyPresentedGroups";
   "HomCategories" -> "Objects";
+  "HyperbolicLattices" -> "Lattices";
   "Ideals" -> "CommutativeIdeals";
   "Ideals" -> "FractionalIdeals";
   "InfiniteEnumeratedSets" -> "EnumeratedSets";
   "IntegralDomains" -> "OwnedRings.Commutative";
   "IntegralSchemes" -> "Schemes";
   "InternalHomModules" -> "LinearHomModules";
+  "IsotropicReductions" -> "Lattices";
   "KahlerDifferentialModules" -> "FinitelyPresentedModules";
   "KahlerDifferentialModules" -> "FramedModules";
   "LatticePolygons" -> "ConvexPolygons";
@@ -384,6 +400,7 @@ digraph preamble {
   "LocalRings" -> "OwnedRings.Commutative";
   "LocalizedModules" -> "Modules";
   "LocallyRingedSpaces" -> "RingedSpaces";
+  "LogPairs" -> "Sets";
   "Magmas" -> "Sets";
   "MatrixAlgebras" -> "Algebras";
   "MatrixAlgebras" -> "FramedAlgebras";
@@ -444,6 +461,7 @@ digraph preamble {
   "PredicateSubrings" -> "OwnedRings";
   "PrimeFields" -> "OwnedFields";
   "PrimeSpectra" -> "PartiallyOrderedSets";
+  "PrimitiveIsotropicSubobjects" -> "ModuleSubobjects";
   "PrincipalIdealDomains" -> "OwnedIntegralDomains";
   "PrincipalIdealDomains" -> "OwnedNoetherianRings";
   "ProductProjectiveSpaces" -> "ProductSchemes";
@@ -487,6 +505,9 @@ digraph preamble {
   "SymmetricBilinearFormModules" -> "BilinearFormModules";
   "TensorProductModules" -> "Modules";
   "TopologicalGroups" -> "OwnedGroups";
+  "ToricLogPairs" -> "LogPairs";
+  "ToricSchemes" -> "NormalSchemes";
+  "ToricSchemes" -> "Varieties";
   "TorsionBilinearFormModules" -> "FinitelyPresentedBilinearFormModules";
   "TorsionBilinearFormModules" -> "FinitelyPresentedTorsionModules";
   "TorsionModules" -> "Modules";
@@ -498,7 +519,9 @@ digraph preamble {
   "Varieties" -> "IntegralSchemes";
   "Varieties" -> "Schemes";
   "Varieties" -> "SeparatedSchemes";
+  "VectorConfigurations" -> "ModuleSubobjects";
   "VectorSpaces" -> "Modules";
+  "VinbergInvariantMatrices" -> "Sets";
   "WeilDivisorGroups" -> "DivisorGroups";
   "groups" -> "Monoids";
 }
