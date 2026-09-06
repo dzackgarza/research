@@ -4,6 +4,7 @@ from math import factorial
 
 from sage.categories.category import Category
 from sage.geometry.polyhedron.constructor import Polyhedron
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
@@ -177,7 +178,49 @@ class ConvexPolytopes(OwnedCategory):
 
         def _engine_normal_fan(self):
             r"""Return the private normal-fan computation object."""
-            return self._engine_polyhedron().normal_fan()
+            return self._engine_polyhedron().normal_fan(direction="inner")
+
+        @cached_method
+        def normal_fan(self):
+            r"""Return the normal fan ``Sigma_P`` in ``N_R`` (CLS Def. 2.3.2).
+
+            The polytope lives in ``M_R`` for ``M`` its coordinate lattice, so
+            the normal fan lives in the dual lattice ``N``.  The cone of a face
+            ``Q`` is spanned by the *inner* normals of the facets containing
+            ``Q``, which is the convention under which ``X_{Sigma_P}`` carries
+            ``P`` as the polytope of an ample divisor.
+            """
+            from dzack_research.preamble.categories.schemes.toric.fans import (
+                RationalPolyhedralFans,
+            )
+
+            assert int(self.dimension()) == int(
+                self._engine_polyhedron().ambient_dim()
+            ), "the normal fan is taken of a full-dimensional polytope"
+            cocharacters = self.ambient_lattice().dual_module()
+            return RationalPolyhedralFans(cocharacters).from_engine_fan(
+                self._engine_normal_fan()
+            )
+
+        def toric_variety(self, base_ring):
+            r"""Return ``X_P``, the toric variety of the normal fan of ``P``.
+
+            ``P`` is retained as the polarizing polytope of the result: it is
+            the polytope of the ample divisor that the construction produced,
+            and it is not recoverable from the fan alone.
+            """
+            from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+                ToricVariety,
+            )
+
+            assert self.is_lattice_polytope(), (
+                "the toric variety of a polytope is defined for lattice polytopes"
+            )
+            return ToricVariety(
+                self.normal_fan(),
+                base_ring,
+                polarizing_polytope=self,
+            )
 
         def volume(self):
             rationals = _own_ring(SageQQ)
