@@ -2,6 +2,7 @@
 
 from sage.categories.morphism import Morphism
 from sage.categories.sets_cat import Sets
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.parent import Parent
 
@@ -13,9 +14,14 @@ from dzack_research.preamble.categories.modules.graded_modules import (
     require_grading_monoid,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
+    OwnedRings,
     _engine_element,
     _own_ring,
+    predicate_subring,
+    ring_morphism,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -251,6 +257,73 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             if not homogeneous:
                 raise ValueError("the algebra element is not homogeneous")
             return self.grading_monoid()(int(degree))
+
+        @cached_method
+        def degree_zero_chart(self, localization):
+            r"""Return ``(S_f)_0``, the degree-zero part of a graded localization.
+
+            Localizing a graded ring at homogeneous elements grades the result
+            by ``deg(a/s) = deg(a) - deg(s)``, now over the integers rather than
+            the original monoid.  The degree-zero part is a subring, and for a
+            single homogeneous ``f`` it is the affine coordinate ring of the
+            standard open ``D_+(f)`` of ``Proj S``: the chart every projective
+            construction is read in.
+
+            A fraction is degree zero exactly when its numerator is homogeneous
+            of the degree its denominator has, so the chart is cut out by that
+            condition rather than by a chosen presentation in new variables.
+            The degree of a fraction is well defined because ``a/s = b/t``
+            forces ``at = bs``, hence equal degree differences, over an integral
+            domain.
+            """
+
+            assert localization in LocalizationRings(), (
+                "a degree-zero chart is the degree-zero part of a localization"
+            )
+            assert localization.localization_source() is self, (
+                f"{localization} localizes a different ring than {self}"
+            )
+            assert self in OwnedIntegralDomains(), (
+                f"the degree of a fraction over {self} is well defined once "
+                "cancellation cannot change it, which an integral domain assures"
+            )
+            assert all(
+                self(inverted).is_homogeneous() for inverted in localization.inverted_elements()
+            ), "a graded localization inverts homogeneous elements"
+
+            def is_degree_zero(fraction) -> bool:
+                numerator = self(fraction.numerator())
+                if numerator == self.zero():
+                    return True
+                if not numerator.is_homogeneous():
+                    return False
+                denominator = self(fraction.denominator())
+                return self.homogeneous_degree(numerator) == self.homogeneous_degree(denominator)
+
+            return predicate_subring(
+                localization,
+                is_degree_zero,
+                f"a/s is homogeneous of degree zero in {localization}",
+                OwnedRings().Commutative(),
+            )
+
+        def degree_zero_chart_restriction(self, source_localization, target_localization):
+            r"""Return the overlap map ``(S_f)_0 -> (S_fg)_0`` of two standard charts.
+
+            The restriction ``S_f -> S_fg`` preserves the grading, so it carries
+            degree-zero fractions to degree-zero fractions and cuts down to the
+            charts.  These maps compose because the localization restrictions
+            do, which is the compatibility ``Proj`` needs on overlaps.
+            """
+
+            restriction = source_localization.restriction_to(target_localization)
+            source_chart = self.degree_zero_chart(source_localization)
+            target_chart = self.degree_zero_chart(target_localization)
+            return ring_morphism(
+                source_chart,
+                target_chart,
+                lambda element: target_chart(restriction(source_localization(element))),
+            )
 
         def _Hom_(self, codomain, category=None):
             # Object-level Hom defaults to the underlying algebra category.
