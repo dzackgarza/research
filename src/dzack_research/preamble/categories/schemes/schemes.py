@@ -608,6 +608,37 @@ class Schemes(OwnedCategoryOverBaseRing):
         def _categorical_pullback(self, left_morphism, right_morphism):
             return scheme_fiber_product(left_morphism, right_morphism)
 
+        def glue(self, charts, overlaps, transitions):
+            r"""``X`` glued from charts along isomorphic opens (Stacks, Tag 01JA).
+
+            The data are schemes ``X_i``, open subschemes ``U_ij <= X_i``, and
+            isomorphisms ``phi_ji: U_ij -> U_ji`` with ``phi_ij = phi_ji^{-1}``
+            and ``phi_ki = phi_kj phi_ji`` on the triple overlaps.
+
+            The result is not representable here, and the obstruction is one
+            architectural fact rather than a missing algorithm: an owned scheme
+            morphism is represented by a native scheme morphism of the backend,
+            and a glued scheme has no such representative.  The backend's own
+            glued scheme stores the two open immersions and answers nothing
+            else, not even its base ring, so an object built on it would admit
+            no morphism and the second half of this construction -- gluing
+            morphisms out of compatible local ones -- would be unstatable.
+
+            What is representable is everything that lives on a cover of one
+            affine scheme: `AffineSchemes.distinguished_open_cover` builds the
+            cover, `DistinguishedAffineCover.glue_modules` and
+            `glue_invertible_module` descend sheaves along it, and
+            `CoverRefinement` compares two covers.  Removing the obstruction
+            means making a scheme morphism owned data rather than a wrapper
+            around a backend morphism, which is a design decision, not an edit.
+            """
+            assert False, (
+                "gluing schemes needs an owned scheme morphism that does not wrap a backend "
+                "scheme morphism: a glued scheme has no backend representative, so it could "
+                "carry no Hom and no glued morphism; sheaves on a cover of one affine scheme "
+                "are built with distinguished_open_cover and glue_modules instead"
+            )
+
         def equalizer(self, left, right):
             r"""Return the equalizer ``Eq(f, g) -> X`` of two parallel morphisms."""
             assert left.domain() is right.domain() and left.codomain() is right.codomain(), (

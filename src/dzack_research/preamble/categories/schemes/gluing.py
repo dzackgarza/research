@@ -495,8 +495,141 @@ class GluedModuleSheaf(SageObject):
         return f"Glued module sheaf on {self.scheme()} from {self.cover()}"
 
 
+def _rank_one_transition(source, target, unit):
+    r"""``m |-> u m`` between two rank-one free modules on one overlap.
+
+    A unit of the overlap's section ring gives an isomorphism because its
+    inverse gives the inverse map; this is the only shape a transition of
+    trivialized invertible sheaves takes.
+    """
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+        Isomorphism,
+    )
+
+    source_generator = source.module_generator(next(iter(_finite_framing(source))))
+    target_generator = target.module_generator(next(iter(_finite_framing(target))))
+    forward = module_homset(source, target)(
+        lambda _label: target.scalar_multiple(unit, target_generator)
+    )
+    inverse = module_homset(target, source)(
+        lambda _label: source.scalar_multiple(unit.inverse_of_unit(), source_generator)
+    )
+    return Isomorphism(forward, inverse)
+
+
+class InvertibleModuleSheaf(GluedModuleSheaf):
+    r"""A rank-one locally free sheaf given by trivializations and transition units.
+
+    On a distinguished affine cover ``{U_i}`` an invertible sheaf that is
+    trivial on every chart is the free rank-one module on each chart glued by
+    units ``u_ij`` of ``O(U_ij)``, and the cocycle condition on the transition
+    isomorphisms is ``u_ik = u_jk u_ij`` on the triple overlaps: the datum is
+    a Cech 1-cocycle with values in ``O_X^*`` and the sheaf is its class
+    (Stacks, Tag 01X0).
+
+    Tensoring two such sheaves multiplies their cocycles, so the tensor
+    powers and the dual are the same cover carrying the units raised to an
+    integer power, negative powers included.  That is exactly why the
+    isomorphism classes form a group.
+    """
+
+    def __init__(self, gluing_datum, transition_units) -> None:
+        super().__init__(gluing_datum)
+        self._transition_units = dict(transition_units)
+
+    def transition_units(self):
+        r"""The 1-cocycle ``{u_ij}``, indexed by the pairs ``i < j``."""
+        return dict(self._transition_units)
+
+    def transition_unit(self, left_index, right_index):
+        r"""``u_ij in O(U_ij)^*``, the unit the transition multiplies by."""
+        left_index, right_index = int(left_index), int(right_index)
+        if left_index < right_index:
+            return self._transition_units[left_index, right_index]
+        return self._transition_units[right_index, left_index].inverse_of_unit()
+
+    def tensor_product(self, other):
+        r"""``L tensor L'`` on the same cover: the cocycles multiply."""
+        assert other.cover() is self.cover(), (
+            "invertible sheaves are tensored on one cover; refine both to a common one first"
+        )
+        return glue_invertible_module(
+            self.cover(),
+            {
+                pair: unit * other.transition_unit(*pair)
+                for pair, unit in self._transition_units.items()
+            },
+        )
+
+    def tensor_power(self, exponent):
+        r"""``L^{tensor n}`` for any integer ``n``: the cocycle to the ``n``-th power.
+
+        ``n = 0`` is the structure sheaf, whose cocycle is constant one, and
+        a negative power inverts each unit, which is the dual sheaf.
+        """
+        exponent = int(exponent)
+        return glue_invertible_module(
+            self.cover(),
+            {
+                pair: (
+                    unit**exponent
+                    if exponent >= 0
+                    else unit.inverse_of_unit() ** (-exponent)
+                )
+                for pair, unit in self._transition_units.items()
+            },
+        )
+
+    def dual_sheaf(self):
+        r"""``L^{-1} = Hom_{O_X}(L, O_X)``, the inverse of ``L`` in the Picard group."""
+        return self.tensor_power(-1)
+
+    def _repr_(self):
+        return f"Invertible sheaf on {self.scheme()} from {self.cover()}"
+
+
+def glue_invertible_module(cover, transition_units):
+    r"""Glue the trivial rank-one sheaves on ``cover`` by a 1-cocycle of units."""
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FreeModule,
+    )
+
+    chart_count = len(cover.opens())
+    units = {
+        (int(left), int(right)): unit
+        for (left, right), unit in transition_units.items()
+    }
+    expected = {
+        (left, right)
+        for left in range(chart_count)
+        for right in range(left + 1, chart_count)
+    }
+    assert set(units) == expected, (
+        f"an invertible sheaf on this cover needs one transition unit for each pair {sorted(expected)}"
+    )
+    local_modules = tuple(
+        FreeModule(cover.open(index).coordinate_algebra(), 1)
+        for index in range(chart_count)
+    )
+    transitions = {}
+    for (left, right), unit in units.items():
+        overlap_algebra = cover.intersection(left, right).coordinate_algebra()
+        assert unit.parent() is overlap_algebra, (
+            f"the transition unit for charts {left} and {right} must live on their overlap"
+        )
+        transitions[left, right] = _rank_one_transition(
+            cover.restrict_module(local_modules[left], left, right),
+            cover.restrict_module(local_modules[right], right, left),
+            unit,
+        )
+    datum = cover.glue_modules(local_modules, transitions)
+    return InvertibleModuleSheaf(datum, units)
+
+
 __all__ = [
     "CompatibleLocalSectionsModule",
     "GluedModuleSheaf",
+    "InvertibleModuleSheaf",
+    "glue_invertible_module",
     "ModuleGluingDatum",
 ]

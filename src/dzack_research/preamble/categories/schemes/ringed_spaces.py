@@ -278,6 +278,15 @@ class DistinguishedAffineCover(SageObject):
 
         return ModuleGluingDatum(self, local_modules, transitions)
 
+    def glue_invertible_module(self, transition_units):
+        r"""Return the rank-one locally free sheaf glued by a 1-cocycle of units."""
+
+        from dzack_research.preamble.categories.schemes.gluing import (
+            glue_invertible_module,
+        )
+
+        return glue_invertible_module(self, transition_units)
+
     def common_refinement(self, other):
         r"""The refinement ``{D(f_i g_j)}`` of this cover and ``other``, with its comparison maps."""
 
