@@ -407,6 +407,36 @@ class LatticePolytopes(OwnedCategory):
         r"""The standard simplex in ``ZZ^3``."""
         return LatticePolytope(((0, 0, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1)))
 
+    @cached_method
+    def reflexive_polytopes(self, dimension):
+        r"""The reflexive polytopes of the stated dimension, up to lattice equivalence.
+
+        The classification is Kreuzer--Skarke's; Sage carries it in
+        ``sage.geometry.lattice_polytope.ReflexivePolytopes``, with dimension
+        two built in and dimension three behind its optional polytope
+        database.  By Batyrev's theorem the toric variety of the normal fan of
+        a reflexive polytope is Gorenstein Fano, so this is the finite list a
+        session searches when it wants those.
+        """
+        from sage.geometry.lattice_polytope import ReflexivePolytopes
+
+        dimension = int(dimension)
+        assert dimension in (2, 3), (
+            "the represented reflexive-polytope classification covers "
+            "dimensions two and three"
+        )
+        return finite_ordered_set(
+            tuple(
+                LatticePolytope(
+                    tuple(
+                        tuple(int(coordinate) for coordinate in vertex)
+                        for vertex in classified.vertices()
+                    )
+                )
+                for classified in ReflexivePolytopes(dimension)
+            )
+        )
+
     @classmethod
     def _repr_object_names(cls):
         return "lattice polytopes"
