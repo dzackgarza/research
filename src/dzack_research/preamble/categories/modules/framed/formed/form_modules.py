@@ -1068,6 +1068,10 @@ class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U").discriminant_group()
 
+    def additional_condition(self):
+        r"""None: exactly a form module that is finitely presented."""
+        return None
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely presented form modules"
@@ -1083,6 +1087,10 @@ class FinitelyPresentedBilinearFormModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.lattices import Lattices
 
         return Lattices(self.base_ring())("U").discriminant_group()
+
+    def additional_condition(self):
+        r"""None: exactly a finitely presented form module whose form is bilinear."""
+        return None
 
     @classmethod
     def _repr_object_names(cls):
@@ -1101,6 +1109,10 @@ class FinitelyPresentedQuadraticFormModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.lattices import Lattices
 
         return Lattices(self.base_ring())("U").discriminant_group()
+
+    def additional_condition(self):
+        r"""None: exactly a finitely presented form module whose form is quadratic."""
+        return None
 
     @classmethod
     def _repr_object_names(cls):

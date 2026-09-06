@@ -174,28 +174,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
         def value_module(self):
             return self.bilinear_value_module()
 
-        @cached_method
-        def form(self):
-
-            generators = tuple(self.module_generators())
-            values = tuple(
-                tuple(self.b(left, right) for right in generators)
-                for left in generators
-            )
-            return BilinearForms(self, self.bilinear_value_module())(values)
-
-        def unformed_module(self):
-            return self
-
-        @cached_method
-        def forget_form_morphism(self):
-
-            return module_homset(self, self).identity()
-
-        @cached_method
-        def equip_form_morphism(self):
-            return self.forget_form_morphism()
-
         def b(self, left, right):
             if left not in self or right not in self:
                 raise TypeError("the discriminant form pairs two classes in one module")
@@ -388,27 +366,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 
         def value_module(self):
             return self.quadratic_value_module()
-
-        @cached_method
-        def form(self):
-
-            generators = tuple(self.module_generators())
-            quadratic_values = self.quadratic_value_module()
-            bilinear_values = self.bilinear_value_module()
-            gram = []
-            for i, left in enumerate(generators):
-                row = []
-                for j, right in enumerate(generators):
-                    if i == j:
-                        row.append(self.q(left))
-                    else:
-                        row.append(
-                            quadratic_values(
-                                bilinear_values.lift(self.b(left, right))
-                            )
-                        )
-                gram.append(tuple(row))
-            return QuadraticForms(self, quadratic_values)(tuple(gram))
 
         def q(self, element):
             if element not in self:
@@ -810,27 +767,97 @@ def _all_discriminant_subgroups(ambient):
     )
 
 
+def _descended_bilinear_gram(dual_lattice, labels, bilinear_values):
+    r"""Return ``b`` on the classes of the selected dual basis, in ``K/R``.
+
+    A class is represented by the dual generator carrying its label, so the
+    entry at ``(i,j)`` is the value ``L^#`` already pairs those two
+    generators to, read in the quotient.
+    """
+    return tuple(
+        tuple(
+            bilinear_values(
+                dual_lattice.b(
+                    dual_lattice.module_generator(left),
+                    dual_lattice.module_generator(right),
+                )
+            )
+            for right in labels
+        )
+        for left in labels
+    )
+
+
+def _descended_quadratic_gram(dual_lattice, labels, bilinear_values, quadratic_values):
+    r"""Return ``q`` on the classes of the selected dual basis, in ``K/2R``.
+
+    The diagonal is the norm of the representative and the off-diagonal is
+    the bilinear lift, which is the coordinate datum a quadratic form is
+    classified by.  ``q`` is finer than ``b``: it is well defined modulo
+    ``2R`` exactly when the lattice is even, which is the hypothesis under
+    which this is reached.
+    """
+    return tuple(
+        tuple(
+            quadratic_values(
+                dual_lattice.norm(dual_lattice.module_generator(left))
+                if left == right
+                else bilinear_values.lift(
+                    bilinear_values(
+                        dual_lattice.b(
+                            dual_lattice.module_generator(left),
+                            dual_lattice.module_generator(right),
+                        )
+                    )
+                )
+            )
+            for right in labels
+        )
+        for left in labels
+    )
+
+
 def DiscriminantModule(lattice):
     r"""Return the literal cokernel of ``L -> L^#`` with descended forms when supported."""
     assert lattice.module_rank().is_finite() and lattice.is_nondegenerate()
 
     prototype = lattice.correlation_morphism().cokernel()
+    dual_lattice = lattice.dual_lattice()
+    labels = prototype.module_generating_set()
     ring = lattice.base_ring()
     categories = [DiscriminantModules(ring)]
     construction_data = {
         "source_lattice": lattice,
-        "dual_lattice": lattice.dual_lattice(),
+        "dual_lattice": dual_lattice,
     }
 
     # The general quotient-value abstraction is present, but the active native
     # K/R engine currently specializes to QQ/nZZ.  Do not advertise a form over
     # another PID until its fraction-field quotient engine exists.
     if _engine_ring(ring) is SageZZ:
-        construction_data["bilinear_value_module"] = FractionFieldQuotient(ring, 1)
+        bilinear_values = FractionFieldQuotient(ring, 1)
+        construction_data["bilinear_value_module"] = bilinear_values
         categories.append(DiscriminantBilinearModules(ring))
+        # The form level introduces the form and the module it was defined
+        # on, and this is the level that has both: the classes are those of
+        # the selected dual basis, so the descended form is read off ``L^#``
+        # before the quotient carrying it exists.  ``q`` is the selected form
+        # when the lattice is even, because it determines ``b`` and ``b`` does
+        # not determine it.
         if lattice.is_even():
-            construction_data["quadratic_value_module"] = FractionFieldQuotient(ring, 2)
+            quadratic_values = FractionFieldQuotient(ring, 2)
+            construction_data["quadratic_value_module"] = quadratic_values
             categories.append(DiscriminantQuadraticModules(ring))
+            construction_data["source_form"] = QuadraticForms(
+                prototype, quadratic_values
+            )(_descended_quadratic_gram(
+                dual_lattice, labels, bilinear_values, quadratic_values
+            ))
+        else:
+            construction_data["source_form"] = BilinearForms(
+                prototype, bilinear_values
+            )(_descended_bilinear_gram(dual_lattice, labels, bilinear_values))
+        construction_data["unformed_module"] = prototype
     return FinitelyPresentedModule(
         prototype.presentation(),
         _extra_categories=tuple(categories),
