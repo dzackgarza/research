@@ -3,6 +3,7 @@ r"""Enumerated sets of functions, indexed by \(\mathbb N\) or by \(\mathbb Z\)."
 from operator import index as integer_index
 
 from sage.categories.category import Category
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
@@ -13,7 +14,7 @@ from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
     InfiniteEnumeratedSets,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
-from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.categories.sets.set_categories import NN, ranking_isomorphism
 
 
 def _nonnegative_integer(value, *, error_type):
@@ -104,14 +105,14 @@ class EnumeratedByNaturals(Category):
             return _nonnegative_integer(index, error_type=ValueError)
 
         def function(self, index):
-            return self.unrank(self._rank_from_index(index))
+            return self[self._rank_from_index(index)]
 
 
 class EnumeratedByIntegers(Category):
     r"""Infinite enumerated sets whose functions are indexed by \(\mathbb Z\).
 
-    Sage's ranking still runs through \(\mathbb N\); :meth:`function` takes the
-    integer index, and :meth:`unrank` takes the corresponding natural number.
+    The ranking map still runs through \(\mathbb N\); :meth:`function` takes the
+    integer index, and indexing takes the corresponding natural number.
     """
 
     def super_categories(self):
@@ -128,7 +129,7 @@ class EnumeratedByIntegers(Category):
             return natural_from_integer(index)
 
         def function(self, index):
-            return self.unrank(self._rank_from_index(index))
+            return self[self._rank_from_index(index)]
 
 
 class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
@@ -165,24 +166,25 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
             self._latex_symbol_prefix,
         )
 
-    def unrank(self, position):
-        return self._symbol_at_index(self._index_from_rank(position))
-
-    def rank(self, element):
-        return self._rank_from_index(self._index_of_element(element))
-
-    def __getitem__(self, position):
-        return self.unrank(position)
+    @cached_method
+    def ranking_map(self):
+        r"""The enumeration by index, read through this set's own indexing."""
+        return ranking_isomorphism(
+            self,
+            lambda element: self._rank_from_index(self._index_of_element(element)),
+            lambda position: self._symbol_at_index(self._index_from_rank(position)),
+        )
 
     def __contains__(self, element):
         try:
-            self.rank(element)
+            self.ranking_map()(element)
         except IndexError, TypeError, ValueError:
             return False
         return True
 
     def __iter__(self):
+        symbol_at = self.ranking_map().inverse()
         position = 0
         while True:
-            yield self.unrank(position)
+            yield symbol_at(position)
             position += 1

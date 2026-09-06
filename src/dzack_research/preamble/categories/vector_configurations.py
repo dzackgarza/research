@@ -81,11 +81,11 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             graph = Graph(loops=True, multiedges=False)
             graph.add_vertices(range(1, size + 1))
             for left in range(size):
-                left_vector = vectors[positions.unrank(left)]
+                left_vector = vectors[positions[left]]
                 graph.add_edge(left + 1, left + 1, int(lattice.q(left_vector)))
                 for right in range(left + 1, size):
                     pairing = int(
-                        lattice.b(left_vector, vectors[positions.unrank(right)])
+                        lattice.b(left_vector, vectors[positions[right]])
                     )
                     if pairing:
                         graph.add_edge(left + 1, right + 1, pairing)
@@ -166,9 +166,9 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
             positions = self.configuration_positions()
 
             def as_position_map(permutation):
-                return lambda label: positions.unrank(
-                    int(permutation(int(positions.rank(label)) + 1)) - 1
-                )
+                return lambda label: positions[
+                    int(permutation(int(positions.ranking_map()(label)) + 1)) - 1
+                ]
 
             return tuple(
                 as_position_map(permutation)

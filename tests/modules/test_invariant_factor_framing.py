@@ -24,8 +24,8 @@ def test_literal_cokernel_retains_generator_killed_by_the_relation() -> None:
     labels = quotient.module_generating_set()
     generators = quotient.module_generators()
     assert labels.cardinality() == 2
-    assert labels.unrank(0) == "v"
-    assert labels.unrank(1) == "w"
+    assert labels[0] == "v"
+    assert labels[1] == "w"
     assert generators["v"] == v_bar
     assert generators["w"] == w_bar
     assert v_bar != quotient.zero()
@@ -50,7 +50,7 @@ def test_invariant_factor_form_drops_only_unit_factors_and_keeps_free_summands()
 
     factors = quotient.invariant_factors()
     assert factors.cardinality() == 1
-    assert factors.unrank(0) == 0
+    assert factors[0] == 0
     assert quotient.number_of_module_generators() == 2
     normalization = quotient.invariant_factor_form()
     normalized = normalization.codomain()
@@ -58,7 +58,7 @@ def test_invariant_factor_form_drops_only_unit_factors_and_keeps_free_summands()
     assert normalized.number_of_module_generators() == 1
     normalized_factors = normalized.invariant_factors()
     assert normalized_factors.cardinality() == 1
-    assert normalized_factors.unrank(0) == 0
+    assert normalized_factors[0] == 0
     assert normalized.module_rank() == 1
     assert normalized.module_rank() in Cardinalities()
     for generator in quotient.module_generators():
@@ -139,7 +139,7 @@ def test_u2_discriminant_keeps_the_two_half_basis_classes() -> None:
     assert discriminant.number_of_module_generators() == 2
     assert generators.cardinality() == 2
     assert all(generator.additive_order() == 2 for generator in generators)
-    assert generators.unrank(0) != generators.unrank(1)
+    assert generators[0] != generators[1]
 
     normalization = discriminant.invariant_factor_form()
     assert normalization.codomain() is not discriminant
@@ -157,10 +157,10 @@ def test_a2_invariant_factor_form_is_a_different_one_generator_framing() -> None
     assert normalized.number_of_module_generators() == 1
     normalized_factors = normalized.invariant_factors()
     assert normalized_factors.cardinality() == 1
-    assert normalized_factors.unrank(0) == 3
+    assert normalized_factors[0] == 3
     assert normalization.is_quadratic()
     normalized_generator = normalized.module_generators()[0]
-    smith_generator = discriminant.smith_form_module_generators().unrank(0)
+    smith_generator = discriminant.smith_form_module_generators()[0]
     assert normalization.inverse()(normalized_generator) == smith_generator
     for generator in discriminant.module_generators():
         assert normalization.inverse()(normalization(generator)) == generator

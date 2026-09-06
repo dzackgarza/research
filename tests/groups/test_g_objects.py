@@ -47,7 +47,7 @@ def _regular_representation(ring):
 
 def test_a_finite_g_set_on_an_owned_finite_ordered_set_is_a_g_object_in_sets() -> None:
     group, g_set = _swap_two_of_three()
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     assert g_set in GObjects(group, Sets())
     assert g_set in FiniteGSets(group)
     assert g_set.acting_group() is group
@@ -98,7 +98,7 @@ def test_equivariant_module_maps_commute_with_the_actions() -> None:
     unit = representation.module_generator(group.one())
     total = sum(representation.module_generator(label) for label in group)
     averaging = equivariant({label: total for label in group})
-    translate = representation.action_of(group.group_generators().unrank(0))
+    translate = representation.action_of(group.group_generators()[0])
     assert averaging(unit - translate(unit)) == representation.zero()
     assert averaging * averaging == 6 * averaging.underlying_arrow()
     with pytest.raises(ValueError):

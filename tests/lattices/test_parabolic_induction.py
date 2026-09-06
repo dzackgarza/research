@@ -20,7 +20,7 @@ from dzack_research.preamble.all import (
 def _lorentzian_line():
     lattice = NamedLattices.E10
     generators = lattice.module_generators()
-    return lattice, generators, primitive_isotropic(lattice, (generators.unrank(0),))
+    return lattice, generators, primitive_isotropic(lattice, (generators[0],))
 
 
 def _acts_as_identity(restriction, module) -> bool:
@@ -47,8 +47,8 @@ def test_the_isotropic_line_of_E10_reduces_to_E8() -> None:
 
 def test_eichler_transvections_lie_in_the_unipotent_radical() -> None:
     lattice, generators, line = _lorentzian_line()
-    isotropic, hyperbolic_partner = generators.unrank(0), generators.unrank(1)
-    root = generators.unrank(2)
+    isotropic, hyperbolic_partner = generators[0], generators[1]
+    root = generators[2]
     assert lattice.b(isotropic, root) == 0
     assert root.q() == -2
 
@@ -68,8 +68,8 @@ def test_eichler_transvections_lie_in_the_unipotent_radical() -> None:
 
 def test_the_eichler_transvections_of_a_line_form_an_abelian_group() -> None:
     lattice, generators, line = _lorentzian_line()
-    isotropic = generators.unrank(0)
-    first, second = generators.unrank(2), generators.unrank(3)
+    isotropic = generators[0]
+    first, second = generators[2], generators[3]
 
     left = line.eichler_transvection(first)
     right = line.eichler_transvection(second)
@@ -104,7 +104,7 @@ def test_the_parabolic_subgroup_is_larger_than_its_unipotent_radical() -> None:
 
 def test_the_levi_descent_of_a_transvection_is_the_identity_of_the_reduction() -> None:
     _lattice, generators, line = _lorentzian_line()
-    transvection = line.eichler_transvection(generators.unrank(2))
+    transvection = line.eichler_transvection(generators[2])
 
     quotient = line.isotropic_quotient()
     descent = line.levi_quotient_action(transvection)
@@ -116,15 +116,15 @@ def test_the_levi_descent_of_a_transvection_is_the_identity_of_the_reduction() -
 def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> None:
     lattice = NamedLattices.U + NamedLattices.U
     generators = lattice.module_generators()
-    first = primitive_isotropic(lattice, (generators.unrank(0),))
-    second = primitive_isotropic(lattice, (generators.unrank(2),))
+    first = primitive_isotropic(lattice, (generators[0],))
+    second = primitive_isotropic(lattice, (generators[2],))
 
     assert first.isotropic_reduction().is_isometric(NamedLattices.U)
     assert second.isotropic_reduction().is_isometric(NamedLattices.U)
 
     witness = first.transporter_witness_to(second)
     assert witness is not None
-    assert second.inclusion().is_in_image(witness(generators.unrank(0)))
+    assert second.inclusion().is_in_image(witness(generators[0]))
     assert first.is_equivalent_to(second)
 
 
@@ -135,7 +135,7 @@ def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -
     # line, so passing to the rational line forgets exactly the index, and the
     # saturation is what recovers it.
     lattice = NamedLattices.U
-    vector = lattice.module_generators().unrank(0)
+    vector = lattice.module_generators()[0]
     assert vector.parent() is lattice
     assert vector.q() == 0
 
@@ -160,7 +160,7 @@ def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -
     rational = lattice.base_change(ZZ.Mor(QQ)(lambda integer: QQ(integer)))
     assert rational.base_ring() is QQ
     assert rational.module_rank() == lattice.module_rank()
-    rational_vector = rational.module_generators().unrank(0)
+    rational_vector = rational.module_generators()[0]
     rational_line = rational.subobject_on((2 * rational_vector,))
     # Over a field every subobject is saturated, so the doubled vector spans
     # the same rational line as the vector itself.

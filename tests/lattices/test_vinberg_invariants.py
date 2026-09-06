@@ -43,10 +43,10 @@ def test_membership_in_the_reflection_cosines_is_decided_exactly() -> None:
     assert AA(0) in cosines, "cos(pi/2) = 0"
 
     # Position k of the enumeration carries n = k + 1.
-    assert cosines.unrank(2) == AA(1) / 2
-    assert cosines.unrank(4) == AA((1 + sqrt(5)) / 4)
-    assert cosines.rank(AA(1) / 2) == 2
-    assert cosines.rank(AA(0)) == 1
+    assert cosines[2] == AA(1) / 2
+    assert cosines[4] == AA((1 + sqrt(5)) / 4)
+    assert cosines.ranking_map()(AA(1) / 2) == 2
+    assert cosines.ranking_map()(AA(0)) == 1
 
 
 def test_the_invariant_of_a_root_pair_gives_back_the_coxeter_bond() -> None:

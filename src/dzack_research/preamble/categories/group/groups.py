@@ -1860,7 +1860,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
                 characters = self.irreducible_characters()
                 size = int(characters.cardinality())
-                field = characters.unrank(0).codomain()
+                field = characters[0].codomain()
                 return MatrixSpace(field, size, size).from_rows(tuple(tuple(character.values()) for character in characters))
 
             def left_cosets(self, subgroup):

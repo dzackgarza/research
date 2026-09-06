@@ -100,7 +100,7 @@ def _family_on_finite_ordered_set(index_set, values, *, name, noun):
 
     return finite_indexed_family(
         index_set,
-        lambda index: entries[int(index_set.rank(index))],
+        lambda index: entries[int(index_set.ranking_map()(index))],
         name=name,
     )
 
@@ -129,7 +129,7 @@ def _finite_chart_family(charts):
         index_set = finite_ordered_set(range(len(entries)))
         family = finite_indexed_family(
             index_set,
-            lambda index: entries[int(index_set.rank(index))],
+            lambda index: entries[int(index_set.ranking_map()(index))],
             name="Affine charts of a finite scheme gluing",
         )
     if int(family.cardinality().finite_value()) == 0:
@@ -170,7 +170,7 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
         return not self == other
 
     def __hash__(self) -> int:
-        position = self.gluing_datum().chart_index_set().rank(self.chart_index())
+        position = self.gluing_datum().chart_index_set().ranking_map()(self.chart_index())
         return hash((id(self.gluing_datum()), int(position), "open-image"))
 
     def _repr_(self):
@@ -229,7 +229,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         return not self == other
 
     def __hash__(self) -> int:
-        position = self.gluing_datum().chart_index_set().rank(self.chart_index())
+        position = self.gluing_datum().chart_index_set().ranking_map()(self.chart_index())
         return hash((id(self.gluing_datum()), int(position)))
 
     def _repr_(self):
@@ -708,7 +708,8 @@ class _FiniteSchemeGluingDatum(SageObject):
         if left_index == right_index:
             raise ValueError("a scheme-gluing transition is between distinct charts")
         indices = self.chart_index_set()
-        if indices.rank(left_index) < indices.rank(right_index):
+        index_ranking = indices.ranking_map()
+        if index_ranking(left_index) < index_ranking(right_index):
             return left_index, right_index
         return right_index, left_index
 
@@ -765,10 +766,11 @@ class _FiniteSchemeGluingDatum(SageObject):
         source_index = self.normalize_chart_index(source_index)
         middle_index = self.normalize_chart_index(middle_index)
         target_index = self.normalize_chart_index(target_index)
+        chart_ranking = self.chart_index_set().ranking_map()
         if len({
-            self.chart_index_set().rank(source_index),
-            self.chart_index_set().rank(middle_index),
-            self.chart_index_set().rank(target_index),
+            chart_ranking(source_index),
+            chart_ranking(middle_index),
+            chart_ranking(target_index),
         }) != 3:
             raise ValueError("a triple overlap requires three distinct chart indices")
         others = sorted(

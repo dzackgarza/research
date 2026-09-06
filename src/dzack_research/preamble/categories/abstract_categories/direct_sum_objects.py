@@ -55,11 +55,11 @@ class DirectSumObjects(OwnedCategory):
 def _binary_decomposition_is_valid(underlying_object, summands) -> bool:
     if summands.cardinality() != cardinal(2):
         return False
-    left = summands.unrank(0)
-    right = summands.unrank(1)
+    left = summands[0]
+    right = summands[1]
     try:
         represented = underlying_object.biproduct_factors()
-        return represented.unrank(0) is left and represented.unrank(1) is right
+        return represented[0] is left and represented[1] is right
     except (AttributeError, TypeError, ValueError):
         pass
 
@@ -106,7 +106,7 @@ def DirectSumDecomposition(underlying_object, summands, summand_index_set=None):
             raise ValueError("the summand family and its index set have different cardinalities")
         family = indexed_family(
             labels,
-            lambda label: values[int(labels.rank(label))],
+            lambda label: values[int(labels.ranking_map()(label))],
             name=f"Direct summands of {underlying_object}",
         )
 
@@ -116,7 +116,7 @@ def DirectSumDecomposition(underlying_object, summands, summand_index_set=None):
             "the represented backend cannot verify that the stated family is a direct-sum decomposition"
         )
     if size == cardinal(1):
-        only = family.unrank(0)
+        only = family[0]
         if only is not underlying_object:
             try:
                 inclusion = only.inclusion()

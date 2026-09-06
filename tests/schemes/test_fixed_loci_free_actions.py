@@ -89,7 +89,7 @@ def test_the_artin_schreier_translation_acts_freely_on_the_affine_line() -> None
 
 def test_the_sign_of_a_translation_is_that_squaring_it_returns_the_identity() -> None:
     _field, group, algebra, x, acted = _translation_of_the_affine_line()
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     pullback = acted.action_of(generator).coordinate_algebra_morphism()
 
     assert pullback(x) == x + algebra.one()

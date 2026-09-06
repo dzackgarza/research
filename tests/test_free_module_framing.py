@@ -10,8 +10,8 @@ def test_rank_free_module_uses_the_canonical_owned_finite_ordinal_framing() -> N
     labels = module.module_generating_set()
 
     assert labels is Sets.Δ[2]
-    assert labels.unrank(0).parent() is NN
-    assert labels.unrank(2).parent() is NN
+    assert labels[0].parent() is NN
+    assert labels[2].parent() is NN
     assert module.module_generator(0) == module.module_generator(NN(0))
 
 

@@ -127,8 +127,8 @@ def test_finite_ordinals_are_totally_ordered() -> None:
     four = Sets.Δ[3]
     assert four.cardinality() == 4
     assert four in TotallyOrderedSets()
-    assert four.unrank(0) == four(0)
-    assert four.rank(four(2)) == 2
+    assert four[0] == four(0)
+    assert four.ranking_map()(four(2)) == 2
     assert four.le(four(1), four(3))
     assert not four.le(four(3), four(1))
 

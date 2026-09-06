@@ -148,7 +148,7 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
             labels = self.module_generating_set()
             return self.element_class(
                 self,
-                self._preamble_module_generator_values[labels.position(label)],
+                self._preamble_module_generator_values[labels.ranking_map()(label)],
             )
 
         def _element_constructor_(self, value):

@@ -116,7 +116,7 @@ def test_the_decomposition_summands_are_the_biproduct_factors() -> None:
     factors = lattice.biproduct_factors()
     assert summands.cardinality() == factors.cardinality()
     assert all(
-        summands.unrank(position) is factors.unrank(position)
+        summands[position] is factors[position]
         for position in range(int(summands.cardinality()))
     )
     # The sum associates, so the immediate factors are two while the

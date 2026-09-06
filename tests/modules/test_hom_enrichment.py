@@ -152,7 +152,7 @@ def test_presented_pid_kernel_is_an_owned_subobject_with_exact_lift() -> None:
     inclusion = kernel.inclusion()
     invariant_factors = kernel.invariant_factors()
     assert invariant_factors.cardinality() == 1
-    assert invariant_factors.unrank(0) == ZZ(2)
+    assert invariant_factors[0] == ZZ(2)
 
     two_x = source.scalar_multiple(ZZ(2), source.module_generator("x"))
     lifted = inclusion.lift(two_x)

@@ -177,7 +177,7 @@ def test_orthogonal_complement_uses_the_image_of_an_arbitrary_morphism() -> None
 
 def test_isotropic_reduction_of_a_line_in_u_plus_u_is_u() -> None:
     lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
-    isotropic_vector = lattice.module_generators().unrank(0)
+    isotropic_vector = lattice.module_generators()[0]
     isotropic_line = lattice.subobject_on((isotropic_vector,))
 
     reduction = isotropic_line.isotropic_reduction()
@@ -192,7 +192,7 @@ def test_primitive_a1_and_a2_complements_in_e8_have_e7_and_e6_discriminants() ->
     e8 = Lattices(ZZ)("E8")
     module_generators = e8.module_generators()
 
-    a1 = e8.subobject_on((module_generators.unrank(0),))
+    a1 = e8.subobject_on((module_generators[0],))
     e7 = a1.orthogonal_complement()
 
     assert a1.is_primitive()
@@ -201,14 +201,14 @@ def test_primitive_a1_and_a2_complements_in_e8_have_e7_and_e6_discriminants() ->
     assert abs(e7.determinant()) == 2
     e7_factors = e7.discriminant_module().invariant_factors()
     assert e7_factors.cardinality() == 1
-    assert e7_factors.unrank(0) == 2
+    assert e7_factors[0] == 2
 
     adjacent_pair = next(
-        (module_generators.unrank(left_position), module_generators.unrank(right_position))
+        (module_generators[left_position], module_generators[right_position])
         for left_position in range(int(module_generators.cardinality()))
         for right_position in range(left_position + 1, int(module_generators.cardinality()))
-        if module_generators.unrank(left_position).b(
-            module_generators.unrank(right_position)
+        if module_generators[left_position].b(
+            module_generators[right_position]
         ) != 0
     )
     a2 = e8.subobject_on(adjacent_pair)
@@ -220,7 +220,7 @@ def test_primitive_a1_and_a2_complements_in_e8_have_e7_and_e6_discriminants() ->
     assert abs(e6.determinant()) == 3
     e6_factors = e6.discriminant_module().invariant_factors()
     assert e6_factors.cardinality() == 1
-    assert e6_factors.unrank(0) == 3
+    assert e6_factors[0] == 3
 
 
 def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice() -> None:
@@ -377,7 +377,7 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
         return plane((right, left))
 
     group_lattice = Lattices(ZZ[group])(plane, swap)
-    involution = group_lattice.group().group_generators().unrank(0)
+    involution = group_lattice.group().group_generators()[0]
 
     assert group_lattice.action().domain() is group
     assert group_lattice.action().codomain() is group_lattice.Aut()

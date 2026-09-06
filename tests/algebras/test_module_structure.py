@@ -41,8 +41,8 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     order = _gaussian_integers()
     eta = order.algebra_structure_morphism()
     generators = order.module_generators()
-    one = generators.unrank(0)
-    imag = generators.unrank(1)
+    one = generators[0]
+    imag = generators[1]
 
     assert eta.domain() is ZZ
     assert eta.codomain() is order.ring_center()
@@ -127,8 +127,8 @@ def test_finite_free_quotient_algebra_uses_its_module_tensor_for_multiplication(
 def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -> None:
     order = _gaussian_integers()
     generators = order.module_generators()
-    one = generators.unrank(0)
-    imag = generators.unrank(1)
+    one = generators[0]
+    imag = generators[1]
     multiplication = order.multiplication_morphism()
     tensor = multiplication.domain()
 
@@ -186,8 +186,8 @@ def test_algebras_intern_a_module_from_its_multiplication_morphism() -> None:
 def test_algebras_intern_the_multiplication_of_an_order() -> None:
     order = _gaussian_integers()
     generators = order.module_generators()
-    one = generators.unrank(0)
-    imag = generators.unrank(1)
+    one = generators[0]
+    imag = generators[1]
     algebra = Algebras(ZZ)(order.multiplication_morphism())
     unit = algebra.module_generator(0)
     generator = algebra.module_generator(1)

@@ -263,7 +263,7 @@ def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
             (),
             (rank, rank),
             (
-                module.b(basis.unrank(i), basis.unrank(j))
+                module.b(basis[i], basis[j])
                 for i in range(rank)
                 for j in range(rank)
             ),
@@ -971,7 +971,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
 
             target = OwnedGroups().C(2)
-            exchange = target.group_generators().unrank(0)
+            exchange = target.group_generators()[0]
             return SetMorphism(
                 self.Aut().Mor(target),
                 lambda isometry: target.one()
@@ -1189,7 +1189,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             keys = self.module_generating_set()
             if index not in keys:
-                index = keys.unrank(int(index))
+                index = keys[int(index)]
             return self.element_class(self, self._module.module_generator(index))
 
         def b(self, left, right):
@@ -2679,8 +2679,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             if rank == Infinity:
                 if not coefficients:
                     return []
-                last = max(int(keys.rank(key)) for key in coefficients)
-                return [coefficients.get(keys.unrank(index), zero) for index in range(last + 1)]
+                last = max(int(keys.ranking_map()(key)) for key in coefficients)
+                return [coefficients.get(keys[index], zero) for index in range(last + 1)]
             return [coefficients.get(key, zero) for key in keys]
 
         def to_tuple(self):
@@ -2821,7 +2821,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 )
                 return self.linear_combination(
                     {
-                        labels.unrank(int(normalized_labels.rank(normalized_label))): coefficient
+                        labels[int(normalized_labels.ranking_map()(normalized_label))]: coefficient
                         for normalized_label, coefficient in module_coefficients(
                             normalized_element, normalized
                         ).items()

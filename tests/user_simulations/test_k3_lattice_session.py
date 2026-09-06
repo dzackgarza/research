@@ -71,7 +71,7 @@ def test_a_catalogue_involution_session(name) -> None:
     assert invariant.discriminant_group().cardinality() == coinvariant_lattice.discriminant_group().cardinality()
     assert invariant.is_p_elementary(2)
     assert coinvariant_lattice.is_p_elementary(2)
-    assert acted.character()(group.group_generators().unrank(0)) == invariant_rank - coinvariant_rank
+    assert acted.character()(group.group_generators()[0]) == invariant_rank - coinvariant_rank
     assert acted.character()(group.one()) == 22
 
     # Nikulin's (r, a, delta) for the invariant lattice.

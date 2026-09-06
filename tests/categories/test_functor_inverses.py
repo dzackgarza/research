@@ -51,7 +51,7 @@ def test_algebra_transpose_uses_the_left_functors_recorded_preimage() -> None:
 def test_abelianization_transpose_uses_the_quotient_projection_on_its_domain() -> None:
     group = Groups.S(3)
     target = Groups.C(6)
-    target_generator = target.group_generators().unrank(0)
+    target_generator = target.group_generators()[0]
     group_generators = group.group_generators()
     group_morphism = group_homset(group, target)(
         {
@@ -108,7 +108,7 @@ def test_free_group_transpose_uses_the_left_functors_recorded_preimage() -> None
     adjunction = FreeGroupUnderlyingSetAdjunction()
     free_group = adjunction.left_adjoint()(source)
     target = Groups.C(3)
-    target_generator = target.group_generators().unrank(0)
+    target_generator = target.group_generators()[0]
     generator_map = Sets().Mor(source, target)(lambda point: target_generator if point == 11 else target_generator**2)
     group_morphism = group_homset(free_group, target)(generator_map)
 

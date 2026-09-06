@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfSets,
+    EnumeratedSets,
     Sets,
 )
 from dzack_research.preamble.refine import realize_owned_category
@@ -288,13 +289,11 @@ class ModuleMorphism(Morphism):
                 raise TypeError("sequence generator-image syntax requires a finite framing; use a callable or indexed family for an infinite framing")
             if len(values) != int(size.finite_value()):
                 raise ValueError("the number of generator images must equal the framing size")
-            try:
-                labels.rank(labels.unrank(0)) if values else None
-            except AttributeError as error:
-                raise TypeError("sequence generator-image syntax requires a ranked framing") from error
+            if labels not in EnumeratedSets():
+                raise TypeError("sequence generator-image syntax requires a ranked framing")
             self._generator_images = indexed_family(
                 labels,
-                lambda label: values[int(labels.rank(label))],
+                lambda label: values[int(labels.ranking_map()(label))],
                 name="Module-morphism generator-image family",
             )
             self._generator_image = self._generator_images.value
@@ -798,7 +797,7 @@ class ModuleMorphism(Morphism):
             {
                 label: target.linear_combination(
                     {
-                        labels.unrank(position): coefficient
+                        labels[position]: coefficient
                         for position, source_generator in enumerate(source_generators)
                         if (
                             coefficient := codomain.b(
@@ -1583,8 +1582,8 @@ class TensorProductModuleHomset(ModuleHomset):
 
             def generator_image(pair):
                 value = by_position[
-                    int(left_labels.rank(pair.component(0))),
-                    int(right_labels.rank(pair.component(1))),
+                    int(left_labels.ranking_map()(pair.component(0))),
+                    int(right_labels.ranking_map()(pair.component(1))),
                 ]
                 return value if getattr(value, "parent", lambda: None)() is self.codomain() else self.codomain()(value)
 

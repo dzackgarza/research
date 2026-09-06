@@ -76,14 +76,14 @@ def test_a_smaller_boundary_is_not_log_calabi_yau() -> None:
     group = plane.torus_invariant_divisor_group()
     partial = group.zero()
     for ray in rays:
-        if ray != rays.unrank(0):
+        if ray != rays[0]:
             partial = partial + plane.torus_invariant_prime_divisor(ray)
     pair = ToricLogPair(plane, partial)
 
     assert not pair.is_toric_boundary()
     assert not pair.is_log_calabi_yau()
     assert pair.log_canonical_divisor() == -plane.torus_invariant_prime_divisor(
-        rays.unrank(0)
+        rays[0]
     )
 
 

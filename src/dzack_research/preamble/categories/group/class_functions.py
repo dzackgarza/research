@@ -38,7 +38,7 @@ class FiniteGroupClassFunction(SetMorphism):
         self._values = finite_indexed_family(
             self._representatives,
             lambda representative: values_by_position[
-                self._representatives.rank(representative)
+                self._representatives.ranking_map()(representative)
             ],
             name="Class-function values",
         )
@@ -88,7 +88,7 @@ class FiniteGroupClassFunction(SetMorphism):
         return int(self._values.cardinality())
 
     def __getitem__(self, index):
-        return self._values.unrank(index)
+        return self._values[index]
 
     def _repr_(self):
         return f"Class function {self.domain()} -> {self.codomain()}"

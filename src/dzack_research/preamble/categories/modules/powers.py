@@ -169,7 +169,7 @@ class QuadraticModuleMorphism(ModuleMorphism):
             (),
             (rank, rank),
             (
-                self._gram_entry(labels.unrank(i), labels.unrank(j))
+                self._gram_entry(labels[i], labels[j])
                 for i in range(rank)
                 for j in range(rank)
             ),
@@ -226,10 +226,10 @@ class QuadraticModuleHomset(ModuleHomset):
         def generator_image(selection):
             support = selection.support()
             if int(support.cardinality()) == 1:
-                label = support.unrank(0)
+                label = support[0]
                 return quadratic(source.module_generator(label))
-            left = support.unrank(0)
-            right = support.unrank(1)
+            left = support[0]
+            right = support[1]
             return (
                 quadratic(
                     source.module_generator(left)
@@ -257,8 +257,8 @@ class QuadraticModuleHomset(ModuleHomset):
         size = int(labels.cardinality())
         for i in range(size):
             for j in range(i + 1, size):
-                left = labels.unrank(i)
-                right = labels.unrank(j)
+                left = labels[i]
+                right = labels[j]
                 indices = values.index_set()
                 lr = indices(lambda index: left if int(index) == 0 else right)
                 rl = indices(lambda index: right if int(index) == 0 else left)
@@ -349,11 +349,11 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
             for left, left_coefficient in coefficients.items():
                 if not left_coefficient:
                     continue
-                left_position = int(source_labels.rank(left))
+                left_position = int(source_labels.ranking_map()(left))
                 for right, right_coefficient in coefficients.items():
                     if (
                         not right_coefficient
-                        or left_position >= int(source_labels.rank(right))
+                        or left_position >= int(source_labels.ranking_map()(right))
                     ):
                         continue
                     target_label = square_labels.from_multiplicities(
@@ -373,10 +373,10 @@ class DividedSquareModules(OwnedCategoryOverBaseRing):
             def generator_image(selection):
                 support = selection.support()
                 if int(support.cardinality()) == 1:
-                    label = support.unrank(0)
+                    label = support[0]
                     return quadratic(source.module_generator(label))
-                left = support.unrank(0)
-                right = support.unrank(1)
+                left = support[0]
+                right = support[1]
                 return (
                     quadratic(
                         source.module_generator(left)
@@ -429,9 +429,9 @@ def _symmetric_relation_rows(
             for source_position, coefficient in enumerate(relation):
                 if not coefficient:
                     continue
-                source_label = source_labels.unrank(source_position)
+                source_label = source_labels[source_position]
                 target = monomial.add_label(source_label)
-                row[labels.rank(target)] += ring(coefficient)
+                row[labels.ranking_map()(target)] += ring(coefficient)
             if any(row):
                 rows.append(row)
     return rows
@@ -460,13 +460,13 @@ def _alternating_relation_rows(
             for source_position, coefficient in enumerate(relation):
                 if not coefficient:
                     continue
-                source_label = source_labels.unrank(source_position)
+                source_label = source_labels[source_position]
                 singleton = singleton_labels.from_multiplicities({source_label: 1})
                 wedge = monomial.wedge_with(singleton)
                 if wedge is None:
                     continue
                 target, sign = wedge
-                row[labels.rank(target)] += sign * ring(coefficient)
+                row[labels.ranking_map()(target)] += sign * ring(coefficient)
             if any(row):
                 rows.append(row)
     return rows
@@ -514,13 +514,13 @@ def _divided_relation_rows(
                     coefficient = ring.one()
                     for source_label in exponent.support():
                         scalar = ring(
-                            relation[int(source_labels.rank(source_label))]
+                            relation[int(source_labels.ranking_map()(source_label))]
                         )
                         coefficient *= scalar ** exponent.multiplicity(source_label)
                     if not coefficient:
                         continue
                     target = exponent.merged_with(monomial)
-                    row[labels.rank(target)] += (
+                    row[labels.ranking_map()(target)] += (
                         coefficient
                         * _divided_product_coefficient(exponent, monomial)
                     )
@@ -734,9 +734,9 @@ def tensor_power_permutation(module, degree, positions):
         factors = _flatten_tensor_label(label, degree)
         word = indexed_family(
             Sets.Δ[degree - 1],
-            lambda index: factors.unrank(
-                int(positions.unrank(int(index)))
-            ),
+            lambda index: factors[
+                int(positions[int(index)])
+            ],
             name="Permuted tensor word",
         )
         return power.module_generator(_nested_tensor_label(module, word))
@@ -764,7 +764,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
     def image_of_source_label(source_label):
         if flavor == "alternating":
             polynomial = {
-                ordered_subsets_of_size(codomain_labels, 0).unrank(0):
+                ordered_subsets_of_size(codomain_labels, 0)[0]:
                 morphism.codomain().base_ring().one()
             }
             for source_generator_label in source_label:
@@ -796,7 +796,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
             return target.linear_combination(polynomial)
 
         polynomial = {
-            multisets_of_size(codomain_labels, 0).unrank(0):
+            multisets_of_size(codomain_labels, 0)[0]:
             morphism.codomain().base_ring().one()
         }
         accumulated_degree = 0
@@ -827,7 +827,7 @@ def _power_morphism(morphism, degree: int, flavor: str):
                         continue
                     target_selection = (
                         codomain_degree_indices.from_source_rank_positions(
-                            int(codomain_labels.rank(target_label))
+                            int(codomain_labels.ranking_map()(target_label))
                             for target_label in local_selection
                         )
                     )
@@ -930,7 +930,7 @@ def divided_power_product(module, left_degree, left, right_degree, right):
                 * _divided_product_coefficient(left_selection, right_selection)
             )
             label = (
-                selection.support().unrank(0)
+                selection.support()[0]
                 if total_degree == 1
                 else selection
             )
@@ -976,7 +976,7 @@ def alternating_power_product(module, left_degree, left, right_degree, right):
             selection, sign = wedge
             coefficient = sign * left_coefficient * right_coefficient
             label = (
-                selection.support().unrank(0)
+                selection.support()[0]
                 if total_degree == 1
                 else selection
             )
@@ -992,11 +992,11 @@ def _ordered_coefficient_support(module, coefficients):
     def label_at(index):
         requested = int(index)
         for label in coefficients:
-            label_rank = int(source_labels.rank(label))
+            label_rank = int(source_labels.ranking_map()(label))
             preceding = sum(
                 1
                 for other in coefficients
-                if int(source_labels.rank(other)) < label_rank
+                if int(source_labels.ranking_map()(other)) < label_rank
             )
             if preceding == requested:
                 return label
@@ -1037,7 +1037,7 @@ def divided_power_element(module, degree, element):
         if not coefficient:
             continue
         target_selection = target_labels.from_source_rank_positions(
-            int(source_labels.rank(label)) for label in local_selection
+            int(source_labels.ranking_map()(label)) for label in local_selection
         )
         result[target_selection] = coefficient
     return target.linear_combination(result)

@@ -48,7 +48,7 @@ def _transposition_and_three_cycle(group):
 def test_the_standard_isotypic_component_carries_the_standard_representation() -> None:
     group, representation = _permutation_module()
     transposition, three_cycle = _transposition_and_three_cycle(group)
-    standard = representation.isotypic_decomposition().nontrivial_components().unrank(0)
+    standard = representation.isotypic_decomposition().nontrivial_components()[0]
 
     equivariant = representation.restrict_action_to(standard.inclusion())
     restricted = equivariant.domain()

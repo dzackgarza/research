@@ -249,7 +249,7 @@ def definite_complement_extensions(lattice, left, right):
     ambient_generators = lattice.module_generators()
     source_line_vector = source.line.inclusion().lift(source.vector)
     target_line_vector = target.line.inclusion().lift(target.vector)
-    target_line_generator = target_line.module_generators().unrank(0)
+    target_line_generator = target_line.module_generators()[0]
     source_coefficient = source_line_vector.to_tuple()[0]
     target_coefficient = target_line_vector.to_tuple()[0]
     if source_coefficient not in (ring.one(), -ring.one()) or target_coefficient not in (ring.one(), -ring.one()):
@@ -293,7 +293,7 @@ def definite_complement_extensions(lattice, left, right):
             sum(
                 (
                     lattice.scalar_multiple(
-                        integral[row, column], ambient_generators.unrank(row)
+                        integral[row, column], ambient_generators[row]
                     )
                     for row in range(source_rank)
                     if integral[row, column]

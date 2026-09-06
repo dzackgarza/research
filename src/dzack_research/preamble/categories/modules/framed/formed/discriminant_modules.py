@@ -790,7 +790,7 @@ def _all_discriminant_subgroups(ambient):
             candidate_generators = finite_indexed_family(
                 indices,
                 lambda position, embedded=embedded, element=element, existing_count=existing_count: (
-                    embedded.unrank(int(position))
+                    embedded[int(position)]
                     if int(position) < existing_count
                     else element
                 ),

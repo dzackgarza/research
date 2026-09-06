@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
@@ -199,7 +199,7 @@ class _SparseFreeModuleParent:
         labels = self.module_generating_set()
 
         if isinstance(value, (tuple, list)):
-            if not hasattr(labels, "unrank"):
+            if labels not in EnumeratedSets():
                 raise TypeError(
                     "coordinate sequence syntax requires an ordered enumerated framing"
                 )
@@ -212,7 +212,7 @@ class _SparseFreeModuleParent:
             if len(value) != int(cardinality.finite_value()):
                 raise ValueError("coordinate tuple has the wrong length")
             coefficients = {
-                labels.unrank(position): coefficient
+                labels[position]: coefficient
                 for position, coefficient in enumerate(value)
                 if coefficient != 0
             }
@@ -225,7 +225,7 @@ class _SparseFreeModuleParent:
             else:
                 return self.element_class(
                     self,
-                    {labels.unrank(0): scalar} if scalar != self.base_ring().zero() else {},
+                    {labels[0]: scalar} if scalar != self.base_ring().zero() else {},
                 )
         if value in labels:
             # A label is its basis element: the unit ``S -> F(S)`` of the
@@ -543,7 +543,7 @@ def _span_basis_elements(module, module_generating_set):
             [
                 _engine_element(
                     ring,
-                    coefficients.get(support_labels.unrank(position), ring.zero()),
+                    coefficients.get(support_labels[position], ring.zero()),
                 )
                 for position in range(support_count)
             ]
@@ -559,7 +559,7 @@ def _span_basis_elements(module, module_generating_set):
         row = basis.row(int(position))
         return module.linear_combination(
             {
-                support_labels.unrank(column): ring._from_engine_element(row[column])
+                support_labels[column]: ring._from_engine_element(row[column])
                 for column in range(support_count)
                 if row[column]
             }
@@ -630,7 +630,7 @@ def _module_subobject_constructor_data(module, basis):
     labels = Sets.Δ[int(basis.cardinality()) - 1]
 
     def embedded(label):
-        return basis.unrank(int(label))
+        return basis[int(label)]
 
     support_labels = _finite_support_labels(module, basis)
     source_rank = int(basis.cardinality())
@@ -643,8 +643,8 @@ def _module_subobject_constructor_data(module, basis):
         ).from_rows(
             tuple(
                 tuple(
-                    module_coefficients(basis.unrank(i), module).get(
-                        support_labels.unrank(j),
+                    module_coefficients(basis[i], module).get(
+                        support_labels[j],
                         ring.zero(),
                     )
                     for j in range(support_rank_count)
@@ -667,14 +667,14 @@ def _module_subobject_constructor_data(module, basis):
         solution = _solve_left_integrally(
             coordinate_matrix,
             (
-                coefficients.get(support_labels.unrank(j), ring.zero())
+                coefficients.get(support_labels[j], ring.zero())
                 for j in range(support_rank_count)
             ),
             ring,
         )
         return source.linear_combination(
             {
-                labels.unrank(i): coefficient
+                labels[i]: coefficient
                 for i, coefficient in enumerate(solution)
                 if coefficient
             }
@@ -722,7 +722,7 @@ class FreeModuleGeneratorSet(Parent):
         label = self._generator_label(element)
         if label is None:
             raise ValueError(f"{element} is not a canonical module generator")
-        return self._module.module_generating_set().position(label)
+        return self._module.module_generating_set().ranking_map()(label)
 
     def _repr_(self):
         size = self.cardinality()

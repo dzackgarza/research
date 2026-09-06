@@ -61,7 +61,7 @@ def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() ->
     assert equalizer.module_rank() == 0
     invariant_factors = coequalizer.invariant_factors()
     assert invariant_factors.cardinality() == 1
-    assert invariant_factors.unrank(0) == ZZ(2)
+    assert invariant_factors[0] == ZZ(2)
 
 
 def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> None:
@@ -383,7 +383,7 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
     assert unit(group_generators[0]) == abelianization.one()
     assert unit(group_generators[1]) != abelianization.one()
 
-    target_generator = target.group_generators().unrank(0)
+    target_generator = target.group_generators()[0]
     from dzack_research.preamble.categories.group import group_homset
 
     assert adjunction.right_adjoint()(target) is target

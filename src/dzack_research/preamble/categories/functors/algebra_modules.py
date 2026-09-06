@@ -106,7 +106,7 @@ def _free_algebra_underlying_module(algebra, source, flavor):
                     for index, candidate in enumerate(engine.monoid().gens())
                     if candidate == generator
                 )
-                return source_labels.unrank(position)
+                return source_labels[position]
 
             def tensor_term(item):
                 monomial, coefficient = item
@@ -132,7 +132,7 @@ def _free_algebra_underlying_module(algebra, source, flavor):
             def symmetric_term(item):
                 exponents, coefficient = item
                 multiplicities = {
-                    source_labels.unrank(position): int(exponent)
+                    source_labels[position]: int(exponent)
                     for position, exponent in enumerate(exponents)
                     if exponent
                 }

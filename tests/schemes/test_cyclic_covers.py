@@ -47,7 +47,7 @@ def test_the_cover_algebra_is_free_of_rank_two_on_the_powers_of_z() -> None:
 
 def test_the_deck_involution_scales_z_and_fixes_the_ramification_subscheme() -> None:
     _algebra, _x, covers, cover = _hyperelliptic_double_cover()
-    generator = covers.deck_group().group_generators().unrank(0)
+    generator = covers.deck_group().group_generators()[0]
     involution = cover.action_of(generator)
     z = cover.cover_variable()
 
@@ -72,7 +72,7 @@ def test_the_branch_subscheme_of_the_double_cover_is_four_points() -> None:
 
 def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
     algebra, _x, covers, cover = _hyperelliptic_double_cover()
-    generator = covers.deck_group().group_generators().unrank(0)
+    generator = covers.deck_group().group_generators()[0]
     quotient_morphism = cover.quotient_morphism()
 
     assert cover in CyclicCovers(algebra, 2)
@@ -86,7 +86,7 @@ def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
 
 def test_the_cover_lives_over_its_base_and_its_deck_map_is_a_map_over_the_base() -> None:
     algebra, _x, covers, cover = _hyperelliptic_double_cover()
-    generator = covers.deck_group().group_generators().unrank(0)
+    generator = covers.deck_group().group_generators()[0]
     schemes = Schemes(algebra)
     relative_schemes = schemes.slice_category()
     relative_cover = schemes.as_slice_object(cover)

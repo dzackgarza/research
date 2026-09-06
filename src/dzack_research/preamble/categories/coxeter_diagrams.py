@@ -191,11 +191,12 @@ class CoxeterDiagrams(OwnedCategory):
                 raise ValueError("an induced subdiagram uses vertices of this diagram")
             matrix_ = self.coxeter_matrix()
             entries = [[matrix_[left, right] for right in vertices] for left in vertices]
-            names = tuple(self._names[self.index_set().position(vertex)] for vertex in vertices)
+            ranking = self.index_set().ranking_map()
+            names = tuple(self._names[ranking(vertex)] for vertex in vertices)
             preferred_positions = None if self._preferred_positions is None else {vertex: self._preferred_positions[vertex] for vertex in vertices}
             if self.is_rooted():
                 selected = finite_ordered_set(
-                    tuple(self.index_set().position(vertex) for vertex in vertices)
+                    tuple(self.index_set().ranking_map()(vertex) for vertex in vertices)
                 )
                 roots = tuple(self._roots[position] for position in selected)
                 gram = tensor(
@@ -576,8 +577,9 @@ class CoxeterDiagrams(OwnedCategory):
         def _root_pair_discriminant(self, left, right):
             r"""Return \(b(r_v,r_w)^2-q(r_v)q(r_w)\) for the two vertices."""
             gram = self.root_gram_tensor()
-            i = self.index_set().position(left)
-            j = self.index_set().position(right)
+            ranking = self.index_set().ranking_map()
+            i = ranking(left)
+            j = ranking(right)
             return gram[i, j] ** 2 - gram[i, i] * gram[j, j]
 
         def mirrors_are_parallel(self, left, right) -> bool:

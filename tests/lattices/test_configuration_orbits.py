@@ -59,7 +59,7 @@ def test_orthogonal_roots_admit_every_permutation_but_a_chain_does_not() -> None
 def test_the_swap_of_the_A2_simple_roots_lifts_to_an_involution_of_O_A2() -> None:
     root_lattice = Lattices(ZZ)("A2")
     positions = root_lattice.module_generating_set()
-    first, second = positions.unrank(0), positions.unrank(1)
+    first, second = positions[0], positions[1]
     configuration = vector_configuration(root_lattice, root_lattice.module_generators())
 
     swap = {first: second, second: first}.__getitem__
@@ -82,7 +82,7 @@ def test_the_swap_of_the_A2_simple_roots_lifts_to_an_involution_of_O_A2() -> Non
 def test_a_permutation_moving_a_pairing_is_refused() -> None:
     root_lattice = Lattices(ZZ)("A3")
     positions = root_lattice.module_generating_set()
-    first, second, third = (positions.unrank(index) for index in range(3))
+    first, second, third = (positions[index] for index in range(3))
     configuration = vector_configuration(root_lattice, root_lattice.module_generators())
 
     # The A3 chain is 1-2-3, so exchanging an end with the middle breaks the

@@ -16,8 +16,8 @@ from dzack_research.preamble.rings import MatrixSpace
 def test_the_two_by_two_matrix_algebra_does_not_commute() -> None:
     matrices = MatrixSpace(QQ, 2)
     rows = matrices.row_index_set()
-    first = matrices.matrix_unit(rows.unrank(0), rows.unrank(1))
-    second = matrices.matrix_unit(rows.unrank(1), rows.unrank(0))
+    first = matrices.matrix_unit(rows[0], rows[1])
+    second = matrices.matrix_unit(rows[1], rows[0])
 
     assert first * second != second * first
     assert matrices.is_commutative() is False

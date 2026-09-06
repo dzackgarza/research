@@ -185,7 +185,7 @@ def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):
     if variable_count == 0:
         return target_ring(coefficient_lift(relation))
     if variable_count == 1:
-        variable = target_variables.unrank(0)
+        variable = target_variables[0]
         return sum(
             (
                 coefficient_lift(coefficient) * variable**exponent
@@ -197,7 +197,7 @@ def _lift_polynomial(relation, coefficient_lift, target_variables, target_ring):
         (
             coefficient_lift(coefficient)
             * target_ring.prod(
-                target_variables.unrank(position) ** int(exponent)
+                target_variables[position] ** int(exponent)
                 for position, exponent in enumerate(exponents)
             )
             for exponents, coefficient in relation.dict().items()

@@ -90,8 +90,8 @@ def coordinate_family(left_labels, right_labels, value_module, datum, *, name):
     return indexed_family(
         indices,
         lambda pair: entries[
-            int(left_labels.rank(pair.component(0))),
-            int(right_labels.rank(pair.component(1))),
+            int(left_labels.ranking_map()(pair.component(0))),
+            int(right_labels.ranking_map()(pair.component(1))),
         ],
         name=name,
     )

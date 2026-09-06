@@ -84,7 +84,7 @@ def test_local_modification_is_exactly_p_primary_isotropic_glue() -> None:
 
 def test_nonisotropic_glue_is_rejected_before_overlattice_construction() -> None:
     discriminant = Lattices(ZZ)("A1").discriminant_quadratic_form()
-    generator = discriminant.smith_form_module_generators().unrank(0)
+    generator = discriminant.smith_form_module_generators()[0]
     subgroup = discriminant.subgroup_on((generator,))
 
     assert not subgroup.is_isotropic()

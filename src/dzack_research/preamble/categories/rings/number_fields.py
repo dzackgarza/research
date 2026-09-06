@@ -424,7 +424,7 @@ class OrdersWithChosenIntegralBasis(Category):
             engine = _engine_ring(self)
             if engine is SageZZ:
                 return self._from_engine_element(SageZZ.one())
-            return self._from_engine_element(engine.basis()[labels.position(label)])
+            return self._from_engine_element(engine.basis()[labels.ranking_map()(label)])
 
         @cached_method
         def module_generators(self):

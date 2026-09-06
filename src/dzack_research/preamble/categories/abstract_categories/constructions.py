@@ -125,7 +125,7 @@ def Coequalizer(left_morphism, right_morphism):
 
 def _nonempty_parallel_family(morphisms, construction):
     try:
-        reference = morphisms.unrank(0)
+        reference = morphisms[0]
     except (AttributeError, IndexError) as error:
         raise ValueError(f"a {construction} family must be nonempty") from error
     return reference

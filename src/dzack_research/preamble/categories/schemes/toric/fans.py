@@ -458,7 +458,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
             return finite_indexed_family(
                 generators,
                 lambda generator: integers(
-                    int(multiplicities[int(generators.rank(generator))])
+                    int(multiplicities[int(generators.ranking_map()(generator))])
                 ),
                 name="Semigroup multiplicities of a character",
             )

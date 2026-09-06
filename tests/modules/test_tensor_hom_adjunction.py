@@ -47,7 +47,7 @@ def test_tensor_product_of_presented_modules_has_the_bilinear_universal_property
     # Universality is uniqueness, not merely existence.  Any linear map with
     # the required value on the universal pure tensor agrees on the selected
     # generating set of the tensor product and hence on every element.
-    tensor_label = tensor.module_generating_set().unrank(0)
+    tensor_label = tensor.module_generating_set()[0]
     competing = module_homset(tensor, right)(
         {tensor_label: beta(left_generator, right_generator)}
     )

@@ -20,7 +20,7 @@ from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
 from sage.modules.free_module_element import FreeModuleElement
 from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     NN,
     Sets,
+    ranking_isomorphism,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
@@ -107,23 +108,23 @@ class _FormalSymbols(UniqueRepresentation, Parent):
     def cardinality(self):
         return aleph0
 
-    def unrank(self, index):
-        return _formal_symbol(index)
-
-    def rank(self, elt):
-        return _formal_symbol_index(elt)
+    @cached_method
+    def ranking_map(self):
+        r"""The enumeration $e_i \mapsto i$, which is a bijection onto $\omega$."""
+        return ranking_isomorphism(self, _formal_symbol_index, _formal_symbol)
 
     def __contains__(self, elt):
         try:
-            self.rank(elt)
+            self.ranking_map()(elt)
         except TypeError, ValueError:
             return False
         return True
 
     def __iter__(self):
+        symbol_at = self.ranking_map().inverse()
         index = 0
         while True:
-            yield self.unrank(index)
+            yield symbol_at(index)
             index += 1
 
     def _repr_(self) -> str:
@@ -140,7 +141,7 @@ def _as_generating_set(keys, rank):
         return finite_ordered_image(
             positions,
             lambda position: _formal_symbol(int(position)),
-            rank=lambda symbol: positions.unrank(_formal_symbol_index(symbol)),
+            index_of=lambda symbol: positions[_formal_symbol_index(symbol)],
             name="Formal lattice generators",
         )
     if isinstance(keys, (list, tuple, range)):
@@ -173,7 +174,7 @@ def _generating_set_from_names(names, rank):
         symbols = finite_ordered_image(
             name_source,
             lambda name: SR.var(str(name).strip()),
-            rank=lambda symbol: name_source(str(symbol)),
+            index_of=lambda symbol: name_source(str(symbol)),
             name="Named lattice generators",
         )
     else:
@@ -185,7 +186,7 @@ def _generating_set_from_names(names, rank):
         symbols = finite_ordered_image(
             name_source,
             lambda name: SR.var(str(name)),
-            rank=lambda symbol: name_source(str(symbol)),
+            index_of=lambda symbol: name_source(str(symbol)),
             name="Named lattice generators",
         )
     size = symbols.cardinality()
@@ -208,7 +209,7 @@ def _resolve_key(keys, index):
     r"""Return ``index`` as an element of the generating set ``keys``."""
     if index in keys:
         return index
-    return keys.unrank(int(index))
+    return keys[int(index)]
 
 
 def _vector_coefficients(vector, module):
@@ -659,7 +660,7 @@ class _DiagonalGram(_PairingGram):
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
-            if _basis_keys(self._module).rank(key) == 0 and value == -ring.one():
+            if int(_basis_keys(self._module).ranking_map()(key)) == 0 and value == -ring.one():
                 if rank == Infinity:
                     return r"[-1]\oplus I_{\infty}"
                 if rank == 1:
@@ -678,7 +679,7 @@ class _DiagonalGram(_PairingGram):
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
-            if _basis_keys(self._module).rank(key) == 0 and value == -ring.one():
+            if int(_basis_keys(self._module).ranking_map()(key)) == 0 and value == -ring.one():
                 if rank == Infinity:
                     return "[-1] ⊕ I_∞"
                 if rank == 1:
@@ -766,14 +767,14 @@ class _BiproductGram(_PairingGram):
         ).items():
             left_keys = _basis_keys(self._left._module)
             position = _basis_position(left_keys, label)
-            result[keys.unrank(position)] = value
+            result[keys[position]] = value
         for label, value in generator_pairings(
             self._right,
             _lattice_vector_from_coefficients(self._right, right_part),
         ).items():
             right_keys = _basis_keys(self._right._module)
             position = _basis_position(right_keys, label)
-            result[keys.unrank(n + position)] = value
+            result[keys[n + position]] = value
         return result
 
     def __call__(self, left, right):
@@ -847,12 +848,14 @@ class _ColimitGram(_PairingGram):
         coefficients = _vector_coefficients(vector, self._module)
         if not coefficients:
             return {}
-        stage = self._stage_at(max(int(generating_set.rank(key)) for key in coefficients) + 1)
+        ranking = generating_set.ranking_map()
+        stage = self._stage_at(max(int(ranking(key)) for key in coefficients) + 1)
         stage_vector = _lattice_vector_from_coefficients(
             stage,
-            {int(generating_set.rank(key)): value for key, value in coefficients.items()},
+            {int(ranking(key)): value for key, value in coefficients.items()},
         )
-        return {generating_set.unrank(int(_basis_keys(stage._module).rank(label))): value for label, value in generator_pairings(stage, stage_vector).items()}
+        stage_ranking = _basis_keys(stage._module).ranking_map()
+        return {generating_set[int(stage_ranking(label))]: value for label, value in generator_pairings(stage, stage_vector).items()}
 
     def __call__(self, left, right):
         generating_set = _basis_keys(self._module)
@@ -861,9 +864,10 @@ class _ColimitGram(_PairingGram):
         keys = set(coefficients_left) | set(coefficients_right)
         if not keys:
             return self.base_ring().zero()
-        stage = self._stage_at(max(int(generating_set.rank(key)) for key in keys) + 1)
-        positions_left = {int(generating_set.rank(key)): value for key, value in coefficients_left.items()}
-        positions_right = {int(generating_set.rank(key)): value for key, value in coefficients_right.items()}
+        ranking = generating_set.ranking_map()
+        stage = self._stage_at(max(int(ranking(key)) for key in keys) + 1)
+        positions_left = {int(ranking(key)): value for key, value in coefficients_left.items()}
+        positions_right = {int(ranking(key)): value for key, value in coefficients_right.items()}
         return _lattice_vector_from_coefficients(stage, positions_left).b(_lattice_vector_from_coefficients(stage, positions_right))
 
     def signature_pair(self):
@@ -1231,7 +1235,7 @@ def _basis_keys(module):
 
 def _basis_position(keys, label):
     r"""Return the owned framing rank of ``label``."""
-    return int(keys.rank(label))
+    return int(keys.ranking_map()(label))
 
 
 def _owned_free_module(data, ring, module_generators=None, names=None):
@@ -1253,7 +1257,7 @@ def _owned_free_module(data, ring, module_generators=None, names=None):
         positional = labels is NN
     else:
         positional = int(labels.cardinality()) == int(rank) and all(
-            (label := labels.unrank(position)) == position
+            (label := labels[position]) == position
             or (label in NN and int(label) == position)
             for position in range(int(rank))
         )

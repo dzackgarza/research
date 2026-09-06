@@ -1343,7 +1343,7 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
                 raise ArithmeticError(
                     "a one-variable formal power-series ring has one selected variable"
                 )
-            return self.algebra_generator(labels.unrank(0))
+            return self.algebra_generator(labels[0])
 
     class ElementMethods:
         def coefficient(self, degree):

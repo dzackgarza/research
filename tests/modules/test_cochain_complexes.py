@@ -47,7 +47,7 @@ def test_generic_cohomology_uses_kernel_image_and_cokernel() -> None:
     h1 = complex_.cohomology(1)
     invariant_factors = h1.invariant_factors()
     assert invariant_factors.cardinality() == 1
-    assert invariant_factors.unrank(0) == ZZ(2)
+    assert invariant_factors[0] == ZZ(2)
     f = C1.module_generator("f")
     one_class = h1.class_of_cycle(f)
     assert h1.cycle_representative(one_class) == f
@@ -82,7 +82,7 @@ def test_presented_pid_cohomology_uses_semantic_kernel_and_image_backends() -> N
     h1 = complex_.cohomology(1)
     invariant_factors = h0.invariant_factors()
     assert invariant_factors.cardinality() == 1
-    assert invariant_factors.unrank(0) == ZZ(2)
+    assert invariant_factors[0] == ZZ(2)
     assert h1.is_zero()
 
     two_x = source.scalar_multiple(ZZ(2), source.module_generator("x"))

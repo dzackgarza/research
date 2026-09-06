@@ -90,7 +90,7 @@ def _internal_hom_model_data(homset):
     def relation_image(pair):
         source_label = pair.component(0)
         target_label = pair.component(1)
-        source_position = int(source_labels.rank(source_label))
+        source_position = int(source_labels.ranking_map()(source_label))
         return relation_assignments.linear_combination(
             {
                 _tensor_pair(

@@ -78,7 +78,7 @@ def _normalize_lattice_generator_images(domain, images):
             label = labels(key)
         else:
             try:
-                label = labels.unrank(int(key))
+                label = labels[int(key)]
             except (AttributeError, TypeError, ValueError, IndexError):
                 label = key
         normalized[label] = value
@@ -195,7 +195,7 @@ class LatticeEmbedding(LatticeMorphism):
             labels,
             lambda position: perpendicular.linear_combination(
                 module_coefficients(
-                    quotient_module_generators.unrank(int(position))
+                    quotient_module_generators[int(position)]
                 )
             ),
             name="Isotropic-reduction lifts",
@@ -210,7 +210,7 @@ class LatticeEmbedding(LatticeMorphism):
                 (),
                 (rank, rank),
                 (
-                    perpendicular.b(lifts.unrank(i), lifts.unrank(j))
+                    perpendicular.b(lifts[i], lifts[j])
                     for i in range(rank)
                     for j in range(rank)
                 ),
@@ -427,7 +427,7 @@ class LatticeIsometry(LatticeEmbedding):
                 (
                     target_dual.scalar_multiple(
                         dual_map[target_position, source_position],
-                        target_dual_generators.unrank(target_position),
+                        target_dual_generators[target_position],
                     )
                     for target_position in range(dual_map.parent().nrows())
                     if dual_map[target_position, source_position]

@@ -152,8 +152,8 @@ def test_elements_of_lattices() -> None:
 
 def test_elements_of_groups() -> None:
     group = Groups.S(4)
-    g = group.group_generators().unrank(0)
-    h = group.group_generators().unrank(1)
+    g = group.group_generators()[0]
+    h = group.group_generators()[1]
     assert g * g.inverse() == group.one()
     assert (g * h).inverse() == h.inverse() * g.inverse()
     assert g ** g.order() == group.one()

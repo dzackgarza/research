@@ -131,7 +131,7 @@ def _value_as_module_element(formed_module, value):
         return represented(value)
     extension = getattr(represented, "module_over_extension", lambda: None)()
     if extension is not None:
-        unit_label = extension.module_generating_set().unrank(0)
+        unit_label = extension.module_generating_set()[0]
         return represented.wrap(
             extension.linear_combination(
                 {unit_label: formed_module.value_module()(value)}
@@ -153,14 +153,14 @@ def _value_from_module_element(formed_module, element):
         coefficients = module_coefficients(
             restricted_element.underlying_element(), extension
         )
-        unit_label = extension.module_generating_set().unrank(0)
+        unit_label = extension.module_generating_set()[0]
         value_ring = formed_module.value_module()
         return value_ring(coefficients.get(unit_label, value_ring.zero()))
 
     coefficients = module_coefficients(element, represented)
     ring = formed_module.base_ring()
     labels = represented.module_generating_set()
-    unit_label = labels.unrank(0)
+    unit_label = labels[0]
     return ring(coefficients.get(unit_label, ring.zero()))
 
 
@@ -945,9 +945,9 @@ class FormModules(OwnedCategoryOverBaseRing):
                         left_coefficient**2
                         * base_change_scalar(ring_map, form(source_left))
                     )
-                    left_rank = source_labels.rank(left_label)
+                    left_rank = source_labels.ranking_map()(left_label)
                     for right_label, right_coefficient in coefficients.items():
-                        if source_labels.rank(right_label) <= left_rank:
+                        if source_labels.ranking_map()(right_label) <= left_rank:
                             continue
                         source_right = source.module_generator(right_label)
                         result += (

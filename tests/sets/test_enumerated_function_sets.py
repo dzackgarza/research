@@ -43,15 +43,15 @@ def test_hermite_polynomials_are_enumerated_by_naturals() -> None:
     assert hermite.cardinality() == Infinity
     assert H0 in hermite
     assert H3 in hermite
-    assert hermite.rank(H3) == 3
-    assert hermite.unrank(3) == H3
+    assert hermite.ranking_map()(H3) == 3
+    assert hermite[3] == H3
     assert hermite[3] == H3
     assert H0 in SR
     assert str(H0) == "H_0"
     assert 1 not in hermite
     assert indexed_symbol("H", -1, "H") not in hermite
     with pytest.raises(IndexError):
-        hermite.unrank(-1)
+        hermite[-1]
     with pytest.raises(IndexError):
         hermite[-1]
 
@@ -68,16 +68,16 @@ def test_integer_indexed_function_sets() -> None:
     assert sinc in FunctionEnumeratedSets()
     assert fourier in InfiniteEnumeratedSets()
     assert repr(laurent.index_set()) == "Integer Ring"
-    assert [str(laurent.unrank(rank)) for rank in range(5)] == [
+    assert [str(laurent[rank]) for rank in range(5)] == [
         "z_0",
         "z_1",
         "z_m1",
         "z_2",
         "z_m2",
     ]
-    assert laurent.rank(laurent.function(-2)) == 4
+    assert laurent.ranking_map()(laurent.function(-2)) == 4
     assert z_m1 in laurent
-    assert laurent.function(-1) == laurent.unrank(laurent.rank(z_m1))
+    assert laurent.function(-1) == laurent[laurent.ranking_map()(z_m1)]
     assert laurent[0] == laurent.function(0)
     assert laurent[2] == laurent.function(-1)
     assert str(z_m1) == "z_m1"
@@ -87,7 +87,7 @@ def test_integer_indexed_function_sets() -> None:
     assert F0 in fourier
     assert 1 not in fourier
     with pytest.raises(IndexError):
-        laurent.unrank(-1)
+        laurent[-1]
     with pytest.raises(IndexError):
         laurent[-1]
 

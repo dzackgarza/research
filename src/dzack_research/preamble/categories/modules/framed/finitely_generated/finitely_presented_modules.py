@@ -158,15 +158,15 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 row = [ring.zero()] * width
                 for position, coefficient in enumerate(relation):
                     if coefficient:
-                        left_label = left_labels.unrank(position)
-                        row[labels.rank(_biproduct_label(labels, 0, left_label))] = coefficient
+                        left_label = left_labels[position]
+                        row[labels.ranking_map()(_biproduct_label(labels, 0, left_label))] = coefficient
                 rows.append(row)
             for relation in right_relations:
                 row = [ring.zero()] * width
                 for position, coefficient in enumerate(relation):
                     if coefficient:
-                        right_label = right_labels.unrank(position)
-                        row[labels.rank(_biproduct_label(labels, 1, right_label))] = coefficient
+                        right_label = right_labels[position]
+                        row[labels.ranking_map()(_biproduct_label(labels, 1, right_label))] = coefficient
                 rows.append(row)
             relations = _matrix_space_like(self, len(rows), width).from_rows(tuple(tuple(row) for row in rows))
             presentation = _presentation_from_relation_rows(
@@ -232,7 +232,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             target_labels = degree_zero.module_generating_set()
 
             def image(label):
-                row = relation_matrix.row(int(relation_labels.rank(label)))
+                row = relation_matrix.row(int(relation_labels.ranking_map()(label)))
                 return degree_zero.linear_combination(
                     {target_label: ring._from_engine_element(coefficient) for target_label, coefficient in zip(target_labels, row, strict=True) if coefficient}
                 )
@@ -342,7 +342,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 labels = Sets.Δ[int(generators.cardinality()) - 1]
 
                 def generator(label):
-                    return generators.unrank(int(label))
+                    return generators[int(label)]
 
             source = self.presentation().codomain()._fresh_free_module_on(labels)
             spanning = module_homset(source, self)(lambda label: self(generator(label)))
@@ -520,7 +520,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             return finite_ordered_image(
                 positions,
-                lambda position: labels.unrank(int(position)),
+                lambda position: labels[int(position)],
                 name="Vector-space basis generator labels",
             )
 
@@ -606,7 +606,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if custom is not None:
                 return custom(label)
             labels = self.module_generating_set()
-            position = labels.rank(label)
+            position = labels.ranking_map()(label)
             if position is None:
                 raise ValueError(f"{label!r} is not a module-generator label")
             return self._cover_generator(position)
@@ -674,7 +674,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
                 return indexed_family(
                     labels,
-                    lambda label: owned[int(labels.rank(label))],
+                    lambda label: owned[int(labels.ranking_map()(label))],
                     name=f"Framing coordinates of {element}",
                 )
             return self._cover_coordinates(element)
@@ -853,7 +853,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             reduced_positions = Sets.Δ[int(retained.cardinality()) - 1]
             return finite_indexed_family(
                 reduced_positions,
-                lambda position: invariants[int(retained.unrank(int(position)))],
+                lambda position: invariants[int(retained[int(position)])],
                 name="Invariant-factor family",
             )
 
@@ -1001,8 +1001,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalized_projection = module_homset(normalized, target)(
                 {
                     label: (
-                        target.module_generator(retained_positions.unrank(int(label)))
-                        if retained_positions.unrank(int(label)) in free_positions
+                        target.module_generator(retained_positions[int(label)])
+                        if retained_positions[int(label)] in free_positions
                         else target.zero()
                     )
                     for label in normalized.module_generating_set()
@@ -1104,13 +1104,13 @@ def _module_invariant_factor_form(module):
     reduced_target = free_owner._fresh_free_module_on(reduced_labels)
     relation_labels = finite_ordered_filter(
         reduced_labels,
-        lambda reduced_position: invariants[int(retained_positions.unrank(int(reduced_position)))] != ring.zero(),
+        lambda reduced_position: invariants[int(retained_positions[int(reduced_position)])] != ring.zero(),
     )
     reduced_source = free_owner._fresh_free_module_on(relation_labels)
     reduced_presentation = module_homset(reduced_source, reduced_target)(
         {
             reduced_position: reduced_target.scalar_multiple(
-                invariants[int(retained_positions.unrank(int(reduced_position)))],
+                invariants[int(retained_positions[int(reduced_position)])],
                 reduced_target.module_generator(reduced_position),
             )
             for reduced_position in relation_labels
@@ -1121,13 +1121,13 @@ def _module_invariant_factor_form(module):
     full_labels = full_normalized.module_generating_set()
     full_to_reduced = module_homset(full_normalized, reduced)(
         {
-            full_label: (reduced.module_generator(retained_positions.rank(retained_positions(position))) if position in retained_positions else reduced.zero())
+            full_label: (reduced.module_generator(retained_positions.ranking_map()(retained_positions(position))) if position in retained_positions else reduced.zero())
             for position, full_label in enumerate(full_labels)
         }
     )
     reduced_to_full = module_homset(reduced, full_normalized)(
         {
-            reduced_label: full_normalized.module_generator(full_labels.unrank(int(retained_positions.unrank(int(reduced_label)))))
+            reduced_label: full_normalized.module_generator(full_labels[int(retained_positions[int(reduced_label)])])
             for reduced_label in reduced.module_generating_set()
         }
     )
@@ -1260,7 +1260,7 @@ class _GeneralPresentedModule:
         super().__init__(
             base_ring=base_ring,
             module_generating_set=module_generating_set,
-            module_generator_function=lambda label: self._cover_generator(int(module_generating_set.rank(label))),
+            module_generator_function=lambda label: self._cover_generator(int(module_generating_set.ranking_map()(label))),
             relation_matrix=relation_matrix,
             presentation=presentation,
             cokernel_morphism=cokernel_morphism,
@@ -1278,7 +1278,7 @@ class _GeneralPresentedModule:
         r"""The class of the ``position``-th cover basis vector."""
         if self._relation_submodule is None:
             labels = self._free_module.module_generating_set()
-            return self(self._free_module.module_generator(labels.unrank(position)))
+            return self(self._free_module.module_generator(labels[position]))
         return self(self._free_module.gen(position))
 
     def _cover_coordinates(self, element):
@@ -1298,7 +1298,7 @@ class _GeneralPresentedModule:
         ring = self.base_ring()
         return indexed_family(
             labels,
-            lambda label: ring._from_engine_element(native[int(labels.rank(label))]),
+            lambda label: ring._from_engine_element(native[int(labels.ranking_map()(label))]),
             name=f"Cover coordinates of {element}",
         )
 

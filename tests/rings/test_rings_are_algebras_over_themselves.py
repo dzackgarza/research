@@ -95,7 +95,7 @@ def test_the_augmentation_of_a_group_algebra_over_a_number_field_is_an_algebra_m
     group_algebra = field[group]
     augmentation = group_algebra.augmentation()
     assert augmentation in Algebras(field).Mor(group_algebra, field)
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     two_elements = group_algebra(generator) + 3 * group_algebra(group.one())
     assert augmentation(two_elements) == field(4)
 

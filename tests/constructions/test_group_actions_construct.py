@@ -84,7 +84,7 @@ def test_a_group_acting_on_itself_is_a_torsor() -> None:
     assert regular in FiniteGSets(group)
     assert FiniteGSets(group).orbits_functor()(regular).cardinality() == 1
     assert regular.fixed_points().cardinality() == 0
-    element = group.group_generators().unrank(0)
+    element = group.group_generators()[0]
     assert regular.transporter(group.one(), element) == element
     assert regular.point_set().cardinality() == 6
 
@@ -219,8 +219,8 @@ def test_a_group_lattice_and_its_invariant_and_coinvariant_lattices() -> None:
 
     acted = Lattices(ZZ[group])(a2, action)
     assert acted in Lattices(ZZ[group])
-    assert acted.action_of(group.group_generators().unrank(0)) == swap
-    assert acted.action_of(group.group_generators().unrank(0)) in a2.O()
+    assert acted.action_of(group.group_generators()[0]) == swap
+    assert acted.action_of(group.group_generators()[0]) in a2.O()
     assert acted.invariant_lattice().module_rank() == 1
     assert acted.invariant_lattice().determinant() == 6
     assert acted.formed_coinvariants().module_rank() == 1
@@ -228,7 +228,7 @@ def test_a_group_lattice_and_its_invariant_and_coinvariant_lattices() -> None:
     assert acted.is_invariant(e0 + e1)
     assert not acted.is_invariant(e0)
     assert acted.character()(group.one()) == 2
-    assert acted.character()(group.group_generators().unrank(0)) == 0
+    assert acted.character()(group.group_generators()[0]) == 0
 
 
 def test_a_non_isometric_action_on_a_lattice_is_refused() -> None:

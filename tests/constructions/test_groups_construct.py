@@ -179,7 +179,7 @@ def test_the_natural_action_of_the_symmetric_group_is_transitive() -> None:
     assert natural.fixed_points().cardinality() == 0
     assert trivial.fixed_points().cardinality() == 3
     assert natural.point_set().cardinality() == 3
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     assert natural.act(generator, 1) == generator(1)
 
 

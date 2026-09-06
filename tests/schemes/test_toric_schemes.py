@@ -85,7 +85,7 @@ def test_the_orbit_cone_correspondence_counts_the_orbits_of_each_dimension() -> 
 def test_the_chart_of_a_smooth_cone_is_the_affine_plane() -> None:
     fans = _plane_fans()
     variety = fans((((1, 0), (0, 1)), ((1, 0), (0, -1)))).toric_variety(QQ)
-    cone = variety.fan().maximal_cones().unrank(0)
+    cone = variety.fan().maximal_cones()[0]
     chart = variety.affine_chart(cone)
 
     assert chart in AffineSchemes(QQ)
@@ -98,7 +98,7 @@ def test_the_chart_of_the_a_one_cone_is_the_quadric_cone() -> None:
     affine plane."""
     fans = _plane_fans()
     variety = fans((((0, 1), (2, -1)),)).toric_variety(QQ)
-    cone = variety.fan().maximal_cones().unrank(0)
+    cone = variety.fan().maximal_cones()[0]
     chart = variety.affine_chart(cone)
 
     assert chart in AffineSchemes(QQ)
@@ -111,8 +111,8 @@ def test_a_face_of_a_cone_localizes_the_chart_at_one_monomial() -> None:
     is the distinguished open of the chart of ``sigma`` where the supporting
     character is invertible."""
     variety = _plane_fans().projective_space_fan().toric_variety(QQ)
-    cone = variety.fan().maximal_cones().unrank(0)
-    face = cone.faces(1).unrank(0)
+    cone = variety.fan().maximal_cones()[0]
+    face = cone.faces(1)[0]
     chart = variety.affine_chart(cone)
     localized = variety.face_localization(face, cone)
 

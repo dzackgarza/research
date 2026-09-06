@@ -85,7 +85,7 @@ def test_an_elementary_session(n) -> None:
     assert cyclic.order() == n
     assert cyclic in AbelianGroups()
     assert cyclic.Aut().order() == _euler_phi(n)
-    assert cyclic.group_generators().unrank(0).order() == n
+    assert cyclic.group_generators()[0].order() == n
     assert cyclic.Mor(Groups.C(6)).cardinality() == math.gcd(n, 6)
     module = FinitelyPresentedTorsionModules(ZZ).direct_sum_of_cyclics((n,))
     rendered(module)

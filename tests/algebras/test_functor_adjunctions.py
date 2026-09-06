@@ -57,8 +57,8 @@ def test_algebra_scalar_extension_restriction_has_the_hom_bijection() -> None:
     # generator s and the original algebra generator y.
     restricted_labels = restricted_target.algebra_generating_set()
     assert int(restricted_labels.cardinality()) == 2
-    scalar_label = restricted_labels.unrank(0)
-    algebra_label = restricted_labels.unrank(1)
+    scalar_label = restricted_labels[0]
+    algebra_label = restricted_labels[1]
     assert int(scalar_label.summand_index()) == 0
     assert scalar_label.summand_element() == "s"
     assert int(algebra_label.summand_index()) == 1

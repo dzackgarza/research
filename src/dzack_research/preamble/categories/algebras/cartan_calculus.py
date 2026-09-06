@@ -31,7 +31,7 @@ def _vector_field_scalar(vector_field, element):
     labels = target.module_generating_set()
     if int(labels.cardinality()) != 1:
         raise TypeError("a vector field here takes values in the rank-one A-module A")
-    label = labels.unrank(0)
+    label = labels[0]
     coefficients = module_coefficients(vector_field(element), target)
     return vector_field.domain()(coefficients.get(label, target.base_ring().zero()))
 

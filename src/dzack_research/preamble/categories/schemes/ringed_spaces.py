@@ -198,7 +198,7 @@ class DistinguishedAffineCover(SageObject):
         self._opens = tuple(scheme.distinguished_open(element) for element in elements)
         self._atlas = finite_ordered_set(range(len(self._opens)))
         self._intersections = {
-            (label,): self._opens[int(self._atlas.rank(label))]
+            (label,): self._opens[int(self._atlas.ranking_map()(label))]
             for label in self._atlas
         }
         self._restricted_modules = {}
@@ -237,7 +237,7 @@ class DistinguishedAffineCover(SageObject):
         is the one place a position is read, and it is read from the atlas
         rather than assumed of the label.
         """
-        return int(self.atlas().rank(self.chart_label(index)))
+        return int(self.atlas().ranking_map()(self.chart_label(index)))
 
     def open(self, index):
         return self._opens[self.chart_position(index)]

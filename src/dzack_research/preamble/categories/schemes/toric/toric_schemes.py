@@ -181,7 +181,7 @@ def _face_supporting_character(face, cone):
     generators = cone.semigroup_generators()
     supporting = characters.zero()
     for position in _face_supporting_generator_positions(face, cone):
-        supporting = supporting + generators.unrank(position)
+        supporting = supporting + generators[position]
     return supporting
 
 

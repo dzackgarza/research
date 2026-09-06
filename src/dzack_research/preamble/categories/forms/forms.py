@@ -69,7 +69,7 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
                 (),
                 (rank, rank),
                 (
-                    self._gram_entry(labels.unrank(i), labels.unrank(j))
+                    self._gram_entry(labels[i], labels[j])
                     for i in range(rank)
                     for j in range(rank)
                 ),
@@ -143,8 +143,8 @@ class _CallableForm(Element):
                 size = int(left_labels.cardinality())
                 for i in range(size):
                     for j in range(i + 1, size):
-                        left = left_labels.unrank(i)
-                        right = left_labels.unrank(j)
+                        left = left_labels[i]
+                        right = left_labels[j]
                         if _coordinate_pair(values, left, right) != _coordinate_pair(
                             values, right, left
                         ):
@@ -254,7 +254,7 @@ class _CallableForm(Element):
             (),
             (rank, rank),
             (
-                _coordinate_pair(values, labels.unrank(i), labels.unrank(j))
+                _coordinate_pair(values, labels[i], labels[j])
                 for i in range(rank)
                 for j in range(rank)
             ),

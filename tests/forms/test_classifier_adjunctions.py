@@ -70,7 +70,7 @@ def test_divided_square_classifies_quadratic_maps_integrally_on_zmod4() -> None:
     universal_value = square.quadratic(generator)
 
     assert square.invariant_factors().cardinality() == 1
-    assert square.invariant_factors().unrank(0) == ZZ(8)
+    assert square.invariant_factors()[0] == ZZ(8)
     assert universal_value.additive_order() == 8
     assert square.quadratic(2 * generator) == 4 * universal_value
 
@@ -166,7 +166,7 @@ def test_free_form_classifier_adjunctions_have_hom_bijections_naturality_and_tri
 
     classifier_invariants = free_source.value_module().invariant_factors()
     assert classifier_invariants.cardinality() == 1
-    assert classifier_invariants.unrank(0) == ZZ(expected_classifier_invariants)
+    assert classifier_invariants[0] == ZZ(expected_classifier_invariants)
 
     doubling = module_homset(source, source)({0: 2 * source_generator})
     module_map = free_source.equip_form_morphism() * doubling

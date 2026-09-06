@@ -8,7 +8,8 @@ class IndexedFamily(SageObject):
     r"""A family ``(x_i)_{i in I}`` retaining its indexing set.
 
     A family is not the set of its values: different indices may have equal
-    values.  It therefore has no inverse ``rank(value)`` operation in general.
+    values, so it is not injective and has no ranking map of its own.  Its
+    index set may have one, and positional access goes through that.
     Consumers iterate values lazily or address them through ``value(index)``.
     """
 
@@ -43,10 +44,11 @@ class IndexedFamily(SageObject):
     __call__ = value
 
     def __getitem__(self, index):
+        r"""The value at ``index``, or -- failing that -- at that position."""
         try:
             normalized = self.index_set()(index)
         except (TypeError, ValueError):
-            return self.unrank(index)
+            return self.value(self.index_set().ranking_map().inverse()(index))
         return self.value(normalized)
 
     def items(self):
@@ -54,20 +56,6 @@ class IndexedFamily(SageObject):
 
     def __iter__(self):
         return (self.value(index) for index in self.index_set())
-
-    def unrank(self, position):
-        try:
-            index = self.index_set().unrank(int(position))
-        except AttributeError:
-            try:
-                index = next(
-                    index
-                    for offset, index in enumerate(self.index_set())
-                    if offset == int(position)
-                )
-            except StopIteration as error:
-                raise IndexError(position) from error
-        return self.value(index)
 
     def map(self, function, *, name=None):
         if not callable(function):

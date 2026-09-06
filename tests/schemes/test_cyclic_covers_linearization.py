@@ -31,7 +31,7 @@ def test_the_deck_action_splits_the_cover_sections_by_the_powers_of_z() -> None:
     x = algebra.algebra_generator("x")
     covers = CyclicCovers(algebra, 2)
     cover = covers(x**4 - algebra.one())
-    generator = covers.deck_group().group_generators().unrank(0)
+    generator = covers.deck_group().group_generators()[0]
     sections = AffineSectionModuleFunctor(
         covers.deck_group(),
         algebra,
@@ -51,7 +51,7 @@ def test_the_action_on_sections_is_pullback_along_the_inverse() -> None:
     x = algebra.algebra_generator("x")
     covers = CyclicCovers(algebra, 3)
     cover = covers(x)
-    generator = covers.deck_group().group_generators().unrank(0)
+    generator = covers.deck_group().group_generators()[0]
     root_of_unity = covers.deck_root_of_unity()
     sections_functor = AffineSectionModuleFunctor(covers.deck_group(), algebra)
     sections = sections_functor.object_image(cover)

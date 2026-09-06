@@ -31,7 +31,7 @@ def _coordinate_swap_action() -> tuple:
 
 def test_affine_scheme_action_is_a_fresh_g_object_with_represented_pullbacks() -> None:
     group, algebra, x, y, scheme, acted = _coordinate_swap_action()
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     pullback = acted.action_of(generator).coordinate_algebra_morphism()
 
     assert acted is not scheme
@@ -52,7 +52,7 @@ def test_affine_scheme_action_is_a_fresh_g_object_with_represented_pullbacks() -
 
 def test_coordinate_swap_fixed_subscheme_is_the_diagonal_equalizer() -> None:
     group, algebra, x, y, _scheme, acted = _coordinate_swap_action()
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
 
     assert acted.fixed_ideal() == algebra.ideal(x - y)
 

@@ -70,7 +70,7 @@ class IsotypicDecompositions(OwnedCategory):
             super().__init__(
                 summands=indexed_family(
                     index_set,
-                    lambda character: components[int(index_set.rank(character))],
+                    lambda character: components[int(index_set.ranking_map()(character))],
                     name="Isotypic summands",
                 ),
                 **rest,
