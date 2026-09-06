@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| Q-glued-invariant-quotient-20260906 | Q — assemble a finite glued quotient from affine G-chart quotients and explicit descended quotient-overlap isomorphisms; verify source-transition equivariance and quotient descent squares, retain an actual global action, quotient morphism, and affine-target universal factorization | ChatGPT continuation `2026-09-06-glued-invariant-quotient`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/schemes/invariant_quotient_gluing.py`; `src/dzack_research/preamble/categories/schemes/__init__.py`; `src/dzack_research/preamble/all.py`; `tests/schemes/test_glued_invariant_quotients.py`; `docs/preamble-megadoc.md`; `docs/preamble-graph.json`; `docs/preamble-graph.dot`; `docs/preamble-graph.html` | `88e0a575`; consumes affine invariant quotients `dfdb460d` and finite affine gluing `b9a2927f` | 2026-09-06T05:47:00Z |
 
 ### Existing work awaiting adoption
 
