@@ -195,8 +195,10 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     DivisorGroups,
     FormalDivisor,
     FormalDivisorGroups,
+    InvertibleSheaf,
     PicardGroup,
     PicardGroups,
+    TrivialInvertibleSheaf,
     WeilDivisorGroup,
     WeilDivisorGroups,
 )

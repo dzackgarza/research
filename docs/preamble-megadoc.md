@@ -15895,6 +15895,38 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | [`AdditiveSemigroups`](#cat-additivesemigroups) | 1 |  |  |
 | [`Objects`](#cat-objects) | 1 |  |  |
 
+### Supporting classes
+
+#### `InvertibleSheaf` <sub>CLASS</sub>
+
+A line bundle represented by rank-one free descent on one affine cover.
+
+- **defined at** `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py:44`
+- **built by** `InvertibleSheaf(gluing_datum)`
+
+**Operations**
+
+- `cover()`
+- `dual()`
+  - Return the dual line bundle, with transition units ``u_ij^{-1}``.
+- `global_sections()`
+- `gluing_datum()`
+- `local_module(index)`
+- `local_trivialization(index)`
+  - Return the literal rank-one free chart module trivializing this sheaf.
+- `morphism_to(target, local_maps)`
+  - Return the descent morphism represented by the supplied chart maps.
+- `ringed_space()`
+- `scheme()`
+- `sections()`
+- `sheaf()`
+- `tensor_power(exponent)`
+  - Return ``self^tensor exponent`` using powers of the transition units.
+- `tensor_product(other)`
+  - Tensor two line bundles by multiplying their transition units.
+- `transition_unit(source_index, target_index)`
+  - Return the unit ``u_ij`` with ``e_i |-> u_ij e_j`` on the overlap.
+
 ### Functions
 
 #### `CartierDivisorGroup` <sub>FUNCTION</sub>
@@ -15929,6 +15961,11 @@ answers ``terms``, ``components`` and printing for it.
 
 - **defined at** `src/dzack_research/preamble/categories/divisors/picard_groups.py:21`
 - **built by** `PicardGroup(module)`
+
+#### `TrivialInvertibleSheaf` <sub>FUNCTION</sub>
+
+- **defined at** `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py:201`
+- **built by** `TrivialInvertibleSheaf(cover)`
 
 #### `WeilDivisorGroup` <sub>FUNCTION</sub>
 
@@ -17770,7 +17807,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Load a Sage file and restore this session's owned scalar vocabulary.
 
-- **defined at** `src/dzack_research/preamble/all.py:791`
+- **defined at** `src/dzack_research/preamble/all.py:793`
 - **built by** `load(filename: str, globals: dict | None = None, attach: bool = False) -> None`
 
 #### `lzip` <sub>FUNCTION</sub>
@@ -18174,6 +18211,7 @@ Return the sum of pairwise terms from two equally sized iterables.
 | [`InverseImagePowerSetFunctor`](#fun-inverseimagepowersetfunctor) | functor | Functors & Adjunctions |
 | [`InverseImageSubobjectFunctor`](#fun-inverseimagesubobjectfunctor) | functor | Functors & Adjunctions |
 | [`InverseSystem`](#cat-inversesystem) | category | Abstract Category Theory & Universal Constructions |
+| `InvertibleSheaf` | class | Divisors & Picard Theory |
 | [`Involutions`](#involutions) | catalogue | Named Catalogue & Classification Tables |
 | [`IsoArrowCategory`](#cat-isoarrowcategory) | category | Abstract Category Theory & Universal Constructions |
 | [`IsoCategoryConstruction`](#cat-isocategoryconstruction) | category | Abstract Category Theory & Universal Constructions |
@@ -18383,6 +18421,7 @@ Return the sum of pairwise terms from two equally sized iterables.
 | [`TotallyOrderedSets`](#cat-totallyorderedsets) | category | Sets, Cardinals & Ordinals |
 | [`TrivialActionFunctor`](#fun-trivialactionfunctor) | functor | Functors & Adjunctions |
 | [`TrivialInvariantsAdjunction`](#fun-trivialinvariantsadjunction) | adjunction | Functors & Adjunctions |
+| `TrivialInvertibleSheaf` | function | Divisors & Picard Theory |
 | [`UncountableSets`](#cat-uncountablesets) | category | Sets, Cardinals & Ordinals |
 | [`UnderlyingSetFunctor`](#fun-underlyingsetfunctor) | functor | Functors & Adjunctions |
 | `UnitInterval` | live object | Rings, Fields & Commutative Algebra |
