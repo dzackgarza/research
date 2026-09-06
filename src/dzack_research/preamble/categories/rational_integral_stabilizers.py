@@ -7,10 +7,14 @@ finitely generated subgroup of ``GL(V)``.  Two lattices ``L`` and ``M`` in
 
 ``G_L = G ∩ GL(L) = {g in G : g(L) = L}``,
 
-which is the definition; the computation goes through the finite quotient
-``F_M = M / dM``.  Every element of ``G`` that preserves ``M`` acts on
-``F_M``, so there is a morphism ``rho : G -> Aut(F_M)`` with finite image, and
-``L`` becomes the subgroup ``S_L = L / dM`` of ``F_M``.  Then
+which is the definition, and it is what :func:`integral_stabilizer` returns: a
+predicate subgroup cut out by that condition, with nothing enumerated and no
+engine called.
+
+The other three operations go through the finite quotient ``F_M = M / dM``.
+Every element of ``G`` that preserves ``M`` acts on ``F_M``, so there is a
+morphism ``rho : G -> Aut(F_M)`` with finite image, and ``L`` becomes the
+subgroup ``S_L = L / dM`` of ``F_M``.  Then
 
 ``G_L = rho^{-1}(Stab_{rho(G)}(S_L))``,
 
@@ -18,8 +22,8 @@ the orbit of ``S_L`` under the finite group ``rho(G)`` indexes the right
 cosets ``G_L \\ G``, a transporter between two commensurable lattices is a
 preimage of an element carrying one subgroup to the other, and a double coset
 space ``V \\ G / G_L`` is computed in that finite image.  One finite quotient
-therefore carries the three answers that would otherwise be a search in an
-infinite group; the stabilizer itself is a predicate and needs no search.
+therefore carries those three answers, which would otherwise be a search in an
+infinite group.
 
 The vocabulary for all of this is subobjects of one module, and restriction of
 scalars supplies that module.  ``Res`` is the restriction functor along
@@ -40,37 +44,22 @@ quotient of ``ZZ``-modules.  This is what the four operations below take: the
 monomorphism presenting a lattice in ``V``, not a bare lattice, and no
 commensurability type is invented.
 
-What refuses is one operation, and its name is ``ModuleMorphism.lift`` in
-``modules/module_morphisms/module_morphisms.py``.  It solves coordinates
-against the framings of both endpoints and raises without them, and
-``is_in_image`` is built on it.  ``Res(V)`` has no finite free framing over
-``ZZ``: a rational vector space is divisible, so it is not finitely generated
-over ``ZZ`` at all.  Every *decision* about these subobjects therefore refuses
-there -- whether ``d M`` lies in ``L``, whether ``L`` lies in ``M``, and
-whether ``g`` carries ``L`` onto itself.  The construction stands; the
-membership test on top of it does not.  What would supply it is a lift that
-decides membership in the ``ZZ``-span of finitely many elements of an unframed
-module, which is the rational linear solve followed by an integrality test,
-and it belongs beside the coordinate lift it generalizes.
+Restriction acts on morphisms by the identity: ``Res(g)`` is ``g``, since
+restriction changes which ring acts and never the underlying map, so an
+element of ``Res(V)`` moves under ``g`` by reading it in ``V``, applying
+``g``, and reading the result back.  Membership in a lattice is decided by
+``ModuleMorphism.lift``, which reads the ``ZZ``-span of the finitely many
+generator images in the ``QQ``-framing that ``V`` carries; ``Res(V)`` has no
+framing of its own, being divisible and so not finitely generated over ``ZZ``,
+and none is needed.
 
-The arrow is not missing either.  Mathematically ``Res(g)`` is ``g``:
-restriction changes which ring acts, never the underlying map, so the
-functor's action on morphisms is the identity and there is nothing to
-construct.  This preamble's functor does not say it that way -- it
-materializes a morphism by naming images of a framing, so on the unframed
-``Res(V)`` it refuses an arrow that exists, and that repair belongs to the
-scalar-change functor, where the obstacle is.  Either way it is not the
-binding constraint: ``g`` applies to an element of ``Res(V)`` without it, and
-what is missing is the decision, not the map.
-
-Then the algorithm.  ``polyhedral_common`` carries it as
-``01_RatIntAutomorphy``, the rational matrix group integralization, and
-``sage-indefinite-port`` is the port that will supply it through the
-capability layer.  Note which rows need it: with the lift above,
-``integral_stabilizer`` is definitional, a predicate subgroup cut out by
-``g(L) = L`` on the finite generators of ``L``, with no engine called at all.
-The transporter, the right cosets and the double cosets are the three that
-need the finite quotient computed.
+What each row needs now.  ``integral_stabilizer`` needs nothing further: it is
+definitional, decided on the finite module generators of ``L`` as described at
+its own site.  The transporter, the right cosets and the double cosets each
+wait on two pieces that are not built: the finite quotient ``F_M = M / dM``
+with the morphism ``rho`` and its image, and the integralization algorithm
+itself, which ``polyhedral_common`` carries as ``01_RatIntAutomorphy`` and
+``sage-indefinite-port`` will supply through the capability layer.
 
 One further gap bounds the argument these operations take.  The preamble names
 no general linear group of a module: ``module_homset(V, V)`` is the
@@ -93,34 +82,71 @@ What *is* owned, so a caller does not come here for it:
 
 _ABSENCE = (
     "the objects exist: Res(V), the rational space read over ZZ through the "
-    "restriction functor, holds L and M as two subobjects, and d M <= L <= M "
-    "is a comparison between them.  The arrow exists too: Res(g) is g, since "
-    "restriction changes which ring acts and never the underlying map, so "
-    "there is nothing to construct and functoriality is free; this preamble's "
-    "scalar-change functor writes its morphism action through framings and so "
-    "refuses an arrow that exists, which is an implementation limitation to "
-    "repair in functors/scalar_change.py.  What refuses the mathematics is "
-    "ModuleMorphism.lift in "
-    "modules/module_morphisms/module_morphisms.py, which solves coordinates "
-    "against the framings of both endpoints; Res(V) has no finite free "
-    "framing over ZZ because a rational vector space is divisible, so "
-    "is_in_image and with it every containment and every g(L) = L decision "
-    "refuses there.  A lift deciding membership in the ZZ-span of finitely "
-    "many elements of an unframed module -- the rational solve plus an "
-    "integrality test -- is what these rows wait on, and after it the "
-    "computation on top is polyhedral_common's 01_RatIntAutomorphy through "
-    "sage-indefinite-port and the capability layer.  For a stabilizer inside "
-    "one lattice use the predicate subgroups of O(L); for the orbit splitting "
-    "of a finite-index subgroup of O(L) use the finite character quotient of "
+    "restriction functor, holds L and M as two subobjects, d M <= L <= M is a "
+    "comparison between them, and Res(g) is g.  Membership in a lattice is "
+    "decided, so integral_stabilizer is stated.  This row is not: it needs the "
+    "finite quotient F_M = M/dM with the morphism rho : G -> Aut(F_M) and its "
+    "finite image, and then the integralization algorithm, which "
+    "polyhedral_common carries as 01_RatIntAutomorphy and sage-indefinite-port "
+    "will supply through the capability layer.  For a stabilizer inside one "
+    "lattice use the predicate subgroups of O(L); for the orbit splitting of a "
+    "finite-index subgroup of O(L) use the finite character quotient of "
     "orthogonal_quotients"
 )
 
 
 def integral_stabilizer(rational_group, lattice_inclusion):
-    r"""Return ``G ∩ GL(L)`` for a lattice ``L -> Res(V)`` and a rational group."""
-    assert False, (
-        f"the integral stabilizer of {lattice_inclusion} in {rational_group} "
-        f"is not stated: {_ABSENCE}"
+    r"""Return ``{g in G : g(L) = L}`` for ``L -> Res(V)`` and a rational group ``G``.
+
+    ``g(L) <= L`` is decided on the module generators of ``L``, because ``g``
+    is additive and ``L`` is their ``R``-span, and each membership is the lift
+    along ``lattice_inclusion``.  That containment alone is not ``g(L) = L``:
+    on the hyperbolic plane over ``QQ`` the isometry ``diag(2, 1/2)`` carries
+    the line ``ZZ e_0`` onto ``2 ZZ e_0``, properly inside itself.  Asking the
+    same of ``g^{-1}`` gives ``L = g(g^{-1}(L)) <= g(L)``, so the two
+    containments together are the equality, and both are decided by the same
+    lift.  Nothing is enumerated, so the subgroup is constructed for an
+    infinite ``G`` as well.
+    """
+    from dzack_research.preamble.categories.group.predicate_subgroups import (
+        predicate_subgroup,
+    )
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        RestrictedScalarsModules,
+    )
+
+    lattice = lattice_inclusion.domain()
+    space = lattice_inclusion.codomain()
+    ring = lattice.base_ring()
+    assert space in RestrictedScalarsModules(ring), (
+        f"a lattice in a rational space is a monomorphism into a restriction of "
+        f"scalars, and {space} is not one"
+    )
+    assert space.extension_ring() is ring.fraction_field(), (
+        f"the rational space is {ring} read along its fraction field, and "
+        f"{space} restricts {space.extension_ring()}"
+    )
+
+    # ``Res(g)`` is ``g``: restriction never changes the underlying map, so an
+    # element of ``Res(V)`` moves by applying ``g`` in ``V`` and reading the
+    # image back.  The generators are held in ``V`` for that reason.
+    rational_generators = tuple(
+        lattice_inclusion(generator).underlying_element()
+        for generator in lattice.module_generators()
+    )
+
+    def preserves_the_lattice(automorphism):
+        inverse = automorphism.inverse()
+        return all(
+            lattice_inclusion.is_in_image(space.wrap(automorphism(vector)))
+            and lattice_inclusion.is_in_image(space.wrap(inverse(vector)))
+            for vector in rational_generators
+        )
+
+    return predicate_subgroup(
+        rational_group,
+        preserves_the_lattice,
+        f"g(L)=L for L={lattice}",
     )
 
 
