@@ -390,6 +390,18 @@ class Algebras(OwnedCategoryOverBaseRing):
 
                 return affine_spec_functor(self.base_ring())
 
+            def de_rham(self):
+                r"""``DR_R : CAlg_R -> SCDGA_R``, the algebraic de Rham functor.
+
+                The same rule as the spectrum: a functor is a method of its
+                domain category, named by the construction.
+                """
+                from dzack_research.preamble.categories.functors.de_rham import (
+                    de_rham_functor,
+                )
+
+                return de_rham_functor(self.base_ring())
+
             def product(self, factors):
                 r"""Return the product of a finite family of objects of this category."""
                 return self._fold_construction(self._categorical_product, factors, name="Product factors")
