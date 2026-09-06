@@ -2739,6 +2739,53 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             assert quotient_map.domain() is self.ambient_scheme().coordinate_algebra()
             return factor
 
+        def intersection(self, other):
+            r"""``Z cap W = V(I + J)``, the scheme-theoretic intersection in ``X``.
+
+            The intersection of two closed subschemes of ``X`` is the closed
+            subscheme whose ideal is the sum of the two ideals, and that is
+            the fibre product ``Z x_X W`` (Stacks, Tag 0C4H): a morphism into
+            ``X`` factors through it exactly when its pullback kills both
+            ideals, which is exactly factoring through each of ``Z`` and
+            ``W``.  Each factorization is the corestriction of this
+            subscheme's inclusion along the corresponding one.
+            """
+            assert other.ambient_scheme() is self.ambient_scheme(), (
+                "a scheme-theoretic intersection is taken inside one ambient scheme"
+            )
+            return self.ambient_scheme().closed_subscheme(
+                (*self.defining_equations(), *other.defining_equations())
+            )
+
+        def intersection_multiplicity(self, other, point):
+            r"""``i(p; Z . W)``, the multiplicity of the intersection at ``p``.
+
+            The definition is the length of the stalk at ``p`` of the
+            structure sheaf of ``Z cap W``, taken over ``O_{X,p}``, and it
+            is the intersection multiplicity exactly when the intersection is
+            proper at ``p``; for an improper intersection the number is
+            Serre's alternating sum of the lengths of
+            ``Tor_i^{O_{X,p}}(O_{Z,p}, O_{W,p})``.
+
+            Both readings need one operation the preamble does not own: the
+            composition length of a finitely generated module over a local
+            ring.  Every other part is here -- ``intersection`` builds the
+            subscheme, ``direct_image`` reads its structure sheaf as an
+            ``O_X``-module, the stalk localizes it at ``p``, and ``Tor`` is
+            already a functor on modules -- so this body is the composite
+
+                ``self.intersection(other).structure_sheaf_pushforward()``
+                ``.stalk(point).length()``
+
+            once that length answers.
+            """
+            assert False, (
+                "the intersection multiplicity is the length of O_{Z cap W, p} over O_{X,p}, "
+                "and no composition length of a finitely generated module over a local ring is "
+                "owned; the scheme-theoretic intersection itself is `intersection`, and its "
+                "stalk at p is available through the direct image of its structure sheaf"
+            )
+
         def ideal_sheaf(self):
             r"""``I_Z = I~``, the quasi-coherent ideal sheaf of ``Z = V(I)`` on affine ``X``."""
             ambient = self.ambient_scheme()
