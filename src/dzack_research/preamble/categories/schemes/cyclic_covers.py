@@ -8,14 +8,19 @@ branched along ``s`` is the relative spectrum of the ``O_X``-algebra
 multiplication by ``s`` when ``i + j >= n`` (Barth, Hulek, Peters and Van de
 Ven, *Compact Complex Surfaces*, I.17).
 
-The construction here is the trivialized one, ``L = O_X``: the section is an
-element ``f`` of ``A`` and the cover algebra is ``A[z]/(z^n - f)``.  One
-presented algebra supplies everything the cover needs.  Its multiplication is
-the algebra structure of the quotient; its underlying finite module is the
-free ``A``-module on the powers ``1, z, ..., z^{n-1}`` that a one-variable
-monic quotient already carries; its local equation is the relation
-``z^n - f``; and a scalar change of ``A`` carries that presentation along.
-The graded summand ``A z^i`` is the trivialization of ``L^{-i}``.
+That algebra is owned by ``CyclicCoverAlgebra``, which builds it for any
+invertible sheaf represented by rank-one descent on an affine cover: on each
+chart it is the trivialized algebra ``cyclic_cover_presentation`` returns, and
+the charts are glued by the transition units of ``L``.  One construction
+therefore supplies the multiplication, the underlying finite module on
+``1, z, ..., z^{n-1}``, the local equation ``z^n - f`` and every scalar change
+of it, on the charts and here alike.
+
+The covers constructed in this category are the globally trivialized ones,
+``L = O_X`` on the affine ``X = Spec(A)``: the section is an element ``f`` of
+``A``, the descent is vacuous, and the cover algebra is the single chart
+algebra ``A[z]/(z^n - f)``.  The graded summand ``A z^i`` is the
+trivialization of ``L^{-i}``.
 
 The deck group is ``mu_n``.  Over scalars containing a primitive ``n``-th root
 of unity ``zeta`` it is the constant group ``C_n``, acting by ``z -> zeta z``
@@ -31,20 +36,26 @@ That is a theorem about the grading, not an invariant-ring computation, and
 it is what this category supplies in place of the general linear-action
 backend, which does not apply to a quotient presentation.
 
-Not constructed here: the canonical-bundle formula and the smoothness
-criteria of a cover, both of which need the differentials and the invertible
-sheaves that the divisor layer will own, and the nontrivial ``L``, which
-needs the gluing of rank-one locally free modules with their transition
-units.
+The relative spectrum of a cover algebra whose ``L`` is not trivial is a
+stated gap.  ``Spec`` builds an affine scheme from an owned algebra with a
+represented engine ring, and the algebra of compatible sections of a glued
+cover algebra has neither an engine ring nor a chosen finite presentation, so
+the affine spectra of the charts have to be glued along the spectra of the
+algebra transitions instead.  The chart images of that glued scheme are the
+missing construction, not the cover algebra, which is already owned.
+
+The canonical-bundle formula and the smoothness criteria of a cover are also
+not constructed here: both read the module of differentials of the cover
+algebra against the invertible sheaves of the divisor layer.
 """
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    FinitelyPresentedAlgebra,
-    PolynomialRing,
+from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
+    CYCLIC_COVER_VARIABLE,
+    cyclic_cover_presentation,
 )
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import OwnedGroups
@@ -60,7 +71,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
 )
 from dzack_research.preamble.refine import refine
 
-_COVER_VARIABLE_LABEL = "z"
+_ROOT_OF_UNITY_VARIABLE = "t"
 
 
 def _primitive_root_of_unity(scalars, degree):
@@ -83,7 +94,7 @@ def _primitive_root_of_unity(scalars, degree):
         "the cover is inseparable and its deck group scheme mu_n is not the "
         "constant group C_n"
     )
-    polynomials = engine[_COVER_VARIABLE_LABEL]
+    polynomials = engine[_ROOT_OF_UNITY_VARIABLE]
     variable = polynomials.gen()
     primitive = [
         root
@@ -167,14 +178,9 @@ class CyclicCovers(OwnedCategory):
         degree = self.cover_degree()
         root_of_unity = self.deck_root_of_unity()
 
-        presentation = PolynomialRing(algebra, _COVER_VARIABLE_LABEL)
-        variable = presentation.algebra_generator(_COVER_VARIABLE_LABEL)
-        cover_algebra = FinitelyPresentedAlgebra(
-            presentation,
-            (variable**degree - presentation(section),),
-        )
+        cover_algebra = cyclic_cover_presentation(algebra, section, degree)
         cover = Spec(cover_algebra)
-        image = cover_algebra.algebra_generator(_COVER_VARIABLE_LABEL)
+        image = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
 
         group = self.deck_group()
         generator = group.group_generators().unrank(0)
@@ -188,7 +194,7 @@ class CyclicCovers(OwnedCategory):
             scaling = cover_algebra(root_of_unity ** exponents[group_element])
             return SpecFunctor(algebra)(
                 cover_algebra.Mor(cover_algebra)(
-                    {_COVER_VARIABLE_LABEL: scaling * image}
+                    {CYCLIC_COVER_VARIABLE: scaling * image}
                 )
             )
 
@@ -213,7 +219,7 @@ class CyclicCovers(OwnedCategory):
 
         def cover_variable(self):
             r"""Return ``z``, whose ``n``-th power is the branch section."""
-            return self.coordinate_algebra().algebra_generator(_COVER_VARIABLE_LABEL)
+            return self.coordinate_algebra().algebra_generator(CYCLIC_COVER_VARIABLE)
 
         @cached_method
         def branch_subscheme(self):

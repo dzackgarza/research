@@ -19,6 +19,33 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 
 
+CYCLIC_COVER_VARIABLE = "z"
+
+
+def cyclic_cover_presentation(ring: Any, branch_coefficient: Any, degree: int) -> Any:
+    r"""Return ``R[z]/(z^n - f)``, the cover algebra of a trivialized chart.
+
+    Where ``L`` is trivialized by ``e``, the branch section reads ``s = f e^n``
+    and the summand ``L^{-i}`` is the free rank-one module ``R z^i``.  The
+    multiplication ``L^{-i} ox L^{-j} -> L^{-(i+j)}`` is the identity when
+    ``i + j < n`` and is multiplication by ``f`` when ``i + j >= n``, which is
+    exactly the monic one-variable quotient returned here: its multiplication,
+    its free rank-``n`` underlying module on ``1, z, ..., z^{n-1}``, its local
+    equation ``z^n - f`` and its scalar changes are one construction.
+
+    Both consumers call this one function.  The descent construction of a
+    cover algebra for a nontrivial ``L`` builds it on every chart; the
+    globally trivialized cyclic cover of an affine scheme builds it once.
+    """
+
+    presentation = PolynomialRing(ring, CYCLIC_COVER_VARIABLE)
+    variable = presentation.algebra_generator(CYCLIC_COVER_VARIABLE)
+    return FinitelyPresentedAlgebra(
+        presentation,
+        (variable ** int(degree) - presentation(branch_coefficient),),
+    )
+
+
 def _rank_one_coefficient(module: Any, element: Any) -> Any:
     labels = module.module_generating_set()
     if not labels.cardinality().is_finite() or int(labels.cardinality()) != 1:
@@ -104,12 +131,10 @@ class CyclicCoverAlgebra(SageObject):
         return self._local_branch_coefficients[int(index)]
 
     def _build_local_algebra(self, index: int) -> Any:
-        ring = self.cover().open(index).coordinate_algebra()
-        presentation = PolynomialRing(ring, "z")
-        z = presentation.algebra_generator("z")
-        return FinitelyPresentedAlgebra(
-            presentation,
-            (z ** self.degree() - self.local_branch_coefficient(index),),
+        return cyclic_cover_presentation(
+            self.cover().open(index).coordinate_algebra(),
+            self.local_branch_coefficient(index),
+            self.degree(),
         )
 
     def local_algebra(self, index: int) -> Any:
@@ -145,16 +170,16 @@ class CyclicCoverAlgebra(SageObject):
             source_index,
         )
         unit = self.line_bundle().transition_unit(source_index, target_index)
-        source_z = source.algebra_generator("z")
-        target_z = target.algebra_generator("z")
+        source_z = source.algebra_generator(CYCLIC_COVER_VARIABLE)
+        target_z = target.algebra_generator(CYCLIC_COVER_VARIABLE)
         forward = source.Mor(target)(
             {
-                "z": target(unit.inverse_of_unit()) * target_z,
+                CYCLIC_COVER_VARIABLE: target(unit.inverse_of_unit()) * target_z,
             }
         )
         inverse = target.Mor(source)(
             {
-                "z": source(unit) * source_z,
+                CYCLIC_COVER_VARIABLE: source(unit) * source_z,
             }
         )
         return Isomorphism(forward, inverse)
@@ -197,4 +222,8 @@ class CyclicCoverAlgebra(SageObject):
         )
 
 
-__all__ = ["CyclicCoverAlgebra"]
+__all__ = [
+    "CYCLIC_COVER_VARIABLE",
+    "CyclicCoverAlgebra",
+    "cyclic_cover_presentation",
+]
