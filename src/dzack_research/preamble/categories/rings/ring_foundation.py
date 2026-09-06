@@ -433,6 +433,10 @@ class LocalizationRings(OwnedCategory):
                 _trusted_denominator=True,
             )
 
+        def _sub_(self, other):
+            r"""Subtraction in the additive group of ``S^{-1}R``."""
+            return self._add_(-other)
+
         def equality_status(self, other):
             if other.parent() is not self.parent() or other.parent() is not self.parent():
                 return False
@@ -1385,19 +1389,19 @@ class OwnedLocalRings(OwnedCategory):
             return self._preamble_residue_field
 
         def residue_map(self):
-            r"""Return the represented local quotient map ``R -> kappa(m)``."""
-            morphism = self.__dict__.get("_preamble_residue_map")
-            if morphism is not None:
-                return morphism
-            if self.residue_field() is self:
-                return ring_homset(self, self).identity()
-            raise NotImplementedError(f"the residue map of {self} is not represented")
+            r"""Return the local quotient map ``R -> kappa(m)``.
 
-        def fraction_field(self):
-            represented = self.__dict__.get("_preamble_fraction_field")
-            if represented is not None:
-                return represented
-            return super().fraction_field()
+            A local ring whose residue field is itself is a field, and there
+            the map is the identity.  Otherwise it is supplied by the level
+            that introduces the residue field, as a prime localization does
+            from the universal property of localization.
+            """
+            residue = self.residue_field()
+            assert residue is self, (
+                f"the residue map {self} -> {residue} is not constructed here; the level "
+                "that introduces the residue field of this ring supplies it"
+            )
+            return ring_homset(self, self).identity()
 
 
 class OwnedAdicallyCompleteRings(OwnedCategory):

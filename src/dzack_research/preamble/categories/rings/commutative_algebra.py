@@ -454,6 +454,10 @@ class QuotientRings(OwnedCategory):
         def _neg_(self):
             return self.parent()(-self.lift())
 
+        def _sub_(self, other):
+            r"""Subtraction in the additive group of ``R/I``."""
+            return self._add_(-other)
+
         def is_unit(self):
             parent = self.parent()
             if parent._preamble_engine_ring is None:
@@ -774,6 +778,21 @@ class PrimeLocalizations(OwnedCategory):
                 algebra_source=algebra_source,
                 **rest,
             )
+
+        def fraction_field(self):
+            r"""Return ``Frac(R_p)``, which is ``Frac(R)``.
+
+            Localizing does not change the fraction field: ``R -> R_p`` is
+            injective for a domain and every nonzero element of ``R_p`` is
+            already invertible in ``Frac(R)``.  A ring with zero divisors has
+            no fraction field, and neither has its localization.
+            """
+            represented = self._preamble_fraction_field
+            assert represented is not None, (
+                f"{self.localization_source()} has zero divisors, so neither it nor {self} "
+                "has a fraction field"
+            )
+            return represented
 
         @cached_method
         def residue_field(self):

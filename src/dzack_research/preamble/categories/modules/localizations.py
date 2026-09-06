@@ -414,10 +414,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 f"{self.localization_ring().localization_map()}"
             )
         def localization_source_module(self):
-            source = self.__dict__.get("_source_module")
-            if source is not None:
-                return source
-            return self.localization_functor().chosen_preimage(self)
+            r"""Return the ``M`` this module is ``S^{-1}M`` of."""
+            return self._source_module
 
         def localization_ring(self):
             return self._preamble_localization_ring
