@@ -11,9 +11,8 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.algebras import AssociativeAlgebras
 from dzack_research.preamble.categories.algebras.lie_algebras import (
     CommutatorLieAlgebras,
-)
-from dzack_research.preamble.categories.functors.algebra_modules import (
-    algebra_underlying_module_functor,
+    LieAlgebraMorphism,
+    lie_algebra_homset,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
@@ -47,22 +46,31 @@ class CommutatorLieAlgebraFunctor(Functor):
         return algebra
 
     def _apply_morphism(self, morphism):
-        r"""Return the underlying linear map of an algebra morphism.
+        r"""Return the same map, read in the Lie Hom of its endpoints.
 
         A morphism of associative algebras preserves the commutator, since
-        \(f(xy-yx)=f(x)f(y)-f(y)f(x)\) follows from multiplicativity; that is
-        a theorem, so the map is not tested here.  What the Lie level wants of
-        it is the \(R\)-linear map, which is
-        :func:`~dzack_research.preamble.categories.functors.algebra_modules.algebra_underlying_module_functor`
-        applied to the same morphism.
+        \(f(xy-yx)=f(x)f(y)-f(y)f(x)\) follows from multiplicativity, and it
+        is \(R\)-linear by the structure map.  Both are theorems, so the Lie
+        level is told them rather than asked to decide them -- which is also
+        what lets this answer for an algebra whose module framing is infinite,
+        where the bracket condition has no decision procedure of its own.
 
-        A Lie Hom is presently the module Hom of the two algebras:
-        :class:`~dzack_research.preamble.categories.algebras.lie_algebras.LieAlgebras`
-        declares no Hom of its own, so nothing yet cuts the bracket-preserving
-        maps out of the linear ones.  Until it does, this is the parent the
-        image arrives in.
+        The image is the map itself; \(A^-\) is \(A\), so nothing is
+        transported.  Every linear-map question about it -- matrix, kernel,
+        cokernel -- is the module level's, and
+        :func:`~dzack_research.preamble.categories.functors.algebra_modules.algebra_underlying_module_functor`
+        is where that map is asked for.
         """
-        return algebra_underlying_module_functor(self.base_ring())(morphism)
+        return LieAlgebraMorphism(
+            lie_algebra_homset(
+                self(morphism.domain()),
+                self(morphism.codomain()),
+            ),
+            morphism,
+            elementwise=True,
+            verify_linearity=False,
+            verify_bracket=False,
+        )
 
     def _repr_(self):
         return f"Commutator Lie-algebra functor on associative {self.base_ring()}-algebras"
