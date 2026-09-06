@@ -487,6 +487,7 @@ from dzack_research.preamble.categories.isotropic_orbits import IsotropicFlag  #
 from dzack_research.preamble.categories.lattices import (  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
+    IsotropicReductions,
     NondegenerateLattices,
 )
 from dzack_research.preamble.categories.lattices import (  # noqa: F401
