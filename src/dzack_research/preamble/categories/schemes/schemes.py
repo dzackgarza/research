@@ -89,6 +89,31 @@ _SCHEME_MORPHISM_WRAPPERS = {}
 _AFFINE_SPECTRA = {}
 
 
+def _elements_determining_maps_out_of(algebra, base):
+    r"""Elements of ``algebra`` on which two ring maps out of it already agree.
+
+    A map out of a framed algebra is fixed by the images of its algebra
+    generators.  A map out of ``S^{-1}A`` is fixed by its restriction along
+    ``A -> S^{-1}A``, because that restriction is what the localization is
+    universal for, so a tower of localizations is answered by the framed
+    algebra at its foot with its generators carried up by the localization
+    maps.  ``None`` says the foot is not framed by a finite family, and the
+    maps have to be compared some other way.
+    """
+    if algebra in FramedAlgebras(base):
+        labels = algebra.algebra_generating_set()
+        if not labels.cardinality().is_finite():
+            return None
+        return tuple(algebra.algebra_generator(label) for label in labels)
+    if algebra in LocalizationRings():
+        below = _elements_determining_maps_out_of(algebra.localization_source(), base)
+        if below is None:
+            return None
+        localization_map = algebra.localization_map()
+        return tuple(localization_map(element) for element in below)
+    return None
+
+
 class SchemeMorphism(Morphism):
     r"""Categorical wrapper around one native Sage scheme morphism."""
 
@@ -398,34 +423,14 @@ class SchemeMorphism(Morphism):
         if left_pullback is not None and right_pullback is not None:
             base = _scheme_base_ring(self.codomain())
             if self.codomain() in AffineSchemes(base):
-                algebra = self.codomain().coordinate_algebra()
-                if algebra in FramedAlgebras(base):
-                    labels = algebra.algebra_generating_set()
-                    if labels.cardinality().is_finite():
-                        return all(
-                            left_pullback(algebra.algebra_generator(label))
-                            == right_pullback(algebra.algebra_generator(label))
-                            for label in labels
-                        )
-                if algebra in LocalizationRings():
-                    source_algebra = algebra.localization_source()
-                    if source_algebra in FramedAlgebras(base):
-                        labels = source_algebra.algebra_generating_set()
-                        if labels.cardinality().is_finite():
-                            localization_map = algebra.localization_map()
-                            return all(
-                                left_pullback(
-                                    localization_map(
-                                        source_algebra.algebra_generator(label)
-                                    )
-                                )
-                                == right_pullback(
-                                    localization_map(
-                                        source_algebra.algebra_generator(label)
-                                    )
-                                )
-                                for label in labels
-                            )
+                determining = _elements_determining_maps_out_of(
+                    self.codomain().coordinate_algebra(), base
+                )
+                if determining is not None:
+                    return all(
+                        left_pullback(element) == right_pullback(element)
+                        for element in determining
+                    )
             return bool(left_pullback == right_pullback)
         from sage.schemes.generic.morphism import SchemeMorphism_id
 
@@ -2621,37 +2626,51 @@ def affine_spec_morphism(algebra_morphism):
         # Sage coercion is an admissible private realization only after checking
         # it on finite generating families for both the algebra and its scalar
         # ring.
+        #
+        # A localization is framed by no algebra generating family at all, so
+        # the same admissibility argument runs off a different finite family:
+        # a map out of ``S^{-1}A`` is determined by its restriction along the
+        # map from the ring below, and the foot of the localization tower is
+        # framed.  This is the case a distinguished open of a distinguished
+        # open reaches, where the engines are the two one-step Sage
+        # localizations of one ring and the coercion between them is the map
+        # over that ring.
         base = source_algebra.base_ring()
-        scalar_base = base.base_ring()
-        if (
-            source_algebra not in FramedAlgebras(base)
-            or base not in FramedAlgebras(scalar_base)
-        ):
-            raise error
-        algebra_labels = source_algebra.algebra_generating_set()
-        scalar_labels = base.algebra_generating_set()
-        if (
-            not algebra_labels.cardinality().is_finite()
-            or not scalar_labels.cardinality().is_finite()
-        ):
-            raise error
+        if source_algebra in LocalizationRings():
+            test_values = _elements_determining_maps_out_of(source_algebra, base)
+            if test_values is None:
+                raise error
+        else:
+            scalar_base = base.base_ring()
+            if (
+                source_algebra not in FramedAlgebras(base)
+                or base not in FramedAlgebras(scalar_base)
+            ):
+                raise error
+            algebra_labels = source_algebra.algebra_generating_set()
+            scalar_labels = base.algebra_generating_set()
+            if (
+                not algebra_labels.cardinality().is_finite()
+                or not scalar_labels.cardinality().is_finite()
+            ):
+                raise error
+            test_values = tuple(
+                source_algebra.algebra_generator(label)
+                for label in algebra_labels
+            ) + tuple(
+                source_algebra(
+                    source_algebra.algebra_structure_morphism()(
+                        base.algebra_generator(label)
+                    )
+                )
+                for label in scalar_labels
+            )
         engine_source = _engine_ring(source_algebra)
         engine_target = _engine_ring(target_algebra)
         engine_morphism = engine_target.coerce_map_from(engine_source)
         if engine_morphism is None:
             raise error
 
-        test_values = tuple(
-            source_algebra.algebra_generator(label)
-            for label in algebra_labels
-        ) + tuple(
-            source_algebra(
-                source_algebra.algebra_structure_morphism()(
-                    base.algebra_generator(label)
-                )
-            )
-            for label in scalar_labels
-        )
         if any(
             engine_morphism(_engine_element(source_algebra, value))
             != _engine_element(target_algebra, algebra_morphism(value))
@@ -3111,6 +3130,39 @@ class _SchemeSubobjectsOf(OwnedParameterizedCategory):
             return self._preamble_inclusion
 
 
+def _distinguished_overlap_transition(
+    left_chart,
+    left_element,
+    right_chart,
+    right_element,
+):
+    r"""The isomorphism ``D_i(f_j) -> D_j(f_i)`` of the two presentations of ``D(f_i f_j)``.
+
+    For ``left_chart = D(f_i)`` and ``right_chart = D(f_j)`` inside one affine
+    scheme, the overlap is the locus where both elements are units.  It is
+    presented once over each chart, and the two presentations are compared by
+    the universal property alone: a map into ``D(f_j)`` is a map into ``X``
+    inverting ``f_j``, and a map into a distinguished open of ``D(f_j)`` is
+    that map inverting ``f_i`` as well, so each direction is the corestriction
+    of one overlap's inclusion through the other chart and then through the
+    other overlap.
+    """
+    left_overlap = left_chart.distinguished_open(right_element)
+    right_overlap = right_chart.distinguished_open(left_element)
+    return Isomorphism(
+        right_overlap.corestriction(
+            right_chart.corestriction(
+                left_chart.inclusion() * left_overlap.inclusion()
+            )
+        ),
+        left_overlap.corestriction(
+            left_chart.corestriction(
+                right_chart.inclusion() * right_overlap.inclusion()
+            )
+        ),
+    )
+
+
 class ClosedEmbeddings(_SchemeSubobjectsOf):
     r"""Subobjects of ``X`` whose inclusion is a closed immersion.
 
@@ -3287,38 +3339,49 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             A prime of ``X = Spec A`` lies outside ``Z = V(I)`` exactly when
             it fails to contain some ``f in I``, so the complement is
             ``D(I) = union_{f in I} D(f)``, and the ``D(f)`` for ``f`` running
-            over a generating family of ``I`` already cover it.  One equation
-            therefore has the affine complement ``D(f) = Spec A[1/f]``, whose
-            open immersion is ``Spec`` of the localization ``A -> A[1/f]``.
+            over a generating family of ``I`` already cover it.  The equations
+            that cut ``Z`` out are such a family, so they are the atlas: the
+            chart at ``f_i`` is ``D(f_i) = Spec A[1/f_i]``, glued to the chart
+            at ``f_j`` along ``D(f_i) cap D(f_j) = D(f_i f_j)``.
 
-            Several equations need those charts glued along their overlaps
-            ``D(f_i) cap D(f_j) = D(f_i f_j)``, and the glued scheme is not
-            reached.  ``D(f_i f_j)`` is built, and it corestricts into both
-            ``D(f_i)`` and ``D(f_j)``, so the two maps whose composite is the
-            overlap isomorphism are there.  What is missing is that a
-            subobject is the pair, and the pair this one is built as sends it
-            into ``X``: to be an open subobject *of the chart* ``D(f_i)`` the
-            overlap has to be presented as a distinguished open of that chart,
-            which localizes ``A[1/f_i]`` a second time, and a localization of
-            a localization builds no engine ring.  The composition
-            ``(S^{-1}A)[1/g] = (S u {g})^{-1}A`` is the operation that would
-            supply it.  Downstream of that everything is here:
-            ``Schemes(R).glue_affine_atlas`` takes the charts with their
-            overlap isomorphisms, and the immersion into ``X`` is the map out
-            of the glued scheme given chartwise by the inclusions of the
-            ``D(f_i)``.
+            A single equation is its own union, and ``D(f)`` is affine.  The
+            complement of the origin in the affine line is ``G_m``, and the
+            complement of the origin in the plane is the punctured plane, which
+            is the standard quasi-affine scheme that is not affine.
+
+            The immersion into ``X`` is the map out of the glued scheme given
+            chartwise by the inclusions of the ``D(f_i)``, which agree on the
+            overlaps because each is an open of ``X`` to begin with.
             """
             codomain = self.inclusion().codomain()
-            assert codomain in AffineSchemes(codomain.scheme_base_ring()), (
+            base = codomain.scheme_base_ring()
+            assert codomain in AffineSchemes(base), (
                 "the represented open complement requires a closed subscheme of an affine scheme"
             )
             equations = self.defining_equations()
-            assert equations.cardinality() == 1, (
-                "the open complement of a closed subscheme cut out by several equations is the "
-                "union of their distinguished opens glued along D(f_i f_j), and that gluing "
-                "needs the localization of a localization, which builds no engine ring"
+            indices = equations.index_set()
+            charts = {
+                index: codomain.distinguished_open(equations[index])
+                for index in indices
+            }
+            if equations.cardinality() == 1:
+                return charts[next(iter(indices))]
+            glued = Schemes(base).glue_affine_atlas(
+                charts,
+                {
+                    (left, right): _distinguished_overlap_transition(
+                        charts[left],
+                        equations[left],
+                        charts[right],
+                        equations[right],
+                    )
+                    for left, right in combinations(tuple(indices), 2)
+                },
             )
-            return codomain.distinguished_open(next(iter(equations)))
+            glued._preamble_inclusion = glued.Mor(codomain)(
+                {index: chart.inclusion() for index, chart in charts.items()}
+            )
+            return refine_scheme(glued, base, [OpenImmersions(codomain)])
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
