@@ -75,7 +75,6 @@ def test_a_closed_subscheme_is_placed_with_its_dimension_and_ideal_sheaf() -> No
     assert cusp.dimension() == 1
     assert cusp.codimension() == 1
     assert origin_on_cusp in ClosedSubschemes(QQ)
-    assert origin_on_cusp.ambient_scheme() is cusp
     assert origin_on_cusp.relative_dimension() == 0
     assert origin_on_cusp.inclusion().codomain() is cusp
     through_plane = cusp.inclusion() * origin_on_cusp.inclusion()

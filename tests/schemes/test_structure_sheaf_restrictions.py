@@ -13,8 +13,8 @@ def test_distinguished_affine_cover_has_function_restrictions_and_overlap_compos
     overlap = cover.overlap(0, 1)
     sheaf = scheme.structure_sheaf()
 
-    assert left.ambient_scheme() is scheme
-    assert right.ambient_scheme() is scheme
+    assert left.inclusion().codomain() is scheme
+    assert right.inclusion().codomain() is scheme
     assert left.is_distinguished_open()
     assert left.distinguished_open_element() == x
     assert sheaf.sections_on_distinguished_open(left) is left.coordinate_algebra()

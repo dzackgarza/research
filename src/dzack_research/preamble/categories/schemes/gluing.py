@@ -70,20 +70,20 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 def _factor_affine_map_through_distinguished_open(morphism, open_subscheme):
     r"""Factor ``morphism : T -> X`` through the represented ``D(f) subseteq X``."""
 
-    ambient = open_subscheme.ambient_scheme()
-    if morphism.codomain() is not ambient:
-        raise ValueError("distinguished-open factorization requires the stated ambient codomain")
-    base = ambient.scheme_base_ring()
+    scheme = open_subscheme.inclusion().codomain()
+    if morphism.codomain() is not scheme:
+        raise ValueError("distinguished-open factorization requires the stated codomain")
+    base = scheme.scheme_base_ring()
     if morphism.domain() not in AffineSchemes(base):
         raise TypeError("the represented distinguished-open factorization requires an affine source")
-    if open_subscheme not in OpenImmersions(ambient) or not open_subscheme.is_distinguished_open():
+    if open_subscheme not in OpenImmersions(scheme) or not open_subscheme.is_distinguished_open():
         raise TypeError("the target open must be represented by one distinguished element")
 
-    ambient_algebra = ambient.coordinate_algebra()
+    scheme_algebra = scheme.coordinate_algebra()
     source_algebra = morphism.domain().coordinate_algebra()
     open_algebra = open_subscheme.coordinate_algebra()
     pullback = morphism.coordinate_algebra_morphism()
-    defining_element = ambient_algebra(open_subscheme.distinguished_open_element())
+    defining_element = scheme_algebra(open_subscheme.distinguished_open_element())
     pulled_element = source_algebra(pullback(defining_element))
     if not pulled_element.is_unit():
         raise ValueError("the scheme morphism does not land in the stated distinguished open")

@@ -279,7 +279,7 @@ class SchemeMorphism(Morphism):
         ``V(f^#(I) A)``; the restriction ``f^{-1}(Z) -> Z`` of ``f`` is the
         corestriction of ``f`` composed with the inclusion.
         """
-        assert closed_subscheme.ambient_scheme() is self.codomain(), (
+        assert closed_subscheme.inclusion().codomain() is self.codomain(), (
             "the inverse image is taken of a closed subscheme of the codomain"
         )
         base = self.domain().scheme_base_ring()
@@ -2874,25 +2874,27 @@ def scheme_fiber_product(left_map, right_map):
 class _SchemeSubobjectsOf(OwnedParameterizedCategory):
     r"""Subobjects of one scheme, by the kind of immersion they carry."""
 
-    def ambient_scheme(self):
+    def base_object(self):
         r"""Return the scheme these subobjects are subobjects of."""
         return self.base()
 
     def _repr_object_names(self) -> str:
-        return f"{self.immersion_name} into {self.ambient_scheme()}"
+        return f"{self.immersion_name} into {self.base_object()}"
 
     def super_categories(self):
-        ambient = self.ambient_scheme()
-        return [Schemes(ambient.scheme_base_ring()).SubobjectCategory(ambient)]
+        base_object = self.base_object()
+        return [
+            Schemes(base_object.scheme_base_ring()).SubobjectCategory(base_object)
+        ]
 
     class ParentMethods:
         def inclusion(self):
-            r"""Return the chosen monomorphism representing this subobject."""
-            return self._preamble_inclusion
+            r"""Return the chosen monomorphism representing this subobject.
 
-        def ambient_scheme(self):
-            r"""Return the ambient scheme: the codomain of the inclusion."""
-            return self.inclusion().codomain()
+            A subobject of ``X`` is the pair ``(Z, i: Z -> X)``, so the scheme
+            it sits inside is ``i.codomain()`` and is never separate data.
+            """
+            return self._preamble_inclusion
 
 
 class ClosedEmbeddings(_SchemeSubobjectsOf):
@@ -2909,27 +2911,27 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
     immersion_name = "closed embeddings"
 
     def an_object(self):
-        r"""The coordinate axis, cut out of the ambient by its first coordinate."""
-        ambient = self.ambient_scheme()
-        first = next(iter(ambient.coordinate_algebra().algebra_generators()))
-        return ambient.closed_subscheme(first)
+        r"""The coordinate axis, cut out by the first coordinate of ``X``."""
+        base_object = self.base_object()
+        first = next(iter(base_object.coordinate_algebra().algebra_generators()))
+        return base_object.closed_subscheme(first)
 
     class ParentMethods:
         def codimension(self):
             defining = getattr(self, "_preamble_defining_ideal", None)
-            ambient = self.ambient_scheme()
-            if defining is not None and hasattr(ambient, "coordinate_algebra"):
+            codomain = self.inclusion().codomain()
+            if defining is not None and hasattr(codomain, "coordinate_algebra"):
 
-                ambient_engine = _engine_ring(ambient.coordinate_algebra())
+                codomain_engine = _engine_ring(codomain.coordinate_algebra())
                 ideal_engine = defining._engine_ideal()
                 try:
                     quotient_dimension = ideal_engine.dimension()
-                    ambient_dimension = ambient_engine.krull_dimension()
+                    codomain_dimension = codomain_engine.krull_dimension()
                 except (AttributeError, NotImplementedError):
                     pass
                 else:
-                    return int(ambient_dimension - quotient_dimension)
-            return self.ambient_scheme().dimension() - self.dimension()
+                    return int(codomain_dimension - quotient_dimension)
+            return codomain.dimension() - self.dimension()
 
         def defining_equations(self):
             r"""Return the family of equations that cut this subscheme out."""
@@ -2955,8 +2957,8 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             01QP); for affine endpoints the factor is ``Spec`` of the induced
             map ``A/I -> O(T)`` on the presentation's generators.
             """
-            assert morphism.codomain() is self.ambient_scheme(), (
-                "a corestriction is taken of a morphism into the ambient scheme"
+            assert morphism.codomain() is self.inclusion().codomain(), (
+                "a corestriction is taken of a morphism into the codomain of the inclusion"
             )
             source = morphism.domain()
             base = source.scheme_base_ring()
@@ -2973,7 +2975,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             factor_pullback = algebra.Mor(source.coordinate_algebra())(
                 {
                     label: pullback(
-                        self.ambient_scheme().coordinate_algebra().algebra_generator(label)
+                        morphism.codomain().coordinate_algebra().algebra_generator(label)
                     )
                     for label in algebra.algebra_generating_set()
                 }
@@ -2982,7 +2984,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             assert self.inclusion() * factor == morphism, (
                 "the corestriction does not recover the morphism through the inclusion"
             )
-            assert quotient_map.domain() is self.ambient_scheme().coordinate_algebra()
+            assert quotient_map.domain() is morphism.codomain().coordinate_algebra()
             return factor
 
         def intersection(self, other):
@@ -2996,10 +2998,11 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             ``W``.  Each factorization is the corestriction of this
             subscheme's inclusion along the corresponding one.
             """
-            assert other.ambient_scheme() is self.ambient_scheme(), (
-                "a scheme-theoretic intersection is taken inside one ambient scheme"
+            codomain = self.inclusion().codomain()
+            assert other.inclusion().codomain() is codomain, (
+                "a scheme-theoretic intersection is taken inside one scheme"
             )
-            return self.ambient_scheme().closed_subscheme(
+            return codomain.closed_subscheme(
                 (*self.defining_equations(), *other.defining_equations())
             )
 
@@ -3034,22 +3037,22 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
 
         def ideal_sheaf(self):
             r"""``I_Z = I~``, the quasi-coherent ideal sheaf of ``Z = V(I)`` on affine ``X``."""
-            ambient = self.ambient_scheme()
-            assert ambient in AffineSchemes(ambient.scheme_base_ring()), (
-                "the ideal sheaf is represented on an affine ambient scheme"
+            codomain = self.inclusion().codomain()
+            assert codomain in AffineSchemes(codomain.scheme_base_ring()), (
+                "the ideal sheaf is represented on an affine scheme"
             )
-            return ambient.associated_module_sheaf(self.defining_ideal_owned())
+            return codomain.associated_module_sheaf(self.defining_ideal_owned())
 
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
     r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
 
     An object is a scheme ``Z`` together with the chosen closed immersion
-    ``Z -> X`` into its ambient scheme.  ``ClosedEmbeddings(X)`` is the fibre
-    of this category over one ambient scheme ``X``, where the subobject order
-    and the ideal-sheaf data live; this category collects those fibres over
-    all ``R``-schemes so that "is a closed subscheme" is a placement a session
-    can ask without naming the ambient scheme.
+    ``Z -> X``.  ``ClosedEmbeddings(X)`` is the fibre of this category over
+    one scheme ``X``, where the subobject order and the ideal-sheaf data
+    live; this category collects those fibres over all ``R``-schemes so that
+    "is a closed subscheme" is a placement a session can ask without naming
+    the codomain of the immersion.
     """
 
     def an_object(self):
@@ -3081,14 +3084,17 @@ class OpenImmersions(_SchemeSubobjectsOf):
     immersion_name = "open immersions"
 
     def an_object(self):
-        r"""\(D(f)\) for ``f`` the ambient's first coordinate."""
-        ambient = self.ambient_scheme()
-        first = next(iter(ambient.coordinate_algebra().algebra_generators()))
-        return ambient.distinguished_open(first)
+        r"""\(D(f)\) for ``f`` the first coordinate of ``X``."""
+        base_object = self.base_object()
+        first = next(iter(base_object.coordinate_algebra().algebra_generators()))
+        return base_object.distinguished_open(first)
 
     class ParentMethods:
         def is_distinguished_open(self):
-            return getattr(self, "_preamble_distinguished_open_ambient", None) is self.ambient_scheme()
+            return (
+                getattr(self, "_preamble_distinguished_open_ambient", None)
+                is self.inclusion().codomain()
+            )
 
         def distinguished_open_element(self):
             if not self.is_distinguished_open():
@@ -3103,11 +3109,11 @@ class OpenImmersions(_SchemeSubobjectsOf):
             ``D(g)``; composed with the inclusion of ``D(f)`` it is the
             inclusion of ``D(g)``.
             """
-            ambient = self.ambient_scheme()
-            assert larger_open.ambient_scheme() is ambient, (
+            codomain = self.inclusion().codomain()
+            assert larger_open.inclusion().codomain() is codomain, (
                 "an inclusion between distinguished opens is taken in one affine scheme"
             )
-            restriction = ambient.structure_sheaf().restriction_map(larger_open, self)
+            restriction = codomain.structure_sheaf().restriction_map(larger_open, self)
             inclusion = _affine_morphism_from_pullback(self, larger_open, restriction)
             assert larger_open.inclusion() * inclusion == self.inclusion(), (
                 "the inclusion between distinguished opens does not compose to the inclusion into the scheme"
@@ -3125,9 +3131,9 @@ class SchemeMonomorphisms(MonoCategoryOf):
     """
 
     def accepts(self, arrow) -> bool:
-        ambient = arrow.codomain()
+        codomain = arrow.codomain()
         source = arrow.domain()
-        if source in ClosedEmbeddings(ambient) or source in OpenImmersions(ambient):
+        if source in ClosedEmbeddings(codomain) or source in OpenImmersions(codomain):
             return True
         open_image = arrow.__dict__.get("_preamble_open_image")
         open_image_isomorphism = arrow.__dict__.get(
@@ -3136,7 +3142,7 @@ class SchemeMonomorphisms(MonoCategoryOf):
         if open_image is None or open_image_isomorphism is None:
             return False
         return (
-            open_image in OpenImmersions(ambient)
+            open_image in OpenImmersions(codomain)
             and open_image_isomorphism.forward().domain() is source
             and open_image_isomorphism.forward().codomain() is open_image
         )
@@ -3144,28 +3150,28 @@ class SchemeMonomorphisms(MonoCategoryOf):
 
 def refine_closed_subscheme(
     subscheme,
-    ambient=None,
+    codomain=None,
     *,
     defining_equations=None,
 ):
-    ambient = subscheme.ambient_space() if ambient is None else ambient
-    base = ambient.scheme_base_ring()
+    codomain = subscheme.ambient_space() if codomain is None else codomain
+    base = codomain.scheme_base_ring()
     if defining_equations is not None:
         equations = tuple(defining_equations)
         subscheme._preamble_defining_equations = equations
-        subscheme._preamble_defining_ideal = ambient.coordinate_ring().ideal(*equations)
+        subscheme._preamble_defining_ideal = codomain.coordinate_ring().ideal(*equations)
     if getattr(subscheme, "_preamble_inclusion", None) is None:
         # The subobject is the arrow, so a route that did not build one takes
-        # the native embedding, retargeted at the stated ambient.
+        # the native embedding, retargeted at the stated codomain.
         subscheme._preamble_inclusion = categorical_scheme_morphism(
             subscheme.embedding_morphism(),
             domain=subscheme,
-            codomain=ambient,
+            codomain=codomain,
         )
     return refine_scheme(
         subscheme,
         base,
-        [ClosedEmbeddings(ambient), ClosedSubschemes(base)],
+        [ClosedEmbeddings(codomain), ClosedSubschemes(base)],
     )
 
 __all__ = [
