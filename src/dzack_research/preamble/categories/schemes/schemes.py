@@ -2462,8 +2462,21 @@ def scheme_product(*schemes):
         projections = [affine_spec_morphism(factor_map) for factor_map in factor_maps]
         refine_scheme(product, base, [ProductSchemes(base)])
     else:
-        raise NotImplementedError(
-            "mixed affine/projective scheme products are not yet represented"
+        # A^m_R x_R P^n_R is P^n over the affine factor's coordinate algebra,
+        # because base change carries P^n_R along Spec A -> Spec R.  The object
+        # is therefore already constructible; its two projections are not.  The
+        # projection onto the affine factor is the structure morphism of
+        # P^n_A, whose codomain is Spec(A) rather than the affine space object
+        # a caller passed in, and the projection onto P^n_R is a morphism
+        # between schemes over two different scalar rings, which the backend's
+        # projective Hom does not represent.  Both are missing morphisms, not a
+        # missing scheme.
+        assert False, (
+            "the mixed product A^m_R x P^n_R is P^n over the affine factor's coordinate "
+            "algebra, but neither projection is represented: onto the affine factor it is "
+            "the structure morphism of P^n_A, whose codomain is Spec(A) and not the affine "
+            "space object, and onto P^n_R it is a morphism between schemes over two "
+            "different scalar rings"
         )
 
     product._preamble_product_factors = tuple(schemes)
