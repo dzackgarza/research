@@ -534,8 +534,8 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         def is_free(self) -> bool:
             return True
 
-        def algebra_homset(self, hom_family, codomain):
-            return FramedFreeAlgebraHomset(hom_family, self, codomain)
+        def _algebra_homset_class(self):
+            return FramedFreeAlgebraHomset
 
 
 class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
