@@ -246,6 +246,18 @@ class SchemeMorphism(Morphism):
         )
         return product.closed_subscheme(equations)
 
+    def base_change(self, ring_map):
+        r"""``f_{R'}: X_{R'} -> Y_{R'}``, the morphism the base-change functor induces.
+
+        The square with the two projections commutes, so an automorphism of
+        ``X`` over ``R`` becomes an automorphism of ``X_{R'}`` over ``R'``.
+        """
+        from dzack_research.preamble.categories.schemes.base_change import (
+            scheme_base_change_functor,
+        )
+
+        return scheme_base_change_functor(ring_map)(self)
+
     def inverse_image(self, closed_subscheme):
         r"""``f^{-1}(Z) = X x_Y Z`` as a closed subscheme of ``X``.
 
@@ -787,6 +799,22 @@ class Schemes(OwnedCategoryOverBaseRing):
             if self is self.base_scheme():
                 return 0
             return self.dimension_relative()
+
+        def base_change(self, ring_map):
+            r"""``X_{R'} = X x_{Spec R} Spec R'`` along a scalar morphism ``R -> R'``.
+
+            The functor is applied to this object; the result is equipped as
+            the fibre product of ``X -> Spec R <- Spec R'``, so its two
+            projections and the universal factorization are available on it.
+            """
+            from dzack_research.preamble.categories.schemes.base_change import (
+                scheme_base_change_functor,
+            )
+
+            assert self in Schemes(_own_ring(ring_map.domain())), (
+                "a scheme is base-changed along a morphism out of its own scalar base"
+            )
+            return scheme_base_change_functor(ring_map)(self)
 
         def as_slice_object(self):
             return self.scheme_category().as_slice_object(self)

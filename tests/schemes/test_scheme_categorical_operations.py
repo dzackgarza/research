@@ -5,6 +5,8 @@ scheme-theoretic image are all closed subschemes with their inclusions, and
 each is checked against the morphism identity that defines it.
 """
 
+import pytest
+
 from dzack_research.preamble.all import (
     AffineSchemes,
     AffineSpace,
@@ -91,8 +93,6 @@ def test_a_closed_subscheme_is_placed_with_its_dimension_and_ideal_sheaf() -> No
 
 
 def test_projective_closed_subschemes_require_homogeneous_equations() -> None:
-    import pytest
-
     plane = ProjectiveSpace(2, QQ)
     x, y, z = plane.gens()
     conic = plane.closed_subscheme(x * z - y**2)

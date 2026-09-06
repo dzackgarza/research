@@ -33,6 +33,9 @@ def test_base_change_of_the_cuspidal_cubic_is_the_cubic_over_the_extension() -> 
 
     changed_plane = change(plane)
     changed_cusp = change(cusp)
+    # The session spelling names the object, not the functor.
+    assert plane.base_change(ring_map) is changed_plane
+    assert cusp.base_change(ring_map) is changed_cusp
     assert changed_plane in AffineSpaces(field)
     assert changed_cusp in AffineSchemes(field)
     assert changed_cusp in FiberProductSchemes(field)

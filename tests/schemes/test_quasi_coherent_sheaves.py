@@ -2,6 +2,7 @@ r"""Quasi-coherent sheaves on affine schemes: restriction, refinement, stalks, d
 
 from dzack_research.preamble.all import (
     AffineSpace,
+    FinitelyPresentedAlgebra,
     FreeModule,
     LocalRings,
     PolynomialRing,
@@ -100,8 +101,6 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     x = algebra.algebra_generator("x")
     cover_presentation = PolynomialRing(QQ, ("x", "z"))
     xc, z = cover_presentation.algebra_generators()
-    from dzack_research.preamble.all import FinitelyPresentedAlgebra
-
     cover_algebra = FinitelyPresentedAlgebra(cover_presentation, (z**2 - xc,))
     structure = algebra.Mor(cover_algebra)({"x": cover_algebra.algebra_generator("x")})
     relative = line.relative_spectrum(structure)
@@ -120,5 +119,6 @@ def test_relative_spec_is_compatible_with_base_change() -> None:
     zf = fibre_algebra.algebra_generator(("left", "z"))
     assert zf**2 == fibre_algebra.one()
     changed = point_map.domain().relative_spectrum(fibre.right_projection().coordinate_algebra_morphism())
-    assert changed.arrow() is fibre.right_projection()
+    assert changed.arrow() == fibre.right_projection()
     assert changed.arrow().domain() is fibre
+    assert changed.arrow().codomain() is point_map.domain()
