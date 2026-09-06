@@ -21,6 +21,7 @@ from sage.schemes.product_projective.space import (
 from sage.structure.category_object import CategoryObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    CosliceUnder,
     Isomorphism,
     SliceOver,
 )
@@ -743,6 +744,25 @@ class Schemes(OwnedCategoryOverBaseRing):
         if scheme not in self:
             raise TypeError(f"{scheme} is not an object of {self}")
         return self.slice_category()(scheme.structure_morphism())
+
+    @cached_method
+    def coslice_category(self):
+        r"""``Spec R / Sch_R``, where the pointed ``R``-schemes live.
+
+        An object is a morphism ``Spec R -> X`` and a morphism is a triangle
+        under ``Spec R``.  A family ``X -> S`` is an object of the slice and a
+        point of ``X`` is an object of the coslice; the two constructions are
+        opposite and neither stands in for the other.
+        """
+        return CosliceUnder(self, self.base_scheme())
+
+    def as_coslice_object(self, point):
+        r"""Read a morphism ``Spec R -> X`` as a pointed ``R``-scheme."""
+        assert point.domain() is self.base_scheme(), (
+            "a pointed R-scheme is a morphism out of Spec R"
+        )
+        assert point.codomain() in self, "a pointed R-scheme is pointed in an R-scheme"
+        return self.coslice_category()(point)
 
     def glue_affine_charts(self, left_chart, right_chart, transition):
         r"""Glue two affine charts along the represented open isomorphism ``transition``."""
