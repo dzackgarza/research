@@ -480,6 +480,36 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
             return isotypic_decomposition(self)
 
+        def restrict_action_to(self, inclusion):
+            r"""Return the subobject ``S`` of ``M`` in ``Modules(R[G])``, as its inclusion.
+
+            A submodule whose image is stable under the action carries exactly
+            one action making the inclusion equivariant, namely
+            ``s . x = i^{-1}(rho(s) i(x))``, so the ``G``-module structure is
+            not a choice.  A subobject of ``M`` in ``Modules(R[G])`` is the
+            pair of that module and its inclusion, and that pair is what this
+            returns: the equivariant monomorphism ``S -> M``.
+
+            The invariants and each isotypic component are stable, the latter
+            because the central idempotent cutting it out commutes with the
+            action, so this is how the action of ``G`` and of any equivariant
+            automorphism reaches those pieces.  Stability is not assumed: the
+            lift back along ``inclusion`` fails on a generator whose image
+            leaves the submodule.
+            """
+            submodule = inclusion.domain()
+            assert inclusion.codomain() is self, (
+                f"{inclusion} is not a subobject inclusion into {self}"
+            )
+
+            def restricted_action(group_element, vector):
+                return inclusion.lift(self.act(group_element, inclusion(vector)))
+
+            acted = _equip_action(submodule, self.group(), restricted_action)
+            return group_module_homset(acted, self)(
+                lambda label: inclusion(submodule.module_generator(label))
+            )
+
         def character(self):
             r"""Return the ordinary trace character in characteristic zero."""
             group = self.group()

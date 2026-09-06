@@ -212,6 +212,48 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                     f"no represented constructor equips an object of {category} with a group action"
                 )
 
+    def restriction(self, group_morphism):
+        r"""Return ``phi^*: GObjects(G, C) -> GObjects(H, C)`` for ``phi: H -> G``.
+
+        Restriction along a group morphism is the reindexing functor
+        ``BH -> BG -> C``; it is defined for every ``phi``, not only for the
+        inclusion of a subgroup.
+        """
+        from dzack_research.preamble.categories.functors.group_actions import (
+            RestrictionOfGroupActionFunctor,
+        )
+
+        assert group_morphism.codomain() is self.acting_group(), (
+            f"{group_morphism} does not land in {self.acting_group()}, "
+            "so it restricts no action of that group"
+        )
+        return RestrictionOfGroupActionFunctor(
+            group_morphism,
+            self.underlying_category(),
+        )
+
+    def affine_quotient_functor(self):
+        r"""Return ``(-)/G: GObjects(G, Sch_R) -> AffSch_R``.
+
+        The quotient of one affine action and its universal property are owned
+        by the affine specialization; the functor adds the action on
+        equivariant morphisms, which that universal property determines.
+        """
+        from dzack_research.preamble.categories.schemes.quotients import (
+            AffineQuotientFunctor,
+        )
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        category = self.underlying_category()
+        match category:
+            case Schemes():
+                return AffineQuotientFunctor(self.acting_group(), category.base_ring())
+            case other:
+                assert False, (
+                    f"the affine quotient functor is a construction on schemes; "
+                    f"{other} has no owned quotient by a group action"
+                )
+
     def an_object(self):
         r"""The trivial action on an object of the underlying category."""
         from dzack_research.preamble.categories.group.g_sets import trivial_g_set
@@ -273,6 +315,95 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             r"""Return ``group_element . element``."""
             assert element in self, f"{element} is not an element of {self}"
             return self.action_of(group_element)(element)
+
+        def restrict_action(self, group_morphism):
+            r"""Return this object acted on by ``H`` through ``phi: H -> G``."""
+            category = GObjects(self.acting_group(), self.underlying_category())
+            return category.restriction(group_morphism)(self)
+
+        def _cyclic_restriction(self, group_element):
+            r"""Return this object acted on by the cyclic subgroup ``<g> <= G``."""
+            from dzack_research.preamble.categories.group.cyclic_subgroups import (
+                cyclic_subgroup,
+            )
+            from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+            match self.underlying_category():
+                case Schemes():
+                    pass
+                case other:
+                    assert False, (
+                        "the fixed locus of a single group element is constructed "
+                        f"for schemes; {other} supplies no owned equalizer of an "
+                        "automorphism with the identity"
+                    )
+            return self.restrict_action(cyclic_subgroup(group_element).inclusion())
+
+        def fixed_subobject_of(self, group_element):
+            r"""Return ``X^g``, the equalizer of ``rho(g)`` and the identity of ``X``.
+
+            A point fixed by ``g`` is fixed by every power of ``g``, so
+            ``X^g = X^{<g>}``: the equalizer of one automorphism with the
+            identity is the common fixed locus of the cyclic subgroup that
+            automorphism generates, and that common fixed locus is what the
+            specialization constructs.
+            """
+            return self._cyclic_restriction(group_element).fixed_subscheme()
+
+        def nontrivial_stabilizer_subscheme(self):
+            r"""Return the locus of points fixed by some nonidentity element.
+
+            This is the union of the ``X^g`` over ``g != 1``, and a union of
+            closed subschemes is cut out by the intersection of their ideals.
+            The action is free exactly when this subscheme is empty, and the
+            quotient morphism is ramified exactly over its image, which is
+            where a quotient singularity of the orbit space can appear.
+            """
+            group = self.acting_group()
+            assert group.is_finite() is True, (
+                f"the union of the fixed loci of {group} is taken over its "
+                "nonidentity elements, which requires a group decided finite"
+            )
+            identity = group.one()
+            ideal = None
+            for group_element in group:
+                if group_element == identity:
+                    continue
+                fixed = self._cyclic_restriction(group_element).fixed_ideal()
+                ideal = fixed if ideal is None else ideal.intersection(fixed)
+            if ideal is None:
+                ideal = self.coordinate_algebra().ideal(
+                    self.coordinate_algebra().one()
+                )
+            return self.closed_subscheme(tuple(ideal.ideal_generators()))
+
+        def action_is_free(self):
+            r"""Decide whether the identity is the only element with a fixed point.
+
+            This is strictly stronger than ``X^G`` being empty.  ``X^G`` is the
+            intersection of the ``X^g``, so one element acting without fixed
+            points already empties it while other elements keep theirs; the
+            quotient is then still not a torsor over its image, and the
+            hypotheses of free quotients do not apply.  Freeness asks the
+            question of every nonidentity element separately.
+
+            ``X^g`` is empty exactly when its ideal is the unit ideal.  For an
+            acting group not decided finite the answer is ``Unknown``: the
+            question is one condition per element and no owned criterion
+            replaces it.
+            """
+            group = self.acting_group()
+            if group.is_finite() is not True:
+                return Unknown
+            identity = group.one()
+            for group_element in group:
+                if group_element == identity:
+                    continue
+                restricted = self._cyclic_restriction(group_element)
+                unit = restricted.coordinate_algebra().one()
+                if not restricted.fixed_ideal().contains_ambient_element(unit):
+                    return False
+            return True
 
         def is_invariant(self, element):
             r"""Decide ``g . element = element`` for all ``g``, on the chosen generators."""

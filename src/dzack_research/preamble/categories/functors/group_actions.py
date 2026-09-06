@@ -11,6 +11,7 @@ Algebra*, §6.1).  The functors here are the scalar-change functors of
 represented equalizer and coequalizer as the computation.
 """
 
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.functors.scalar_change import (
     BaseChangeAdjunction,
     CoextensionOfScalarsFunctor,
@@ -224,10 +225,60 @@ class CoinvariantsTrivialAdjunction(BaseChangeAdjunction):
         return f"Coinvariants/trivial-action adjunction for {self.left_adjoint().group()}"
 
 
+class RestrictionOfGroupActionFunctor(Functor):
+    r"""``phi^*: GObjects(G, C) -> GObjects(H, C)`` for a group morphism ``phi: H -> G``.
+
+    A ``G``-object is a group morphism ``rho: G -> Aut_C(X)``; composing with
+    ``phi`` gives ``rho phi: H -> Aut_C(X)``, so restriction changes which
+    group acts and nothing about the object of ``C`` underneath.  An
+    equivariant morphism stays equivariant because both endpoints restrict
+    along the same ``phi``.  Nothing here uses injectivity of ``phi``: the
+    inclusion of a subgroup is one case, and a surjection onto ``G`` or the
+    projection of a semidirect factor is admitted on the same footing.  On
+    ``Modules(R[G])`` this is restriction of scalars along ``R[H] -> R[G]``
+    (Serre, *Linear Representations of Finite Groups*, §7.1), which
+    ``RestrictionOfActingGroupFunctor`` computes for a subgroup with the
+    module presentation in hand.
+    """
+
+    def __init__(self, group_morphism, underlying_category) -> None:
+        from dzack_research.preamble.categories.group.g_objects import GObjects
+
+        self._group_morphism = group_morphism
+        Functor.__init__(
+            self,
+            GObjects(group_morphism.codomain(), underlying_category),
+            GObjects(group_morphism.domain(), underlying_category),
+        )
+
+    def group_morphism(self):
+        r"""Return ``phi: H -> G``, the morphism the action is restricted along."""
+        return self._group_morphism
+
+    def _apply_object(self, acted):
+        morphism = self.group_morphism()
+        return self.codomain()(
+            acted,
+            lambda group_element: acted.action_of(morphism(group_element)),
+        )
+
+    def _apply_morphism(self, arrow):
+        source = self.object_image(arrow.domain())
+        target = self.object_image(arrow.codomain())
+        return self.codomain().Mor(source, target)(arrow.underlying_arrow())
+
+    def _repr_(self):
+        morphism = self.group_morphism()
+        return (
+            f"Restriction of actions along {morphism.domain()} -> {morphism.codomain()}"
+        )
+
+
 __all__ = [
     "CoinvariantsFunctor",
     "CoinvariantsTrivialAdjunction",
     "InvariantsFunctor",
+    "RestrictionOfGroupActionFunctor",
     "TrivialActionFunctor",
     "TrivialInvariantsAdjunction",
     "is_augmentation_of_group_algebra",
