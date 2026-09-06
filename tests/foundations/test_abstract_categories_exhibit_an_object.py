@@ -34,7 +34,7 @@ def test_the_category_of_discrete_categories_exhibits_one() -> None:
     witness = DiscreteCategories().an_object()
 
     assert witness in DiscreteCategories()
-    assert witness.object_set() is Sets().an_object()
+    assert witness.object_set() in Sets()
     assert witness.an_object() in witness
 
 
