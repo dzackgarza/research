@@ -84,7 +84,7 @@ def test_the_five_sterk_cusps_split_into_two_reduction_classes() -> None:
 def test_primitive_isotropic_vectors_are_cut_out_by_their_definition() -> None:
     lattice = NamedLattices.E10
     generators = lattice.module_generators()
-    isotropic, partner, root = (generators.unrank(index) for index in range(3))
+    isotropic, partner, root = (generators[index] for index in range(3))
     vectors = primitive_isotropic_vectors(lattice)
 
     assert isotropic in vectors
@@ -112,7 +112,7 @@ def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
 
     cusp_set = cusps(lattice)
     assert cusp_set.cardinality() == 1
-    cusp = cusp_set.unrank(0)
+    cusp = cusp_set[0]
     assert cusp.rank() == 1
 
     reduction = cusp.reduction_lattice()
@@ -122,14 +122,14 @@ def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
 
     generators = lattice.module_generators()
     for index in (0, 1):
-        line = primitive_isotropic(lattice, (generators.unrank(index),))
+        line = primitive_isotropic(lattice, (generators[index],))
         assert line in cusp
 
 
 def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     lattice = NamedLattices.E10
     generators = lattice.module_generators()
-    isotropic, partner, root = (generators.unrank(index) for index in range(3))
+    isotropic, partner, root = (generators[index] for index in range(3))
     # b(e, f) = 1 and q(r) = -2, so q(e + f + r) = 2 + (-2) = 0, and the
     # coefficient one on e makes the vector primitive.
     vector = isotropic + partner + root
@@ -137,7 +137,7 @@ def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     line = primitive_isotropic(lattice, (vector,))
     assert line.rank() == 1
 
-    cusp = cusps(lattice).unrank(0)
+    cusp = cusps(lattice)[0]
     witness = cusp.transporter_witness(line)
     assert witness is not None
     assert witness.domain() is lattice
@@ -173,8 +173,8 @@ def test_minus_one_and_the_cone_character_split_a_lorentzian_group() -> None:
     lattice = NamedLattices.E10
     assert lattice.signature_pair().first() == 1
     generators = lattice.module_generators()
-    line = primitive_isotropic(lattice, (generators.unrank(0),))
-    transvection = line.eichler_transvection(generators.unrank(2))
+    line = primitive_isotropic(lattice, (generators[0],))
+    transvection = line.eichler_transvection(generators[2])
 
     minus_identity = lattice.Aut()(
         {

@@ -75,7 +75,7 @@ def test_coordinate_swap_has_a_represented_affine_invariant_quotient() -> None:
     assert inclusion.domain() is invariant_algebra
     assert inclusion.codomain() is algebra
     assert set(images) == {x + y, x**2 + y**2}
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     pullback = acted.action_of(generator).coordinate_algebra_morphism()
     assert all(pullback(image) == image for image in images)
 
@@ -124,7 +124,7 @@ def test_sign_involution_invariant_ring_keeps_its_quadratic_relation() -> None:
         for label in invariant_algebra.algebra_generating_set()
     )
     assert set(images) == {x**2, x * y, y**2}
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     action = acted.action_of(generator).coordinate_algebra_morphism()
     assert all(action(image) == image for image in images)
 
@@ -140,7 +140,7 @@ def test_sign_involution_invariant_ring_keeps_its_quadratic_relation() -> None:
 
 def test_order_three_linear_action_uses_the_same_invariant_quotient_backend() -> None:
     group = Groups.C(3)
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     algebra = PolynomialRing(QQ, ("x", "y"))
     x = algebra.algebra_generator("x")
     y = algebra.algebra_generator("y")
@@ -220,7 +220,7 @@ def test_nonlinear_polynomial_action_is_outside_the_selected_invariant_backend()
     # This is genuinely an involution, so rejection is by the selected
     # invariant-ring backend's linearity hypothesis rather than by the action
     # verifier.
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     generator_action = acted.action_of(generator)
     assert (
         generator_action * generator_action

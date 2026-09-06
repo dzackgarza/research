@@ -356,7 +356,7 @@ def _cocone_on(source: Parent):
 
 def _vector_stabilizer(lattice):
     group = lattice.O()
-    vector = lattice.module_generators().unrank(0)
+    vector = lattice.module_generators()[0]
     return group.vector_stabilizer_generators(vector)
 
 
@@ -368,7 +368,7 @@ def _identity_backend_stabilizer(gram, _basis, choice="plane"):
 
 
 def _isotropic_line_stabilizer(lattice):
-    line = lattice.primitive_isotropic_subobject(lattice.module_generators().unrank(0))
+    line = lattice.primitive_isotropic_subobject(lattice.module_generators()[0])
     group = lattice.O()
     with patch(
         "py_polyhedral.binaries.indefinite_form_stabilizer_isotropic_subspace",
@@ -379,7 +379,7 @@ def _isotropic_line_stabilizer(lattice):
 
 def _isotropic_plane_stabilizer(lattice):
     basis = lattice.module_generators()
-    plane = lattice.primitive_isotropic_subobject(basis.unrank(0), basis.unrank(2))
+    plane = lattice.primitive_isotropic_subobject(basis[0], basis[2])
     group = lattice.O()
     with patch(
         "py_polyhedral.binaries.indefinite_form_stabilizer_isotropic_subspace",
@@ -390,7 +390,7 @@ def _isotropic_plane_stabilizer(lattice):
 
 def _isotropic_flag_stabilizer(lattice):
     basis = lattice.module_generators()
-    flag = lattice.isotropic_flag(basis.unrank(0), basis.unrank(2))
+    flag = lattice.isotropic_flag(basis[0], basis[2])
     group = lattice.O()
     with patch(
         "py_polyhedral.binaries.indefinite_form_stabilizer_isotropic_subspace",

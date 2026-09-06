@@ -62,7 +62,7 @@ def test_the_abelianization_adjunction_has_the_quotient_for_its_unit() -> None:
     counit = adjunction.counit(cyclic)
     assert counit.codomain() is cyclic
     assert counit.domain() is adjunction.left_adjoint()(cyclic)
-    generator = cyclic.group_generators().unrank(0)
+    generator = cyclic.group_generators()[0]
     assert counit(adjunction.unit(cyclic)(generator)) == generator
 
 

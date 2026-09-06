@@ -61,5 +61,5 @@ def test_primitive_embedding_of_a1_into_the_even_unimodular_lattice_of_rank_8() 
     assert target.is_even()
     assert target.is_positive_definite()
     assert target.vectors_of_square(2).cardinality() == 240
-    root = a1.module_generators().unrank(0)
+    root = a1.module_generators()[0]
     assert embedding(root).q() == root.q()

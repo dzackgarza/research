@@ -38,7 +38,7 @@ from dzack_research.preamble.all import (
 
 def test_milestone_one_the_E10_cusp_acts_on_its_reduction_lattice() -> None:
     lattice = NamedLattices.E10
-    cusp = cusps(lattice).unrank(0)
+    cusp = cusps(lattice)[0]
     line = cusp.representative()
     quotient = line.isotropic_quotient()
     assert quotient.rank() == 8
@@ -78,10 +78,10 @@ def test_milestone_two_a_plane_of_the_enriques_lattice_meets_a_line_cusp() -> No
     assert plane_cusps.cardinality() >= 1
     assert all(cusp.reduction_lattice().rank() == 8 for cusp in plane_cusps)
 
-    plane = plane_cusps.unrank(0).representative()
+    plane = plane_cusps[0].representative()
     assert plane.rank() == 2
     embedded = plane.embedded_module_generators()
-    first = embedded[plane.module_generating_set().unrank(0)]
+    first = embedded[plane.module_generating_set()[0]]
     assert first.q() == 0
 
     # A basis vector of a saturated plane spans a saturated line, so the
@@ -102,8 +102,8 @@ def test_milestone_three_the_polarized_enriques_group_is_a_proper_subgroup() -> 
     # A polarization is a non-isotropic vector of the invariant lattice; the
     # stabilizer construction is the same for either sign of its square.
     polarization = inclusion(
-        invariant.module_generator(labels.unrank(0))
-    ) + inclusion(invariant.module_generator(labels.unrank(1)))
+        invariant.module_generator(labels[0])
+    ) + inclusion(invariant.module_generator(labels[1]))
     assert polarization.q() != 0
     assert involution(polarization) == polarization
 

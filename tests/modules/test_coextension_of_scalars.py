@@ -37,7 +37,7 @@ def test_a_module_over_an_algebra_is_constructed_from_its_scalar_action() -> Non
     quarter_turn = endomorphisms({0: e1, 1: -e0})
 
     labels = scalars.module_generating_set()
-    one_label, i_label = labels.unrank(0), labels.unrank(1)
+    one_label, i_label = labels[0], labels[1]
 
     def action(scalar):
         coefficients = module_coefficients(scalar, scalars)
@@ -102,7 +102,7 @@ def test_restriction_is_left_adjoint_to_coextension() -> None:
 
     labels = restricted.module_generating_set()
     weights = module_homset(restricted, target)(
-        {label: (1 + int(labels.rank(label))) * target.module_generator(0) for label in labels}
+        {label: (1 + int(labels.ranking_map()(label))) * target.module_generator(0) for label in labels}
     )
     transposed = adjunction.hom_set_isomorphism_forward(weights)
     assert transposed.domain() is free_line
@@ -119,7 +119,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     structure_map = ring_morphism(ZZ, group_algebra, lambda integer: integer * group_algebra.one())
     plane = FreeModule(ZZ, 2)
     labels = plane.module_generating_set()
-    first, second = labels.unrank(0), labels.unrank(1)
+    first, second = labels[0], labels[1]
     e0, e1 = plane.module_generator(first), plane.module_generator(second)
 
     def swap(group_element, vector):
@@ -134,7 +134,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     assert forgotten in Modules(ZZ)
     assert forgotten.rank() == 2
 
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     unit = adjunction.unit(swapped)
     coextended = unit.codomain()
     assert unit(swapped.act(generator, swapped.module_generator(0))) == coextended.act(

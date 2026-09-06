@@ -25,7 +25,7 @@ def _assert_maps_agree(left, right, elements) -> None:
 def _nontrivial_c2_set():
     group = Groups.C(2)
     points = finite_ordered_set((ZZ(0), ZZ(1), ZZ(2)))
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
 
     def action(group_element, point):
         if group_element == group.one():
@@ -73,7 +73,7 @@ def _s3_c2_torsion_sign_module():
 
 def test_orbits_trivial_fixed_gset_adjoints_have_hom_bijections_naturality_and_triangles() -> None:
     group, acted = _nontrivial_c2_set()
-    group_generator = group.group_generators().unrank(0)
+    group_generator = group.group_generators()[0]
     target = finite_ordered_set((ZZ(10), ZZ(20)))
     second_target = finite_ordered_set((ZZ(30), ZZ(40)))
 
@@ -166,7 +166,7 @@ def test_free_underlying_cofree_gset_adjoints_have_hom_bijections_naturality_and
     left, right = free_adjunction.unit_transformation().naturality_square(set_map)
     _assert_maps_agree(left, right, source)
 
-    group_generator = group.group_generators().unrank(0)
+    group_generator = group.group_generators()[0]
     acted_endomorphism = g_set_homset(acted, acted)(
         lambda point: acted.act(group_generator, point)
     )
@@ -223,7 +223,7 @@ def test_free_group_underlying_set_adjunction_uses_indexed_free_group_universal_
     source = finite_ordered_set((ZZ(2), ZZ(3)))
     second_source = finite_ordered_set((ZZ(5), ZZ(7)))
     target = Groups.C(3)
-    target_generator = target.group_generators().unrank(0)
+    target_generator = target.group_generators()[0]
     free = adjunction.left_adjoint()(source)
 
     assert adjunction.right_adjoint()(target) is target
@@ -398,7 +398,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     induced = induction.left_adjoint()(module)
     induced_invariants = induced.invariant_factors()
     assert induced_invariants.cardinality() == 3
-    assert all(induced_invariants.unrank(position) == ZZ(4) for position in range(3))
+    assert all(induced_invariants[position] == ZZ(4) for position in range(3))
     assert all(generator.additive_order() == 4 for generator in induced.module_generators())
 
     induced_doubling = induced.Mor(induced)(
@@ -428,7 +428,7 @@ def test_induction_and_coinduction_preserve_torsion_presentations_and_adjunction
     coinduced_invariants = coinduced.invariant_factors()
     assert coinduced_invariants.cardinality() == 3
     assert all(
-        coinduced_invariants.unrank(position) == ZZ(4)
+        coinduced_invariants[position] == ZZ(4)
         for position in range(3)
     )
     assert all(generator.additive_order() == 4 for generator in coinduced.module_generators())

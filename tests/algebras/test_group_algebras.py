@@ -3,7 +3,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def test_the_group_algebra_functor_extends_a_subgroup_inclusion_linearly() -> None:
     symmetric = Groups.S(3)
-    rotation = symmetric.group_generators().unrank(0)
+    rotation = symmetric.group_generators()[0]
     cyclic = symmetric.subgroup([rotation])
     functor = Groups().group_algebra(QQ)
 
@@ -21,7 +21,7 @@ def test_the_group_inclusion_lands_in_the_units() -> None:
     symmetric = Groups.S(3)
     algebra = QQ[symmetric]
     inclusion = algebra.group_inclusion()
-    rotation = symmetric.group_generators().unrank(0)
+    rotation = symmetric.group_generators()[0]
     transposition = symmetric((1, 2))
 
     assert inclusion(rotation) * inclusion(rotation.inverse()) == algebra.one()

@@ -65,8 +65,8 @@ def test_a_toric_transition_is_the_face_localization_of_the_common_face() -> Non
     their charts.  The transition of the atlas is the isomorphism between those
     two presentations of ``U_gamma``, so it is invertible on both."""
     fan, plane = _projective_plane()
-    left = fan.maximal_cones().unrank(0)
-    right = fan.maximal_cones().unrank(1)
+    left = fan.maximal_cones()[0]
+    right = fan.maximal_cones()[1]
     common = left.intersection(right)
 
     assert common.dimension() == 1

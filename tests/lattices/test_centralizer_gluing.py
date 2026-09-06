@@ -28,13 +28,13 @@ from dzack_research.preamble.all import (
 
 def _hyperbolic_swap():
     lattice = NamedLattices.U
-    first, second = lattice.module_generators().unrank(0), lattice.module_generators().unrank(1)
+    first, second = lattice.module_generators()[0], lattice.module_generators()[1]
     return lattice, lattice.Aut()({0: second, 1: first})
 
 
 def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     lattice, swap = _hyperbolic_swap()
-    first, second = lattice.module_generators().unrank(0), lattice.module_generators().unrank(1)
+    first, second = lattice.module_generators()[0], lattice.module_generators()[1]
     assert swap * swap == lattice.Aut().one()
 
     extension = isometry_primitive_extension(swap)
@@ -44,10 +44,10 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
     assert extension.acts_as_negation_on_coinvariants()
 
     invariant_vector = extension.invariant.embedded_module_generators()[
-        extension.invariant.module_generating_set().unrank(0)
+        extension.invariant.module_generating_set()[0]
     ]
     coinvariant_vector = extension.coinvariant.embedded_module_generators()[
-        extension.coinvariant.module_generating_set().unrank(0)
+        extension.coinvariant.module_generating_set()[0]
     ]
     assert invariant_vector.q() == 2
     assert coinvariant_vector.q() == -2

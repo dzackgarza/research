@@ -159,7 +159,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     cokernel_object = cokernel(twice_arrow)
     invariants = cokernel_object.invariant_factors()
     assert int(invariants.cardinality()) == 1
-    assert invariants.unrank(0) == ZZ(2)
+    assert invariants[0] == ZZ(2)
     induced_cokernel = cokernel(square3)
     _assert_module_maps_agree(
         induced_cokernel * cokernel_object.cokernel_projection(),
@@ -195,7 +195,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
     torsion_cokernel = cokernel(torsion_twice_arrow)
     torsion_invariants = torsion_cokernel.invariant_factors()
     assert int(torsion_invariants.cardinality()) == 1
-    assert torsion_invariants.unrank(0) == ZZ(2)
+    assert torsion_invariants[0] == ZZ(2)
     induced_torsion_cokernel = cokernel(torsion_square)
     _assert_module_maps_agree(
         induced_torsion_cokernel * torsion_cokernel.cokernel_projection(),
@@ -206,7 +206,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
 def test_orthogonal_direct_sum_is_a_bifunctor_on_lattice_morphisms() -> None:
     left = Lattices(ZZ)("A1")
     right = Lattices(ZZ)("A2")
-    left_label = left.module_generating_set().unrank(0)
+    left_label = left.module_generating_set()[0]
     right_labels = right.module_generating_set()
     left_negation = left.Isom(left)(
         {left_label: -left.module_generator(left_label)}

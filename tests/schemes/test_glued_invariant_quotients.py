@@ -232,7 +232,7 @@ def test_finite_glued_invariant_quotient_retains_global_action_and_descent(
     data = glued_swap_quotient.chart_data
     source = glued_swap_quotient.source
     quotient = glued_swap_quotient.quotient
-    generator = data.group.group_generators().unrank(0)
+    generator = data.group.group_generators()[0]
 
     assert tuple(quotient.chart_index_set()) == (0, 1, 2)
     assert quotient.source_scheme() is source

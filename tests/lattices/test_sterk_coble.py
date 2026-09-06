@@ -78,7 +78,7 @@ def test_sterk_diagram_layouts_are_exact_optional_presentation_data() -> None:
     assert layouts["Sterk_1"][9] == (13 / 4, -19 / 4)
     for name, diagram in diagrams.items():
         assert diagram.preferred_positions() == layouts[name]
-        vertex = diagram.index_set().unrank(0)
+        vertex = diagram.index_set()[0]
         assert diagram.induced_subdiagram((vertex,)).preferred_positions() == {vertex: layouts[name][vertex]}
 
 

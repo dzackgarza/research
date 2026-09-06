@@ -53,7 +53,7 @@ def test_cardinality_is_functorial_on_set_isomorphisms() -> None:
 
     source = Sets.Δ[2]
     target = __import__("dzack_research.preamble.categories.sets", fromlist=["finite_ordered_set"]).finite_ordered_set((ZZ(10), ZZ(20), ZZ(30)))
-    forward = Sets().Mor( dzack, esearc)(lambda value: target((ZZ(10), ZZ(20), ZZ(30))[source.position(value)]))
+    forward = Sets().Mor( dzack, esearc)(lambda value: target((ZZ(10), ZZ(20), ZZ(30))[source.ranking_map()(value)]))
     backward = Sets().Mor( dzack, esearc)(lambda value: source((ZZ(10), ZZ(20), ZZ(30)).index(value)))
     core = Core(Sets())
     isomorphism = core.Mor(source, target)(forward, backward)

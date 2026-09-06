@@ -113,7 +113,7 @@ def test_the_cardinality_functor_is_defined_on_the_core_of_sets() -> None:
 
     ordinal = Sets.Δ[2]
     letters = finite_ordered_set(("x", "y", "z"))
-    relabelling = Sets().Mor(ordinal, letters)(lambda index: letters.unrank(int(index)))
+    relabelling = Sets().Mor(ordinal, letters)(lambda index: letters[int(index)])
 
     assert functor(ordinal) == cardinal(3)
     assert functor(letters) == cardinal(3)

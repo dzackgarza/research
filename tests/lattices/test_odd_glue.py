@@ -33,9 +33,9 @@ def _cubic_lattice_split():
     lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
     generators = lattice.module_generators()
     first, second, third = (
-        generators.unrank(0),
-        generators.unrank(1),
-        generators.unrank(2),
+        generators[0],
+        generators[1],
+        generators[2],
     )
     diagonal = lattice.subobject_on((first + second + third,))
     complement = lattice.subobject_on((first - second, second - third))
@@ -81,7 +81,7 @@ def test_the_glue_of_an_odd_lattice_is_an_anti_isometry_of_bilinear_forms() -> N
 
     # The arrow lands in the twist A_R(-1), where the anti-isometry is an
     # isometry: without that twist the image would pair to 2/3.
-    generator = source.module_generators().unrank(0)
+    generator = source.module_generators()[0]
     assert source.b(generator, generator) == values(QQ(1) / 3)
     assert target.b(glue(generator), glue(generator)) == source.b(generator, generator)
 
@@ -89,7 +89,7 @@ def test_the_glue_of_an_odd_lattice_is_an_anti_isometry_of_bilinear_forms() -> N
 def test_an_even_lattice_glues_through_its_quadratic_discriminant_forms() -> None:
     lattice = Lattices(ZZ)("U")
     generators = lattice.module_generators()
-    first, second = generators.unrank(0), generators.unrank(1)
+    first, second = generators[0], generators[1]
     invariant = lattice.subobject_on((first + second,))
     coinvariant = lattice.subobject_on((first - second,))
     values = FractionFieldQuotient(ZZ, 2)
@@ -106,7 +106,7 @@ def test_an_even_lattice_glues_through_its_quadratic_discriminant_forms() -> Non
     assert target in TorsionQuadraticFormModules(ZZ)
     assert source.cardinality() == 2
 
-    generator = source.module_generators().unrank(0)
+    generator = source.module_generators()[0]
     assert source.q(generator) == values(QQ(1) / 2)
     assert target.q(glue(generator)) == source.q(generator)
 
@@ -129,7 +129,7 @@ def test_a_bilinear_isotropic_class_of_u2_gives_the_odd_overlattice() -> None:
     lattice = Lattices(ZZ)([[0, 2], [2, 0]])
     discriminant = lattice.discriminant_module()
     generators = discriminant.module_generators()
-    odd_class = generators.unrank(0) + generators.unrank(1)
+    odd_class = generators[0] + generators[1]
 
     assert discriminant.cardinality() == 4
     assert discriminant.b(odd_class, odd_class) == FractionFieldQuotient(ZZ, 1).zero()
@@ -150,7 +150,7 @@ def test_an_odd_orthogonal_sum_glues_up_to_a_unimodular_lattice() -> None:
     summands = Lattices(ZZ)([[3, 0, 0], [0, 2, -1], [0, -1, 2]])
     discriminant = summands.discriminant_module()
     generators = discriminant.module_generators()
-    glue_class = generators.unrank(0) + generators.unrank(1)
+    glue_class = generators[0] + generators[1]
 
     assert not summands.is_even()
     assert discriminant in TorsionBilinearFormModules(ZZ)

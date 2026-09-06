@@ -59,9 +59,9 @@ def test_the_criterion_reads_its_hypothesis_off_the_decomposition() -> None:
 def test_on_a_unimodular_lattice_the_square_decides() -> None:
     lattice = _decomposed_k3()
     generators = lattice.module_generators()
-    first_plane = generators.unrank(0) + generators.unrank(1)
-    second_plane = generators.unrank(2) + generators.unrank(3)
-    opposite = generators.unrank(0) - generators.unrank(1)
+    first_plane = generators[0] + generators[1]
+    second_plane = generators[2] + generators[3]
+    opposite = generators[0] - generators[1]
 
     assert lattice.discriminant_group().cardinality() == 1
     assert first_plane.q() == 2
@@ -77,8 +77,8 @@ def test_the_divided_discriminant_class_separates_two_elementary_vectors() -> No
     assert eichler_criterion_applies(lattice)
     assert lattice.discriminant_group().cardinality() == 256
 
-    first_root = generators.unrank(4)
-    second_root = generators.unrank(5)
+    first_root = generators[4]
+    second_root = generators[5]
     assert first_root.q() == -4
     assert second_root.q() == -4
     assert first_root.div() == 2
@@ -97,16 +97,16 @@ def test_the_divided_discriminant_class_separates_two_elementary_vectors() -> No
 
 def test_the_covering_list_holds_the_class_of_every_primitive_vector() -> None:
     lattice, generators = _two_elementary_specimen()
-    root = generators.unrank(4)
+    root = generators[4]
     covering = covering_discriminant_classes(lattice, root.q())
     divided = root.divided_discriminant_class()
 
     assert divided in covering
     assert divided.additive_order() == root.div()
-    assert generators.unrank(5).divided_discriminant_class() in covering
+    assert generators[5].divided_discriminant_class() in covering
     assert covering.cardinality() < lattice.discriminant_group().cardinality()
 
-    isotropic = generators.unrank(0)
+    isotropic = generators[0]
     assert isotropic.q() == 0
     assert lattice.discriminant_group().zero() in covering_discriminant_classes(
         lattice, isotropic.q()
@@ -121,7 +121,7 @@ def test_the_covering_list_holds_the_class_of_every_primitive_vector() -> None:
 
 def test_a_vector_with_divisibility_one_has_a_trivial_divided_class() -> None:
     lattice, generators = _two_elementary_specimen()
-    isotropic = generators.unrank(0)
+    isotropic = generators[0]
     assert isotropic.div() == 1
     assert isotropic.divided_discriminant_class() == lattice.discriminant_group().zero()
-    assert are_in_one_stable_orbit(isotropic, generators.unrank(2))
+    assert are_in_one_stable_orbit(isotropic, generators[2])

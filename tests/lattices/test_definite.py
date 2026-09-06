@@ -500,7 +500,7 @@ def test_indefinite_polyhedral_wrapper_crossings_are_live_tensor_morphisms(monke
     )
 
     group = lattice.O()
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     assert generator(e) == 3 * e + 2 * f
     assert generator(f) == 4 * e + 3 * f
 
@@ -616,7 +616,7 @@ def test_isotropic_line_plane_flag_orbits_equivalence_and_stabilizers_are_live_s
 
 def test_finite_character_quotient_splits_vector_orbits_under_special_orthogonal_group() -> None:
     lattice = Lattices(ZZ)("A1")
-    root = lattice.module_generators().unrank(0)
+    root = lattice.module_generators()[0]
     special = lattice.SO()
 
     representatives = special.vector_orbit_representatives(-2)
