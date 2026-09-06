@@ -73,6 +73,10 @@ from sage.categories.category_with_axiom import (
 from sage.categories.covariant_functorial_construction import (
     CovariantConstructionCategory as SageCovariantConstructionCategory,
 )
+
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+    CategoryPacketMethods,
+)
 from sage.categories.covariant_functorial_construction import (
     FunctorialConstructionCategory as SageFunctorialConstructionCategory,
 )
@@ -225,9 +229,19 @@ class Category_singleton(
 
 
 class CategoryWithAxiom(
-    OwnedCategoryMixin, OwnedCategoryObject, SageCategoryWithAxiom, Parent
+    CategoryPacketMethods,
+    OwnedCategoryMixin,
+    OwnedCategoryObject,
+    SageCategoryWithAxiom,
+    Parent,
 ):
     r"""Owned base over Sage's category-with-axiom base.
+
+    An axiom states a property of the objects and no new morphisms, so the
+    Hom packet is the one the refined category already has; carrying
+    ``CategoryPacketMethods`` here is what lets an axiom category be asked for
+    it, and the Hom family's supercategory walk is what makes the answer the
+    same object rather than a second parent for the same maps.
 
     Sage's ``CategoryWithAxiom_over_base_ring`` is not the base to use for an
     axiom on an owned category over a ring: it asks Sage's own ``Rings()``
@@ -249,6 +263,7 @@ class CategoryWithAxiom(
 
 
 class CategoryWithAxiom_singleton(
+    CategoryPacketMethods,
     _SingletonAxiomClasscallMixin,
     OwnedCategoryMixin,
     OwnedCategoryObject,
@@ -266,7 +281,11 @@ class CategoryWithAxiom_singleton(
 
 
 class CategoryWithAxiom_over_base_ring(
-    OwnedCategoryMixin, OwnedCategoryObject, SageCategoryWithAxiomOverBaseRing, Parent
+    CategoryPacketMethods,
+    OwnedCategoryMixin,
+    OwnedCategoryObject,
+    SageCategoryWithAxiomOverBaseRing,
+    Parent,
 ):
     r"""Owned base over Sage's base-ring axiom category base."""
 
