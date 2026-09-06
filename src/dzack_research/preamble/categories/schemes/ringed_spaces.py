@@ -247,7 +247,7 @@ class DistinguishedAffineCover(SageObject):
         labels = {self.chart_label(index) for index in indices}
         if not labels:
             raise ValueError("an affine-cover intersection requires at least one chart")
-        return tuple(sorted(labels, key=self.atlas().rank))
+        return tuple(sorted(labels, key=self.atlas().ranking_map()))
 
     def intersection(self, *indices):
         r"""Return ``D(prod_i f_i)``, the represented intersection of selected charts."""
