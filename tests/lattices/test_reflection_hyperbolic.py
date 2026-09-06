@@ -8,16 +8,23 @@ delivers on \(U\oplus A_1\), and check Vinberg's root-length bound against the
 two Bogachev-Kolpakov ternary lattices, where the bound is what makes "does
 this lattice have a root" a finite question.
 
+Allcock's edgewalk answers the same question and terminates on every input, so
+it decides where Vinberg's algorithm semi-decides; the last test states that
+agreement, or the shared absence of the program that realizes it.
+
 Sources: Vinberg, *On groups of unit elements of certain quadratic forms*,
 Mat. Sb. 87 (1972); Vinberg, *Hyperbolic reflection groups*, Russian Math.
 Surveys 40 (1985); Bogachev and Kolpakov, *Thin hyperbolic reflection groups*,
-arXiv:2112.14642v4, sections 6.1 and 6.2.
+arXiv:2112.14642v4, sections 6.1 and 6.2.  The edgewalk is taken from its
+implementation in ``polyhedral_common``, ``src_lorentzian/edgewalk.h``.
 """
 
 import pytest
+from py_polyhedral.binaries import binary_available
 from sage.all import ZZ as SageZZ
 
 from dzack_research.preamble.all import HyperbolicLattices, Lattices, ZZ
+from dzack_research.preamble.engine_capabilities import EngineCapabilityUnavailable
 
 
 def u_plus_a1():
@@ -162,3 +169,49 @@ def test_a_lattice_that_represents_zero_has_a_noncompact_fundamental_domain() ->
 
     assert lattice.is_reflective(max_decompositions=200) is True
     assert lattice.is_cocompact(max_decompositions=200) is False
+
+
+def test_the_edgewalk_decides_reflectivity_where_vinbergs_algorithm_semi_decides_it() -> None:
+    r"""Allcock's edgewalk answers the same question with a stronger certificate.
+
+    Vinberg's algorithm halts only on a reflective lattice, so it proves
+    reflectivity and never disproves it.  The edgewalk walks the edges of a
+    fundamental polyhedron and terminates on every input, reporting the
+    obstruction when there is no such polyhedron, so it decides.  On
+    \(U\oplus A_1\) the two agree, and the walls the edgewalk reports are
+    roots of the lattice like the walls Vinberg's enumeration reports.
+
+    The edgewalk is realized by ``LORENTZ_ReflectiveEdgewalk`` of
+    ``polyhedral_common``.  Where that program is not on ``PATH`` the question
+    is refused by the shared capability layer, which names the provider and
+    the command that builds it; no other engine is substituted, because no
+    other engine decides this.
+    """
+    lattice = u_plus_a1()
+
+    if not binary_available("LORENTZ_ReflectiveEdgewalk"):
+        with pytest.raises(EngineCapabilityUnavailable) as refusal:
+            lattice.edgewalk_is_reflective()
+
+        absence = refusal.value.absent
+        assert refusal.value.capability == "lorentzian_edgewalk_fundamental_domain"
+        assert tuple(entry.provider for entry in absence) == (
+            "polyhedral-common-via-py-polyhedral",
+        )
+        assert "LORENTZ_ReflectiveEdgewalk" in absence[0].provisioning
+        return
+
+    assert lattice.edgewalk_is_reflective() is True
+    assert lattice.is_reflective(max_decompositions=200) is True
+
+    walls = lattice.edgewalk_simple_roots()
+    assert walls.cardinality() >= 3, "a polyhedron in H^2 has at least three walls"
+
+    lengths = lattice.possible_root_lengths()
+    identity = lattice.O().one()
+    for wall in walls:
+        assert wall.is_root()
+        assert abs(wall.q()) in lengths, "Vinberg's criterion bounds the length"
+        reflection = lattice.reflection(wall)
+        assert reflection in lattice.O()
+        assert reflection * reflection == identity

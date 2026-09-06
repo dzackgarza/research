@@ -40,6 +40,17 @@ from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
 
+_VINAL_PROVISIONING = (
+    "install VinAl into the Sage environment with "
+    "`sage -pip install git+https://github.com/dzackgarza/vinal`"
+)
+
+_EDGEWALK_PROVISIONING = (
+    "build polyhedral_common (github.com/MathieuDutSik/polyhedral_common) and "
+    "put LORENTZ_ReflectiveEdgewalk on PATH"
+)
+
+
 def _vinal_is_available() -> bool:
     from importlib.util import find_spec
 
@@ -63,11 +74,43 @@ def _vinal_vinberg_roots(gram, controlling_vector, max_roots, max_decompositions
     return bool(complete), tuple(tuple(root) for root in algorithm.roots)
 
 
+def _edgewalk_is_available() -> bool:
+    from py_polyhedral.binaries import binary_available
+
+    return binary_available("LORENTZ_ReflectiveEdgewalk")
+
+
+def _polyhedral_common_edgewalk(gram):
+    r"""Run Allcock's edgewalk on a Gram matrix of signature \((n,1)\).
+
+    Returns the reflectivity decision and the coordinate rows of the simple
+    roots.  ``LORENTZ_ReflectiveEdgewalk`` is the driver of
+    ``polyhedral_common`` that calls ``StandardEdgewalkAnalysis`` with early
+    termination on a non-reflective input, so the decision is total and the
+    simple roots are reported exactly when the fundamental polyhedron exists.
+    """
+    from py_polyhedral.binaries import lorentzian_reflective_edgewalk
+
+    record = lorentzian_reflective_edgewalk([list(row) for row in gram.rows()])
+    reflective = bool(record["is_reflective"])
+    rows = record["ListSimpleRoots"] if reflective else ()
+    return reflective, tuple(tuple(row) for row in rows)
+
+
 engine_capabilities.register(
     "vinberg_root_enumeration",
     "vinal",
     _vinal_vinberg_roots,
     available=_vinal_is_available,
+    provisioning=_VINAL_PROVISIONING,
+)
+
+engine_capabilities.register(
+    "lorentzian_edgewalk_fundamental_domain",
+    "polyhedral-common-via-py-polyhedral",
+    _polyhedral_common_edgewalk,
+    available=_edgewalk_is_available,
+    provisioning=_EDGEWALK_PROVISIONING,
 )
 
 
@@ -164,7 +207,9 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 "the available realization of Vinberg's algorithm works over "
                 "the integers; over a totally real ring of integers the "
                 "algorithm is the same and the root rows carry entries of that "
-                "ring, and no engine here computes them"
+                "ring.  Bottinelli's VinbergsAlgorithmNF "
+                "(github.com/bottine/VinbergsAlgorithmNF) computes them, and "
+                "no realization registered here does"
             )
             gram, negated = self._engine_gram_of_signature_n_1()
             coordinates = (
@@ -213,7 +258,7 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             lattice does not return, so this answers ``True`` or ``Unknown``
             and never ``False``.  Deciding non-reflectivity needs Allcock's
             edgewalk, which terminates on every input; see
-            :meth:`allcock_edgewalk`.
+            :meth:`edgewalk_is_reflective`.
 
             In signature \((1,1)\) the criterion is unreachable: the domain is
             a half-line in \(H^1\), of infinite volume, and the question is
@@ -398,24 +443,52 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 "applied to a hyperbolic lattice directly"
             )
 
-        def allcock_edgewalk(self):
-            r"""Return fundamental-domain data from Allcock's edgewalk.
+        @cached_method
+        def _edgewalk(self):
+            r"""Run Allcock's edgewalk and return the decision with the roots.
 
-            The category's stated contract.  A second producer of the object
-            Vinberg's algorithm enumerates, walking the edges of a fundamental
-            polyhedron; unlike Vinberg root enumeration it terminates on every
-            input, so it decides reflectivity rather than semi-deciding it.
-            The realization is the ``LORENTZ_FundDomain_AllcockEdgewalk``
-            program of ``polyhedral_common``, which is not installed here, and
-            no other available engine answers.
+            A second producer of the object Vinberg's algorithm enumerates,
+            walking the edges of a fundamental polyhedron rather than growing
+            it from a controlling vector.  It takes no controlling vector and
+            no bound, because it terminates on every input.
+
+            The engine works in signature \((n,1)\), so the roots come back
+            negated whenever the transport negated the form, exactly as in
+            :meth:`_vinberg_search`.
             """
-            assert False, (
-                "Allcock's edgewalk is realized by the "
-                "LORENTZ_FundDomain_AllcockEdgewalk program of "
-                "polyhedral_common, which is not installed; without it "
-                "reflectivity is semi-decided by Vinberg's algorithm and "
-                "non-reflectivity is not decided at all"
+            gram, negated = self._engine_gram_of_signature_n_1()
+            reflective, rows = engine_capabilities.compute(
+                "lorentzian_edgewalk_fundamental_domain",
+                gram,
             )
+            roots = tuple(self(tuple(row)) for row in rows)
+            return reflective, tuple(-root for root in roots) if negated else roots
+
+        def edgewalk_is_reflective(self) -> bool:
+            r"""Return whether \(W(L)\) has finite index in \(O(L)\).
+
+            A decision, unlike :meth:`is_reflective`: the edgewalk terminates
+            on every input, reporting the fundamental polyhedron when there is
+            one and the obstruction when there is not, so this answers ``True``
+            or ``False`` and never ``Unknown``.  The two methods answer the
+            same mathematical question and are kept apart because they prove
+            different things, not because they use different engines.
+            """
+            reflective, _roots = self._edgewalk()
+            return reflective
+
+        def edgewalk_simple_roots(self):
+            r"""Return the simple roots of the polyhedron the edgewalk walked.
+
+            The outward normals of the walls of a fundamental polyhedron for
+            \(W(L)\), the same wall set :meth:`vinberg_simple_roots` produces
+            from a completed search.  A non-reflective lattice has no such
+            polyhedron, and the set is then empty; ask
+            :meth:`edgewalk_is_reflective` to tell that case from a lattice
+            whose polyhedron has no walls.
+            """
+            _reflective, roots = self._edgewalk()
+            return finite_ordered_set(roots)
 
 
 __all__ = ["HyperbolicLattices"]
