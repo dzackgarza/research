@@ -81,6 +81,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 _SCHEME_MORPHISM_WRAPPERS = {}
@@ -1077,8 +1079,23 @@ class Schemes(OwnedCategoryOverBaseRing):
                 codomain=self,
             )
 
-        def product(self, *others):
-            return scheme_product(self, *others)
+        def product_with(self, other):
+            r"""Return ``X x_S Y``, the product asked of the two objects.
+
+            One argument is distinguished, so this is the operator spelling of
+            the binary case.  A product over an index set that is part of the
+            mathematics is named and taken over that set with
+            ``Schemes(R).product(family)``, which is the same word one level
+            up (`CON-14`).
+            """
+            schemes = self.scheme_category()
+            assert other in schemes, (
+                "a product of schemes is taken between two schemes over one base"
+            )
+            factors = (self, other)
+            return schemes.product(
+                indexed_family(Sets.Δ[1], lambda index: factors[int(index)])
+            )
 
         def point_counts(self, extension_degree):
             r"""Return ``(#X(F_q),...,#X(F_{q^n}))`` for a finite base field."""
