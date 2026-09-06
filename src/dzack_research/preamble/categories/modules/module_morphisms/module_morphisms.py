@@ -2,6 +2,7 @@
 
 import logging
 import operator
+from functools import reduce
 from itertools import product
 
 from sage.categories.action import Action
@@ -655,8 +656,11 @@ class ModuleMorphism(Morphism):
         if custom is not None:
             return custom(element)
         ring = self.domain().base_ring()
-        if not (_has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain())):
-            raise NotImplementedError("the coordinate lift requires finite free framed endpoints")
+        assert _has_finite_free_framing(self.domain()), (
+            f"a lift is solved for the coefficients of a framing, and {self.domain()} has none"
+        )
+        if not _has_finite_free_framing(self.codomain()):
+            return self._lift_through_the_extension_framing(element)
         if element.parent() is not self.codomain():
             element = self.codomain()(element)
         codomain_labels = tuple(self.codomain().module_generating_set())
@@ -668,6 +672,77 @@ class ModuleMorphism(Morphism):
             ring,
         )
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
+
+    def _lift_through_the_extension_framing(self, element):
+        r"""Return the preimage of ``element`` in a restriction of scalars to ``R``.
+
+        ``Res_f(W)`` along ``f: R -> Frac(R)`` is divisible, so it is not
+        finitely generated over ``R`` and carries no framing of its own to
+        solve coordinates against.  The image of this morphism is still the
+        ``R``-span of the finitely many images of the domain framing, and
+        that span is read in the ``Frac(R)``-framing ``W`` does carry: one
+        common denominator carries the generator images and the target into
+        the free ``R``-module on that framing, without changing which
+        ``R``-combinations of the images the target is.  The coordinate lift
+        decides there, which is the rational solve of the linear system
+        followed by the integrality of its solution.
+        """
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FreshFreeModuleOn,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            FinitelyGeneratedModules,
+            FramedModules,
+            RestrictedScalarsModules,
+        )
+
+        domain, codomain = self.domain(), self.codomain()
+        ring = domain.base_ring()
+        assert codomain in RestrictedScalarsModules(ring), (
+            f"an unframed lift is stated here for a restriction of scalars, and {codomain} is not one"
+        )
+        fractions = codomain.extension_ring()
+        assert fractions is ring.fraction_field(), (
+            f"the integrality test reads denominators in {ring}, so the restricted scalars must be "
+            f"its fraction field; {codomain} restricts {fractions}"
+        )
+        extension = codomain.module_over_extension()
+        assert extension in FramedModules(fractions) and extension in FinitelyGeneratedModules(fractions), (
+            f"the span is read in a finite framing of {extension} over {fractions}, and it has none"
+        )
+
+        if element.parent() is not codomain:
+            element = codomain(element)
+
+        image_coordinates = {
+            label: module_coefficients(
+                self(domain.module_generator(label)).underlying_element(),
+                extension,
+            )
+            for label in domain.module_generating_set()
+        }
+        target_coordinates = module_coefficients(element.underlying_element(), extension)
+        denominator = reduce(
+            lambda current, coefficient: current.lcm(coefficient.denominator()),
+            tuple(
+                coefficient
+                for coordinates in (*image_coordinates.values(), target_coordinates)
+                for coefficient in coordinates.values()
+            ),
+            ring.one(),
+        )
+        scale = codomain.ring_map()(denominator)
+        cleared_module = FreshFreeModuleOn(ring, extension.module_generating_set())
+
+        def cleared(coordinates):
+            return cleared_module.linear_combination(
+                {label: ring(scale * coefficient) for label, coefficient in coordinates.items()}
+            )
+
+        cleared_span = module_homset(domain, cleared_module)(
+            {label: cleared(coordinates) for label, coordinates in image_coordinates.items()}
+        )
+        return cleared_span.lift(cleared(target_coordinates))
 
     def is_in_image(self, element) -> bool:
         r"""Return whether ``element`` has a preimage when the lift is decidable."""
