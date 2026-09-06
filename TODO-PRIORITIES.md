@@ -32,6 +32,142 @@ Neither of those is verification, and neither licenses a suite. A green run is n
 evidence while the architecture is incomplete, so do not seek one, do not report
 one, and do not let one decide a design question.
 
+## Handoff, 2026-09-06
+
+Read this before selecting work. It is the state a session ended in, not a
+summary of what was done; git history owns that.
+
+### One live defect, and it is in the headline operation
+
+The discriminant group of a lattice builds or does not depending on what the
+session constructed first. In a fresh session
+`Lattices(ZZ)("A2").discriminant_group()` answers; after these four lines it
+raises `TypeError: Cannot create a consistent method resolution order`:
+
+```python
+X = AffineSpace(2, QQ)
+X.distinguished_open(X.coordinate_ring().algebra_generators()[0])
+gl2 = Modules(ZZ).End(FreeModule(ZZ, 2))
+MatrixAlgebras(ZZ).Mor(gl2, gl2)
+Lattices(ZZ)("E8").module_rank()
+```
+
+**Cause.** Sage sorts its C3 merge on `_cmp_key`, whose second half is a global
+counter assigned at first access. Sage's own graph is created during import, so
+that order is fixed every run; the owned graph is created lazily as a session
+reaches into it, so two sibling categories can linearize their shared
+supercategories in opposite orders and a category above both cannot be built.
+
+**Mitigation in place, and its limit.** `all.py` realizes owned categories at
+import in name order, which fixes the tie-breaks for what it reaches. It
+reaches only subclasses of `OwnedCategoryOverBaseRing` **bound in the session
+surface**, over `ZZ` alone — so the Hom, End and Aut categories, the axiom
+categories, joins, anything unexported, and every category over any other ring
+still take their order from the session. That is why the four lines above still
+fail.
+
+**What was ruled out, so it is not re-derived.** A comparison key derived from
+the owned graph — `(flag, declared depth, qualified class name)` — was written,
+merged and reverted; it broke `distinguished_open` outright. The reason is
+structural, not a bug in that key:
+
+- `_super_categories_for_classes` is handed to `dynamic_class` as the literal
+  base list, so Python's C3 requires a linear extension of every base's own MRO.
+  That constrains incomparable pairs, which is stronger than the two properties
+  Sage documents at `c3_controlled.pyx:395-403`.
+- Sage's counter is a topological index of every graph it has touched, including
+  cross-graph edges. A declared depth indexes the owned graph only. There are
+  **no** declared edges from the owned graph into `sage.categories.*` — the
+  owned root declares no supercategories, and `Sets()` is genuinely incomparable
+  with Sage's — so nothing computed from owned declarations can place a Sage
+  category relative to an owned one. Two topological indices with incomparable
+  origins interleave arbitrarily in one tuple slot.
+- An offset above Sage's counter is not available: the counter is global,
+  unbounded and monotonic, and "all owned above all Sage" is an arbitrary order
+  rather than the one the merge needs.
+
+So a graph-derived key can only work if *every* category in a mixed join uses
+it, which means replacing Sage's `_cmp_key` machine-wide. That is a vendored
+library and is not to be modified without the owner's decision.
+
+**The next step** is the realization route, with its two holes closed: hook the
+realization to owned ring construction so every ring is covered without a
+register, and enumerate the owned categories honestly — a registry populated at
+class creation — rather than taking what happens to be exported. Verify against
+the four lines above in several orders, and against
+`AffineSpace(2, QQ).distinguished_open(...)`, not only against the discriminant
+group.
+
+### The algebra node conversion, designed and part-built
+
+Ruled by the owner: `Algebras(R)` is the node — an algebra, however it
+multiplies — with `Associative`, `Unital`, `Commutative` and `Lie` as axioms on
+it reached by `with_axiom`, and `WithChosenMultiplication` as the data
+refinement holding the multiplication morphism and the machinery that consumes
+it. The present `Algebras(R)`, meaning unital associative, becomes
+`Algebras(R).Associative().Unital()`, and the ring facts attach there, since a
+non-unital non-associative algebra is not a ring. A Lie algebra is an algebra
+whose multiplication satisfies alternating and Jacobi; its morphisms are algebra
+morphisms, so `LieAlgebraMorphism` and `AssociativeAlgebraMorphism` both
+disappear into the node's contract.
+
+Executable order, established by attempt: the axiom Hom packet, then the node,
+then `Lie`, then the morphism classes. The first has landed. The second is
+written and red on branch `work/algnode`, with two failures standing:
+`Algebras(R).Associative()` inherits three incompatible Homs and must declare
+its own, and `CommutativeAlgebras(R)` composes to a `JoinCategory`, which is not
+an axiom category and so carries no packet at all. The sweep is 11 edits rather
+than the 46 call sites, because the composite is contained in the node and
+membership sites keep passing.
+
+`center` splits three ways: the submodule at the node, a subalgebra at
+`.Associative()` since closure under multiplication needs associativity, a ring
+only at `.Associative().Unital()`.
+
+### `Framed`, designed and not built
+
+`Framed` is one axiom, registered once and stated at `Sets()`, whose ancestor
+`Sets().Framed()` owns the **data model** and nothing else: the datum is a
+morphism $F \to X$, or a complex $F_2 \to F_1 \to X$ for a presentation, plus
+private helpers. It owns no notion of generator, because a set framing is a
+chosen surjection and generates nothing. Each descendant introduces its own
+vocabulary — `Groups().Framed()` gives `group_generators`, `Modules(R).Framed()`
+gives `module_generators`, `Algebras(R).Framed()` gives `algebra_generators` —
+and those names stay.
+
+`Framed` is **structure**: the category of framed modules is the category of
+pairs, so two framings of one module are two objects. `FinitelyGenerated` is a
+**property** and owns no accessor at all; something can be finitely generated
+with nothing to hand you. They are not one notion at two strengths. Sage's
+`WithBasis` is the precedent for axiom syntax over a comma category, and
+`FinitelyGeneratedAsMagma` is the precedent for disambiguating such an axiom by
+structure in its own name.
+
+The algebra-under-module relation is a **functor, not an inclusion**: a framed
+algebra is $(A, F_{\mathrm{alg}}(S) \twoheadrightarrow A)$ and the induced
+object is $(A, F_{\mathrm{mod}}(\mathrm{Words}\,S) \twoheadrightarrow A)$, the
+same $A$ with a different second component, so they are different objects of
+different comma categories. `FinitelyGeneratedModules`,
+`FinitelyGeneratedFreeModules` and `FinitelyPresentedAlgebras` are ordinary
+categories that supply accessors, which is the property/structure conflation in
+code; leave them until `Framed` exists.
+
+### Smaller findings, each stated where it was found
+
+- `MatrixSpaces(R)` declares $\operatorname{Hom}_R(F,G)$ a finitely generated
+  free $R$-module on both the commutative and the noncommutative branch. Over
+  noncommutative $R$ it is a module over the centre. Live specimen: $\operatorname{End}$
+  of a free module over $M_2(\mathbb{Q})$.
+- A category join can lose its base ring, which is why the orthogonal sum reads
+  the ring off its summands.
+- `DirectSumDecomposition` verifies a two-summand decomposition and trusts a
+  three-summand one; a check gated on arity is incoherent either way.
+- `Spec(A)` and `A.spectrum()` are the affine scheme and its underlying ordered
+  set of primes. They are correctly distinct; the TODO row calling them two
+  names for one notion is wrong.
+- `OpenSubschemes` in TODO names the archived preamble's spelling; the live
+  category is `OpenImmersions`.
+
 ## Current objective and order
 
 Develop a general scheme-theory toolkit built on the preamble's affine-local algebra, modules, and categorical constructions.
