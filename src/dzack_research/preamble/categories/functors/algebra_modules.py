@@ -1,12 +1,19 @@
 r"""The forgetful functor \(U\colon R\text{-}\mathbf{Alg}\to R\text{-}\mathbf{Mod}\).
 
-An associative unital \(R\)-algebra is already an \(R\)-module.  Finite
-module-backed algebras use that module directly.  A represented free algebra
-has infinitely many homogeneous generators as a module, so its underlying module is the
-finite-support direct sum of its actual presented homogeneous pieces.
+An associative unital \(R\)-algebra is already an \(R\)-module, so \(U\) adds
+no structure and takes nothing away; it names the passage and settles which
+module state the answer arrives with.
+
+An algebra that carries a module framing is that framed module.  A free
+construction carries none: \(T_R(M)\) and \(\operatorname{Sym}_R(M)\) have one
+homogeneous module generator for each word or monomial, in every degree, so
+their underlying module is the finite-support direct sum of their own graded
+pieces.  A polynomial ring named by its variables is the second of these, on
+the free module on those names, and is summed the same way.
 """
 
 from sage.misc.cachefunc import cached_function
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -41,7 +48,20 @@ from dzack_research.preamble.categories.modules.tensor_products import (
 )
 
 
-def _free_algebra_underlying_module(algebra, source, flavor):
+def _monomial_exponents(exponents):
+    r"""Return one monomial's exponent as multiplicities in variable order.
+
+    Private backend serialization.  Sage writes the exponent of a monomial in
+    a single variable as a bare integer and of a monomial in several variables
+    as a tuple of them.  Both record the same multiplicity function on the
+    variables, and the code that reads it wants the second spelling.
+    """
+    return (exponents,) if exponents in SageZZ else exponents
+
+
+def _free_algebra_underlying_module(algebra, ring):
+    source = algebra.free_source_module()
+    tensor_flavored = algebra in TensorAlgebras(ring)
     realization_maps = {}
 
     def piece(degree):
@@ -52,7 +72,7 @@ def _free_algebra_underlying_module(algebra, source, flavor):
             return algebra.one()
         if degree == 1:
             return algebra.algebra_generator(label)
-        if flavor == "tensor":
+        if tensor_flavored:
             factors = (
                 algebra.algebra_generator(source_label)
                 for source_label in _flatten_tensor_label(label, degree)
@@ -99,7 +119,7 @@ def _free_algebra_underlying_module(algebra, source, flavor):
         backend = _engine_element(presentation, presented)
         engine = _engine_ring(presentation)
 
-        if flavor == "tensor":
+        if tensor_flavored:
             def source_label(generator):
                 position = next(
                     index
@@ -133,7 +153,9 @@ def _free_algebra_underlying_module(algebra, source, flavor):
                 exponents, coefficient = item
                 multiplicities = {
                     source_labels[position]: int(exponent)
-                    for position, exponent in enumerate(exponents)
+                    for position, exponent in enumerate(
+                        _monomial_exponents(exponents)
+                    )
                     if exponent
                 }
                 degree = sum(multiplicities.values())
@@ -240,10 +262,9 @@ class AlgebraUnderlyingModuleFunctor(Functor):
         domain = (
             Algebras(self._base_ring) if algebra_category is None else algebra_category
         )
-        if not domain.is_subcategory(Algebras(self._base_ring)):
-            raise ValueError(
-                "the underlying-module functor starts on an algebra category"
-            )
+        assert domain.is_subcategory(Algebras(self._base_ring)), (
+            f"the underlying-module functor starts on a category of {self._base_ring}-algebras"
+        )
         super().__init__(domain, Modules(self._base_ring))
 
     def base_ring(self):
@@ -252,35 +273,34 @@ class AlgebraUnderlyingModuleFunctor(Functor):
     def _apply_object(self, algebra):
         r"""Return the underlying \(R\)-module of one algebra.
 
-        An algebra already is an \(R\)-module, so the algebra itself is the
-        answer wherever nothing better is available: when it carries a module
-        framing of its own there is nothing to build, and a polynomial ring
-        built from variable names has the addition and the scalar action
-        without being the free construction on any represented module.
+        An algebra already is an \(R\)-module, so when it has a module framing
+        of its own that framing is the underlying module and there is nothing
+        to build.
 
-        The one case that does build something is the free algebra of a
-        module.  It has infinitely many homogeneous module generators, so no
-        finite framing describes it, and its underlying module is stated as
-        the finite-support sum of its own graded pieces -- the module it
-        realizes, not a second model of it.
+        A free construction \(T_R(M)\) or \(\operatorname{Sym}_R(M)\) has no
+        finite framing: it has one homogeneous module generator for each word
+        or monomial, in every degree.  Its underlying module is therefore
+        stated as the finite-support sum of its own graded pieces -- the
+        module it realizes, not a second model of it.  This covers a
+        polynomial ring named by its variables too, since \(R[x_1,\dots,x_n]\)
+        is \(\operatorname{Sym}_R\) of the free module on those names, so the
+        graded pieces are there to be summed whichever route built it.
+
+        Every remaining algebra is answered by itself.  It is an \(R\)-module
+        by its structure map, and no framing of it is chosen here: an algebra
+        given by generators and relations has one only when its construction
+        computed one.
         """
         ring = self.base_ring()
         if algebra in FramedModules(ring):
             return algebra
         match algebra:
             case _ if algebra in TensorAlgebras(ring):
-                flavor = "tensor"
+                return _free_algebra_underlying_module(algebra, ring)
             case _ if algebra in SymmetricAlgebras(ring):
-                flavor = "symmetric"
+                return _free_algebra_underlying_module(algebra, ring)
             case _:
                 return algebra
-        try:
-            source = algebra.free_source_module()
-        except AttributeError:
-            # Built from variable names rather than from a module, so there is
-            # no module to take graded pieces of.
-            return algebra
-        return _free_algebra_underlying_module(algebra, source, flavor)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())

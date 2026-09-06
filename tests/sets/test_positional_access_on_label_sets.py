@@ -1,15 +1,10 @@
 r"""Positional access on an owned set whose points are not Sage elements.
 
 An enumerated set answers ``X[k]`` with the point at position ``k``, and that
-is the ranking map run backwards.  The map is currently a Sage ``SetMorphism``,
-whose application is typed to return a Sage ``Element``, so a set whose points
-are Python labels cannot answer at all: the forward direction gives the
-position, and the backward direction refuses.
-
-This is red, and the red row is the finding.  The two candidate repairs are
-mathematically different and the choice is open: either an owned set owns its
-points, so a set of labels has its own elements and this never arises, or a map
-of owned sets is applied by owned machinery rather than by Sage's morphism.
+is the ranking map run backwards.  Nothing in that says the points have to be
+Sage elements: a set of labels, or an index set of generator names, is a set
+like any other, and its enumeration is a bijection onto the ordinal counting
+it.
 """
 
 import pytest

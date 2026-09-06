@@ -246,6 +246,24 @@ class _Aleph:
 class OwnedSetMorphism(SetMorphism):
     r"""A set map whose composition remains in the canonical owned Set Hom."""
 
+    def __init__(self, parent, function) -> None:
+        SetMorphism.__init__(self, parent, function)
+        self._owned_function = function
+
+    def __call__(self, element, *args, **kwargs):
+        r"""Send a point of the source to its point of the target.
+
+        Sage's ``SetMorphism`` is typed to return an ``Element``, so a map
+        whose target has points that are not Sage elements -- a set of
+        labels, an index set of generator names -- cannot be applied at all
+        through it.  A map of sets carries no such restriction: it takes a
+        point of the source to a point of the target, whatever those are.
+        The function is kept here so applying the map never crosses that
+        typing, and foreign data is read where every owned set reads it, by
+        the source's own ingress.
+        """
+        return self._owned_function(element, *args, **kwargs)
+
     def __eq__(self, other) -> bool:
         r"""Two set maps agree when they agree at every point.
 

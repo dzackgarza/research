@@ -3281,6 +3281,45 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             )
             return codomain.associated_module_sheaf(self.defining_ideal_owned())
 
+        def open_complement(self):
+            r"""``X \ Z``, the open subscheme on which the ideal of ``Z`` is the unit ideal.
+
+            A prime of ``X = Spec A`` lies outside ``Z = V(I)`` exactly when
+            it fails to contain some ``f in I``, so the complement is
+            ``D(I) = union_{f in I} D(f)``, and the ``D(f)`` for ``f`` running
+            over a generating family of ``I`` already cover it.  One equation
+            therefore has the affine complement ``D(f) = Spec A[1/f]``, whose
+            open immersion is ``Spec`` of the localization ``A -> A[1/f]``.
+
+            Several equations need those charts glued along their overlaps
+            ``D(f_i) cap D(f_j) = D(f_i f_j)``, and the glued scheme is not
+            reached.  ``D(f_i f_j)`` is built, and it corestricts into both
+            ``D(f_i)`` and ``D(f_j)``, so the two maps whose composite is the
+            overlap isomorphism are there.  What is missing is that a
+            subobject is the pair, and the pair this one is built as sends it
+            into ``X``: to be an open subobject *of the chart* ``D(f_i)`` the
+            overlap has to be presented as a distinguished open of that chart,
+            which localizes ``A[1/f_i]`` a second time, and a localization of
+            a localization builds no engine ring.  The composition
+            ``(S^{-1}A)[1/g] = (S u {g})^{-1}A`` is the operation that would
+            supply it.  Downstream of that everything is here:
+            ``Schemes(R).glue_affine_atlas`` takes the charts with their
+            overlap isomorphisms, and the immersion into ``X`` is the map out
+            of the glued scheme given chartwise by the inclusions of the
+            ``D(f_i)``.
+            """
+            codomain = self.inclusion().codomain()
+            assert codomain in AffineSchemes(codomain.scheme_base_ring()), (
+                "the represented open complement requires a closed subscheme of an affine scheme"
+            )
+            equations = self.defining_equations()
+            assert equations.cardinality() == 1, (
+                "the open complement of a closed subscheme cut out by several equations is the "
+                "union of their distinguished opens glued along D(f_i f_j), and that gluing "
+                "needs the localization of a localization, which builds no engine ring"
+            )
+            return codomain.distinguished_open(next(iter(equations)))
+
 
 class ClosedSubschemes(OwnedCategoryOverBaseRing):
     r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
