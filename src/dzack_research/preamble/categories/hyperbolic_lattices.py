@@ -456,6 +456,12 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             negated whenever the transport negated the form, exactly as in
             :meth:`_vinberg_search`.
             """
+            assert self.base_ring() is _own_ring(SageZZ), (
+                "the available realization of the edgewalk carries its root "
+                "coordinates in a fixed integral type, so it walks the "
+                "polyhedron of an integral lattice; no realization registered "
+                "here walks one over a wider ring"
+            )
             gram, negated = self._engine_gram_of_signature_n_1()
             reflective, rows = engine_capabilities.compute(
                 "lorentzian_edgewalk_fundamental_domain",

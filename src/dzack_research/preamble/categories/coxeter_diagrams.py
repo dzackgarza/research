@@ -1,5 +1,7 @@
 r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 
+from itertools import combinations
+
 from sage.combinat.posets.posets import Poset
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
@@ -74,7 +76,7 @@ class CoxeterDiagrams(OwnedCategory):
                 names = tuple(part.strip() for part in names.split(","))
             else:
                 names = tuple(names)
-            if len(names) != len(self._index_set):
+            if self._index_set.cardinality() != len(names):
                 raise ValueError("a Coxeter diagram needs one name per vertex")
             self._names = names
             self._roots = None if roots is None else tuple(roots)
@@ -147,13 +149,10 @@ class CoxeterDiagrams(OwnedCategory):
             """
             graph = Graph(multiedges=False, loops=False)
             graph.add_vertices(tuple(self.index_set()))
-            vertices = tuple(self.index_set())
-            for i, left in enumerate(vertices):
-                for j in range(i + 1, len(vertices)):
-                    right = vertices[j]
-                    m = self.coxeter_entry(left, right)
-                    if m != 2:
-                        graph.add_edge(left, right, m)
+            for left, right in combinations(self.index_set(), 2):
+                bond = self.coxeter_entry(left, right)
+                if bond != 2:
+                    graph.add_edge(left, right, bond)
             return graph
 
         def connected_components(self):
@@ -220,11 +219,10 @@ class CoxeterDiagrams(OwnedCategory):
             r"""Return the normalized reflection Gram tensor ``S_ii=1``."""
             from sage.all import AA, cos, pi
 
-            vertices = tuple(self.index_set())
             values = []
-            for left in vertices:
+            for left in self.index_set():
                 row = []
-                for right in vertices:
+                for right in self.index_set():
                     if left == right:
                         row.append(AA.one())
                         continue
@@ -234,7 +232,8 @@ class CoxeterDiagrams(OwnedCategory):
                     else:
                         row.append(-AA(cos(pi / m)))
                 values.append(row)
-            return tensor(AA, (), (len(vertices), len(vertices)), values)
+            mirrors = self.cardinality()
+            return tensor(AA, (), (mirrors, mirrors), values)
 
         def _inertia_counts(self):
             r"""Return \((n_+,n_-,n_0)\) of the Schlaefli form, by Sylvester.
@@ -247,7 +246,9 @@ class CoxeterDiagrams(OwnedCategory):
             eigenvalues = _engine_component_matrix(self.schlafli_tensor()).eigenvalues()
             positive = sum(1 for value in eigenvalues if value > 0)
             negative = sum(1 for value in eigenvalues if value < 0)
-            zero = len(eigenvalues) - positive - negative
+            # The three indices sum to the rank of the Schlaefli form, which is
+            # the number of vertices of the diagram.
+            zero = int(self.cardinality()) - positive - negative
             return cardinal(positive), cardinal(negative), cardinal(zero)
 
         def positive_inertia_index(self):
@@ -277,8 +278,6 @@ class CoxeterDiagrams(OwnedCategory):
             The vertex subsets of a finite diagram are finite in number, so the
             enumeration terminates by the finiteness of the index set.
             """
-            from itertools import combinations
-
             vertices = tuple(self.index_set())
             selected = []
             for size in range(len(vertices) + 1):
@@ -485,10 +484,8 @@ class CoxeterDiagrams(OwnedCategory):
             codomain, and the two coincide exactly when the roots generate a
             finite-index sublattice with the same Gram framing.
             """
-            gram = self.root_gram_tensor()
-            rank = len(tuple(self.index_set()))
             return Lattices(self.root_realization().base_ring())(
-                [[gram[i, j] for j in range(rank)] for i in range(rank)]
+                self.root_gram_tensor()
             )
 
         def root_morphism(self):
@@ -516,14 +513,13 @@ class CoxeterDiagrams(OwnedCategory):
             the pairings themselves separate diagrams the bonds identify.
             """
             gram = self.root_gram_tensor()
-            vertices = tuple(self.index_set())
             graph = Graph(multiedges=False, loops=True)
-            graph.add_vertices(vertices)
-            for i, left in enumerate(vertices):
-                graph.add_edge(left, left, gram[i, i])
-                for j in range(i + 1, len(vertices)):
-                    if gram[i, j] != 0:
-                        graph.add_edge(left, vertices[j], gram[i, j])
+            graph.add_vertices(tuple(self.index_set()))
+            for position, vertex in enumerate(self.index_set()):
+                graph.add_edge(vertex, vertex, gram[position, position])
+            for (i, left), (j, right) in combinations(enumerate(self.index_set()), 2):
+                if gram[i, j] != 0:
+                    graph.add_edge(left, right, gram[i, j])
             return graph
 
         def _root_pair_discriminant(self, left, right):
@@ -580,21 +576,30 @@ class CoxeterDiagrams(OwnedCategory):
         roots = tuple(roots)
         if not roots:
             raise ValueError("a rooted Coxeter diagram needs at least one root")
-        ambient = roots[0].parent()
-        if any(root.parent() is not ambient for root in roots):
+        realization = roots[0].parent()
+        if any(root.parent() is not realization for root in roots):
             raise ValueError("all diagram roots must belong to one lattice")
         if index_set is None:
-            index_set = range(len(roots))
+            index_set = tuple(range(len(roots)))
         index_set = finite_ordered_set(index_set)
         if index_set.cardinality() != len(roots):
             raise ValueError("the index set must have one vertex per root")
+        mirrors = index_set.cardinality()
         gram = tensor(
-            ambient.base_ring(),
+            realization.base_ring(),
             (),
-            (len(roots), len(roots)),
+            (mirrors, mirrors),
             [[left.b(right) for right in roots] for left in roots],
         )
-        entries = [[SageZZ.one() if i == j else _coxeter_entry(gram[i, i], gram[j, j], gram[i, j]) for j in range(len(roots))] for i in range(len(roots))]
+        entries = [
+            [
+                SageZZ.one()
+                if i == j
+                else _coxeter_entry(gram[i, i], gram[j, j], gram[i, j])
+                for j in range(mirrors)
+            ]
+            for i in range(mirrors)
+        ]
         return _coxeter_diagram(
             CoxeterMatrix(entries, index_set=tuple(index_set)),
             names=names,

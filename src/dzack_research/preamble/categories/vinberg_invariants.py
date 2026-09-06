@@ -35,6 +35,8 @@ groups; Bourbaki, *Groupes et algebres de Lie* VI.1.1 for crystallographic
 Coxeter bonds.
 """
 
+from itertools import combinations
+
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
@@ -252,14 +254,11 @@ class VinbergInvariantMatrices(OwnedCategory):
             """
             from sage.graphs.graph import Graph
 
-            vertices = tuple(self._index_set)
             graph = Graph(multiedges=False, loops=False)
-            graph.add_vertices(vertices)
-            for i, left in enumerate(vertices):
-                for j in range(i + 1, len(vertices)):
-                    right = vertices[j]
-                    if self._numerators[i][j] != 0:
-                        graph.add_edge(left, right, self.vinberg_invariant(left, right))
+            graph.add_vertices(tuple(self._index_set))
+            for left, right in combinations(self._index_set, 2):
+                if self.vinberg_ratio(left, right) != 0:
+                    graph.add_edge(left, right, self.vinberg_invariant(left, right))
             return graph
 
         def is_crystallographic(self) -> bool:
@@ -269,12 +268,10 @@ class VinbergInvariantMatrices(OwnedCategory):
             bonds a reflection group preserving a lattice can realize, and in
             invariants they are \(t\in\{0,1,2,3\}\) together with \(t\geq 4\).
             """
-            vertices = tuple(self._index_set)
-            for i, left in enumerate(vertices):
-                for j in range(i + 1, len(vertices)):
-                    ratio = self.vinberg_ratio(left, vertices[j])
-                    if ratio < 4 and ratio not in (0, 1, 2, 3):
-                        return False
+            for left, right in combinations(self._index_set, 2):
+                ratio = self.vinberg_ratio(left, right)
+                if ratio < 4 and ratio not in (0, 1, 2, 3):
+                    return False
             return True
 
         def is_simply_laced(self) -> bool:
@@ -284,11 +281,9 @@ class VinbergInvariantMatrices(OwnedCategory):
             right angles or at \(\pi/3\), which is the condition under which
             every root has the same square.
             """
-            vertices = tuple(self._index_set)
-            for i, left in enumerate(vertices):
-                for j in range(i + 1, len(vertices)):
-                    if self.vinberg_ratio(left, vertices[j]) not in (0, 1):
-                        return False
+            for left, right in combinations(self._index_set, 2):
+                if self.vinberg_ratio(left, right) not in (0, 1):
+                    return False
             return True
 
         def _vertex_deleted_diagrams(self):
