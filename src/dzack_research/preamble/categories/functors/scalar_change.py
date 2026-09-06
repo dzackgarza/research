@@ -126,19 +126,19 @@ class RestrictionOfScalarsFunctor(Functor):
         return element.underlying_element()
 
     def _apply_morphism(self, morphism):
+        # Restriction changes which ring acts and never the underlying map, so
+        # ``Res_f(g)`` is ``g``: its element action is the original one read
+        # through the restricted parents, and its ``R``-linearity is the
+        # ``S``-linearity of ``g`` along ``f``, not a runtime condition.  A
+        # framing of the source is therefore not part of the statement.
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        if source not in FramedModules(self._source_ring):
-            raise NotImplementedError(
-                "the current owned module Hom surface needs a represented framing "
-                "to materialize the restricted morphism"
-            )
-
-        def image(label):
-            source_element = self._extension_element(source, source.module_generator(label))
-            return self._restricted_element(target, morphism(source_element))
-
-        return module_homset(source, target)(image)
+        return module_homset(source, target).elementwise(
+            lambda element: self._restricted_element(
+                target, morphism(self._extension_element(source, element))
+            ),
+            verify_linearity=False,
+        )
 
     def _repr_(self):
         return f"Restriction of scalars along {self.ring_map()}"
