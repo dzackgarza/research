@@ -1,5 +1,7 @@
 r"""Duality, arrow kernels/cokernels, and additive/form biproduct functors."""
 
+from sage.misc.cachefunc import cached_function
+
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.abstract_categories.functors import Bifunctor, ContravariantFunctor
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import ArrowCategory
@@ -195,10 +197,16 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
         return lattice_homset(source, target)(image)
 
 
+@cached_function
+def dualization_functor(base_ring) -> DualizationFunctor:
+    return DualizationFunctor(base_ring)
+
+
 __all__ = [
     "BiproductBifunctor",
     "CokernelArrowFunctor",
     "DualizationFunctor",
     "KernelArrowFunctor",
     "OrthogonalDirectSumBifunctor",
+    "dualization_functor",
 ]
