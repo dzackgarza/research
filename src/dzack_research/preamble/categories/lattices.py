@@ -1103,17 +1103,21 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self._gram
 
         def gram_matrix(self):
-            r"""Return the matrix of the correlation \(L\to\operatorname{Hom}_R(L,R)\) in the framing and its dual framing.
+            r"""Return the matrix of \(L\to\operatorname{Hom}_R(L,R)\) in the framing and its dual.
 
             The Gram tensor is the form; this is its coordinate presentation,
-            the matrix of :meth:`algebraic_correlation_morphism`, an element
-            of \(\operatorname{Hom}_R(F(S), F(S^\vee))\).
+            the matrix of :meth:`algebraic_correlation_morphism` as an element
+            of \(\operatorname{Hom}_R(F(S),F(S^\vee))\), so its entry at
+            \((i,j)\) is \(b(e_i,e_j)\) and its determinant is the
+            discriminant.
 
             EXAMPLES::
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)("U").gram_matrix().rows()
-                [[0, 1], [1, 0]]
+                sage: Lattices(ZZ)("U").gram_matrix().determinant()
+                -1
+                sage: Lattices(ZZ)("A2").gram_matrix().determinant()
+                3
             """
             return self.algebraic_correlation_morphism().matrix()
 
@@ -1413,8 +1417,8 @@ class Lattices(OwnedCategoryOverBaseRing):
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
                 sage: L = Lattices(ZZ)([[2, 0], [0, -6]])
-                sage: L.divisibility_ideal(L.module_generator(1))
-                Principal ideal (6) of Integer Ring
+                sage: L.divisibility_ideal(L.module_generator(1)) == ZZ.ideal(6)
+                True
             """
             assert element.parent() is self, "the divisibility ideal is defined for an element of this lattice"
             ring = self.base_ring()
