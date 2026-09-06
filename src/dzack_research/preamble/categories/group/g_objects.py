@@ -232,6 +232,28 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             self.underlying_category(),
         )
 
+    def affine_quotient_functor(self):
+        r"""Return ``(-)/G: GObjects(G, Sch_R) -> AffSch_R``.
+
+        The quotient of one affine action and its universal property are owned
+        by the affine specialization; the functor adds the action on
+        equivariant morphisms, which that universal property determines.
+        """
+        from dzack_research.preamble.categories.schemes.quotients import (
+            AffineQuotientFunctor,
+        )
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        category = self.underlying_category()
+        match category:
+            case Schemes():
+                return AffineQuotientFunctor(self.acting_group(), category.base_ring())
+            case other:
+                assert False, (
+                    f"the affine quotient functor is a construction on schemes; "
+                    f"{other} has no owned quotient by a group action"
+                )
+
     def an_object(self):
         r"""The trivial action on an object of the underlying category."""
         from dzack_research.preamble.categories.group.g_sets import trivial_g_set
