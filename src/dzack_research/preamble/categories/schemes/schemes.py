@@ -3131,11 +3131,24 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         return base_object.closed_subscheme(first)
 
     class ParentMethods:
-        def codimension(self):
-            equations = getattr(self, "_preamble_defining_equations", None)
-            codomain = self.inclusion().codomain()
-            if equations is not None and hasattr(codomain, "coordinate_algebra"):
+        def _recorded_defining_equations(self):
+            r"""The equations this subobject was cut out by, or ``None``.
 
+            A closed subobject built from equations records them; one reached
+            through the backend's own subscheme constructor does not, and
+            reads its equations back off that instead.  The datum is stamped
+            at construction because the scheme layer installs owned methods
+            onto Sage scheme parents and there is no owned class to declare a
+            field on; this is the one place that reads it.
+            """
+            return getattr(self, "_preamble_defining_equations", None)
+
+        def codimension(self):
+            codomain = self.inclusion().codomain()
+            if (
+                self._recorded_defining_equations() is not None
+                and codomain in AffineSchemes(codomain.scheme_base_ring())
+            ):
                 codomain_engine = _engine_ring(codomain.coordinate_algebra())
                 ideal_engine = self.defining_ideal_owned()._engine_ideal()
                 try:
@@ -3150,7 +3163,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         def defining_equations(self):
             r"""Return the family of equations that cut this subscheme out."""
 
-            selected = getattr(self, "_preamble_defining_equations", None)
+            selected = self._recorded_defining_equations()
             if selected is not None:
                 return finite_family(selected, name="Defining equations")
             return finite_family(
@@ -3169,7 +3182,7 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             makes the subobject unbuildable wherever the presentation has no
             backend.
             """
-            equations = getattr(self, "_preamble_defining_equations", None)
+            equations = self._recorded_defining_equations()
             if equations is None:
                 return self.defining_ideal()
             return self.inclusion().codomain().coordinate_ring().ideal(*equations)
