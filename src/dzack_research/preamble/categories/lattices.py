@@ -2411,7 +2411,8 @@ class Lattices(OwnedCategoryOverBaseRing):
         def __pow__(self, exponent):
             r"""Return \(L^{\oplus n}\), the \(n\)-fold orthogonal direct sum.
 
-            ``L ** 0`` is the zero lattice, the unit of ``+``.
+            It is the sum of the constant family over \(\Delta[n-1]\), so
+            ``L ** 0`` is the empty sum: the zero lattice, the unit of ``+``.
 
             EXAMPLES::
 
@@ -2423,10 +2424,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert count >= 0, "an orthogonal power L^n takes a natural number n"
             if count == 0:
                 return Lattices(self.base_ring())(0)
-            result = self
-            for _ in range(count - 1):
-                result = result + self
-            return result
+            return sum(
+                indexed_family(
+                    Sets.Δ[count - 1],
+                    lambda _position: self,
+                    name=f"Orthogonal power summands of {self}",
+                )
+            )
 
         def _repr_(self):
             r"""Name the lattice by rank and, over \(\mathbb{Q}\), signature.
