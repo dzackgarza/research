@@ -123,8 +123,11 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 self._preamble_ideal_generators = tuple(ideal_generators)
             if engine_ideal is not None:
                 self._preamble_engine_ideal = engine_ideal
-            if localization_source_ideal is not None:
-                self._preamble_localization_source_ideal = localization_source_ideal
+            # An ideal that arose as the extension of a source ideal along
+            # R -> S^{-1}R keeps that source ideal, and every other ideal has
+            # none.  The field is declared either way, so a reader of this
+            # class meets it here rather than at runtime.
+            self._preamble_localization_source_ideal = localization_source_ideal
             super().__init__(**rest)
 
         def ring(self):
@@ -254,6 +257,13 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     return bool(lifted.is_prime() and lifted.dimension() == 0)
 
         def radical(self):
+            r"""Return ``sqrt(I)``.
+
+            Over a realized quotient ``P/K`` the radical is computed on the
+            preimage: an element is nilpotent modulo ``I`` exactly when its
+            lift is nilpotent modulo the preimage, so ``sqrt(I)`` is
+            ``sqrt(I~)/K``.
+            """
             ring = self.ring()
             if ring._has_selected_exact_coefficient_presentation():
                 presentation_ring = ring._exact_coefficient_presentation_ring()
@@ -282,7 +292,9 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 return ring.ideal(
                     *(descended_generators or (ring.zero(),))
                 )
-            return _from_engine_ideal(self.ring(), self._engine_ideal().radical())
+            if _realized_as_quotient(ring):
+                return _descend_cover_ideal(ring, _cover_lifted_ideal(self).radical())
+            return _from_engine_ideal(ring, self._engine_ideal().radical())
 
         def colon(self, other):
             r"""Return the ideal quotient ``(I : J)``.
@@ -296,13 +308,17 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             none, so the computation is lifted and the result descended.
             """
             _require_same_ring(self, other)
-            method = _optional_engine_method(self._engine_ideal(), "quotient")
-            if method is not None:
-                return _from_engine_ideal(self.ring(), method(other._engine_ideal()))
-            return _descend_cover_ideal(
-                self.ring(),
-                _cover_lifted_ideal(self).quotient(_cover_lifted_ideal(other)),
+            if _realized_as_quotient(self.ring()):
+                return _descend_cover_ideal(
+                    self.ring(),
+                    _cover_lifted_ideal(self).quotient(_cover_lifted_ideal(other)),
+                )
+            method = _engine_ideal_method(
+                self,
+                "quotient",
+                "this ideal backend has no colon/ideal-quotient operation",
             )
+            return _from_engine_ideal(self.ring(), method(other._engine_ideal()))
 
         ideal_quotient = colon
 
@@ -315,18 +331,22 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             exponent is a fact about the computation, not about the ideal.
             """
             _require_same_ring(self, other)
-            method = _optional_engine_method(self._engine_ideal(), "saturation")
-            if method is not None:
-                saturated, _reached_at_exponent = method(other._engine_ideal())
-                return _from_engine_ideal(self.ring(), saturated)
-            saturated, _reached_at_exponent = _cover_lifted_ideal(self).saturation(
-                _cover_lifted_ideal(other)
+            if _realized_as_quotient(self.ring()):
+                saturated, _reached_at_exponent = _cover_lifted_ideal(self).saturation(
+                    _cover_lifted_ideal(other)
+                )
+                return _descend_cover_ideal(self.ring(), saturated)
+            method = _engine_ideal_method(
+                self,
+                "saturation",
+                "this ideal backend has no saturation operation",
             )
-            return _descend_cover_ideal(self.ring(), saturated)
+            saturated, _reached_at_exponent = method(other._engine_ideal())
+            return _from_engine_ideal(self.ring(), saturated)
 
         def contraction_from_localization(self):
             r"""Contract this selected localized extension back to its source ring."""
-            source_ideal = self.__dict__.get("_preamble_localization_source_ideal")
+            source_ideal = self._preamble_localization_source_ideal
             if source_ideal is None:
                 raise NotImplementedError(
                     "contraction is currently represented for ideals selected as localization extensions"
@@ -438,7 +458,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             r"""Return whether an ambient ring element lies in this ideal."""
             ring = self.ring()
             value = ring(element)
-            source_ideal = self.__dict__.get("_preamble_localization_source_ideal")
+            source_ideal = self._preamble_localization_source_ideal
             if ring in LocalizationRings() and source_ideal is not None:
                 numerator, _denominator = ring.localization_fraction_data(value)
                 structure = ring.localization_submonoid().structure_data()
@@ -552,6 +572,17 @@ def _engine_ideal_method(ideal, name, unavailable_message):
     return method
 
 
+def _realized_as_quotient(ring) -> bool:
+    r"""Return whether the realization of ``ring`` is a quotient ``P/K``.
+
+    Only a quotient realization presents a cover ring, and an ideal of one is
+    a Singular ideal whose parent Singular itself refuses: the operation is
+    offered and then declines when called.  So the routing is decided from the
+    ring rather than from whether the operation is present.
+    """
+    return _optional_engine_method(_engine_ring(ring), "cover_ring") is not None
+
+
 def _cover_lifted_ideal(ideal):
     r"""Return the preimage in ``P`` of an ideal of a ring realized as ``P/K``.
 
@@ -561,7 +592,7 @@ def _cover_lifted_ideal(ideal):
     operation is computed on preimages and its result descended.
     """
     ring = ideal.ring()
-    assert _optional_engine_method(_engine_ring(ring), "cover_ring") is not None, (
+    assert _realized_as_quotient(ring), (
         f"an ideal operation of {ring} is computed by its own realization, or in the "
         "cover ring when that realization is a quotient; this realization is neither"
     )
@@ -634,8 +665,16 @@ def _relation_element(free_module, row):
 
 
 def _from_engine_ideal(ring, engine_ideal):
+    r"""Return the owned ideal of ``R`` generated by an engine ideal's generators.
+
+    The generators arrive as engine values and cross back through the ring
+    before reaching its ideal constructor, which is a public one and refuses
+    raw backend elements.
+    """
     source = _own_ring(ring)
-    return source.ideal(*tuple(engine_ideal.gens()))
+    return source.ideal(
+        *(_owned_engine_value(source, generator) for generator in engine_ideal.gens())
+    )
 
 
 def _engine_ring_value(ring, value):
