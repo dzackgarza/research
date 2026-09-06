@@ -500,6 +500,15 @@ from dzack_research.preamble.categories.vector_configurations import (  # noqa: 
     VectorConfigurations,
     vector_configuration,
 )
+from dzack_research.preamble.categories.eichler_criterion import (  # noqa: F401
+    are_in_one_stable_orbit,
+    eichler_criterion_applies,
+    hyperbolic_plane_summand_count,
+    splits_two_hyperbolic_planes,
+)
+from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F401
+    lorentzian_reduction_complex,
+)
 from dzack_research.preamble.categories.lattices import (  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
