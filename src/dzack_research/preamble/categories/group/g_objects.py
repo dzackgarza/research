@@ -350,6 +350,33 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             """
             return self._cyclic_restriction(group_element).fixed_subscheme()
 
+        def nontrivial_stabilizer_subscheme(self):
+            r"""Return the locus of points fixed by some nonidentity element.
+
+            This is the union of the ``X^g`` over ``g != 1``, and a union of
+            closed subschemes is cut out by the intersection of their ideals.
+            The action is free exactly when this subscheme is empty, and the
+            quotient morphism is ramified exactly over its image, which is
+            where a quotient singularity of the orbit space can appear.
+            """
+            group = self.acting_group()
+            assert group.is_finite() is True, (
+                f"the union of the fixed loci of {group} is taken over its "
+                "nonidentity elements, which requires a group decided finite"
+            )
+            identity = group.one()
+            ideal = None
+            for group_element in group:
+                if group_element == identity:
+                    continue
+                fixed = self._cyclic_restriction(group_element).fixed_ideal()
+                ideal = fixed if ideal is None else ideal.intersection(fixed)
+            if ideal is None:
+                ideal = self.coordinate_algebra().ideal(
+                    self.coordinate_algebra().one()
+                )
+            return self.closed_subscheme(tuple(ideal.ideal_generators()))
+
         def action_is_free(self):
             r"""Decide whether the identity is the only element with a fixed point.
 

@@ -110,6 +110,11 @@ def test_an_empty_common_fixed_locus_does_not_make_the_action_free() -> None:
     shear_locus = acted.fixed_subobject_of(generators[1])
     assert shear_locus.defining_ideal_owned() == algebra.ideal(x**2 + x)
     assert shear_locus.ambient_scheme().acting_group().order() == 2
+    # Only the shear has fixed points, so the union of the fixed loci of the
+    # three involutions is the shear's own curve.
+    assert acted.nontrivial_stabilizer_subscheme().defining_ideal_owned() == algebra.ideal(
+        x**2 + x
+    )
 
 
 def test_restriction_along_a_subgroup_inclusion_keeps_the_scheme_and_the_action() -> None:
