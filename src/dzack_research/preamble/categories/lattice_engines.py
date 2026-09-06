@@ -368,8 +368,9 @@ _POLYHEDRAL_BUILD = (
 
 _POLYHEDRAL_NO_PROGRAM = (
     "polyhedral_common builds no program of this name: `src_indefinite/Makefile` "
-    "lists the drivers it compiles and this is not among them, so the operation "
-    "arrives only with an upstream addition"
+    "lists the drivers it compiles and this is not among them.  The routine "
+    "itself is in `src_indefinite/CombinedAlgorithms.h`, so the operation "
+    "arrives with a command-line driver added upstream, not with any install"
 )
 
 _POLYHEDRAL_REALIZATIONS = (
