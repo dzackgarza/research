@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| B-cyclic-cover-algebra-20260906 | B — construct cyclic-cover algebra descent from `(L,s,n)`: local equations `z_i^n=f_i`, rank-`n` finite module/multiplication/presentation on each chart, overlap maps `z_i -> u_ij^-1 z_j`, and scalar restrictions/gluing through G | ChatGPT continuation `2026-09-06-cyclic-cover-algebra`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/algebras/cyclic_cover_algebras.py`; `src/dzack_research/preamble/categories/algebras/__init__.py`; `src/dzack_research/preamble/all.py`; `tests/algebras/test_cyclic_cover_algebras.py`; `docs/preamble-megadoc.md`; `docs/preamble-graph.json`; `docs/preamble-graph.dot`; `docs/preamble-graph.html` | `40cee8e5`; consumes V invertible sheaves `0e70a242`, G algebra descent `bf68bc59`, and one-variable finite-free quotient presentations | 2026-09-06T05:34:00Z |
 
 ### Existing work awaiting adoption
 
