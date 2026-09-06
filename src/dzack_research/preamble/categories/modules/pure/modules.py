@@ -2598,6 +2598,30 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
         return [MatrixSpaces(self.base_ring()), OwnedRings()]
 
     class ParentMethods:
+        def is_commutative(self):
+            r"""Return whether \(\operatorname{End}_R(F)\cong M_n(R)\) commutes.
+
+            The base is not assumed commutative here, so the answer depends on
+            both the ring and the rank, and each rank is its own statement.
+
+            Rank zero gives the zero ring, which commutes whatever \(R\) is.
+            Rank one gives \(R\) acting on itself, whose endomorphisms are the
+            right multiplications, so it commutes exactly when \(R\) does; a
+            ring that does not decide its own commutativity leaves this
+            undecided too, and says so through the answer it gives.  From rank
+            two the matrix units satisfy \(e_{11}e_{12}=e_{12}\) and
+            \(e_{12}e_{11}=0\), so commuting forces \(e_{12}=0\) and hence
+            \(1=0\): the ring commutes exactly when \(R\) is the zero ring.
+            """
+            ring = self.base_ring()
+            match self.nrows():
+                case 0:
+                    return True
+                case 1:
+                    return ring.is_commutative()
+                case _:
+                    return ring.one() == ring.zero()
+
         def identity_matrix(self):
             return self.identity()
 
