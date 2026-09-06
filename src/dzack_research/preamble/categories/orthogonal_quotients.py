@@ -186,7 +186,49 @@ class OrthogonalCharacterQuotient:
         )
 
 
+def _finite_supergroup_elements(subgroup):
+    r"""Return the elements of a subgroup whose supergroup is a finite ``O(L)``.
+
+    A predicate subgroup with no character data has no finite quotient of
+    ``O(L)`` describing it, so the only thing that describes it is the group
+    itself.  Listing it is a finite computation exactly when ``O(L)`` is
+    finite, which for a lattice is definiteness.
+    """
+    supergroup = subgroup.supergroup()
+    lattice = supergroup.domain()
+    assert lattice.is_definite(), (
+        f"{subgroup} is cut out by a predicate that is not a character kernel, "
+        "so its orbits are read by acting with the subgroup itself.  That is a "
+        "finite computation only for a definite lattice; over an indefinite "
+        "lattice O(L) is an infinite arithmetic group and this subgroup has no "
+        "owned generating set.  The missing operation is a generating set for "
+        "an arithmetic subgroup of O(L), owned by lattice_engines"
+    )
+    return tuple(
+        automorphism for automorphism in supergroup if automorphism in subgroup
+    )
+
+
+def _finite_subgroup_vector_orbit_representatives(subgroup, square):
+    r"""Return one representative of each orbit of a listable subgroup."""
+    elements = _finite_supergroup_elements(subgroup)
+    lattice = subgroup.supergroup().domain()
+    remaining = {
+        tuple(vector.to_tuple()): vector
+        for vector in lattice.vectors_of_square(square)
+    }
+    representatives = []
+    while remaining:
+        _coordinates, representative = next(iter(remaining.items()))
+        representatives.append(representative)
+        for automorphism in elements:
+            remaining.pop(tuple(automorphism(representative).to_tuple()), None)
+    return tuple(representatives)
+
+
 def subgroup_vector_orbit_representatives(subgroup, square):
+    if not subgroup.contains_character_kernel():
+        return _finite_subgroup_vector_orbit_representatives(subgroup, square)
     quotient = OrthogonalCharacterQuotient(subgroup)
     orthogonal_group = subgroup.supergroup()
     representatives = []
