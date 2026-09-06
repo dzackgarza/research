@@ -190,6 +190,9 @@ from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F40
     VinbergInvariantMatrices,
     reflection_cosines,
 )
+from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F401
+    HyperbolicLattices,
+)
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
     CartierDivisorGroup,
     CartierDivisorGroups,

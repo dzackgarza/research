@@ -1,6 +1,5 @@
 r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 
-from sage.categories.category import Category
 from sage.combinat.posets.posets import Poset
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
