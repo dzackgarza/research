@@ -64,6 +64,15 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+def _chart_pair(cover, left_index, right_index):
+    r"""The two chart labels in the atlas order, which is how descent data is keyed."""
+
+    labels = (cover.chart_label(left_index), cover.chart_label(right_index))
+    if labels[0] == labels[1]:
+        raise ValueError("descent data is keyed by two distinct charts")
+    return tuple(sorted(labels, key=cover.atlas().rank))
+
+
 def _family_on_finite_ordered_set(index_set, values, *, name, noun):
     r"""Normalize finite input to an indexed family on ``index_set``."""
 
@@ -975,24 +984,22 @@ class ModuleGluingDatum(Parent):
     def __init__(self, cover, local_modules, transitions) -> None:
         self._cover = cover
         self._local_modules = tuple(local_modules)
-        if len(self._local_modules) != len(cover.opens()):
+        if cover.atlas().cardinality() != len(self._local_modules):
             raise ValueError("module gluing requires exactly one local module on each affine chart")
-        for index, module in enumerate(self._local_modules):
-            if module.base_ring() is not cover.open(index).coordinate_algebra():
+        for label, module in zip(cover.atlas(), self._local_modules, strict=True):
+            if module.base_ring() is not cover.open(label).coordinate_algebra():
                 raise ValueError("each local module must be defined over its chart section ring")
             _finite_framing(module)
 
-        expected = {
-            (left, right)
-            for left in range(len(self._local_modules))
-            for right in range(left + 1, len(self._local_modules))
+        expected = set(combinations(tuple(cover.atlas()), 2))
+        self._transitions = {
+            _chart_pair(cover, left, right): transition
+            for (left, right), transition in dict(transitions).items()
         }
-        supplied = set(transitions)
-        if supplied != expected:
+        if set(self._transitions) != expected:
             raise ValueError(
                 f"module gluing requires one transition isomorphism for each pair {sorted(expected)}"
             )
-        self._transitions = dict(transitions)
         self._restriction_maps = {}
         self._transition_restrictions = {}
         self._inverse_transitions = {}
@@ -1014,7 +1021,7 @@ class ModuleGluingDatum(Parent):
         return self._local_modules
 
     def local_module(self, index):
-        return self.local_modules()[int(index)]
+        return self.local_modules()[self.cover().chart_position(index)]
 
     def restricted_module(self, chart_index, *intersection_indices):
         return self.cover().restrict_module(
@@ -1026,17 +1033,16 @@ class ModuleGluingDatum(Parent):
     def transition(self, source_index, target_index):
         r"""Return the represented overlap isomorphism from one chart to another."""
 
-        source_index = int(source_index)
-        target_index = int(target_index)
-        if source_index == target_index:
-            raise ValueError("a transition isomorphism is requested between two distinct charts")
-        if source_index < target_index:
-            return self._transitions[source_index, target_index]
+        pair = _chart_pair(self.cover(), source_index, target_index)
+        source_index = self.cover().chart_label(source_index)
+        target_index = self.cover().chart_label(target_index)
+        if pair == (source_index, target_index):
+            return self._transitions[pair]
         key = (source_index, target_index)
         cached = self._inverse_transitions.get(key)
         if cached is not None:
             return cached
-        original = self._transitions[target_index, source_index]
+        original = self._transitions[pair]
         from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
             Isomorphism,
         )
@@ -1109,8 +1115,8 @@ class ModuleGluingDatum(Parent):
             cached = module_homset(source, source).identity()
             self._restriction_maps[key] = cached
             return cached
-        source_open = self.cover().intersection(source_indices)
-        target_open = self.cover().intersection(target_indices)
+        source_open = self.cover().intersection(*source_indices)
+        target_open = self.cover().intersection(*target_indices)
         ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
         restricted_target = restrict_scalars(target, ring_map)
         cached = module_homset(source, restricted_target)(
@@ -1171,8 +1177,8 @@ class ModuleGluingDatum(Parent):
             self._transition_restrictions[key] = transition
             return transition
 
-        pair_open = self.cover().intersection(pair)
-        target_open = self.cover().intersection(indices)
+        pair_open = self.cover().intersection(*pair)
+        target_open = self.cover().intersection(*indices)
         ring_map = self.scheme().structure_sheaf().restriction_map(pair_open, target_open)
         pair_source = self.restricted_module(source_index, *pair)
         pair_target = self.restricted_module(target_index, *pair)
@@ -1283,7 +1289,7 @@ class ModuleGluingMorphism(Morphism):
             return local_map
 
         source_open = self.cover().open(chart_index)
-        target_open = self.cover().intersection(indices)
+        target_open = self.cover().intersection(*indices)
         ring_map = self.domain().scheme().structure_sheaf().restriction_map(
             source_open,
             target_open,
@@ -1478,10 +1484,10 @@ class AlgebraGluingDatum(Parent):
     def __init__(self, cover, local_algebras, transitions) -> None:
         self._cover = cover
         self._local_algebras = tuple(local_algebras)
-        if len(self._local_algebras) != len(cover.opens()):
+        if cover.atlas().cardinality() != len(self._local_algebras):
             raise ValueError("algebra gluing requires exactly one local algebra on each affine chart")
-        for index, algebra in enumerate(self._local_algebras):
-            ring = cover.open(index).coordinate_algebra()
+        for label, algebra in zip(cover.atlas(), self._local_algebras, strict=True):
+            ring = cover.open(label).coordinate_algebra()
             if algebra.base_ring() is not ring:
                 raise ValueError("each local algebra must be defined over its chart section ring")
             if algebra not in AlgebrasWithChosenFinitePresentation(ring):
@@ -1490,17 +1496,15 @@ class AlgebraGluingDatum(Parent):
                 )
             _finite_framing(algebra)
 
-        expected = {
-            (left, right)
-            for left in range(len(self._local_algebras))
-            for right in range(left + 1, len(self._local_algebras))
+        expected = set(combinations(tuple(cover.atlas()), 2))
+        self._transitions = {
+            _chart_pair(cover, left, right): transition
+            for (left, right), transition in dict(transitions).items()
         }
-        supplied = set(transitions)
-        if supplied != expected:
+        if set(self._transitions) != expected:
             raise ValueError(
                 f"algebra gluing requires one transition isomorphism for each pair {sorted(expected)}"
             )
-        self._transitions = dict(transitions)
         self._inverse_transitions = {}
         self._restriction_maps = {}
         self._transition_restrictions = {}
@@ -1523,7 +1527,7 @@ class AlgebraGluingDatum(Parent):
         return self._local_algebras
 
     def local_algebra(self, index):
-        return self.local_algebras()[int(index)]
+        return self.local_algebras()[self.cover().chart_position(index)]
 
     def restricted_algebra(self, chart_index, *intersection_indices):
         chart_index = int(chart_index)
@@ -1613,8 +1617,8 @@ class AlgebraGluingDatum(Parent):
             cached = source.Mor(source).identity()
             self._restriction_maps[key] = cached
             return cached
-        source_open = self.cover().intersection(source_indices)
-        target_open = self.cover().intersection(target_indices)
+        source_open = self.cover().intersection(*source_indices)
+        target_open = self.cover().intersection(*target_indices)
         ring_map = self.scheme().structure_sheaf().restriction_map(source_open, target_open)
         restricted_target = restrict_algebra_scalars(target, ring_map)
         cached = source.Mor(restricted_target)(

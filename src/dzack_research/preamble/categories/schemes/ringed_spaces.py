@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -195,9 +196,10 @@ class DistinguishedAffineCover(SageObject):
         self._scheme = scheme
         self._elements = elements
         self._opens = tuple(scheme.distinguished_open(element) for element in elements)
+        self._atlas = finite_ordered_set(range(len(self._opens)))
         self._intersections = {
-            (index,): open_subscheme
-            for index, open_subscheme in enumerate(self._opens)
+            (label,): self._opens[int(self._atlas.rank(label))]
+            for label in self._atlas
         }
         self._restricted_modules = {}
         self._restricted_algebras = {}
@@ -208,21 +210,44 @@ class DistinguishedAffineCover(SageObject):
     def defining_elements(self):
         return self._elements
 
+    def defining_element(self, index):
+        r"""``f_i``, the element whose distinguished open is the chart at ``index``."""
+        return self._elements[self.chart_position(index)]
+
     def opens(self):
         return self._opens
 
+    def atlas(self):
+        r"""The set the charts are indexed by, and the only source of chart labels.
+
+        A cover has as many charts as it has defining elements, and each is
+        addressed by its own label rather than by a position in a sequence, so
+        a caller ranges over this set instead of counting the charts.
+        """
+        return self._atlas
+
+    def chart_label(self, index):
+        r"""Read ``index`` as a label of this cover's atlas."""
+        return self.atlas()(index)
+
+    def chart_position(self, index):
+        r"""Where the chart at ``index`` sits in the atlas order.
+
+        The charts and the defining elements are held in that order, so this
+        is the one place a position is read, and it is read from the atlas
+        rather than assumed of the label.
+        """
+        return int(self.atlas().rank(self.chart_label(index)))
+
     def open(self, index):
-        return self.opens()[int(index)]
+        return self._opens[self.chart_position(index)]
 
     def intersection_indices(self, *indices):
-        if len(indices) == 1 and isinstance(indices[0], (tuple, list)):
-            indices = tuple(indices[0])
-        normalized = tuple(sorted({int(index) for index in indices}))
-        if not normalized:
+        r"""Read the stated chart labels, deduplicated and in the atlas order."""
+        labels = {self.chart_label(index) for index in indices}
+        if not labels:
             raise ValueError("an affine-cover intersection requires at least one chart")
-        if normalized[0] < 0 or normalized[-1] >= len(self.opens()):
-            raise IndexError("affine-cover chart index is out of range")
-        return normalized
+        return tuple(sorted(labels, key=self.atlas().rank))
 
     def intersection(self, *indices):
         r"""Return ``D(prod_i f_i)``, the represented intersection of selected charts."""
@@ -232,8 +257,8 @@ class DistinguishedAffineCover(SageObject):
         if selected is None:
             algebra = self.ambient_scheme().coordinate_algebra()
             element = algebra.one()
-            for index in key:
-                element *= self.defining_elements()[index]
+            for label in key:
+                element *= self.defining_element(label)
             selected = self.ambient_scheme().distinguished_open(element)
             self._intersections[key] = selected
         return selected
@@ -251,12 +276,12 @@ class DistinguishedAffineCover(SageObject):
     def restrict_module(self, module, chart_index, *intersection_indices):
         r"""Return ``M_i|_{U_I}`` by scalar extension along ``O(U_i) -> O(U_I)``."""
 
-        chart_index = int(chart_index)
+        chart_index = self.chart_label(chart_index)
         chart = self.open(chart_index)
         if module.base_ring() is not chart.coordinate_algebra():
             raise ValueError("a local module must be defined over the selected affine chart")
         indices = self.intersection_indices(chart_index, *intersection_indices)
-        target = self.intersection(indices)
+        target = self.intersection(*indices)
         if target is chart:
             return module
         key = (id(module), indices)
@@ -280,13 +305,13 @@ class DistinguishedAffineCover(SageObject):
             AlgebraScalarExtensionFunctor,
         )
 
-        chart_index = int(chart_index)
+        chart_index = self.chart_label(chart_index)
         chart = self.open(chart_index)
         chart_ring = chart.coordinate_algebra()
         if algebra not in Algebras(chart_ring):
             raise ValueError("a local algebra must be defined over the selected affine chart")
         indices = self.intersection_indices(chart_index, *intersection_indices)
-        target = self.intersection(indices)
+        target = self.intersection(*indices)
         if target is chart:
             return algebra
         key = (id(algebra), indices)
@@ -331,7 +356,7 @@ class DistinguishedAffineCover(SageObject):
         return CoverRefinement(self, other)
 
     def _repr_(self):
-        return f"Distinguished affine cover of {self.ambient_scheme()} by {len(self.opens())} opens"
+        return f"Distinguished affine cover of {self.ambient_scheme()} by {self.atlas().cardinality()} opens"
 
 
 class CoverRefinement(SageObject):
@@ -348,14 +373,17 @@ class CoverRefinement(SageObject):
 
     def __init__(self, first_cover, second_cover) -> None:
         self._coarse_covers = (first_cover, second_cover)
-        first = first_cover.defining_elements()
-        second = second_cover.defining_elements()
         self._index_pairs = tuple(
-            (left, right) for left in range(len(first)) for right in range(len(second))
+            (left, right)
+            for left in first_cover.atlas()
+            for right in second_cover.atlas()
         )
         self._fine_cover = DistinguishedAffineCover(
             first_cover.ambient_scheme(),
-            tuple(first[left] * second[right] for left, right in self._index_pairs),
+            tuple(
+                first_cover.defining_element(left) * second_cover.defining_element(right)
+                for left, right in self._index_pairs
+            ),
         )
 
     def ambient_scheme(self):
