@@ -24,7 +24,11 @@ from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects as SageObjects
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedCategoryMixin,
+)
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
@@ -63,7 +67,7 @@ def _packet_supercategories(category):
     return tuple(
         supercategory
         for supercategory in category.super_categories()
-        if isinstance(supercategory, OwnedCategory)
+        if isinstance(supercategory, OwnedCategoryMixin)
     )
 
 
