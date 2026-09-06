@@ -9,8 +9,12 @@ Both are read off cohomology modules of represented cochain complexes, so a
 result remembers the complex it was computed in and its cycle
 representatives.  ``F_• ⊗ N`` is a chain complex; it is stored as a cochain
 complex with ``F_i ⊗ N`` in degree ``shift - i``, and ``Tor_n`` is its
-cohomology in degree ``shift - n``.  The resolution currently owned by the
-presented modules has length at most one, over a principal ideal domain.
+cohomology in degree ``shift - n``.
+
+Both read the resolution one term past the degree asked for, because homology
+in degree ``n`` needs the map into ``F_n`` as well as the map out of it.  Over
+a principal ideal domain the resolution stops in degree one however far it is
+asked to go; over a polynomial ring it continues by syzygies.
 """
 
 from sage.misc.cachefunc import cached_function
@@ -39,11 +43,11 @@ def _common_base_ring(module, other):
     return ring
 
 
-@cached_function(key=lambda module, other, shift: (id(module), id(other), shift))
-def _tensored_resolution(module, other, shift):
+@cached_function(key=lambda module, other, shift, steps: (id(module), id(other), shift, steps))
+def _tensored_resolution(module, other, shift, steps):
     r"""``F_• ⊗ other`` as a cochain complex with ``F_i ⊗ other`` in degree ``shift - i``."""
     ring = _common_base_ring(module, other)
-    resolution = free_resolution(module)
+    resolution = free_resolution(module, steps)
     length = resolution.length()
     tensor = TensorByFunctor(other)
     return CochainComplex(
@@ -61,9 +65,12 @@ def Tor(degree, module, other):
     r"""Return ``Tor_degree(module, other)``, the homology of ``F_• ⊗ other``."""
     degree = int(degree)
     assert degree >= 0, "a homological degree is nonnegative"
-    length = free_resolution(module).length()
+    # Homology in degree n reads the map out of F_n and the map into it, so
+    # the resolution must reach one term past the degree asked for.
+    steps = degree + 1
+    length = free_resolution(module, steps).length()
     shift = max(length, degree)
-    return Cohomology(_tensored_resolution(module, other, shift), shift - degree)
+    return Cohomology(_tensored_resolution(module, other, shift, steps), shift - degree)
 
 
 def Ext(degree, module, other):
@@ -71,7 +78,7 @@ def Ext(degree, module, other):
     degree = int(degree)
     assert degree >= 0, "a cohomological degree is nonnegative"
     ring = _common_base_ring(module, other)
-    resolution = free_resolution(module)
+    resolution = free_resolution(module, degree + 1)
     length = resolution.length()
     identity = module_homset(other, other).identity()
     dualized = CochainComplex(

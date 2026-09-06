@@ -628,6 +628,7 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     regular_dg_module,
     restrict_scalars,
     ring_as_module,
+    sub_framing_morphism,
     tensor_product_morphism,
     twist_scalar_action,
 )

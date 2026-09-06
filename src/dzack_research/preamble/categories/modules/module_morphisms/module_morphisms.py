@@ -780,6 +780,64 @@ class ModuleMorphism(Morphism):
             raise NotImplementedError("this cokernel has no represented quotient-module backend")
         return quotient
 
+    @cached_method
+    def cokernel_projection(self):
+        r"""Return the quotient map ``q : B -> coker(self)``.
+
+        The cokernel is presented on the generators of the codomain, with the
+        images of this morphism added as relations.  So the quotient map sends
+        each generator to the generator of the same name, and no second model
+        of the quotient is built to state it.
+        """
+        quotient = self.cokernel()
+        codomain = self.codomain()
+        return module_homset(codomain, quotient)(
+            lambda label: quotient.module_generator(label)
+        )
+
+    def section(self):
+        r"""Return ``s`` with ``self . s`` the identity, for an epimorphism onto a free module.
+
+        A section chooses one preimage of each generator of the codomain.
+        Those choices assemble into a morphism exactly when the codomain is
+        free on those generators, since then there is no relation for them to
+        respect: this is projectivity of a free module, and the construction
+        exhibits the splitting rather than asserting that one exists.
+        """
+
+        codomain = self.codomain()
+        assert self.is_surjective(), "only an epimorphism has a section"
+        assert codomain.is_free(), (
+            f"a section chooses a preimage of each generator, and {codomain} must be "
+            "free for those choices to respect no relation"
+        )
+        return module_homset(codomain, self.domain())(
+            lambda label: self.lift(codomain.module_generator(label))
+        )
+
+    def retraction(self):
+        r"""Return ``r`` with ``r . self`` the identity, for a split monomorphism.
+
+        Splitting ``i : A -> B`` is the same as splitting the quotient
+        ``q : B -> B/i(A)``.  Given a section ``s`` of ``q``, each ``b``
+        differs from ``s(q(b))`` by an element of ``i(A)``, and ``i`` is
+        injective, so ``r(b) = i^{-1}(b - s(q(b)))`` is well defined and
+        restricts to the identity on ``A``.  The section exists when the
+        cokernel is free, which over a principal ideal domain is exactly when
+        this monomorphism splits.
+        """
+
+        assert self.is_injective(), "only a monomorphism has a retraction"
+        quotient_map = self.cokernel_projection()
+        splitting = quotient_map.section()
+        codomain = self.codomain()
+
+        def image(label):
+            generator = codomain.module_generator(label)
+            return self.lift(generator - splitting(quotient_map(generator)))
+
+        return module_homset(codomain, self.domain())(image)
+
 
 class FramingMorphism(ModuleMorphism):
     r"""A declared surjective linear map from a free framed module."""
@@ -1180,6 +1238,57 @@ class ModuleHomset(_ModuleHomsetCommonMethods, CategoricalHomset):
 def module_homset(domain, codomain) -> ModuleHomset:
     r"""``Hom_R(domain, codomain)`` for ``R`` the base of ``domain``; both must be placed over ``R``."""
     return domain.module_category().Mor(domain, codomain)
+
+
+class SubFramingMorphism(ModuleEmbedding):
+    r"""The free module functor applied to an injection of framings.
+
+    An injection of framing sets is split, and the free functor is a left
+    adjoint that carries the splitting, so this is a split monomorphism and
+    both membership in its image and the lift are decided on labels: an
+    element of the larger free module comes from the smaller one exactly when
+    it is supported on the smaller framing, and its preimage has the same
+    coefficients.
+
+    That is what the class buys over the general route below, which builds the
+    matrix of images and solves a linear system.  The smaller framing may be
+    infinite, as the degree-two piece of an algebra on countably many
+    generators is, and then no matrix exists to solve against.
+    """
+
+    def is_in_image(self, element) -> bool:
+        r"""Return whether ``element`` is supported on the smaller framing."""
+        if element.parent() is not self.codomain():
+            return False
+        source_labels = self.domain().module_generating_set()
+        return all(
+            label in source_labels
+            for label in module_coefficients(element, self.codomain())
+        )
+
+    def lift(self, element):
+        r"""Return the unique element of the smaller free module mapping here."""
+        assert self.is_in_image(element), f"{element} is not in the image of {self}"
+        return self.domain().linear_combination(
+            module_coefficients(element, self.codomain())
+        )
+
+
+def sub_framing_morphism(domain, codomain) -> SubFramingMorphism:
+    r"""Construct the inclusion of a free module on part of another's framing.
+
+    The caller states by calling this that the domain's framing injects into
+    the codomain's under the labels they share.  Linearity is not checked
+    because there is nothing to check: the morphism is the image of an
+    injection of sets under the free functor, which is linear by construction,
+    and the domain may be infinite.
+    """
+
+    return SubFramingMorphism(
+        module_homset(domain, codomain),
+        codomain.module_generator,
+        verify_linearity=False,
+    )
 
 
 def framing_morphism(domain, codomain, images) -> FramingMorphism:

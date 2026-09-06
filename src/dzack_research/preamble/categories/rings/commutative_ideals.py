@@ -185,8 +185,6 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                 raise ValueError("the localization has the wrong source ring")
             return _localized_commutative_ideal(self, localization_ring)
 
-        extension = extension_to_localization
-
         def is_prime(self):
             backend = self._engine_ideal()
             try:

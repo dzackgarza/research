@@ -10,6 +10,7 @@ and every Smith-form computation is an explicit crossing into it.
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
+from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
@@ -42,12 +43,13 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     OwnedCategoryOverBaseRing,
     OwnedFields,
+    OwnedIntegralDomains,
     PrincipalIdealDomains,
     _engine_element,
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
     finite_ordered_image,
@@ -185,9 +187,36 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             return TensorProduct(self, other)
 
+        def free_resolution(self, steps=None):
+            r"""Return a free resolution of the selected presentation.
+
+            Over a principal ideal domain the relation submodule is free, so
+            one step suffices and the resolution is the length-one complex
+            ``0 -> F_1 -> F_0 -> M -> 0`` built from an independent set of
+            relations.
+
+            Over any other base the syzygies of the chosen presentation are the
+            next relations, and the resolution continues by resolving them: the
+            kernel of a differential is a finitely presented submodule of its
+            domain, and its own free cover composed with that inclusion is the
+            next differential.  The tower stops on its own where the syzygies
+            vanish, and ``is_exact`` then holds; where they do not, ``steps``
+            says how far to compute, because a resolution over a general ring
+            need not be finite and no bound may be assumed.
+            """
+
+            ring = self.base_ring()
+            if ring in PrincipalIdealDomains():
+                return self._relation_submodule_resolution()
+            assert steps is not None, (
+                f"a free resolution over {ring} is not known to be finite, so the "
+                "number of steps to compute must be supplied"
+            )
+            return self._syzygy_resolution(int(steps))
+
         @cached_method
-        def free_resolution(self):
-            r"""Return the selected length-one free resolution over the represented PID."""
+        def _relation_submodule_resolution(self):
+            r"""Resolve over a PID, where the relation submodule is already free."""
 
             ring = self.base_ring()
             degree_zero = self.presentation().codomain()
@@ -203,11 +232,35 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     {target_label: ring._from_engine_element(coefficient) for target_label, coefficient in zip(target_labels, row, strict=True) if coefficient}
                 )
 
-            return FreeResolution(
+            return _resolution_over_degrees(
                 self,
-                degree_zero,
-                degree_one,
-                module_embedding(degree_one, degree_zero, image),
+                {0: degree_zero, 1: degree_one},
+                {1: module_embedding(degree_one, degree_zero, image)},
+                self.presentation_projection(),
+                zero,
+            )
+
+        @cached_method
+        def _syzygy_resolution(self, steps):
+            r"""Resolve by iterated syzygies, stopping early where they vanish."""
+
+            assert steps >= 1, "a syzygy resolution computes at least the relation step"
+            degree_zero = self.presentation().codomain()
+            zero = degree_zero._fresh_free_module_on(Sets.Δ[-1])
+            terms = {0: degree_zero}
+            differentials = {}
+            differential = self.presentation()
+            for degree in range(1, steps + 1):
+                terms[degree] = differential.domain()
+                differentials[degree] = differential
+                syzygies = differential.kernel()
+                if int(syzygies.number_of_module_generators()) == 0:
+                    break
+                differential = syzygies.inclusion() * syzygies.presentation_projection()
+            return _resolution_over_degrees(
+                self,
+                terms,
+                differentials,
                 self.presentation_projection(),
                 zero,
             )
@@ -357,15 +410,21 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _represented_annihilator_ideal(self):
             r"""Represent the scalar-action kernel in exact presentation regimes."""
             ring = self.base_ring()
-            engine = self._smith_engine()
-            if engine is not None:
-                invariants = tuple(engine.invariants(include_ones=True))
-                if not invariants or all(invariant.is_unit() for invariant in invariants):
-                    return ring.ideal(ring.one())
+            if ring in PrincipalIdealDomains():
+                # M is R^r together with the cyclic quotients R/(d_i), and the
+                # invariant factors divide one another in order.  A scalar kills
+                # the sum exactly when it kills every summand, so a free summand
+                # leaves the annihilator zero and otherwise the last invariant
+                # factor generates it.  This reads the selected presentation, so
+                # it covers every PID whose Smith form the backend computes,
+                # rather than only the integers.
+                invariants = self._invariants_with_units()
                 if any(invariant == 0 for invariant in invariants):
                     return ring.ideal(ring.zero())
                 nonunits = tuple(invariant for invariant in invariants if not invariant.is_unit())
-                return ring.ideal(ring._from_engine_element(_engine_ring(ring)(nonunits[-1])))
+                if not nonunits:
+                    return ring.ideal(ring.one())
+                return ring.ideal(nonunits[-1])
 
             if int(self.number_of_module_generators()) == 1:
                 matrix = _engine_matrix(self.presentation_matrix())
@@ -556,10 +615,29 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return cardinal(sum(1 for invariant in self._invariants_with_units() if invariant == 0))
 
         def is_torsion(self):
+            r"""Read torsion off the invariant factors over a PID, else take the generic fibre."""
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().is_torsion()
             return self.rank() == 0
 
         def is_torsion_free(self):
+            r"""Over a PID ``M`` is torsion-free exactly when no invariant factor is a nonzero non-unit."""
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().is_torsion_free()
             return all(invariant == 0 or invariant.is_unit() for invariant in self._invariants_with_units())
+
+        def is_free(self) -> bool:
+            r"""Over a PID a finitely generated module is free exactly when it is torsion-free.
+
+            This is the structure theorem: the decomposition has no cyclic
+            torsion summand exactly when no invariant factor is a nonzero
+            non-unit, and what is left is a sum of copies of ``R``.  So a
+            presented module answers here rather than inheriting the default
+            for a module with no known basis.
+            """
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().is_free()
+            return self.is_torsion_free()
 
         def is_zero(self):
             if self.base_ring() not in PrincipalIdealDomains():
@@ -570,16 +648,28 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return all(invariant.is_unit() for invariant in self._invariants_with_units())
 
         def cardinality(self):
-            r"""Return the cardinality of the underlying set, as a cardinal."""
+            r"""Return ``|M|`` from the base cardinal and the invariant-factor decomposition.
 
-            engine = self._smith_engine()
-            if engine is not None:
-                return cardinal(int(engine.cardinality()))
-            scalars = _engine_ring(self.base_ring())
-            if scalars.is_field() or not self._selected_presentation_rows():
-                # A vector space, or a free module (no relations): |R|^rank.
-                return cardinal(scalars.cardinality()) ** self.rank()
-            assert False, f"cardinality is defined for every presented module, but this presentation over {self.base_ring()} has no exact-cardinality computation"
+            Over a principal ideal domain ``M`` is ``R^r`` together with the
+            cyclic quotients ``R/(d_i)`` of its nonzero non-unit invariant
+            factors, and the underlying set of a direct sum is the product of
+            the underlying sets.  So ``|M| = |R|^r * prod_i |R/(d_i)|``, with
+            every factor read from the base ring rather than assumed to be the
+            integers.  The vector-space and free cases are the same formula
+            with no nonzero non-unit invariant factor.
+            """
+
+            ring = self.base_ring()
+            assert ring in PrincipalIdealDomains(), (
+                f"the cardinality of a module presented over {ring} is read from an "
+                "invariant-factor decomposition, which a principal ideal domain supplies"
+            )
+            cyclic_orders = tuple(
+                ring.quotient_ring(ring.ideal(invariant)).cardinality()
+                for invariant in self._invariants_with_units()
+                if invariant != 0 and not invariant.is_unit()
+            )
+            return ring.cardinality() ** self.rank() * prod(cyclic_orders, Cardinalities().one())
 
         @cached_method
         def invariant_factor_presentation(self):
@@ -719,16 +809,43 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return Isomorphism(normalized_to_free, free_to_normalized) * normalization
 
         def is_projective(self) -> bool:
-            r"""Decide finite projectivity over a represented PID from the free witness."""
+            r"""Decide finite projectivity of the selected presentation.
 
-            if self.base_ring() not in PrincipalIdealDomains():
-                raise NotImplementedError(
-                    "projectivity from invariant factors is represented here over a PID"
-                )
-            if not self.is_torsion_free():
-                return False
-            self.finite_free_trivialization()
-            return True
+            Over a principal ideal domain the structure theorem decides it and
+            supplies the witness: a torsion-free finitely generated module is
+            free, and ``finite_free_trivialization`` produces that isomorphism,
+            so the answer arrives with the free module it names.
+
+            Over any other integral domain the presentation still answers.  A
+            finitely presented module is projective exactly when every Fitting
+            ideal is generated by an idempotent, and where the only idempotents
+            are zero and one that says the module has a single rank ``r``, with
+            ``Fitt_{r-1}(M) = 0`` and ``Fitt_r(M) = R``.  The Fitting ideals
+            commute with base change, which is why this one condition is
+            equivalent to freeness of every localization.  Nothing here reads a
+            placement, so a presented module answers the question rather than
+            being declared projective in advance.
+            """
+
+            ring = self.base_ring()
+            if ring in PrincipalIdealDomains():
+                if not self.is_torsion_free():
+                    return False
+                self.finite_free_trivialization()
+                return True
+
+            assert ring in OwnedIntegralDomains(), (
+                f"deciding projectivity by Fitting ideals needs the idempotents of {ring} "
+                "to be trivial, which an integral domain assures"
+            )
+            unit_ideal = ring.ideal(ring.one())
+            zero_ideal = ring.ideal(ring.zero())
+            generator_count = int(self.number_of_module_generators())
+            return any(
+                self.fitting_ideal(rank) == unit_ideal
+                and (rank == 0 or self.fitting_ideal(rank - 1) == zero_ideal)
+                for rank in range(generator_count + 1)
+            )
 
         def is_locally_free(self) -> bool:
             r"""Decide finite local freeness in the represented PID regime."""
@@ -797,16 +914,25 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return self.torsion_free_quotient_projection().codomain()
 
         def exponent(self):
-            r"""Return the exponent of a finite torsion ``ZZ``-module."""
-            from sage.rings.integer_ring import ZZ as SageZZ
+            r"""Return the generator of ``Ann_R(M)`` over a principal ideal domain.
+
+            The scalars killing ``M`` form an ideal, and over a principal ideal
+            domain that ideal has one generator ``e``: a scalar kills ``M``
+            exactly when ``e`` divides it, which is what an exponent says.  So
+            the exponent is read from the annihilator rather than from the
+            integers in particular, and the two degenerate readings come out
+            right on their own.  A module with no nonzero annihilator, any
+            nonzero free module among them, has ``e = 0``, and ``e`` is a unit
+            exactly when ``Ann(M) = R``, that is exactly when ``M`` is zero.
+            """
 
             ring = self.base_ring()
-            if _engine_ring(ring) is not SageZZ:
-                raise TypeError("the exponent here is the exponent of an abelian group")
-            if not self.is_torsion():
-                return ring.zero()
-            factors = tuple(abs(x) for x in self.invariant_factors() if abs(x) > ring.one())
-            return factors[-1] if factors else ring.one()
+            assert ring in PrincipalIdealDomains(), (
+                f"an exponent is one generator of the annihilator, which {ring} "
+                "need not supply; a principal ideal domain does"
+            )
+            (generator,) = self.annihilator().ideal_generators()
+            return generator
 
         def _repr_(self):
             if self._smith_engine() is None:
@@ -1304,6 +1430,38 @@ def _new_presented_module(
     if extra_construction_data is not None:
         data.update(extra_construction_data)
     return object_of(Category.join(tuple(categories)), **data)
+
+
+def _resolution_over_degrees(module, terms, differentials, augmentation, zero):
+    r"""Assemble a free resolution from its terms and differentials by degree.
+
+    The degrees carrying a term are the ordinals up to the largest one built,
+    and the degrees carrying a differential are those among them that have one,
+    which are the nonzero degrees the construction reached.  Both are owned
+    ordered sets, and the terms and differentials are families over them.
+    """
+
+    degrees = Sets.Δ[max(terms)]
+    carrying = finite_ordered_filter(
+        degrees,
+        lambda degree: int(degree) in differentials,
+    )
+    return FreeResolution(
+        module,
+        degrees,
+        indexed_family(
+            degrees,
+            lambda degree: terms[int(degree)],
+            name="Free resolution terms",
+        ),
+        indexed_family(
+            carrying,
+            lambda degree: differentials[int(degree)],
+            name="Free resolution differentials",
+        ),
+        augmentation,
+        zero,
+    )
 
 
 def _presentation_matrix(module):

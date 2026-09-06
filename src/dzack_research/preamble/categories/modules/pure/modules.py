@@ -48,7 +48,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family, indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     CartesianProductOfFamily,
@@ -583,6 +587,31 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return ``Ann_R(M)=ker(R -> End_R(M))``."""
             return self.scalar_action().kernel()
 
+        @cached_method
+        def generic_fibre_map(self):
+            r"""Return the unit ``M -> K tensor_R M`` of scalar extension to ``Frac(R)``."""
+            ring = self.base_ring()
+            assert ring in IntegralDomains(), (
+                f"the generic fibre of a module over {ring} needs an integral-domain base"
+            )
+            return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
+
+        def torsion_submodule(self):
+            r"""Return ``Tor(M) = ker(M -> K tensor_R M)`` over an integral domain.
+
+            An element is torsion exactly when some nonzero scalar kills it, and
+            over a domain that is exactly when it dies in the generic fibre: the
+            unit of scalar extension along ``R -> K`` inverts every nonzero
+            scalar and nothing else.  So the torsion submodule is that unit's
+            kernel, computed as a kernel rather than read off a decomposition
+            that only a principal ideal domain supplies.
+            """
+            return self.generic_fibre_map().kernel()
+
+        def is_torsion_free(self) -> bool:
+            r"""Return whether ``Tor(M)=0``, that is whether ``M -> K tensor_R M`` is injective."""
+            return self.generic_fibre_map().is_injective()
+
         def scalar_multiple(self, scalar, element):
             r"""Return ``r*m = rho_M(r)(m)``."""
             return self.scalar_action()(self.base_ring()(scalar))(element)
@@ -959,6 +988,15 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
                 raise TypeError("generic rank is defined here over an integral domain")
             return self.fiber_dimension(ring.spectrum().generic_point())
 
+        def is_torsion(self) -> bool:
+            r"""Return whether ``K tensor_R M = 0`` over an integral domain.
+
+            The generic fibre is a vector space over ``K``, so it vanishes
+            exactly when its dimension does.  A free module of positive rank is
+            therefore not torsion, whatever its relations look like.
+            """
+            return self.generic_rank() == 0
+
 
 class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
     r"""Modules admitting a finite presentation."""
@@ -1004,55 +1042,93 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
 @dataclass(frozen=True)
 class FreeResolution:
-    r"""The exact resolution ``0 -> F_1 -> F_0 -> M -> 0`` over a PID."""
+    r"""The exact resolution ``0 -> F_n -> ... -> F_0 -> M -> 0`` by free modules.
+
+    The datum is an indexed family of free modules over the degrees carrying a
+    term, together with the family of differentials over the degrees that carry
+    one, which are the nonzero ones.  A module over a principal ideal domain
+    resolves in one step, while ``k = R/(x,y)`` over ``R = k[x,y]`` needs the
+    Koszul complex and two, so the degrees are what varies and the top degree is
+    read off them.  Outside those degrees everything is the zero module and the
+    zero map, which is what makes the resolution finite.
+    """
 
     _module: object
-    _degree_zero: object
-    _degree_one: object
-    _differential_one: object
+    _degrees: Parent
+    _terms: IndexedFamily
+    _differentials: IndexedFamily
     _augmentation: object
     _zero_term: object
 
     def module(self):
         return self._module
 
+    def degrees(self):
+        r"""Return the degrees carrying a term, an owned ordered set."""
+        return self._degrees
+
     def term(self, degree):
-        degree = int(degree)
-        if degree < 0:
+        if int(degree) < 0:
             raise ValueError("a homological degree is nonnegative")
-        if degree == 0:
-            return self._degree_zero
-        if degree == 1:
-            return self._degree_one
+        if degree in self._degrees:
+            return self._terms.value(degree)
         return self._zero_term
 
     def differential(self, degree):
 
-        degree = int(degree)
-        if degree <= 0:
+        if int(degree) <= 0:
             raise ValueError("resolution differentials are indexed in positive degree")
-        if degree == 1:
-            return self._differential_one
-        return module_homset(self.term(degree), self.term(degree - 1)).zero()
+        if degree in self._differentials.index_set():
+            return self._differentials.value(degree)
+        return module_homset(self.term(degree), self.term(int(degree) - 1)).zero()
 
     def augmentation(self):
         return self._augmentation
 
     def length(self):
-        return 0 if self._degree_one.rank() == 0 else 1
+        r"""Return the largest degree carrying a nonzero term."""
+        return int(max(self._degrees))
 
     def is_exact(self):
-        d1 = self.differential(1)
-        if not d1.is_injective() or not self.augmentation().is_surjective():
+        r"""Decide exactness of ``0 -> F_n -> ... -> F_0 -> M -> 0``.
+
+        Exactness is checked where it is stated: the augmentation is onto, the
+        last differential is injective, and at every intermediate spot the
+        image of the incoming map equals the kernel of the outgoing one, each
+        equality decided as a pair of subobject containments.
+        """
+
+        if not self.augmentation().is_surjective():
             return False
-        image = d1.image()
-        kernel = self.augmentation().kernel()
-        subobjects = Subobjects(self._degree_zero, Modules(self._degree_zero.base_ring()))
-        return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
+        length = self.length()
+        if length == 0:
+            return self.augmentation().is_injective()
+        if not self.differential(length).is_injective():
+            return False
+
+        def agree(image, kernel, term):
+            subobjects = Subobjects(term, Modules(term.base_ring()))
+            return subobjects.leq(image, kernel) and subobjects.leq(kernel, image)
+
+        if not agree(
+            self.differential(1).image(),
+            self.augmentation().kernel(),
+            self.term(0),
+        ):
+            return False
+        return all(
+            agree(
+                self.differential(int(degree) + 1).image(),
+                self.differential(degree).kernel(),
+                self.term(degree),
+            )
+            for degree in self._differentials.index_set()
+            if int(degree) != length
+        )
 
 
-def free_resolution(module):
-    return module.free_resolution()
+def free_resolution(module, steps=None):
+    return module.free_resolution(steps)
 
 
 class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
@@ -1096,6 +1172,19 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _selected_presentation_rows(self):
             return ()
 
+        def fitting_ideal(self, index):
+            r"""Return ``Fitt_i(R^n)``: zero below the rank, the unit ideal from it on.
+
+            A free module is presented by no relations, so its relation matrix
+            has no rows and the ideal of its ``(n - i)``-minors is zero while a
+            minor of positive size is asked for and the unit ideal once none
+            is.  The general minor computation has no matrix to read here, so
+            the same formula is stated directly.
+            """
+            ring = self.base_ring()
+            rank = int(self.number_of_module_generators())
+            return ring.ideal(ring.one() if int(index) >= rank else ring.zero())
+
         def _represented_kernel_of_morphism(self, morphism):
             if morphism.domain() is not self:
                 return NotImplemented
@@ -1118,14 +1207,29 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=_extra_construction_data,
             )
 
+        def free_resolution(self, steps=None):
+            r"""A free module is its own resolution, in degree zero alone.
+
+            The number of steps a caller is willing to compute does not enter:
+            the identity already resolves a free module, so the same resolution
+            answers however far it is asked to go.
+            """
+            _ = steps
+            return self._identity_resolution()
+
         @cached_method
-        def free_resolution(self):
+        def _identity_resolution(self):
             zero = self._fresh_free_module_on(finite_ordered_set(()))
+            degrees = Sets.Δ[0]
             return FreeResolution(
                 self,
-                self,
-                zero,
-                module_embedding(zero, self, {}),
+                degrees,
+                indexed_family(degrees, lambda degree: self, name="Free resolution terms"),
+                indexed_family(
+                    Sets.Δ[-1],
+                    lambda degree: None,
+                    name="Free resolution differentials",
+                ),
                 module_homset(self, self).identity(),
                 zero,
             )
@@ -1160,6 +1264,29 @@ class ProjectiveModules(OwnedCategoryOverBaseRing):
             if self not in FinitelyGeneratedModules(self.base_ring()):
                 raise TypeError("projective_rank currently requires a finite projective module")
             return self.fiber_dimension(point)
+
+        def local_free_trivialization(self, point):
+            r"""Return the isomorphism ``R_p^r -> M_p`` at a point of the spectrum.
+
+            By Nakayama a family whose images span the fibre ``M(p)`` generates
+            ``M_p``, and a projective module is free there, so a family of that
+            size generating a free module of that rank is a basis.  The
+            residue field already selects such a family among the chosen
+            generators, so the trivialization is the map carrying the standard
+            basis to it, and it is an isomorphism rather than merely a
+            surjection because the ranks agree.
+            """
+
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreeModuleOn,
+            )
+
+            localized = self.localize_at_prime(point)
+            labels = localized.residue_module().basis_generator_labels()
+            free = FreeModuleOn(localized.base_ring(), labels)
+            return module_homset(free, localized)(
+                lambda label: localized.module_generator(label)
+            )
 
 
 class FramedModules(OwnedCategoryOverBaseRing):

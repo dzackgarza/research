@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _refine_matrix_hom,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    IntegralDomains,
     OwnedFields,
     PrincipalIdealDomains,
     _own_ring,
@@ -379,6 +380,16 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return self.rank().is_finite()
 
         def is_torsion_free(self) -> bool:
+            r"""A free module over a domain is torsion-free.
+
+            A basis element is killed only by a scalar killing its coefficient,
+            and a domain has none nonzero.  Off a domain there is no fraction
+            field and hence no torsion submodule to be zero, so the question is
+            not asked rather than answered ``True``.
+            """
+            assert self.base_ring() in IntegralDomains(), (
+                f"torsion-freeness of a module over {self.base_ring()} needs an integral-domain base"
+            )
             return True
 
         def cardinality(self):
