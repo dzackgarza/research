@@ -952,6 +952,23 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             r"""Return the local fiber rank ``dim_{kappa(p)} M(p)``."""
             return self.fiber_dimension(point)
 
+        def rank_function(self):
+            r"""Return ``r_M : Spec(R) -> NN``, ``p |-> dim_{kappa(p)} M(p)``.
+
+            A module that is not locally free has no rank; it has a rank at
+            each point, and those values vary.  So the rank of a finitely
+            generated module is a function on the spectrum, and this returns
+            that function as a morphism of sets: it composes with maps of
+            spectra, restricts to a subset, and is the object whose fibres are
+            the rank strata, rather than a number a caller recomputes at every
+            point.
+
+            This is a different invariant from the generic rank, which is one
+            value of it, and from the local free rank of a finite projective
+            module, which is this function where it is locally constant.
+            """
+            return Sets().Mor(self.base_ring().spectrum(), NN)(self.rank_at)
+
         def local_number_of_generators(self, point):
             r"""Return the minimal number of generators of ``M_p`` by Nakayama."""
             return self.localize_at_prime(point).minimal_number_of_generators()
