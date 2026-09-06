@@ -33,14 +33,18 @@ of them.  Nothing about a lattice in a rational space is unsayable here.
 What is missing is two things, and neither is the object.
 
 The first is the morphism half of the restriction functor for this ring map.
+Mathematically ``Res(g)`` is ``g``: restriction changes which ring acts, never
+the underlying map, so its action on morphisms is the identity and there is
+nothing to construct.  This preamble's functor does not say it that way.
 ``RestrictionOfScalarsFunctor`` in ``functors/scalar_change.py`` materializes
 ``Res(g)`` by naming images of a framing, and refuses without one; the view
 carries a framing only when the extension ring is a finitely generated free
 module over the base ring.  ``QQ`` is not that over ``ZZ``, so ``Res(V)`` has
-no framing and ``Res(g)`` cannot be formed.  Until it can, ``g(L) = L`` has no
-owned composite to be stated as, even though every object in it exists.  That
-is the module Hom surface's to supply, and it is also what the
-scalar-extension adjunction's ``unit`` guards on.
+no framing and the functor refuses a morphism that exists.  Until that is
+repaired, ``g(L) = L`` has no owned composite to be stated as, even though
+every object and every arrow in it exists.  The repair belongs to the
+scalar-change functor, where the obstacle is, and the same condition is what
+the scalar-extension adjunction's ``unit`` guards on.
 
 The second is the algorithm.  ``polyhedral_common`` carries it as
 ``01_RatIntAutomorphy``, the rational matrix group integralization, and
@@ -76,10 +80,12 @@ What *is* owned, so a caller does not come here for it:
 _ABSENCE = (
     "the objects exist -- a lattice in V is a monomorphism L -> Res_ZZ(V) "
     "through restriction of scalars, and d M <= L <= M is three of them in "
-    "one restricted module -- but Res(g) does not: the restriction functor "
-    "materializes a morphism by naming images of a framing, and Res_ZZ(V) "
-    "carries none because QQ is not a finitely generated free ZZ-module.  "
-    "Supplying that morphism is the module Hom surface's, and it is what "
+    "one restricted module -- and so does the arrow: Res(g) is g, since "
+    "restriction changes which ring acts and never the underlying map.  What "
+    "refuses is this preamble's functor, which materializes a morphism by "
+    "naming images of a framing, and Res_ZZ(V) carries none because QQ is not "
+    "a finitely generated free ZZ-module.  Repairing that belongs to the "
+    "scalar-change functor, and it is what "
     "g(L) = L needs to be stated as an owned composite.  The computation on "
     "top of it is polyhedral_common's 01_RatIntAutomorphy, arriving through "
     "sage-indefinite-port and the capability layer.  For a stabilizer inside "
