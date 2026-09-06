@@ -95,7 +95,7 @@ def _finite_ordered_presentation(elements):
 
 
 
-def ordered_enumerated_set(index_set, element_at, *, index_of=None, contains=None, name=None):
+def ordered_enumerated_set(index_set, element_at, *, index_of, contains=None, name=None):
     r"""Return the ordered image of ``index_set`` under the stated enumeration."""
     return object_of(
         OrderedEnumeratedSets(),
@@ -141,7 +141,7 @@ class OrderedEnumeratedSets(OwnedCategory):
             index_set,
             element_at,
             *,
-            index_of=None,
+            index_of,
             contains=None,
             name=None,
             finite=False,
@@ -149,6 +149,11 @@ class OrderedEnumeratedSets(OwnedCategory):
         ) -> None:
             assert callable(element_at), (
                 "an ordered enumerated set requires a map from its index set"
+            )
+            assert callable(index_of), (
+                "an enumerated set states both directions of its enumeration: a "
+                "map out of an index set with no inverse presents a family, "
+                "which is not a set with a ranking"
             )
             self._index_set = index_set
             self._element_at_function = element_at
@@ -183,10 +188,6 @@ class OrderedEnumeratedSets(OwnedCategory):
                 return self._element_at_function(index_ranking.inverse()(int(position)))
 
             def position_of(element):
-                if self._index_of_function is None:
-                    raise NotImplementedError(
-                        "this ordered set has no represented inverse ranking map"
-                    )
                 index = self._index_of_function(element)
                 if index is None:
                     raise ValueError(f"{element!r} is not in {self}")
@@ -200,8 +201,6 @@ class OrderedEnumeratedSets(OwnedCategory):
         def __contains__(self, element) -> bool:
             if self._contains_function is not None:
                 return bool(self._contains_function(element))
-            if self._index_of_function is None:
-                return False
             try:
                 self.ranking_map()(element)
             except (TypeError, ValueError):

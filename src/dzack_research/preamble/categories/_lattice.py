@@ -660,7 +660,7 @@ class _DiagonalGram(_PairingGram):
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
-            if _basis_keys(self._module).ranking_map()(key) == 0 and value == -ring.one():
+            if int(_basis_keys(self._module).ranking_map()(key)) == 0 and value == -ring.one():
                 if rank == Infinity:
                     return r"[-1]\oplus I_{\infty}"
                 if rank == 1:
@@ -679,7 +679,7 @@ class _DiagonalGram(_PairingGram):
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
-            if _basis_keys(self._module).ranking_map()(key) == 0 and value == -ring.one():
+            if int(_basis_keys(self._module).ranking_map()(key)) == 0 and value == -ring.one():
                 if rank == Infinity:
                     return "[-1] ⊕ I_∞"
                 if rank == 1:

@@ -1410,55 +1410,57 @@ class CartesianProductsOfSets(OwnedCategory):
 
         @cached_method
         def ranking_map(self):
-            r"""The mixed-radix enumeration of a finite product of finite factors."""
+            r"""The mixed-radix enumeration of a finite product of finite factors.
+
+            The represented enumeration is the mixed-radix one, which needs a
+            finite index set and a finite enumerated factor at each index.  A
+            product of countably many countable factors is still countable, so
+            an isomorphism onto $\omega$ exists; this construction is not it,
+            and the arrow is refused rather than returned with both directions
+            raising when applied.
+            """
+            assert self.has_finite_index_set(), (
+                "the mixed-radix enumeration is represented over a finite index set"
+            )
+            assert self.index_set() in EnumeratedSets(), (
+                "the mixed-radix enumeration reads its index order off the index set"
+            )
+            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
+            index_at = self.index_set().ranking_map().inverse()
+            for index in self.index_set():
+                factor = self.factor(index)
+                assert factor in EnumeratedSets(), (
+                    f"the factor at {index} states no enumeration of its own"
+                )
+                assert cardinal(factor.cardinality()).is_finite(), (
+                    f"the factor at {index} is infinite, so the product's "
+                    "mixed-radix enumeration is not represented here"
+                )
+            total_size = int(cardinal(self.cardinality()).finite_value())
 
             def point_at(position):
-                if not self.has_finite_index_set():
-                    raise TypeError("an infinite-index product is not enumerated by position here")
-                index_count = int(cardinal(self.index_set().cardinality()).finite_value())
-                total = self.cardinality()
-                if not total.is_finite():
-                    raise TypeError("this product is not finite")
                 position = int(position)
-                total_size = int(total.finite_value())
                 if position < 0 or position >= total_size:
                     raise IndexError(position)
-                if self.index_set() not in EnumeratedSets():
-                    raise TypeError(
-                        "a finite product is enumerated only over an enumerated index set"
-                    )
-                index_ranking = self.index_set().ranking_map().inverse()
                 assignment = {}
                 quotient = position
                 for offset in range(index_count - 1, -1, -1):
-                    index = index_ranking(offset)
+                    index = index_at(offset)
                     factor = self.factor(index)
-                    if factor not in EnumeratedSets():
-                        raise TypeError("a finite product is enumerated only over enumerated factors")
-                    factor_size = cardinal(factor.cardinality())
-                    if not factor_size.is_finite():
-                        raise TypeError("this product is not finite")
-                    radix = int(factor_size.finite_value())
-                    digit = quotient % radix
-                    quotient //= radix
+                    radix = int(cardinal(factor.cardinality()).finite_value())
+                    quotient, digit = divmod(quotient, radix)
                     assignment[index] = factor.ranking_map().inverse()(digit)
                 frozen = dict(assignment)
                 return self(lambda index: frozen[index])
 
             def position_of(section):
                 section = self(section)
-                if not self.has_finite_index_set():
-                    raise TypeError("an infinite-index product has no finite ranking here")
                 position = 0
                 for index in self.index_set():
                     factor = self.factor(index)
-                    factor_size = cardinal(factor.cardinality())
-                    if not factor_size.is_finite():
-                        raise TypeError("this product is not finite")
-                    if factor not in EnumeratedSets():
-                        raise TypeError("a finite product is enumerated only over enumerated factors")
+                    radix = int(cardinal(factor.cardinality()).finite_value())
                     digit = int(factor.ranking_map()(section.component(index)))
-                    position = position * int(factor_size.finite_value()) + digit
+                    position = position * radix + digit
                 return position
 
             return ranking_isomorphism(self, position_of, point_at)
