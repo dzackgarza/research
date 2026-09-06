@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| V-invertible-sheaf-gluing-20260906 | V — certify rank-one module descent data as invertible sheaves, retain transition units, construct duals/tensor powers on the same affine cover, and expose compatible global sections and descent-induced section maps | ChatGPT continuation `2026-09-06-invertible-sheaf-gluing`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py`; `src/dzack_research/preamble/categories/divisors/__init__.py`; `src/dzack_research/preamble/all.py`; `tests/divisors/test_invertible_sheaves.py`; `docs/preamble-megadoc.md`; `docs/preamble-graph.json`; `docs/preamble-graph.dot`; `docs/preamble-graph.html` | `b1b53c48`; consumes G module descent `da4bf50b`/`9a7cf0d7` and M local/free trivialization `b9a9770a` | 2026-09-06T05:26:24Z |
 
 ### Existing work awaiting adoption
 
