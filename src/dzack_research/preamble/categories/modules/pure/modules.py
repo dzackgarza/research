@@ -319,6 +319,26 @@ class Modules(OwnedCategoryOverBaseRing):
 
             return alternating_algebra_functor(self.base_ring())
 
+        # An adjunction is a method of its left adjoint's domain category.
+        # ``Sym_R`` and ``T_R`` are left adjoints out of ``Mod_R``, so their
+        # adjunctions are asked for here.  ``Lambda_R`` has none.
+
+        def symmetric_algebra_adjunction(self):
+            r"""``Sym_R -| U``, between ``Mod_R`` and commutative ``R``-algebras."""
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                symmetric_algebra_adjunction,
+            )
+
+            return symmetric_algebra_adjunction(self.base_ring())
+
+        def tensor_algebra_adjunction(self):
+            r"""``T_R -| U``, between ``Mod_R`` and associative unital ``R``-algebras."""
+            from dzack_research.preamble.categories.functors.free_algebras import (
+                tensor_algebra_adjunction,
+            )
+
+            return tensor_algebra_adjunction(self.base_ring())
+
         def tensor_product(self, factors):
             r"""Return the tensor product of a finite family of objects of this category."""
             return self._fold_construction(self._categorical_tensor_product, factors, name="Tensor product factors")

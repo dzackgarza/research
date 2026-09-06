@@ -114,3 +114,32 @@ def test_the_exterior_algebra_functor_is_asked_of_the_module_category() -> None:
     assert image.domain() is algebra
     assert image.codomain() is algebra
     assert image(x) == y
+
+
+def test_the_free_algebra_adjunctions_are_asked_of_the_module_category() -> None:
+    r"""``Sym_ZZ -| U`` and ``T_ZZ -| U`` produce a unit and a counit on ``ZZ^2``.
+
+    The unit is the degree-one inclusion of the module into the underlying
+    module of its free algebra, so it is injective; the counit evaluates the
+    free algebra on an algebra's own underlying module back onto that algebra.
+    """
+    plane, _ = _plane_with_swap()
+    modules = Modules(ZZ)
+
+    for adjunction, degree_two_rank in (
+        (modules.symmetric_algebra_adjunction(), 3),
+        (modules.tensor_algebra_adjunction(), 4),
+    ):
+        algebra = adjunction.left_adjoint()(plane)
+        assert algebra.graded_piece(2).rank() == degree_two_rank
+
+        unit = adjunction.unit(plane)
+        assert unit.domain() is plane
+        assert unit.codomain() == adjunction.right_adjoint()(algebra)
+        assert unit.is_injective()
+
+        counit = adjunction.counit(algebra)
+        assert counit.codomain() is algebra
+        assert counit.domain() is adjunction.left_adjoint()(
+            adjunction.right_adjoint()(algebra)
+        )
