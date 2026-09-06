@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import OwnedCategoryMixin
 
 
 class SchemeUnderlyingSpace(SageObject):
@@ -614,7 +613,7 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         return module.presentation()
 
 
-class RingedSpaces(CategoryPacketMethods, OwnedCategoryMixin, Category):
+class RingedSpaces(CategoryPacketMethods, Category):
     r"""Ringed spaces ``(X,O_X)``."""
 
     @classmethod
@@ -643,7 +642,7 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategoryMixin, Category):
             return SchemeUnderlyingSpace(self)
 
 
-class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategoryMixin, Category):
+class LocallyRingedSpaces(CategoryPacketMethods, Category):
     r"""Ringed spaces whose stalks are local rings."""
 
     @classmethod

@@ -65,8 +65,6 @@ from collections.abc import Hashable
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
-from sage.misc.c3_controlled import _cmp_key as _sage_cmp_key
-from sage.misc.cachefunc import cached_function
 from sage.misc.classcall_metaclass import ClasscallMetaclass
 from sage.misc.constant_function import ConstantFunction
 from sage.misc.inherit_comparison import InheritComparisonMetaclass
@@ -346,19 +344,6 @@ def declared_implementation_types(
     return declared[0], tuple(declared[1:])
 
 
-@cached_function
-def _declared_depth(category) -> int:
-    r"""The longest path from ``category`` up to a category with no supercategories.
-
-    A function of the declared graph and of nothing else, so two sessions
-    agree on it and adding a category elsewhere in the graph does not move it.
-    """
-    return 1 + max(
-        (_declared_depth(super_category) for super_category in category.super_categories()),
-        default=-1,
-    )
-
-
 class OwnedCategoryMixin(CatConstructionsMixin):
     r"""Tie a category to its implementation classes.
 
@@ -384,40 +369,6 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     to track Sage: same key shares, different key does not, and a shared class
     still enforces its obligations.
     """
-
-    @lazy_attribute
-    def _cmp_key(self):
-        r"""This category's place in the order Sage sorts supercategories by.
-
-        Sage's key is ``(flag, i)``.  The flag is a function of the graph --
-        the bit for the class's own name, ORed with every supercategory's --
-        and is taken as it comes.  The number ``i`` is not: Sage's own
-        docstring calls it "session dependent, and assigned increasingly when
-        new categories are created", which is deterministic for a graph built
-        while ``sage.categories.all`` imports and is not for a graph a session
-        reaches into lazily.  Two sibling categories then sorted their shared
-        supercategories in opposite orders and a category above both had no
-        consistent linearization at all.
-
-        Replacing ``i`` by ``(depth, name)`` makes the key a function of the
-        category.  Both properties Sage's contract asks for hold by argument.
-        *If A is a subcategory of B then* ``A._cmp_key > B._cmp_key``: depth
-        drops by at least one along every declared edge, so it is strictly
-        greater along any path, and the flag can only gain bits going down.
-        *Distinct joinable categories are comparable*: equal keys need the
-        same class, so the only categories sharing one differ in a parameter,
-        and Sage exempts exactly those -- "taking the join of
-        ``Algebras(GF(5))`` and ``Algebras(QQ)`` does not make sense" -- and
-        gives them one key itself through ``CmpKeyNamed``.
-
-        A Sage category keeps Sage's key.  Nothing here compares a string
-        against an integer: Sage's tuple is shorter, so it runs out first.
-        """
-        return (
-            _sage_cmp_key.__get__(self, type(self))[0],
-            _declared_depth(self),
-            f"{type(self).__base__.__module__}.{type(self).__base__.__qualname__}",
-        )
 
     _TIED_NAMED_CLASSES = frozenset(("parent_class", "element_class", "morphism_class"))
 
