@@ -876,6 +876,15 @@ class VectorSpaces(OwnedCategoryOverBaseRing):
 
         return Modules(self.base_ring()).an_object()
 
+    def additional_condition(self):
+        r"""None: over a field, a vector space is exactly a module.
+
+        The condition is on the parameter, not on the object.  Every module
+        over a field is a vector space over it, so nothing has to be placed
+        here to be here.
+        """
+        return None
+
     @classmethod
     def _repr_object_names(cls):
         return "vector spaces"

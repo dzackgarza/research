@@ -60,19 +60,33 @@ class ForgetTheFormFunctor(_UnderlyingFormModuleFunctor):
 class BilinearUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
+        self._base_ring = ring
         super().__init__(
             FinitelyPresentedBilinearFormModules(ring),
             FinitelyPresentedModules(ring),
         )
 
+    def base_ring(self):
+        return self._base_ring
+
+    def _repr_(self):
+        return f"Underlying-module functor on bilinear formed {self.base_ring()}-modules"
+
 
 class QuadraticUnderlyingModuleFunctor(_UnderlyingFormModuleFunctor):
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
+        self._base_ring = ring
         super().__init__(
             FinitelyPresentedQuadraticFormModules(ring),
             FinitelyPresentedModules(ring),
         )
+
+    def base_ring(self):
+        return self._base_ring
+
+    def _repr_(self):
+        return f"Underlying-module functor on quadratic formed {self.base_ring()}-modules"
 
 
 class FreeBilinearFormFunctor(Functor):
@@ -80,10 +94,17 @@ class FreeBilinearFormFunctor(Functor):
 
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
+        self._base_ring = ring
         super().__init__(
             FinitelyPresentedModules(ring),
             FinitelyPresentedBilinearFormModules(ring),
         )
+
+    def base_ring(self):
+        return self._base_ring
+
+    def _repr_(self):
+        return f"Free bilinear-form functor on {self.base_ring()}-modules"
 
     def _apply_object(self, module):
 
@@ -118,10 +139,17 @@ class FreeQuadraticFormFunctor(Functor):
 
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
+        self._base_ring = ring
         super().__init__(
             FinitelyPresentedModules(ring),
             FinitelyPresentedQuadraticFormModules(ring),
         )
+
+    def base_ring(self):
+        return self._base_ring
+
+    def _repr_(self):
+        return f"Free quadratic-form functor on {self.base_ring()}-modules"
 
     def _apply_object(self, module):
 
@@ -160,6 +188,9 @@ TautologicalQuadraticFormFunctor = FreeQuadraticFormFunctor
 
 
 class _FreeFormAdjunction(Adjunction):
+    def _repr_(self):
+        return f"{self.left_adjoint()} ⊣ {self.right_adjoint()}"
+
     def unit(self, module):
         return self.left_adjoint()(module).equip_form_morphism()
 

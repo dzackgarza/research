@@ -1120,6 +1120,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
+    def additional_condition(self):
+        r"""None: a free form module is exactly a form module that is framed free."""
+        return None
+
     @classmethod
     def _repr_object_names(cls):
         return "free form modules"
@@ -1145,6 +1149,10 @@ class FinitelyGeneratedFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
+    def additional_condition(self):
+        r"""None: exactly a form module that is finitely generated."""
+        return None
+
     @classmethod
     def _repr_object_names(cls):
         return "finitely generated form modules"
@@ -1160,6 +1168,10 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.lattices import Lattices
 
         return Lattices(self.base_ring())("U")
+
+    def additional_condition(self):
+        r"""None: exactly the intersection of the three categories below."""
+        return None
 
     @classmethod
     def _repr_object_names(cls):
