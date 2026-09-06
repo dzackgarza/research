@@ -75,6 +75,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     voronoi_relevant_vectors,
 )
 from dzack_research.preamble.categories.forms.forms import BilinearForms
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
@@ -949,6 +950,33 @@ class Lattices(OwnedCategoryOverBaseRing):
                 lambda automorphism: automorphism.real_spinor_norm_sign() == 1,
                 "real spinor norm(g)=+1",
                 character_data={"spinor_kernel": True},
+            )
+
+        @cached_method
+        def component_character(self):
+            r"""Return \(\chi_\Omega\colon O(L)\to C_2\), the character of the positive cone.
+
+            In signature \((1,n)\) the cone \(\{v: b(v,v)>0\}\) has two
+            components, and an isometry either preserves each of them or
+            exchanges the two.  That assignment is a group morphism to the
+            cyclic group of order two, and :meth:`positive_cone_subgroup` is
+            its kernel.
+            """
+            _signature = self.signature_pair()
+            positive, negative = _signature.first(), _signature.second()
+            integers = positive.parent()
+            if positive != integers.one() or negative < integers.one():
+                raise ValueError(
+                    f"the component character is defined in signature (1,n); got {(positive, negative)}"
+                )
+
+            target = OwnedGroups().C(2)
+            exchange = target.group_generators().unrank(0)
+            return SetMorphism(
+                self.Aut().Mor(target),
+                lambda isometry: target.one()
+                if isometry.preserves_positive_cone()
+                else exchange,
             )
 
         def positive_cone_subgroup(self):
