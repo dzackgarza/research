@@ -2861,29 +2861,29 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 name="Embedded isotropic-reduction lifts",
             )
             complement = lattice.subobject_on(embedded_lifts)
-            hyperbolic_part = complement.orthogonal_complement()
-            assert complement.is_primitive() and hyperbolic_part.is_unimodular(), (
+            unimodular_summand = complement.orthogonal_complement()
+            assert complement.is_primitive() and unimodular_summand.is_unimodular(), (
                 "no represented splitting L = M perp K' along the chosen lifts; "
                 "the Levi quotient need not lift"
             )
             complement_inclusion = complement.inclusion()
-            hyperbolic_inclusion = hyperbolic_part.inclusion()
+            summand_inclusion = unimodular_summand.inclusion()
             into_complement = module_homset(self, complement)(
                 lambda label: complement_inclusion.lift(embedded_lifts(label))
             )
-            correlation = hyperbolic_part.correlation_isomorphism()
-            hyperbolic_dual = correlation.forward().codomain()
+            correlation = unimodular_summand.correlation_isomorphism()
+            summand_dual = correlation.forward().codomain()
 
-            def hyperbolic_component(vector):
-                covector = hyperbolic_dual.linear_combination(
+            def summand_component(vector):
+                covector = summand_dual.linear_combination(
                     {
                         label: coefficient
-                        for label in hyperbolic_dual.module_generating_set()
+                        for label in summand_dual.module_generating_set()
                         if (
                             coefficient := lattice.b(
                                 vector,
-                                hyperbolic_inclusion(
-                                    hyperbolic_part.module_generator(label)
+                                summand_inclusion(
+                                    unimodular_summand.module_generator(label)
                                 ),
                             )
                         )
@@ -2893,8 +2893,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
             def image(label):
                 vector = lattice.module_generator(label)
-                fixed_part = hyperbolic_component(vector)
-                embedded_fixed = hyperbolic_inclusion(fixed_part)
+                fixed_part = summand_component(vector)
+                embedded_fixed = summand_inclusion(fixed_part)
                 moved_part = into_complement.lift(
                     complement_inclusion.lift(vector - embedded_fixed)
                 )
@@ -2903,9 +2903,14 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 )
 
             lifted = lattice.O()(image)
-            assert lifted in self.parabolic_subgroup()
-            assert self.levi_action()(lifted) == isometry
+            assert lifted in self.parabolic_subgroup(), (
+                "the assembled map does not stabilize I; the chosen lifts do not span a splitting"
+            )
+            assert self.levi_action()(lifted) == isometry, (
+                "the assembled map descends to the wrong isometry of I^perp/I"
+            )
             return lifted
+
 
 class RootLattices(Category):
     r"""Negative-definite ADE root lattices with a chosen simple-root framing."""

@@ -1050,6 +1050,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             preserves_image,
             f"g(I)=I for I={source}",
         )
+
     @cached_method
     def _engine_group(self):
         r"""Return Sage's private orthogonal-group engine when it is exact.
