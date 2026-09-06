@@ -25,6 +25,47 @@ and that is a statement about the presentation rather than about the lattice.
 """
 
 
+def covering_discriminant_classes(lattice, square):
+    r"""Return the discriminant classes covering the primitive vectors of ``square``.
+
+    For a primitive ``v`` write ``d = div(v)``, so ``v/d`` lies in ``L^#`` and
+    ``x = [v/d]`` lies in ``A_L``.  The order of ``x`` is exactly ``d``: a
+    smaller order ``e`` would put ``(e/d) v`` in ``L`` and contradict
+    primitivity.  The discriminant quadratic form then reads
+    ``q_{A_L}(x) = q(v)/d^2`` in ``K/2R``.  Both statements are unconditional,
+    so the classes satisfying
+
+    ``q_{A_L}(x) = square / ord(x)^2``
+
+    cover the primitive vectors of that square: every such vector has its
+    divided class among them, with its divisibility the order of that class.
+    This is the finite covering list, and it is computed by one pass over the
+    finite discriminant group with no search in ``L``.
+
+    Under Eichler's criterion the list is sharper still: the stable orthogonal
+    group is then transitive on the primitive vectors sharing a square and a
+    divided class, so each class in the list carries at most one stable orbit.
+    Which classes are actually attained is a separate question this list does
+    not answer, which is why it covers rather than enumerates.
+    """
+    from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+        finite_ordered_set,
+    )
+
+    discriminant = lattice.discriminant_group()
+    values = discriminant.quadratic_value_module()
+    field = lattice.base_ring().fraction_field()
+    target = field(square)
+    return finite_ordered_set(
+        tuple(
+            element
+            for element in discriminant.elements()
+            if discriminant.q(element)
+            == values(target / field(element.additive_order()) ** 2)
+        )
+    )
+
+
 def hyperbolic_plane_summand_count(lattice):
     r"""Return how many indecomposable summands of ``lattice`` are hyperbolic planes."""
     from dzack_research.preamble.categories.lattices import Lattices
@@ -85,6 +126,7 @@ def are_in_one_stable_orbit(left, right) -> bool:
 
 __all__ = [
     "are_in_one_stable_orbit",
+    "covering_discriminant_classes",
     "eichler_criterion_applies",
     "hyperbolic_plane_summand_count",
     "splits_two_hyperbolic_planes",

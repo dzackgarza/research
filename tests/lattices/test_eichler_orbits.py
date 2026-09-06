@@ -21,6 +21,7 @@ by a Gram matrix and therefore answers that it splits nothing.
 from dzack_research.preamble.all import (
     NamedLattices,
     are_in_one_stable_orbit,
+    covering_discriminant_classes,
     eichler_criterion_applies,
     hyperbolic_plane_summand_count,
     splits_two_hyperbolic_planes,
@@ -92,6 +93,30 @@ def test_the_divided_discriminant_class_separates_two_elementary_vectors() -> No
     # Negation preserves all three invariants in a two-group.
     assert are_in_one_stable_orbit(first_root, -first_root)
     assert first_root != -first_root
+
+
+def test_the_covering_list_holds_the_class_of_every_primitive_vector() -> None:
+    lattice, generators = _two_elementary_specimen()
+    root = generators.unrank(4)
+    covering = covering_discriminant_classes(lattice, root.q())
+    divided = root.divided_discriminant_class()
+
+    assert divided in covering
+    assert divided.additive_order() == root.div()
+    assert generators.unrank(5).divided_discriminant_class() in covering
+    assert covering.cardinality() < lattice.discriminant_group().cardinality()
+
+    isotropic = generators.unrank(0)
+    assert isotropic.q() == 0
+    assert lattice.discriminant_group().zero() in covering_discriminant_classes(
+        lattice, isotropic.q()
+    )
+
+    # An even lattice has no vector of odd square, and no class can cover one:
+    # q_{A_L} takes the values q(v)/d^2 of an even lattice, so an odd square
+    # would need a denominator the discriminant form does not produce.
+    odd = covering_discriminant_classes(lattice, lattice.base_ring().one())
+    assert odd.cardinality() == 0
 
 
 def test_a_vector_with_divisibility_one_has_a_trivial_divided_class() -> None:

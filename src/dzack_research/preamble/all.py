@@ -508,6 +508,7 @@ from dzack_research.preamble.categories.vector_configurations import (  # noqa: 
 )
 from dzack_research.preamble.categories.eichler_criterion import (  # noqa: F401
     are_in_one_stable_orbit,
+    covering_discriminant_classes,
     eichler_criterion_applies,
     hyperbolic_plane_summand_count,
     splits_two_hyperbolic_planes,
