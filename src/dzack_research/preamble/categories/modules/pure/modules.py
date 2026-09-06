@@ -1053,12 +1053,12 @@ class FreeResolution:
     zero map, which is what makes the resolution finite.
     """
 
-    _module: object
+    _module: Parent
     _degrees: Parent
     _terms: IndexedFamily
     _differentials: IndexedFamily
-    _augmentation: object
-    _zero_term: object
+    _augmentation: ModuleMorphism
+    _zero_term: Parent
 
     def module(self):
         return self._module
