@@ -53,7 +53,7 @@ The poset is drawn in `docs/preamble-graph.html` (pan and zoom), from
 | :--- | ---: |
 | categories in the poset | 278 |
 | of those, built and interrogated | 196 |
-| operations, each written once at its owner | 1111 |
+| operations, each written once at its owner | 1121 |
 | functors | 69, 11 of them with a domain and codomain resolved here |
 | adjunctions | 21 |
 
@@ -6945,7 +6945,7 @@ Return `Lambda^degree(module^vee)`.
 
 Return `coker(presentation)` in `R-Mod` with its selected module presentation.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py:1610`
+- **defined at** `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py:1640`
 - **built by** `FinitelyPresentedModule(presentation, *, _cokernel_morphism=None, _extra_categories=(), _extra_construction_data=None, _subobject_ambient=None, _subobject_generator_images=None, _subobject_lift=None, _subobject_inclusion_factory=None, _subobject_verify_linearity=True, _biproduct_factors=None)`
 
 #### `FormModule` <sub>FUNCTION</sub>
@@ -7493,26 +7493,41 @@ Associative algebras with bracket `[x,y]=xy-yx`.
 
 Selected modules `Omega^1_{A/R}` for the coefficient algebra `A`.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/kahler_differentials.py:36`
+- **defined at** `src/dzack_research/preamble/categories/algebras/kahler_differentials.py:40`
 - **probed as** `Category of Kähler differential modules`
 - **above** [`FinitelyPresentedModules(R)`](#cat-finitelypresentedmodules), [`FramedModules(R)`](#cat-framedmodules)
 - **refines**, transitively, in Sage's linearization order: [`FinitelyPresentedModules(R)`](#cat-finitelypresentedmodules) · [`FinitelyGeneratedModules(R)`](#cat-finitelygeneratedmodules) · [`FramedModules(R)`](#cat-framedmodules) · [`Modules(R)`](#cat-modules) · [`AdditiveGroups.AdditiveCommutative`](#cat-additivegroups-additivecommutative) · [`AdditiveGroups`](#cat-additivegroups) · [`AdditiveMonoids`](#cat-additivemonoids) · [`AdditiveSemigroups`](#cat-additivesemigroups) · [`AdditiveMagmas`](#cat-additivemagmas) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
 - **build an object** `KahlerDifferentialModules(R)(x, *args, **opts)`
 
-**Operations introduced here** (8 on objects)
+**Operations introduced here** (15 on objects)
 
 *on objects*
 
 - `ElementType()`
   - Selected modules ``Omega^1_{A/R}`` for the coefficient algebra ``A``.
-- `algebra()`
+- `ambient_differentials()`
+  - Return ``Omega^1_{P/R} tensor_P A`` in the selected conormal sequence.
+- `conormal_module()`
+  - Return ``A tensor_P I ~= I/I^2`` for the selected quotient ``P -> A``.
+- `conormal_morphism()`
+  - Return ``I/I^2 -> Omega^1_{P/R} tensor_P A``, ``f |-> df``.
+- `conormal_morphism_at(point)`
+  - Base-change the selected conormal map to ``kappa(point)``.
+- `cotangent_space(point)` <sub>cached</sub>
+  - Return ``Omega^1_{A/R} tensor_A kappa(point)``.
 - `derivation_classifier_isomorphism(target_module)`
   - Return ``Hom_A(Omega^1_{A/R},M) ~= Der_R(A,M)`` as an ``A``-module isomorphism.
 - `differential_generator(algebra_generator_label)`
+- `differential_projection()`
+  - Return the quotient map onto ``Omega^1_{A/R}`` in the conormal sequence.
 - `from_derivation(derivation)`
 - `representing_isomorphism(target_module)`
   - Return ``Hom_A(Omega^1_{A/R},M) ~= Der_R(A,M)`` as an ``A``-module isomorphism.
 - `source_algebra()`
+- `tangent_dimension(point)`
+  - Return the dimension of the relative Zariski tangent space.
+- `tangent_space(point)` <sub>cached</sub>
+  - Return the relative Zariski tangent space dual to ``cotangent_space(point)``.
 - `universal_derivation()` <sub>cached</sub>
 
 **Inherited operations**, defined where they are owned:
@@ -9115,7 +9130,7 @@ Return contraction `i_X` as a degree `-1` derivation of `DR(A)`.
 
 Return `Omega^1_{A/R}` with its universal `R`-derivation.
 
-- **defined at** `src/dzack_research/preamble/categories/algebras/kahler_differentials.py:137`
+- **defined at** `src/dzack_research/preamble/categories/algebras/kahler_differentials.py:236`
 - **built by** `KahlerDifferentials(algebra)`
 
 #### `LieBracket` <sub>FUNCTION</sub>
@@ -13742,7 +13757,7 @@ A category over a ring, normalized to the session's owned ring.
 
 Scheme products equipped with their stated factors and projections.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1414`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1470`
 - **probed as** `Category of scheme products over Integer Ring`
 - **above** [`Schemes(R)`](#cat-schemes)
 - **below** [`ProductProjectiveSpaces(R)`](#cat-productprojectivespaces)
@@ -13842,7 +13857,7 @@ A category over a ring, normalized to the session's owned ring.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1264`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1320`
 - **probed as** `Category of quasi-affine schemes over Integer Ring`
 - **above** [`Schemes(R)`](#cat-schemes), [`SeparatedSchemes(R)`](#cat-separatedschemes)
 - **below** [`AffineSchemes(R)`](#cat-affineschemes)
@@ -13875,7 +13890,7 @@ A category over a ring, normalized to the session's owned ring.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1283`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1339`
 - **probed as** `Category of quasi-projective schemes over Integer Ring`
 - **above** [`Schemes(R)`](#cat-schemes), [`SeparatedSchemes(R)`](#cat-separatedschemes)
 - **below** [`ProjectiveSchemes(R)`](#cat-projectiveschemes)
@@ -13915,7 +13930,7 @@ A category over a ring, normalized to the session's owned ring.
 - **refines**, transitively, in Sage's linearization order: [`QuasiAffineSchemes(R)`](#cat-quasiaffineschemes) · [`SeparatedSchemes(R)`](#cat-separatedschemes) · [`Schemes(R)`](#cat-schemes) · [`LocallyRingedSpaces`](#cat-locallyringedspaces) · [`RingedSpaces`](#cat-ringedspaces) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
 - **build an object** `AffineSchemes(R)(x, *args, **opts)`
 
-**Operations introduced here** (8 on objects)
+**Operations introduced here** (11 on objects)
 
 *on objects*
 
@@ -13927,11 +13942,17 @@ A category over a ring, normalized to the session's owned ring.
 - `coordinate_algebra()`
 - `coordinate_ring()`
   - Return the owned coordinate ring/algebra of this affine scheme.
+- `differential_rank_drop_subscheme(rank)`
+  - Return the closed Fitting stratum ``V(Fitt_rank(Omega^1_{X/S}))``.
 - `distinguished_open(element)`
   - Return \(D(f)\subseteq X\), the open locus where ``element`` is a unit.
 - `distinguished_open_cover(*elements)`
   - Return the finite cover by ``D(f_i)`` when the ``f_i`` generate the unit ideal.
 - `is_affine()`
+- `relative_differentials()` <sub>cached</sub>
+  - Return the affine module of relative Kähler differentials.
+- `singular_subscheme()`
+  - Return the nonsmooth closed subscheme in the supported equidimensional field case.
 
 **Inherited operations**, defined where they are owned:
 
@@ -13952,7 +13973,7 @@ A category over a ring, normalized to the session's owned ring.
 
 Affine schemes equipped as selected pullbacks of one cospan.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2202`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2258`
 - **probed as** `Category of fiber product schemes`
 - **above** [`AffineSchemes(R)`](#cat-affineschemes)
 - **refines**, transitively, in Sage's linearization order: [`AffineSchemes(R)`](#cat-affineschemes) · [`QuasiAffineSchemes(R)`](#cat-quasiaffineschemes) · [`SeparatedSchemes(R)`](#cat-separatedschemes) · [`Schemes(R)`](#cat-schemes) · [`LocallyRingedSpaces`](#cat-locallyringedspaces) · [`RingedSpaces`](#cat-ringedspaces) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -13979,7 +14000,7 @@ Affine schemes equipped as selected pullbacks of one cospan.
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Schemes(R)`](#cat-schemes) | 13 |  |  |
-| [`AffineSchemes(R)`](#cat-affineschemes) | 8 |  |  |
+| [`AffineSchemes(R)`](#cat-affineschemes) | 11 |  |  |
 | `SageObject` | 8 |  |  |
 | [`Sets`](#cat-sets) | 7 |  |  |
 | [`QuasiAffineSchemes(R)`](#cat-quasiaffineschemes) | 2 |  |  |
@@ -13992,7 +14013,7 @@ Affine schemes equipped as selected pullbacks of one cospan.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1300`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1356`
 - **probed as** `Category of projective schemes over Integer Ring`
 - **above** [`FiniteTypeSchemes(R)`](#cat-finitetypeschemes), [`QuasiProjectiveSchemes(R)`](#cat-quasiprojectiveschemes), [`Schemes(R)`](#cat-schemes), [`SeparatedSchemes(R)`](#cat-separatedschemes)
 - **below** [`ProductProjectiveSpaces(R)`](#cat-productprojectivespaces), [`ProjectiveSpaces(R)`](#cat-projectivespaces)
@@ -14132,7 +14153,7 @@ A category over a ring, normalized to the session's owned ring.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1330`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1386`
 - **probed as** `Category of affine spaces over Integer Ring`
 - **above** [`AffineSchemes(R)`](#cat-affineschemes), [`FiniteTypeSchemes(R)`](#cat-finitetypeschemes), [`SmoothSchemes(R)`](#cat-smoothschemes)
 - **refines**, transitively, in Sage's linearization order: [`SmoothSchemes(R)`](#cat-smoothschemes) · [`FiniteTypeSchemes(R)`](#cat-finitetypeschemes) · [`AffineSchemes(R)`](#cat-affineschemes) · [`QuasiAffineSchemes(R)`](#cat-quasiaffineschemes) · [`SeparatedSchemes(R)`](#cat-separatedschemes) · [`Schemes(R)`](#cat-schemes) · [`LocallyRingedSpaces`](#cat-locallyringedspaces) · [`RingedSpaces`](#cat-ringedspaces) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -14154,7 +14175,7 @@ A category over a ring, normalized to the session's owned ring.
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Schemes(R)`](#cat-schemes) | 13 |  |  |
-| [`AffineSchemes(R)`](#cat-affineschemes) | 8 |  |  |
+| [`AffineSchemes(R)`](#cat-affineschemes) | 11 |  |  |
 | `SageObject` | 8 |  |  |
 | [`Sets`](#cat-sets) | 7 |  |  |
 | [`FiniteTypeSchemes(R)`](#cat-finitetypeschemes) | 2 |  |  |
@@ -14169,7 +14190,7 @@ A category over a ring, normalized to the session's owned ring.
 
 A category over a ring, normalized to the session's owned ring.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1372`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1428`
 - **probed as** `Category of projective spaces over Integer Ring`
 - **above** [`ProjectiveSchemes(R)`](#cat-projectiveschemes), [`SmoothSchemes(R)`](#cat-smoothschemes)
 - **refines**, transitively, in Sage's linearization order: [`ProjectiveSchemes(R)`](#cat-projectiveschemes) · [`QuasiProjectiveSchemes(R)`](#cat-quasiprojectiveschemes) · [`SmoothSchemes(R)`](#cat-smoothschemes) · [`FiniteTypeSchemes(R)`](#cat-finitetypeschemes) · [`SeparatedSchemes(R)`](#cat-separatedschemes) · [`Schemes(R)`](#cat-schemes) · [`LocallyRingedSpaces`](#cat-locallyringedspaces) · [`RingedSpaces`](#cat-ringedspaces) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -14206,7 +14227,7 @@ A category over a ring, normalized to the session's owned ring.
 
 Finite products of projective spaces over one base ring.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1454`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1510`
 - **probed as** `Category of products of projective spaces over Integer Ring`
 - **above** [`ProductSchemes(R)`](#cat-productschemes), [`ProjectiveSchemes(R)`](#cat-projectiveschemes), [`SmoothSchemes(R)`](#cat-smoothschemes)
 - **refines**, transitively, in Sage's linearization order: [`ProjectiveSchemes(R)`](#cat-projectiveschemes) · [`ProductSchemes(R)`](#cat-productschemes) · [`QuasiProjectiveSchemes(R)`](#cat-quasiprojectiveschemes) · [`SmoothSchemes(R)`](#cat-smoothschemes) · [`FiniteTypeSchemes(R)`](#cat-finitetypeschemes) · [`SeparatedSchemes(R)`](#cat-separatedschemes) · [`Schemes(R)`](#cat-schemes) · [`LocallyRingedSpaces`](#cat-locallyringedspaces) · [`RingedSpaces`](#cat-ringedspaces) · [`Sets`](#cat-sets) · [`Objects`](#cat-objects)
@@ -14251,7 +14272,7 @@ chosen finite generating set of \(I\) presents the coordinate algebra and
 is stated on that algebra.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2411`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2467`
 - **not placed**: `ClosedEmbeddings(parameter)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
 **Operations introduced here** (3 on objects)
@@ -14273,7 +14294,7 @@ The standard affine specimen is the distinguished open
 inclusion is induced by the localization map \(A\to A[1/f]\).
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2464`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2520`
 - **not placed**: `OpenImmersions(parameter)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
 **Operations introduced here** (2 on objects)
@@ -14294,7 +14315,7 @@ that declaration.  Injectivity on points is neither necessary nor
 sufficient for a scheme monomorphism, so the inherited test does not apply.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2490`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2546`
 - **not placed**: `SchemeMonomorphisms(base_category)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
 ### Functors and adjunctions
@@ -14384,7 +14405,7 @@ The represented structure sheaf `O_X` of a ringed space `X`.
 
 Return the owned affine space `A^n_R`.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2003`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2059`
 - **built by** `AffineSpace(dimension, base_ring, names=None)`
 
 #### `ConvexPolygon` <sub>FUNCTION</sub>
@@ -14411,7 +14432,7 @@ Return the owned affine space `A^n_R`.
 
 Return the owned projective space `P^n_R`.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2061`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2117`
 - **built by** `ProjectiveSpace(dimension, base_ring, names=None)`
 
 #### `Spec` <sub>FUNCTION</sub>
@@ -14427,7 +14448,7 @@ itself when it is supplied as the explicit ``base_ring``, so
 base retains the coordinate algebra's represented scalar base.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1569`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:1625`
 - **built by** `Spec(ring_or_algebra, base_ring=None)`
 
 #### `SpecFunctor` <sub>FUNCTION</sub>
@@ -14444,7 +14465,7 @@ base retains the coordinate algebra's represented scalar base.
 
 Return `X x_S Y` for two represented affine scheme maps to `S`.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2334`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2390`
 - **built by** `scheme_fiber_product(left_map, right_map)`
 
 #### `scheme_product` <sub>FUNCTION</sub>
@@ -14460,7 +14481,7 @@ surface but require the coordinate-algebra tensor-product/fiber-product
 layer and are not silently represented as products of underlying sets.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2106`
+- **defined at** `src/dzack_research/preamble/categories/schemes/schemes.py:2162`
 - **built by** `scheme_product(*schemes)`
 
 ## Divisors & Picard Theory

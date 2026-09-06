@@ -1057,7 +1057,37 @@ class _GeneralPresentedModule:
             return _engine_element(presentation_ring, lifted_owned)
 
         lifted = lifted_free(tuple(lift_backend_coefficient(coefficient) for coefficient in tuple(vector)))
-        return lifted in lifted_submodule
+        native_contains = lifted in lifted_submodule
+        presentation_engine = _engine_ring(presentation_ring)
+        flattening = getattr(presentation_engine, "flattening_morphism", None)
+        if flattening is None:
+            return native_contains
+        try:
+            flatten = flattening()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return native_contains
+        flattened_ring = flatten.codomain()
+        if flattened_ring is presentation_engine:
+            return native_contains
+
+        # Sage's generic submodule membership over a nested polynomial ring can
+        # return False even for one of the displayed generators.  Flattening
+        # P = R[t][x_1,...,x_n] to the canonically isomorphic polynomial ring
+        # R[t,x_1,...,x_n] routes the same module-membership question to the
+        # Singular-backed multivariate implementation.
+        from sage.modules.free_module import FreeModule as SageFreeModule
+
+        flattened_free = SageFreeModule(flattened_ring, int(lifted_free.rank()))
+        flattened = flattened_free(tuple(flatten(coefficient) for coefficient in tuple(lifted)))
+        flattened_relations = flattened_free.submodule(
+            tuple(
+                flattened_free(
+                    tuple(flatten(coefficient) for coefficient in tuple(relation))
+                )
+                for relation in lifted_submodule.gens()
+            )
+        )
+        return flattened in flattened_relations
 
     def __call__(self, value):
         r"""Construct a quotient element without Sage coercion discovery."""

@@ -860,6 +860,12 @@
             "mark": ""
           },
           {
+            "name": "differential_rank_drop_subscheme",
+            "signature": "(rank)",
+            "summary": "Return the closed Fitting stratum ``V(Fitt_rank(Omega^1_{X/S}))``.",
+            "mark": ""
+          },
+          {
             "name": "distinguished_open",
             "signature": "(element)",
             "summary": "Return \\(D(f)\\subseteq X\\), the open locus where ``element`` is a unit.",
@@ -875,6 +881,18 @@
             "name": "is_affine",
             "signature": "()",
             "summary": "",
+            "mark": ""
+          },
+          {
+            "name": "relative_differentials",
+            "signature": "()",
+            "summary": "Return the affine module of relative K\u00e4hler differentials.",
+            "mark": "cached"
+          },
+          {
+            "name": "singular_subscheme",
+            "signature": "()",
+            "summary": "Return the nonsmooth closed subscheme in the supported equidimensional field case.",
             "mark": ""
           }
         ]
@@ -947,7 +965,7 @@
     "AffineSpaces": {
       "display": "AffineSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1330",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1386",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -1008,7 +1026,7 @@
         },
         {
           "from": "AffineSchemes",
-          "objects": 8,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -3533,7 +3551,7 @@
     "ClosedEmbeddings": {
       "display": "ClosedEmbeddings",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2411",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2467",
       "summary": "Subobjects of ``X`` whose inclusion is a closed immersion.",
       "owned": true,
       "exported": true,
@@ -9047,7 +9065,7 @@
     "FiberProductSchemes": {
       "display": "FiberProductSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2202",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2258",
       "summary": "Affine schemes equipped as selected pullbacks of one cospan.",
       "owned": true,
       "exported": true,
@@ -9134,7 +9152,7 @@
         },
         {
           "from": "AffineSchemes",
-          "objects": 8,
+          "objects": 11,
           "elements": 0,
           "morphisms": 0
         },
@@ -15469,7 +15487,7 @@
     "KahlerDifferentialModules": {
       "display": "KahlerDifferentialModules(R)",
       "subsystem": "algebras",
-      "source": "src/dzack_research/preamble/categories/algebras/kahler_differentials.py:36",
+      "source": "src/dzack_research/preamble/categories/algebras/kahler_differentials.py:40",
       "summary": "Selected modules ``Omega^1_{A/R}`` for the coefficient algebra ``A``.",
       "owned": true,
       "exported": true,
@@ -15502,10 +15520,34 @@
             "mark": ""
           },
           {
-            "name": "algebra",
+            "name": "ambient_differentials",
             "signature": "()",
-            "summary": "",
+            "summary": "Return ``Omega^1_{P/R} tensor_P A`` in the selected conormal sequence.",
             "mark": ""
+          },
+          {
+            "name": "conormal_module",
+            "signature": "()",
+            "summary": "Return ``A tensor_P I ~= I/I^2`` for the selected quotient ``P -> A``.",
+            "mark": ""
+          },
+          {
+            "name": "conormal_morphism",
+            "signature": "()",
+            "summary": "Return ``I/I^2 -> Omega^1_{P/R} tensor_P A``, ``f |-> df``.",
+            "mark": ""
+          },
+          {
+            "name": "conormal_morphism_at",
+            "signature": "(point)",
+            "summary": "Base-change the selected conormal map to ``kappa(point)``.",
+            "mark": ""
+          },
+          {
+            "name": "cotangent_space",
+            "signature": "(point)",
+            "summary": "Return ``Omega^1_{A/R} tensor_A kappa(point)``.",
+            "mark": "cached"
           },
           {
             "name": "derivation_classifier_isomorphism",
@@ -15517,6 +15559,12 @@
             "name": "differential_generator",
             "signature": "(algebra_generator_label)",
             "summary": "",
+            "mark": ""
+          },
+          {
+            "name": "differential_projection",
+            "signature": "()",
+            "summary": "Return the quotient map onto ``Omega^1_{A/R}`` in the conormal sequence.",
             "mark": ""
           },
           {
@@ -15536,6 +15584,18 @@
             "signature": "()",
             "summary": "",
             "mark": ""
+          },
+          {
+            "name": "tangent_dimension",
+            "signature": "(point)",
+            "summary": "Return the dimension of the relative Zariski tangent space.",
+            "mark": ""
+          },
+          {
+            "name": "tangent_space",
+            "signature": "(point)",
+            "summary": "Return the relative Zariski tangent space dual to ``cotangent_space(point)``.",
+            "mark": "cached"
           },
           {
             "name": "universal_derivation",
@@ -20030,7 +20090,7 @@
     "OpenImmersions": {
       "display": "OpenImmersions",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2464",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2520",
       "summary": "Subobjects of ``X`` whose inclusion is an open immersion.",
       "owned": true,
       "exported": true,
@@ -24772,7 +24832,7 @@
     "ProductProjectiveSpaces": {
       "display": "ProductProjectiveSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1454",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1510",
       "summary": "Finite products of projective spaces over one base ring.",
       "owned": true,
       "exported": true,
@@ -24899,7 +24959,7 @@
     "ProductSchemes": {
       "display": "ProductSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1414",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1470",
       "summary": "Scheme products equipped with their stated factors and projections.",
       "owned": true,
       "exported": true,
@@ -25243,7 +25303,7 @@
     "ProjectiveSchemes": {
       "display": "ProjectiveSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1300",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1356",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -25365,7 +25425,7 @@
     "ProjectiveSpaces": {
       "display": "ProjectiveSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1372",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1428",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -25603,7 +25663,7 @@
     "QuasiAffineSchemes": {
       "display": "QuasiAffineSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1264",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1320",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -25702,7 +25762,7 @@
     "QuasiProjectiveSchemes": {
       "display": "QuasiProjectiveSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1283",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1339",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -26783,7 +26843,7 @@
     "SchemeMonomorphisms": {
       "display": "SchemeMonomorphisms",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2490",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2546",
       "summary": "Monomorphisms of schemes.",
       "owned": true,
       "exported": true,

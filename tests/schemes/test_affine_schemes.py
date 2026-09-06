@@ -328,3 +328,25 @@ def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None
 
     induced_identity = special_fiber.from_pullback_cone(to_family, to_zero)
     assert induced_identity == special_fiber.categorical_identity_morphism()
+
+
+def test_xy_zero_fiber_has_represented_singular_closed_subscheme() -> None:
+    from dzack_research.preamble.all import FinitelyPresentedAlgebra, PolynomialRing
+
+    presentation = PolynomialRing(QQ, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    y = presentation.algebra_generator("y")
+    special_algebra = FinitelyPresentedAlgebra(presentation, (x * y,))
+    special_fiber = Spec(special_algebra, base_ring=QQ)
+    x0 = special_algebra.algebra_generator("x")
+    y0 = special_algebra.algebra_generator("y")
+
+    singular = special_fiber.singular_subscheme()
+
+    assert singular.ambient_scheme() is special_fiber
+    assert singular.defining_ideal_owned() == special_algebra.ideal(x0, y0)
+    assert tuple(singular.defining_equations()) == (y0, x0)
+    assert singular.coordinate_algebra().krull_dimension() == 0
+    assert special_fiber.relative_differentials().fitting_ideal(1) == (
+        special_algebra.ideal(x0, y0)
+    )

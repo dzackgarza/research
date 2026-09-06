@@ -965,6 +965,62 @@ class AffineSchemes(_SchemePropertyCategory):
                 defining_equations=equations,
             )
 
+        @cached_method
+        def relative_differentials(self):
+            r"""Return the affine module of relative Kähler differentials."""
+
+            from dzack_research.preamble.categories.algebras.kahler_differentials import (
+                KahlerDifferentials,
+            )
+
+            return KahlerDifferentials(self.coordinate_algebra())
+
+        def differential_rank_drop_subscheme(self, rank):
+            r"""Return the closed Fitting stratum ``V(Fitt_rank(Omega^1_{X/S}))``."""
+
+            ideal = self.relative_differentials().fitting_ideal(int(rank))
+            return self.closed_subscheme(tuple(ideal.ideal_generators()))
+
+        def singular_subscheme(self):
+            r"""Return the nonsmooth closed subscheme in the supported equidimensional field case.
+
+            This uses ``Fitt_d(Omega^1_{X/k})`` only when the represented
+            affine morphism is flat and finitely presented with equidimensional
+            fibres of dimension ``d``.  Here the base is a field, so flatness
+            is automatic, and the selected finite algebra presentation and
+            backend minimal components verify the remaining hypotheses.
+            """
+
+            base = self.scheme_base_ring()
+            engine_base = _engine_ring(base)
+            if not bool(engine_base.is_field()):
+                raise NotImplementedError(
+                    "the represented singular subscheme currently requires a field base"
+                )
+            algebra = self.coordinate_algebra()
+            if algebra not in AlgebrasWithChosenFinitePresentation(base):
+                raise NotImplementedError(
+                    "the represented singular subscheme requires a chosen finite algebra presentation"
+                )
+            dimension = int(algebra.krull_dimension())
+            engine_algebra = _engine_ring(algebra)
+            defining_ideal = getattr(engine_algebra, "defining_ideal", lambda: None)()
+            if defining_ideal is not None:
+                try:
+                    minimal_components = defining_ideal.minimal_associated_primes()
+                except (AttributeError, NotImplementedError) as error:
+                    raise NotImplementedError(
+                        "the represented singular subscheme requires a represented equidimensionality check"
+                    ) from error
+                if any(
+                    int(component.dimension()) != dimension
+                    for component in minimal_components
+                ):
+                    raise NotImplementedError(
+                        "the represented singular subscheme requires equidimensional fibres"
+                    )
+            return self.differential_rank_drop_subscheme(dimension)
+
         def distinguished_open(self, element):
             r"""Return \(D(f)\subseteq X\), the open locus where ``element`` is a unit.
 
