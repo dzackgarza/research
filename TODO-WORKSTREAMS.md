@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| D-conormal-singular-xy-t-20260906 | D — construct the represented conormal/Jacobian map for finite presentations, compare it with relative Kähler differentials, and use the resulting Fitting locus to represent the nonsmooth closed subscheme of the `xy=t` family | ChatGPT continuation `2026-09-06-d-conormal-singular-1210`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/algebras/kahler_differentials.py`; `src/dzack_research/preamble/categories/schemes/schemes.py`; `tests/algebras/test_de_rham.py`; `tests/schemes/test_affine_schemes.py`; `docs/preamble-megadoc.md`; `docs/preamble-graph.json`; `docs/preamble-graph.dot`; `docs/preamble-graph.html` | `14f618ea`; consumes P relative presentations `289d4756`, M Fitting transport `65fe44e6`, D localization `8298c13d`, S affine family `dbef76cc` | 2026-09-06T04:10:13Z |
 
 ### Existing work awaiting adoption
 
