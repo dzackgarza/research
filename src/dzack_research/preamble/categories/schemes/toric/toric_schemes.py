@@ -416,7 +416,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                     return False
             return True
 
-        def support_function_character(self, divisor, cone):
+        def cartier_datum(self, divisor, cone):
             r"""``m_sigma`` in ``M`` with ``<m_sigma, u_rho> = -a_rho`` on ``sigma(1)``.
 
             This is the Cartier datum of ``D`` on the chart of ``sigma`` (CLS
@@ -449,7 +449,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             coefficients = module_coefficients(divisor, group)
             zero = _integers().zero()
             for cone in fan.maximal_cones():
-                character = self.support_function_character(divisor, cone)
+                character = self.cartier_datum(divisor, cone)
                 for ray in fan.cones(1):
                     if _pairing_on_ray(fan, character, ray) < -coefficients.get(
                         ray, zero
@@ -475,7 +475,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             coefficients = module_coefficients(divisor, group)
             zero = _integers().zero()
             for cone in fan.maximal_cones():
-                character = self.support_function_character(divisor, cone)
+                character = self.cartier_datum(divisor, cone)
                 for ray in fan.cones(1):
                     if ray.is_face_of(cone):
                         continue
