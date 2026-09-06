@@ -133,3 +133,27 @@ def test_commutativity_and_localization_remain_coherent_on_non_engine_ring_paren
     localization = QQ.localize_at_prime(QQ.ideal(QQ.zero()))
     assert localization.localization_source() is QQ
     assert localization.residue_field() in Fields()
+
+
+def test_a_ring_over_nothing_smaller_is_its_own_scalar_ring(promoted_ring: Any) -> None:
+    r"""A ring states its own scalars when nothing smaller presents it.
+
+    A ring is free of rank one over its own scalars, so it is a rank-one
+    algebra over itself whatever else it is.  Where no smaller base was
+    chosen, that canonical structure is the answer, not an error and not a
+    stand-in for a declaration nobody made.
+    """
+    ring = promoted_ring
+    scalars = ring.algebra_base_ring()
+    assert scalars is not None
+    assert ring in Algebras(scalars)
+    assert ring in Modules(scalars)
+
+
+def test_the_integers_are_an_algebra_over_themselves() -> None:
+    r"""The integers have nothing smaller beneath them, so they are their own base."""
+    assert ZZ.algebra_base_ring() is ZZ
+    assert ZZ.base_ring() is ZZ
+    assert ZZ in CommutativeAlgebras(ZZ)
+    assert ZZ in Modules(ZZ)
+    assert ZZ.rank() == 1

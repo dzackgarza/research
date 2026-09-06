@@ -241,20 +241,37 @@ class Algebras(OwnedCategoryOverBaseRing):
         def is_algebra(self) -> bool:
             return True
 
+        # The scalar ring an algebra was constructed over, when a level above
+        # declared one.  Declared here so a reader of this category sees the
+        # field, and so an algebra built by a route that states no base still
+        # answers below rather than failing to resolve the name.
+        _preamble_algebra_base_ring = None
+
         def algebra_base_ring(self):
-            r"""Return the scalar ring this algebra's construction declared.
+            r"""Return the scalar ring this algebra is an algebra over.
 
             Every route that builds an algebra states the ring it is an
             algebra over: the algebra level takes it as its own datum, and a
             ring the preamble adopts declares the ring its engine presents it
-            over, itself when there is nothing smaller.  So the answer is read
-            off the construction, and the host's own ``base`` answers for a
-            parent that threaded it through the module level instead.
+            over.  So the answer is read off the construction, and the host's
+            own ``base`` answers for a parent that threaded it through the
+            module level instead.
+
+            An algebra that states no smaller scalars is an algebra over
+            itself, and that is what is answered.  It is not a guess standing
+            in for a missing declaration: an algebra is a ring, a ring is free
+            of rank one over its own scalars, and so \(A\) is a rank-one
+            \(A\)-algebra whatever else it is.  A smaller base is a *chosen*
+            distinguished one, and where nothing chose, the canonical
+            structure every algebra carries is the answer.
             """
-            declared = self.__dict__.get("_preamble_algebra_base_ring")
+            declared = self._preamble_algebra_base_ring
             if declared is not None:
                 return declared
-            return _own_ring(self.base())
+            host_base = self.base()
+            if host_base is None or host_base is self:
+                return self
+            return _own_ring(host_base)
 
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):
