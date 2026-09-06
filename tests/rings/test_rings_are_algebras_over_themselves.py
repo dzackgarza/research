@@ -183,5 +183,5 @@ def test_a_ring_is_the_rank_one_free_module_over_itself(promoted_ring: Any) -> N
     """
     ring = promoted_ring
     assert ring in FinitelyGeneratedFreeModules(ring)
-    assert ring.rank() == 1
+    assert ring.module_generating_set().cardinality() == 1
     assert ring_as_module(ring) is ring
