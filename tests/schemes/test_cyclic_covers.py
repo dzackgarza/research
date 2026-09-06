@@ -15,6 +15,7 @@ from dzack_research.preamble.all import (
     GF,
     PolynomialRing,
     QQ,
+    Schemes,
     Spec,
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
@@ -81,6 +82,30 @@ def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
     assert quotient_morphism.codomain() is cover.affine_quotient()
     # The cover morphism is invariant, which is what makes it the quotient map.
     assert quotient_morphism * cover.action_of(generator) == quotient_morphism
+
+
+def test_the_cover_lives_over_its_base_and_its_deck_map_is_a_map_over_the_base() -> None:
+    algebra, _x, covers, cover = _hyperelliptic_double_cover()
+    generator = covers.deck_group().group_generators().unrank(0)
+    schemes = Schemes(algebra)
+    relative_schemes = schemes.slice_category()
+    relative_cover = schemes.as_slice_object(cover)
+
+    assert relative_cover in relative_schemes
+    assert relative_cover.source_object() is cover
+    assert relative_cover.target_object() is covers.base_scheme()
+    # A deck transformation is an automorphism over the base, so its square
+    # closes with the identity on the base.  That square commutes exactly
+    # when pi sigma = pi, and the slice morphism checks it as it is built.
+    deck_over_the_base = relative_schemes.Mor(relative_cover, relative_cover)(
+        cover.action_of(generator)
+    )
+
+    assert deck_over_the_base.left() == cover.action_of(generator)
+    assert deck_over_the_base.right() == schemes.Mor(
+        covers.base_scheme(),
+        covers.base_scheme(),
+    ).identity()
 
 
 def test_the_trivial_cover_is_the_unramified_torsor_with_a_free_deck_action() -> None:
