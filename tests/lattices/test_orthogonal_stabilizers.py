@@ -70,7 +70,7 @@ def test_a_transvection_moving_a_line_leaves_its_setwise_stabilizer() -> None:
 
 def test_the_orthogonal_group_names_the_lattice_it_acts_on() -> None:
     lattice = Lattices(ZZ)("U")
-    assert lattice.O().ambient_lattice() is lattice
+    assert lattice.O().lattice() is lattice
 
 
 def test_the_stabilizer_of_a_root_holds_exactly_the_expected_involution() -> None:
