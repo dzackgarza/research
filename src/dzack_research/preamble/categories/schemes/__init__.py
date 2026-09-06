@@ -57,6 +57,10 @@ _EXPORTS = {'AffineSpecFunctor': ('dzack_research.preamble.categories.schemes.af
  'LatticePolygons': ('dzack_research.preamble.categories.schemes.polytopes', 'LatticePolygons'),
  'LatticePolytope': ('dzack_research.preamble.categories.schemes.polytopes', 'LatticePolytope'),
  'LatticePolytopes': ('dzack_research.preamble.categories.schemes.polytopes', 'LatticePolytopes'),
+ 'ADELogPair': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'ADELogPair'),
+ 'ADELogPairs': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'ADELogPairs'),
+ 'SideDecoration': ('dzack_research.preamble.categories.schemes.ade_surfaces',
+                    'SideDecoration'),
  'LogPair': ('dzack_research.preamble.categories.schemes.log_pairs', 'LogPair'),
  'LogPairs': ('dzack_research.preamble.categories.schemes.log_pairs', 'LogPairs'),
  'ToricLogPair': ('dzack_research.preamble.categories.schemes.log_pairs', 'ToricLogPair'),
@@ -68,7 +72,10 @@ _EXPORTS = {'AffineSpecFunctor': ('dzack_research.preamble.categories.schemes.af
  'ToricVariety': ('dzack_research.preamble.categories.schemes.toric.toric_schemes',
                   'ToricVariety')}
 
-__all__ = ['AffineSpecFunctor',
+__all__ = ['ADELogPair',
+ 'ADELogPairs',
+ 'SideDecoration',
+ 'AffineSpecFunctor',
  'SpecFunctor',
  'affine_spec_functor',
  'AffineSchemes',

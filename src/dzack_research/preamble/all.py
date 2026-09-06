@@ -628,6 +628,9 @@ from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
     gluing_route_discriminant_classes,
 )
 from dzack_research.preamble.categories.schemes import (  # noqa: F401
+    ADELogPair,
+    ADELogPairs,
+    SideDecoration,
     AffineSpecFunctor,
     SpecFunctor,
     affine_spec_functor,
