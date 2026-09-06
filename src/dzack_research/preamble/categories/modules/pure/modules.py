@@ -1054,7 +1054,7 @@ class FreeResolution:
     """
 
     _module: object
-    _degrees: object
+    _degrees: Parent
     _terms: IndexedFamily
     _differentials: IndexedFamily
     _augmentation: object
