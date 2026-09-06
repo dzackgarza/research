@@ -1,7 +1,10 @@
 r"""Cyclic-cover algebras from invertible sheaves and branch sections."""
 
-from typing import Any
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+from sage.rings.integer import Integer
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -18,11 +21,37 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
 )
 
+if TYPE_CHECKING:
+    from sage.structure.element import Element
+    from sage.structure.parent import Parent
+
+    from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+        CategoricalIsomorphism,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        ModuleMorphism,
+    )
+    from dzack_research.preamble.categories.schemes.gluing import (
+        AlgebraGluingDatum,
+        CompatibleLocalAlgebraSections,
+        CompatibleLocalSectionElement,
+        GluedAlgebraSheaf,
+        ModuleGluingDatum,
+    )
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        DistinguishedAffineCover,
+    )
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
 
 CYCLIC_COVER_VARIABLE = "z"
 
 
-def cyclic_cover_presentation(ring: Any, branch_coefficient: Any, degree: int) -> Any:
+def cyclic_cover_presentation(
+    algebra: Parent,
+    branch_coefficient: Element,
+    degree: Integer,
+) -> Parent:
     r"""Return ``R[z]/(z^n - f)``, the cover algebra of a trivialized chart.
 
     Where ``L`` is trivialized by ``e``, the branch section reads ``s = f e^n``
@@ -38,15 +67,15 @@ def cyclic_cover_presentation(ring: Any, branch_coefficient: Any, degree: int) -
     globally trivialized cyclic cover of an affine scheme builds it once.
     """
 
-    presentation = PolynomialRing(ring, CYCLIC_COVER_VARIABLE)
+    presentation = PolynomialRing(algebra, CYCLIC_COVER_VARIABLE)
     variable = presentation.algebra_generator(CYCLIC_COVER_VARIABLE)
     return FinitelyPresentedAlgebra(
         presentation,
-        (variable ** int(degree) - presentation(branch_coefficient),),
+        (variable ** Integer(degree) - presentation(branch_coefficient),),
     )
 
 
-def _rank_one_coefficient(module: Any, element: Any) -> Any:
+def _rank_one_coefficient(module: Parent, element: Element) -> Element:
     labels = module.module_generating_set()
     if not labels.cardinality().is_finite() or int(labels.cardinality()) != 1:
         raise TypeError("a cyclic-cover branch trivialization requires rank-one local modules")
@@ -65,10 +94,15 @@ class CyclicCoverAlgebra(SageObject):
     required to carry exactly the ``u_ij^n`` transition data of ``L^n``.
     """
 
-    def __init__(self, line_bundle: InvertibleSheaf, branch_section: Any, degree: int) -> None:
+    def __init__(
+        self,
+        line_bundle: InvertibleSheaf,
+        branch_section: CompatibleLocalSectionElement,
+        degree: Integer,
+    ) -> None:
         if not isinstance(line_bundle, InvertibleSheaf):
             raise TypeError("cyclic-cover data requires an invertible sheaf")
-        degree = int(degree)
+        degree = Integer(degree)
         if degree < 2:
             raise ValueError("a cyclic cover has degree at least two")
 
@@ -115,50 +149,54 @@ class CyclicCoverAlgebra(SageObject):
     def branch_power(self) -> InvertibleSheaf:
         return self._branch_power
 
-    def branch_section(self) -> Any:
+    def branch_section(self) -> CompatibleLocalSectionElement:
         return self._branch_section
 
-    def degree(self) -> int:
+    def degree(self) -> Integer:
         return self._degree
 
-    def cover(self) -> Any:
+    def cover(self) -> DistinguishedAffineCover:
         return self.line_bundle().cover()
 
-    def scheme(self) -> Any:
+    def scheme(self) -> Parent:
         return self.line_bundle().scheme()
 
-    def local_branch_coefficient(self, index: int) -> Any:
+    def local_branch_coefficient(self, index: int) -> Element:
         return self._local_branch_coefficients[int(index)]
 
-    def _build_local_algebra(self, index: int) -> Any:
+    def _build_local_algebra(self, index: int) -> Parent:
         return cyclic_cover_presentation(
             self.cover().open(index).coordinate_algebra(),
             self.local_branch_coefficient(index),
             self.degree(),
         )
 
-    def local_algebra(self, index: int) -> Any:
+    def local_algebra(self, index: int) -> Parent:
         return self._local_algebras[int(index)]
 
-    def local_algebras(self) -> tuple[Any, ...]:
+    def local_algebras(self) -> tuple[Parent, ...]:
         return self._local_algebras
 
-    def local_underlying_module(self, index: int) -> Any:
+    def local_underlying_module(self, index: int) -> Parent:
         r"""Return the same local algebra object, carrying its rank-``n`` module basis."""
 
         return self.local_algebra(index)
 
-    def local_multiplication(self, index: int) -> Any:
+    def local_multiplication(self, index: int) -> ModuleMorphism:
         return self.local_algebra(index).multiplication_morphism()
 
-    def local_presentation(self, index: int) -> Any:
+    def local_presentation(self, index: int) -> tuple[Parent, IndexedFamily]:
         return self.local_algebra(index).presentation()
 
-    def local_equation(self, index: int) -> Any:
+    def local_equation(self, index: int) -> Element:
         relations = self.local_algebra(index).relations()
         return relations.value(next(iter(relations.index_set())))
 
-    def _transition(self, source_index: int, target_index: int) -> Isomorphism:
+    def _transition(
+        self,
+        source_index: int,
+        target_index: int,
+    ) -> CategoricalIsomorphism:
         source = self.cover().restrict_algebra(
             self.local_algebra(source_index),
             source_index,
@@ -184,7 +222,7 @@ class CyclicCoverAlgebra(SageObject):
         )
         return Isomorphism(forward, inverse)
 
-    def _build_algebra_gluing_datum(self) -> Any:
+    def _build_algebra_gluing_datum(self) -> AlgebraGluingDatum:
         transitions = {
             (left, right): self._transition(left, right)
             for left in range(len(self.local_algebras()))
@@ -192,27 +230,35 @@ class CyclicCoverAlgebra(SageObject):
         }
         return self.cover().glue_algebras(self.local_algebras(), transitions)
 
-    def gluing_datum(self) -> Any:
+    def gluing_datum(self) -> AlgebraGluingDatum:
         return self._gluing_datum
 
-    def sheaf(self) -> Any:
+    def sheaf(self) -> GluedAlgebraSheaf:
         return self.gluing_datum().sheaf()
 
-    def underlying_module_datum(self) -> Any:
+    def underlying_module_datum(self) -> ModuleGluingDatum:
         return self.gluing_datum().underlying_module_datum()
 
-    def global_sections(self) -> Any:
+    def global_sections(self) -> CompatibleLocalAlgebraSections:
         return self.gluing_datum().compatible_sections()
 
     sections = global_sections
 
-    def restricted_algebra(self, chart_index: int, *intersection_indices: int) -> Any:
+    def restricted_algebra(
+        self,
+        chart_index: int,
+        *intersection_indices: int,
+    ) -> Parent:
         return self.gluing_datum().restricted_algebra(
             chart_index,
             *intersection_indices,
         )
 
-    def transition(self, source_index: int, target_index: int) -> Any:
+    def transition(
+        self,
+        source_index: int,
+        target_index: int,
+    ) -> CategoricalIsomorphism:
         return self.gluing_datum().transition(source_index, target_index)
 
     def _repr_(self) -> str:
