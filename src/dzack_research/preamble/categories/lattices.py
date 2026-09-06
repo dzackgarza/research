@@ -1737,6 +1737,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 integral_gram,
                 module_generators=labels,
             )
+            # The system every generator is solved against: the basis of L'
+            # in the coordinates of L, as the owned matrix the solver takes.
+            integral_basis = MatrixSpace(ring, rank, rank).from_rows(
+                tuple(tuple(row) for row in integral_basis_rows)
+            )
             images = {}
             for source_position, source_label in enumerate(
                 self.module_generating_set()
@@ -1746,7 +1751,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     for index in range(rank)
                 ]
                 coefficients = _solve_left_integrally(
-                    integral_basis_rows,
+                    integral_basis,
                     target,
                     ring,
                 )
