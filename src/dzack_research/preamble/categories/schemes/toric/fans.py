@@ -173,15 +173,17 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
     def projective_space_fan(self):
         r"""The fan of ``P^n`` (CLS Example 3.1.10): rays ``e_1,...,e_n`` and ``-sum e_i``."""
         lattice = self.lattice()
-        labels = tuple(lattice.module_generating_set())
+        labels = lattice.module_generating_set()
         integers = _integers()
-        basis = [lattice.module_generator(label) for label in labels]
-        rays = basis + [lattice.linear_combination({label: -integers.one() for label in labels})]
-        cones = [
-            [ray for position, ray in enumerate(rays) if position != omitted]
-            for omitted in range(len(rays))
-        ]
-        return self(cones)
+        rays = finite_ordered_set(
+            tuple(lattice.module_generator(label) for label in labels)
+            + (lattice.linear_combination({label: -integers.one() for label in labels}),)
+        )
+        return self(
+            tuple(
+                tuple(ray for ray in rays if ray != omitted) for omitted in rays
+            )
+        )
 
     @cached_method
     def weighted_projective_space_fan(self, weights):
@@ -194,14 +196,24 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         """
         from sage.schemes.toric.library import toric_varieties
 
-        weights = tuple(int(weight) for weight in weights)
-        assert all(weight > 0 for weight in weights), (
+        # The weights are a family indexed by the homogeneous coordinates, so
+        # they are presented by the graph of that family: pairing each weight
+        # with its coordinate keeps repeated weights apart, which a set of the
+        # weights alone would not.
+        homogeneous_weights = finite_ordered_set(
+            tuple(enumerate(int(weight) for weight in weights))
+        )
+        assert all(weight > 0 for _, weight in homogeneous_weights), (
             "the weights of a weighted projective space are positive"
         )
-        assert len(weights) == int(self.lattice().rank()) + 1, (
+        assert homogeneous_weights.cardinality() == int(self.lattice().rank()) + 1, (
             "P(q_0,...,q_n) has dimension n, one less than the number of weights"
         )
-        return self.from_engine_fan(toric_varieties.WP(*weights).fan())
+        return self.from_engine_fan(
+            toric_varieties.WP(
+                *(weight for _, weight in homogeneous_weights)
+            ).fan()
+        )
 
     @cached_method
     def hirzebruch_surface_fan(self, twist):
@@ -277,7 +289,13 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
         def cardinality(self):
             r"""The number of cones, the origin included."""
-            return cardinal(sum(len(self._engine_fan().cones(d)) for d in range(int(self.dimension()) + 1)))
+            return sum(
+                (
+                    self.cones(dimension).cardinality()
+                    for dimension in range(int(self.dimension()) + 1)
+                ),
+                cardinal(0),
+            )
 
         def __contains__(self, candidate) -> bool:
             return candidate.parent() is self

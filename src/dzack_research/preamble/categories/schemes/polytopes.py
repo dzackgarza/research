@@ -396,7 +396,7 @@ class ConvexPolytopes(OwnedCategory):
         def _repr_(self):
             noun = "Lattice " if self.is_lattice_polytope() else "Convex "
             noun += "Polygon" if int(self.dimension()) == 2 else "Polytope"
-            return f"{noun} of dimension {self.dimension()} with {len(self.vertices())} vertices"
+            return f"{noun} of dimension {self.dimension()} with {self.n_vertices()} vertices"
 
 
 
