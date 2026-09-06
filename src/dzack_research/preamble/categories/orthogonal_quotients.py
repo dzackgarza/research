@@ -186,6 +186,13 @@ class OrthogonalCharacterQuotient:
         )
 
 
+_MISSING_ARITHMETIC_GENERATING_SET = (
+    "Over an indefinite lattice O(L) is an infinite arithmetic group and this "
+    "subgroup has no owned generating set.  The missing operation is a "
+    "generating set for an arithmetic subgroup of O(L), owned by lattice_engines"
+)
+
+
 def _finite_supergroup_elements(subgroup):
     r"""Return the elements of a subgroup whose supergroup is a finite ``O(L)``.
 
@@ -198,11 +205,9 @@ def _finite_supergroup_elements(subgroup):
     lattice = supergroup.domain()
     assert lattice.is_definite(), (
         f"{subgroup} is cut out by a predicate that is not a character kernel, "
-        "so its orbits are read by acting with the subgroup itself.  That is a "
-        "finite computation only for a definite lattice; over an indefinite "
-        "lattice O(L) is an infinite arithmetic group and this subgroup has no "
-        "owned generating set.  The missing operation is a generating set for "
-        "an arithmetic subgroup of O(L), owned by lattice_engines"
+        "so it is described by acting with the subgroup itself.  That is a "
+        "finite computation only for a definite lattice.  "
+        + _MISSING_ARITHMETIC_GENERATING_SET
     )
     return tuple(
         automorphism for automorphism in supergroup if automorphism in subgroup
@@ -246,6 +251,13 @@ def subgroup_vector_orbit_representatives(subgroup, square):
 
 def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
     orthogonal_group = subgroup.supergroup()
+    if not subgroup.contains_character_kernel():
+        lattice = orthogonal_group.domain()
+        source, target = lattice(left), lattice(right)
+        return any(
+            automorphism(source) == target
+            for automorphism in _finite_supergroup_elements(subgroup)
+        )
     witness = orthogonal_group.vector_equivalence_witness(left, right)
     if witness is None:
         return False
@@ -255,8 +267,27 @@ def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
     )
 
 
-def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
+def _assert_isotropic_splitting_has_character_data(subgroup) -> None:
+    r"""Assert that a subgroup splitting isotropic orbits carries character data.
 
+    A primitive isotropic subobject of positive rank exists only in an
+    indefinite lattice, so the route that reads a predicate subgroup by listing
+    it inside a finite ``O(L)`` is never available here: that listing is finite
+    only for a definite lattice, and a definite lattice has no isotropic
+    vector.  Character data is therefore the only description of a subgroup
+    that splits an isotropic orbit.
+    """
+    assert subgroup.contains_character_kernel(), (
+        f"{subgroup} is cut out by a predicate that is not a character kernel, "
+        "so no finite character quotient describes it, and the subgroup itself "
+        "cannot be listed instead: that listing is finite only for a definite "
+        "lattice, which has no isotropic vector.  "
+        + _MISSING_ARITHMETIC_GENERATING_SET
+    )
+
+
+def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
+    _assert_isotropic_splitting_has_character_data(subgroup)
     quotient = OrthogonalCharacterQuotient(subgroup)
     orthogonal_group = subgroup.supergroup()
     representatives = []
@@ -274,6 +305,7 @@ def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
 
 
 def subgroup_isotropic_are_equivalent(subgroup, left, right, *, flag=False) -> bool:
+    _assert_isotropic_splitting_has_character_data(subgroup)
     orthogonal_group = subgroup.supergroup()
     witness = orthogonal_group.isotropic_equivalence_witness(
         left, right, flag=flag
