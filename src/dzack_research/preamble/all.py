@@ -493,6 +493,10 @@ from dzack_research.preamble.categories.lattice_centralizers import (  # noqa: F
     cyclotomic_summand,
     isometry_primitive_extension,
 )
+from dzack_research.preamble.categories.vector_configurations import (  # noqa: F401
+    VectorConfigurations,
+    vector_configuration,
+)
 from dzack_research.preamble.categories.lattices import (  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
