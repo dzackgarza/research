@@ -1,28 +1,25 @@
 r"""Kähler differentials of represented commutative algebras."""
 
 from sage.misc.cachefunc import cached_function, cached_method
+
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+)
 from dzack_research.preamble.categories.algebras.derivations import (
     Derivation,
     Derivations,
     _commutative_presentation_data,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    LocalizationRings,
-    OwnedCategoryOverBaseRing,
-    _engine_ring,
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
-)
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.internal_hom import InternalHom
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -30,6 +27,13 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
+    OwnedCategoryOverBaseRing,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
 )
 
 
@@ -44,7 +48,9 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         identity, but that placement is not represented, so the witness is the
         polynomial algebra on one generator.
         """
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.algebras.algebras import (
+            CommutativeAlgebras,
+        )
 
         return KahlerDifferentials(CommutativeAlgebras(self.base_ring()).an_object())
 
@@ -60,14 +66,107 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
-        def __init__(self, source_algebra, **rest) -> None:
+        def __init__(
+            self,
+            source_algebra,
+            conormal_module=None,
+            ambient_differentials=None,
+            conormal_morphism=None,
+            **rest,
+        ) -> None:
             self._preamble_source_algebra = source_algebra
+            self._preamble_conormal_module = conormal_module
+            self._preamble_ambient_differentials = ambient_differentials
+            self._preamble_conormal_morphism = conormal_morphism
             super().__init__(**rest)
 
         def source_algebra(self):
             return self._preamble_source_algebra
 
-        algebra = source_algebra
+        def conormal_module(self):
+            r"""Return ``A tensor_P I ~= I/I^2`` for the selected quotient ``P -> A``."""
+
+            conormal = self._preamble_conormal_module
+            if conormal is None:
+                raise NotImplementedError(
+                    "this differential object has no selected quotient presentation conormal module"
+                )
+            return conormal
+
+        def ambient_differentials(self):
+            r"""Return ``Omega^1_{P/R} tensor_P A`` in the selected conormal sequence."""
+
+            ambient = self._preamble_ambient_differentials
+            if ambient is None:
+                raise NotImplementedError(
+                    "this differential object has no selected quotient presentation ambient differential module"
+                )
+            return ambient
+
+        def conormal_morphism(self):
+            r"""Return ``I/I^2 -> Omega^1_{P/R} tensor_P A``, ``f |-> df``."""
+
+            morphism = self._preamble_conormal_morphism
+            if morphism is None:
+                raise NotImplementedError(
+                    "this differential object has no selected quotient presentation conormal morphism"
+                )
+            return morphism
+
+        def differential_projection(self):
+            r"""Return the quotient map onto ``Omega^1_{A/R}`` in the conormal sequence."""
+
+            self.conormal_morphism()
+            return self.cokernel_projection()
+
+        @cached_method
+        def cotangent_space(self, point):
+            r"""Return ``Omega^1_{A/R} tensor_A kappa(point)``."""
+
+            algebra = self.source_algebra()
+            spectrum = algebra.spectrum()
+            if getattr(point, "parent", lambda: None)() is not spectrum:
+                point = spectrum(point)
+            try:
+                return self.fiber(point)
+            except NotImplementedError:
+                # The fiber is canonically the direct scalar extension along
+                # A -> kappa(p).  This exact route remains available when the
+                # optional localization-first realization cannot decide
+                # equality of localization fractions.
+                return self.base_change(point.residue_map())
+
+        @cached_method
+        def tangent_space(self, point):
+            r"""Return the relative Zariski tangent space dual to ``cotangent_space(point)``."""
+
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                ring_as_module,
+            )
+
+            algebra = self.source_algebra()
+            spectrum = algebra.spectrum()
+            if getattr(point, "parent", lambda: None)() is not spectrum:
+                point = spectrum(point)
+            cotangent = self.cotangent_space(point)
+            return InternalHom(
+                cotangent,
+                ring_as_module(point.residue_field()),
+            )
+
+        def tangent_dimension(self, point):
+            r"""Return the dimension of the relative Zariski tangent space."""
+
+            return self.cotangent_space(point).dimension()
+
+        def conormal_morphism_at(self, point):
+            r"""Base-change the selected conormal map to ``kappa(point)``."""
+
+            algebra = self.source_algebra()
+            spectrum = algebra.spectrum()
+            if getattr(point, "parent", lambda: None)() is not spectrum:
+                point = spectrum(point)
+            return self.conormal_morphism().base_change(point.residue_map())
 
         @cached_method
         def universal_derivation(self):
@@ -220,46 +319,68 @@ def KahlerDifferentials(algebra):
             extra_construction_data={"source_algebra": algebra},
         )
 
-    presentation, labels, variables, relations, _lift = _commutative_presentation_data(
+    presentation, labels, _variables, relations, _lift = _commutative_presentation_data(
         algebra
     )
     differential_labels = finite_ordered_image(
         labels,
         lambda label: ("d", label),
     )
-
-
-    free_differentials = BasedFreeModule(algebra, differential_labels)
     if relations.cardinality() != 0:
-        relation_indices = relations.index_set()
-        relation_module = BasedFreeModule(algebra, relation_indices)
-        presentation_engine = _engine_ring(presentation)
-        algebra_engine = _engine_ring(algebra)
+        from dzack_research.preamble.categories.functors.scalar_change import (
+            ScalarExtensionFunctor,
+        )
 
-        def relation_image(relation_index):
-            relation = relations[relation_index]
-            engine_relation = presentation._engine_element(relation)
-            coefficients = {}
-            for differential_label, variable in zip(
-                differential_labels,
-                variables,
+        presentation_ideal = presentation.ideal(*tuple(relations))
+        presentation_omega = KahlerDifferentials(presentation)
+        presentation_derivation = presentation_omega.universal_derivation()
+        ideal_generators = dict(
+            zip(
+                presentation_ideal.module_generating_set(),
+                presentation_ideal.ideal_generators(),
                 strict=True,
-            ):
-                engine_variable = presentation._engine_element(variable)
-                coefficient = algebra._from_engine_element(
-                    algebra_engine(
-                        presentation_engine(engine_relation).derivative(engine_variable)
-                    )
-                )
-                if coefficient != algebra.zero():
-                    coefficients[differential_label] = coefficient
-            return free_differentials.linear_combination(coefficients)
+            )
+        )
+        quotient_map = algebra.algebra_presentation_morphism()
+        scalar_extension = ScalarExtensionFunctor(quotient_map)
+        conormal_module = scalar_extension(presentation_ideal)
+        ambient_differentials = BasedFreeModule(algebra, differential_labels)
 
-        relation_map = module_homset(relation_module, free_differentials)(relation_image)
+        def conormal_image(label):
+            differential = presentation_derivation(ideal_generators[label])
+            coefficients = module_coefficients(differential, presentation_omega)
+            return ambient_differentials.linear_combination(
+                {
+                    differential_label: quotient_map(coefficient)
+                    for differential_label, coefficient in coefficients.items()
+                    if coefficient
+                }
+            )
+
+        conormal_morphism = module_homset(
+            conormal_module,
+            ambient_differentials,
+        )(conormal_image)
+        relation_module = FreshFreeModuleOn(
+            algebra,
+            conormal_module.module_generating_set(),
+        )
+        relation_map = module_homset(
+            relation_module,
+            ambient_differentials,
+        )(
+            lambda label: conormal_morphism(conormal_module.module_generator(label))
+        )
         omega = FinitelyPresentedModule(
             relation_map,
+            _cokernel_morphism=relation_map,
             _extra_categories=(KahlerDifferentialModules(algebra),),
-            _extra_construction_data={"source_algebra": algebra},
+            _extra_construction_data={
+                "source_algebra": algebra,
+                "conormal_module": conormal_module,
+                "ambient_differentials": ambient_differentials,
+                "conormal_morphism": conormal_morphism,
+            },
         )
     else:
         omega = FreshFreeModuleOn(

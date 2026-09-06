@@ -163,10 +163,10 @@ class PrimeSpectra(OwnedCategory):
         def _element_constructor_(self, ideal):
             if isinstance(ideal, self.category().ElementType) and ideal.parent() is self:
                 return ideal
-            candidate = _engine_ideal(self.ring(), ideal)
+            candidate = _owned_ideal(self.ring(), ideal)
             if not bool(candidate.is_prime()):
                 raise ValueError(f"{candidate} is not a prime ideal of {self.ring()}")
-            return self.element_class(self, _owned_ideal(self.ring(), candidate))
+            return self.element_class(self, candidate)
 
         def __contains__(self, candidate) -> bool:
             if isinstance(candidate, self.category().ElementType):

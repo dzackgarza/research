@@ -475,6 +475,29 @@ class Modules(OwnedCategoryOverBaseRing):
         def is_finite(self):
             return Unknown
 
+        def is_flat(self) -> bool:
+            r"""Decide flatness in the represented field/PID regimes.
+
+            Every module over a field is flat.  Over a PID, flatness is
+            equivalent to torsion-freeness (Stacks Project, Tag 0AUW), so a
+            module type that already represents ``is_torsion_free`` supplies
+            an exact flatness decision without a second flatness algorithm.
+            """
+
+            ring = self.base_ring()
+            if bool(_engine_ring(ring).is_field()):
+                return True
+            if ring not in PrincipalIdealDomains():
+                raise NotImplementedError(
+                    "flatness is currently decided from torsion-freeness over a represented PID"
+                )
+            torsion_free = getattr(self, "is_torsion_free", None)
+            if torsion_free is None:
+                raise NotImplementedError(
+                    "this PID-module has no represented torsion-freeness decision"
+                )
+            return bool(torsion_free())
+
         def base_change(self, ring_map):
             _ = ring_map
             raise NotImplementedError(f"base change of {self} has no represented module construction")

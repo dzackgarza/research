@@ -328,3 +328,61 @@ def test_xy_equals_t_family_has_its_t_zero_special_fiber_as_a_pullback() -> None
 
     induced_identity = special_fiber.from_pullback_cone(to_family, to_zero)
     assert induced_identity == special_fiber.categorical_identity_morphism()
+
+
+def test_xy_zero_fiber_has_represented_singular_closed_subscheme() -> None:
+    from dzack_research.preamble.all import FinitelyPresentedAlgebra, PolynomialRing
+
+    presentation = PolynomialRing(QQ, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    y = presentation.algebra_generator("y")
+    special_algebra = FinitelyPresentedAlgebra(presentation, (x * y,))
+    special_fiber = Spec(special_algebra, base_ring=QQ)
+    x0 = special_algebra.algebra_generator("x")
+    y0 = special_algebra.algebra_generator("y")
+
+    singular = special_fiber.singular_subscheme()
+
+    assert singular.ambient_scheme() is special_fiber
+    assert singular.defining_ideal_owned() == special_algebra.ideal(x0, y0)
+    assert tuple(singular.defining_equations()) == (y0, x0)
+    assert singular.coordinate_algebra().krull_dimension() == 0
+    assert special_fiber.relative_differentials().fitting_ideal(1) == (
+        special_algebra.ideal(x0, y0)
+    )
+
+
+def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        FinitelyPresentedAlgebra,
+        PolynomialRing,
+    )
+    from pytest import raises
+
+    parameter = PolynomialRing(QQ, "t")
+    t = parameter.algebra_generator("t")
+    presentation = PolynomialRing(parameter, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    y = presentation.algebra_generator("y")
+    family_algebra = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+    family = Spec(family_algebra, base_ring=parameter)
+    xbar = family_algebra.algebra_generator("x")
+    ybar = family_algebra.algebra_generator("y")
+
+    assert family.is_flat()
+    nonsmooth = family.relative_nonsmooth_subscheme()
+    assert nonsmooth.ambient_scheme() is family
+    assert nonsmooth.defining_ideal_owned() == family_algebra.ideal(xbar, ybar)
+    assert family.relative_differentials().fitting_ideal(1) == family_algebra.ideal(
+        xbar,
+        ybar,
+    )
+    nonsmooth_algebra = nonsmooth.coordinate_algebra()
+    assert nonsmooth_algebra.algebra_structure_morphism()(t) == nonsmooth_algebra.zero()
+
+    killed_presentation = PolynomialRing(parameter, ("z", "w"))
+    nonflat_algebra = FinitelyPresentedAlgebra(killed_presentation, (t,))
+    nonflat = Spec(nonflat_algebra, base_ring=parameter)
+    assert not nonflat.is_flat()
+    with raises(NotImplementedError, match="requires represented flatness"):
+        nonflat.relative_nonsmooth_subscheme()

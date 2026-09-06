@@ -752,6 +752,80 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             r"""Return ``self -> M_if`` with only non-unit invariant factors."""
             return _module_invariant_factor_form(self)
 
+        @cached_method
+        def finite_free_trivialization(self):
+            r"""Return an explicit isomorphism ``self ~= R^r`` in the torsion-free PID regime.
+
+            The invariant-factor isomorphism first removes coordinates killed
+            by unit diagonal entries.  When the module is torsion-free, every
+            remaining invariant factor is zero, so that normalized quotient has
+            no relations at all.  Identify its selected generators with a fresh
+            finite free module on the same labels and compose the two verified
+            isomorphisms.
+            """
+
+            ring = self.base_ring()
+            if ring not in PrincipalIdealDomains():
+                raise NotImplementedError(
+                    "finite-free trivialization from invariant factors is represented here over a PID"
+                )
+            if not self.is_torsion_free():
+                raise ValueError(
+                    "a finitely presented PID module with torsion is not finite free"
+                )
+
+            normalization = self.invariant_factor_form()
+            normalized = normalization.codomain()
+            labels = normalized.module_generating_set()
+            free = self.presentation().codomain()._fresh_free_module_on(labels)
+            normalized_to_free = module_homset(normalized, free)(
+                {label: free.module_generator(label) for label in labels}
+            )
+            free_to_normalized = module_homset(free, normalized)(
+                {label: normalized.module_generator(label) for label in labels}
+            )
+            return Isomorphism(normalized_to_free, free_to_normalized) * normalization
+
+        def is_projective(self) -> bool:
+            r"""Decide finite projectivity over a represented PID from the free witness."""
+
+            if self.base_ring() not in PrincipalIdealDomains():
+                raise NotImplementedError(
+                    "projectivity from invariant factors is represented here over a PID"
+                )
+            if not self.is_torsion_free():
+                return False
+            self.finite_free_trivialization()
+            return True
+
+        def is_locally_free(self) -> bool:
+            r"""Decide finite local freeness in the represented PID regime."""
+
+            return self.is_projective()
+
+        def local_free_trivialization(self, point):
+            r"""Localize the global PID free trivialization at ``point``."""
+
+            ring = self.base_ring()
+            spectrum = ring.spectrum()
+            try:
+                point_parent = point.parent()
+            except AttributeError:
+                point = spectrum(point)
+            else:
+                if point_parent is not spectrum:
+                    point = spectrum(point)
+            from dzack_research.preamble.categories.functors.module_localization import (
+                module_localization_functor,
+            )
+
+            trivialization = self.finite_free_trivialization()
+            localization = module_localization_functor(point.local_ring())
+            return Isomorphism(
+                localization(trivialization.forward()),
+                localization(trivialization.inverse()),
+            )
+
         def presentation_projection(self):
             r"""Return the selected quotient map ``F_0 -> M``."""
 
@@ -765,6 +839,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             invariants = self._invariants_with_units()
 
             positions = Sets.Δ[len(invariants) - 1]
+            retained_positions = finite_ordered_filter(
+                positions,
+                lambda position: not invariants[int(position)].is_unit(),
+            )
             free_positions = finite_ordered_filter(
                 positions,
                 lambda position: invariants[int(position)] == self.base_ring().zero(),
@@ -772,8 +850,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             target = self.presentation().codomain()._fresh_free_module_on(free_positions)
             normalized_projection = module_homset(normalized, target)(
                 {
-                    label: (target.module_generator(position) if position in free_positions else target.zero())
-                    for position, label in enumerate(normalized.module_generating_set())
+                    label: (
+                        target.module_generator(retained_positions.unrank(int(label)))
+                        if retained_positions.unrank(int(label)) in free_positions
+                        else target.zero()
+                    )
+                    for label in normalized.module_generating_set()
                 }
             )
             return normalized_projection * normalization.forward()
@@ -1134,7 +1216,37 @@ class _GeneralPresentedModule:
             return _engine_element(presentation_ring, lifted_owned)
 
         lifted = lifted_free(tuple(lift_backend_coefficient(coefficient) for coefficient in tuple(vector)))
-        return lifted in lifted_submodule
+        native_contains = lifted in lifted_submodule
+        presentation_engine = _engine_ring(presentation_ring)
+        flattening = getattr(presentation_engine, "flattening_morphism", None)
+        if flattening is None:
+            return native_contains
+        try:
+            flatten = flattening()
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return native_contains
+        flattened_ring = flatten.codomain()
+        if flattened_ring is presentation_engine:
+            return native_contains
+
+        # Sage's generic submodule membership over a nested polynomial ring can
+        # return False even for one of the displayed generators.  Flattening
+        # P = R[t][x_1,...,x_n] to the canonically isomorphic polynomial ring
+        # R[t,x_1,...,x_n] routes the same module-membership question to the
+        # Singular-backed multivariate implementation.
+        from sage.modules.free_module import FreeModule as SageFreeModule
+
+        flattened_free = SageFreeModule(flattened_ring, int(lifted_free.rank()))
+        flattened = flattened_free(tuple(flatten(coefficient) for coefficient in tuple(lifted)))
+        flattened_relations = flattened_free.submodule(
+            tuple(
+                flattened_free(
+                    tuple(flatten(coefficient) for coefficient in tuple(relation))
+                )
+                for relation in lifted_submodule.gens()
+            )
+        )
+        return flattened in flattened_relations
 
     def __call__(self, value):
         r"""Construct a quotient element without Sage coercion discovery."""
