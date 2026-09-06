@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _p_adic_jordan_decomposition,
     _p_adic_jordan_form,
     _torsion_form_automorphism_group,
-    _twisted_torsion_form,
     p_adic_jordan_module_generators,
     torsion_form_isometry,
 )
@@ -331,10 +330,6 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
 
         normal_form = p_adic_jordan_form
 
-        def twist(self, scalar):
-
-            return _twisted_torsion_form(self, scalar, quadratic=False)
-
         def is_isomorphic(self, other) -> bool:
 
 
@@ -581,10 +576,6 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             return _p_adic_jordan_form(self, quadratic=True)
 
         normal_form = p_adic_jordan_form
-
-        def twist(self, scalar):
-
-            return _twisted_torsion_form(self, scalar, quadratic=True)
 
         def is_isomorphic(self, other) -> bool:
 

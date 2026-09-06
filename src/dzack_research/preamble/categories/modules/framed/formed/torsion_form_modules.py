@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     Subgroups,
@@ -191,6 +192,10 @@ class TorsionFormIsometry(CategoricalIsomorphism):
 
     def is_quadratic(self) -> bool:
         return self._quadratic
+
+    def inverse_morphism(self):
+        r"""Return the underlying inverse module morphism."""
+        return self._inverse
 
 
 def torsion_form_isometry(forward, inverse, *, quadratic: bool):
@@ -593,6 +598,65 @@ def _twisted_torsion_form(form, scalar, *, quadratic: bool):
     )
 
 
+def _twisted_module_morphism(module_morphism, twisted_source, twisted_target):
+    r"""Read one module map between the twisted copies of its endpoints.
+
+    Twisting rescales the form and leaves the underlying module untouched, so
+    ``twisted_source`` shares its underlying module with the source of
+    ``module_morphism``, and ``twisted_target`` with its target.  The twisted
+    map is therefore the same map: the generator labelled ``l`` goes to the
+    image of the generator labelled ``l``, transported through that shared
+    underlying module.
+    """
+    source = module_morphism.domain()
+    target = module_morphism.codomain()
+    return module_homset(twisted_source, twisted_target)(
+        {
+            label: twisted_target.equip_form_morphism()(
+                target.forget_form_morphism()(
+                    module_morphism(source.module_generator(label))
+                )
+            )
+            for label in twisted_source.module_generating_set()
+        }
+    )
+
+
+class TorsionFormTwistFunctor(Functor):
+    r"""The endofunctor ``A |-> A(s)`` rescaling a finite form by ``s``.
+
+    On objects this is the rescale ``b |-> s*b`` (respectively ``q |-> s*q``)
+    on the unchanged underlying module.  On arrows it is the identity on
+    underlying maps: an isometry ``f`` from ``(A,b)`` to ``(B,b')`` has
+    ``b'(f x, f y) = b(x,y)``, hence ``(s*b')(f x, f y) = (s*b)(x,y)``, so the
+    same map is an isometry from ``A(s)`` to ``B(s)``.
+    """
+
+    def __init__(self, category, scalar, *, quadratic: bool) -> None:
+        self._scalar = scalar
+        self._quadratic = bool(quadratic)
+        super().__init__(category, category)
+
+    def scalar(self):
+        r"""Return the scalar this functor multiplies the form by."""
+        return self._scalar
+
+    def _apply_object(self, form):
+        return _twisted_torsion_form(form, self.scalar(), quadratic=self._quadratic)
+
+    def _apply_morphism(self, isometry):
+        source = self.object_image(isometry.domain())
+        target = self.object_image(isometry.codomain())
+        return torsion_form_isometry(
+            _twisted_module_morphism(isometry.forward(), source, target),
+            _twisted_module_morphism(isometry.inverse_morphism(), target, source),
+            quadratic=self._quadratic,
+        )
+
+    def _repr_(self):
+        return f"Twist by {self.scalar()} on {self.domain()}"
+
+
 def _engine_normal_form_key(form, *, quadratic: bool):
     normalization = form.invariant_factor_form()
     engine = _engine_torsion_form(normalization.codomain(), quadratic=quadratic)
@@ -629,10 +693,6 @@ class TorsionFormAutomorphism(TorsionFormIsometry):
     def _engine(self):
         r"""Return the private Sage representative used for computation."""
         return self._engine_element
-
-    def inverse_morphism(self):
-        r"""Return the underlying inverse module morphism."""
-        return self._inverse
 
     def inverse(self):
         return self.parent()._from_engine(~self._engine())
@@ -1222,6 +1282,11 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         module = _torsion_module_presented_by_matrix(relations, module_generating_set)
         return self.from_module(module, gram, value_module)
 
+    @cached_method
+    def twist_functor(self, scalar):
+        r"""Return the endofunctor ``(A,b) |-> (A, scalar*b)`` of this category."""
+        return TorsionFormTwistFunctor(self, scalar, quadratic=False)
+
     class ParentMethods:
         def form_vanishes_on(self, elements) -> bool:
             elements = tuple(elements)
@@ -1248,7 +1313,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
 
         def twist(self, scalar):
             r"""Return the same finite module equipped with ``scalar*b``."""
-            return _twisted_torsion_form(self, scalar, quadratic=False)
+            return TorsionBilinearFormModules(self.base_ring()).twist_functor(scalar)(self)
 
         def is_isomorphic(self, other) -> bool:
             r"""Decide isometry of represented finite symmetric bilinear forms."""
@@ -1372,6 +1437,11 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         module = _torsion_module_presented_by_matrix(relations, module_generating_set)
         return self.from_module(module, gram, value_module)
 
+    @cached_method
+    def twist_functor(self, scalar):
+        r"""Return the endofunctor ``(A,q) |-> (A, scalar*q)`` of this category."""
+        return TorsionFormTwistFunctor(self, scalar, quadratic=True)
+
     class ParentMethods:
         def form_vanishes_on(self, elements) -> bool:
             return all(self.q(element) == self.value_module().zero() for element in elements)
@@ -1397,7 +1467,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
         def twist(self, scalar):
             r"""Return the same finite module equipped with ``scalar*q``."""
-            return _twisted_torsion_form(self, scalar, quadratic=True)
+            return TorsionQuadraticFormModules(self.base_ring()).twist_functor(scalar)(self)
 
         def is_isomorphic(self, other) -> bool:
             r"""Decide isometry of represented finite quadratic forms."""
