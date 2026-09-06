@@ -10,6 +10,7 @@ and every Smith-form computation is an explicit crossing into it.
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
+from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
@@ -47,7 +48,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
     finite_ordered_image,
@@ -357,15 +358,21 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def _represented_annihilator_ideal(self):
             r"""Represent the scalar-action kernel in exact presentation regimes."""
             ring = self.base_ring()
-            engine = self._smith_engine()
-            if engine is not None:
-                invariants = tuple(engine.invariants(include_ones=True))
-                if not invariants or all(invariant.is_unit() for invariant in invariants):
-                    return ring.ideal(ring.one())
+            if ring in PrincipalIdealDomains():
+                # M is R^r together with the cyclic quotients R/(d_i), and the
+                # invariant factors divide one another in order.  A scalar kills
+                # the sum exactly when it kills every summand, so a free summand
+                # leaves the annihilator zero and otherwise the last invariant
+                # factor generates it.  This reads the selected presentation, so
+                # it covers every PID whose Smith form the backend computes,
+                # rather than only the integers.
+                invariants = self._invariants_with_units()
                 if any(invariant == 0 for invariant in invariants):
                     return ring.ideal(ring.zero())
                 nonunits = tuple(invariant for invariant in invariants if not invariant.is_unit())
-                return ring.ideal(ring._from_engine_element(_engine_ring(ring)(nonunits[-1])))
+                if not nonunits:
+                    return ring.ideal(ring.one())
+                return ring.ideal(nonunits[-1])
 
             if int(self.number_of_module_generators()) == 1:
                 matrix = _engine_matrix(self.presentation_matrix())
@@ -576,16 +583,28 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return all(invariant.is_unit() for invariant in self._invariants_with_units())
 
         def cardinality(self):
-            r"""Return the cardinality of the underlying set, as a cardinal."""
+            r"""Return ``|M|`` from the base cardinal and the invariant-factor decomposition.
 
-            engine = self._smith_engine()
-            if engine is not None:
-                return cardinal(int(engine.cardinality()))
-            scalars = _engine_ring(self.base_ring())
-            if scalars.is_field() or not self._selected_presentation_rows():
-                # A vector space, or a free module (no relations): |R|^rank.
-                return cardinal(scalars.cardinality()) ** self.rank()
-            assert False, f"cardinality is defined for every presented module, but this presentation over {self.base_ring()} has no exact-cardinality computation"
+            Over a principal ideal domain ``M`` is ``R^r`` together with the
+            cyclic quotients ``R/(d_i)`` of its nonzero non-unit invariant
+            factors, and the underlying set of a direct sum is the product of
+            the underlying sets.  So ``|M| = |R|^r * prod_i |R/(d_i)|``, with
+            every factor read from the base ring rather than assumed to be the
+            integers.  The vector-space and free cases are the same formula
+            with no nonzero non-unit invariant factor.
+            """
+
+            ring = self.base_ring()
+            assert ring in PrincipalIdealDomains(), (
+                f"the cardinality of a module presented over {ring} is read from an "
+                "invariant-factor decomposition, which a principal ideal domain supplies"
+            )
+            cyclic_orders = tuple(
+                ring.quotient_ring(ring.ideal(invariant)).cardinality()
+                for invariant in self._invariants_with_units()
+                if invariant != 0 and not invariant.is_unit()
+            )
+            return ring.cardinality() ** self.rank() * prod(cyclic_orders, Cardinalities().one())
 
         @cached_method
         def invariant_factor_presentation(self):
@@ -721,16 +740,25 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return self.torsion_free_quotient_projection().codomain()
 
         def exponent(self):
-            r"""Return the exponent of a finite torsion ``ZZ``-module."""
-            from sage.rings.integer_ring import ZZ as SageZZ
+            r"""Return the generator of ``Ann_R(M)`` over a principal ideal domain.
+
+            The scalars killing ``M`` form an ideal, and over a principal ideal
+            domain that ideal has one generator ``e``: a scalar kills ``M``
+            exactly when ``e`` divides it, which is what an exponent says.  So
+            the exponent is read from the annihilator rather than from the
+            integers in particular, and the two degenerate readings come out
+            right on their own.  A module with no nonzero annihilator, any
+            nonzero free module among them, has ``e = 0``, and ``e`` is a unit
+            exactly when ``Ann(M) = R``, that is exactly when ``M`` is zero.
+            """
 
             ring = self.base_ring()
-            if _engine_ring(ring) is not SageZZ:
-                raise TypeError("the exponent here is the exponent of an abelian group")
-            if not self.is_torsion():
-                return ring.zero()
-            factors = tuple(abs(x) for x in self.invariant_factors() if abs(x) > ring.one())
-            return factors[-1] if factors else ring.one()
+            assert ring in PrincipalIdealDomains(), (
+                f"an exponent is one generator of the annihilator, which {ring} "
+                "need not supply; a principal ideal domain does"
+            )
+            (generator,) = self.annihilator().ideal_generators()
+            return generator
 
         def _repr_(self):
             if self._smith_engine() is None:
