@@ -374,6 +374,22 @@ class Algebras(OwnedCategoryOverBaseRing):
         class SubcategoryMethods:
             r"""Constructions this category owns, reachable from any subcategory."""
 
+            def spectrum(self):
+                r"""``Spec_R : CAlg_R^op -> AffSch_R``, the affine spectrum functor.
+
+                A functor is a method of its domain category named by the
+                construction, so this is where ``Spec`` is spelled.  It is
+                contravariant: a map of algebras is a map of affine schemes the
+                other way.  Applied to an algebra it gives the scheme, whose
+                underlying space is the prime spectrum that ring already
+                answers with.
+                """
+                from dzack_research.preamble.categories.schemes.affine_spec import (
+                    affine_spec_functor,
+                )
+
+                return affine_spec_functor(self.base_ring())
+
             def product(self, factors):
                 r"""Return the product of a finite family of objects of this category."""
                 return self._fold_construction(self._categorical_product, factors, name="Product factors")
