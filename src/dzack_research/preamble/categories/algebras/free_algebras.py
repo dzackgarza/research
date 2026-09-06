@@ -368,9 +368,6 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             self._preamble_commutative_algebra_coproduct_backend = lambda left, right: (
                 _commutative_algebra_coproduct_backend(left, right)
             )
-            self._preamble_quotient_by_algebra_elements_backend = lambda elements: (
-                _quotient_by_algebra_elements_backend(self, elements)
-            )
             self._preamble_commutative_algebra_pushout_backend = lambda left_map, right_map: (
                 _commutative_algebra_pushout_backend(left_map, right_map)
             )
@@ -668,9 +665,6 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         def _commutative_algebra_coproduct(self, left, right):
             return _commutative_algebra_coproduct_backend(left, right)
 
-        def _quotient_by_algebra_elements(self, elements):
-            return _quotient_by_algebra_elements_backend(self, elements)
-
         def _commutative_algebra_pushout(self, left_map, right_map):
             return _commutative_algebra_pushout_backend(left_map, right_map)
 
@@ -855,11 +849,6 @@ def _commutative_algebra_pushout_backend(left_map, right_map):
         - right_injection(right_map(common.algebra_generator(label)))
         for label in common.algebra_generating_set()
     )
-    quotient_operation = getattr(tensor, "_quotient_by_algebra_elements", None)
-    if quotient_operation is None:
-        raise NotImplementedError(
-            "the represented coproduct has no selected algebra-quotient backend"
-        )
     pushout, _quotient_map = _quotient_by_algebra_elements_backend(
         tensor,
         equalities,

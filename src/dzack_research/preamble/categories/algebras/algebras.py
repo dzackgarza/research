@@ -435,6 +435,23 @@ class Algebras(OwnedCategoryOverBaseRing):
             def is_commutative(self) -> bool:
                 return True
 
+            def _quotient_by_algebra_elements(self, elements):
+                r"""Return ``A/(f_1,...,f_r)`` with its quotient map ``A ->> A/(f)``.
+
+                For ``A = P/I`` this is ``P/(I + (f)~)``: the chosen
+                presentation of ``A`` is carried forward and the new equations
+                are lifted onto it, so a second closed embedding into an
+                already presented algebra reaches the same construction as the
+                first instead of stacking a quotient on a quotient.  A free
+                polynomial algebra is the case ``I = 0``, which is why one
+                declaration serves both.
+                """
+                from dzack_research.preamble.categories.algebras.free_algebras import (
+                    _quotient_by_algebra_elements_backend,
+                )
+
+                return _quotient_by_algebra_elements_backend(self, elements)
+
 
 class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
     r"""Unital algebras interned on a chosen morphism \(A\otimes_R A\to A\)."""
@@ -833,16 +850,6 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             if operation is None:
                 raise NotImplementedError("this selected presentation has no represented coproduct backend")
             return operation(left, right)
-
-        def _quotient_by_algebra_elements(self, elements):
-            operation = getattr(
-                self,
-                "_preamble_quotient_by_algebra_elements_backend",
-                None,
-            )
-            if operation is None:
-                raise NotImplementedError("this selected presentation has no represented quotient backend")
-            return operation(elements)
 
         def _commutative_algebra_pushout(self, left_map, right_map):
             operation = getattr(
