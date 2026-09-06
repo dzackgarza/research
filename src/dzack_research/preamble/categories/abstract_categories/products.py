@@ -284,6 +284,54 @@ class CoconeCategory(OwnedCategory):
 
 
 
+class SpanCategory(ConeCategory):
+    r"""Spans in one category, over the shape ``. <- . -> .``.
+
+    That shape needs no new vocabulary.  A span :math:`A\leftarrow C\to B` is
+    an apex with one arrow to each of two objects, which is exactly a cone
+    over the discrete diagram on those two, so ``ConeCategory`` already owns
+    it and this is that category read as spans.
+
+    A span is an object here rather than a pair of arguments, so it has an
+    apex, two legs, a diagram, and its own colimit.  The colimit is computed
+    in the category the span lives in, which is where a pushout belongs and
+    which is what lets a category with a construction of its own supply it.
+    """
+
+    class ParentMethods:
+        def target_category(self):
+            r"""The category the span lives in."""
+            return self.cone_category().target_category()
+
+        def left_leg(self):
+            return self.structure_morphism(self.diagram().domain()(0))
+
+        def right_leg(self):
+            return self.structure_morphism(self.diagram().domain()(1))
+
+        def pushout(self):
+            r"""Return the pushout of this span, the colimit of its diagram."""
+            return self.target_category().pushout(self.left_leg(), self.right_leg())
+
+        def _repr_(self) -> str:
+            return f"Span {self.left_leg().codomain()} <- {self.apex()} -> {self.right_leg().codomain()}"
+
+
+def Span(left_leg, right_leg):
+    r"""Return the span the two legs form, as an object.
+
+    The legs share a domain, which is the apex; their codomains are the two
+    feet.
+    """
+    assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
+    legs = (left_leg, right_leg)
+    diagram = _discrete_diagram((left_leg.codomain(), right_leg.codomain()))
+    return SpanCategory(diagram).cone(
+        left_leg.domain(),
+        lambda index: legs[int(index.value())],
+    )
+
+
 class ProductConeCategory(ConeCategory):
     r"""Selected product cones over one finite discrete diagram."""
 
@@ -433,6 +481,8 @@ __all__ = [
     "LimitsOfCategory",
     "ProductConeCategory",
     "ProductsOfCategory",
+    "Span",
+    "SpanCategory",
     "TensorProductCategory",
     "common_category_of",
     "coproduct_cocone_category",

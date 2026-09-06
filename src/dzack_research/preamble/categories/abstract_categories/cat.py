@@ -194,6 +194,19 @@ class Cat(Category):
                 right_leg * total.right_projection(),
             )
 
+        def span(self, left_leg, right_leg):
+            r"""Return the span these two legs form, as an object of this category.
+
+            The span is an object: it has an apex, two legs, a diagram over
+            the shape \(\cdot\leftarrow\cdot\rightarrow\cdot\), and its own
+            colimit, which it asks this category for.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                Span,
+            )
+
+            return Span(left_leg, right_leg)
+
         def pushout(self, left_leg, right_leg):
             r"""Return the pushout of the span these two legs form.
 
