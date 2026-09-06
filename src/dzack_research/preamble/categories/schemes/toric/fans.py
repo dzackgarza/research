@@ -84,12 +84,9 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
     its cones, so the category refines finite sets.
     """
 
-    @staticmethod
-    def __classcall__(cls, lattice):
-        assert lattice in FinitelyGeneratedFreeModules(_integers()), (
-            "a fan lives in a finitely generated free ZZ-module"
-        )
-        return OwnedParameterizedCategory.__classcall__(cls, lattice)
+    def parameter_category(self):
+        r"""A fan lives in one finitely generated free ``ZZ``-module."""
+        return FinitelyGeneratedFreeModules(_integers())
 
     def an_object(self):
         r"""The fan of projective space of the lattice's rank."""

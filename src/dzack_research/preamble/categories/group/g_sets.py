@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
+    OwnedGroups,
     _engine_group,
     _integer_engine_point,
     _own_group,
@@ -64,6 +65,10 @@ class GSetHomCategoryConstruction(HomCategoryConstruction):
 
 class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""The represented finite objects of ``GSets(G)``."""
+
+    def parameter_category(self):
+        r"""A finite ``G``-set is indexed by the acting group ``G``."""
+        return OwnedGroups()
 
     def an_object(self):
         r"""The three-point set with the trivial action of the group."""
