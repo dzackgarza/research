@@ -3,6 +3,35 @@
 This file owns work selection across `TODO.md`, `TODO-ORGANIZATION.md`, and `PORT_TODO.md`.
 The detailed mathematical requirements remain in those files.
 
+## Testing is deferred until every other item is done (always-on)
+
+**Run no tests, no QC gates, no Sage and no notebooks against preamble work while
+any item in these queues remains open.** Verification is the last phase of the
+whole programme, not a step inside a work unit. There is exactly one verification
+pass, and it happens after the architecture is complete.
+
+This is not a preference about speed. The architecture is still moving: a category
+changes owner, a functor gains its morphism half, an operation moves to the level
+that actually defines it. A suite run against a half-built architecture measures a
+shape nobody intends to keep. Its failures are noise, its passes are worse than
+noise, and acting on either drags the design toward whatever happened to be green
+that hour. Red is the expected state of these trees until the last unit lands.
+
+So the unit of work is the construction plus the test that would falsify it,
+written and committed **unverified**. Write the test. Do not run it. Say
+"unverified" wherever a test is named in a report or a commit message.
+
+Two narrow exceptions, and nothing else:
+
+- Checking that a merged tree still imports, which is one short process and tells
+  you whether the session exists at all.
+- Provisioning a tool a row requires, such as instantiating a Julia project or
+  confirming an executable is on `PATH`.
+
+Neither of those is verification, and neither licenses a suite. A green run is not
+evidence while the architecture is incomplete, so do not seek one, do not report
+one, and do not let one decide a design question.
+
 ## Current objective and order
 
 Develop a general scheme-theory toolkit built on the preamble's affine-local algebra, modules, and categorical constructions.

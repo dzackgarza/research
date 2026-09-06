@@ -1,5 +1,12 @@
 # Preamble organization assessment
 
+**Testing is deferred until every item in these queues is done.** Run no tests,
+no QC gates, no Sage and no notebooks against this work. Consolidating an owner
+changes the shape a suite would measure, so a run made during it measures
+nothing worth keeping.
+[TODO-PRIORITIES.md](TODO-PRIORITIES.md#testing-is-deferred-until-every-other-item-is-done-always-on)
+owns the rule and its two narrow exceptions.
+
 ## Current organization work
 
 [TODO-WORKSTREAMS.md](TODO-WORKSTREAMS.md) owns the parallel schedule, shared-file boundaries, active reservations, and current progress.

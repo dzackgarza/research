@@ -1,5 +1,12 @@
 # Preamble remediation queue
 
+**Testing is deferred until every item in these queues is done.** Run no tests,
+no QC gates, no Sage and no notebooks against this work. Write the test that
+would falsify each construction, commit it unverified, and move on. One
+verification pass follows the whole programme.
+[TODO-PRIORITIES.md](TODO-PRIORITIES.md#testing-is-deferred-until-every-other-item-is-done-always-on)
+owns the rule and its two narrow exceptions.
+
 ## Work selection
 
 Use [the workstream board](TODO-WORKSTREAMS.md) to identify parallel work, claim edit paths, release reservations, and update overall progress.

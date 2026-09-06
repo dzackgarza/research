@@ -1,5 +1,13 @@
 # Archive Port Outstanding Work
 
+**Testing is deferred until every item in these queues is done.** Run no tests,
+no QC gates, no Sage and no notebooks against this work. A port is an
+architecture edit: read the archived notion, reconcile it against the live
+owner, write the construction and the test that would falsify it, and commit
+unverified. Red is the expected state until the last unit lands.
+[TODO-PRIORITIES.md](TODO-PRIORITIES.md#testing-is-deferred-until-every-other-item-is-done-always-on)
+owns the rule and its two narrow exceptions.
+
 Mathematical requirements for the preamble, including work originating in `archives/preamble/`.
 An unchecked row can include an implemented case whose extension remains open.
 Inspect the current source before selecting its missing mathematical output.
