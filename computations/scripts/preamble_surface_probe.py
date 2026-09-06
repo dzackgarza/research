@@ -227,7 +227,7 @@ def _subobject_index(lattice):
 # catalogue's involutions rather than of every lattice.
 MATHEMATICS = OrderedDict(
     [
-        ("rank", lambda L: L.rank()),
+        ("module_rank", lambda L: L.module_rank()),
         ("gram_matrix", lambda L: L.gram_matrix()),
         ("pairing b(e, e)", _pairing),
         ("signature_pair", lambda L: L.signature_pair()),
@@ -304,7 +304,7 @@ def small(lattices):
     kept = OrderedDict()
     for name, lattice in lattices.items():
         try:
-            if lattice.rank() <= SMALL_RANK:
+            if lattice.module_rank() <= SMALL_RANK:
                 kept[name] = lattice
         except Exception:
             continue
