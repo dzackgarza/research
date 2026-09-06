@@ -931,8 +931,10 @@ def test_map_induced_out_of_a_localization_is_independent_of_the_representative(
     assert induced(inverted.localization_map()(x + 1)) == to_fractions(x + 1)
     assert induced(over_x) * to_fractions(x) == to_fractions(ring.one())
 
-    with pytest.raises(AssertionError, match="not a power of the inverted element"):
-        induced(inverted(ring.one() / ring(2)))
+    # A rational constant is an element of QQ[x][1/x] like any other, and the
+    # induced map sends it where the universal property says: 1/2 to 1/2.
+    half = inverted(ring.one() / ring(2))
+    assert induced(half) * to_fractions(ring(2)) == to_fractions(ring.one())
 
     plane = PolynomialRing(QQ, ("x", "y"))
     with pytest.raises(AssertionError, match="a localization at a single element"):

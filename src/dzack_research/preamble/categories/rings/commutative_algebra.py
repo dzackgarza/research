@@ -1068,8 +1068,6 @@ def Localization(ring, *datum):
     source = _own_ring(ring)
     if len(datum) == 1 and datum[0] in Submonoids(source):
         return _localization_at_submonoid(source, datum[0])
-    if len(datum) == 1 and isinstance(datum[0], (tuple, list)):
-        datum = tuple(datum[0])
     return _localization_at_elements(
         source,
         tuple(source(element) for element in datum),

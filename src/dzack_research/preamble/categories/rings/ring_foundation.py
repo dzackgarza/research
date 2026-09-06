@@ -64,7 +64,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import (
     CountablyInfiniteSets,
     FiniteSets,
-    NN,
     Sets,
     UncountableSets,
 )
@@ -346,49 +345,6 @@ class LocalizationRings(OwnedCategory):
 
         def denominator(self):
             return self._denominator
-
-        def _denominator_exponent(self):
-            r"""Return ``n`` where this fraction's represented denominator is ``f^n``.
-
-            Protected contract: the parent's ``induced_morphism`` reads this
-            presentation datum once and no caller outside this category sees it.
-            It is not an invariant of the element, since ``a/f`` and ``af/f^2``
-            are equal in ``A[1/f]`` and report ``1`` and ``2``.  What is
-            invariant is the induced map, which sends both to ``g(a)g(f)^{-1}``.
-
-            Dividing the denominator by ``f`` until nothing remains decides
-            whether it is a power, over a domain in which ``f`` is neither zero
-            nor a unit: the divisibility chain descends, and a unit is never
-            divisible by a non-unit, so a denominator that is not a power of
-            ``f`` is refused rather than searched for.
-            """
-            parent = self.parent()
-            source = parent.localization_source()
-            inverted = source(parent.inverted_element())
-            denominator = source(self.denominator())
-
-            assert source in OwnedIntegralDomains(), (
-                f"{source} is not an integral domain, and dividing a denominator by "
-                f"{inverted} decides whether it is a power only over a domain"
-            )
-            assert not inverted.is_zero() and not inverted.is_unit(), (
-                f"{inverted} is zero or a unit in {source}, so {parent} is the zero ring or "
-                f"{source} itself and a denominator does not determine an exponent"
-            )
-            assert not denominator.is_zero(), (
-                f"the denominator of {self} is zero, and zero is not a power of {inverted}"
-            )
-
-            exponent = 0
-            remaining = denominator
-            while remaining != source.one():
-                assert inverted.divides(remaining), (
-                    f"the denominator {denominator} of {self} is not a power of the inverted "
-                    f"element {inverted}, so it has no exponent"
-                )
-                remaining = remaining // inverted
-                exponent += 1
-            return NN(exponent)
 
         def _add_(self, other):
             return self.parent().fraction(
@@ -729,10 +685,14 @@ class LocalizationRings(OwnedCategory):
             Localization is universal among ring maps out of ``R`` that invert
             ``S``.  So when ``g`` carries the inverted element to a unit exactly
             one map out of ``S^{-1}R`` composes with the localization map to give
-            ``g``, and it sends ``a/f^n`` to ``g(a)g(f)^{-n}``.  Which
-            representative of a fraction is used does not matter, and that is
-            what makes this the public word while the denominator's exponent
-            stays private data of the fraction.
+            ``g``, and it sends ``a/s`` to ``g(a)g(s)^{-1}``.  Which
+            representative of a fraction is used does not matter: ``a/f`` and
+            ``af/f^2`` have the same image, so the map is defined on the
+            fraction and not on a chosen presentation of it.
+
+            Both terms come from the fraction itself, which a localization
+            built from a numerator and a denominator, so the source ring is
+            asked for nothing beyond the two elements it already holds.
 
             A transition map of a toric atlas is such a map: the pullback to a
             face localization is a ring morphism out of the source that carries
@@ -748,13 +708,12 @@ class LocalizationRings(OwnedCategory):
                 f"{morphism} does not carry {inverted} to a unit, so it does not factor "
                 f"through {self}"
             )
-            inverse = inverted_image.inverse_of_unit()
 
             def image(element):
                 fraction = self(element)
-                return morphism(fraction.numerator()) * inverse ** int(
-                    fraction._denominator_exponent()
-                )
+                return morphism(fraction.numerator()) * morphism(
+                    fraction.denominator()
+                ).inverse_of_unit()
 
             return ring_morphism(self, morphism.codomain(), image)
 

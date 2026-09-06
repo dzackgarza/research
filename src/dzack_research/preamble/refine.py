@@ -142,6 +142,24 @@ def realize_owned_category(obj: SageObject):
     return obj
 
 
+def run_construction_hooks(obj: SageObject, already_reached: frozenset[type]) -> None:
+    r"""Run the construction step of every level ``obj`` has newly reached.
+
+    A category level states what it establishes on its objects in
+    ``__init_extra__``, and the host runs those hooks in one pass over the MRO
+    from ``Parent.__init__`` (``sage/structure/parent.pyx``).  Neither
+    ``CategoryObject._refine_category_`` nor ``Parent._refine_category_`` runs
+    them, so an object that arrives at a level after construction arrives with
+    that level's step still owed.  ``already_reached`` is the MRO from before
+    the refinement, so each level's step is taken exactly once.
+    """
+    for provider in type(obj).__mro__:
+        if provider in already_reached:
+            continue
+        if "__init_extra__" in vars(provider):
+            provider.__init_extra__(obj)
+
+
 def refine(obj: SageObject, category: Category | Iterable[Category]):
     r"""Add a verified property/axiom category to an already constructed object."""
     target = category if isinstance(category, Category) else Category.join(tuple(category))
@@ -153,5 +171,8 @@ def refine(obj: SageObject, category: Category | Iterable[Category]):
         # by that already-constructed Hom theory.
         _rebuild_morphism_class(obj, target)
         return obj
+    already_reached = frozenset(type(obj).__mro__)
     CategoryObject._refine_category_(obj, target)
-    return realize_owned_category(obj)
+    realized = realize_owned_category(obj)
+    run_construction_hooks(obj, already_reached)
+    return realized
