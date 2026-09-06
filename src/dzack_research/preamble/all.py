@@ -838,7 +838,6 @@ from dzack_research.preamble.rings import (  # noqa: F401
     OrderedRings,
     NonNegativeReals,
     NumberFieldsWithChosenPrimitiveElement,
-    OwnedCategoryOverBaseRing,
     OwnedDivisionRings,
     OwnedFields,
     OwnedNumberFields,
