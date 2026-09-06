@@ -1,15 +1,21 @@
-r"""Descent data for modules and algebras on represented distinguished affine covers."""
+r"""Descent and gluing for represented schemes, modules, and algebras."""
 
 from itertools import combinations
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
+from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.schemes.generic.glue import GluedScheme as SageGluedScheme
+from sage.schemes.generic.scheme import Scheme as SageScheme
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoricalIsomorphism,
@@ -21,6 +27,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebras,
+    FramedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.restricted_scalars import (
     restrict_algebra_scalars,
@@ -36,7 +43,432 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     restrict_scalars,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.schemes.schemes import (
+    AffineSchemes,
+    OpenImmersions,
+    SchemeMorCategory,
+    SchemeMorphism,
+    Spec,
+    _fresh_affine_spectrum,
+    refine_scheme,
+)
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+def _scheme_maps_agree_on_affine_pullbacks(left, right) -> bool:
+    if left.domain() is not right.domain() or left.codomain() is not right.codomain():
+        return False
+    base = left.domain().scheme_base_ring()
+    target = left.codomain()
+    if target not in AffineSchemes(base):
+        return bool(left == right)
+    algebra = target.coordinate_algebra()
+    if algebra not in FramedAlgebras(base):
+        return bool(left == right)
+    labels = algebra.algebra_generating_set()
+    if not labels.cardinality().is_finite():
+        return bool(left == right)
+    left_pullback = left.coordinate_algebra_morphism()
+    right_pullback = right.coordinate_algebra_morphism()
+    return all(
+        left_pullback(algebra.algebra_generator(label))
+        == right_pullback(algebra.algebra_generator(label))
+        for label in labels
+    )
+
+
+class _GluedSchemeOpenInclusion(SchemeMorphism):
+    r"""The chosen inclusion of one chart image into the glued scheme."""
+
+    def __init__(self, parent, gluing_datum, chart_index) -> None:
+        Morphism.__init__(self, parent)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        self._gluing_datum = gluing_datum
+        self._chart_index = int(chart_index)
+
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def chart_index(self):
+        return self._chart_index
+
+    def native_morphism(self):
+        raise NotImplementedError(
+            "the chart-image inclusion is represented by the glued-scheme construction, "
+            "not by one affine native morphism"
+        )
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, _GluedSchemeOpenInclusion)
+            and other.gluing_datum() is self.gluing_datum()
+            and other.chart_index() == self.chart_index()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.gluing_datum()), self.chart_index(), "open-image"))
+
+    def _repr_(self):
+        return f"Open inclusion {self.domain()} -> {self.codomain()}"
+
+
+class _GluedSchemeChartEmbedding(SchemeMorphism):
+    r"""One canonical chart map into a represented two-chart glued scheme."""
+
+    def __init__(
+        self,
+        parent,
+        gluing_datum,
+        chart_index,
+        open_image,
+        chart_isomorphism,
+    ) -> None:
+        Morphism.__init__(self, parent)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        self._gluing_datum = gluing_datum
+        self._chart_index = int(chart_index)
+        self._preamble_open_image = open_image
+        self._preamble_open_image_isomorphism = chart_isomorphism
+        self._chart_isomorphism = chart_isomorphism
+
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def chart_index(self):
+        return self._chart_index
+
+    def open_image(self):
+        return self._preamble_open_image
+
+    def chart_isomorphism(self):
+        return self._chart_isomorphism
+
+    def open_inclusion(self):
+        return self.open_image().inclusion()
+
+    def native_morphism(self):
+        raise NotImplementedError(
+            "the canonical chart embedding is represented by the glued-scheme construction, "
+            "not by one affine native morphism"
+        )
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, _GluedSchemeChartEmbedding)
+            and other.gluing_datum() is self.gluing_datum()
+            and other.chart_index() == self.chart_index()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.gluing_datum()), self.chart_index()))
+
+    def _repr_(self):
+        return (
+            f"Open chart embedding {self.domain()} -> {self.codomain()} "
+            f"(chart {self.chart_index()})"
+        )
+
+
+class _GluedSchemeMorphism(SchemeMorphism):
+    r"""A morphism out of a glued scheme, represented by compatible chart maps."""
+
+    def __init__(self, parent, local_maps, *, verify_compatibility=True) -> None:
+        Morphism.__init__(self, parent)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        datum = self.domain().gluing_datum()
+        local_maps = tuple(local_maps)
+        if len(local_maps) != 2:
+            raise ValueError("a two-chart glued-scheme morphism requires two local maps")
+        self._local_maps = tuple(
+            datum.chart(index).Mor(self.codomain())(local_map)
+            for index, local_map in enumerate(local_maps)
+        )
+        if verify_compatibility:
+            self._verify_overlap_compatibility()
+
+    def local_maps(self):
+        return self._local_maps
+
+    def local_map(self, index):
+        return self.local_maps()[int(index)]
+
+    def native_morphism(self):
+        raise NotImplementedError(
+            "this morphism is represented by its compatible maps on the glued affine charts"
+        )
+
+    def _verify_overlap_compatibility(self) -> None:
+        datum = self.domain().gluing_datum()
+        left_restriction = self.local_map(0) * datum.left_overlap().inclusion()
+        right_restriction = (
+            self.local_map(1)
+            * datum.right_overlap().inclusion()
+            * datum.transition().forward()
+        )
+        if not _scheme_maps_agree_on_affine_pullbacks(
+            left_restriction,
+            right_restriction,
+        ):
+            raise ValueError(
+                "the local scheme morphisms do not agree through the overlap transition"
+            )
+
+    def _postcompose_with(self, after):
+        if after.domain() is not self.codomain():
+            return NotImplemented
+        return self.domain().Mor(after.codomain())(
+            tuple(after * local_map for local_map in self.local_maps())
+        )
+
+    def __mul__(self, other):
+        if self._is_the_identity():
+            return other
+        if (
+            isinstance(other, _GluedSchemeChartEmbedding)
+            and other.codomain() is self.domain()
+            and other.gluing_datum() is self.domain().gluing_datum()
+        ):
+            return self.local_map(other.chart_index())
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        if other._is_the_identity():
+            return self
+        return NotImplemented
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, _GluedSchemeMorphism)
+            and other.domain() is self.domain()
+            and other.codomain() is self.codomain()
+            and all(
+                left == right
+                for left, right in zip(
+                    self.local_maps(),
+                    other.local_maps(),
+                    strict=True,
+                )
+            )
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    __hash__ = None
+
+    def _repr_(self):
+        return f"Scheme morphism from glued charts: {self.domain()} -> {self.codomain()}"
+
+
+class _GluedSchemeMorCategory(SchemeMorCategory):
+    r"""Maps out of one two-chart glued scheme, represented by compatible local maps."""
+
+    def _element_constructor_(self, datum):
+        if isinstance(datum, _GluedSchemeMorphism):
+            if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
+                raise ValueError("the glued-scheme morphism has the wrong endpoints")
+            if datum.parent() is self:
+                return datum
+            datum = datum.local_maps()
+        if isinstance(datum, (tuple, list)):
+            return _GluedSchemeMorphism(self, datum)
+        return super()._element_constructor_(datum)
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on a glued-scheme endomorphism Hom")
+        datum = self.domain().gluing_datum()
+        return _GluedSchemeMorphism(
+            self,
+            tuple(datum.chart_embedding(index) for index in range(2)),
+            verify_compatibility=False,
+        )
+
+
+class _OwnedTwoChartGluedScheme(SageGluedScheme):
+    r"""A scheme obtained by gluing two affine charts along represented affine opens."""
+
+    def __init__(self, gluing_datum, left_native, right_native) -> None:
+        self._preamble_gluing_datum = gluing_datum
+        SageGluedScheme.__init__(self, left_native, right_native, check=True)
+        SageScheme.__init__(self, _engine_ring(gluing_datum.base_ring()))
+
+    def gluing_datum(self):
+        return self._preamble_gluing_datum
+
+    def chart(self, index):
+        return self.gluing_datum().chart(index)
+
+    def charts(self):
+        return self.gluing_datum().charts()
+
+    def chart_images(self):
+        return self.gluing_datum().chart_images()
+
+    def chart_image(self, index):
+        return self.gluing_datum().chart_image(index)
+
+    def chart_isomorphism(self, index):
+        return self.gluing_datum().chart_isomorphism(index)
+
+    def chart_embedding(self, index):
+        return self.gluing_datum().chart_embedding(index)
+
+    def overlap_transition(self):
+        return self.gluing_datum().transition()
+
+
+class _TwoChartSchemeGluingDatum(SageObject):
+    r"""Two affine schemes glued along an isomorphism of represented affine opens."""
+
+    def __init__(self, schemes, left_chart, right_chart, transition) -> None:
+        base = schemes.base_ring()
+        if left_chart not in AffineSchemes(base) or right_chart not in AffineSchemes(base):
+            raise TypeError("the represented two-chart gluing currently requires affine charts")
+        if not isinstance(transition, CategoricalIsomorphism):
+            raise TypeError("scheme gluing requires a represented overlap isomorphism")
+        forward = transition.forward()
+        inverse = transition.inverse()
+        if not isinstance(forward, SchemeMorphism) or not isinstance(inverse, SchemeMorphism):
+            raise TypeError("the overlap transition must be an isomorphism of schemes")
+        left_overlap = forward.domain()
+        right_overlap = forward.codomain()
+        if left_overlap not in OpenImmersions(left_chart):
+            raise ValueError("the transition domain must be a represented open subscheme of the left chart")
+        if right_overlap not in OpenImmersions(right_chart):
+            raise ValueError("the transition codomain must be a represented open subscheme of the right chart")
+        if inverse.domain() is not right_overlap or inverse.codomain() is not left_overlap:
+            raise ValueError("the stated overlap inverse has the wrong endpoints")
+        if inverse * forward != left_overlap.categorical_identity_morphism():
+            raise ValueError("the overlap transition is not left-invertible")
+        if forward * inverse != right_overlap.categorical_identity_morphism():
+            raise ValueError("the overlap transition is not right-invertible")
+
+        self._schemes = schemes
+        self._charts = finite_family(
+            (left_chart, right_chart),
+            name="Scheme gluing charts",
+        )
+        self._transition = transition
+        self._scheme = None
+        self._chart_images = None
+        self._chart_isomorphisms = None
+        self._chart_embeddings = None
+        self._construct_glued_scheme()
+
+    def base_ring(self):
+        return self._schemes.base_ring()
+
+    def charts(self):
+        return self._charts
+
+    def chart(self, index):
+        return self.charts()[int(index)]
+
+    def transition(self):
+        return self._transition
+
+    def left_overlap(self):
+        return self.transition().forward().domain()
+
+    def right_overlap(self):
+        return self.transition().forward().codomain()
+
+    def _construct_glued_scheme(self) -> None:
+        left_inclusion = self.left_overlap().inclusion()
+        right_inclusion = self.right_overlap().inclusion()
+        right_span = right_inclusion * self.transition().forward()
+        self._scheme = _OwnedTwoChartGluedScheme(
+            self,
+            left_inclusion.native_morphism(),
+            right_span.native_morphism(),
+        )
+        self._scheme._preamble_scheme_homset_class = _GluedSchemeMorCategory
+        refine_scheme(self._scheme, self.base_ring())
+        chart_images = []
+        chart_isomorphisms = []
+        chart_embeddings = []
+        for index in range(2):
+            chart = self.chart(index)
+            algebra = chart.coordinate_algebra()
+            chart_image = _fresh_affine_spectrum(
+                algebra,
+                self.base_ring(),
+                extra_categories=(OpenImmersions(self._scheme),),
+            )
+            open_inclusion = _GluedSchemeOpenInclusion(
+                chart_image.Mor(self._scheme),
+                self,
+                index,
+            )
+            chart_image._preamble_inclusion = open_inclusion
+            identity_pullback = algebra.Mor(algebra).identity()
+            chart_isomorphism = Isomorphism(
+                chart.Mor(chart_image)(identity_pullback),
+                chart_image.Mor(chart)(identity_pullback),
+            )
+            chart_embedding = _GluedSchemeChartEmbedding(
+                chart.Mor(self._scheme),
+                self,
+                index,
+                chart_image,
+                chart_isomorphism,
+            )
+            chart_images.append(chart_image)
+            chart_isomorphisms.append(chart_isomorphism)
+            chart_embeddings.append(chart_embedding)
+
+        self._chart_images = finite_family(
+            chart_images,
+            name="Open chart images in glued scheme",
+        )
+        self._chart_isomorphisms = finite_family(
+            chart_isomorphisms,
+            name="Chart-to-image isomorphisms",
+        )
+        self._chart_embeddings = finite_family(
+            chart_embeddings,
+            name="Scheme gluing chart embeddings",
+        )
+        self._scheme._preamble_identity_morphism = self._scheme.Mor(
+            self._scheme
+        ).identity()
+        base_scheme = Spec(self.base_ring(), base_ring=self.base_ring())
+        self._scheme._preamble_structure_morphism = self._scheme.Mor(base_scheme)(
+            tuple(chart.structure_morphism() for chart in self.charts())
+        )
+
+    def scheme(self):
+        return self._scheme
+
+    def chart_embedding(self, index):
+        return self._chart_embeddings[int(index)]
+
+    def chart_images(self):
+        return self._chart_images
+
+    def chart_image(self, index):
+        return self.chart_images()[int(index)]
+
+    def chart_isomorphisms(self):
+        return self._chart_isomorphisms
+
+    def chart_isomorphism(self, index):
+        return self.chart_isomorphisms()[int(index)]
+
+    def _repr_(self):
+        return f"Two-chart scheme gluing datum for {self.chart(0)} and {self.chart(1)}"
 
 
 def _finite_framing(module):

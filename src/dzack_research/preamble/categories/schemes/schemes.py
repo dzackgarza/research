@@ -167,6 +167,9 @@ class SchemeMorphism(Morphism):
                 homset=homset,
                 pullback=composite.coordinate_algebra_morphism(),
             )
+        structured = other._postcompose_with(self)
+        if structured is not NotImplemented:
+            return structured
         return homset(self.native_morphism() * other.native_morphism())
 
     def _is_the_identity(self) -> bool:
@@ -178,6 +181,12 @@ class SchemeMorphism(Morphism):
     def _is_the_structure_morphism(self) -> bool:
         r"""Return whether this is the selected map to the domain's base scheme."""
         return getattr(self.domain(), "_preamble_structure_morphism", None) is self
+
+    def _postcompose_with(self, after):
+        r"""Return ``after ∘ self`` for structured maps without a native composite."""
+
+        _ = after
+        return NotImplemented
 
     def compose(self, before):
         result = self * before
@@ -288,6 +297,18 @@ class SchemeMorCategory(CategoricalHomset):
             if datum.parent() is self:
                 return datum
             datum = datum.native_morphism()
+        if (
+            isinstance(datum, Morphism)
+            and self.domain() in AffineSchemes(_scheme_base_ring(self.domain()))
+            and self.codomain() in AffineSchemes(_scheme_base_ring(self.domain()))
+            and datum.domain() is self.codomain().coordinate_algebra()
+            and datum.codomain() is self.domain().coordinate_algebra()
+        ):
+            return _affine_morphism_from_pullback(
+                self.domain(),
+                self.codomain(),
+                datum,
+            )
         return SchemeMorphism(datum, homset=self)
 
     @cached_method
@@ -399,7 +420,7 @@ class Schemes(OwnedCategoryOverBaseRing):
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a scheme Hom requires two schemes over the stated base")
-        return SchemeMorCategory(self, domain, codomain)
+        return domain._scheme_homset(self, codomain)
 
     _MonoCategory = None  # set below, once SchemeMonomorphisms is defined
 
@@ -438,6 +459,20 @@ class Schemes(OwnedCategoryOverBaseRing):
             raise TypeError(f"{scheme} is not an object of {self}")
         return self.slice_category()(scheme.structure_morphism())
 
+    def glue_affine_charts(self, left_chart, right_chart, transition):
+        r"""Glue two affine charts along the represented open isomorphism ``transition``."""
+
+        from dzack_research.preamble.categories.schemes.gluing import (
+            _TwoChartSchemeGluingDatum,
+        )
+
+        return _TwoChartSchemeGluingDatum(
+            self,
+            left_chart,
+            right_chart,
+            transition,
+        ).scheme()
+
 
 
 
@@ -469,6 +504,12 @@ class Schemes(OwnedCategoryOverBaseRing):
         return SmoothSchemes(self.base_ring())
 
     class ParentMethods:
+        def _scheme_homset(self, schemes, codomain):
+            homset_class = self.__dict__.get("_preamble_scheme_homset_class")
+            if homset_class is None:
+                homset_class = SchemeMorCategory
+            return homset_class(schemes, self, codomain)
+
         def Mor(self, codomain, category=None):
             schemes = Schemes(self.scheme_base_ring())
             if category is None or category.is_subcategory(schemes):
@@ -1446,6 +1487,21 @@ def _initialize_owned_affine_spectrum(
     return scheme
 
 
+def _fresh_affine_spectrum(algebra, base, *, extra_categories=()):
+    r"""Return a fresh affine spectrum carrying the stated owned coordinate algebra."""
+
+    return _initialize_owned_affine_spectrum(
+        typecall(
+            _SageAffineScheme,
+            _engine_ring(algebra),
+            _engine_ring(base),
+        ),
+        algebra,
+        base,
+        extra_categories=extra_categories,
+    )
+
+
 def Spec(ring_or_algebra, base_ring=None):
     r"""Return the affine scheme ``Spec(A)`` over the represented scalar base.
 
@@ -2379,7 +2435,19 @@ class SchemeMonomorphisms(MonoCategoryOf):
     def accepts(self, arrow) -> bool:
         ambient = arrow.codomain()
         source = arrow.domain()
-        return source in ClosedEmbeddings(ambient) or source in OpenImmersions(ambient)
+        if source in ClosedEmbeddings(ambient) or source in OpenImmersions(ambient):
+            return True
+        open_image = arrow.__dict__.get("_preamble_open_image")
+        open_image_isomorphism = arrow.__dict__.get(
+            "_preamble_open_image_isomorphism"
+        )
+        if open_image is None or open_image_isomorphism is None:
+            return False
+        return (
+            open_image in OpenImmersions(ambient)
+            and open_image_isomorphism.forward().domain() is source
+            and open_image_isomorphism.forward().codomain() is open_image
+        )
 
 
 def refine_closed_subscheme(
