@@ -231,12 +231,14 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     pass
 
             # For a presented module, d/1 vanishes after localization exactly
-            # when Ann_R(d) meets the localization submonoid.  The cyclic
-            # submodule R*d represents Ann_R(d) through the existing scalar-
-            # action kernel, so no second presentation backend is needed here.
+            # when Ann_R(d) meets the localization submonoid.  On a chosen
+            # presentation that annihilator is the transporter (Im(A) :_R v)
+            # carrying the coordinates of d into the relations, which the
+            # module computes from its own presentation, so this is the exact
+            # relation-membership question and not a search.
             try:
                 if source in _SelectedFinitePresentationModules(self.source_ring()):
-                    annihilator = source.subobject_on((cross_difference,)).annihilator()
+                    annihilator = source.annihilator_of(cross_difference)
                     structure = self.localization_submonoid().structure_data()
 
                     if structure.get("kind") == "prime_complement":
