@@ -1901,7 +1901,9 @@ class NaturalNumberSets(OwnedCategory):
         __index__ = __int__
 
         def __hash__(self):
-            return hash((id(self.parent()), self._value))
+            # Equality is decided on the number, not on the parent that
+            # presented it, so the hash is the number's.
+            return hash(self._value)
 
         def __eq__(self, other):
             # The argument is genuinely arbitrary here, so the question is
@@ -1945,7 +1947,19 @@ class NaturalNumberSets(OwnedCategory):
             return self._element_constructor_(value)
 
         def __contains__(self, value) -> bool:
-            return isinstance(value, self.category().ElementType) and value.parent() is self
+            r"""Decide whether ``value`` names a natural number.
+
+            The argument is genuinely arbitrary here, so the question is
+            whether this set has a point for it, and that is what the element
+            constructor decides.  A nonnegative owned integer names one, since
+            $\mathbb N\subset\mathbb Z$, and so does the literal a
+            mathematician writes at a prompt.
+            """
+            try:
+                self._element_constructor_(value)
+            except (TypeError, ValueError):
+                return False
+            return True
 
         def __iter__(self):
             index = 0
