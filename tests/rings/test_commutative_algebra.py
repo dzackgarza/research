@@ -263,8 +263,15 @@ def test_presented_special_fiber_origin_has_exact_ideal_and_local_ring() -> None
     assert origin.syzygy_matrix().ncols() == 2
     assert origin.syzygy_matrix().nrows() == 2
 
+    origin_point = special_fiber.spectrum()(origin)
+    assert origin_point.ideal() is origin
+
     local = special_fiber.localize_at_prime(origin)
     assert local in LocalRings()
+    point_local = origin_point.local_ring()
+    assert point_local in LocalRings()
+    assert point_local.localization_source() is special_fiber
+    assert point_local.localized_prime() is origin
     assert local.localization_source() is special_fiber
     assert local.localized_prime() is origin
     assert not local(x0).is_unit()

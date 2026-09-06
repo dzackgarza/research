@@ -16,6 +16,10 @@ from dzack_research.preamble.all import (
     ZZ,
     algebra_underlying_module_functor,
 )
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    FinitelyPresentedAlgebra,
+    PolynomialRing,
+)
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
@@ -83,6 +87,41 @@ def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
     polynomial_underlying = algebra_underlying_module_functor(QQ)
     assert polynomial_underlying(polynomials) is polynomials
     assert polynomials in Modules(QQ)
+
+
+def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
+    parameter = PolynomialRing(QQ, "t")
+    t = parameter.algebra_generator("t")
+    presentation = PolynomialRing(parameter, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    y = presentation.algebra_generator("y")
+    family = FinitelyPresentedAlgebra(presentation, (x * y - t,))
+
+    assert family in Modules(parameter)
+    assert family.is_integral_domain()
+    assert family.is_torsion_free()
+    assert family.is_flat()
+
+    killed_presentation = PolynomialRing(parameter, ("z", "w"))
+    killed = FinitelyPresentedAlgebra(killed_presentation, (t,))
+    assert killed.is_integral_domain()
+    assert not killed.is_torsion_free()
+    assert not killed.is_flat()
+
+
+def test_finite_free_quotient_algebra_uses_its_module_tensor_for_multiplication() -> None:
+    presentation = PolynomialRing(QQ, "z")
+    z = presentation.algebra_generator("z")
+    algebra = FinitelyPresentedAlgebra(presentation, (z**2 - QQ.one(),))
+
+    assert int(algebra.rank()) == 2
+    multiplication = algebra.multiplication_morphism()
+    tensor_square = multiplication.domain()
+    one = algebra.module_generator(0)
+    generator = algebra.module_generator(1)
+    assert multiplication.codomain() is algebra
+    assert multiplication(tensor_square.pure_tensor(one, generator)) == generator
+    assert multiplication(tensor_square.pure_tensor(generator, generator)) == one
 
 
 def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -> None:
