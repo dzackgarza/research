@@ -48,6 +48,7 @@ def test_the_residue_field_of_the_plane_resolves_in_two_steps() -> None:
     resolution = module.free_resolution(3)
 
     assert resolution.length() == 2
+    assert resolution.degrees().cardinality() == 3
     assert resolution.term(0).rank() == 1
     assert resolution.term(1).rank() == 2
     assert resolution.term(2).rank() == 1

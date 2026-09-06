@@ -232,10 +232,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     {target_label: ring._from_engine_element(coefficient) for target_label, coefficient in zip(target_labels, row, strict=True) if coefficient}
                 )
 
-            return FreeResolution(
+            return _resolution_over_degrees(
                 self,
-                (degree_zero, degree_one),
-                (module_embedding(degree_one, degree_zero, image),),
+                {0: degree_zero, 1: degree_one},
+                {1: module_embedding(degree_one, degree_zero, image)},
                 self.presentation_projection(),
                 zero,
             )
@@ -247,20 +247,20 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             assert steps >= 1, "a syzygy resolution computes at least the relation step"
             degree_zero = self.presentation().codomain()
             zero = degree_zero._fresh_free_module_on(Sets.Δ[-1])
-            terms = [degree_zero]
-            differentials = []
+            terms = {0: degree_zero}
+            differentials = {}
             differential = self.presentation()
-            for _ in range(steps):
-                terms.append(differential.domain())
-                differentials.append(differential)
+            for degree in range(1, steps + 1):
+                terms[degree] = differential.domain()
+                differentials[degree] = differential
                 syzygies = differential.kernel()
                 if int(syzygies.number_of_module_generators()) == 0:
                     break
                 differential = syzygies.inclusion() * syzygies.presentation_projection()
-            return FreeResolution(
+            return _resolution_over_degrees(
                 self,
-                tuple(terms),
-                tuple(differentials),
+                terms,
+                differentials,
                 self.presentation_projection(),
                 zero,
             )
@@ -1430,6 +1430,38 @@ def _new_presented_module(
     if extra_construction_data is not None:
         data.update(extra_construction_data)
     return object_of(Category.join(tuple(categories)), **data)
+
+
+def _resolution_over_degrees(module, terms, differentials, augmentation, zero):
+    r"""Assemble a free resolution from its terms and differentials by degree.
+
+    The degrees carrying a term are the ordinals up to the largest one built,
+    and the degrees carrying a differential are those among them that have one,
+    which are the nonzero degrees the construction reached.  Both are owned
+    ordered sets, and the terms and differentials are families over them.
+    """
+
+    degrees = Sets.Δ[max(terms)]
+    carrying = finite_ordered_filter(
+        degrees,
+        lambda degree: int(degree) in differentials,
+    )
+    return FreeResolution(
+        module,
+        degrees,
+        indexed_family(
+            degrees,
+            lambda degree: terms[int(degree)],
+            name="Free resolution terms",
+        ),
+        indexed_family(
+            carrying,
+            lambda degree: differentials[int(degree)],
+            name="Free resolution differentials",
+        ),
+        augmentation,
+        zero,
+    )
 
 
 def _presentation_matrix(module):

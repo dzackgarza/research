@@ -48,7 +48,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family, indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     CartesianProductOfFamily,
@@ -1040,46 +1044,50 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 class FreeResolution:
     r"""The exact resolution ``0 -> F_n -> ... -> F_0 -> M -> 0`` by free modules.
 
-    The terms are the chosen free covers and the differentials are the maps
-    between them, so the datum is the whole tower rather than a single relation
-    map: a module over a principal ideal domain resolves in one step, while
-    ``k = R/(x,y)`` over ``R = k[x,y]`` needs the Koszul complex and two.
-    Beyond the last term everything is the zero module and the zero map, which
-    is what makes the resolution finite.
+    The datum is an indexed family of free modules over the degrees carrying a
+    term, together with the family of differentials over the degrees that carry
+    one, which are the nonzero ones.  A module over a principal ideal domain
+    resolves in one step, while ``k = R/(x,y)`` over ``R = k[x,y]`` needs the
+    Koszul complex and two, so the degrees are what varies and the top degree is
+    read off them.  Outside those degrees everything is the zero module and the
+    zero map, which is what makes the resolution finite.
     """
 
     _module: object
-    _terms: tuple
-    _differentials: tuple
+    _degrees: object
+    _terms: IndexedFamily
+    _differentials: IndexedFamily
     _augmentation: object
     _zero_term: object
 
     def module(self):
         return self._module
 
+    def degrees(self):
+        r"""Return the degrees carrying a term, an owned ordered set."""
+        return self._degrees
+
     def term(self, degree):
-        degree = int(degree)
-        if degree < 0:
+        if int(degree) < 0:
             raise ValueError("a homological degree is nonnegative")
-        if degree < len(self._terms):
-            return self._terms[degree]
+        if degree in self._degrees:
+            return self._terms.value(degree)
         return self._zero_term
 
     def differential(self, degree):
 
-        degree = int(degree)
-        if degree <= 0:
+        if int(degree) <= 0:
             raise ValueError("resolution differentials are indexed in positive degree")
-        if degree <= len(self._differentials):
-            return self._differentials[degree - 1]
-        return module_homset(self.term(degree), self.term(degree - 1)).zero()
+        if degree in self._differentials.index_set():
+            return self._differentials.value(degree)
+        return module_homset(self.term(degree), self.term(int(degree) - 1)).zero()
 
     def augmentation(self):
         return self._augmentation
 
     def length(self):
         r"""Return the largest degree carrying a nonzero term."""
-        return len(self._terms) - 1
+        return int(max(self._degrees))
 
     def is_exact(self):
         r"""Decide exactness of ``0 -> F_n -> ... -> F_0 -> M -> 0``.
@@ -1110,11 +1118,12 @@ class FreeResolution:
             return False
         return all(
             agree(
-                self.differential(degree + 1).image(),
+                self.differential(int(degree) + 1).image(),
                 self.differential(degree).kernel(),
                 self.term(degree),
             )
-            for degree in range(1, length)
+            for degree in self._differentials.index_set()
+            if int(degree) != length
         )
 
 
@@ -1211,10 +1220,16 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         @cached_method
         def _identity_resolution(self):
             zero = self._fresh_free_module_on(finite_ordered_set(()))
+            degrees = Sets.Δ[0]
             return FreeResolution(
                 self,
-                (self,),
-                (),
+                degrees,
+                indexed_family(degrees, lambda degree: self, name="Free resolution terms"),
+                indexed_family(
+                    Sets.Δ[-1],
+                    lambda degree: None,
+                    name="Free resolution differentials",
+                ),
                 module_homset(self, self).identity(),
                 zero,
             )
