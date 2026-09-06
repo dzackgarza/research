@@ -201,11 +201,7 @@ class OrderedEnumeratedSets(OwnedCategory):
         def __contains__(self, element) -> bool:
             if self._contains_function is not None:
                 return bool(self._contains_function(element))
-            try:
-                self.ranking_map()(element)
-            except (TypeError, ValueError):
-                return False
-            return True
+            return self._index_of_function(element) is not None
 
         is_parent_of = __contains__
 
@@ -213,10 +209,17 @@ class OrderedEnumeratedSets(OwnedCategory):
             return self._element_constructor_(element)
 
         def _element_constructor_(self, element):
-            if element not in self:
+            r"""Return the member of this image that ``element`` names.
+
+            This is the element constructor, the one boundary that admits
+            foreign data, so it reads the presentation directly.  It cannot
+            ask the ranking map: applying an arrow coerces its argument into
+            the domain, and the domain is this parent.
+            """
+            index = self._index_of_function(element)
+            if index is None:
                 raise ValueError(f"{element!r} is not in {self}")
-            ranking = self.ranking_map()
-            return ranking.inverse()(ranking(element))
+            return self._element_at_function(index)
 
         def le(self, left, right) -> bool:
             ranking = self.ranking_map()

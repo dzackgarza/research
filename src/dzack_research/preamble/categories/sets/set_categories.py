@@ -130,9 +130,20 @@ class FiniteOrdinalSets(OwnedCategory):
         is_parent_of = __contains__
 
         def __call__(self, element):
-            r"""Normalize a natural number to the point of this ordinal it names."""
-            ranking = self.ranking_map()
-            return ranking.inverse()(ranking(element))
+            r"""Normalize a natural number to the point of this ordinal it names.
+
+            This is the element constructor, the one boundary that admits
+            foreign data, so it reads the position directly.  It cannot ask
+            the ranking map: applying an arrow coerces its argument into the
+            domain, and the domain is this parent.
+            """
+            try:
+                position = int(element)
+            except (TypeError, ValueError) as error:
+                raise ValueError(element) from error
+            if position < 0 or position >= self._size:
+                raise ValueError(element)
+            return NN(position)
 
         def le(self, left, right):
             ranking = self.ranking_map()
