@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     Modules,
     ModulesWithChosenFinitePresentation,
-    register_module_scalar_action,
 )
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
