@@ -48,6 +48,66 @@ An arithmetic calculation moves earlier when that geometry requires its result.
 Integrate with `sage-categories` alongside this application order when it supports the complete construction being transferred.
 Each work unit completes a reusable mathematical construction, including its maps, inherited operations, and supported algorithms.
 
+## Remaining workstreams as a dependency graph
+
+The queues are written by subject, which hides what actually orders the work.
+This graph is that order. A node is a unit one agent, or a small parallel group,
+can take end to end. An edge means the head cannot start until the tail lands,
+not merely that it would be tidier to wait.
+
+```mermaid
+graph TD
+    A["A. Covers become atlases"] --> F["F. §11 divisors, Picard,<br/>cycles, cohomology, linear systems"]
+    A --> H["H. §17 ADE double cover"]
+    B["B. Toric atlas gluing"] --> H
+    F --> G["G. §12, §14, §15<br/>singularities, blowups, families"]
+    F --> I["I. §20 framework specifications"]
+    C["C. Odd bilinear glue map"] --> L
+    D["D. §8.2 and §8.3 residue"] --> L
+    E["E. Remediation queue"] --> L
+    G --> L["L. §24 audit, megadoc,<br/>terminology audit"]
+    H --> L
+    I --> L
+    K["K. §0 purity migration"] --> L
+    J["J. §3.x and §5 indefinite residue<br/>(gated on sage-indefinite-port)"] --> L
+    L --> M["M. The single verification pass"]
+```
+
+| Node | Unit | Depends on | Relative size | State |
+| --- | --- | --- | --- | --- |
+| A | A cover becomes an atlas of open immersions rather than distinguished opens of one affine, and invertible sheaves re-site onto it | — | 1.5 | needs a decision, not an implementer |
+| B | The toric variety becomes an owned glued scheme, its face-localization transitions written through the localization's universal property | — | 0.5 | ready |
+| C | The odd bilinear analogue of the primitive-extension correspondence, so the glue map is not even-only | — | 0.5 | ready |
+| D | The general module through `rho: R -> End(M)`, linearity dispatch, rank stratifications on the spectrum | — | 0.75 | ready |
+| E | The remediation queue in `TODO.md`: scheme and inheritance items, collection and finiteness, typing, and the defects the category witnesses found | — | 1 | ready |
+| F | Divisors, Picard and class groups, line bundles and intersections, cohomology and sections, linear systems, cycles | A | 2 | blocked |
+| G | Singularities of curves and schemes, complete intersections and blowups, families and higher direct images | F | 1 | blocked |
+| H | The ADE double cover, which needs a line bundle on a variety that is not affine | A, B | 0.5 | blocked |
+| I | The archived framework specifications: relative spectrum, jets, Bertini, linearizations, Lefschetz | F | 1 | blocked |
+| J | The rational-integral coset rows and the indefinite recursion, which wait on generating sets for arithmetic subgroups and on `01_RatIntAutomorphy` | the port | — | externally gated |
+| K | The purity migration: owned categories only in the mathematical graph, and the dynamic-peek surface | — | 2.5 | ready, run last |
+| L | Port-completion audit, megadoc regeneration, fresh-context terminology audit | every content node | 0.75 | closing |
+| M | The one verification pass | L | 0.5 to a day | terminal |
+
+Relative size is calibrated against observed cadence rather than guessed: one
+operation with its test has been running five to fifteen minutes on one agent,
+one port section thirty to forty, and a wave of eight sections about forty
+minutes of wall clock plus an hour of review and merging. The figures are for
+comparing nodes against each other, and they are not commitments. Node M is the
+only one that cannot be estimated, because everything above it is construction
+and it alone is discovery.
+
+Reading the graph:
+
+- **A is small and gates the most.** It is the only thing standing between the
+  present state and F, G, H and I, which together are the bulk of what remains.
+- **K is the largest single body of work and the most parallel**, being mechanical
+  and file-local, but it touches everything, so it runs last among ready nodes to
+  avoid colliding with the geometry.
+- **B, C, D and E are ready now** and touch files the geometry work does not, so
+  they are what moves while A is undecided.
+- **M is terminal by rule**, not by convenience. See the always-on section above.
+
 ## How much category theory to implement here
 
 The preamble's category layer supplies the reuse needed by its mathematical algorithms.

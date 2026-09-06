@@ -19,6 +19,13 @@ Its foundation is a coherent algebraic subtree with reusable module, ring, algeb
 
 ## Geometry delivery sequence
 
+The steps below read as a line, which is how they were first written. What
+actually orders the remaining work, including which steps can run at the same
+time and which are waiting on one architectural decision, is the dependency
+graph in
+[TODO-PRIORITIES.md](TODO-PRIORITIES.md#remaining-workstreams-as-a-dependency-graph).
+Read that before picking a step.
+
 - [ ] Close the quotient/localization/module dependencies in §8.4 using the family `xy=t`, its reducible special fiber, and its local rings.
   Extend the existing distinguished-open construction with restriction maps on functions and modules.
 - [ ] Complete affine `Spec` on ring morphisms, closed immersions, and fiber products through the algebra constructions in §§8.4–10.
