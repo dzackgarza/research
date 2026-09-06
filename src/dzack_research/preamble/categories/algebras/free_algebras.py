@@ -429,6 +429,28 @@ def FinitelyPresentedAlgebra(
 ):
     r"""Return the selected quotient ``R[S] / (relations)``."""
     base = presentation_ring.base_ring()
+    if presentation_ring in AlgebrasWithChosenFinitePresentation(base):
+        # A quotient of a quotient is one quotient of the same polynomial
+        # presentation: for A = P/I, the algebra A/(J) is P/(I + J~) where J~
+        # lifts the new relations to P.  Consolidating here keeps one chosen
+        # presentation and one scalar ring, so a second closed embedding into
+        # an already presented algebra reaches the same construction as the
+        # first rather than needing a tower of quotient objects.
+        source = presentation_ring.presentation_ring()
+        existing = presentation_ring.relations()
+        return FinitelyPresentedAlgebra(
+            source,
+            (
+                *(existing.value(index) for index in existing.index_set()),
+                *(
+                    presentation_ring.lift_to_presentation(presentation_ring(relation))
+                    for relation in relations
+                ),
+            ),
+            _extra_categories=_extra_categories,
+            _extra_construction_data=_extra_construction_data,
+            _free_source_module=_free_source_module,
+        )
     if presentation_ring not in SymmetricAlgebras(base):
         raise NotImplementedError(
             "the active native finite-presentation adapter currently handles commutative polynomial presentations"
