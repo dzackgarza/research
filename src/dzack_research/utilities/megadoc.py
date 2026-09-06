@@ -653,7 +653,7 @@ class Survey:
 
     # ---- catalogues and specimens --------------------------------------
 
-    INVARIANTS: Final = ("rank", "signature_pair", "discriminant", "degree", "order")
+    INVARIANTS: Final = ("module_rank", "signature_pair", "discriminant", "degree", "order")
 
     @staticmethod
     def ask(value: Specimen, question: str, show: Callable[[object], str] = str) -> str | None:

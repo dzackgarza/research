@@ -126,7 +126,7 @@ def _internal_hom_model_data(homset):
                 for row in engine_kernel_relations.rows()
             )
         )
-        kernel_labels = Sets.Δ[int(kernel.V().module_rank()) - 1]
+        kernel_labels = Sets.Δ[int(kernel.V().rank()) - 1]
         kernel_relation_labels = Sets.Δ[engine_kernel_relations.nrows() - 1]
         kernel_presentation = _presentation_from_relation_rows(
             ring,

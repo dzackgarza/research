@@ -1386,7 +1386,7 @@ class _GeneralPresentedModule:
         # Singular-backed multivariate implementation.
         from sage.modules.free_module import FreeModule as SageFreeModule
 
-        flattened_free = SageFreeModule(flattened_ring, int(lifted_free.module_rank()))
+        flattened_free = SageFreeModule(flattened_ring, int(lifted_free.rank()))
         flattened = flattened_free(tuple(flatten(coefficient) for coefficient in tuple(lifted)))
         flattened_relations = flattened_free.submodule(
             tuple(

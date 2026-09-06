@@ -32,8 +32,8 @@ preamble's source:
 ```python
 def test_the_group_algebra_of_the_symmetric_group(build, name) -> None:
     algebra = GroupAlgebra(build(name), Groups.S(3))
-    assert algebra.rank() == 6
-    assert algebra.center().rank() == 3
+    assert algebra.module_rank() == 6
+    assert algebra.center().module_rank() == 3
 ```
 
 It constructs the object, then runs nontrivial operations on it: the
