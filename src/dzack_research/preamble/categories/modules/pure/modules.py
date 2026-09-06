@@ -1107,6 +1107,19 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _selected_presentation_rows(self):
             return ()
 
+        def fitting_ideal(self, index):
+            r"""Return ``Fitt_i(R^n)``: zero below the rank, the unit ideal from it on.
+
+            A free module is presented by no relations, so its relation matrix
+            has no rows and the ideal of its ``(n - i)``-minors is zero while a
+            minor of positive size is asked for and the unit ideal once none
+            is.  The general minor computation has no matrix to read here, so
+            the same formula is stated directly.
+            """
+            ring = self.base_ring()
+            rank = int(self.number_of_module_generators())
+            return ring.ideal(ring.one() if int(index) >= rank else ring.zero())
+
         def _represented_kernel_of_morphism(self, morphism):
             if morphism.domain() is not self:
                 return NotImplemented

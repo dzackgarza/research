@@ -127,6 +127,31 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
             residue = point.residue_field()
             return InternalHom(self.cotangent_space(point), ring_as_module(residue))
 
+        def non_smooth_locus(self, relative_dimension):
+            r"""Return ``V(Fitt_d(Omega^1_{A/R}))`` for the supplied relative dimension ``d``.
+
+            The ``d``-th Fitting ideal of a finitely presented module cuts out
+            exactly the points where its rank exceeds ``d``.  On an algebra of
+            finite type over a field, of relative dimension ``d``, the
+            differentials have rank at least ``d`` everywhere and rank exactly
+            ``d`` where the algebra is smooth, so this closed set is the
+            singular locus.
+
+            The relative dimension is a supplied datum, not a reading of the
+            presentation: local dimension and component data are properties of
+            the algebra and are not determined by its module of differentials.
+            """
+
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
+
+            algebra = self.base_ring()
+            assert algebra.base_ring() in OwnedFields(), (
+                "the Fitting-ideal criterion for the singular locus is stated here "
+                f"for an algebra of finite type over a field, and {algebra} has "
+                f"scalars {algebra.base_ring()}"
+            )
+            return algebra.spectrum().V(self.fitting_ideal(relative_dimension))
+
         def derivation_classifier_isomorphism(self, target_module):
             r"""Return ``Hom_A(Omega^1_{A/R},M) ~= Der_R(A,M)`` as an ``A``-module isomorphism."""
 
