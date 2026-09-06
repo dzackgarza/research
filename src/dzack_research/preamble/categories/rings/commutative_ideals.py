@@ -285,28 +285,44 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             return _from_engine_ideal(self.ring(), self._engine_ideal().radical())
 
         def colon(self, other):
-            r"""Return the ideal quotient ``(self : other)`` when the backend supports it."""
+            r"""Return the ideal quotient ``(I : J)``.
+
+            Where the ring is realized as a quotient ``P/K``, the colon is
+            computed on preimages.  Taking preimages along ``P -> P/K`` is a
+            bijection onto the ideals of ``P`` containing ``K`` and it respects
+            products, so ``a J <= I`` upstairs says the same thing as it does
+            downstairs and ``(I : J)`` is ``(I~ : J~)/K``.  Singular computes a
+            colon for an ideal of ``P``, and Sage's quotient-ring ideal offers
+            none, so the computation is lifted and the result descended.
+            """
             _require_same_ring(self, other)
-            method = _engine_ideal_method(
-                self,
-                "quotient",
-                "this ideal backend has no colon/ideal-quotient operation",
+            method = _optional_engine_method(self._engine_ideal(), "quotient")
+            if method is not None:
+                return _from_engine_ideal(self.ring(), method(other._engine_ideal()))
+            return _descend_cover_ideal(
+                self.ring(),
+                _cover_lifted_ideal(self).quotient(_cover_lifted_ideal(other)),
             )
-            return _from_engine_ideal(self.ring(), method(other._engine_ideal()))
 
         ideal_quotient = colon
 
         def saturation(self, other):
-            r"""Return ``(self : other^infinity)`` when the backend supports it."""
+            r"""Return ``(I : J^infinity)``.
+
+            Preimages behave as they do for a colon, so a saturation over a
+            realized quotient ``P/K`` is ``(I~ : J~^infinity)/K``.  Sage
+            answers with the ideal and the exponent that reached it; the
+            exponent is a fact about the computation, not about the ideal.
+            """
             _require_same_ring(self, other)
-            method = _engine_ideal_method(
-                self,
-                "saturation",
-                "this ideal backend has no saturation operation",
+            method = _optional_engine_method(self._engine_ideal(), "saturation")
+            if method is not None:
+                saturated, _reached_at_exponent = method(other._engine_ideal())
+                return _from_engine_ideal(self.ring(), saturated)
+            saturated, _reached_at_exponent = _cover_lifted_ideal(self).saturation(
+                _cover_lifted_ideal(other)
             )
-            result = method(other._engine_ideal())
-            saturated = result[0] if isinstance(result, tuple) else result
-            return _from_engine_ideal(self.ring(), saturated)
+            return _descend_cover_ideal(self.ring(), saturated)
 
         def contraction_from_localization(self):
             r"""Contract this selected localized extension back to its source ring."""
@@ -534,6 +550,31 @@ def _engine_ideal_method(ideal, name, unavailable_message):
     if method is None:
         raise NotImplementedError(unavailable_message)
     return method
+
+
+def _cover_lifted_ideal(ideal):
+    r"""Return the preimage in ``P`` of an ideal of a ring realized as ``P/K``.
+
+    The preimage of ``I`` is ``K`` together with lifts of its generators, which
+    is what :func:`_engine_quotient_cover_ideal` builds.  Singular performs an
+    ideal operation over ``P`` and not over Sage's quotient parent, so the
+    operation is computed on preimages and its result descended.
+    """
+    ring = ideal.ring()
+    assert _optional_engine_method(_engine_ring(ring), "cover_ring") is not None, (
+        f"an ideal operation of {ring} is computed by its own realization, or in the "
+        "cover ring when that realization is a quotient; this realization is neither"
+    )
+    return _engine_quotient_cover_ideal(ring, ideal._engine_ideal())
+
+
+def _descend_cover_ideal(ring, cover_ideal):
+    r"""Return the ideal of ``P/K`` whose preimage in ``P`` is ``cover_ideal``."""
+    source = _own_ring(ring)
+    descended = tuple(
+        _owned_engine_value(source, generator) for generator in cover_ideal.gens()
+    )
+    return source.ideal(*(descended or (source.zero(),)))
 
 
 def _engine_ideal_syzygy_rows(ring, backend, selected):
