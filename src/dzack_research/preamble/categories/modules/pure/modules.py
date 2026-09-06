@@ -1172,6 +1172,29 @@ class ProjectiveModules(OwnedCategoryOverBaseRing):
                 raise TypeError("projective_rank currently requires a finite projective module")
             return self.fiber_dimension(point)
 
+        def local_trivialization(self, point):
+            r"""Return the isomorphism ``R_p^r -> M_p`` at a point of the spectrum.
+
+            By Nakayama a family whose images span the fibre ``M(p)`` generates
+            ``M_p``, and a projective module is free there, so a family of that
+            size generating a free module of that rank is a basis.  The
+            residue field already selects such a family among the chosen
+            generators, so the trivialization is the map carrying the standard
+            basis to it, and it is an isomorphism rather than merely a
+            surjection because the ranks agree.
+            """
+
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreeModuleOn,
+            )
+
+            localized = self.localize_at_prime(point)
+            labels = localized.residue_module().basis_generator_labels()
+            free = FreeModuleOn(localized.base_ring(), labels)
+            return module_homset(free, localized)(
+                lambda label: localized.module_generator(label)
+            )
+
 
 class FramedModules(OwnedCategoryOverBaseRing):
     r"""Modules carrying a specified generating map from a set."""
