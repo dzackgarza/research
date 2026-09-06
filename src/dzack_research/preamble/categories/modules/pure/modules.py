@@ -450,6 +450,19 @@ class Modules(OwnedCategoryOverBaseRing):
                 return modules.Mor(self, codomain)
             return _category_homset(category, self, codomain)
 
+        def End(self):
+            r"""Return ``End_R(M)``, the endomorphism ring of this module."""
+            return Modules(self.base_ring()).End(self)
+
+        def Aut(self):
+            r"""Return ``Aut_R(M)``, the automorphisms of this module.
+
+            The Hom packet gives every object its automorphisms, so a module
+            reaches them the way a group and a lattice already do rather than
+            through a class of its own.
+            """
+            return Modules(self.base_ring()).Aut(self)
+
         def module_category(self):
             return Modules(self.base_ring())
 

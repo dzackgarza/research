@@ -945,6 +945,45 @@ class ModuleMorphism(Morphism):
 
         return module_homset(codomain, self.domain())(image)
 
+    def inverse(self):
+        r"""Return the two-sided inverse of an isomorphism.
+
+        A bijection has one preimage of each generator of the codomain, so the
+        same construction that gives a section gives the inverse, and it needs
+        no freeness: where a section had to choose, this has nothing to choose.
+        The linear extension of those preimages is checked against the
+        codomain's relations by the constructor, which is where the assembled
+        map either is a morphism or is not.
+        """
+
+        assert self.is_injective(), "only a bijection has a two-sided inverse"
+        assert self.is_surjective(), "only a bijection has a two-sided inverse"
+        codomain = self.codomain()
+        return module_homset(codomain, self.domain())(
+            lambda label: self.lift(codomain.module_generator(label))
+        )
+
+    def as_automorphism(self):
+        r"""Return this invertible endomorphism as an element of ``Aut_R(M)``.
+
+        An automorphism is not a kind of morphism; it is an element of the
+        automorphism group the Hom packet gives the module.  This states the
+        endomorphism together with the inverse it constructs, which is what
+        that group's elements are.
+        """
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            CategoricalIsomorphism,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        module = self.domain()
+        assert self.codomain() is module, "an automorphism is an endomorphism"
+        # The inverse was constructed as one, so the pair is mutually inverse by
+        # construction and is not re-derived here.
+        return Modules(module.base_ring()).Aut(module)(
+            CategoricalIsomorphism(self.parent(), self, self.inverse(), verify=False)
+        )
+
 
 class FramingMorphism(ModuleMorphism):
     r"""A declared surjective linear map from a free framed module."""
