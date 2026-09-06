@@ -818,13 +818,19 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 placements.extend((OwnedRings().Commutative(), CommutativeAlgebras(self)))
             refine(self, placements)
 
-        def _fresh_free_module_on(self, labels):
+        def _fresh_free_module_on(self, labels, **options):
             r"""Return the selected free module on ``labels`` over this ring."""
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 FreshFreeModuleOn,
             )
 
-            return FreshFreeModuleOn(self, labels)
+            module_base = self.__dict__.get("_preamble_base_ring")
+            base = (
+                module_base
+                if module_base is not None and module_base is not self
+                else self
+            )
+            return FreshFreeModuleOn(base, labels, **options)
 
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""

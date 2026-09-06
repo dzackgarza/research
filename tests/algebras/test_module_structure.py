@@ -109,6 +109,21 @@ def test_presented_pid_algebra_flatness_uses_the_exact_scalar_kernel() -> None:
     assert not killed.is_flat()
 
 
+def test_finite_free_quotient_algebra_uses_its_module_tensor_for_multiplication() -> None:
+    presentation = PolynomialRing(QQ, "z")
+    z = presentation.algebra_generator("z")
+    algebra = FinitelyPresentedAlgebra(presentation, (z**2 - QQ.one(),))
+
+    assert int(algebra.rank()) == 2
+    multiplication = algebra.multiplication_morphism()
+    tensor_square = multiplication.domain()
+    one = algebra.module_generator(0)
+    generator = algebra.module_generator(1)
+    assert multiplication.codomain() is algebra
+    assert multiplication(tensor_square.pure_tensor(one, generator)) == generator
+    assert multiplication(tensor_square.pure_tensor(generator, generator)) == one
+
+
 def test_multiplication_morphism_is_the_module_map_out_of_the_tensor_product() -> None:
     order = _gaussian_integers()
     generators = order.module_generators()
