@@ -1045,18 +1045,32 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             refine(self, placements)
 
         def _fresh_free_module_on(self, labels, **options):
-            r"""Return the selected free module on ``labels`` over this ring."""
+            r"""Return the free module on ``labels`` over this ring's own scalars.
+
+            A ring is free of rank one over itself, so its sibling free modules
+            are free over it.  A ring the construction placed as a finite free
+            module over a smaller base -- a number field presented over the
+            rationals -- has that base for its scalars, and the question is
+            asked of the placement rather than of state a leaf restated.
+            """
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 FreshFreeModuleOn,
             )
-
-            module_base = self.__dict__.get("_preamble_base_ring")
-            base = (
-                module_base
-                if module_base is not None and module_base is not self
-                else self
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                FinitelyGeneratedFreeModules,
             )
-            return FreshFreeModuleOn(base, labels, **options)
+
+            scalars = self.base()
+            over_a_smaller_base = (
+                scalars is not None
+                and scalars is not self
+                and self in FinitelyGeneratedFreeModules(scalars)
+            )
+            return FreshFreeModuleOn(
+                scalars if over_a_smaller_base else self,
+                labels,
+                **options,
+            )
 
         def __pow__(self, exponent):
             r"""Return the free module ``R^n`` through the owned module constructor."""
@@ -1783,12 +1797,21 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     Element = _OwnedRingElement
 
-    def __init__(self, engine: Ring, *, category=None) -> None:
+    def __init__(self, engine: Ring, *, base=None, category=None) -> None:
+        r"""Construct over the scalar ring the level above declares.
+
+        ``base`` is that ring.  A level sitting over a ring states its own base
+        when it constructs through the level below -- the algebra level does --
+        and carrying it to the host here is what makes the module level's
+        ``base_ring()`` an answer of the construction rather than state a leaf
+        restates.  A ring which is its own base declares none, and reads its
+        scalars off the engine.
+        """
         self._engine = engine
         placement = _owned_ring_category(engine)
         if category is not None:
             placement = Category.join((placement, category))
-        Parent.__init__(self, category=placement)
+        Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
 
     def _from_engine_element(self, value):
