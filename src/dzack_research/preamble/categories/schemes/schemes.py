@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
     refine_commutative_algebra,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedCategoryOverBaseRing,
     RingMorphism,
     _engine_element,
@@ -159,13 +160,15 @@ class SchemeMorphism(Morphism):
         left_pullback = self._preamble_coordinate_algebra_morphism
         right_pullback = other._preamble_coordinate_algebra_morphism
         if left_pullback is not None and right_pullback is not None:
-            composite = affine_spec_morphism(right_pullback * left_pullback)
-            # Re-siting the composite in the Hom of the stated endpoints must
-            # not drop the pullback it was computed from.
-            return SchemeMorphism(
-                composite.native_morphism(),
-                homset=homset,
-                pullback=composite.coordinate_algebra_morphism(),
+            composite_pullback = ring_homset(
+                left_pullback.domain(),
+                right_pullback.codomain(),
+            ).elementwise(
+                lambda element: right_pullback(left_pullback(element))
+            )
+            return _RepresentedAffineSchemeMorphism(
+                homset,
+                composite_pullback,
             )
         structured = other._postcompose_with(self)
         if structured is not NotImplemented:
@@ -235,6 +238,36 @@ class SchemeMorphism(Morphism):
         left_pullback = self._preamble_coordinate_algebra_morphism
         right_pullback = other._preamble_coordinate_algebra_morphism
         if left_pullback is not None and right_pullback is not None:
+            base = _scheme_base_ring(self.codomain())
+            if self.codomain() in AffineSchemes(base):
+                algebra = self.codomain().coordinate_algebra()
+                if algebra in FramedAlgebras(base):
+                    labels = algebra.algebra_generating_set()
+                    if labels.cardinality().is_finite():
+                        return all(
+                            left_pullback(algebra.algebra_generator(label))
+                            == right_pullback(algebra.algebra_generator(label))
+                            for label in labels
+                        )
+                if algebra in LocalizationRings():
+                    source_algebra = algebra.localization_source()
+                    if source_algebra in FramedAlgebras(base):
+                        labels = source_algebra.algebra_generating_set()
+                        if labels.cardinality().is_finite():
+                            localization_map = algebra.localization_map()
+                            return all(
+                                left_pullback(
+                                    localization_map(
+                                        source_algebra.algebra_generator(label)
+                                    )
+                                )
+                                == right_pullback(
+                                    localization_map(
+                                        source_algebra.algebra_generator(label)
+                                    )
+                                )
+                                for label in labels
+                            )
             return bool(left_pullback == right_pullback)
         from sage.schemes.generic.morphism import SchemeMorphism_id
 
@@ -254,6 +287,28 @@ class SchemeMorphism(Morphism):
 
     def _repr_(self) -> str:
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
+
+
+class _RepresentedAffineSchemeMorphism(SchemeMorphism):
+    r"""An affine scheme morphism carried exactly by its coordinate pullback."""
+
+    def __init__(self, parent, pullback) -> None:
+        Morphism.__init__(self, parent)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        self._preamble_coordinate_algebra_morphism = pullback
+        self._native_realization = None
+
+    def native_morphism(self):
+        if self._native_realization is None:
+            self._native_realization = _affine_morphism_from_pullback(
+                self.domain(),
+                self.codomain(),
+                self.coordinate_algebra_morphism(),
+            ).native_morphism()
+        return self._native_realization
+
+    __hash__ = None
 
 
 def categorical_scheme_morphism(native_morphism, *, domain=None, codomain=None):
@@ -304,11 +359,7 @@ class SchemeMorCategory(CategoricalHomset):
             and datum.domain() is self.codomain().coordinate_algebra()
             and datum.codomain() is self.domain().coordinate_algebra()
         ):
-            return _affine_morphism_from_pullback(
-                self.domain(),
-                self.codomain(),
-                datum,
-            )
+            return _RepresentedAffineSchemeMorphism(self, datum)
         return SchemeMorphism(datum, homset=self)
 
     @cached_method
@@ -471,6 +522,19 @@ class Schemes(OwnedCategoryOverBaseRing):
             left_chart,
             right_chart,
             transition,
+        ).scheme()
+
+    def glue_affine_atlas(self, charts, transitions):
+        r"""Glue a finite affine atlas with represented distinguished-open transitions."""
+
+        from dzack_research.preamble.categories.schemes.gluing import (
+            _FiniteSchemeGluingDatum,
+        )
+
+        return _FiniteSchemeGluingDatum(
+            self,
+            charts,
+            transitions,
         ).scheme()
 
 

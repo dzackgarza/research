@@ -803,7 +803,7 @@
     "AffineSchemes": {
       "display": "AffineSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:825",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:889",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -947,7 +947,7 @@
     "AffineSpaces": {
       "display": "AffineSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1266",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1330",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -3533,7 +3533,7 @@
     "ClosedEmbeddings": {
       "display": "ClosedEmbeddings",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2347",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2411",
       "summary": "Subobjects of ``X`` whose inclusion is a closed immersion.",
       "owned": true,
       "exported": true,
@@ -9047,7 +9047,7 @@
     "FiberProductSchemes": {
       "display": "FiberProductSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2138",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2202",
       "summary": "Affine schemes equipped as selected pullbacks of one cospan.",
       "owned": true,
       "exported": true,
@@ -9733,7 +9733,7 @@
     "FiniteTypeSchemes": {
       "display": "FiniteTypeSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:765",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:829",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -15197,7 +15197,7 @@
     "IntegralSchemes": {
       "display": "IntegralSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:781",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:845",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -19487,7 +19487,7 @@
     "NormalSchemes": {
       "display": "NormalSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:797",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:861",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -20030,7 +20030,7 @@
     "OpenImmersions": {
       "display": "OpenImmersions",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2400",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2464",
       "summary": "Subobjects of ``X`` whose inclusion is an open immersion.",
       "owned": true,
       "exported": true,
@@ -24772,7 +24772,7 @@
     "ProductProjectiveSpaces": {
       "display": "ProductProjectiveSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1390",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1454",
       "summary": "Finite products of projective spaces over one base ring.",
       "owned": true,
       "exported": true,
@@ -24899,7 +24899,7 @@
     "ProductSchemes": {
       "display": "ProductSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1350",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1414",
       "summary": "Scheme products equipped with their stated factors and projections.",
       "owned": true,
       "exported": true,
@@ -25243,7 +25243,7 @@
     "ProjectiveSchemes": {
       "display": "ProjectiveSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1236",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1300",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -25365,7 +25365,7 @@
     "ProjectiveSpaces": {
       "display": "ProjectiveSpaces(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1308",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1372",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -25603,7 +25603,7 @@
     "QuasiAffineSchemes": {
       "display": "QuasiAffineSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1200",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1264",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -25702,7 +25702,7 @@
     "QuasiProjectiveSchemes": {
       "display": "QuasiProjectiveSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1219",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:1283",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -26783,7 +26783,7 @@
     "SchemeMonomorphisms": {
       "display": "SchemeMonomorphisms",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2426",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:2490",
       "summary": "Monomorphisms of schemes.",
       "owned": true,
       "exported": true,
@@ -26800,7 +26800,7 @@
     "Schemes": {
       "display": "Schemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:396",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:447",
       "summary": "Schemes over ``Spec(R)`` for the represented base ring ``R``.",
       "owned": true,
       "exported": true,
@@ -27032,7 +27032,7 @@
     "SeparatedSchemes": {
       "display": "SeparatedSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:751",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:815",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,
@@ -27389,7 +27389,7 @@
     "SmoothSchemes": {
       "display": "SmoothSchemes(R)",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:811",
+      "source": "src/dzack_research/preamble/categories/schemes/schemes.py:875",
       "summary": "A category over a ring, normalized to the session's owned ring.",
       "owned": true,
       "exported": true,

@@ -1,6 +1,7 @@
 r"""Descent and gluing for represented schemes, modules, and algebras."""
 
-from itertools import combinations
+from collections.abc import Mapping
+from itertools import combinations, permutations
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
@@ -27,7 +28,6 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebras,
-    FramedAlgebras,
 )
 from dzack_research.preamble.categories.algebras.restricted_scalars import (
     restrict_algebra_scalars,
@@ -43,7 +43,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     restrict_scalars,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring,
+    ring_morphism,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     OpenImmersions,
@@ -54,29 +57,114 @@ from dzack_research.preamble.categories.schemes.schemes import (
     refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def _scheme_maps_agree_on_affine_pullbacks(left, right) -> bool:
-    if left.domain() is not right.domain() or left.codomain() is not right.codomain():
-        return False
-    base = left.domain().scheme_base_ring()
-    target = left.codomain()
-    if target not in AffineSchemes(base):
-        return bool(left == right)
-    algebra = target.coordinate_algebra()
-    if algebra not in FramedAlgebras(base):
-        return bool(left == right)
-    labels = algebra.algebra_generating_set()
-    if not labels.cardinality().is_finite():
-        return bool(left == right)
-    left_pullback = left.coordinate_algebra_morphism()
-    right_pullback = right.coordinate_algebra_morphism()
-    return all(
-        left_pullback(algebra.algebra_generator(label))
-        == right_pullback(algebra.algebra_generator(label))
-        for label in labels
+def _factor_affine_map_through_distinguished_open(morphism, open_subscheme):
+    r"""Factor ``morphism : T -> X`` through the represented ``D(f) subseteq X``."""
+
+    ambient = open_subscheme.ambient_scheme()
+    if morphism.codomain() is not ambient:
+        raise ValueError("distinguished-open factorization requires the stated ambient codomain")
+    base = ambient.scheme_base_ring()
+    if morphism.domain() not in AffineSchemes(base):
+        raise TypeError("the represented distinguished-open factorization requires an affine source")
+    if open_subscheme not in OpenImmersions(ambient) or not open_subscheme.is_distinguished_open():
+        raise TypeError("the target open must be represented by one distinguished element")
+
+    ambient_algebra = ambient.coordinate_algebra()
+    source_algebra = morphism.domain().coordinate_algebra()
+    open_algebra = open_subscheme.coordinate_algebra()
+    pullback = morphism.coordinate_algebra_morphism()
+    defining_element = ambient_algebra(open_subscheme.distinguished_open_element())
+    pulled_element = source_algebra(pullback(defining_element))
+    if not pulled_element.is_unit():
+        raise ValueError("the scheme morphism does not land in the stated distinguished open")
+
+    def factor_pullback(element):
+        numerator, denominator = open_algebra.localization_fraction_data(element)
+        numerator_image = source_algebra(pullback(numerator))
+        denominator_image = source_algebra(pullback(denominator))
+        return numerator_image * denominator_image.inverse_of_unit()
+
+    return morphism.domain().Mor(open_subscheme)(
+        ring_morphism(
+            open_algebra,
+            source_algebra,
+            factor_pullback,
+        )
     )
+
+
+def _family_on_finite_ordered_set(index_set, values, *, name, noun):
+    r"""Normalize finite input to an indexed family on ``index_set``."""
+
+    expected = int(index_set.cardinality().finite_value())
+    if isinstance(values, IndexedFamily):
+        if not values.cardinality().is_finite():
+            raise TypeError(f"{noun} must be a finite indexed family")
+        if int(values.cardinality().finite_value()) != expected:
+            raise ValueError(f"{noun} has the wrong number of entries")
+        try:
+            entries = tuple(values[index] for index in index_set)
+        except (IndexError, KeyError, TypeError, ValueError) as error:
+            raise ValueError(f"{noun} is not indexed by the required labels") from error
+    elif isinstance(values, Mapping):
+        if len(values) != expected:
+            raise ValueError(f"{noun} has the wrong number of entries")
+        try:
+            entries = tuple(values[index] for index in index_set)
+        except (KeyError, TypeError) as error:
+            raise ValueError(f"{noun} is not indexed by the required labels") from error
+    else:
+        entries = tuple(values)
+        if len(entries) != expected:
+            raise ValueError(f"{noun} has the wrong number of entries")
+
+    return finite_indexed_family(
+        index_set,
+        lambda index: entries[int(index_set.rank(index))],
+        name=name,
+    )
+
+
+def _finite_chart_family(charts):
+    r"""Return one nonempty finite ordered family of chart candidates."""
+
+    if isinstance(charts, IndexedFamily):
+        if not charts.cardinality().is_finite():
+            raise TypeError("scheme gluing requires a finite indexed family of affine charts")
+        index_set = finite_ordered_set(charts.index_set())
+        family = finite_indexed_family(
+            index_set,
+            lambda index: charts[index],
+            name="Affine charts of a finite scheme gluing",
+        )
+    elif isinstance(charts, Mapping):
+        index_set = finite_ordered_set(tuple(charts))
+        family = finite_indexed_family(
+            index_set,
+            lambda index: charts[index],
+            name="Affine charts of a finite scheme gluing",
+        )
+    else:
+        entries = tuple(charts)
+        index_set = finite_ordered_set(range(len(entries)))
+        family = finite_indexed_family(
+            index_set,
+            lambda index: entries[int(index_set.rank(index))],
+            name="Affine charts of a finite scheme gluing",
+        )
+    if int(family.cardinality().finite_value()) == 0:
+        raise ValueError("scheme gluing requires at least one affine chart")
+    return family
 
 
 class _GluedSchemeOpenInclusion(SchemeMorphism):
@@ -87,7 +175,7 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
         self._gluing_datum = gluing_datum
-        self._chart_index = int(chart_index)
+        self._chart_index = gluing_datum.normalize_chart_index(chart_index)
 
     def gluing_datum(self):
         return self._gluing_datum
@@ -112,7 +200,8 @@ class _GluedSchemeOpenInclusion(SchemeMorphism):
         return not self == other
 
     def __hash__(self) -> int:
-        return hash((id(self.gluing_datum()), self.chart_index(), "open-image"))
+        position = self.gluing_datum().chart_index_set().rank(self.chart_index())
+        return hash((id(self.gluing_datum()), int(position), "open-image"))
 
     def _repr_(self):
         return f"Open inclusion {self.domain()} -> {self.codomain()}"
@@ -133,7 +222,7 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
         self._gluing_datum = gluing_datum
-        self._chart_index = int(chart_index)
+        self._chart_index = gluing_datum.normalize_chart_index(chart_index)
         self._preamble_open_image = open_image
         self._preamble_open_image_isomorphism = chart_isomorphism
         self._chart_isomorphism = chart_isomorphism
@@ -170,7 +259,8 @@ class _GluedSchemeChartEmbedding(SchemeMorphism):
         return not self == other
 
     def __hash__(self) -> int:
-        return hash((id(self.gluing_datum()), self.chart_index()))
+        position = self.gluing_datum().chart_index_set().rank(self.chart_index())
+        return hash((id(self.gluing_datum()), int(position)))
 
     def _repr_(self):
         return (
@@ -187,12 +277,18 @@ class _GluedSchemeMorphism(SchemeMorphism):
         self._preamble_domain_override = None
         self._preamble_codomain_override = None
         datum = self.domain().gluing_datum()
-        local_maps = tuple(local_maps)
-        if len(local_maps) != 2:
-            raise ValueError("a two-chart glued-scheme morphism requires two local maps")
-        self._local_maps = tuple(
-            datum.chart(index).Mor(self.codomain())(local_map)
-            for index, local_map in enumerate(local_maps)
+        raw_local_maps = _family_on_finite_ordered_set(
+            datum.chart_index_set(),
+            local_maps,
+            name="Raw local maps of a glued-scheme morphism",
+            noun="a glued-scheme morphism",
+        )
+        self._local_maps = finite_indexed_family(
+            datum.chart_index_set(),
+            lambda index: datum.chart(index).Mor(self.codomain())(
+                raw_local_maps[index]
+            ),
+            name="Local maps of a glued-scheme morphism",
         )
         if verify_compatibility:
             self._verify_overlap_compatibility()
@@ -201,7 +297,9 @@ class _GluedSchemeMorphism(SchemeMorphism):
         return self._local_maps
 
     def local_map(self, index):
-        return self.local_maps()[int(index)]
+        return self.local_maps()[
+            self.domain().gluing_datum().normalize_chart_index(index)
+        ]
 
     def native_morphism(self):
         raise NotImplementedError(
@@ -210,19 +308,20 @@ class _GluedSchemeMorphism(SchemeMorphism):
 
     def _verify_overlap_compatibility(self) -> None:
         datum = self.domain().gluing_datum()
-        left_restriction = self.local_map(0) * datum.left_overlap().inclusion()
-        right_restriction = (
-            self.local_map(1)
-            * datum.right_overlap().inclusion()
-            * datum.transition().forward()
-        )
-        if not _scheme_maps_agree_on_affine_pullbacks(
-            left_restriction,
-            right_restriction,
-        ):
-            raise ValueError(
-                "the local scheme morphisms do not agree through the overlap transition"
+        for left_index, right_index in combinations(tuple(datum.chart_indices()), 2):
+            left_overlap = datum.overlap(left_index, right_index)
+            right_overlap = datum.overlap(right_index, left_index)
+            transition = datum.transition_between(left_index, right_index).forward()
+            left_restriction = self.local_map(left_index) * left_overlap.inclusion()
+            right_restriction = (
+                self.local_map(right_index)
+                * right_overlap.inclusion()
+                * transition
             )
+            if left_restriction != right_restriction:
+                raise ValueError(
+                    "the local scheme morphisms do not agree through the overlap transition"
+                )
 
     def _postcompose_with(self, after):
         if after.domain() is not self.codomain():
@@ -252,12 +351,8 @@ class _GluedSchemeMorphism(SchemeMorphism):
             and other.domain() is self.domain()
             and other.codomain() is self.codomain()
             and all(
-                left == right
-                for left, right in zip(
-                    self.local_maps(),
-                    other.local_maps(),
-                    strict=True,
-                )
+                self.local_map(index) == other.local_map(index)
+                for index in self.domain().gluing_datum().chart_indices()
             )
         )
 
@@ -271,7 +366,7 @@ class _GluedSchemeMorphism(SchemeMorphism):
 
 
 class _GluedSchemeMorCategory(SchemeMorCategory):
-    r"""Maps out of one two-chart glued scheme, represented by compatible local maps."""
+    r"""Maps out of a finite glued scheme, represented by compatible local maps."""
 
     def _element_constructor_(self, datum):
         if isinstance(datum, _GluedSchemeMorphism):
@@ -280,7 +375,7 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
             if datum.parent() is self:
                 return datum
             datum = datum.local_maps()
-        if isinstance(datum, (tuple, list)):
+        if isinstance(datum, (tuple, list, IndexedFamily, Mapping)):
             return _GluedSchemeMorphism(self, datum)
         return super()._element_constructor_(datum)
 
@@ -291,9 +386,77 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
         datum = self.domain().gluing_datum()
         return _GluedSchemeMorphism(
             self,
-            tuple(datum.chart_embedding(index) for index in range(2)),
+            tuple(
+                datum.chart_embedding(index)
+                for index in datum.chart_indices()
+            ),
             verify_compatibility=False,
         )
+
+
+def _install_glued_scheme_structure(datum, scheme) -> None:
+    r"""Install the owned chart/open/Hom structure on one verified glued carrier."""
+
+    datum._scheme = scheme
+    scheme._preamble_scheme_homset_class = _GluedSchemeMorCategory
+    refine_scheme(scheme, datum.base_ring())
+
+    chart_images = []
+    chart_isomorphisms = []
+    chart_embeddings = []
+    for index in datum.chart_indices():
+        chart = datum.chart(index)
+        algebra = chart.coordinate_algebra()
+        chart_image = _fresh_affine_spectrum(
+            algebra,
+            datum.base_ring(),
+            extra_categories=(OpenImmersions(scheme),),
+        )
+        open_inclusion = _GluedSchemeOpenInclusion(
+            chart_image.Mor(scheme),
+            datum,
+            index,
+        )
+        chart_image._preamble_inclusion = open_inclusion
+        identity_pullback = algebra.Mor(algebra).identity()
+        chart_isomorphism = Isomorphism(
+            chart.Mor(chart_image)(identity_pullback),
+            chart_image.Mor(chart)(identity_pullback),
+        )
+        chart_embedding = _GluedSchemeChartEmbedding(
+            chart.Mor(scheme),
+            datum,
+            index,
+            chart_image,
+            chart_isomorphism,
+        )
+        chart_images.append(chart_image)
+        chart_isomorphisms.append(chart_isomorphism)
+        chart_embeddings.append(chart_embedding)
+
+    datum._chart_images = _family_on_finite_ordered_set(
+        datum.chart_index_set(),
+        chart_images,
+        name="Open chart images in glued scheme",
+        noun="open chart images",
+    )
+    datum._chart_isomorphisms = _family_on_finite_ordered_set(
+        datum.chart_index_set(),
+        chart_isomorphisms,
+        name="Chart-to-image isomorphisms",
+        noun="chart-to-image isomorphisms",
+    )
+    datum._chart_embeddings = _family_on_finite_ordered_set(
+        datum.chart_index_set(),
+        chart_embeddings,
+        name="Scheme gluing chart embeddings",
+        noun="scheme gluing chart embeddings",
+    )
+    scheme._preamble_identity_morphism = scheme.Mor(scheme).identity()
+    base_scheme = Spec(datum.base_ring(), base_ring=datum.base_ring())
+    scheme._preamble_structure_morphism = scheme.Mor(base_scheme)(
+        tuple(chart.structure_morphism() for chart in datum.charts())
+    )
 
 
 class _OwnedTwoChartGluedScheme(SageGluedScheme):
@@ -312,6 +475,9 @@ class _OwnedTwoChartGluedScheme(SageGluedScheme):
 
     def charts(self):
         return self.gluing_datum().charts()
+
+    def chart_index_set(self):
+        return self.gluing_datum().chart_index_set()
 
     def chart_images(self):
         return self.gluing_datum().chart_images()
@@ -374,10 +540,36 @@ class _TwoChartSchemeGluingDatum(SageObject):
         return self._charts
 
     def chart(self, index):
-        return self.charts()[int(index)]
+        return self.charts()[self.normalize_chart_index(index)]
+
+    def chart_index_set(self):
+        return self.charts().index_set()
+
+    def normalize_chart_index(self, index):
+        return self.chart_index_set()(index)
+
+    def number_of_charts(self):
+        return 2
+
+    def chart_indices(self):
+        return self.chart_index_set()
 
     def transition(self):
         return self._transition
+
+    def transition_between(self, source_index, target_index):
+        source_index = int(self.normalize_chart_index(source_index))
+        target_index = int(self.normalize_chart_index(target_index))
+        if source_index == target_index:
+            raise ValueError("a scheme-gluing transition is between distinct charts")
+        if (source_index, target_index) == (0, 1):
+            return self.transition()
+        if (source_index, target_index) == (1, 0):
+            return Isomorphism(self.transition().inverse(), self.transition().forward())
+        raise IndexError("two-chart gluing has only chart indices 0 and 1")
+
+    def overlap(self, source_index, target_index):
+        return self.transition_between(source_index, target_index).forward().domain()
 
     def left_overlap(self):
         return self.transition().forward().domain()
@@ -389,86 +581,364 @@ class _TwoChartSchemeGluingDatum(SageObject):
         left_inclusion = self.left_overlap().inclusion()
         right_inclusion = self.right_overlap().inclusion()
         right_span = right_inclusion * self.transition().forward()
-        self._scheme = _OwnedTwoChartGluedScheme(
+        scheme = _OwnedTwoChartGluedScheme(
             self,
             left_inclusion.native_morphism(),
             right_span.native_morphism(),
         )
-        self._scheme._preamble_scheme_homset_class = _GluedSchemeMorCategory
-        refine_scheme(self._scheme, self.base_ring())
-        chart_images = []
-        chart_isomorphisms = []
-        chart_embeddings = []
-        for index in range(2):
-            chart = self.chart(index)
-            algebra = chart.coordinate_algebra()
-            chart_image = _fresh_affine_spectrum(
-                algebra,
-                self.base_ring(),
-                extra_categories=(OpenImmersions(self._scheme),),
-            )
-            open_inclusion = _GluedSchemeOpenInclusion(
-                chart_image.Mor(self._scheme),
-                self,
-                index,
-            )
-            chart_image._preamble_inclusion = open_inclusion
-            identity_pullback = algebra.Mor(algebra).identity()
-            chart_isomorphism = Isomorphism(
-                chart.Mor(chart_image)(identity_pullback),
-                chart_image.Mor(chart)(identity_pullback),
-            )
-            chart_embedding = _GluedSchemeChartEmbedding(
-                chart.Mor(self._scheme),
-                self,
-                index,
-                chart_image,
-                chart_isomorphism,
-            )
-            chart_images.append(chart_image)
-            chart_isomorphisms.append(chart_isomorphism)
-            chart_embeddings.append(chart_embedding)
-
-        self._chart_images = finite_family(
-            chart_images,
-            name="Open chart images in glued scheme",
-        )
-        self._chart_isomorphisms = finite_family(
-            chart_isomorphisms,
-            name="Chart-to-image isomorphisms",
-        )
-        self._chart_embeddings = finite_family(
-            chart_embeddings,
-            name="Scheme gluing chart embeddings",
-        )
-        self._scheme._preamble_identity_morphism = self._scheme.Mor(
-            self._scheme
-        ).identity()
-        base_scheme = Spec(self.base_ring(), base_ring=self.base_ring())
-        self._scheme._preamble_structure_morphism = self._scheme.Mor(base_scheme)(
-            tuple(chart.structure_morphism() for chart in self.charts())
-        )
+        _install_glued_scheme_structure(self, scheme)
 
     def scheme(self):
         return self._scheme
 
     def chart_embedding(self, index):
-        return self._chart_embeddings[int(index)]
+        return self._chart_embeddings[self.normalize_chart_index(index)]
 
     def chart_images(self):
         return self._chart_images
 
     def chart_image(self, index):
-        return self.chart_images()[int(index)]
+        return self.chart_images()[self.normalize_chart_index(index)]
 
     def chart_isomorphisms(self):
         return self._chart_isomorphisms
 
     def chart_isomorphism(self, index):
-        return self.chart_isomorphisms()[int(index)]
+        return self.chart_isomorphisms()[self.normalize_chart_index(index)]
 
     def _repr_(self):
         return f"Two-chart scheme gluing datum for {self.chart(0)} and {self.chart(1)}"
+
+
+class _OwnedFiniteGluedScheme(SageScheme):
+    r"""The owned carrier of a verified finite affine gluing datum."""
+
+    def __init__(self, gluing_datum) -> None:
+        self._preamble_gluing_datum = gluing_datum
+        SageScheme.__init__(self, _engine_ring(gluing_datum.base_ring()))
+
+    def gluing_datum(self):
+        return self._preamble_gluing_datum
+
+    def chart_index_set(self):
+        return self.gluing_datum().chart_index_set()
+
+    def chart_indices(self):
+        return self.gluing_datum().chart_indices()
+
+    def number_of_charts(self):
+        return self.gluing_datum().number_of_charts()
+
+    def charts(self):
+        return self.gluing_datum().charts()
+
+    def chart(self, index):
+        return self.gluing_datum().chart(index)
+
+    def transitions(self):
+        return self.gluing_datum().transitions()
+
+    def transition_between(self, source_index, target_index):
+        return self.gluing_datum().transition_between(source_index, target_index)
+
+    def overlap(self, source_index, target_index):
+        return self.gluing_datum().overlap(source_index, target_index)
+
+    def triple_overlap(self, source_index, middle_index, target_index):
+        return self.gluing_datum().triple_overlap(
+            source_index,
+            middle_index,
+            target_index,
+        )
+
+    def transition_on_triple(self, source_index, target_index, third_index):
+        return self.gluing_datum().transition_on_triple(
+            source_index,
+            target_index,
+            third_index,
+        )
+
+    def chart_images(self):
+        return self.gluing_datum().chart_images()
+
+    def chart_image(self, index):
+        return self.gluing_datum().chart_image(index)
+
+    def chart_isomorphism(self, index):
+        return self.gluing_datum().chart_isomorphism(index)
+
+    def chart_embedding(self, index):
+        return self.gluing_datum().chart_embedding(index)
+
+    def _repr_(self):
+        return f"Scheme glued from affine atlas indexed by {self.chart_index_set()}"
+
+
+class _FiniteSchemeGluingDatum(SageObject):
+    r"""Finite affine charts with distinguished pair overlaps and a cocycle."""
+
+    def __init__(self, schemes, charts, transitions) -> None:
+        self._schemes = schemes
+        self._charts = _finite_chart_family(charts)
+        for chart in self.charts():
+            if chart not in AffineSchemes(self.base_ring()):
+                raise TypeError("finite scheme gluing currently requires affine charts")
+
+        pair_indices = finite_ordered_set(
+            tuple(combinations(tuple(self.chart_indices()), 2))
+        )
+        self._transitions = _family_on_finite_ordered_set(
+            pair_indices,
+            transitions,
+            name="Pair transitions of a finite scheme gluing",
+            noun="finite scheme-gluing transition data",
+        )
+        self._reverse_transitions = []
+        self._triple_overlaps = []
+        self._triple_transition_maps = []
+        self._scheme = None
+        self._chart_images = None
+        self._chart_isomorphisms = None
+        self._chart_embeddings = None
+
+        self._verify_pairwise_transitions()
+        self._verify_triple_domains_and_cocycle()
+        self._construct_glued_scheme()
+
+    def base_ring(self):
+        return self._schemes.base_ring()
+
+    def charts(self):
+        return self._charts
+
+    def chart_index_set(self):
+        return self.charts().index_set()
+
+    def chart_indices(self):
+        return self.chart_index_set()
+
+    def normalize_chart_index(self, index):
+        return self.chart_index_set()(index)
+
+    def number_of_charts(self):
+        return int(self.chart_index_set().cardinality().finite_value())
+
+    def chart(self, index):
+        return self.charts()[self.normalize_chart_index(index)]
+
+    def transition_index_set(self):
+        return self.transitions().index_set()
+
+    def transitions(self):
+        return self._transitions
+
+    def _ordered_pair(self, left_index, right_index):
+        left_index = self.normalize_chart_index(left_index)
+        right_index = self.normalize_chart_index(right_index)
+        if left_index == right_index:
+            raise ValueError("a scheme-gluing transition is between distinct charts")
+        indices = self.chart_index_set()
+        if indices.rank(left_index) < indices.rank(right_index):
+            return left_index, right_index
+        return right_index, left_index
+
+    def transition_between(self, source_index, target_index):
+        source_index = self.normalize_chart_index(source_index)
+        target_index = self.normalize_chart_index(target_index)
+        pair = self._ordered_pair(source_index, target_index)
+        transition = self.transitions()[pair]
+        if pair == (source_index, target_index):
+            return transition
+        key = (source_index, target_index)
+        for cached_key, cached in self._reverse_transitions:
+            if cached_key == key:
+                return cached
+        reversed_transition = Isomorphism(
+            transition.inverse(),
+            transition.forward(),
+        )
+        self._reverse_transitions.append((key, reversed_transition))
+        return reversed_transition
+
+    def overlap(self, source_index, target_index):
+        return self.transition_between(source_index, target_index).forward().domain()
+
+    def _verify_pairwise_transitions(self) -> None:
+        for source_index, target_index in self.transition_index_set():
+            transition = self.transitions()[source_index, target_index]
+            if not isinstance(transition, CategoricalIsomorphism):
+                raise TypeError("scheme gluing requires represented overlap isomorphisms")
+            forward = transition.forward()
+            inverse = transition.inverse()
+            if not isinstance(forward, SchemeMorphism) or not isinstance(
+                inverse, SchemeMorphism
+            ):
+                raise TypeError("each finite-atlas transition must be an isomorphism of schemes")
+            source_overlap = forward.domain()
+            target_overlap = forward.codomain()
+            source_chart = self.chart(source_index)
+            target_chart = self.chart(target_index)
+            if source_overlap not in OpenImmersions(source_chart):
+                raise ValueError("a transition domain must be a represented open of its source chart")
+            if target_overlap not in OpenImmersions(target_chart):
+                raise ValueError("a transition codomain must be a represented open of its target chart")
+            if not source_overlap.is_distinguished_open() or not target_overlap.is_distinguished_open():
+                raise TypeError("finite scheme gluing currently requires distinguished affine pair overlaps")
+            if inverse.domain() is not target_overlap or inverse.codomain() is not source_overlap:
+                raise ValueError("a finite-atlas transition inverse has the wrong overlap endpoints")
+            if inverse * forward != source_overlap.categorical_identity_morphism():
+                raise ValueError("a finite-atlas transition is not left-invertible")
+            if forward * inverse != target_overlap.categorical_identity_morphism():
+                raise ValueError("a finite-atlas transition is not right-invertible")
+
+    def _triple_key(self, source_index, middle_index, target_index):
+        source_index = self.normalize_chart_index(source_index)
+        middle_index = self.normalize_chart_index(middle_index)
+        target_index = self.normalize_chart_index(target_index)
+        if len({
+            self.chart_index_set().rank(source_index),
+            self.chart_index_set().rank(middle_index),
+            self.chart_index_set().rank(target_index),
+        }) != 3:
+            raise ValueError("a triple overlap requires three distinct chart indices")
+        others = sorted(
+            (middle_index, target_index),
+            key=self.chart_index_set().rank,
+        )
+        return source_index, others[0], others[1]
+
+    def triple_overlap(self, source_index, middle_index, target_index):
+        r"""Return ``U_ij cap U_ik = D(f_ij f_ik)`` inside ``X_i``."""
+
+        key = self._triple_key(source_index, middle_index, target_index)
+        for cached_key, cached in self._triple_overlaps:
+            if cached_key == key:
+                return cached
+        source_index, middle_index, target_index = key
+        source_chart = self.chart(source_index)
+        left_element = self.overlap(
+            source_index,
+            middle_index,
+        ).distinguished_open_element()
+        right_element = self.overlap(
+            source_index,
+            target_index,
+        ).distinguished_open_element()
+        triple = source_chart.distinguished_open(left_element * right_element)
+        self._triple_overlaps.append((key, triple))
+        return triple
+
+    def transition_on_triple(self, source_index, target_index, third_index):
+        r"""Restrict ``phi_source,target`` to the represented triple overlap."""
+
+        source_index = self.normalize_chart_index(source_index)
+        target_index = self.normalize_chart_index(target_index)
+        third_index = self.normalize_chart_index(third_index)
+        self._triple_key(source_index, target_index, third_index)
+        key = (source_index, target_index, third_index)
+        for cached_key, cached in self._triple_transition_maps:
+            if cached_key == key:
+                return cached
+
+        source_triple = self.triple_overlap(
+            source_index,
+            target_index,
+            third_index,
+        )
+        source_overlap = self.overlap(source_index, target_index)
+        into_source_overlap = _factor_affine_map_through_distinguished_open(
+            source_triple.inclusion(),
+            source_overlap,
+        )
+        transition = self.transition_between(source_index, target_index).forward()
+        through_target_overlap = transition * into_source_overlap
+        target_chart_map = (
+            self.overlap(target_index, source_index).inclusion()
+            * through_target_overlap
+        )
+        target_triple = self.triple_overlap(
+            target_index,
+            source_index,
+            third_index,
+        )
+        try:
+            restricted = _factor_affine_map_through_distinguished_open(
+                target_chart_map,
+                target_triple,
+            )
+        except ValueError as error:
+            raise ValueError(
+                "a finite-atlas transition does not preserve the represented triple-overlap domain"
+            ) from error
+        self._triple_transition_maps.append((key, restricted))
+        return restricted
+
+    def _verify_triple_domains_and_cocycle(self) -> None:
+        labels = tuple(self.chart_indices())
+        for source_index, target_index, third_index in permutations(labels, 3):
+            forward = self.transition_on_triple(
+                source_index,
+                target_index,
+                third_index,
+            )
+            inverse = self.transition_on_triple(
+                target_index,
+                source_index,
+                third_index,
+            )
+            source_triple = self.triple_overlap(
+                source_index,
+                target_index,
+                third_index,
+            )
+            if inverse * forward != source_triple.categorical_identity_morphism():
+                raise ValueError(
+                    "finite-atlas transitions fail inverse compatibility on a triple overlap"
+                )
+
+        for left_index, middle_index, right_index in permutations(labels, 3):
+            left_middle = self.transition_on_triple(
+                left_index,
+                middle_index,
+                right_index,
+            )
+            middle_right = self.transition_on_triple(
+                middle_index,
+                right_index,
+                left_index,
+            )
+            left_right = self.transition_on_triple(
+                left_index,
+                right_index,
+                middle_index,
+            )
+            if middle_right * left_middle != left_right:
+                raise ValueError("finite-atlas transition maps fail the triple cocycle")
+
+    def _construct_glued_scheme(self) -> None:
+        scheme = _OwnedFiniteGluedScheme(self)
+        _install_glued_scheme_structure(self, scheme)
+
+    def scheme(self):
+        return self._scheme
+
+    def chart_embedding(self, index):
+        return self._chart_embeddings[self.normalize_chart_index(index)]
+
+    def chart_images(self):
+        return self._chart_images
+
+    def chart_image(self, index):
+        return self.chart_images()[self.normalize_chart_index(index)]
+
+    def chart_isomorphisms(self):
+        return self._chart_isomorphisms
+
+    def chart_isomorphism(self, index):
+        return self.chart_isomorphisms()[self.normalize_chart_index(index)]
+
+    def _repr_(self):
+        return f"Finite affine scheme gluing datum indexed by {self.chart_index_set()}"
 
 
 def _finite_framing(module):
