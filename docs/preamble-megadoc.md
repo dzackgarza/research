@@ -13459,7 +13459,7 @@ computation engine.
 
 Ringed spaces `(X,O_X)`.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:374`
+- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:420`
 - **probed as** `Category of ringed spaces`
 - **above** [`Sets`](#cat-sets)
 - **below** [`LocallyRingedSpaces`](#cat-locallyringedspaces)
@@ -13545,7 +13545,7 @@ Convex polytopes all of whose vertices are lattice points.
 
 Ringed spaces whose stalks are local rings.
 
-- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:403`
+- **defined at** `src/dzack_research/preamble/categories/schemes/ringed_spaces.py:449`
 - **probed as** `Category of locally ringed spaces`
 - **above** [`RingedSpaces`](#cat-ringedspaces)
 - **below** [`Schemes(R)`](#cat-schemes)

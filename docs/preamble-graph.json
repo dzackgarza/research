@@ -17495,7 +17495,7 @@
     "LocallyRingedSpaces": {
       "display": "LocallyRingedSpaces",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:403",
+      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:449",
       "summary": "Ringed spaces whose stalks are local rings.",
       "owned": true,
       "exported": true,
@@ -26322,7 +26322,7 @@
     "RingedSpaces": {
       "display": "RingedSpaces",
       "subsystem": "schemes",
-      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:374",
+      "source": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py:420",
       "summary": "Ringed spaces ``(X,O_X)``.",
       "owned": true,
       "exported": true,
