@@ -1616,6 +1616,22 @@ class _OwnedRingElement(RingElement):
         return parent._from_engine_element(self._backend() * other._backend())
 
     def __mul__(self, other):
+        r"""``r x`` for a scalar of this ring and an element over it.
+
+        A module over this ring registers the action of this ring on its
+        elements, and the host's coercion model finds that action for ``r*m``.
+        It finds it only when this method defers, and this method cannot defer
+        whenever this ring can convert the other element: the line below would
+        then multiply in this ring and answer in it, so ``3`` times the identity
+        of the Gaussian field would be the rational three rather than the
+        Gaussian three.  A number field, a polynomial ring and every other
+        algebra over this ring holds such elements -- the ones this ring already
+        names.
+
+        So the scalar action is taken here, on the element's own parent, before
+        the conversion is tried.  It is the same operation the registered action
+        performs, reached on the one route the coercion model does not see.
+        """
         other_parent = getattr(other, "parent", lambda: None)()
         if other_parent is not None and other_parent is not self.parent():
             try:
