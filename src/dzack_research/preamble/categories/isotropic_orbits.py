@@ -10,18 +10,52 @@ def _held(lattice, element):
 
 
 def primitive_isotropic_subobject(lattice, basis):
-    r"""Return the primitive totally isotropic sublattice spanned by ``basis``."""
+    r"""Return the primitive totally isotropic sublattice spanned by ``basis``.
+
+    The subobject is admitted to ``PrimitiveIsotropicSubobjects``, so every
+    orbit representative produced here carries the parabolic subgroup, the
+    Levi restrictions and the Eichler transvections of its own cusp.
+    """
+    from dzack_research.preamble.categories.isotropic_parabolics import (
+        primitive_isotropic,
+    )
+
     elements = tuple(_held(lattice, element) for element in basis)
-    if not elements:
-        raise ValueError("an isotropic sublattice requires a nonempty basis")
-    if any(lattice.b(left, right) != 0 for left in elements for right in elements):
-        raise ValueError("the stated basis is not totally isotropic")
-    subobject = lattice.subobject_on(elements)
-    if subobject.rank() != len(elements):
-        raise ValueError("the stated isotropic basis is linearly dependent")
-    if not subobject.is_primitive():
-        raise ValueError("the isotropic sublattice must be primitive")
+    assert elements, "an isotropic sublattice is spanned by a nonempty family"
+    subobject = primitive_isotropic(lattice, elements)
+    assert int(subobject.rank()) == len(elements), (
+        "the stated isotropic family is linearly dependent, so it does not "
+        "frame the sublattice it spans"
+    )
     return subobject
+
+
+def primitive_isotropic_vectors(lattice):
+    r"""Return the set of primitive isotropic vectors of ``lattice``.
+
+    Membership is ``q(v) = 0`` together with the saturation of ``Z v``, which
+    is the statement ``div(v) = 1`` in ``Z v``: the vector is not a proper
+    multiple of another lattice vector.  Both conditions are decided from
+    their definitions, so the set is exact.
+
+    For an indefinite isotropic lattice this set is countably infinite, so it
+    is presented by its membership and not by an enumeration.  Its ``O(L)``
+    orbits are the cusps, and they are finite in number; representatives come
+    from ``L.O().isotropic_orbit_representatives(1)``.
+    """
+    from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+
+    zero = lattice.zero()
+    value_zero = lattice.base_ring().zero()
+
+    def is_primitive_isotropic(vector) -> bool:
+        if vector == zero:
+            return False
+        if lattice.q(vector) != value_zero:
+            return False
+        return bool(lattice.subobject_on((vector,)).is_primitive())
+
+    return ConditionSet(lattice, is_primitive_isotropic)
 
 
 class IsotropicFlag:
@@ -195,5 +229,6 @@ __all__ = [
     "isotropic_orbit_representatives",
     "isotropic_stabilizer_generators",
     "primitive_isotropic_subobject",
+    "primitive_isotropic_vectors",
     "transport_isotropic_object",
 ]
