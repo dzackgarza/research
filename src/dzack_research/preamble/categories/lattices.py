@@ -15,6 +15,7 @@ calling that category.
 
 from sage.arith.misc import gcd
 from sage.categories.category import Category
+from sage.categories.morphism import SetMorphism
 from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
@@ -74,6 +75,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     voronoi_relevant_vectors,
 )
 from dzack_research.preamble.categories.forms.forms import BilinearForms
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
@@ -127,7 +129,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+    indexed_family,
+)
 from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
@@ -899,8 +904,6 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def discriminant_representation(self):
             r"""Return ``rho_L:O(L)->O(A_L)`` by functoriality of discriminants."""
-            from sage.categories.morphism import SetMorphism
-
             source = self.Aut()
             target = self.discriminant_group().orthogonal_group()
             return SetMorphism(
@@ -947,6 +950,33 @@ class Lattices(OwnedCategoryOverBaseRing):
                 lambda automorphism: automorphism.real_spinor_norm_sign() == 1,
                 "real spinor norm(g)=+1",
                 character_data={"spinor_kernel": True},
+            )
+
+        @cached_method
+        def component_character(self):
+            r"""Return \(\chi_\Omega\colon O(L)\to C_2\), the character of the positive cone.
+
+            In signature \((1,n)\) the cone \(\{v: b(v,v)>0\}\) has two
+            components, and an isometry either preserves each of them or
+            exchanges the two.  That assignment is a group morphism to the
+            cyclic group of order two, and :meth:`positive_cone_subgroup` is
+            its kernel.
+            """
+            _signature = self.signature_pair()
+            positive, negative = _signature.first(), _signature.second()
+            integers = positive.parent()
+            if positive != integers.one() or negative < integers.one():
+                raise ValueError(
+                    f"the component character is defined in signature (1,n); got {(positive, negative)}"
+                )
+
+            target = OwnedGroups().C(2)
+            exchange = target.group_generators().unrank(0)
+            return SetMorphism(
+                self.Aut().Mor(target),
+                lambda isometry: target.one()
+                if isometry.preserves_positive_cone()
+                else exchange,
             )
 
         def positive_cone_subgroup(self):
@@ -1099,6 +1129,25 @@ class Lattices(OwnedCategoryOverBaseRing):
                 I_∞ ∈ (ZZ^NN ⊗ ZZ^NN)*
             """
             return self._gram
+
+        def gram_matrix(self):
+            r"""Return the matrix of \(L\to\operatorname{Hom}_R(L,R)\) in the framing and its dual.
+
+            The Gram tensor is the form; this is its coordinate presentation,
+            the matrix of :meth:`algebraic_correlation_morphism` as an element
+            of \(\operatorname{Hom}_R(F(S),F(S^\vee))\), so its entry at
+            \((i,j)\) is \(b(e_i,e_j)\) and its determinant is the
+            discriminant.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: Lattices(ZZ)("U").gram_matrix().determinant()
+                -1
+                sage: Lattices(ZZ)("A2").gram_matrix().determinant()
+                3
+            """
+            return self.algebraic_correlation_morphism().matrix()
 
         def module_generating_set(self):
             r"""Return the labels of the distinguished free-module framing.
@@ -1385,6 +1434,46 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return ring(gram._scalar).is_unit() and Lattices(ring)(gram._gram).is_unimodular()
                 case _:
                     raise NotImplementedError("unimodularity of this infinite Gram presentation is not decided")
+
+        def divisibility_ideal(self, element):
+            r"""Return the ideal \(b(v, L) = \{b(v,x) : x\in L\}\) of the base ring.
+
+            The pairings against a generating set generate it.  Over
+            \(\mathbb Z\) its positive generator is :meth:`div`.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: L = Lattices(ZZ)([[2, 0], [0, -6]])
+                sage: L.divisibility_ideal(L.module_generator(1)) == ZZ.ideal(6)
+                True
+            """
+            assert element.parent() is self, "the divisibility ideal is defined for an element of this lattice"
+            ring = self.base_ring()
+            pairings = tuple(generator_pairings(self, element).values())
+            if not pairings:
+                return ring.ideal(ring.zero())
+            return ring.ideal(*pairings)
+
+        def is_totally_isotropic(self) -> bool:
+            r"""Return whether the form vanishes identically: \(\operatorname{rad}(L)=L\).
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: U = Lattices(ZZ)("U")
+                sage: U.is_totally_isotropic()
+                False
+                sage: U.subobject_on((U.module_generator(0),)).is_totally_isotropic()
+                True
+            """
+            assert self.is_finite_rank(), "total isotropy is decided here on a finite generating set"
+            zero = self.base_ring().zero()
+            return all(
+                value == zero
+                for generator in self.module_generators()
+                for value in generator_pairings(self, generator).values()
+            )
 
         def div(self, element):
             r"""Return the divisibility ``gcd{b(element,x): x in L}`` over ``ZZ``."""
@@ -2066,6 +2155,63 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return self.Aut()(image)
 
+        def eichler_transvection(self, isotropic, orthogonal):
+            r"""Return the Eichler transvection \(t(e,a)\in O(L)\).
+
+            For isotropic \(e\) and \(a\in e^\perp\),
+
+            \[
+            t(e,a)(x) = x - b(a,x)\,e + b(e,x)\,a - \tfrac12 q(a)\,b(e,x)\,e .
+            \]
+
+            It fixes \(e\) and acts trivially on \(e^\perp/e\), so it lies in
+            the unipotent radical of the parabolic subgroup stabilizing
+            \(\mathbb Z e\).  These transvections generate the stable
+            orthogonal group and put vectors into normal form, which is how
+            Eichler's criterion realizes its orbit equivalences.  The formula
+            is transcribed at ``notes/topics/coble-enriques-lattice-theory/``
+            ``reflective-two-elementary-lattices.md``, which attributes it to
+            Dawes, section 2 equation (7).
+            \(t(e,a)\) preserves \(L\) exactly when every coefficient
+            \(\tfrac12 q(a)\,b(e,x)\) is integral, automatic on an even
+            lattice and asserted otherwise.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: L = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
+                sage: e, f, a, _b = L.module_generators()
+                sage: t = L.eichler_transvection(e, a)
+                sage: t(e) == e and t(f) == f + a + e
+                True
+            """
+            assert isotropic.parent() is self and orthogonal.parent() is self, (
+                "an Eichler transvection is built from two vectors of this lattice"
+            )
+            ring = self.base_ring()
+            zero = ring.zero()
+            assert isotropic.q() == zero, f"an Eichler transvection is taken in an isotropic vector; q(e)={isotropic.q()}"
+            assert isotropic.b(orthogonal) == zero, (
+                f"an Eichler transvection needs a in e^perp; b(e,a)={isotropic.b(orthogonal)}"
+            )
+            fraction_field = ring.fraction_field()
+            half_norm = fraction_field(orthogonal.q()) / fraction_field(ring(2))
+
+            def image(label):
+                x = self.module_generator(label)
+                half_coefficient = half_norm * fraction_field(x.b(isotropic))
+                assert half_coefficient in ring, (
+                    f"t(e,a) does not preserve the lattice: q(a) b(e,{x})/2 = {half_coefficient} is not integral"
+                )
+                return (
+                    x
+                    - self.scalar_multiple(x.b(orthogonal), isotropic)
+                    + self.scalar_multiple(x.b(isotropic), orthogonal)
+                    - self.scalar_multiple(ring(half_coefficient), isotropic)
+                )
+
+            return self.Aut()(image)
+
         def is_positive_definite(self) -> bool:
             return bool(
                 self.is_finite_rank()
@@ -2290,6 +2436,30 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return self
             return NotImplemented
 
+        def __pow__(self, exponent):
+            r"""Return \(L^{\oplus n}\), the \(n\)-fold orthogonal direct sum.
+
+            It is the sum of the constant family over \(\Delta[n-1]\), so
+            ``L ** 0`` is the empty sum: the zero lattice, the unit of ``+``.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: (Lattices(ZZ)("U") ** 3).signature_pair()
+                (3, 3)
+            """
+            count = int(exponent)
+            assert count >= 0, "an orthogonal power L^n takes a natural number n"
+            if count == 0:
+                return Lattices(self.base_ring())(0)
+            return sum(
+                indexed_family(
+                    Sets.Δ[count - 1],
+                    lambda _position: self,
+                    name=f"Orthogonal power summands of {self}",
+                )
+            )
+
         def _repr_(self):
             r"""Name the lattice by rank and, over \(\mathbb{Q}\), signature.
 
@@ -2381,6 +2551,55 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def divided_discriminant_class(self):
             return self.parent().divided_discriminant_class(self)
+
+        def to_covector(self):
+            r"""Return \(b(v,-)\in\operatorname{Hom}_R(L,R)\), the image of \(v\) under the algebraic correlation.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: U = Lattices(ZZ)("U")
+                sage: e, f = U.module_generators()
+                sage: e.to_covector().parent() is U.dual_module()
+                True
+            """
+            return self.parent().algebraic_correlation_morphism()(self)
+
+        def is_isotropic(self) -> bool:
+            r"""Return whether \(q(v)=0\).
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: e, f = Lattices(ZZ)("U").module_generators()
+                sage: e.is_isotropic(), (e + f).is_isotropic()
+                (True, False)
+            """
+            return self.q() == self.parent().base_ring().zero()
+
+        def sublattice(self):
+            r"""Return \(Rv\hookrightarrow L\): the rank-one subobject spanned by this vector, with its inclusion."""
+            return self.parent().subobject_on((self,))
+
+        def is_primitive(self) -> bool:
+            r"""Return whether \(Rv\hookrightarrow L\) has torsion-free cokernel.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: e, f = Lattices(ZZ)("U").module_generators()
+                sage: e.is_primitive(), (2 * e).is_primitive(), (2 * e + 3 * f).is_primitive()
+                (True, False, True)
+            """
+            return self.sublattice().is_primitive()
+
+        def orthogonal_complement(self):
+            r"""Return \(v^\perp\hookrightarrow L\) as a subobject of the lattice."""
+            return self.sublattice().orthogonal_complement()
+
+        def isotropic_reduction(self):
+            r"""Return \(v^\perp/Rv\) for an isotropic vector, with its parabolic data."""
+            return self.sublattice().inclusion().isotropic_reduction()
 
         def is_root(self) -> bool:
             r"""Return whether the orthogonal reflection in this vector is integral.
@@ -2511,6 +2730,214 @@ class EvenLattices(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [Lattices(self.base_ring())]
+
+
+class IsotropicReductions(OwnedCategoryOverBaseRing):
+    r"""Lattices \(K_I=I^\perp/I\) built from a totally isotropic \(\iota:I\hookrightarrow L\).
+
+    An object is the quotient lattice itself, together with the data that
+    built it: the embedding \(\iota\), the complement \(I^\perp\), the
+    inclusion \(I\hookrightarrow I^\perp\) and the chosen lifts of the
+    framing of \(K_I\) into \(I^\perp\).  The parabolic subgroup
+    \(P_I=\operatorname{Stab}_{O(L)}(I)\) acts on \(K_I\) through its Levi
+    quotient; the kernel of that action together with the restriction to
+    \(I\) is the unipotent radical.
+    """
+
+    def an_object(self):
+        r"""The reduction of \(U\oplus U\) by an isotropic line, which is \(U\)."""
+        plane = Lattices(self.base_ring())("U")
+        return (plane + plane).module_generator(0).isotropic_reduction()
+
+    @classmethod
+    def _repr_object_names(cls) -> str:
+        return "isotropic reductions"
+
+    def super_categories(self):
+        return [Lattices(self.base_ring())]
+
+    class ParentMethods:
+        def isotropic_embedding(self):
+            r"""Return \(\iota:I\hookrightarrow L\), the embedding this reduces."""
+            return self._preamble_isotropic_embedding
+
+        def isotropic_sublattice(self):
+            r"""Return \(I\), the totally isotropic sublattice."""
+            return self.isotropic_embedding().domain()
+
+        def orthogonal_complement(self):
+            r"""Return \(I^\perp\hookrightarrow L\) as a subobject of the lattice."""
+            return self._preamble_orthogonal_complement
+
+        def isotropic_inclusion(self):
+            r"""Return \(I\hookrightarrow I^\perp\)."""
+            return self._preamble_isotropic_inclusion
+
+        def reduction_lifts(self):
+            r"""Return the chosen lifts of the framing of \(K_I\) into \(I^\perp\)."""
+            return self._preamble_reduction_lifts
+
+        def quotient_lattice(self):
+            r"""Return \(K_I=I^\perp/I\), which is this lattice."""
+            return self
+
+        @cached_method
+        def projection(self):
+            r"""Return the quotient morphism \(\pi:I^\perp\twoheadrightarrow K_I\)."""
+            perpendicular = self.orthogonal_complement()
+            quotient = self.isotropic_inclusion().cokernel()
+            normalization = self._preamble_reduction_normalization
+            normalized = normalization.codomain()
+            normalized_labels = normalized.module_generating_set()
+            labels = self.module_generating_set()
+            presentation_projection = quotient.presentation_projection()
+
+            def image(label):
+                normalized_element = normalization.forward()(
+                    presentation_projection(perpendicular.module_generator(label))
+                )
+                return self.linear_combination(
+                    {
+                        labels.unrank(int(normalized_labels.rank(normalized_label))): coefficient
+                        for normalized_label, coefficient in module_coefficients(
+                            normalized_element, normalized
+                        ).items()
+                        if coefficient
+                    }
+                )
+
+            return module_homset(perpendicular, self)(image)
+
+        @cached_method
+        def parabolic_subgroup(self):
+            r"""Return \(P_I=\operatorname{Stab}_{O(L)}(I)\), the setwise stabilizer of \(I\)."""
+            embedding = self.isotropic_embedding()
+            return embedding.codomain().O().setwise_stabilizer(embedding)
+
+        @cached_method
+        def levi_action(self):
+            r"""Return \(P_I\to O(K_I)\), \(g\mapsto\bar g\), the action on \(I^\perp/I\).
+
+            An isometry stabilizing \(I\) stabilizes \(I^\perp\), so it
+            descends to the quotient.  The descended map is read on the
+            chosen lifts.
+            """
+            perpendicular = self.orthogonal_complement()
+            perpendicular_inclusion = perpendicular.inclusion()
+            lifts = self.reduction_lifts()
+            projection = self.projection()
+            automorphisms = self.Aut()
+
+            def descend(isometry):
+                return automorphisms(
+                    lambda label: projection(
+                        perpendicular_inclusion.lift(
+                            isometry(perpendicular_inclusion(lifts(label)))
+                        )
+                    )
+                )
+
+            return SetMorphism(
+                self.parabolic_subgroup().Mor(automorphisms), descend
+            )
+
+        @cached_method
+        def unipotent_kernel(self):
+            r"""Return \(U_I=\ker(P_I\to GL(I)\times O(K_I))\), the unipotent radical."""
+            embedding = self.isotropic_embedding()
+            source = embedding.domain()
+            embedded = tuple(
+                embedding(generator) for generator in source.module_generators()
+            )
+            levi = self.levi_action()
+            identity = self.Aut().one()
+            return predicate_subgroup(
+                self.parabolic_subgroup(),
+                lambda isometry: all(
+                    isometry(vector) == vector for vector in embedded
+                )
+                and levi(isometry) == identity,
+                "g fixes I pointwise and acts trivially on I^perp/I",
+            )
+
+        def lift_isometry(self, isometry):
+            r"""Return \(g\in P_I\) with \(\bar g=\) ``isometry``, when \(L\) splits along the lifts.
+
+            The chosen lifts span \(K'\subseteq I^\perp\), a copy of
+            \(K_I\).  When \(K'\) is primitive and \(M=K'^\perp\) is
+            unimodular, \(L=M\perp K'\), so \(g=\mathrm{id}_M\perp\sigma\)
+            lies in \(P_I\) and has the required Levi image; \(M\) then
+            contains \(I\).  Without such a splitting the Levi quotient need
+            not lift, which the assertion states.
+
+            Unimodularity of \(M\) is what makes the splitting computable:
+            the correlation \(M\to M^\vee\) is then an isomorphism, and the
+            \(M\)-component of \(x\in L\) is the correlation's inverse
+            applied to \(b(x,-)|_M\).
+            """
+            automorphisms = self.Aut()
+            assert isometry.parent() is automorphisms, (
+                "the isometry to lift is an element of O(K_I)"
+            )
+            lattice = self.isotropic_embedding().codomain()
+            perpendicular_inclusion = self.orthogonal_complement().inclusion()
+            lifts = self.reduction_lifts()
+            labels = self.module_generating_set()
+            embedded_lifts = finite_indexed_family(
+                labels,
+                lambda label: perpendicular_inclusion(lifts(label)),
+                name="Embedded isotropic-reduction lifts",
+            )
+            complement = lattice.subobject_on(embedded_lifts)
+            unimodular_summand = complement.orthogonal_complement()
+            assert complement.is_primitive() and unimodular_summand.is_unimodular(), (
+                "no represented splitting L = M perp K' along the chosen lifts; "
+                "the Levi quotient need not lift"
+            )
+            complement_inclusion = complement.inclusion()
+            summand_inclusion = unimodular_summand.inclusion()
+            into_complement = module_homset(self, complement)(
+                lambda label: complement_inclusion.lift(embedded_lifts(label))
+            )
+            correlation = unimodular_summand.correlation_isomorphism()
+            summand_dual = correlation.forward().codomain()
+
+            def summand_component(vector):
+                covector = summand_dual.linear_combination(
+                    {
+                        label: coefficient
+                        for label in summand_dual.module_generating_set()
+                        if (
+                            coefficient := lattice.b(
+                                vector,
+                                summand_inclusion(
+                                    unimodular_summand.module_generator(label)
+                                ),
+                            )
+                        )
+                    }
+                )
+                return correlation.inverse()(covector)
+
+            def image(label):
+                vector = lattice.module_generator(label)
+                fixed_part = summand_component(vector)
+                embedded_fixed = summand_inclusion(fixed_part)
+                moved_part = into_complement.lift(
+                    complement_inclusion.lift(vector - embedded_fixed)
+                )
+                return embedded_fixed + complement_inclusion(
+                    into_complement(isometry(moved_part))
+                )
+
+            lifted = lattice.O()(image)
+            assert lifted in self.parabolic_subgroup(), (
+                "the assembled map does not stabilize I; the chosen lifts do not span a splitting"
+            )
+            assert self.levi_action()(lifted) == isometry, (
+                "the assembled map descends to the wrong isometry of I^perp/I"
+            )
+            return lifted
 
 
 class RootLattices(Category):

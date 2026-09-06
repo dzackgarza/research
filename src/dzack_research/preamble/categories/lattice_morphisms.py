@@ -41,11 +41,19 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_matrix,
     tensor,
 )
+
+
+def _engine_gram_rows(lattice):
+    r"""Return the Gram entries as plain integer rows, the shape the programs read."""
+    rank = int(lattice.rank())
+    gram = lattice.gram_tensor()
+    return [[int(gram[i, j]) for j in range(rank)] for i in range(rank)]
 
 
 def _tensor_view(morphism):
@@ -141,20 +149,32 @@ class LatticeEmbedding(LatticeMorphism):
         )
 
     def isotropic_reduction(self):
-        r"""Return ``S^perp/S`` for this isotropic embedding ``S -> L``."""
+        r"""Return \(K_I=I^\perp/I\) for this totally isotropic embedding \(\iota:I\hookrightarrow L\).
+
+        \(I\) pairs to zero against \(I^\perp\), so the form of \(L\) descends
+        to the quotient.  When \(L\) is nondegenerate of signature \((p,q)\)
+        and \(\operatorname{rk}I=k\), the quotient is nondegenerate of
+        signature \((p-k,q-k)\).
+
+        The result is a lattice in ``IsotropicReductions``, which keeps the
+        embedding, the complement \(I^\perp\), the inclusion
+        \(I\hookrightarrow I^\perp\) and the chosen lifts of the quotient
+        framing.  The parabolic subgroup of \(O(L)\) stabilizing \(I\), its
+        Levi action on \(K_I\) and its unipotent radical are all read off that
+        retained data.
+        """
+        from dzack_research.preamble.categories._lattice import Lattice
+        from dzack_research.preamble.categories.lattices import IsotropicReductions
+
         source = self.domain()
         target = self.codomain()
         ring = target.base_ring()
-        if any(
-            source.b(left, right) != ring.zero()
-            for left in source.module_generators()
-            for right in source.module_generators()
-        ):
-            raise ValueError("isotropic reduction requires an isotropic sublattice")
+        assert source.is_totally_isotropic(), (
+            "an isotropic reduction is taken along a totally isotropic sublattice"
+        )
 
         perpendicular = self.orthogonal_complement()
         perpendicular_inclusion = perpendicular.inclusion()
-
         into_perpendicular = module_embedding(
             source,
             perpendicular,
@@ -162,18 +182,14 @@ class LatticeEmbedding(LatticeMorphism):
                 self(source.module_generator(label))
             ),
         )
-        if not into_perpendicular.is_primitive():
-            raise ValueError(
-                "the isotropic quotient is not free over the base ring; the selected isotropic sublattice is not primitive in its orthogonal complement"
-            )
+        assert into_perpendicular.is_primitive(), (
+            "the isotropic quotient is not free over the base ring; the selected "
+            "isotropic sublattice is not primitive in its orthogonal complement"
+        )
         quotient = into_perpendicular.cokernel()
+        normalization = quotient.invariant_factor_form()
         quotient_module_generators = quotient.smith_form_module_generators()
         rank = int(quotient_module_generators.cardinality())
-        lattice_category = target.lattice_category()
-        if rank == 0:
-            return lattice_category(0)
-
-
         labels = Sets.Δ[rank - 1]
         lifts = finite_indexed_family(
             labels,
@@ -184,17 +200,38 @@ class LatticeEmbedding(LatticeMorphism):
             ),
             name="Isotropic-reduction lifts",
         )
-        gram = tensor(
-            ring,
-            (),
-            (rank, rank),
-            (
-                perpendicular.b(lifts.unrank(i), lifts.unrank(j))
-                for i in range(rank)
-                for j in range(rank)
+
+        lattice_category = target.lattice_category()
+        if rank == 0:
+            prototype = lattice_category(0)
+        else:
+            gram = tensor(
+                ring,
+                (),
+                (rank, rank),
+                (
+                    perpendicular.b(lifts.unrank(i), lifts.unrank(j))
+                    for i in range(rank)
+                    for j in range(rank)
+                ),
+            )
+            prototype = lattice_category(gram, module_generators=labels)
+
+        reduction = Lattice(
+            prototype._module,
+            prototype.gram_tensor(),
+            lattice_category,
+            prototype._sage_lattice,
+            extra_categories=(IsotropicReductions(ring),),
+            construction_data=(
+                ("isotropic_embedding", self),
+                ("orthogonal_complement", perpendicular),
+                ("isotropic_inclusion", into_perpendicular),
+                ("reduction_lifts", lifts),
+                ("reduction_normalization", normalization),
             ),
         )
-        return lattice_category(gram, module_generators=labels)
+        return lattice_category._refine_lattice_object(reduction)
 
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.
@@ -267,15 +304,17 @@ class LatticeEmbedding(LatticeMorphism):
             source_vector = source_dual_form * basis_covector
             target_vector = inclusion_tensor * source_vector
             extended_covector = target_form_tensor * target_vector
-            try:
-                integral_coefficients = tuple(
-                    target_ring(coefficient) for coefficient in extended_covector
-                )
-            except (TypeError, ValueError) as error:
+            if any(
+                coefficient not in target_ring for coefficient in extended_covector
+            ):
                 raise ValueError(
                     "the lattice embedding is not an orthogonal direct summand: "
-                    "extension by zero does not send the selected dual lattice into the ambient dual lattice"
-                ) from error
+                    "extension by zero does not send the selected dual lattice into "
+                    "the dual lattice of the codomain"
+                )
+            integral_coefficients = tuple(
+                target_ring(coefficient) for coefficient in extended_covector
+            )
             dual_element = target_dual.linear_combination(
                 {
                     target_label: coefficient
@@ -913,11 +952,15 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if self.domain() is not self.codomain():
             raise ValueError("a discriminant preimage is defined for an automorphism group")
         target = self.domain().discriminant_group().orthogonal_group()
-        ambient = subgroup if subgroup is target else getattr(subgroup, "supergroup", lambda: None)()
+        containing_group = (
+            subgroup
+            if subgroup is target
+            else getattr(subgroup, "supergroup", lambda: None)()
+        )
         if (
-            ambient is None
-            or getattr(ambient, "domain", lambda: None)() is not target.domain()
-            or getattr(ambient, "is_quadratic", lambda: None)()
+            containing_group is None
+            or getattr(containing_group, "domain", lambda: None)() is not target.domain()
+            or getattr(containing_group, "is_quadratic", lambda: None)()
             != target.is_quadratic()
         ):
             raise ValueError("the subgroup must lie in O(A_L)")
@@ -937,6 +980,89 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             predicate,
             f"rho_L(g) lies in {subgroup}",
             character_data={"discriminant_preimages": (subgroup,)},
+        )
+
+    def lattice(self):
+        r"""Return \(L\), the lattice this orthogonal group acts on."""
+        assert self.domain() is self.codomain(), (
+            "the acted lattice is the common domain and codomain of an automorphism group"
+        )
+        return self.domain()
+
+    def stabilizer(self, vector):
+        r"""Return \(\operatorname{Stab}_{O(L)}(v)=\{g\in O(L): g(v)=v\}\).
+
+        The subgroup is cut out by its defining condition, so it is
+        constructed for indefinite \(L\) as well, where \(O(L)\) is infinite
+        and cannot be enumerated.  When the engine computes a generating set
+        of this subgroup, :meth:`vector_stabilizer_generators` supplies it.
+        """
+        lattice = self.lattice()
+        assert vector.parent() is lattice, (
+            "a point stabilizer in O(L) fixes a vector of L"
+        )
+        return predicate_subgroup(
+            self,
+            lambda automorphism: automorphism(vector) == vector,
+            f"g fixes {vector}",
+        )
+
+    def pointwise_stabilizer(self, embedding):
+        r"""Return \(\{g\in O(L): g|_I=\mathrm{id}\}\) for \(\iota:I\hookrightarrow L\).
+
+        A linear map that fixes a generating set of \(I\) fixes \(I\)
+        pointwise, so the condition is decided on the framing of \(I\).
+        """
+        lattice = self.lattice()
+        assert embedding.codomain() is lattice, (
+            "a stabilizer in O(L) is taken of a sublattice of L"
+        )
+        source = embedding.domain()
+        embedded = tuple(
+            embedding(generator) for generator in source.module_generators()
+        )
+        return predicate_subgroup(
+            self,
+            lambda automorphism: all(
+                automorphism(vector) == vector for vector in embedded
+            ),
+            f"g fixes {source} pointwise",
+        )
+
+    def setwise_stabilizer(self, embedding):
+        r"""Return \(\{g\in O(L): g(I)=I\}\) for \(\iota:I\hookrightarrow L\).
+
+        The image of \(I\) is carried into itself by \(g\) exactly when every
+        \(g(\iota(e))\) has a preimage under \(\iota\); asking the same of
+        \(g^{-1}\) turns that containment into equality.  Both conditions are
+        decided by the coordinate lift along \(\iota\), so the subgroup is
+        constructed for indefinite \(L\) too.
+
+        For a totally isotropic \(I\) this is the parabolic subgroup
+        \(P_I\), whose Levi action on \(I^\perp/I\) and unipotent radical are
+        read off the isotropic reduction of \(\iota\).
+        """
+        lattice = self.lattice()
+        assert embedding.codomain() is lattice, (
+            "a stabilizer in O(L) is taken of a sublattice of L"
+        )
+        source = embedding.domain()
+        embedded = tuple(
+            embedding(generator) for generator in source.module_generators()
+        )
+
+        def preserves_image(automorphism):
+            inverse = automorphism.inverse()
+            return all(
+                embedding.is_in_image(automorphism(vector))
+                and embedding.is_in_image(inverse(vector))
+                for vector in embedded
+            )
+
+        return predicate_subgroup(
+            self,
+            preserves_image,
+            f"g(I)=I for I={source}",
         )
 
     @cached_method
@@ -1016,16 +1142,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
         lattice = self.domain()
         if not lattice.is_definite():
-            from py_polyhedral.binaries import indefinite_form_automorphism_group
-
-            gram = [
-                [
-                    int(lattice.gram_tensor()[i, j])
-                    for j in range(int(lattice.rank()))
-                ]
-                for i in range(int(lattice.rank()))
-            ]
-            backend_generators = indefinite_form_automorphism_group(gram)
+            backend_generators = engine_capabilities.compute(
+                "lattice.indefinite_automorphism_group", _engine_gram_rows(lattice)
+            )
             positions = Sets.Δ[len(backend_generators) - 1]
             return finite_ordered_image(
                 positions,
@@ -1043,7 +1162,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         )
 
     def number_of_group_generators(self):
-        return lattice.base_ring()(int(self.group_generators().cardinality()))
+        r"""Return the cardinality of the chosen generating set of ``O(L)``."""
+        return self.group_generators().cardinality()
 
     def __iter__(self):
         return (self._from_engine(element) for element in self._engine_group())
@@ -1063,14 +1183,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if lattice.q(left) != lattice.q(right):
             return None
         if not lattice.is_definite():
-            from py_polyhedral.binaries import indefinite_form_test_equivalence_vector
-
-            gram = [
-                [int(lattice.gram_tensor()[i, j]) for j in range(int(lattice.rank()))]
-                for i in range(int(lattice.rank()))
-            ]
-            witness = indefinite_form_test_equivalence_vector(
-                gram,
+            witness = engine_capabilities.compute(
+                "lattice.indefinite_vector_isometry_witness",
+                _engine_gram_rows(lattice),
                 [int(entry) for entry in left.to_list()],
                 [int(entry) for entry in right.to_list()],
             )
@@ -1104,17 +1219,12 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             else lattice(element)
         )
         if not lattice.is_definite():
-            from py_polyhedral.binaries import indefinite_form_stabilizer_vector
-
-            gram = [
-                [int(lattice.gram_tensor()[i, j]) for j in range(int(lattice.rank()))]
-                for i in range(int(lattice.rank()))
-            ]
             isometries = finite_ordered_set(
                 tuple(
                     self._from_backend_row_action(engine_isometry)
-                    for engine_isometry in indefinite_form_stabilizer_vector(
-                        gram,
+                    for engine_isometry in engine_capabilities.compute(
+                        "lattice.indefinite_vector_stabilizer",
+                        _engine_gram_rows(lattice),
                         [int(entry) for entry in element.to_list()],
                     )
                 )
@@ -1144,13 +1254,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         """
         lattice = self.domain()
         if not lattice.is_definite():
-            from py_polyhedral.binaries import indefinite_form_get_orbit_representative
-
-            rank = int(lattice.rank())
-            gram = [
-                [int(lattice.gram_tensor()[i, j]) for j in range(rank)]
-                for i in range(rank)
-            ]
+            gram = _engine_gram_rows(lattice)
             lattice_generators = tuple(lattice.module_generators())
             representatives = tuple(
                 sum(
@@ -1167,7 +1271,9 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                     ),
                     lattice.zero(),
                 )
-                for row in indefinite_form_get_orbit_representative(gram, int(square))
+                for row in engine_capabilities.compute(
+                    "lattice.indefinite_orbit_representative", gram, int(square)
+                )
             )
             if any(lattice.q(representative) != square for representative in representatives):
                 raise ArithmeticError(
@@ -1291,13 +1397,12 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             self._definite_witness_matrix = transformation
             return False
 
-        from py_polyhedral.binaries import (
-            binary_available,
-            indefinite_form_test_equivalence,
-        )
-
-        if binary_available("INDEF_FORM_TestEquivalence"):
-            witness_rows = indefinite_form_test_equivalence(
+        # The absence of this program is not fatal here: the classification
+        # theorems below still decide some pairs, so the capability is asked
+        # for first rather than demanded.
+        if engine_capabilities.is_available("lattice.indefinite_isometry_witness"):
+            witness_rows = engine_capabilities.compute(
+                "lattice.indefinite_isometry_witness",
                 [list(row) for row in codomain_gram.components()],
                 [list(row) for row in domain_gram.components()],
             )

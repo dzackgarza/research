@@ -80,6 +80,19 @@ class EngineCapabilities:
     def provider_names(self, capability: str) -> tuple[str, ...]:
         return tuple(provider.name for provider in self._providers.get(capability, ()))
 
+    def is_available(self, capability: str) -> bool:
+        r"""Return whether some registered provider of ``capability`` is provisioned.
+
+        A caller that must demand the operation calls :meth:`compute` and lets
+        the absence be stated.  This is for the caller that has another
+        mathematical route when the engine is missing, and so must ask before
+        it demands.
+        """
+        return any(
+            provider.available()
+            for provider in self._providers.get(capability, ())
+        )
+
     def compute(self, capability: str, /, *args, **kwargs):
         absent = []
         for provider in self._providers.get(capability, ()):

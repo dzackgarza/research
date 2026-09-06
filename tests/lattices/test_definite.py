@@ -688,6 +688,34 @@ def test_positive_cone_character_and_real_spinor_norm_are_independent_computatio
     assert positive_reflection not in spinor_kernel
 
 
+def test_the_component_character_is_multiplicative_and_cuts_out_the_cone_subgroup() -> None:
+    r"""\(\chi_\Omega\) separates the two reflections of \(U\) and is a morphism.
+
+    \(e+f\) and \(e-f\) are orthogonal, so \(s_{e+f}s_{e-f}=-\mathrm{id}\),
+    which exchanges the two components of the positive cone.  A character
+    that merely recorded the determinant would send that product to the
+    identity and fail here.
+    """
+    lattice = Lattices(ZZ)("U")
+    e, f = lattice.module_generators()
+    exchanging = lattice.reflection(e + f)
+    preserving = lattice.reflection(e - f)
+    negation = lattice.O()(lambda label: -lattice.module_generator(label))
+    character = lattice.component_character()
+    trivial = character.codomain().one()
+
+    assert exchanging * preserving == negation
+    assert character(preserving) == trivial
+    assert character(exchanging) != trivial
+    assert character(negation) == character(exchanging) * character(preserving)
+    assert character(negation) != trivial
+
+    cone_group = lattice.positive_cone_subgroup()
+    assert preserving in cone_group
+    assert exchanging not in cone_group
+    assert negation not in cone_group
+
+
 def test_centralizer_discriminant_image_matches_finite_a2_centralizer(monkeypatch) -> None:
     from dzack_research.preamble.categories import lattice_engines
 
