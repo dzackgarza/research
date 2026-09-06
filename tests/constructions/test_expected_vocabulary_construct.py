@@ -23,9 +23,9 @@ def test_the_group_algebra_of_the_symmetric_group(build, name) -> None:
     group = Groups.S(3)
     algebra = GroupAlgebra(ring, group)
     assert algebra in Algebras(ring)
-    assert algebra.rank() == 6
+    assert algebra.module_rank() == 6
     assert algebra not in CommutativeAlgebras(ring)
-    assert algebra.center().rank() == 3
+    assert algebra.center().module_rank() == 3
     assert algebra.augmentation()(algebra(group.one())) == ring.one()
     assert algebra(group.group_generators().unrank(0)) * algebra(group.group_generators().unrank(0).inverse()) == algebra.one()
 
@@ -34,7 +34,7 @@ def test_the_group_algebra_by_subscript_notation() -> None:
     group = Groups.C(4)
     algebra = QQ[group]
     assert algebra in CommutativeAlgebras(QQ)
-    assert algebra.rank() == 4
+    assert algebra.module_rank() == 4
     assert algebra.is_semisimple()
     assert not GF(2)[group].is_semisimple()
     assert ZZ[group] in Algebras(ZZ)
@@ -44,8 +44,8 @@ def test_the_regular_representation_is_the_group_algebra_as_a_module() -> None:
     group = Groups.S(3)
     regular = GroupAlgebra(QQ, group).regular_representation()
     assert regular in Modules(QQ[group])
-    assert regular.rank() == 6
-    assert regular.module_invariants().rank() == 1
+    assert regular.module_rank() == 6
+    assert regular.module_invariants().module_rank() == 1
     assert regular.character()(group.one()) == 6
     assert regular.character()(group.group_generators().unrank(0)) == 0
 
@@ -103,7 +103,7 @@ def test_unit_groups_and_class_groups_of_number_fields(build) -> None:
     non_principal = build("QQ(sqrt-5)")
     assert gaussian.unit_group().order() == 4
     assert gaussian.unit_group() in FiniteGroups()
-    assert golden.unit_group().rank() == 1
+    assert golden.unit_group().module_rank() == 1
     assert golden.unit_group().torsion_subgroup().order() == 2
     assert golden.fundamental_units().cardinality() == 1
     assert gaussian.class_group().order() == 1
@@ -180,10 +180,10 @@ def test_riemann_roch_on_the_projective_line() -> None:
     point = line.point((1, 0))
     divisor = 3 * line.divisor(point)
     assert divisor.degree() == 3
-    assert line.riemann_roch_space(divisor).rank() == 4
-    assert line.riemann_roch_space(-divisor).rank() == 0
+    assert line.riemann_roch_space(divisor).module_rank() == 4
+    assert line.riemann_roch_space(-divisor).module_rank() == 0
     assert line.canonical_divisor().degree() == -2
-    assert line.picard_group().rank() == 1
+    assert line.picard_group().module_rank() == 1
     assert line.euler_characteristic() == 2
 
 
@@ -200,7 +200,7 @@ def test_weyl_groups_and_dynkin_diagrams_of_root_lattices() -> None:
     assert WeylGroup(["A", 2]).order() == 6
     assert a2.dynkin_diagram().cardinality() == 2
     assert a2.cartan_matrix().determinant() == 3
-    assert a2.root_system().rank() == 2
+    assert a2.root_system().module_rank() == 2
     assert a2.positive_roots().cardinality() == 3
     assert e8.positive_roots().cardinality() == 120
     assert a2.weyl_group().is_isomorphic_to(Groups.S(3))
@@ -210,8 +210,8 @@ def test_weyl_groups_and_dynkin_diagrams_of_root_lattices() -> None:
 def test_clifford_algebras_and_witt_invariants() -> None:
     a2 = Lattices(QQ)([[2, 1], [1, 2]])
     plane = Lattices(QQ)("U")
-    assert CliffordAlgebra(a2).rank() == 4
-    assert CliffordAlgebra(Lattices(QQ)(3)).rank() == 8
+    assert CliffordAlgebra(a2).module_rank() == 4
+    assert CliffordAlgebra(Lattices(QQ)(3)).module_rank() == 8
     assert CliffordAlgebra(a2) in Algebras(QQ)
     assert not CliffordAlgebra(a2).is_commutative()
     assert plane.is_isotropic()
@@ -222,8 +222,8 @@ def test_clifford_algebras_and_witt_invariants() -> None:
     assert a2.hasse_invariant(3) in (1, -1)
     assert a2.represents(2)
     assert not a2.represents(1)
-    assert a2.anisotropic_kernel().rank() == 2
-    assert plane.anisotropic_kernel().rank() == 0
+    assert a2.anisotropic_kernel().module_rank() == 2
+    assert plane.anisotropic_kernel().module_rank() == 0
     assert WittGroup(QQ).an_element() in WittGroup(QQ)
     assert WittGroup(RR).is_isomorphic_to(Groups.Abelian([0]))
     assert WittGroup(CC).order() == 2
@@ -249,29 +249,29 @@ def test_hom_tensor_and_sum_spelled_as_a_sage_user_would(commutative_ring) -> No
     ring = commutative_ring
     plane = FreeModule(ring, 2)
     line = FreeModule(ring, 1)
-    assert Hom(plane, line).rank() == 2
+    assert Hom(plane, line).module_rank() == 2
     assert plane.hom(line) in Cat()
-    assert plane.tensor(line).rank() == 2
-    assert plane.tensor_product(line).rank() == 2
-    assert plane.direct_sum(line).rank() == 3
-    assert (plane + line).rank() == 3
-    assert (plane**3).rank() == 6
-    assert plane.dual().rank() == 2
-    assert plane.dimension() == 2 if ring in Fields() else plane.rank() == 2
+    assert plane.tensor(line).module_rank() == 2
+    assert plane.tensor_product(line).module_rank() == 2
+    assert plane.direct_sum(line).module_rank() == 3
+    assert (plane + line).module_rank() == 3
+    assert (plane**3).module_rank() == 6
+    assert plane.dual().module_rank() == 2
+    assert plane.dimension() == 2 if ring in Fields() else plane.module_rank() == 2
     assert plane.basis().cardinality() == 2
-    assert plane.zero_submodule().rank() == 0
-    assert kernel(plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})).rank() == 1
+    assert plane.zero_submodule().module_rank() == 0
+    assert kernel(plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})).module_rank() == 1
 
 
 def test_symmetric_and_exterior_powers_by_their_usual_names(commutative_ring) -> None:
     module = FreeModule(commutative_ring, 3)
-    assert SymmetricPower(module, 2).rank() == 6
-    assert ExteriorPower(module, 2).rank() == 3
-    assert ExteriorPower(module, 3).rank() == 1
-    assert ExteriorPower(module, 4).rank() == 0
-    assert TensorPower(module, 2).rank() == 9
-    assert Sym(module, 2).rank() == 6
-    assert Alt(module, 2).rank() == 3
+    assert SymmetricPower(module, 2).module_rank() == 6
+    assert ExteriorPower(module, 2).module_rank() == 3
+    assert ExteriorPower(module, 3).module_rank() == 1
+    assert ExteriorPower(module, 4).module_rank() == 0
+    assert TensorPower(module, 2).module_rank() == 9
+    assert Sym(module, 2).module_rank() == 6
+    assert Alt(module, 2).module_rank() == 3
 
 
 def test_torsion_and_length_of_modules_over_the_integers() -> None:
@@ -340,7 +340,7 @@ def test_normalization_of_the_cusp_and_regularity() -> None:
     assert cusp.localize_at_prime(origin).embedding_dimension() == 2
     assert cusp.localize_at_prime(origin).is_regular() is False
     assert plane.localize_at_prime(plane.ideal(x, y)).is_regular()
-    assert plane.localize_at_prime(plane.ideal(x, y)).tangent_space().rank() == 2
+    assert plane.localize_at_prime(plane.ideal(x, y)).tangent_space().module_rank() == 2
 
 
 def test_factoring_elements_and_counting_divisors() -> None:
@@ -470,18 +470,18 @@ def test_proj_blowups_and_global_sections() -> None:
     plane = Proj(graded)
     assert plane == ProjectiveSpace(2, QQ)
     assert plane.dimension() == 2
-    assert plane.global_sections().rank() == 1
-    assert H(0, plane, plane.structure_sheaf()).rank() == 1
-    assert H(1, plane, plane.structure_sheaf()).rank() == 0
+    assert plane.global_sections().module_rank() == 1
+    assert H(0, plane, plane.structure_sheaf()).module_rank() == 1
+    assert H(1, plane, plane.structure_sheaf()).module_rank() == 0
     assert plane.euler_characteristic() == 3
-    assert plane.picard_group().rank() == 1
+    assert plane.picard_group().module_rank() == 1
     blown_up = AffineSpace(2, QQ).blowup(AffineSpace(2, QQ).point((0, 0)))
     assert blown_up.dimension() == 2
     assert blown_up.exceptional_divisor().dimension() == 1
     assert blown_up.exceptional_divisor().is_isomorphic_to(ProjectiveSpace(1, QQ))
     assert AffineSpace(2, QQ).point((1, 2)).residue_field() is QQ
     assert AffineSpace(2, QQ).local_ring(AffineSpace(2, QQ).point((1, 2))) in LocalRings()
-    assert AffineSpace(2, QQ).tangent_space(AffineSpace(2, QQ).point((1, 2))).rank() == 2
+    assert AffineSpace(2, QQ).tangent_space(AffineSpace(2, QQ).point((1, 2))).module_rank() == 2
 
 
 # ---------------------------------------------------------------------------

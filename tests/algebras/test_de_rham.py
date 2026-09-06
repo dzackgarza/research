@@ -187,7 +187,7 @@ def test_dual_numbers_use_generic_de_rham_cohomology() -> None:
     assert omega.universal_derivation()(xbar**2) == omega.zero()
 
     de_rham = DeRhamAlgebra(algebra)
-    assert de_rham.cohomology(0).rank() == 1
+    assert de_rham.cohomology(0).module_rank() == 1
     assert de_rham.cohomology(1).is_zero()
 
 

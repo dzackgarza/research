@@ -56,7 +56,7 @@ def test_a_finite_coxeter_session(name) -> None:
     rendered(lattice)
     assert lattice in RootLattices()
     assert lattice in EvenLattices(ZZ)
-    assert lattice.rank() == cartan_type[1]
+    assert lattice.module_rank() == cartan_type[1]
     assert lattice.is_definite()
     assert lattice.roots().cardinality() == root_count
     assert lattice.simple_roots().cardinality() == cartan_type[1]

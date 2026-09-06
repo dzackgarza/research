@@ -110,7 +110,7 @@ def test_root_enumeration_and_root_sublattice_are_formed_and_embedded() -> None:
     assert lattice.roots_of_square(-2) == roots
     assert lattice.vectors_of_square_and_divisibility(-2, 1) == roots
     root_sublattice = lattice.root_sublattice()
-    assert root_sublattice.rank() == 2
+    assert root_sublattice.module_rank() == 2
     assert root_sublattice.inclusion().codomain() is lattice
     assert str(root_sublattice.cartan_type()) == "['A', 2]"
 
@@ -430,7 +430,7 @@ def test_primitive_extension_with_no_glue_returns_the_zero_anti_isometry() -> No
     assert first.sum(second).index() == 1
     assert glue.domain().cardinality() == 1
     assert glue.codomain().cardinality() == 1
-    assert glue.domain().rank() == 0
+    assert glue.domain().module_rank() == 0
 
 
 def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() -> None:
@@ -597,11 +597,11 @@ def test_isotropic_line_plane_flag_orbits_equivalence_and_stabilizers_are_live_s
     plane = lattice.isotropic_plane_orbit_representatives()[0]
     flag = lattice.isotropic_flag_orbit_representatives()[0]
 
-    assert line.rank() == 1 and line.is_primitive()
-    assert plane.rank() == 2 and plane.is_primitive()
-    assert flag.rank() == 2
-    assert flag.rank() in Cardinalities()
-    assert tuple(term.rank() for term in flag.terms()) == (1, 2)
+    assert line.module_rank() == 1 and line.is_primitive()
+    assert plane.module_rank() == 2 and plane.is_primitive()
+    assert flag.module_rank() == 2
+    assert flag.module_rank() in Cardinalities()
+    assert tuple(term.module_rank() for term in flag.terms()) == (1, 2)
 
     line_witness = lattice.O().isotropic_equivalence_witness(line, line)
     plane_witness = lattice.O().isotropic_equivalence_witness(plane, plane)
@@ -775,8 +775,8 @@ def test_vector_primitive_extension_recovers_index_two_glue_in_u() -> None:
     extension = lattice.vector_primitive_extension(e + f)
 
     assert extension.vector.q() == 2
-    assert extension.line.rank() == extension.complement.rank() == 1
-    assert extension.sum_lattice.rank() == lattice.rank() == 2
+    assert extension.line.module_rank() == extension.complement.module_rank() == 1
+    assert extension.sum_lattice.module_rank() == lattice.module_rank() == 2
     assert extension.index == 2
     assert extension.inclusion.index() == 2
     assert extension.gluing_subgroup.cardinality() == 2
@@ -792,7 +792,7 @@ def test_vector_primitive_extension_tracks_nontrivial_ambient_discriminant() -> 
 
     assert extension.index == 2
     assert extension.discriminant_form.cardinality() == 4
-    assert extension.discriminant_representatives.cardinality() == lattice.rank()
+    assert extension.discriminant_representatives.cardinality() == lattice.module_rank()
     for representative in extension.discriminant_representatives:
         for glued in extension.gluing_images:
             assert representative.b(glued) == extension.sum_form.bilinear_value_module().zero()

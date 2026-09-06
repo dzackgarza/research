@@ -1302,7 +1302,7 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
             return constructor(labels, **options)
 
         def _represented_vector_space_dimension(self):
-            return self.rank()
+            return self.module_rank()
 
         def _represented_vector_space_basis_generator_labels(self):
             return self.module_generating_set()

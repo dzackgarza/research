@@ -35,13 +35,13 @@ def test_the_isotropic_line_of_E10_reduces_to_E8() -> None:
     assert line in PrimitiveIsotropicSubobjects(ZZ)
     assert line.is_totally_isotropic()
     assert line.is_primitive()
-    assert line.rank() == 1
+    assert line.module_rank() == 1
     assert line.ambient_lattice() is lattice
 
-    assert line.isotropic_perpendicular().rank() == 9
-    assert line.isotropic_quotient().rank() == 8
+    assert line.isotropic_perpendicular().module_rank() == 9
+    assert line.isotropic_quotient().module_rank() == 8
     reduction = line.isotropic_reduction()
-    assert reduction.rank() == 8
+    assert reduction.module_rank() == 8
     assert reduction.is_isometric(NamedLattices.E8)
 
 
@@ -140,12 +140,12 @@ def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -
     assert vector.q() == 0
 
     line = primitive_isotropic(lattice, (vector,))
-    assert line.rank() == 1
+    assert line.module_rank() == 1
     assert line.inclusion().codomain() is lattice
     assert line.is_primitive()
 
     doubled = lattice.subobject_on((2 * vector,))
-    assert doubled.rank() == 1
+    assert doubled.module_rank() == 1
     # Primitivity is the cokernel's torsion-freeness, so the index two shows up
     # as a torsion invariant of L/Z(2v) and not in any basis matrix.
     assert not doubled.is_primitive()
@@ -153,16 +153,16 @@ def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -
         primitive_isotropic(lattice, (2 * vector,))
 
     saturated = doubled.saturation()
-    assert saturated.rank() == 1
+    assert saturated.module_rank() == 1
     assert saturated.is_primitive()
     assert saturated.inclusion().is_in_image(vector)
 
     rational = lattice.base_change(ZZ.Mor(QQ)(lambda integer: QQ(integer)))
     assert rational.base_ring() is QQ
-    assert rational.rank() == lattice.rank()
+    assert rational.module_rank() == lattice.module_rank()
     rational_vector = rational.module_generators().unrank(0)
     rational_line = rational.subobject_on((2 * rational_vector,))
     # Over a field every subobject is saturated, so the doubled vector spans
     # the same rational line as the vector itself.
-    assert rational_line.rank() == 1
+    assert rational_line.module_rank() == 1
     assert rational_line.inclusion().is_in_image(rational_vector)

@@ -708,7 +708,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             diagonal_rank = min(diagonal.parent().nrows(), diagonal.parent().ncols())
             return tuple(diagonal[position, position] if position < diagonal_rank else ring.zero() for position in range(target_rank))
 
-        def rank(self):
+        def module_rank(self):
             r"""Return the rank of the free summand over a PID."""
 
             if self.base_ring() not in PrincipalIdealDomains():
@@ -719,7 +719,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             r"""Read torsion off the invariant factors over a PID, else take the generic fibre."""
             if self.base_ring() not in PrincipalIdealDomains():
                 return super().is_torsion()
-            return self.rank() == 0
+            return self.module_rank() == 0
 
         def is_torsion_free(self):
             r"""Over a PID ``M`` is torsion-free exactly when no invariant factor is a nonzero non-unit."""
@@ -770,7 +770,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 for invariant in self._invariants_with_units()
                 if invariant != 0 and not invariant.is_unit()
             )
-            return ring.cardinality() ** self.rank() * prod(cyclic_orders, Cardinalities().one())
+            return ring.cardinality() ** self.module_rank() * prod(cyclic_orders, Cardinalities().one())
 
         @cached_method
         def invariant_factor_presentation(self):
@@ -1327,7 +1327,7 @@ class _GeneralPresentedModule:
 
         presentation_ring = base_ring._exact_coefficient_presentation_ring()
         presentation_engine = _engine_ring(presentation_ring)
-        rank = int(self._free_module.rank())
+        rank = int(self._free_module.module_rank())
         lifted_free = SageFreeModule(presentation_engine, rank)
 
         def lift_scalar(value):
@@ -1386,7 +1386,7 @@ class _GeneralPresentedModule:
         # Singular-backed multivariate implementation.
         from sage.modules.free_module import FreeModule as SageFreeModule
 
-        flattened_free = SageFreeModule(flattened_ring, int(lifted_free.rank()))
+        flattened_free = SageFreeModule(flattened_ring, int(lifted_free.module_rank()))
         flattened = flattened_free(tuple(flatten(coefficient) for coefficient in tuple(lifted)))
         flattened_relations = flattened_free.submodule(
             tuple(

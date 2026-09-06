@@ -629,7 +629,7 @@ class ModuleMorphism(Morphism):
 
     def is_injective(self) -> bool:
         r"""Return whether ``ker(self)=0`` when the kernel is computable."""
-        return self.kernel().rank() == 0
+        return self.kernel().module_rank() == 0
 
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""

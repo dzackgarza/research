@@ -23,8 +23,8 @@ def test_c2_integral_isotypic_decomposition_is_the_plus_minus_underlattice() -> 
     decomposition = acted.isotypic_decomposition()
 
     assert decomposition.isotypic_characters().cardinality() == 2
-    assert decomposition.trivial_component().rank() == 1
-    assert decomposition.nontrivial_components()[0].rank() == 1
+    assert decomposition.trivial_component().module_rank() == 1
+    assert decomposition.nontrivial_components()[0].module_rank() == 1
     assert decomposition.index() == 2
     assert decomposition.trivial_component().inclusion().is_in_image(acted.linear_combination({"x": 1, "y": 1}))
     assert decomposition.nontrivial_components()[0].inclusion().is_in_image(acted.linear_combination({"x": 1, "y": -1}))
@@ -50,8 +50,8 @@ def test_c3_integral_characters_are_grouped_into_rational_orbits() -> None:
 
     assert characters.cardinality() == 2
     assert sorted(character.degree() for character in characters) == [1, 2]
-    assert decomposition.trivial_component().rank() == 1
-    assert decomposition.nontrivial_components()[0].rank() == 2
+    assert decomposition.trivial_component().module_rank() == 1
+    assert decomposition.nontrivial_components()[0].module_rank() == 2
     assert decomposition.index() == 3
 
 
@@ -77,7 +77,7 @@ def test_group_lattice_invariants_and_formed_coinvariants_keep_the_form() -> Non
     assert decomposition.nontrivial_components()[0].inclusion() == formed_coinvariants.inclusion()
     assert invariants.gram_tensor() == tensor(ZZ, (), (1, 1), [[2]])
     assert formed_coinvariants.gram_tensor() == tensor(ZZ, (), (1, 1), [[-2]])
-    assert module_coinvariants.rank() == 1
+    assert module_coinvariants.module_rank() == 1
     assert module_coinvariants in Modules(ZZ)
     assert module_coinvariants not in FormedModules(ZZ)
     assert formed_coinvariants in FormedModules(ZZ)

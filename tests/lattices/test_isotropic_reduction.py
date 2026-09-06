@@ -18,7 +18,7 @@ def test_reducing_a_hyperbolic_plane_off_an_isotropic_line_returns_the_complemen
 
     reduction = isotropic.isotropic_reduction()
 
-    assert reduction.rank() == 2
+    assert reduction.module_rank() == 2
     assert reduction.signature_pair() == signature_pair(1, 1)
     assert reduction.determinant() == -1
     assert reduction.is_even()
@@ -43,10 +43,10 @@ def test_the_reduction_retains_the_embedding_and_the_complement_it_came_from() -
 
     reduction = isotropic.isotropic_reduction()
 
-    assert reduction.isotropic_sublattice().rank() == 1
+    assert reduction.isotropic_sublattice().module_rank() == 1
     assert reduction.isotropic_embedding().codomain() is lattice
     # e^perp is spanned by e and the two roots; the reduction kills e alone.
-    assert reduction.orthogonal_complement().rank() == 3
+    assert reduction.orthogonal_complement().module_rank() == 3
     assert reduction.quotient_lattice() is reduction
     assert reduction.projection().domain() is reduction.orthogonal_complement()
     assert reduction.projection().codomain() is reduction

@@ -56,12 +56,12 @@ def test_the_standard_isotypic_component_carries_the_standard_representation() -
 
     assert equivariant.codomain() is representation
     assert restricted in Modules(QQ[group])
-    assert restricted.rank() == 2
+    assert restricted.module_rank() == 2
     assert character(group.one()) == 2
     assert character(transposition) == 0
     assert character(three_cycle) == -1
     # The standard representation has no invariant vector.
-    assert restricted.module_invariants().rank() == 0
+    assert restricted.module_invariants().module_rank() == 0
 
 
 def test_the_invariants_carry_the_trivial_action_of_the_group() -> None:
@@ -72,7 +72,7 @@ def test_the_invariants_carry_the_trivial_action_of_the_group() -> None:
     restricted = representation.restrict_action_to(invariants.inclusion()).domain()
     character = restricted.character()
 
-    assert restricted.rank() == 1
+    assert restricted.module_rank() == 1
     assert character(group.one()) == 1
     assert character(transposition) == 1
     assert character(three_cycle) == 1

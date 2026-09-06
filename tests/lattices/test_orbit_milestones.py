@@ -41,7 +41,7 @@ def test_milestone_one_the_E10_cusp_acts_on_its_reduction_lattice() -> None:
     cusp = cusps(lattice).unrank(0)
     line = cusp.representative()
     quotient = line.isotropic_quotient()
-    assert quotient.rank() == 8
+    assert quotient.module_rank() == 8
 
     descents = tuple(
         line.levi_quotient_action(generator)
@@ -74,12 +74,12 @@ def test_milestone_two_a_plane_of_the_enriques_lattice_meets_a_line_cusp() -> No
     # both reduction classes occur among the Sterk lines, so there are at
     # least two zero-dimensional cusps.
     assert line_cusps.cardinality() >= 2
-    assert all(cusp.reduction_lattice().rank() == 10 for cusp in line_cusps)
+    assert all(cusp.reduction_lattice().module_rank() == 10 for cusp in line_cusps)
     assert plane_cusps.cardinality() >= 1
-    assert all(cusp.reduction_lattice().rank() == 8 for cusp in plane_cusps)
+    assert all(cusp.reduction_lattice().module_rank() == 8 for cusp in plane_cusps)
 
     plane = plane_cusps.unrank(0).representative()
-    assert plane.rank() == 2
+    assert plane.module_rank() == 2
     embedded = plane.embedded_module_generators()
     first = embedded[plane.module_generating_set().unrank(0)]
     assert first.q() == 0
@@ -87,7 +87,7 @@ def test_milestone_two_a_plane_of_the_enriques_lattice_meets_a_line_cusp() -> No
     # A basis vector of a saturated plane spans a saturated line, so the
     # incidence of the Tits building is a statement about two cusps.
     line = primitive_isotropic(lattice, (first,))
-    assert line.rank() == 1
+    assert line.module_rank() == 1
     assert any(line in cusp for cusp in line_cusps)
 
 

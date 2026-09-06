@@ -129,12 +129,12 @@ def test_a_finite_group_session(name) -> None:
         rendered(invariants)
         assert invariants in Modules(ring)
         if name in ("S3", "S4", "A4", "D4"):
-            assert invariants.rank() == 1
+            assert invariants.module_rank() == 1
         else:
-            assert invariants.rank() == degree
+            assert invariants.module_rank() == degree
         coinvariants = representation.module_coinvariants()
         rendered(coinvariants)
-        assert coinvariants.rank() == invariants.rank()
+        assert coinvariants.module_rank() == invariants.module_rank()
         if ring is QQ:
             character = representation.character()
             rendered(character)

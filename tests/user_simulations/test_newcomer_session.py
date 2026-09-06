@@ -35,7 +35,7 @@ def test_a_newcomer_does_algebraic_number_theory(radicand) -> None:
     assert Cl.order() == h
     U = K.unit_group()
     rendered(U)
-    assert U.rank() == (1 if radicand > 0 else 0)
+    assert U.module_rank() == (1 if radicand > 0 else 0)
     G = K.galois_group()
     rendered(G)
     assert G.order() == 2
@@ -122,30 +122,30 @@ def test_a_newcomer_does_plane_curves(field_name) -> None:
 def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
     M = ZZ**rank
     rendered(M)
-    assert M.rank() == rank
+    assert M.module_rank() == rank
     A = matrix(ZZ, rank, rank, lambda i, j: (i + 1) * (j + 1) + (1 if i == j else 0))
     rendered(A)
     f = M.hom(A)
     assert f.domain() == M
     assert f.matrix() == A
-    assert f.kernel().rank() == rank - A.rank()
-    assert f.image().rank() == A.rank()
+    assert f.kernel().module_rank() == rank - A.module_rank()
+    assert f.image().module_rank() == A.module_rank()
     Q = M / f.image()
     rendered(Q)
     assert Q.order() == abs(A.determinant())
     assert Q.invariants() == A.elementary_divisors()
     assert A.smith_form()[0].diagonal() == A.elementary_divisors()
     N = M.submodule([M.gen(0) * 2, M.gen(1)])
-    assert N.rank() == 2
+    assert N.module_rank() == 2
     assert (M / N).torsion_subgroup().order() == 2
     assert M.tensor_product(Q).order() == Q.order() ** rank
-    assert Hom(M, ZZ).rank() == rank
+    assert Hom(M, ZZ).module_rank() == rank
     assert Hom(Q, ZZ).order() == 1
     assert Q.ext(ZZ, 1).order() == Q.order()
     assert Q.tor(Q, 1).order() == Q.order()
     L = IntegralLattice(A + A.transpose())
     rendered(L)
-    assert L.rank() == rank
+    assert L.module_rank() == rank
     assert L.determinant() == (A + A.transpose()).determinant()
     assert L.discriminant_group().order() == abs(L.determinant())
     assert L.automorphism_group().order() >= 2
@@ -182,8 +182,8 @@ def test_a_newcomer_does_commutative_algebra() -> None:
     assert S.dimension() == 3
     assert S.embedding_dimension() == 3
     assert R.completion(R.ideal(x, y, z)).is_complete()
-    assert R.derivation_module().rank() == 3
-    assert R.differentials().rank() == 3
+    assert R.derivation_module().module_rank() == 3
+    assert R.differentials().module_rank() == 3
     assert R.jacobian_matrix((x * y, y * z)).nrows() == 2
     assert Spec(R.quotient(I)).irreducible_components().cardinality() == 3
     assert Spec(R.quotient(I)).dimension() == 1

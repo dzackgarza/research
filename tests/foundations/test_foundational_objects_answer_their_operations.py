@@ -43,7 +43,7 @@ def test_a_free_module_answers_its_module_operations() -> None:
 
     module = ZZ**2
     assert module.base_ring() is ZZ
-    assert module.rank() == 2
+    assert module.module_rank() == 2
 
     v, w = module.module_generators()
     assert v + w == w + v
@@ -116,7 +116,7 @@ def test_the_hyperbolic_plane_answers_its_lattice_operations() -> None:
     Lattices = session["Lattices"]
 
     U = Lattices(ZZ)("U")
-    assert U.rank() == 2
+    assert U.module_rank() == 2
     assert U.determinant() == -1
     assert U.signature_pair() == session["signature_pair"](1, 1)
 

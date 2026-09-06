@@ -56,7 +56,7 @@ def test_primitive_embedding_of_a1_into_the_even_unimodular_lattice_of_rank_8() 
 
     assert embedding.domain() is a1
     assert embedding.is_primitive()
-    assert target.rank() == 8
+    assert target.module_rank() == 8
     assert target.determinant() == 1
     assert target.is_even()
     assert target.is_positive_definite()

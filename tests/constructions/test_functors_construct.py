@@ -48,7 +48,7 @@ def test_known_values_of_the_nullary_functors() -> None:
     gaussian = NumberFields().ring_of_integers()(QuadraticField(-1, "i"))
     assert gaussian in OwnedOrders()
     assert gaussian.is_maximal()
-    assert gaussian.rank() == 2
+    assert gaussian.module_rank() == 2
 
 
 def test_functors_over_every_commutative_ring(commutative_ring) -> None:
@@ -58,12 +58,12 @@ def test_functors_over_every_commutative_ring(commutative_ring) -> None:
 
     free = Sets().free_module(ring)(Sets.Δ[2])
     assert free in FreeModules(ring)
-    assert free.rank() == 3
+    assert free.module_rank() == 3
     assert Modules(ring).underlying_set()(module) in Sets()
-    assert Modules(ring).dualization()(module).rank() == 2
+    assert Modules(ring).dualization()(module).module_rank() == 2
     assert Modules(ring).symmetric_algebra()(module) in CommutativeAlgebras(ring)
     assert Modules(ring).tensor_algebra()(module) in Algebras(ring)
-    assert Modules(ring).exterior_algebra()(module).graded_piece(2).rank() == 1
+    assert Modules(ring).exterior_algebra()(module).graded_piece(2).module_rank() == 1
     assert CommutativeAlgebras(ring).spectrum()(polynomials) in AffineSchemes(ring)
     assert CommutativeAlgebras(ring).spectrum()(polynomials).relative_dimension() == 1
     assert CommutativeAlgebras(ring).de_rham()(polynomials) in StrictlyCommutativeDifferentialGradedAlgebras(ring)

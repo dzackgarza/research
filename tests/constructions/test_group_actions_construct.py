@@ -102,10 +102,10 @@ def test_permutation_module_invariants_and_coinvariants(pid) -> None:
 
     assert representation in Modules(pid[group])
     assert invariants in Modules(pid)
-    assert invariants.rank() == 1
-    assert coinvariants.rank() == 1
-    assert representation.module_invariants().rank() == 1
-    assert representation.module_coinvariants().rank() == 1
+    assert invariants.module_rank() == 1
+    assert coinvariants.module_rank() == 1
+    assert representation.module_invariants().module_rank() == 1
+    assert representation.module_coinvariants().module_rank() == 1
     e0, e1, e2 = (representation.module_generator(index) for index in range(3))
     assert representation.is_invariant(e0 + e1 + e2)
     assert not representation.is_invariant(e0 - e1)
@@ -119,8 +119,8 @@ def test_the_trivial_action_and_its_adjunctions(pid) -> None:
     also = Modules(ring).trivial_action(group)(module)
     assert trivial.is_trivial_action()
     assert also.is_trivial_action()
-    assert trivial.module_invariants().rank() == 2
-    assert trivial.module_coinvariants().rank() == 2
+    assert trivial.module_invariants().module_rank() == 2
+    assert trivial.module_coinvariants().module_rank() == 2
     adjunction = Modules(pid).trivial_invariants_adjunction(group)
     assert adjunction.unit(module).domain() is module
     assert adjunction.counit(trivial).codomain() is trivial
@@ -141,12 +141,12 @@ def test_induction_and_restriction_between_c2_and_s3(pid) -> None:
     restricted = Modules(ZZ[group]).restriction(subgroup)(permutation)
 
     assert induced.group() is group
-    assert induced.rank() == 3
-    assert coinduced.rank() == 3
+    assert induced.module_rank() == 3
+    assert coinduced.module_rank() == 3
     assert restricted.group() is subgroup
-    assert restricted.rank() == 3
-    assert restricted.module_invariants().rank() == 2
-    assert induced.module_invariants().rank() == 0
+    assert restricted.module_rank() == 3
+    assert restricted.module_invariants().module_rank() == 2
+    assert induced.module_invariants().module_rank() == 0
     adjunction = Modules(ZZ[subgroup]).induction_restriction_adjunction(group)
     unit = adjunction.unit(sign_module)
     assert unit.domain() is sign_module
@@ -164,7 +164,7 @@ def test_frobenius_reciprocity_over_the_rationals() -> None:
     permutation = _permutation_module(QQ, group, points)
     adjunction = Modules(ZZ[subgroup]).induction_restriction_adjunction(group)
 
-    assert induced.rank() == 3
+    assert induced.module_rank() == 3
     equivariant = induced.Mor(permutation)
     assert equivariant.zero().domain() is induced
     counit = adjunction.counit(permutation)
@@ -172,13 +172,13 @@ def test_frobenius_reciprocity_over_the_rationals() -> None:
     assert transposed.domain() == adjunction.right_adjoint()(permutation)
     assert adjunction.hom_set_isomorphism_inverse(transposed, permutation) == counit
     restricted = Modules(ZZ[group]).restriction(subgroup)(permutation)
-    assert restricted.module_invariants().rank() == 2
+    assert restricted.module_invariants().module_rank() == 2
     assert InternalHomRank(induced, permutation) == 2
 
 
 def InternalHomRank(source, target):
     r"""The rank of the equivariant Hom, read off the source's coinvariants when the source is induced from the trivial module."""
-    return target.module_invariants().rank() + 1
+    return target.module_invariants().module_rank() + 1
 
 
 def test_characters_and_isotypic_decomposition_over_the_rationals() -> None:
@@ -193,7 +193,7 @@ def test_characters_and_isotypic_decomposition_over_the_rationals() -> None:
     assert character(three_cycle) == 0
     decomposition = representation.isotypic_decomposition()
     assert representation.isotypic_characters().cardinality() == 2
-    assert decomposition.trivial_component().rank() == 1
+    assert decomposition.trivial_component().module_rank() == 1
     assert decomposition.nontrivial_components().cardinality() == 1
     assert decomposition.index() == 1
 
@@ -205,7 +205,7 @@ def test_brauer_characters_in_positive_characteristic() -> None:
     three_cycle = next(g for g in group.group_generators() if g.order() == 3)
     assert brauer(group.one()) == 3
     assert brauer(three_cycle) == 0
-    assert representation.module_invariants().rank() == 1
+    assert representation.module_invariants().module_rank() == 1
 
 
 def test_a_group_lattice_and_its_invariant_and_coinvariant_lattices() -> None:
@@ -221,9 +221,9 @@ def test_a_group_lattice_and_its_invariant_and_coinvariant_lattices() -> None:
     assert acted in Lattices(ZZ[group])
     assert acted.action_of(group.group_generators().unrank(0)) == swap
     assert acted.action_of(group.group_generators().unrank(0)) in a2.O()
-    assert acted.invariant_lattice().rank() == 1
+    assert acted.invariant_lattice().module_rank() == 1
     assert acted.invariant_lattice().determinant() == 6
-    assert acted.formed_coinvariants().rank() == 1
+    assert acted.formed_coinvariants().module_rank() == 1
     assert acted.formed_coinvariants().determinant() == 2
     assert acted.is_invariant(e0 + e1)
     assert not acted.is_invariant(e0)

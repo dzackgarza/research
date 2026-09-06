@@ -50,7 +50,7 @@ class IsometryPrimitiveExtension:
         )
         invariant = isometry.invariant_lattice()
         coinvariant = isometry.formed_coinvariants()
-        assert invariant.rank() + coinvariant.rank() == lattice.rank(), (
+        assert invariant.module_rank() + coinvariant.module_rank() == lattice.module_rank(), (
             "the invariant lattice and its orthogonal complement do not have "
             "complementary rank; f is not of finite order on this lattice"
         )

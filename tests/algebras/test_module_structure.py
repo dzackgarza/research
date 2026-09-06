@@ -114,7 +114,7 @@ def test_finite_free_quotient_algebra_uses_its_module_tensor_for_multiplication(
     z = presentation.algebra_generator("z")
     algebra = FinitelyPresentedAlgebra(presentation, (z**2 - QQ.one(),))
 
-    assert int(algebra.rank()) == 2
+    assert int(algebra.module_rank()) == 2
     multiplication = algebra.multiplication_morphism()
     tensor_square = multiplication.domain()
     one = algebra.module_generator(0)

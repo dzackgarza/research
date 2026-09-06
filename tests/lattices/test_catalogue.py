@@ -10,13 +10,13 @@ from dzack_research.preamble.all import (
 
 
 def test_named_surface_lattices_have_their_expected_signatures_and_ranks() -> None:
-    assert NamedLattices.Tco.rank() == 11
+    assert NamedLattices.Tco.module_rank() == 11
     assert NamedLattices.Tco.signature_pair() == signature_pair(2, 9)
-    assert NamedLattices.TEn.rank() == 12
+    assert NamedLattices.TEn.module_rank() == 12
     assert NamedLattices.TEn.signature_pair() == signature_pair(2, 10)
-    assert NamedLattices.TdP.rank() == 20
+    assert NamedLattices.TdP.module_rank() == 20
     assert NamedLattices.TdP.signature_pair() == signature_pair(2, 18)
-    assert NamedLattices.LK3.rank() == 22
+    assert NamedLattices.LK3.module_rank() == 22
     assert NamedLattices.LK3.signature_pair() == signature_pair(3, 19)
     assert Lattices.TEn is NamedLattices.TEn
     assert Lattices.TdP is NamedLattices.TdP
@@ -64,7 +64,7 @@ def test_catalogue_coinvariant_embeddings_are_formed_orthogonal_complements() ->
     for involution, expected in pairs:
         invariant = involution.invariant_lattice()
         formed_coinvariants = involution.formed_coinvariants()
-        assert invariant.rank() + formed_coinvariants.rank() == 22
+        assert invariant.module_rank() + formed_coinvariants.module_rank() == 22
         assert formed_coinvariants is expected.image()
 
 

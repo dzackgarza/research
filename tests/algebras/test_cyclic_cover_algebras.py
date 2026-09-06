@@ -100,7 +100,7 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
         assert cyclic.local_underlying_module(index) is local
         assert local in FinitelyGeneratedFreeModules(local.base_ring())
         assert local in AlgebrasWithChosenFinitePresentation(local.base_ring())
-        assert int(local.rank()) == 2
+        assert int(local.module_rank()) == 2
         multiplication = cyclic.local_multiplication(index)
         assert multiplication.codomain() is local
         z = local.algebra_generator("z")
@@ -124,8 +124,8 @@ def test_cyclic_cover_algebra_keeps_local_equations_modules_and_multiplication()
     assert transition(source.algebra_generator("z")) == (
         target(overlap_x.inverse_of_unit()) * target.algebra_generator("z")
     )
-    assert int(cyclic.restricted_algebra(0, 0, 1).rank()) == 2
-    assert int(cyclic.restricted_algebra(1, 0, 1).rank()) == 2
+    assert int(cyclic.restricted_algebra(0, 0, 1).module_rank()) == 2
+    assert int(cyclic.restricted_algebra(1, 0, 1).module_rank()) == 2
     restricted = cyclic.restricted_algebra(0, 0, 1)
     assert restricted.multiplication_morphism().codomain() is restricted
     assert cyclic.sheaf().global_sections() is cyclic.global_sections()
@@ -154,10 +154,10 @@ def test_cyclic_cover_degree_three_uses_rank_three_scalar_extensions() -> None:
     branch = _branch_section(line, x, 3)
     cyclic = CyclicCoverAlgebra(line, branch, 3)
 
-    assert all(int(local.rank()) == 3 for local in cyclic.local_algebras())
+    assert all(int(local.module_rank()) == 3 for local in cyclic.local_algebras())
     transition = cyclic.transition(0, 1).forward()
     assert transition(transition.domain().algebra_generator("z")) == (
         transition.codomain()(overlap_x.inverse_of_unit())
         * transition.codomain().algebra_generator("z")
     )
-    assert int(cyclic.restricted_algebra(0, 0, 1).rank()) == 3
+    assert int(cyclic.restricted_algebra(0, 0, 1).module_rank()) == 3

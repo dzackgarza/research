@@ -52,6 +52,6 @@ def test_the_local_free_trivialization_is_an_isomorphism_of_that_rank() -> None:
     trivialization = free.local_free_trivialization(point)
 
     assert trivialization.codomain() is free.localize_at_prime(point)
-    assert trivialization.domain().rank() == free.projective_rank(point)
+    assert trivialization.domain().module_rank() == free.projective_rank(point)
     assert trivialization.is_injective()
     assert trivialization.is_surjective()

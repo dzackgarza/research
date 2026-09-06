@@ -306,7 +306,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
         def _represented_annihilator_ideal(self):
             r"""Return the kernel ideal of the scalar action on a free module."""
             ring = self.base_ring()
-            generator = ring.one() if self.rank() == 0 else ring.zero()
+            generator = ring.one() if self.module_rank() == 0 else ring.zero()
             return ring.ideal(generator)
 
         def _Hom_(self, codomain, category=None):
@@ -365,7 +365,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 _biproduct_factors=factors,
             )
 
-        def rank(self):
+        def module_rank(self):
             r"""Return the cardinality of the module generating set.
 
             A rank can be infinite -- \(R^{(\mathbb N)}\) has rank
@@ -377,7 +377,7 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return self.module_generating_set().cardinality()
 
         def is_finite_rank(self) -> bool:
-            return self.rank().is_finite()
+            return self.module_rank().is_finite()
 
         def is_torsion_free(self) -> bool:
             r"""A free module over a domain is torsion-free.

@@ -51,7 +51,7 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     rendered(permutation)
     assert permutation in Modules(ring[group])
     assert permutation in Modules(ring)
-    assert permutation.rank() == degree
+    assert permutation.module_rank() == degree
     assert permutation.group() is group
     generator = group.group_generators().unrank(0)
     assert permutation.action_of(generator) * permutation.action_of(generator.inverse()) == permutation.action_of(group.one())
@@ -59,8 +59,8 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     coinvariants = permutation.module_coinvariants()
     rendered(invariants)
     rendered(coinvariants)
-    assert invariants.rank() == 1
-    assert coinvariants.rank() == 1
+    assert invariants.module_rank() == 1
+    assert coinvariants.module_rank() == 1
     total = sum((permutation.module_generator(label) for label in range(degree)), permutation.zero())
     assert permutation.is_invariant(total)
     assert invariants.inclusion().is_in_image(total)
@@ -69,7 +69,7 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     endomorphisms = permutation.Mor(permutation)
     rendered(endomorphisms)
     assert endomorphisms.identity()(total) == total
-    assert permutation.equivariant_endomorphism_module().rank() == endomorphism_rank
+    assert permutation.equivariant_endomorphism_module().module_rank() == endomorphism_rank
 
     # Characters over the rationals; Brauer characters in positive characteristic.
     if coefficients == "QQ":
@@ -79,11 +79,11 @@ def test_a_representation_theory_session(name, coefficients) -> None:
         assert character(generator) == sum(1 for point in range(1, degree + 1) if generator(point) == point)
         decomposition = permutation.isotypic_decomposition()
         rendered(decomposition)
-        assert decomposition.trivial_component().rank() == 1
+        assert decomposition.trivial_component().module_rank() == 1
         assert decomposition.index() == 1
         assert permutation.isotypic_characters().cardinality() == endomorphism_rank
         components = decomposition.nontrivial_components()
-        assert sum(component.rank() for component in components) + 1 == degree
+        assert sum(component.module_rank() for component in components) + 1 == degree
     if coefficients.startswith("GF"):
         brauer = permutation.brauer_character()
         rendered(brauer)
@@ -95,15 +95,15 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     restricted = Modules(ZZ[group]).restriction(subgroup)(permutation)
     rendered(restricted)
     assert restricted.group() is subgroup
-    assert restricted.rank() == degree
-    assert restricted.module_invariants().rank() >= 1
+    assert restricted.module_rank() == degree
+    assert restricted.module_invariants().module_rank() >= 1
     trivial = Modules(ring).trivial_action(subgroup)(FreeModule(ring, 1))
     induced = Modules(ZZ[subgroup]).induction(group)(trivial)
     coinduced = Modules(ZZ[subgroup]).coinduction(group)(trivial)
     rendered(induced)
-    assert induced.rank() == group.order() // subgroup.order()
-    assert coinduced.rank() == induced.rank()
-    assert induced.module_invariants().rank() == 1
+    assert induced.module_rank() == group.order() // subgroup.order()
+    assert coinduced.module_rank() == induced.module_rank()
+    assert induced.module_invariants().module_rank() == 1
     adjunction = Modules(ZZ[subgroup]).induction_restriction_adjunction(group)
     unit = adjunction.unit(trivial)
     counit = adjunction.counit(permutation)
@@ -113,5 +113,5 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     transposed = adjunction.hom_set_isomorphism_forward(counit)
     assert adjunction.hom_set_isomorphism_inverse(transposed, permutation) == counit
     if coefficients == "QQ":
-        assert induced.character()(group.one()) == induced.rank()
-        assert induced.isotypic_decomposition().trivial_component().rank() == 1
+        assert induced.character()(group.one()) == induced.module_rank()
+        assert induced.isotypic_decomposition().trivial_component().module_rank() == 1

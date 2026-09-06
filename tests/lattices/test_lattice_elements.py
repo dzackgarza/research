@@ -85,11 +85,11 @@ def test_a_vector_cuts_out_its_line_and_the_complement_of_that_line() -> None:
     line = isotropic.sublattice()
     complement = isotropic.orthogonal_complement()
 
-    assert line.rank() == 1
+    assert line.module_rank() == 1
     assert line.inclusion().codomain() is lattice
     assert line.inclusion()(line.module_generator(0)) == isotropic
     # e is isotropic, so e lies in its own complement and the rank drops by one.
-    assert complement.rank() == 3
+    assert complement.module_rank() == 3
     assert complement.inclusion().codomain() is lattice
 
 
@@ -102,7 +102,7 @@ def test_the_complement_of_an_anisotropic_vector_splits_off_its_line() -> None:
 
     complement = root.orthogonal_complement()
 
-    assert complement.rank() == 1
+    assert complement.module_rank() == 1
     # r^perp in A_2 is spanned by e_0 + 2 e_1, of norm -6.
     assert complement.determinant() == -6
     assert all(
@@ -118,4 +118,4 @@ def test_a_lattice_is_totally_isotropic_exactly_when_its_form_vanishes() -> None
     assert not plane.is_totally_isotropic()
     assert isotropic_line.is_totally_isotropic()
     assert plane.radical().is_totally_isotropic()
-    assert plane.radical().rank() == 0
+    assert plane.radical().module_rank() == 0

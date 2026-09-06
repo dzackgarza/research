@@ -36,7 +36,7 @@ def test_a_lattice_session(name) -> None:
     rendered(lattice)
     assert lattice in Lattices(ZZ)
     assert lattice in FinitelyGeneratedFreeModules(ZZ)
-    assert lattice.rank() == rank
+    assert lattice.module_rank() == rank
     assert lattice.signature_pair() == signature_pair(positive, negative)
     assert lattice.is_even() == even
     assert (lattice in EvenLattices(ZZ)) == even
@@ -62,9 +62,9 @@ def test_a_lattice_session(name) -> None:
     # Dual lattice and discriminant group with its forms.
     dual = lattice.dual_lattice()
     rendered(dual)
-    assert dual.rank() == rank
+    assert dual.module_rank() == rank
     assert dual.determinant() * lattice.determinant() == 1
-    assert lattice.dual_module().rank() == rank
+    assert lattice.dual_module().module_rank() == rank
     discriminant = lattice.discriminant_group()
     rendered(discriminant)
     assert discriminant.cardinality() == discriminant_order
@@ -81,29 +81,29 @@ def test_a_lattice_session(name) -> None:
     # Sublattices: the line through v, its orthogonal complement, and saturation.
     line = lattice.subobject_on([v])
     rendered(line)
-    assert line.rank() == 1
+    assert line.module_rank() == 1
     assert line.is_primitive() == (v.div() == 1)
     perpendicular = line.orthogonal_complement()
     rendered(perpendicular)
-    assert perpendicular.rank() == rank - 1
+    assert perpendicular.module_rank() == rank - 1
     assert lattice.b(line.inclusion()(line.module_generator(0)), perpendicular.inclusion()(perpendicular.module_generator(0))) == 0
     doubled = lattice.subobject_on([2 * e0])
-    assert doubled.rank() == 1
+    assert doubled.module_rank() == 1
     assert not doubled.is_saturated()
-    assert doubled.saturation().rank() == 1
+    assert doubled.saturation().module_rank() == 1
     assert doubled.saturation().is_saturated()
     assert doubled.saturation().inclusion().is_injective()
 
     # Direct sums, twists, and the hyperbolic plane glued on.
     bigger = lattice + Lattices(ZZ)("U")
     rendered(bigger)
-    assert bigger.rank() == rank + 2
+    assert bigger.module_rank() == rank + 2
     assert bigger.signature_pair() == signature_pair(positive + 1, negative + 1)
     assert bigger.discriminant_group().cardinality() == discriminant_order
     assert bigger.summands().cardinality() >= 2
     twisted = lattice.twist(3)
     rendered(twisted)
-    assert twisted.rank() == rank
+    assert twisted.module_rank() == rank
     assert abs(twisted.determinant()) == discriminant_order * 3**rank
     assert twisted.is_even()
 
@@ -149,7 +149,7 @@ def test_a_lattice_session(name) -> None:
     rendered(rational)
     assert rational in VectorSpaces(QQ)
     assert rational in Lattices(QQ)
-    assert rational.rank() == rank
+    assert rational.module_rank() == rank
     assert rational.determinant() == lattice.determinant()
     real = lattice.base_change(ZZ.Mor(RR)(lambda n: RR(n)))
     assert real in Lattices(RR)
@@ -157,7 +157,7 @@ def test_a_lattice_session(name) -> None:
 
     # As a plain ZZ-module it is free of the same rank, and Hom(L, ZZ) is the dual.
     assert lattice in Modules(ZZ)
-    assert lattice.unformed_module().rank() == rank
+    assert lattice.unformed_module().module_rank() == rank
     assert lattice.dual_module() in Modules(ZZ)
     assert lattice.cardinality() == lattice.unformed_module().cardinality()
 
@@ -165,7 +165,7 @@ def test_a_lattice_session(name) -> None:
 def test_the_k3_lattice_session() -> None:
     k3 = NamedLattices.LK3
     rendered(k3)
-    assert k3.rank() == 22
+    assert k3.module_rank() == 22
     assert k3.signature_pair() == signature_pair(3, 19)
     assert k3.is_even()
     assert k3.is_unimodular()
@@ -181,6 +181,6 @@ def test_the_k3_lattice_session() -> None:
     assert embedding.is_injective()
     assert embedding.is_primitive()
     complement = embedding.orthogonal_complement()
-    assert complement.rank() == 20
+    assert complement.module_rank() == 20
     assert complement.signature_pair() == signature_pair(2, 18)
     assert complement.is_unimodular()

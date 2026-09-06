@@ -10,7 +10,7 @@ from dzack_research.preamble.all import ZZ, Lattices, signature_pair
 def test_the_orthogonal_power_adds_signatures_and_multiplies_discriminants() -> None:
     plane = Lattices(ZZ)("U")
 
-    assert (plane ** 3).rank() == 6
+    assert (plane ** 3).module_rank() == 6
     assert (plane ** 3).signature_pair() == signature_pair(3, 3)
     assert (plane ** 3).determinant() == -1
     assert (plane ** 3).is_unimodular()
@@ -30,5 +30,5 @@ def test_the_zeroth_power_is_the_empty_sum_and_the_first_is_the_lattice() -> Non
     """
     plane = Lattices(ZZ)("U")
 
-    assert (plane ** 0).rank() == 0
+    assert (plane ** 0).module_rank() == 0
     assert (plane ** 1) is plane

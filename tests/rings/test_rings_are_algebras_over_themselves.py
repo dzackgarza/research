@@ -103,7 +103,7 @@ def test_the_augmentation_of_a_group_algebra_over_a_number_field_is_an_algebra_m
         FreeModule(field, 2),
         lambda group_element, vector: vector,
     )
-    assert permutation.module_invariants().rank() == 2
+    assert permutation.module_invariants().module_rank() == 2
 
 
 def test_a_self_algebra_keeps_the_ring_morphism_homset_as_its_default_mor() -> None:

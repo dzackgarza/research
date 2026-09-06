@@ -44,7 +44,7 @@ def test_sterk_alternative_realizations_reproduce_the_archived_root_data() -> No
     lattice, sterk_5 = Sterk.sterk5_in_U_E8_2()
     alternatives = Sterk.sterks_in_TEn()
 
-    assert lattice.rank() == 10
+    assert lattice.module_rank() == 10
     assert sterk_5.cardinality() == 14
     assert sum(root.q() == -4 for root in sterk_5) == _STERK_NORM_COUNTS["Sterk_5"][-4]
     assert sum(root.q() == -2 for root in sterk_5) == _STERK_NORM_COUNTS["Sterk_5"][-2]
@@ -101,7 +101,7 @@ def test_coble_has_seventeen_isotropic_candidates_and_embedding_chain_preserves_
 def test_coble_rank_ten_configuration_builds_a_rooted_coxeter_diagram() -> None:
     lattice, roots = Coble.rank_ten_coxeter_roots()
     diagram = Coble.rank_ten_diagram()
-    assert lattice.rank() == 10
+    assert lattice.module_rank() == 10
     assert roots.cardinality() == 11
     assert diagram.is_rooted()
     assert diagram.cardinality() == 11

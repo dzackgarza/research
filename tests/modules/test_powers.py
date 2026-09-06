@@ -32,11 +32,11 @@ def test_degree_powers_have_the_expected_free_ranks_and_use_canonical_tensor_pro
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     assert TensorPower(module, 2) is TensorPower(module, 2)
     assert TensorPower(module, 3) is TensorPower(module, 3)
-    assert TensorPower(module, 2).rank() == 4
-    assert SymmetricPower(module, 2).rank() == 3
-    assert AlternatingPower(module, 2).rank() == 1
-    assert AlternatingPower(module, 3).rank() == 0
-    assert DividedPower(module, 3).rank() == 4
+    assert TensorPower(module, 2).module_rank() == 4
+    assert SymmetricPower(module, 2).module_rank() == 3
+    assert AlternatingPower(module, 2).module_rank() == 1
+    assert AlternatingPower(module, 3).module_rank() == 0
+    assert DividedPower(module, 3).module_rank() == 4
 
 
 def test_integral_divided_powers_distinguish_gamma_from_symmetric_powers() -> None:

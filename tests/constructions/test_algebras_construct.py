@@ -42,8 +42,8 @@ def test_symmetric_algebra_is_the_polynomial_algebra(commutative_ring) -> None:
     assert symmetric in GradedAlgebras(ring)
     assert x * y == y * x
     assert (x + y) ** 2 == x**2 + 2 * x * y + y**2
-    assert symmetric.graded_piece(2).rank() == 3
-    assert symmetric.graded_piece(0).rank() == 1
+    assert symmetric.graded_piece(2).module_rank() == 3
+    assert symmetric.graded_piece(0).module_rank() == 1
 
 
 def test_symmetric_algebra_of_a_free_module(commutative_ring) -> None:
@@ -52,8 +52,8 @@ def test_symmetric_algebra_of_a_free_module(commutative_ring) -> None:
     symmetric = SymmetricAlgebraOf(module)
     assert symmetric in CommutativeAlgebras(ring)
     assert symmetric.free_source_module() is module
-    assert symmetric.graded_piece(1).rank() == 3
-    assert symmetric.graded_piece(2).rank() == 6
+    assert symmetric.graded_piece(1).module_rank() == 3
+    assert symmetric.graded_piece(2).module_rank() == 6
 
 
 def test_exterior_algebra_of_a_free_module(commutative_ring) -> None:
@@ -70,11 +70,11 @@ def test_exterior_algebra_of_a_free_module(commutative_ring) -> None:
     assert e0 * e0 == exterior.zero()
     assert e0 * e1 == -(e1 * e0)
     assert e0 * e1 * e2 != exterior.zero()
-    assert exterior.graded_piece(0).rank() == 1
-    assert exterior.graded_piece(1).rank() == 3
-    assert exterior.graded_piece(2).rank() == 3
-    assert exterior.graded_piece(3).rank() == 1
-    assert exterior.graded_piece(4).rank() == 0
+    assert exterior.graded_piece(0).module_rank() == 1
+    assert exterior.graded_piece(1).module_rank() == 3
+    assert exterior.graded_piece(2).module_rank() == 3
+    assert exterior.graded_piece(3).module_rank() == 1
+    assert exterior.graded_piece(4).module_rank() == 0
 
 
 def test_tensor_algebra_of_a_free_module(commutative_ring) -> None:
@@ -88,8 +88,8 @@ def test_tensor_algebra_of_a_free_module(commutative_ring) -> None:
     assert tensor in Algebras(ring)
     assert tensor not in CommutativeAlgebras(ring)
     assert a * b != b * a
-    assert tensor.graded_piece(2).rank() == 4
-    assert tensor.graded_piece(3).rank() == 8
+    assert tensor.graded_piece(2).module_rank() == 4
+    assert tensor.graded_piece(3).module_rank() == 8
 
 
 def test_polynomial_ring_is_a_commutative_algebra(commutative_ring) -> None:
@@ -168,7 +168,7 @@ def test_kahler_differentials_of_the_polynomial_algebra(commutative_ring) -> Non
 
     assert omega in KahlerDifferentialModules(polynomials)
     assert omega in Modules(polynomials)
-    assert omega.rank() == 2
+    assert omega.module_rank() == 2
     assert d(x) == dx
     assert d(x * y) == omega.scalar_multiple(y, dx) + omega.scalar_multiple(x, dy)
     assert d(x**3) == omega.scalar_multiple(3 * x**2, dx)
@@ -195,7 +195,7 @@ def test_kahler_differentials_of_a_ring_of_integers_have_the_order_of_the_discri
 
 def test_kahler_differentials_of_a_rational_function_field(build) -> None:
     omega = KahlerDifferentials(build("QQ(x)").as_algebra_over(QQ))
-    assert omega.rank() == 1
+    assert omega.module_rank() == 1
     assert omega.cardinality() == aleph0
 
 
@@ -228,10 +228,10 @@ def test_de_rham_complex_of_the_affine_line(field) -> None:
 
     assert de_rham in StrictlyCommutativeDifferentialGradedAlgebras(field)
     assert de_rham.de_rham_source_algebra() is polynomials
-    assert de_rham.kahler_differentials().rank() == 1
+    assert de_rham.kahler_differentials().module_rank() == 1
     assert d(d(de_rham(x))) == de_rham.zero()
     assert d(de_rham(x**2)) == 2 * de_rham(x) * d(de_rham(x))
-    assert de_rham.graded_piece(2).rank() == 0
+    assert de_rham.graded_piece(2).module_rank() == 0
 
 
 @pytest.mark.parametrize("name", ["QQ", "QQ(i)", "RR", "AA"])
@@ -240,7 +240,7 @@ def test_poincare_lemma_in_characteristic_zero(build, name) -> None:
     field = build(name)
     de_rham = DeRhamAlgebra(PolynomialRing(field, "x"))
     assert de_rham.cohomology(1).cardinality() == 1
-    assert de_rham.cohomology(0).rank() == 1
+    assert de_rham.cohomology(0).module_rank() == 1
 
 
 @pytest.mark.parametrize("name", ["GF(5)", "GF(4)"])
@@ -249,11 +249,11 @@ def test_de_rham_cohomology_of_the_line_is_nonzero_in_positive_characteristic(bu
     field = build(name)
     de_rham = DeRhamAlgebra(PolynomialRing(field, "x"))
     assert de_rham.cohomology(1).cardinality() != 1
-    assert de_rham.cohomology(1).rank() >= 1
+    assert de_rham.cohomology(1).module_rank() >= 1
 
 
 def test_de_rham_cohomology_of_the_integer_line_has_torsion() -> None:
     r"""$x\,dx$ is closed over $\mathbb Z$ and $2\,x\,dx = d(x^2)$, so $H^1$ has $2$-torsion."""
     de_rham = DeRhamAlgebra(PolynomialRing(ZZ, "x"))
     assert de_rham.cohomology(1).cardinality() != 1
-    assert de_rham.cohomology(0).rank() == 1
+    assert de_rham.cohomology(0).module_rank() == 1

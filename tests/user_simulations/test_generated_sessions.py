@@ -34,7 +34,7 @@ def test_a_generated_quadratic_field_session(d) -> None:
     rendered(field)
     integers = field.ring_of_integers()
     rendered(integers)
-    assert integers.rank() == 2
+    assert integers.module_rank() == 2
     assert field.discriminant() == quadratic_field_discriminant(d)
     for p in (2, 3, 5, 7, 11):
         primes_above = field.primes_above(p)
@@ -55,7 +55,7 @@ def test_a_generated_quadratic_field_session(d) -> None:
     rendered(galois)
     assert galois.order() == 2
     unit_rank = 1 if d > 0 else 0
-    assert field.unit_group().rank() == unit_rank
+    assert field.unit_group().module_rank() == unit_rank
     rendered(field.class_group())
     assert field.class_group().order() == field.class_number()
 
@@ -79,10 +79,10 @@ def test_a_generated_lattice_session(gram) -> None:
     line = lattice.subobject_on([lattice.module_generator(0)])
     rendered(line)
     rendered(line.orthogonal_complement())
-    assert line.rank() + line.orthogonal_complement().rank() == 2
+    assert line.module_rank() + line.orthogonal_complement().module_rank() == 2
     bigger = lattice + Lattices(ZZ)("U")
     rendered(bigger)
-    assert bigger.rank() == 4
+    assert bigger.module_rank() == 4
     assert bigger.discriminant_group().cardinality() == abs(det)
     rendered(lattice.genus())
     assert lattice.genus().representative().genus() == lattice.genus()

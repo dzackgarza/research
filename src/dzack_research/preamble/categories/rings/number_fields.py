@@ -435,7 +435,7 @@ class OrdersWithChosenIntegralBasis(Category):
                 name="Ring-module generator family",
             )
 
-        def rank(self):
+        def module_rank(self):
             engine = _engine_ring(self)
             return cardinal(1 if engine is SageZZ else engine.rank())
 

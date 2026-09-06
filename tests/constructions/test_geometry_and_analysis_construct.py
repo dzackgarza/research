@@ -95,7 +95,7 @@ def test_finite_coxeter_diagrams_groups_and_root_lattices(cartan_type, order, ra
     assert group.order() == order
     assert Groups.Coxeter(diagram.coxeter_matrix()).order() == order
     assert root_lattice in RootLattices()
-    assert root_lattice.rank() == rank
+    assert root_lattice.module_rank() == rank
     assert root_lattice.roots().cardinality() == root_count
     assert root_lattice.simple_roots().cardinality() == rank
     assert root_lattice.coxeter_number() == coxeter_number
@@ -104,7 +104,7 @@ def test_finite_coxeter_diagrams_groups_and_root_lattices(cartan_type, order, ra
     assert root_lattice.highest_root().is_root()
     assert root_lattice.highest_root().height() == coxeter_number - 1
     assert root_lattice.O().order() % order == 0
-    assert root_lattice.cartan_type().rank() == rank
+    assert root_lattice.cartan_type().module_rank() == rank
 
 
 def test_affine_and_hyperbolic_coxeter_diagrams() -> None:
@@ -189,7 +189,7 @@ def test_a_gram_tensor_and_its_pullback() -> None:
     assert gram.is_symmetric()
     assert not tensor(ZZ, (), (1, 1), [[0, 1], [-1, 0]]).is_symmetric()
     assert gram.tensor_space() in Modules(ZZ)
-    assert gram.tensor_space().rank() == 4
+    assert gram.tensor_space().module_rank() == 4
     assert gram.change_ring(QQ).tensor_space() in Modules(QQ)
     module = Lattices(ZZ)([[2, 1], [1, 2]]).unformed_module()
     scaling = module.Mor(module)({0: 2 * module.module_generator(0), 1: 2 * module.module_generator(1)})
@@ -213,7 +213,7 @@ def test_divisor_groups_on_a_finite_set_of_points() -> None:
     assert divisors in DivisorGroups()
     assert picard in PicardGroups()
     assert classes in ClassGroups()
-    assert divisors.rank() == 3
+    assert divisors.module_rank() == 3
     formal = FormalDivisor(ZZ, {"p": 2, "q": -1})
     assert formal.parent() in FormalDivisorGroups(ZZ)
     assert formal.parent().terms(formal).cardinality() == 2

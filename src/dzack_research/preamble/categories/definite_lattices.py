@@ -32,7 +32,7 @@ def _definite_sign(lattice):
         raise TypeError("definiteness algorithms here require finite rank")
     _signature = lattice.signature_pair()
     positive, negative = _signature.first(), _signature.second()
-    rank = lattice.rank()
+    rank = lattice.module_rank()
     ring = lattice.base_ring()
     if positive == rank and negative == 0:
         return ring.one()
@@ -84,7 +84,7 @@ def lll_reduction(lattice):
 def _reduction_from_backend_rows(lattice, backend_rows):
 
     ring = lattice.base_ring()
-    rank = int(lattice.rank())
+    rank = int(lattice.module_rank())
     # Definite-lattice engines return basis vectors as rows.  The live linear
     # map acts on coordinate columns, hence the transpose here.
     basis_map = MatrixSpace(ring, rank, rank).from_rows(
@@ -164,7 +164,7 @@ def bkz_reduction(lattice, block_size=20):
 
 
 def hkz_reduction(lattice):
-    return bkz_reduction(lattice, block_size=int(lattice.rank()))
+    return bkz_reduction(lattice, block_size=int(lattice.module_rank()))
 
 
 def minimum(lattice):
@@ -210,7 +210,7 @@ def root_sublattice(lattice):
     if not root_vectors:
         return lattice.subobject_on(())
     coordinates = {root: _coordinate_tuple(lattice, root) for root in root_vectors}
-    zero = (SageZZ.zero(),) * int(lattice.rank())
+    zero = (SageZZ.zero(),) * int(lattice.module_rank())
     positive = tuple(root for root in root_vectors if coordinates[root] > zero)
     positive_coordinates = {coordinates[root] for root in positive}
     simple = tuple(
@@ -276,7 +276,7 @@ def _target_coordinates(lattice, target):
         ]
     rationals = lattice.base_ring().fraction_field()
     point = tensor.vector(rationals, target)
-    if point.tensor_shape()[0] != int(lattice.rank()):
+    if point.tensor_shape()[0] != int(lattice.module_rank()):
         raise ValueError("a closest-vector target has one coordinate per lattice generator")
     return point
 
@@ -333,7 +333,7 @@ def closest_vector(lattice, target):
 def babai(lattice, target):
     r"""Return Babai's LLL nearest-plane approximation."""
     point = _target_coordinates(lattice, target)
-    rank = int(lattice.rank())
+    rank = int(lattice.module_rank())
     if rank == 0:
         return lattice.zero()
     _sign, gram = _positive_gram(lattice)
@@ -521,7 +521,7 @@ def gaussian_heuristic(lattice, *, exact_form=False):
     from sage.symbolic.ring import SR
 
     _definite_sign(lattice)
-    rank = int(lattice.rank())
+    rank = int(lattice.module_rank())
     if rank == 0:
         raise ValueError("the zero lattice has no Gaussian-heuristic radius")
     ring = lattice.base_ring()
@@ -620,7 +620,7 @@ def packing_density(lattice):
     from sage.functions.gamma import gamma
     from sage.symbolic.constants import pi
 
-    rank = int(lattice.rank())
+    rank = int(lattice.module_rank())
     factor = pi ** (SageQQ(rank) / 2) / gamma(1 + SageQQ(rank) / 2)
     return RR._from_engine_expression(factor) * center_density(lattice)
 
@@ -643,7 +643,7 @@ def theta_series(lattice, precision=20, variable="q"):
 def hermite_invariant(lattice):
 
     sign, _positive_gram_tensor = _positive_gram(lattice)
-    rank = int(lattice.rank())
+    rank = int(lattice.module_rank())
     ring = lattice.base_ring()
     metric_minimum = _engine_element(ring, sign * minimum(lattice))
     determinant = _engine_element(ring, abs(lattice.determinant()))

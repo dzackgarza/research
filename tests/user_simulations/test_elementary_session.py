@@ -112,7 +112,7 @@ def test_an_elementary_session(n) -> None:
         root = field.primitive_element()
         assert root * root == n
         assert field.discriminant() in (n, 4 * n) if squarefree else field.discriminant() != 0
-        assert field.ring_of_integers().rank() == 2
+        assert field.ring_of_integers().module_rank() == 2
         assert RR(n).sqrt() ** 2 == RR(n)
         assert AA(n).sqrt().minpoly().degree() == 2
     else:

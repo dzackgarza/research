@@ -30,7 +30,7 @@ INVOLUTIONS = {
 def test_the_k3_lattice_and_its_decomposition() -> None:
     k3 = NamedLattices.LK3
     rendered(k3)
-    assert k3.rank() == 22
+    assert k3.module_rank() == 22
     assert k3.signature_pair() == signature_pair(3, 19)
     assert k3.is_even()
     assert k3.is_unimodular()
@@ -40,7 +40,7 @@ def test_the_k3_lattice_and_its_decomposition() -> None:
     assert k3.is_isometric(Lattices(ZZ)("U") ** 3 + Lattices(ZZ)("E8") ** 2)
     assert k3.is_isometric(NamedLattices.U + NamedLattices.U + NamedLattices.U + NamedLattices.E8 + NamedLattices.E8)
     assert not k3.is_isometric(NamedLattices.Mukai)
-    assert NamedLattices.Mukai.rank() == 24
+    assert NamedLattices.Mukai.module_rank() == 24
     assert NamedLattices.Mukai.is_isometric(k3 + NamedLattices.U)
 
 
@@ -61,10 +61,10 @@ def test_a_catalogue_involution_session(name) -> None:
     coinvariant_lattice = acted.formed_coinvariants()
     rendered(invariant)
     rendered(coinvariant_lattice)
-    assert invariant.rank() == invariant_rank
+    assert invariant.module_rank() == invariant_rank
     assert invariant.signature_pair() == signature_pair(positive, negative)
-    assert coinvariant_lattice.rank() == coinvariant_rank
-    assert invariant.rank() + coinvariant_lattice.rank() == 22
+    assert coinvariant_lattice.module_rank() == coinvariant_rank
+    assert invariant.module_rank() + coinvariant_lattice.module_rank() == 22
     assert invariant.is_even()
     assert coinvariant_lattice.is_even()
     assert coinvariant_lattice.is_isometric(coinvariant())
@@ -97,7 +97,7 @@ def test_the_catalogue_embeddings_and_their_complements() -> None:
         assert embedding.is_primitive()
         complement = embedding.orthogonal_complement()
         rendered(complement)
-        assert complement.rank() == 22 - source.rank()
+        assert complement.module_rank() == 22 - source.module_rank()
         assert complement.signature_pair() == signature_pair(*complement_signature)
         assert complement.is_even()
         assert complement.discriminant_group().cardinality() == source.discriminant_group().cardinality()

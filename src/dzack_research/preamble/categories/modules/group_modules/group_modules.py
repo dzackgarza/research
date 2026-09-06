@@ -468,7 +468,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 finite_ordered_set,
             )
 
-            return finite_ordered_set(tuple(character for character in _split_irreducible_characters(self) if isotypic_component(self, character).rank() != 0))
+            return finite_ordered_set(tuple(character for character in _split_irreducible_characters(self) if isotypic_component(self, character).module_rank() != 0))
 
         def isotypic_component(self, character):
             r"""Return the integral/base-ring isotypic component as a subobject."""
@@ -551,7 +551,7 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
 
             from sage.combinat.free_module import CombinatorialFreeModule
 
-            indices = tuple(range(int(self.rank())))
+            indices = tuple(range(int(self.module_rank())))
             computation_module = CombinatorialFreeModule(
                 _engine_ring(self.base_ring()),
                 indices,

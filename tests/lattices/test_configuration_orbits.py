@@ -36,7 +36,7 @@ def test_a_root_basis_pairing_graph_has_the_diagram_automorphisms(name) -> None:
     root_lattice = Lattices(ZZ)(name)
     configuration = vector_configuration(root_lattice, root_lattice.module_generators())
 
-    assert configuration.rank() == root_lattice.rank()
+    assert configuration.module_rank() == root_lattice.module_rank()
     assert configuration.frames_its_lattice()
     assert configuration.configuration_automorphism_group().order() == diagram_order
     assert diagram_order * weyl_order == isometry_order
@@ -46,7 +46,7 @@ def test_a_root_basis_pairing_graph_has_the_diagram_automorphisms(name) -> None:
 def test_orthogonal_roots_admit_every_permutation_but_a_chain_does_not() -> None:
     chain = Lattices(ZZ)("A3")
     orthogonal = NamedLattices.A1 ** 3
-    assert chain.rank() == orthogonal.rank() == 3
+    assert chain.module_rank() == orthogonal.module_rank() == 3
 
     chain_configuration = vector_configuration(chain, chain.module_generators())
     orthogonal_configuration = vector_configuration(

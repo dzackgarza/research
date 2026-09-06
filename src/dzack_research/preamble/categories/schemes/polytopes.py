@@ -132,7 +132,7 @@ class ConvexPolytopes(OwnedCategory):
             assert lattice.base_ring() is integers, (
                 "the ambient lattice of a rational polytope is an owned ZZ-module"
             )
-            assert int(lattice.rank()) == ambient_dimension, (
+            assert int(lattice.module_rank()) == ambient_dimension, (
                 "the ambient lattice rank must equal the coordinate dimension"
             )
 

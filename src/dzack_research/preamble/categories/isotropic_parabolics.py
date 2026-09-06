@@ -119,7 +119,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             on it.  The two ranks are asserted to agree.
             """
             quotient = self.into_perpendicular().cokernel()
-            assert quotient.rank() == self.isotropic_reduction().rank(), (
+            assert quotient.module_rank() == self.isotropic_reduction().module_rank(), (
                 "the represented cokernel of I -> I^perp and the owned isotropic "
                 "reduction I^perp/I must have the same rank"
             )
@@ -272,7 +272,7 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
             """
             lattice = self.ambient_lattice()
             ring = lattice.base_ring()
-            assert int(self.rank()) == 1, (
+            assert int(self.module_rank()) == 1, (
                 "an Eichler transvection is attached to a rank-one isotropic subobject"
             )
             assert lattice.is_even(), (

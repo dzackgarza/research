@@ -32,7 +32,7 @@ def primitive_isotropic_subobject(lattice, basis):
     elements = tuple(_held(lattice, element) for element in basis)
     assert elements, "an isotropic sublattice is spanned by a nonempty family"
     subobject = primitive_isotropic(lattice, elements)
-    assert subobject.rank() == finite_ordered_set(elements).cardinality(), (
+    assert subobject.module_rank() == finite_ordered_set(elements).cardinality(), (
         "the stated isotropic family is linearly dependent, so it does not "
         "frame the sublattice it spans"
     )
@@ -89,14 +89,23 @@ class IsotropicFlag:
     def terms(self):
         return self._terms
 
-    def rank(self):
-        return cardinal(len(self._terms))
+    def flag_length(self):
+        r"""Return how many terms this flag has.
+
+        This counts the steps of the flag and is not a rank: the terms are
+        subobjects of growing rank, and the flag's own invariant is how many
+        of them there are.
+        """
+        return finite_ordered_set(self._terms).cardinality()
 
     def top(self):
         return self._terms[-1]
 
     def __repr__(self) -> str:
-        return f"Primitive totally isotropic flag of rank {self.rank()} in {self.lattice()}"
+        return (
+            f"Primitive totally isotropic flag of length {self.flag_length()} "
+            f"in {self.lattice()}"
+        )
 
 
 class Cusp:
@@ -127,8 +136,8 @@ class Cusp:
     def lattice(self):
         return self._representative.ambient_lattice()
 
-    def rank(self):
-        return self._representative.rank()
+    def module_rank(self):
+        return self._representative.module_rank()
 
     def representative(self):
         r"""Return the member of this orbit the backend chose."""
@@ -161,12 +170,12 @@ class Cusp:
         assert subobject.ambient_lattice() is self.lattice(), (
             "a cusp decides membership for isotropic subobjects of its own lattice"
         )
-        if subobject.rank() != self.rank():
+        if subobject.module_rank() != self.module_rank():
             return False
         return self.transporter_witness(subobject) is not None
 
     def __repr__(self) -> str:
-        return f"Cusp of rank {self.rank()} in {self.lattice()}"
+        return f"Cusp of rank {self.module_rank()} in {self.lattice()}"
 
 
 def cusps(lattice, rank=1):
@@ -224,7 +233,7 @@ def transport_isotropic_object(isometry, obj):
 
 
 def _gram_rows(lattice):
-    rank = int(lattice.rank())
+    rank = int(lattice.module_rank())
     return [
         [int(lattice.gram_tensor()[i, j]) for j in range(rank)]
         for i in range(rank)

@@ -54,11 +54,11 @@ def test_a_sterk_cusp_reduces_to_its_recorded_rank_ten_lattice(name) -> None:
     assert vector.q() == 0
 
     line = primitive_isotropic(period_lattice, (vector,))
-    assert line.rank() == 1
-    assert line.isotropic_perpendicular().rank() == 11
+    assert line.module_rank() == 1
+    assert line.isotropic_perpendicular().module_rank() == 11
 
     reduction = line.isotropic_reduction()
-    assert reduction.rank() == 10
+    assert reduction.module_rank() == 10
     assert reduction.is_even()
     assert reduction.is_p_elementary(2)
     assert reduction.two_elementary_invariants() == nikulin_invariants(
@@ -113,10 +113,10 @@ def test_E10_has_a_single_cusp_and_it_reduces_to_E8() -> None:
     cusp_set = cusps(lattice)
     assert cusp_set.cardinality() == 1
     cusp = cusp_set.unrank(0)
-    assert cusp.rank() == 1
+    assert cusp.module_rank() == 1
 
     reduction = cusp.reduction_lattice()
-    assert reduction.rank() == 8
+    assert reduction.module_rank() == 8
     assert reduction.discriminant_group().cardinality() == 1
     assert reduction.is_isometric(NamedLattices.E8)
 
@@ -135,7 +135,7 @@ def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     vector = isotropic + partner + root
     assert vector.q() == 0
     line = primitive_isotropic(lattice, (vector,))
-    assert line.rank() == 1
+    assert line.module_rank() == 1
 
     cusp = cusps(lattice).unrank(0)
     witness = cusp.transporter_witness(line)
@@ -147,7 +147,7 @@ def test_a_cusp_transporter_carries_a_line_onto_the_representative() -> None:
     representative = cusp.representative()
     inclusion = representative.inclusion()
     embedded = image.embedded_module_generators()
-    assert image.rank() == representative.rank()
+    assert image.module_rank() == representative.module_rank()
     assert all(
         inclusion.is_in_image(embedded[label])
         for label in image.module_generating_set()

@@ -83,9 +83,9 @@ def test_coextension_along_a_group_algebra_is_the_coinduced_module_of_the_trivia
     coextended = coextension(FreeModule(ZZ, 1))
 
     assert coextended in Modules(group_algebra)
-    assert coextended.rank() == 6
-    assert coextended.module_invariants().rank() == 1
-    assert coextended.module_coinvariants().rank() == 1
+    assert coextended.module_rank() == 6
+    assert coextended.module_invariants().module_rank() == 1
+    assert coextended.module_coinvariants().module_rank() == 1
 
 
 def test_restriction_is_left_adjoint_to_coextension() -> None:
@@ -132,7 +132,7 @@ def test_restriction_along_the_structure_map_of_a_group_algebra_forgets_the_acti
     adjunction = Modules(group_algebra).restriction_coextension_adjunction(structure_map)
     forgotten = adjunction.left_adjoint()(swapped)
     assert forgotten in Modules(ZZ)
-    assert forgotten.rank() == 2
+    assert forgotten.module_rank() == 2
 
     generator = group.group_generators().unrank(0)
     unit = adjunction.unit(swapped)

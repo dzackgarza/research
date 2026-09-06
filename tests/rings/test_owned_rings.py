@@ -31,7 +31,7 @@ def test_owned_ring_power_constructs_a_free_module_over_the_owned_ring() -> None
 
     module = ZZ**3
     assert module.base_ring() is ZZ
-    assert module.rank() == 3
+    assert module.module_rank() == 3
     assert module is ZZ**3
     assert FreeModule(ZZ, ZZ(3)) is module
     assert FreeModule(ZZ, SageZZ(3)) is module
@@ -149,7 +149,7 @@ def test_explicit_algebraic_extensions_are_number_fields_or_orders() -> None:
     assert order in OwnedOrders()
     assert gaussian.cardinality() == aleph0
     assert order.cardinality() == aleph0
-    assert order.rank() in session["Cardinalities"]()
+    assert order.module_rank() in session["Cardinalities"]()
     assert real_quadratic.signature() == session["signature_pair"](2, 0)
     assert ZZ["x"].algebra_generating_set() == finite_ordered_set(("x",))
     assert tuple(QQ["x"].algebra_generating_set()) == ("x",)

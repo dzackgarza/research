@@ -44,17 +44,17 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     rendered(v)
     assert module in FreeModules(ring)
     assert module in FinitelyGeneratedFreeModules(ring)
-    assert module.rank() == 3
+    assert module.module_rank() == 3
     submodule = module.subobject_on([v, w, u])
     rendered(submodule)
     assert submodule in ModuleSubobjects(ring)
-    assert submodule.rank() == 2
+    assert submodule.module_rank() == 2
     assert submodule.inclusion().is_injective()
     assert v in submodule
     assert submodule.is_saturated() == ring(2).is_unit()
     saturation = submodule.saturation()
     rendered(saturation)
-    assert saturation.rank() == 2
+    assert saturation.module_rank() == 2
     assert saturation.is_saturated()
 
     # The quotient, its torsion, its annihilator.
@@ -62,7 +62,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     rendered(quotient)
     assert quotient in FinitelyPresentedModules(ring)
     assert quotient in Modules(ring)
-    assert quotient.rank() == 1
+    assert quotient.module_rank() == 1
     torsion = quotient.torsion_submodule()
     rendered(torsion)
     assert torsion in TorsionModules(ring)
@@ -70,7 +70,7 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     assert quotient.annihilator() == ring.ideal(ring.zero())
     presented = FinitelyPresentedModule(submodule.inclusion())
     rendered(presented)
-    assert presented.rank() == 1
+    assert presented.module_rank() == 1
     invariant_factors = presented.invariant_factors()
     rendered(invariant_factors)
     assert ring(2) in invariant_factors
@@ -78,45 +78,45 @@ def test_a_module_session_over_a_principal_ideal_domain(name) -> None:
     # Hom and tensor.
     homs = module.Hom(module)
     rendered(homs)
-    assert homs.rank() == 9
+    assert homs.module_rank() == 9
     tensor = module.tensor_product(quotient)
     rendered(tensor)
     assert tensor in Modules(ring)
-    assert tensor.rank() == 3
+    assert tensor.module_rank() == 3
     dual = module.dual_module()
-    assert dual.rank() == 3
-    assert quotient.Hom(ring.regular_module()).rank() == 1
+    assert dual.module_rank() == 3
+    assert quotient.Hom(ring.regular_module()).module_rank() == 1
 
     # A morphism, its kernel, image and cokernel; the rank–nullity relation.
     morphism = module.Mor(module)({0: e1, 1: e2, 2: 2 * e0})
     rendered(morphism)
     assert morphism.is_injective()
     assert morphism.is_surjective() == ring(2).is_unit()
-    assert Kernel(morphism).rank() == 0
-    assert morphism.image().rank() == 3
+    assert Kernel(morphism).module_rank() == 0
+    assert morphism.image().module_rank() == 3
     assert morphism.cokernel().cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
     assert (morphism * morphism)(e0) == 2 * e1
-    assert morphism.kernel().rank() + morphism.image().rank() == 3
+    assert morphism.kernel().module_rank() + morphism.image().module_rank() == 3
 
     # Base change to the fraction field, and localization where it applies.
     extended = quotient.base_change(ring.Mor(fractions)(lambda element: fractions(element)))
     rendered(extended)
     assert extended in VectorSpaces(fractions)
-    assert extended.rank() == 1
+    assert extended.module_rank() == 1
     prime = ring.spectrum()(ring.ideal(ring(2))) if ring(2) != ring.zero() and not ring(2).is_unit() else None
     if prime is not None:
         localized = quotient.localize_at_prime(prime)
         rendered(localized)
         assert localized in Modules(prime.local_ring())
-        assert localized.rank() == 1
+        assert localized.module_rank() == 1
 
     # A free resolution of the quotient.
     resolution = quotient.free_resolution()
     rendered(resolution)
     assert resolution.is_exact()
-    assert resolution.term(0).rank() == 3
-    assert resolution.term(1).rank() == 2
-    assert resolution.term(2).rank() == 0
+    assert resolution.term(0).module_rank() == 3
+    assert resolution.term(1).module_rank() == 2
+    assert resolution.term(2).module_rank() == 0
 
     # A short cochain complex 0 -> R -> R^2 -> R -> 0 and its cohomology.
     line = FreeModule(ring, 1)

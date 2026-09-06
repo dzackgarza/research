@@ -201,8 +201,8 @@ def test_group_modules_and_their_invariants(pid) -> None:
     assert not acted.is_invariant(e0)
     invariants = acted.module_invariants()
     coinvariants = acted.module_coinvariants()
-    assert invariants.rank() == 1
-    assert coinvariants.rank() == 1
+    assert invariants.module_rank() == 1
+    assert coinvariants.module_rank() == 1
     assert invariants in Modules(ring)
 
 

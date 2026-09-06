@@ -149,7 +149,7 @@ def test_quadratic_fields(d) -> None:
     assert field.signature() == signature_pair(2 if d > 0 else 0, 0 if d > 0 else 1)
     assert field.is_galois()
     assert field.galois_group().order() == 2
-    assert field.ring_of_integers().rank() == 2
+    assert field.ring_of_integers().module_rank() == 2
     assert field.ring_of_integers().is_maximal()
     assert field.embeddings(CC).cardinality() == 2
     assert field.class_number() >= 1
@@ -192,7 +192,7 @@ def test_prime_fields_and_p_adics(p) -> None:
 def test_rank_two_lattices_from_gram_matrices(gram) -> None:
     det = determinant_2x2(gram)
     lattice = Lattices(ZZ)(gram)
-    assert lattice.rank() == 2
+    assert lattice.module_rank() == 2
     assert lattice.determinant() == det
     assert lattice.is_nondegenerate()
     assert lattice.signature_pair() == signature_pair(*signature_2x2(gram))
@@ -228,7 +228,7 @@ def test_root_lattices_of_every_simply_laced_type(cartan_type) -> None:
     lattice = Lattices(ZZ)(name)
     weyl = Groups.Coxeter(cartan_type)
     assert lattice in RootLattices()
-    assert lattice.rank() == cartan_type[1]
+    assert lattice.module_rank() == cartan_type[1]
     assert lattice.is_even()
     assert lattice.is_definite()
     assert lattice.simple_roots().cardinality() == cartan_type[1]
@@ -249,14 +249,14 @@ def test_ranks_of_free_module_constructions(name, r, s) -> None:
     ring = specimen(name)
     left = FreeModule(ring, r)
     right = FreeModule(ring, s)
-    assert left.rank() == r
-    assert left.tensor_product(right).rank() == r * s
-    assert left.Hom(right).rank() == r * s
-    assert Biproduct(left, right).rank() == r + s
-    assert left.dual_module().rank() == r
-    assert ExteriorForms(left, 2).rank() == binomial(r, 2)
-    assert DividedSquare(left).rank() == binomial(r + 1, 2)
-    assert TensorSquare(left).rank() == r * r
+    assert left.module_rank() == r
+    assert left.tensor_product(right).module_rank() == r * s
+    assert left.Hom(right).module_rank() == r * s
+    assert Biproduct(left, right).module_rank() == r + s
+    assert left.dual_module().module_rank() == r
+    assert ExteriorForms(left, 2).module_rank() == binomial(r, 2)
+    assert DividedSquare(left).module_rank() == binomial(r + 1, 2)
+    assert TensorSquare(left).module_rank() == r * r
     assert left in FinitelyGeneratedFreeModules(ring)
     assert (left.cardinality() == 1) == (r == 0)
 
@@ -278,15 +278,15 @@ def test_vector_spaces_over_catalogue_fields(name, r) -> None:
     field = specimen(name)
     space = FreeModule(field, r)
     assert space in VectorSpaces(field)
-    assert space.rank() == r
-    assert space.Hom(space).rank() == r * r
+    assert space.module_rank() == r
+    assert space.Hom(space).module_rank() == r * r
     assert space.Aut().one() == space.Mor(space).identity()
     if field.cardinality().is_finite():
         q = field.cardinality()
         assert space.cardinality() == q**r
         assert space.Aut().order() == prod(q**r - q**i for i in range(r))
     kernel = Kernel(space.Mor(FreeModule(field, 1))({label: FreeModule(field, 1).module_generator(0) for label in range(r)}))
-    assert kernel.rank() == r - 1
+    assert kernel.module_rank() == r - 1
 
 
 # ---------------------------------------------------------------------------

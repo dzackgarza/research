@@ -50,7 +50,7 @@ def test_dualization_is_asked_of_the_module_category() -> None:
     assert dualize.codomain() == FinitelyGeneratedFreeModules(Modules(ZZ).base_ring())
     dual = dualize(plane)
     assert dual in FinitelyGeneratedFreeModules(ZZ)
-    assert dual.rank() == plane.rank()
+    assert dual.module_rank() == plane.module_rank()
 
     transpose = dualize(swap)
     assert transpose.domain() is dual
@@ -66,8 +66,8 @@ def test_the_symmetric_algebra_functor_is_asked_of_the_module_category() -> None
     assert symmetric.codomain() == CommutativeAlgebras(Modules(ZZ).base_ring())
     algebra = symmetric(plane)
     assert algebra in CommutativeAlgebras(ZZ)
-    assert algebra.graded_piece(1).rank() == 2
-    assert algebra.graded_piece(2).rank() == 3
+    assert algebra.graded_piece(1).module_rank() == 2
+    assert algebra.graded_piece(2).module_rank() == 3
     x, y = algebra.algebra_generator(0), algebra.algebra_generator(1)
     assert x * y == y * x
 
@@ -85,8 +85,8 @@ def test_the_tensor_algebra_functor_is_asked_of_the_module_category() -> None:
     assert tensor.codomain() == Algebras(Modules(ZZ).base_ring())
     algebra = tensor(plane)
     assert algebra in Algebras(ZZ)
-    assert algebra.graded_piece(1).rank() == 2
-    assert algebra.graded_piece(2).rank() == 4
+    assert algebra.graded_piece(1).module_rank() == 2
+    assert algebra.graded_piece(2).module_rank() == 4
     x, y = algebra.algebra_generator(0), algebra.algebra_generator(1)
     assert x * y != y * x
 
@@ -104,8 +104,8 @@ def test_the_exterior_algebra_functor_is_asked_of_the_module_category() -> None:
     assert exterior.codomain() == AlternatingAlgebras(Modules(ZZ).base_ring())
     algebra = exterior(plane)
     assert algebra in AlternatingAlgebras(ZZ)
-    assert algebra.graded_piece(1).rank() == 2
-    assert algebra.graded_piece(2).rank() == 1
+    assert algebra.graded_piece(1).module_rank() == 2
+    assert algebra.graded_piece(2).module_rank() == 1
     x, y = algebra.algebra_generator(0), algebra.algebra_generator(1)
     assert x * x == algebra.zero()
     assert x * y == -(y * x)
@@ -131,7 +131,7 @@ def test_the_free_algebra_adjunctions_are_asked_of_the_module_category() -> None
         (modules.tensor_algebra_adjunction(), 4),
     ):
         algebra = adjunction.left_adjoint()(plane)
-        assert algebra.graded_piece(2).rank() == degree_two_rank
+        assert algebra.graded_piece(2).module_rank() == degree_two_rank
 
         unit = adjunction.unit(plane)
         assert unit.domain() is plane

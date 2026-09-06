@@ -40,7 +40,7 @@ class VectorPrimitiveExtension:
         if not line.is_primitive():
             raise ValueError("VectorPrimitiveExtension is normalized to a primitive vector")
         complement = line.orthogonal_complement()
-        if line.rank() + complement.rank() != lattice.rank():
+        if line.module_rank() + complement.module_rank() != lattice.module_rank():
             raise ArithmeticError("the anisotropic line does not have complementary orthogonal rank")
         line_lattice = line.inclusion().domain()
         complement_lattice = complement.inclusion().domain()
@@ -61,7 +61,7 @@ class VectorPrimitiveExtension:
             raise ArithmeticError("the line and complement do not span a finite-index sublattice")
 
         sum_generators = tuple(sum_lattice.module_generators())
-        split = int(line_lattice.rank())
+        split = int(line_lattice.module_rank())
         line_in_sum = line_lattice.Emb(sum_lattice)(sum_generators[:split])
         complement_in_sum = complement_lattice.Emb(sum_lattice)(sum_generators[split:])
         line_discriminant_inclusion = line_in_sum.discriminant_inclusion()
@@ -102,7 +102,7 @@ class VectorPrimitiveExtension:
 
         discriminant_form = lattice.discriminant_group()
         dual_restriction = inclusion.matrix().transpose()
-        lattice_rank = int(lattice.rank())
+        lattice_rank = int(lattice.module_rank())
         discriminant_representatives = []
         for position in range(lattice_rank):
             dual_element = sum_dual.linear_combination(
@@ -235,8 +235,8 @@ def definite_complement_extensions(lattice, left, right):
     target_complement = target.complement.inclusion().domain()
     source_line = source.line.inclusion().domain()
     target_line = target.line.inclusion().domain()
-    source_rank = int(source.sum_lattice.rank())
-    target_rank = int(target.sum_lattice.rank())
+    source_rank = int(source.sum_lattice.module_rank())
+    target_rank = int(target.sum_lattice.module_rank())
     if source_rank != target_rank:
         return ()
 

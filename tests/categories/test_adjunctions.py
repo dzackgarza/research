@@ -58,7 +58,7 @@ def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() ->
     equalizer = Equalizer(identity, negative_identity)
     coequalizer = Coequalizer(identity, negative_identity)
 
-    assert equalizer.rank() == 0
+    assert equalizer.module_rank() == 0
     invariant_factors = coequalizer.invariant_factors()
     assert invariant_factors.cardinality() == 1
     assert invariant_factors.unrank(0) == ZZ(2)
@@ -85,7 +85,7 @@ def test_group_invariants_and_coinvariants_impose_all_generator_relations() -> N
     invariants = acted.module_invariants()
     coinvariants = acted.module_coinvariants()
 
-    assert invariants.rank() == 0
+    assert invariants.module_rank() == 0
     invariant_factors = coinvariants.invariant_factors()
     assert invariant_factors.cardinality() == 2
     assert tuple(invariant_factors) == (ZZ(2), ZZ(2))
@@ -227,7 +227,7 @@ def test_trivial_action_is_left_adjoint_to_invariants_using_equivariant_homsets(
 
     adjunction = Modules(ZZ).trivial_invariants_adjunction(group)
     invariants = adjunction.right_adjoint()(acted)
-    assert invariants.rank() == 1
+    assert invariants.module_rank() == 1
     assert invariants.inclusion().is_in_image(e + f)
 
     source = BasedFreeModule(ZZ, finite_ordered_set(("n",)))
@@ -277,7 +277,7 @@ def test_coinvariants_are_left_adjoint_to_the_trivial_action() -> None:
     adjunction = Modules(ZZ[group]).coinvariants_trivial_adjunction()
     coinvariants = adjunction.left_adjoint()(acted)
 
-    assert coinvariants.rank() == 1
+    assert coinvariants.module_rank() == 1
     unit = adjunction.unit(acted)
     assert unit(e) == unit(f)
 

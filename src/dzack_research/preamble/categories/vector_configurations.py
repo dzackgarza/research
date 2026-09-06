@@ -134,7 +134,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
         def frames_its_lattice(self) -> bool:
             r"""Return whether the framing is a basis of the whole lattice."""
             lattice = self.inclusion().codomain()
-            return bool(self.rank() == lattice.rank()) and self.is_primitive()
+            return bool(self.module_rank() == lattice.module_rank()) and self.is_primitive()
 
         def ambient_isometry(self, position_map):
             r"""Return the lifted element of ``O(L)`` when the framing bases ``L``.

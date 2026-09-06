@@ -126,7 +126,7 @@ def test_kernel_and_cokernel_are_functorial_on_commutative_module_squares() -> N
 
     kernel = KernelArrowFunctor(ZZ)
     kernel_object = kernel(projection_arrow)
-    assert kernel_object.rank() == 1
+    assert kernel_object.module_rank() == 1
     induced_kernel = kernel(first_square)
     _assert_module_maps_agree(
         kernel_object.inclusion() * induced_kernel,

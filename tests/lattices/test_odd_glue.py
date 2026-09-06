@@ -47,7 +47,7 @@ def test_the_glue_of_an_odd_lattice_is_an_anti_isometry_of_bilinear_forms() -> N
     values = FractionFieldQuotient(ZZ, 1)
 
     assert not lattice.is_even()
-    assert diagonal.rank() + complement.rank() == lattice.rank()
+    assert diagonal.module_rank() + complement.module_rank() == lattice.module_rank()
     assert diagonal.is_primitive()
     assert complement.is_primitive()
     assert diagonal.sum(complement).index() == 3

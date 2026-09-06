@@ -49,10 +49,10 @@ def test_the_residue_field_of_the_plane_resolves_in_two_steps() -> None:
 
     assert resolution.length() == 2
     assert resolution.degrees().cardinality() == 3
-    assert resolution.term(0).rank() == 1
-    assert resolution.term(1).rank() == 2
-    assert resolution.term(2).rank() == 1
-    assert resolution.term(3).rank() == 0
+    assert resolution.term(0).module_rank() == 1
+    assert resolution.term(1).module_rank() == 2
+    assert resolution.term(2).module_rank() == 1
+    assert resolution.term(3).module_rank() == 0
 
 
 def test_the_koszul_resolution_is_exact() -> None:

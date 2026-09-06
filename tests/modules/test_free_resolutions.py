@@ -19,8 +19,8 @@ def test_presented_pid_module_has_actual_short_free_resolution() -> None:
 
     assert resolution.module() is module
     assert resolution.term(0) is f0
-    assert resolution.term(1).rank() == 1
-    assert resolution.term(2).rank() == 0
+    assert resolution.term(1).module_rank() == 1
+    assert resolution.term(2).module_rank() == 0
     assert resolution.differential(1).is_injective()
     assert resolution.augmentation().codomain() is module
     assert resolution.is_exact()
@@ -42,7 +42,7 @@ def test_noninjective_presentation_is_replaced_by_actual_relation_submodule() ->
     resolution = free_resolution(module)
 
     assert not presentation.is_injective()
-    assert resolution.term(1).rank() == 1
+    assert resolution.term(1).module_rank() == 1
     assert resolution.differential(1).is_injective()
     assert resolution.is_exact()
     invariants = module.invariant_factors()
@@ -56,7 +56,7 @@ def test_free_module_has_trivial_free_resolution() -> None:
 
     assert resolution.length() == 0
     assert resolution.term(0) is module
-    assert resolution.term(1).rank() == 0
+    assert resolution.term(1).module_rank() == 0
     assert resolution.augmentation().domain() is module
     assert resolution.augmentation().codomain() is module
     for generator in module.module_generators():

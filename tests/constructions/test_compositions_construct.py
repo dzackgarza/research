@@ -18,7 +18,7 @@ def test_lattices_over_orders_and_over_p_adics(build) -> None:
         lattice = Lattices(ring)([[2, 1], [1, 2]])
         assert lattice in Lattices(ring)
         assert lattice.determinant() == 3 * ring.one()
-        assert lattice.dual_lattice().rank() == 2
+        assert lattice.dual_lattice().module_rank() == 2
         assert lattice.discriminant_module().cardinality() == size
 
 
@@ -47,7 +47,7 @@ def test_matrices_over_polynomial_rings_and_modules_over_matrix_algebras() -> No
     assert jordan.transpose().matrix_entry(1, 0) == 1
     over_matrices = FreeModule(MatrixSpace(QQ, 2), 2)
     assert over_matrices in Modules(MatrixSpace(QQ, 2))
-    assert over_matrices.rank() == 2
+    assert over_matrices.module_rank() == 2
 
 
 def test_quotients_of_quotients_and_localizations_of_quotients() -> None:
@@ -153,7 +153,7 @@ def test_the_trace_form_of_a_number_field_is_a_lattice(build) -> None:
         basis = field.ring_of_integers().integral_basis()
         gram = [[(a * b).trace() for b in basis] for a in basis]
         trace_form = Lattices(ZZ)(gram)
-        assert trace_form.rank() == field.degree()
+        assert trace_form.module_rank() == field.degree()
         assert trace_form.determinant() == discriminant
         assert trace_form.discriminant_group().cardinality() == abs(discriminant)
         assert trace_form.is_nondegenerate()

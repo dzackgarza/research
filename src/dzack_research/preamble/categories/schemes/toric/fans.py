@@ -49,7 +49,7 @@ def _integers():
 
 def _engine_lattice(module):
     r"""Sage's toric lattice of the same rank, the engine coordinate space."""
-    return _SageToricLattice(int(module.rank()), "N")
+    return _SageToricLattice(int(module.module_rank()), "N")
 
 
 def _engine_vector(module, element):
@@ -162,7 +162,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
     def from_engine_fan(self, engine_fan):
         r"""Adopt one engine fan whose lattice rank matches ``N``."""
-        assert int(engine_fan.lattice_dim()) == int(self.lattice().rank()), (
+        assert int(engine_fan.lattice_dim()) == int(self.lattice().module_rank()), (
             "the engine fan lives in a lattice of the wrong rank"
         )
         return object_of(self, engine_fan=engine_fan)
@@ -209,7 +209,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         assert all(weight > 0 for _, weight in homogeneous_weights), (
             "the weights of a weighted projective space are positive"
         )
-        assert homogeneous_weights.cardinality() == int(self.lattice().rank()) + 1, (
+        assert homogeneous_weights.cardinality() == int(self.lattice().module_rank()) + 1, (
             "P(q_0,...,q_n) has dimension n, one less than the number of weights"
         )
         return self.from_engine_fan(
@@ -227,7 +227,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
         ``F_1`` is the blow-up of ``P^2`` at one point.
         """
         lattice = self.lattice()
-        assert int(lattice.rank()) == 2, "a Hirzebruch surface is a toric surface"
+        assert int(lattice.module_rank()) == 2, "a Hirzebruch surface is a toric surface"
         integers = _integers()
         twist = integers(twist)
         first, second = tuple(lattice.module_generating_set())
@@ -262,7 +262,7 @@ class RationalPolyhedralFans(OwnedParameterizedCategory):
 
         def dimension(self):
             r"""The rank of ``N``, which is the dimension of the toric variety."""
-            return self.lattice().rank()
+            return self.lattice().module_rank()
 
         def _cone(self, engine_cone):
             return self.element_class(self, engine_cone)

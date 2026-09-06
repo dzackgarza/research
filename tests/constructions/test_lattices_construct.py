@@ -35,7 +35,7 @@ def test_a_gram_matrix_builds_a_lattice_over_every_ring(lattice_ring) -> None:
     assert lattice in FreeModules(ring)
     assert lattice in Modules(ring)
     assert lattice.base_ring() is ring
-    assert lattice.rank() == 2
+    assert lattice.module_rank() == 2
     assert lattice.b(e0, e1) == ring.one()
     assert lattice.b(e0, e0) == 2 * ring.one()
     assert e0.b(e1) == lattice.b(e1, e0)
@@ -53,7 +53,7 @@ def test_nondegeneracy_is_decided_by_the_base_ring(lattice_ring) -> None:
 
     assert lattice.is_nondegenerate() == expected
     assert (lattice in NondegenerateLattices(ring)) == expected
-    assert lattice.radical().rank() == (0 if expected else 1)
+    assert lattice.radical().module_rank() == (0 if expected else 1)
 
 
 def test_dual_lattice_over_every_ring(lattice_ring) -> None:
@@ -62,9 +62,9 @@ def test_dual_lattice_over_every_ring(lattice_ring) -> None:
     if 3 * ring.one() == ring.zero():
         return
     dual = lattice.dual_lattice()
-    assert dual.rank() == 2
+    assert dual.module_rank() == 2
     assert dual.determinant() * lattice.determinant() == lattice.determinant().parent().one()
-    assert lattice.dual_module().rank() == 2
+    assert lattice.dual_module().module_rank() == 2
 
 
 @pytest.mark.parametrize("name", ["ZZ", "ZZ[i]", "ZZ[phi]", "ZZ_3", "ZZ_(5)", "QQ[x]", "QQ", "GF(5)"])
@@ -82,10 +82,10 @@ def test_direct_sums_and_twists(lattice_ring) -> None:
     twisted = lattice.twist(2)
 
     assert double in Lattices(ring)
-    assert double.rank() == 4
+    assert double.module_rank() == 4
     assert double.determinant() == 9 * ring.one()
     assert double.summands().cardinality() == 2
-    assert twisted.rank() == 2
+    assert twisted.module_rank() == 2
     assert twisted.determinant() == 12 * ring.one()
     assert twisted.b(twisted.module_generator(0), twisted.module_generator(1)) == 2 * ring.one()
 
@@ -95,10 +95,10 @@ def test_named_gram_tensors_over_every_ring(lattice_ring) -> None:
     plane = Lattices(ring)("U")
     e8 = Lattices(ring)("E8")
 
-    assert plane.rank() == 2
+    assert plane.module_rank() == 2
     assert plane.determinant() == -ring.one()
     assert plane.b(plane.module_generator(0), plane.module_generator(0)) == ring.zero()
-    assert e8.rank() == 8
+    assert e8.module_rank() == 8
     assert e8.determinant() == ring.one()
     assert e8.is_unimodular() == (ring.one() != ring.zero())
     assert e8.is_even()
@@ -107,7 +107,7 @@ def test_named_gram_tensors_over_every_ring(lattice_ring) -> None:
 def test_euclidean_lattice_of_a_given_rank(lattice_ring) -> None:
     ring = lattice_ring
     cube = Lattices(ring)(3)
-    assert cube.rank() == 3
+    assert cube.module_rank() == 3
     assert cube.determinant() == ring.one()
     assert cube.is_unimodular()
     assert not cube.is_even()
@@ -162,8 +162,8 @@ def test_sublattices_and_orthogonal_complements() -> None:
     complement = line.orthogonal_complement()
     doubled = a2.subobject_on([2 * e0, e1])
 
-    assert line.rank() == 1
-    assert complement.rank() == 1
+    assert line.module_rank() == 1
+    assert complement.module_rank() == 1
     assert complement.inclusion().codomain() is a2
     assert a2.b(line.inclusion()(line.module_generator(0)), complement.inclusion()(complement.module_generator(0))) == 0
     assert doubled.index() == 2
@@ -190,7 +190,7 @@ def test_named_catalogue_lattices_have_their_invariants() -> None:
     assert NamedLattices.E8.discriminant() == 1
     assert NamedLattices.E8_2.discriminant_group().cardinality() == 256
     assert NamedLattices.E8_2.is_p_elementary(2)
-    assert NamedLattices.LK3.rank() == 22
+    assert NamedLattices.LK3.module_rank() == 22
     assert NamedLattices.LK3.signature_pair() == signature_pair(3, 19)
     assert NamedLattices.LK3.is_unimodular()
     assert NamedLattices.LK3.is_even()
@@ -222,7 +222,7 @@ def test_genus_and_local_isometry() -> None:
 
 def test_lattices_over_the_rationals_and_reals_have_no_integral_structure_but_the_form() -> None:
     rational = Lattices(QQ)([[QQ(1) / 2, 0], [0, 3]])
-    assert rational.rank() == 2
+    assert rational.module_rank() == 2
     assert rational.determinant() == QQ(3) / 2
     assert rational.is_nondegenerate()
     assert rational.dual_lattice().determinant() == QQ(2) / 3

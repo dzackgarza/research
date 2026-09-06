@@ -51,7 +51,7 @@ class InvertibleSheaf(SageObject):
         self._transition_units = {}
         for module in gluing_datum.local_modules():
             ring = module.base_ring()
-            if module not in FinitelyGeneratedFreeModules(ring) or int(module.rank()) != 1:
+            if module not in FinitelyGeneratedFreeModules(ring) or int(module.module_rank()) != 1:
                 raise TypeError(
                     "an invertible sheaf requires a rank-one finite free module on every chart"
                 )

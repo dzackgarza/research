@@ -51,7 +51,7 @@ def test_the_underlying_map_answers_the_module_level() -> None:
     kernel = underlying.kernel()
 
     assert not underlying.is_injective()
-    assert kernel.rank() == 1
+    assert kernel.module_rank() == 1
     for label in kernel.module_generating_set():
         generator = kernel.inclusion()(kernel.module_generator(label))
         assert underlying(generator) == point.zero()

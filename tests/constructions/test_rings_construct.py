@@ -676,7 +676,7 @@ def test_ring_of_integers_of_every_number_field(number_field) -> None:
     assert order in IntegralDomains()
     assert order in NoetherianRings()
     assert order.fraction_field() is field
-    assert order.rank() == field.degree()
+    assert order.module_rank() == field.degree()
     assert order.integral_basis().cardinality() == cardinal(field.degree())
     assert order.cardinality() == aleph0
     assert (order in PrincipalIdealDomains()) == (field.class_number() == 1)

@@ -337,7 +337,7 @@ def test_tensor_space_records_index_modules() -> None:
     assert mixed.tensor_type() == (NN**2)((2, 0))
     upper, lower = gram.index_modules()
     assert upper.cardinality() == 0 and lower.cardinality() == 2
-    assert int(lower[0].rank()) == 2
+    assert int(lower[0].module_rank()) == 2
 
 
 def test_tensor_matrix_can_reinterpret_two_index_tensor_components_only() -> None:

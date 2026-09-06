@@ -31,7 +31,7 @@ def test_a_free_module_has_zero_torsion_submodule() -> None:
 
     assert module.generic_fibre_map().domain() is module
     assert module.generic_fibre_map().is_injective()
-    assert module.torsion_submodule().rank() == 0
+    assert module.torsion_submodule().module_rank() == 0
     assert module.is_torsion_free()
     assert not module.is_torsion()
 

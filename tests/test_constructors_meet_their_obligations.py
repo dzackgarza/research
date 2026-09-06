@@ -521,7 +521,7 @@ def test_a_constructed_lattice_satisfies_its_defining_properties() -> None:
     lattice = Lattices(ZZ)("A2")
     module_basis = tuple(lattice.module_generators())
 
-    assert lattice.rank() == len(module_basis) == 2
+    assert lattice.module_rank() == len(module_basis) == 2
     assert all(left.b(right) in ZZ for left in module_basis for right in module_basis)
     assert lattice.is_nondegenerate() is True
     assert lattice.correlation_morphism().is_injective()
@@ -548,7 +548,7 @@ def test_a_degenerate_lattice_answers_its_own_nondegeneracy() -> None:
     formed = Lattices(ZZ)([[1, 1], [1, 1]])
 
     assert formed.is_nondegenerate() is False
-    assert formed.radical().rank() == 1
+    assert formed.radical().module_rank() == 1
     assert Lattices(ZZ)("A2").is_nondegenerate() is True
 
 

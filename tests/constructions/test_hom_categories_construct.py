@@ -78,7 +78,7 @@ def test_hom_modules_are_modules_and_hom_sets_are_sets() -> None:
     line = FreeModule(ZZ, 1)
     homs = plane.Hom(line)
     assert homs in Modules(ZZ)
-    assert homs.rank() == 2
+    assert homs.module_rank() == 2
     assert plane.Mor(line) in Cat()
     assert homs.as_morphism(homs.zero()) == plane.Mor(line).zero()
     assert Modules(ZZ).Mor(plane, line) is plane.Mor(line)

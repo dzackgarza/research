@@ -51,7 +51,7 @@ from dzack_research.preamble.tensors.tensor import (
 
 def _engine_gram_rows(lattice):
     r"""Return the Gram entries as plain integer rows, the shape the programs read."""
-    rank = int(lattice.rank())
+    rank = int(lattice.module_rank())
     gram = lattice.gram_tensor()
     return [[int(gram[i, j]) for j in range(rank)] for i in range(rank)]
 
@@ -281,7 +281,7 @@ class LatticeEmbedding(LatticeMorphism):
             source_form = source.discriminant_bilinear_form()
             target_form = target.discriminant_bilinear_form()
 
-        source_rank = int(source.rank())
+        source_rank = int(source.module_rank())
         rationals = source.base_ring().fraction_field()
         source_dual_form = source.gram_tensor().change_ring(rationals).dual_tensor()
         inclusion_tensor = _tensor_view(self).change_ring(rationals)
@@ -380,7 +380,7 @@ class LatticeIsometry(LatticeEmbedding):
 
     def determinant(self):
         r"""Return the determinant of this automorphism/isometry tensor."""
-        if self.domain().rank() != self.codomain().rank():
+        if self.domain().module_rank() != self.codomain().module_rank():
             raise ValueError("determinant is defined here for equal-rank isometries")
         return self.matrix().determinant()
 
@@ -565,11 +565,11 @@ class LatticeIsometry(LatticeEmbedding):
                 _tensor_view(self),
             )
         )
-        if self.invariant_lattice().rank() != invariant_rank:
+        if self.invariant_lattice().module_rank() != invariant_rank:
             raise ArithmeticError(
                 "OSCAR's invariant-lattice rank disagrees with the owned invariant lattice"
             )
-        if self.formed_coinvariants().rank() != coinvariant_rank:
+        if self.formed_coinvariants().module_rank() != coinvariant_rank:
             raise ArithmeticError(
                 "OSCAR's coinvariant-lattice rank disagrees with the owned formed coinvariants"
             )
@@ -1103,7 +1103,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         generators = tuple(codomain.module_generators())
         rank = len(generators)
         images = []
-        for source_position in range(int(self.domain().rank())):
+        for source_position in range(int(self.domain().module_rank())):
             row = row_action_matrix[source_position]
             images.append(
                 sum(
@@ -1327,7 +1327,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             return False
         if not domain.is_finite_rank() or not codomain.is_finite_rank():
             return Unknown
-        if domain.rank() != codomain.rank():
+        if domain.module_rank() != codomain.module_rank():
             return True
         if domain.signature_pair() != codomain.signature_pair():
             return True
@@ -1339,7 +1339,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if domain_gram == codomain_gram:
             self._definite_witness_matrix = domain_gram.parent().one()
             return False
-        rank = domain.rank()
+        rank = domain.module_rank()
         if rank <= rank.parent().one():
             return True
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
@@ -1424,7 +1424,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             )
             return False
 
-        rank = domain.rank()
+        rank = domain.module_rank()
         if rank >= rank.parent()(3):
             spinor_generators = SageGenus(domain_engine).spinor_generators(proper=False)
             if not spinor_generators:

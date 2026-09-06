@@ -32,8 +32,8 @@ def test_the_koszul_complex_of_a_regular_sequence(field) -> None:
     assert koszul.cohomology(0).cardinality() == 1
     assert koszul.cohomology(1).cardinality() == 1
     assert koszul.cohomology(2).cardinality() == field.cardinality()
-    assert koszul.cycles(1).rank() == 1
-    assert koszul.boundaries(1).rank() == 1
+    assert koszul.cycles(1).module_rank() == 1
+    assert koszul.boundaries(1).module_rank() == 1
     assert koszul.cycles(1) == koszul.boundaries(1)
     assert cohomology_functor(plane, 2)(koszul) == koszul.cohomology(2)
     assert CochainComplexes(plane).underlying_graded_module()(koszul) in GradedModules(plane)
@@ -42,7 +42,7 @@ def test_the_koszul_complex_of_a_regular_sequence(field) -> None:
 def test_the_koszul_complex_over_the_integers() -> None:
     plane, koszul = _koszul_complex(ZZ)
     assert koszul.cohomology(1).cardinality() == 1
-    assert koszul.cohomology(2).rank() == 1
+    assert koszul.cohomology(2).module_rank() == 1
     assert koszul.cohomology(2).annihilator() == plane.ideal(plane.algebra_generator("x"), plane.algebra_generator("y"))
 
 
@@ -69,7 +69,7 @@ def test_a_cochain_complex_over_every_commutative_ring(commutative_ring) -> None
     complex_ = CochainComplexes(ring)({0: line, 1: line}, {0: doubling})
     assert complex_ in CochainComplexes(ring)
     assert complex_.cohomology(1).cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
-    assert complex_.cohomology(0).rank() == (1 if ring(2) == ring.zero() else 0)
+    assert complex_.cohomology(0).module_rank() == (1 if ring(2) == ring.zero() else 0)
 
 
 # ---------------------------------------------------------------------------
@@ -154,7 +154,7 @@ def test_vector_fields_and_lie_brackets(field) -> None:
     euler = LieBracket(y_d_dx, x_d_dy)
     assert euler(x) == -x
     assert euler(y) == y
-    assert Derivations(plane, plane.regular_module()).rank() == 2
+    assert Derivations(plane, plane.regular_module()).module_rank() == 2
     assert d_dx in Derivations(plane, plane.regular_module())
 
 
@@ -187,12 +187,12 @@ def test_de_rham_cohomology_of_the_punctured_line(field) -> None:
     de_rham = DeRhamAlgebra(laurent)
     cohomology = CohomologyAlgebra(de_rham)
     assert cohomology in CohomologyAlgebras(field)
-    assert de_rham.cohomology(0).rank() == 1
+    assert de_rham.cohomology(0).module_rank() == 1
     if field.characteristic() == 0:
-        assert de_rham.cohomology(1).rank() == 1
+        assert de_rham.cohomology(1).module_rank() == 1
         assert de_rham.cohomology(2).cardinality() == 1
     else:
-        assert de_rham.cohomology(1).rank() >= 1
+        assert de_rham.cohomology(1).module_rank() >= 1
 
 
 def test_the_regular_dg_module_of_a_dga(field) -> None:

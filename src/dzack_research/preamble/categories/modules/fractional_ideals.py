@@ -594,7 +594,7 @@ def _integer_coordinate_submodule(ideal):
     ]
     if not rows:
         rationals = _own_ring(SageQQ)
-        rows = [tensor.vector(rationals, [rationals.zero()] * int(order.rank()))]
+        rows = [tensor.vector(rationals, [rationals.zero()] * int(order.module_rank()))]
     return span([_engine_component_vector(row) for row in rows], SageZZ)
 
 
@@ -659,7 +659,7 @@ def _principal_generator_from_integer_module(ideal):
         return field.zero()
 
     rationals = _own_ring(SageQQ)
-    rank = int(order.rank())
+    rank = int(order.module_rank())
     order_basis = MatrixSpace(rationals, rank, rank).from_rows(
         (
             rationals._from_engine_element(SageQQ(coefficient))

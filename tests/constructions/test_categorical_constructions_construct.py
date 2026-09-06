@@ -85,8 +85,8 @@ def test_products_coproducts_and_biproducts_of_modules(commutative_ring) -> None
     for construction in (Product, Coproduct, Biproduct):
         both = construction(left, right)
         assert both in Modules(ring)
-        assert both.rank() == 5
-    assert left.tensor_product(right).rank() == 6
+        assert both.module_rank() == 5
+    assert left.tensor_product(right).module_rank() == 6
     assert Product(left, right) == Coproduct(left, right)
 
 
@@ -97,12 +97,12 @@ def test_kernels_and_cokernels_of_module_morphisms(commutative_ring) -> None:
     projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     doubling = line.Mor(line)({0: 2 * line.module_generator(0)})
 
-    assert Kernel(projection).rank() == 1
+    assert Kernel(projection).module_rank() == 1
     assert Kernel(projection).inclusion().codomain() is plane
     assert Cokernel(projection).cardinality() == 1
     assert Cokernel(doubling).cardinality() == ring.quotient_ring(ring.ideal(ring(2))).cardinality()
     assert Cokernel(doubling).projection().domain() is line
-    assert Kernel(doubling).rank() == (1 if ring(2) == ring.zero() else 0)
+    assert Kernel(doubling).module_rank() == (1 if ring(2) == ring.zero() else 0)
 
 
 def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
@@ -113,12 +113,12 @@ def test_pushouts_and_fiber_products_of_modules(commutative_ring) -> None:
     second_axis = line.Mor(plane)({0: plane.module_generator(1)})
     glued = Pushout(first_axis, first_axis)
     assert glued in Modules(ring)
-    assert glued.rank() == 3
+    assert glued.module_rank() == 3
     first_projection = plane.Mor(line)({0: line.module_generator(0), 1: line.zero()})
     pulled_back = FiberProduct(first_projection, first_projection)
     assert pulled_back in Modules(ring)
-    assert pulled_back.rank() == 3
-    assert Pushout(first_axis, second_axis).rank() == 3
+    assert pulled_back.module_rank() == 3
+    assert Pushout(first_axis, second_axis).module_rank() == 3
 
 
 def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
@@ -263,5 +263,5 @@ def test_direct_sum_objects_know_their_summands() -> None:
     assert lattice in DirectSumObjects()
     assert lattice.number_of_summands() == 2
     assert lattice.summands().cardinality() == 2
-    assert lattice.summand(0).rank() == 2
+    assert lattice.summand(0).module_rank() == 2
     assert lattice.summand(1).determinant() == 3

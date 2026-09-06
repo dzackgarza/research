@@ -60,7 +60,7 @@ def test_a_number_field_session(name) -> None:
     assert integers in IntegralDomains()
     assert integers in NoetherianRings()
     assert integers.is_maximal()
-    assert integers.rank() == degree
+    assert integers.module_rank() == degree
     basis = integers.integral_basis()
     rendered(basis)
     assert basis.cardinality() == degree

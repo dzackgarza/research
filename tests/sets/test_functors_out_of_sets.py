@@ -34,8 +34,8 @@ def test_the_free_module_functor_carries_a_set_map_to_generators() -> None:
     target = functor(larger)
     carried = functor(_shift(labels, larger))
 
-    assert free.rank() == 2
-    assert target.rank() == 3
+    assert free.module_rank() == 2
+    assert target.module_rank() == 3
     assert carried.domain() is free
     assert carried.codomain() is target
     assert carried(free.module_generator(labels(0))) == target.module_generator(larger(1))

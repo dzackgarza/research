@@ -187,7 +187,7 @@ def test_the_root_morphism_carries_the_abstract_root_lattice_into_the_realizatio
 
     assert morphism.domain() is abstract
     assert morphism.codomain() is realization
-    assert abstract.rank() == 2
+    assert abstract.module_rank() == 2
     generators = tuple(abstract.module_generators())
     roots = tuple(diagram.roots())
     for left_index, left in enumerate(generators):

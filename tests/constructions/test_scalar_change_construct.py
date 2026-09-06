@@ -48,7 +48,7 @@ def test_extension_of_scalars_of_a_free_module(ring_map) -> None:
 
     assert extended in Modules(target)
     assert extended in FinitelyGeneratedModules(target)
-    assert extended.rank() == 3
+    assert extended.module_rank() == 3
     assert extended.base_ring() is target
     assert functorial == extended
     if target in Fields():
@@ -66,7 +66,7 @@ def test_extension_of_scalars_of_a_torsion_module_over_the_integers() -> None:
         assert extended.cardinality() == size
     two = ZZ.Mor(GF(2))(lambda element: GF(2)(element))
     assert torsion.base_change(two).cardinality() == 2
-    assert torsion.base_change(two).rank() == 1
+    assert torsion.base_change(two).module_rank() == 1
 
 
 def test_restriction_of_scalars(ring_map) -> None:
@@ -88,7 +88,7 @@ def test_restriction_of_scalars_of_the_gaussian_integers_to_the_integers() -> No
     phi = ZZ.Mor(gaussian)(lambda element: gaussian(element))
     restricted = restrict_scalars(FreeModule(gaussian, 1), phi)
     assert restricted in Modules(ZZ)
-    assert restricted.rank() == 2
+    assert restricted.module_rank() == 2
     assert restricted in FinitelyGeneratedModules(ZZ)
     rationals = restrict_scalars(FreeModule(QQ, 1), ZZ.Mor(QQ)(lambda element: QQ(element)))
     assert rationals in Modules(ZZ)
@@ -141,7 +141,7 @@ def test_base_change_of_a_lattice_and_of_a_form(ring_map) -> None:
     changed = lattice.base_change(phi)
     assert changed in Lattices(target)
     assert changed in BilinearFormModules(target)
-    assert changed.rank() == 2
+    assert changed.module_rank() == 2
     assert changed.determinant() == 3 * target.one()
     assert changed.is_nondegenerate() == (3 * target.one() != target.zero())
 
@@ -154,7 +154,7 @@ def test_localization_of_modules_at_a_prime_of_the_integers() -> None:
 
     assert localize(torsion) in Modules(local)
     assert localize(torsion).cardinality() == 25
-    assert localize(free).rank() == 2
+    assert localize(free).module_rank() == 2
     assert localize(free).base_ring() is local
     doubling = free.Mor(free)({0: 2 * free.module_generator(0), 1: free.module_generator(1)})
     assert localize(doubling).is_surjective()
@@ -168,7 +168,7 @@ def test_twisting_a_module_by_frobenius() -> None:
     twisted = twist_scalar_action(module, frobenius)
     generator = field.multiplicative_generator()
     assert twisted in Modules(field)
-    assert twisted.rank() == 2
+    assert twisted.module_rank() == 2
     assert twisted.scalar_multiple(generator, twisted.module_generator(0)) == generator**2 * twisted.module_generator(0)
     assert frobenius * frobenius == field.Mor(field).identity()
 
@@ -184,8 +184,8 @@ def test_the_tensor_hom_adjunction_over_every_commutative_ring(commutative_ring)
     homs = adjunction.right_adjoint()(other)
     assert tensored == module.tensor_product(fixed)
     assert homs == fixed.Hom(other)
-    assert tensored.rank() == 6
-    assert homs.rank() == 2
+    assert tensored.module_rank() == 6
+    assert homs.module_rank() == 2
     assert adjunction.unit(module).domain() is module
     assert adjunction.counit(other).codomain() is other
     evaluation = tensored.Mor(other)({label: other.zero() for label in range(6)})

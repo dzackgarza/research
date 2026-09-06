@@ -64,7 +64,7 @@ def test_subobject_orthogonal_complement_defers_to_the_inclusion() -> None:
 
     assert perpendicular.inclusion().codomain() is lattice
     assert via_inclusion.inclusion().codomain() is lattice
-    assert perpendicular.rank() == 2
+    assert perpendicular.module_rank() == 2
     assert all(
         subobject.inclusion()(source).b(perpendicular.inclusion()(target)) == 0
         for source in subobject.module_generators()
@@ -92,18 +92,18 @@ def test_radical_and_isotropic_reduction_are_inclusion_derived() -> None:
     e0, e1 = lattice.module_generators()
 
     radical = lattice.radical()
-    assert radical.rank() == 1
+    assert radical.module_rank() == 1
     assert radical.inclusion().is_in_image(e0)
     assert not radical.inclusion().is_in_image(e1)
 
     quotient = lattice.radical_quotient()
-    assert quotient.rank() == 1
+    assert quotient.module_rank() == 1
     assert quotient.gram_tensor()[0, 0] == 1
 
     plane = Lattices(ZZ)("U")
     isotropic_line = plane.subobject_on((plane.module_generator(0),))
     reduction = isotropic_line.isotropic_reduction()
-    assert reduction.rank() == 0
+    assert reduction.module_rank() == 0
 
 
 def test_reflections_are_lattice_automorphisms_with_inverse_and_composition() -> None:
@@ -169,7 +169,7 @@ def test_orthogonal_complement_uses_the_image_of_an_arbitrary_morphism() -> None
 
     perpendicular = morphism.orthogonal_complement()
 
-    assert perpendicular.rank() == 1
+    assert perpendicular.module_rank() == 1
     assert perpendicular.gram_tensor() == tensor(ZZ, (), (1, 1), [[0]])
     assert perpendicular.inclusion().is_in_image(e)
     assert not perpendicular.inclusion().is_in_image(f)
@@ -182,7 +182,7 @@ def test_isotropic_reduction_of_a_line_in_u_plus_u_is_u() -> None:
 
     reduction = isotropic_line.isotropic_reduction()
 
-    assert reduction.rank() == 2
+    assert reduction.module_rank() == 2
     assert reduction.gram_tensor() == tensor(ZZ, (), (2, 2), [[0, 1], [1, 0]])
     assert reduction.signature_pair() == signature_pair(1, 1)
     assert reduction.is_unimodular()
@@ -197,7 +197,7 @@ def test_primitive_a1_and_a2_complements_in_e8_have_e7_and_e6_discriminants() ->
 
     assert a1.is_primitive()
     assert e7.is_primitive()
-    assert e7.rank() == 7
+    assert e7.module_rank() == 7
     assert abs(e7.determinant()) == 2
     e7_factors = e7.discriminant_module().invariant_factors()
     assert e7_factors.cardinality() == 1
@@ -216,7 +216,7 @@ def test_primitive_a1_and_a2_complements_in_e8_have_e7_and_e6_discriminants() ->
 
     assert a2.is_primitive()
     assert e6.is_primitive()
-    assert e6.rank() == 6
+    assert e6.module_rank() == 6
     assert abs(e6.determinant()) == 3
     e6_factors = e6.discriminant_module().invariant_factors()
     assert e6_factors.cardinality() == 1
@@ -240,7 +240,7 @@ def test_diagonal_isotropic_class_glues_a1_four_to_an_index_two_even_overlattice
     overlattice = inclusion.codomain()
 
     assert inclusion.index() == 2
-    assert overlattice.rank() == 4
+    assert overlattice.module_rank() == 4
     assert overlattice.is_even()
     assert abs(overlattice.determinant()) == 4
     overlattice_factors = overlattice.discriminant_module().invariant_factors()
@@ -391,8 +391,8 @@ def test_swap_involution_on_u_is_an_automorphism_with_rank_one_invariants_and_co
 
     invariants = group_lattice.module_invariants()
     coinvariants = group_lattice.module_coinvariants()
-    assert invariants.rank() == 1
-    assert coinvariants.rank() == 1
+    assert invariants.module_rank() == 1
+    assert coinvariants.module_rank() == 1
     assert coinvariants.is_torsion_free()
 
 

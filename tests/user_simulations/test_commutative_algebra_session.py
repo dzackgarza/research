@@ -134,7 +134,7 @@ def test_a_plane_curve_session(name) -> None:
     de_rham = DeRhamAlgebra(cusp)
     rendered(de_rham)
     assert de_rham.differential()(de_rham(xbar)) == de_rham(dx)
-    assert de_rham.cohomology(0).rank() == 1
+    assert de_rham.cohomology(0).module_rank() == 1
     rendered(de_rham.cohomology(1))
 
     # Over the smooth affine line the Poincaré lemma holds in characteristic zero.

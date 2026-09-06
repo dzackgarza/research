@@ -39,8 +39,8 @@ def test_the_swap_of_the_hyperbolic_plane_glues_two_rank_one_lattices() -> None:
 
     extension = isometry_primitive_extension(swap)
     assert extension.lattice is lattice
-    assert extension.invariant.rank() == 1
-    assert extension.coinvariant.rank() == 1
+    assert extension.invariant.module_rank() == 1
+    assert extension.coinvariant.module_rank() == 1
     assert extension.acts_as_negation_on_coinvariants()
 
     invariant_vector = extension.invariant.embedded_module_generators()[
@@ -89,8 +89,8 @@ def test_the_first_two_cyclotomic_summands_split_an_involution() -> None:
 
     fixed = cyclotomic_summand(swap, 1)
     negated = cyclotomic_summand(swap, 2)
-    assert fixed.rank() == 1
-    assert negated.rank() == 1
+    assert fixed.module_rank() == 1
+    assert negated.module_rank() == 1
     assert fixed.is_primitive()
     assert negated.is_primitive()
 
@@ -111,8 +111,8 @@ def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
     extension = isometry_primitive_extension(involution)
 
     assert extension.lattice is NamedLattices.LK3
-    assert extension.invariant.rank() == 10
-    assert extension.coinvariant.rank() == 12
+    assert extension.invariant.module_rank() == 10
+    assert extension.coinvariant.module_rank() == 12
     assert extension.acts_as_negation_on_coinvariants()
     assert extension.coinvariant.inclusion().domain().is_isometric(NamedLattices.TEn)
 
@@ -125,9 +125,9 @@ def test_the_enriques_involution_glues_S_En_to_T_En_with_index_1024() -> None:
 def test_the_enriques_cyclotomic_summands_are_the_two_eigen_sublattices() -> None:
     involution = Involutions.I_En
 
-    assert cyclotomic_summand(involution, 1).rank() == 10
-    assert cyclotomic_summand(involution, 2).rank() == 12
-    assert cyclotomic_summand(involution, 3).rank() == 0
+    assert cyclotomic_summand(involution, 1).module_rank() == 10
+    assert cyclotomic_summand(involution, 2).module_rank() == 12
+    assert cyclotomic_summand(involution, 3).module_rank() == 0
 
 
 def _a2_diagram_involution():
@@ -219,8 +219,8 @@ def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> Non
     lattice, involution = _a2_diagram_involution()
     extension = isometry_primitive_extension(involution)
 
-    assert extension.invariant.rank() == 1
-    assert extension.coinvariant.rank() == 1
+    assert extension.invariant.module_rank() == 1
+    assert extension.coinvariant.module_rank() == 1
     assert extension.invariant.discriminant_group().cardinality() == 2
     assert extension.coinvariant.discriminant_group().cardinality() == 6
     # A_{Z(a1-a2)} is cyclic of order six, on which negation acts
@@ -313,8 +313,8 @@ def test_the_cubic_cyclic_permutation_glues_an_odd_lattice_bilinearly() -> None:
     extension = isometry_primitive_extension(rotation)
 
     assert not lattice.is_even()
-    assert extension.invariant.rank() == 1
-    assert extension.coinvariant.rank() == 2
+    assert extension.invariant.module_rank() == 1
+    assert extension.coinvariant.module_rank() == 2
     assert extension.coinvariant.inclusion().domain().is_even()
 
     assert not extension.glue().is_quadratic()

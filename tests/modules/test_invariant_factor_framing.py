@@ -59,8 +59,8 @@ def test_invariant_factor_form_drops_only_unit_factors_and_keeps_free_summands()
     normalized_factors = normalized.invariant_factors()
     assert normalized_factors.cardinality() == 1
     assert normalized_factors.unrank(0) == 0
-    assert normalized.rank() == 1
-    assert normalized.rank() in Cardinalities()
+    assert normalized.module_rank() == 1
+    assert normalized.module_rank() in Cardinalities()
     for generator in quotient.module_generators():
         assert normalization.inverse()(normalization(generator)) == generator
 
@@ -83,7 +83,7 @@ def test_torsion_free_pid_module_has_global_and_local_free_trivializations() -> 
     free = trivialization.codomain()
     assert trivialization.domain() is quotient
     assert free in FinitelyGeneratedFreeModules(ZZ)
-    assert free.rank() == 1
+    assert free.module_rank() == 1
     for generator in quotient.module_generators():
         assert trivialization.inverse()(trivialization(generator)) == generator
 

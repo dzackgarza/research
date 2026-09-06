@@ -480,7 +480,7 @@ class _PairingGram(ModuleElement, Tensor):
 
     def _become_tensor_on(self, module) -> None:
         self._module = module
-        rank = module.rank()
+        rank = module.module_rank()
         ModuleElement.__init__(self, TensorModule(module.base_ring(), (), (rank, rank)))
 
     def tensor_valence(self) -> ProductOfNaturalNumbers:
@@ -488,7 +488,7 @@ class _PairingGram(ModuleElement, Tensor):
         return (NN**2)((0, 2))
 
     def _index_ranks(self):
-        rank = self._module.rank()
+        rank = self._module.module_rank()
         return (rank, rank)
 
     def index_modules(self):
@@ -642,7 +642,7 @@ class _DiagonalGram(_PairingGram):
         )
 
     def signature_pair(self):
-        rank = self._module.rank()
+        rank = self._module.module_rank()
         default = self._default
         if rank != Infinity:
             return _sylvester(self)
@@ -655,7 +655,7 @@ class _DiagonalGram(_PairingGram):
         return signature_pair(positive_exceptions, negative_exceptions)
 
     def _latex_(self) -> str:
-        rank = self._module.rank()
+        rank = self._module.module_rank()
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
@@ -674,7 +674,7 @@ class _DiagonalGram(_PairingGram):
         return rf"D_{{{rank}}}"
 
     def _pairing_name(self) -> str:
-        rank = self._module.rank()
+        rank = self._module.module_rank()
         ring = self.base_ring()
         if self._default == ring.one() and len(self._exceptions) == 1:
             key, value = next(iter(self._exceptions.items()))
@@ -709,16 +709,16 @@ class _IdentityGram(_DiagonalGram):
 
     def signature_pair(self):
         _rational_fraction_field(self.base_ring())
-        return signature_pair(self._module.rank(), 0)
+        return signature_pair(self._module.module_rank(), 0)
 
     def _latex_(self) -> str:
-        rank = self._module.rank()
+        rank = self._module.module_rank()
         if rank == Infinity:
             return r"I_{\infty}"
         return rf"I_{{{rank}}}"
 
     def _pairing_name(self) -> str:
-        rank = self._module.rank()
+        rank = self._module.module_rank()
         if rank == Infinity:
             return "I_∞"
         return f"I_{rank}"
@@ -833,8 +833,8 @@ class _ColimitGram(_PairingGram):
         n = int(n)
         if n not in self._stages:
             stage = self._stage(n)
-            if stage.rank() != n:
-                raise ValueError(f"stage(n) must have rank n, got stage({n}) of rank {stage.rank()}")
+            if stage.module_rank() != n:
+                raise ValueError(f"stage(n) must have rank n, got stage({n}) of rank {stage.module_rank()}")
             self._stages[n] = stage
         return self._stages[n]
 
@@ -932,10 +932,10 @@ def orthogonal_sum(left, right, *, category):
     constructed.
     """
     ring = category.base_ring()
-    left_rank = left.rank()
+    left_rank = left.module_rank()
     assert left_rank != Infinity, "the orthogonal sum concatenates the left basis first; put the finite-rank summand on the left"
     split = int(left_rank)
-    right_rank = right.rank()
+    right_rank = right.module_rank()
     if right_rank == Infinity:
         generating_set = _as_generating_set(None, Infinity)
     else:
@@ -956,8 +956,8 @@ def colimit_lattice(stage, *, category):
     probe = stage(2)
     if probe not in category:
         raise TypeError("stage(n) must be a lattice in this category")
-    if probe.rank() != 2:
-        raise ValueError(f"stage(n) must have rank n, got stage(2) of rank {probe.rank()}")
+    if probe.module_rank() != 2:
+        raise ValueError(f"stage(n) must have rank n, got stage(2) of rank {probe.module_rank()}")
 
     module = FreshFreeModuleOn(ring, _as_generating_set(None, Infinity))
     return _lattice_parent(
@@ -1080,7 +1080,7 @@ def lattice_latex(lattice: Lattice, ring_tex: str) -> str:
 
     The Gram tensor is the form of $L$, not $L$; $G_L$ typesets its components.
     """
-    rank = lattice.rank()
+    rank = lattice.module_rank()
     gram_latex = str(latex(lattice.gram_tensor()))
     gram_latex = re.sub(r"\b0\b", lambda _match: r"\cdot", gram_latex)
     signature_field = _engine_ring(lattice.base_ring().fraction_field())
@@ -1248,7 +1248,7 @@ def _owned_free_module(data, ring, module_generators=None, names=None):
     if _engine_ring(data.base_ring()) != _engine_ring(ring):
         raise TypeError(f"Lattices({ring}) takes a free module over {ring}, got base ring {data.base_ring()}")
     labels = data.module_generating_set()
-    rank = data.rank()
+    rank = data.module_rank()
     if rank == Infinity:
         positional = labels is NN
     else:

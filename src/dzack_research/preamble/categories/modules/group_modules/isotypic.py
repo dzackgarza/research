@@ -172,7 +172,7 @@ def _central_projector(module, character: IsotypicCharacter):
     engine_ring = _engine_ring(base_ring)
 
     computation_ring = _own_ring(SageQQ) if engine_ring is SageZZ else base_ring
-    rank = int(module.rank())
+    rank = int(module.module_rank())
     matrices = MatrixSpace(computation_ring, rank)
     projector = matrices.zero()
     order = computation_ring(int(group.order()))
@@ -247,13 +247,13 @@ def isotypic_component(module, character):
             denominator = denominator.lcm(entry.denominator())
         cleared = denominator * relation
 
-        relation = MatrixSpace(integers, int(module.rank())).from_rows(
+        relation = MatrixSpace(integers, int(module.module_rank())).from_rows(
             [
                 [
                     cleared[row, column].numerator()
-                    for column in range(int(module.rank()))
+                    for column in range(int(module.module_rank()))
                 ]
-                for row in range(int(module.rank()))
+                for row in range(int(module.module_rank()))
             ]
         )
     return _kernel_subobject_of_matrix(module, relation)

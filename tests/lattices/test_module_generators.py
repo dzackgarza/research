@@ -91,7 +91,7 @@ def test_countable_identity_form_is_free_on_formal_symbols() -> None:
     e0 = SR.var("e_0")
     e3 = SR.var("e_3")
 
-    assert lattice.rank() == lattice.module_generating_set().cardinality()
+    assert lattice.module_rank() == lattice.module_generating_set().cardinality()
     assert e0 in lattice.module_generating_set()
     assert e3 in lattice.module_generating_set()
     assert repr(lattice({e0: 1, e3: 1})) == "e_0 + e_3"
@@ -193,8 +193,8 @@ def test_twist_rescales_the_form_at_every_rank() -> None:
     f0, f1 = infinite.module_generator(0), infinite.module_generator(1)
     f3 = infinite.module_generator(3)
     support = f0 + f3
-    assert infinite.rank() == Infinity
-    assert infinite.rank() in Cardinalities()
+    assert infinite.module_rank() == Infinity
+    assert infinite.module_rank() in Cardinalities()
     assert infinite.module_generating_set().cardinality() in Cardinalities()
     assert f0 * f0 == 2
     assert f0 * f1 == 0
@@ -231,7 +231,7 @@ def test_infinite_rank_form_predicates_and_finite_support_operations() -> None:
     assert infinite.identity_morphism()(e0) == e0
 
     doubled = infinite.twist(2)
-    assert doubled.rank() == Infinity
+    assert doubled.module_rank() == Infinity
     assert doubled.is_even()
     assert not doubled.is_unimodular()
     assert doubled.module_generator(0).div() == 2

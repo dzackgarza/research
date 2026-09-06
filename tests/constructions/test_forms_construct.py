@@ -33,7 +33,7 @@ def test_a_symmetric_bilinear_form_from_a_gram_matrix(commutative_ring) -> None:
     assert form.determinant() == 3 * ring.one()
     assert form.is_nondegenerate() == (3 * ring.one() != ring.zero())
     assert form.correlation_morphism().is_injective() == (3 * ring.one() != ring.zero())
-    assert form.dual_module().rank() == 2
+    assert form.dual_module().module_rank() == 2
     assert form.twist(2).determinant() == 12 * ring.one()
     assert ring.one() in form.scale_submodule()
 
@@ -104,7 +104,7 @@ def test_the_free_form_adjunctions_over_every_commutative_ring(commutative_ring)
         free = adjunction.left_adjoint()(module)
         assert free in category
         assert adjunction.right_adjoint()(free) in Modules(ring)
-        assert adjunction.right_adjoint()(free).rank() == 2
+        assert adjunction.right_adjoint()(free).module_rank() == 2
         unit = adjunction.unit(module)
         assert unit.domain() is module
         assert unit.codomain() == adjunction.right_adjoint()(free)
@@ -197,19 +197,19 @@ def test_form_embeddings_between_lattices() -> None:
     assert embedding.codomain() is a2
     assert embedding.is_injective()
     assert embedding.is_primitive()
-    assert embedding.orthogonal_complement().rank() == 1
+    assert embedding.orthogonal_complement().module_rank() == 1
     assert embedding.orthogonal_complement().determinant() == 6
     assert embedding in a1.Emb(a2)
 
 
 def test_determinant_lines_and_exterior_forms(commutative_ring) -> None:
     module = FreeModule(commutative_ring, 3)
-    assert DeterminantLine(module).rank() == 1
-    assert ExteriorForms(module, 0).rank() == 1
-    assert ExteriorForms(module, 1).rank() == 3
-    assert ExteriorForms(module, 2).rank() == 3
-    assert ExteriorForms(module, 3).rank() == 1
-    assert ExteriorForms(module, 4).rank() == 0
+    assert DeterminantLine(module).module_rank() == 1
+    assert ExteriorForms(module, 0).module_rank() == 1
+    assert ExteriorForms(module, 1).module_rank() == 3
+    assert ExteriorForms(module, 2).module_rank() == 3
+    assert ExteriorForms(module, 3).module_rank() == 1
+    assert ExteriorForms(module, 4).module_rank() == 0
 
 
 def test_forms_over_a_polynomial_ring_and_over_a_field() -> None:
@@ -223,4 +223,4 @@ def test_forms_over_a_polynomial_ring_and_over_a_field() -> None:
     specialized = form.base_change(polynomials.Mor(QQ)({"x": QQ(1)}))
     assert specialized in BilinearFormModules(QQ)
     assert not specialized.is_nondegenerate()
-    assert specialized.radical().rank() == 1
+    assert specialized.radical().module_rank() == 1

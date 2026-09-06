@@ -23,7 +23,7 @@ def _require_finite_free(module) -> int:
     ring = module.base_ring()
     if module not in FinitelyGeneratedFreeModules(ring):
         raise TypeError("this construction requires a finite free module")
-    rank = module.rank()
+    rank = module.module_rank()
     if rank == Infinity:
         raise TypeError("this construction requires finite rank")
     return int(rank)

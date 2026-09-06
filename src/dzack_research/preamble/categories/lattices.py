@@ -692,7 +692,7 @@ class Lattices(OwnedCategoryOverBaseRing):
     def _refine_lattice_object(self, lattice):
         r"""Attach the lattice-property subcategories decidable from its form."""
         categories = []
-        if lattice.rank() != Infinity:
+        if lattice.module_rank() != Infinity:
             categories.append(FiniteRankLattices(lattice.base_ring()))
         if lattice.is_nondegenerate():
             categories.append(NondegenerateLattices(lattice.base_ring()))
@@ -1225,18 +1225,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             return self.b(vector, vector)
 
-        def rank(self):
+        def module_rank(self):
             r"""Return the rank of this lattice as a free module.
 
             EXAMPLES::
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)(ZZ^2).rank()
+                sage: Lattices(ZZ)(ZZ^2).module_rank()
                 2
-                sage: Lattices(ZZ)(ZZ^NN).rank()
+                sage: Lattices(ZZ)(ZZ^NN).module_rank()
                 +Infinity
             """
-            return self._module.rank()
+            return self._module.module_rank()
 
         def signature_pair(self):
             r"""Return $(p,q)$: the positive and negative indices of inertia.
@@ -1285,14 +1285,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)(ZZ^NN).is_finite_rank()
                 False
             """
-            return self.rank() != Infinity
+            return self.module_rank() != Infinity
 
         def determinant(self):
             r"""Return the determinant of a finite-rank lattice form."""
             if not self.is_finite_rank():
                 raise TypeError("the determinant requires a finite-rank lattice")
 
-            rank = int(self.rank())
+            rank = int(self.module_rank())
             gram = self.gram_tensor()
             matrix = MatrixSpace(self.value_module(), rank).from_rows(
                 (gram[row, column] for column in range(rank))
@@ -1345,7 +1345,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             if self.is_finite_rank():
                 gram = self.gram_tensor()
-                return all(is_twice(gram[i, i]) for i in range(int(self.rank())))
+                return all(is_twice(gram[i, i]) for i in range(int(self.module_rank())))
 
             gram = self.gram_tensor()
             match gram:
@@ -1531,7 +1531,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 integral_dual_form = tensor(
                     self.base_ring(),
                     (),
-                    (int(self.rank()), int(self.rank())),
+                    (int(self.module_rank()), int(self.module_rank())),
                     integral_components,
                 )
                 return Lattices(self.base_ring())(
@@ -1630,7 +1630,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             discriminant_module = self.discriminant_module()
             ring = self.base_ring()
             rationals = ring.fraction_field()
-            rank = int(self.rank())
+            rank = int(self.module_rank())
             dual_gram = self.gram_tensor().change_ring(rationals).dual_tensor()
             rational_rows = [
                 [rationals.one() if i == j else rationals.zero() for j in range(rank)]
@@ -1844,12 +1844,12 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sum(
                     (
                         target.scalar_multiple(embedding_matrix[row, column], target_generators[row])
-                        for row in range(int(target.rank()))
+                        for row in range(int(target.module_rank()))
                         if embedding_matrix[row, column]
                     ),
                     target.zero(),
                 )
-                for column in range(int(self.rank()))
+                for column in range(int(self.module_rank()))
             )
             embedding = self.Emb(target)(images)
             if not embedding.is_primitive():
@@ -1914,7 +1914,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 assert subobject.is_primitive(), (
                     "a primitive extension is presented by primitive sublattices"
                 )
-            assert first.rank() + second.rank() == self.rank(), (
+            assert first.module_rank() + second.module_rank() == self.module_rank(), (
                 "a primitive extension of L needs rk(S)+rk(R)=rk(L)"
             )
             assert all(
@@ -2160,7 +2160,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             if not self.is_p_elementary(self.base_ring()(2)) or not self.is_even():
                 raise ValueError("the lattice is not even and 2-elementary")
             return nikulin_invariants(
-                self.rank(), self.discriminant_length(), self.delta()
+                self.module_rank(), self.discriminant_length(), self.delta()
             )
 
         def reflection(self, root):
@@ -2255,13 +2255,13 @@ class Lattices(OwnedCategoryOverBaseRing):
         def is_positive_definite(self) -> bool:
             return bool(
                 self.is_finite_rank()
-                and self.signature_pair() == signature_pair(self.rank(), 0)
+                and self.signature_pair() == signature_pair(self.module_rank(), 0)
             )
 
         def is_negative_definite(self) -> bool:
             return bool(
                 self.is_finite_rank()
-                and self.signature_pair() == signature_pair(0, self.rank())
+                and self.signature_pair() == signature_pair(0, self.module_rank())
             )
 
         def is_definite(self) -> bool:
@@ -2514,7 +2514,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
 
             kind = "Integral lattice" if _engine_ring(self.base_ring()) is ZZ else "Lattice"
-            rank = self.rank()
+            rank = self.module_rank()
             if _engine_ring(self.base_ring().fraction_field()) is QQ:
                 _signature = self.signature_pair()
                 pos, neg = _signature.first(), _signature.second()
@@ -2685,7 +2685,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             coefficients = parent._monomial_coefficients(self._vector)
             keys = parent.module_generating_set()
             zero = parent.base_ring().zero()
-            rank = parent.rank()
+            rank = parent.module_rank()
             if rank == Infinity:
                 if not coefficients:
                     return []
