@@ -472,6 +472,9 @@ class QuasiCoherentSheaves(OwnedParameterizedCategory):
         return [Sets()]
 
     def __contains__(self, candidate) -> bool:
+        # Deciding about an arbitrary argument is this method's whole job, and
+        # the represented sheaves are not parents carrying a placement, so the
+        # question is asked of the space each one names.
         ringed_space = getattr(candidate, "ringed_space", None)
         return ringed_space is not None and ringed_space() is self.scheme()
 

@@ -2844,10 +2844,10 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
 
     An object is a scheme ``Z`` together with the chosen closed immersion
     ``Z -> X`` into its ambient scheme.  ``ClosedEmbeddings(X)`` is the fibre
-    of this category over one ambient ``X``, where the subobject order and
-    the ideal-sheaf data live; this category collects those fibres over all
-    ``R``-schemes so that "is a closed subscheme" is a placement a session
-    can ask without naming the ambient.
+    of this category over one ambient scheme ``X``, where the subobject order
+    and the ideal-sheaf data live; this category collects those fibres over
+    all ``R``-schemes so that "is a closed subscheme" is a placement a session
+    can ask without naming the ambient scheme.
     """
 
     def an_object(self):
