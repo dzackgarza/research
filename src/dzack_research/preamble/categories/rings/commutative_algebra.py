@@ -773,17 +773,6 @@ class PrimeLocalizations(OwnedCategory):
                 **rest,
             )
 
-            source_engine = _engine_ring(source)
-            generators = tuple(
-                self.fraction(generator)
-                for generator in prime_ideal.ideal_generators()
-            )
-            self._preamble_maximal_ideal = LocalizedMaximalIdeal(
-                self,
-                generators,
-                source_ideal=prime_ideal,
-            )
-
             quotient = QuotientRing(source, prime_ideal)
             residue = quotient if quotient in OwnedFields() else quotient.fraction_field()
             self._preamble_residue_field = residue
@@ -806,6 +795,19 @@ class PrimeLocalizations(OwnedCategory):
                 local_residue_image,
             )
             self._preamble_source_residue_map = source_to_residue
+
+        @cached_method
+        def maximal_ideal(self):
+            r"""Return ``p R_p``, the extension of ``p`` along ``R -> R_p``.
+
+            The maximal ideal of a local ring is its non-units, and ``a/s`` is
+            a non-unit of ``R_p`` exactly when ``a`` lies in ``p``, so the
+            non-units are the ideal ``p`` generates here.  Constructing it as
+            the extension of ``p`` is what gives it the operations of an ideal
+            rather than a name and a generating set.
+            """
+            return self.localized_prime().extension_to_localization(self)
+
         def localize_module(self, module):
             r"""Return ``R_p tensor_R M`` through the module-localization theory."""
 
@@ -915,20 +917,6 @@ class GeneratedIdealView(SageObject):
 
     def _repr_(self):
         return f"Ideal ({', '.join(map(str, self.ideal_generators()))}) of {self.ring()}"
-
-
-class LocalizedMaximalIdeal(GeneratedIdealView):
-    def __contains__(self, element) -> bool:
-        ring = self.ring()
-        if element not in ring:
-            return False
-        if ring in LocalizationRings():
-            numerator, _ = ring.localization_fraction_data(element)
-            return self.source_ideal().contains_ambient_element(numerator)
-        fraction = _engine_ring(ring.fraction_field())(element)
-        return fraction.numerator() in self.source_ideal()
-
-
 
 
 def _maximal_ideal_over_local_base(algebra, base, uniformizers):

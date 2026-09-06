@@ -37,3 +37,19 @@ def test_the_second_cut_imposes_both_relations() -> None:
     assert axis(x) == axis.zero()
     assert axis(y) != axis.zero()
     assert axis(y) ** 2 != axis.zero()
+
+
+def test_one_quotient_operation_serves_a_free_and_a_presented_algebra() -> None:
+    r"""The free polynomial algebra is the case with no relations yet."""
+    plane = PolynomialRing(QQ, "x,y")
+    x = plane.algebra_generator("x")
+    y = plane.algebra_generator("y")
+
+    axes, plane_to_axes = plane._quotient_by_algebra_elements([x * y])
+    axis, axes_to_axis = axes._quotient_by_algebra_elements([axes(x)])
+
+    assert axes.presentation_ring() is plane
+    assert axis.presentation_ring() is plane
+    assert plane_to_axes(x * y) == axes.zero()
+    assert axes_to_axis(axes(x)) == axis.zero()
+    assert axes_to_axis(axes(y)) != axis.zero()
