@@ -1122,18 +1122,11 @@ resolution must carry multiplication — over loose tuples of maps.
 
 An axiomatic subcategory is declared once, at the highest category that can
 state it, and reached by `with_axiom` (the axiom name registered in
-`sage.categories.category_with_axiom.all_axioms`). `Algebras.Commutative` is
-the model case in the code, and the only one that carries a base ring:
-`Algebras(QQ).Commutative()` resolves, is a real `CategoryWithAxiom`, keeps
-its `base_ring`, and is the same object `_with_axiom("Commutative")` reaches.
-The others are `Magmas.Commutative`, `Magmas.AdditiveCommutative`,
-`Sets.Finite` and `Sets.Infinite`.
-
-There is no `Framed` axiom. `FramedModules` and `FramedAlgebras` are ordinary
-categories, and what a framing axiom would buy — one contract for the
-generating set, the generators, the counts and the presentation display,
-shared by groups, modules and algebras instead of restated three times — is
-the shape to aim at, not a thing to copy from.
+`sage.categories.category_with_axiom.all_axioms`). `Framed` is the model
+case: one global axiom whose category owns everything derivable from the
+framing datum — generating set, generators, counts, presentation display —
+so that groups, modules, and algebras share one contract instead of three
+restatements.
 
 Duplication is the diagnostic: if two parallel categories restate the same
 contract or the same derived method, the axiom was attached too low. Never
