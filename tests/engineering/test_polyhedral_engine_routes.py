@@ -49,7 +49,8 @@ def test_every_polyhedral_operation_is_offered_by_the_capability_layer() -> None
 def test_an_unbuilt_program_refuses_with_the_reason_it_cannot_be_provisioned() -> None:
     # INDEF_FORM_StabilizerVector is named by the wrapper but has no driver in
     # polyhedral_common's src_indefinite, so no build makes it available.  The
-    # refusal has to say that rather than advise an impossible install.
+    # refusal has to say that rather than advise an impossible install, and it
+    # carries the port's absence too, since the port is the first provider.
     assert not binary_available("INDEF_FORM_StabilizerVector")
 
     with pytest.raises(EngineCapabilityUnavailable) as refusal:
@@ -60,9 +61,12 @@ def test_an_unbuilt_program_refuses_with_the_reason_it_cannot_be_provisioned() -
         )
 
     absence = refusal.value.absent
-    assert len(absence) == 1
-    assert absence[0].provider == "polyhedral-common-via-py-polyhedral"
-    assert "builds no program of this name" in absence[0].provisioning
+    assert tuple(entry.provider for entry in absence) == (
+        "sage-indefinite-port",
+        "polyhedral-common-via-py-polyhedral",
+    )
+    assert "port of INDEF_FORM_StabilizerVector" in absence[0].provisioning
+    assert "builds no program of this name" in absence[1].provisioning
 
 
 def test_isometry_witnesses_of_the_hyperbolic_plane() -> None:
@@ -78,7 +82,8 @@ def test_isometry_witnesses_of_the_hyperbolic_plane() -> None:
                 _HYPERBOLIC_PLANE_GRAM,
                 _HYPERBOLIC_PLANE_GRAM,
             )
-        assert "make -C src_indefinite" in refusal.value.absent[0].provisioning
+        # The port is the first provider, so polyhedral_common's remedy is second.
+        assert "make -C src_indefinite" in refusal.value.absent[1].provisioning
         return
 
     witness = engine_capabilities.compute(
@@ -112,7 +117,8 @@ def test_the_owned_orthogonal_group_of_the_hyperbolic_plane() -> None:
                 "lattice.indefinite_automorphism_group",
                 _HYPERBOLIC_PLANE_GRAM,
             )
-        assert "make -C src_indefinite" in refusal.value.absent[0].provisioning
+        # The port is the first provider, so polyhedral_common's remedy is second.
+        assert "make -C src_indefinite" in refusal.value.absent[1].provisioning
         return
 
     generators = lattice.O().group_generators()

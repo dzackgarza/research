@@ -402,7 +402,12 @@ def _port_operation(module_name, attribute, /, *args, **kwargs):
     return vars(import_module(module_name))[attribute](*args, **kwargs)
 
 
-# capability, INDEF_FORM_ kernel the port carries it under, module, attribute.
+# Capability, the kernel the port carries it under, module, attribute.  The
+# kernel names are the ones declared in `src_indefinite/CombinedAlgorithms.h`,
+# except INDEF_FORM_Invariant, which is in `src_indefinite/IndefiniteFormFundamental.h`.
+# They are not the driver names: the driver INDEF_FORM_TestEquivalenceVector
+# calls the kernel INDEF_FORM_EquivalenceVector, and INDEF_FORM_StabilizerIsotropicPlane
+# calls INDEF_FORM_Stabilizer_IsotropicKplane.
 _PORT_REALIZATIONS = (
     (
         "lattice.indefinite_isometry_prefilter",
@@ -419,7 +424,7 @@ _PORT_REALIZATIONS = (
     ("lattice.indefinite_isometry_witness", "INDEF_FORM_TestEquivalence", None, None),
     (
         "lattice.indefinite_vector_isometry_witness",
-        "INDEF_FORM_TestEquivalenceVector",
+        "INDEF_FORM_EquivalenceVector",
         None,
         None,
     ),
@@ -437,7 +442,7 @@ _PORT_REALIZATIONS = (
     ),
     (
         "lattice.indefinite_isotropic_subspace_stabilizer",
-        "INDEF_FORM_StabilizerIsotropicPlane",
+        "INDEF_FORM_Stabilizer_IsotropicKplane",
         None,
         None,
     ),
@@ -467,18 +472,20 @@ _POLYHEDRAL_BUILD = (
     "programs with `make -C src_indefinite`, and link them into a directory on PATH"
 )
 
+
 def _polyhedral_no_program(kernel):
     r"""State that this operation has no program, and where it comes from instead.
 
     ``src_indefinite/Makefile`` lists the drivers polyhedral_common compiles and
     these are not among them, so no build or install produces them.  The kernel
-    exists in `src_indefinite/CombinedAlgorithms.h`, and the operation reaches
+    exists in ``src_indefinite/CombinedAlgorithms.h``, and the operation reaches
     the session through the port of that kernel.
     """
     return (
-        f"polyhedral_common builds no program of this name, so the operation "
+        "polyhedral_common builds no program of this name, so the operation "
         f"arrives with sage-indefinite-port's port of {kernel}"
     )
+
 
 _POLYHEDRAL_REALIZATIONS = (
     (
