@@ -3,8 +3,8 @@
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    _proper_restriction_base_ring,
 )
-from dzack_research.preamble.categories.algebras.algebras import AssociativeAlgebras
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 
 
@@ -22,10 +22,16 @@ class LieAlgebras(OwnedCategoryOverBaseRing):
         return "Lie algebras"
 
     def super_categories(self):
-        if self.base_ring() not in OwnedRings().Commutative():
+        ring = self.base_ring()
+        if ring not in OwnedRings().Commutative():
             raise TypeError("a Lie algebra here is over a commutative base ring")
 
-        return [Modules(self.base_ring())]
+        # A Lie algebra over R is one over any ring R restricts to, exactly as
+        # an associative algebra is, so the two towers have the same shape.
+        base = _proper_restriction_base_ring(ring)
+        if base is not None:
+            return [Modules(ring), LieAlgebras(base)]
+        return [Modules(ring)]
 
     class ParentMethods:
         def bracket(self, left, right):
@@ -42,12 +48,11 @@ class CommutatorLieAlgebras(LieAlgebras):
     ``AssociativeAlgebras(R).commutator_lie_algebra()``.
 
     Membership is a fact about every associative algebra over a commutative
-    ring, but a category that knows its objects are associative must declare
-    this one for itself.  Saying it once on ``AssociativeAlgebras`` would put
-    that category both above and below this one; saying it through the
-    restriction-of-scalars edge instead puts the shared
-    ``LieAlgebras.ParentMethods`` at two incompatible depths, which Sage
-    refuses when it linearizes the parent class.
+    ring, and ``AssociativeAlgebras`` states it once for all of them.  This
+    category does not name the associative algebras in turn: knowing that a
+    bracket is a commutator does not hand back the product it came from, since
+    many associative products share one commutator.  The passage in that
+    direction is the functor, not an edge.
     """
 
     @classmethod
@@ -55,11 +60,11 @@ class CommutatorLieAlgebras(LieAlgebras):
         return "commutator Lie algebras"
 
     def super_categories(self):
-
-        return [
-            LieAlgebras(self.base_ring()),
-            AssociativeAlgebras(self.base_ring()),
-        ]
+        ring = self.base_ring()
+        base = _proper_restriction_base_ring(ring)
+        if base is not None:
+            return [LieAlgebras(ring), CommutatorLieAlgebras(base)]
+        return [LieAlgebras(ring)]
 
 
 __all__ = ["CommutatorLieAlgebras", "LieAlgebras"]

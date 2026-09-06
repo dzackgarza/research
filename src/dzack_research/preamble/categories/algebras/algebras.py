@@ -71,11 +71,23 @@ class AssociativeAlgebras(OwnedCategoryOverBaseRing):
         return "associative algebras"
 
     def super_categories(self):
+        from dzack_research.preamble.categories.algebras.lie_algebras import (
+            CommutatorLieAlgebras,
+        )
+
         ring = self.base_ring()
+        # An associative algebra is a Lie algebra under [x,y] = xy - yx, and
+        # the commutator is determined by the product, so nothing is chosen
+        # and the Lie structure is stated here rather than built.
+        commutator = (
+            [CommutatorLieAlgebras(ring)]
+            if ring in OwnedRings().Commutative()
+            else []
+        )
         base = _proper_restriction_base_ring(ring)
         if base is not None:
-            return [Modules(ring), AssociativeAlgebras(base)]
-        return [Modules(ring)]
+            return [Modules(ring), AssociativeAlgebras(base), *commutator]
+        return [Modules(ring), *commutator]
 
     class SubcategoryMethods:
         r"""Constructions this category owns, reachable from any subcategory."""
@@ -667,20 +679,14 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         return "matrix algebras"
 
     def super_categories(self):
-        from dzack_research.preamble.categories.algebras.lie_algebras import (
-            CommutatorLieAlgebras,
-        )
-
         if self.base_ring() not in OwnedRings().Commutative():
             raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
-        # gl_n(R) is M_n(R) under the commutator, and the commutator is
-        # determined by the matrix product, so the Lie structure is not a
-        # second object and no construction chooses it.
+        # gl_n(R) is M_n(R) under the commutator, which arrives with the
+        # associative algebras above: nothing here is special to matrices.
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
             Algebras(self.base_ring()),
             FramedAlgebras(self.base_ring()),
-            CommutatorLieAlgebras(self.base_ring()),
         ]
 
     class ParentMethods:
