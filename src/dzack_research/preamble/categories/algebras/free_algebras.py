@@ -564,42 +564,26 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
             not build a second model of those modules.
             """
             degree = int(degree)
-            if degree < 0:
-                raise ValueError("a graded degree is nonnegative")
-
-            try:
-                source = self.free_source_module()
-            except (AttributeError, ValueError):
-
-                source = FreeModuleOn(
-                    self.algebra_base_ring(),
-                    self.algebra_generating_set(),
-                )
+            assert degree >= 0, "a graded degree is nonnegative"
 
             ring = self.algebra_base_ring()
-            # These free constructions are connected: their canonical
-            # degree-zero algebra and module is the scalar ring itself.
-            if degree == 0:
+            match self:
                 # The represented exterior/divided-power algebras are assembled
-                # from their authoritative module-power pieces.  Their concrete
-                # degree-zero piece is therefore the existing degree-zero power
-                # module; do not let this generic free-algebra method replace it.
-                if self in AlternatingAlgebras(ring):
-
-                    return AlternatingPower(source, 0)
-                if self in DividedPowerAlgebras(ring):
-
-                    return DividedPower(source, 0)
-                return ring
-
-            if self in TensorAlgebras(ring):
-                return TensorPower(source, degree)
-            if self in SymmetricAlgebras(ring):
-                return SymmetricPower(source, degree)
-            if self in AlternatingAlgebras(ring):
-                return AlternatingPower(source, degree)
-            if self in DividedPowerAlgebras(ring):
-                return DividedPower(source, degree)
+                # from their authoritative module-power pieces, in every degree
+                # including zero; do not let this generic free-algebra method
+                # replace their degree-zero power module with the scalar ring.
+                case _ if self in AlternatingAlgebras(ring):
+                    return AlternatingPower(self.free_source_module(), degree)
+                case _ if self in DividedPowerAlgebras(ring):
+                    return DividedPower(self.free_source_module(), degree)
+                # These free constructions are connected: their canonical
+                # degree-zero algebra and module is the scalar ring itself.
+                case _ if degree == 0:
+                    return ring
+                case _ if self in TensorAlgebras(ring):
+                    return TensorPower(self.free_source_module(), degree)
+                case _ if self in SymmetricAlgebras(ring):
+                    return SymmetricPower(self.free_source_module(), degree)
             raise TypeError(
                 f"the graded free-algebra flavor of {self} is not represented"
             )
@@ -630,9 +614,28 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         return [GradedAlgebras(self.base_ring())]
 
     class ParentMethods:
+        # The module a construction selected to build this algebra on.
+        # Declared here so a reader of this category sees the field, and so an
+        # algebra reached by a route that selected none answers below.
+        _preamble_free_algebra_source_module = None
+
         def free_source_module(self):
-            r"""Return the module whose tensor algebra this object represents."""
-            return self._preamble_free_algebra_source_module
+            r"""Return the module whose tensor algebra this object represents.
+
+            \(T_R(M)\) is the tensor algebra of a module, so a construction
+            that started from one states it.  Reached instead through variable
+            names, the algebra generating set is the datum that route supplies,
+            and \(T_R(F_R(S))\) is the algebra it built: the free module on
+            \(S\) is the degree-one piece either way.  So the source module is
+            a fact about the algebra, not about which constructor was called.
+            """
+            selected = self._preamble_free_algebra_source_module
+            if selected is not None:
+                return selected
+            return FreeModuleOn(
+                self.algebra_base_ring(),
+                self.algebra_generating_set(),
+            )
 
 
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):
@@ -657,9 +660,25 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        # The module a construction selected to build this algebra on, as on
+        # tensor algebras above.
+        _preamble_free_algebra_source_module = None
+
         def free_source_module(self):
-            r"""Return the module whose symmetric algebra this object represents."""
-            return self._preamble_free_algebra_source_module
+            r"""Return the module whose symmetric algebra this object represents.
+
+            A polynomial ring over \(R\) in the variables \(S\) is
+            \(\operatorname{Sym}_R(F_R(S))\).  So an algebra built from
+            variable names has a source module just as one built from a module
+            does, and it is the free module on its own algebra generating set.
+            """
+            selected = self._preamble_free_algebra_source_module
+            if selected is not None:
+                return selected
+            return FreeModuleOn(
+                self.algebra_base_ring(),
+                self.algebra_generating_set(),
+            )
 
         def _commutative_algebra_coproduct(self, left, right):
             return _commutative_algebra_coproduct_backend(left, right)
