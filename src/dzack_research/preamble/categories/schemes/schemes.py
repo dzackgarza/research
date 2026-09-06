@@ -3025,23 +3025,36 @@ def scheme_fiber_product(left_map, right_map):
     left_pullback = left_map.coordinate_algebra_morphism()
     right_pullback = right_map.coordinate_algebra_morphism()
     cocone_factorization = None
-    try:
-        algebra_pushout = Pushout(left_pullback, right_pullback)
-        left_pushout_map = algebra_pushout.left_pushout_map()
-        right_pushout_map = algebra_pushout.right_pushout_map()
-    except NotImplementedError:
-        quotient_base_change = _quotient_base_change_pushout(
-            left_pullback,
-            right_pullback,
+    if base_scheme is left.base_scheme():
+        # Spec R is terminal in Sch/R, so both legs are the structure
+        # morphisms and the span sits under R, the initial object of CAlg_R.
+        # A colimit under the initial object is the colimit of the discrete
+        # diagram, so X x_{Spec R} Y = Spec(A tensor_R B) and the induced map
+        # out of it is the coproduct's own factorization.
+        algebra_pushout = Coproduct(
+            left.coordinate_algebra(),
+            right.coordinate_algebra(),
         )
-        if quotient_base_change is None:
-            raise
-        (
-            algebra_pushout,
-            left_pushout_map,
-            right_pushout_map,
-            cocone_factorization,
-        ) = quotient_base_change
+        left_pushout_map, right_pushout_map = algebra_pushout.coproduct_injections()
+        cocone_factorization = algebra_pushout.from_cocone
+    else:
+        try:
+            algebra_pushout = Pushout(left_pullback, right_pullback)
+            left_pushout_map = algebra_pushout.left_pushout_map()
+            right_pushout_map = algebra_pushout.right_pushout_map()
+        except NotImplementedError:
+            quotient_base_change = _quotient_base_change_pushout(
+                left_pullback,
+                right_pullback,
+            )
+            if quotient_base_change is None:
+                raise
+            (
+                algebra_pushout,
+                left_pushout_map,
+                right_pushout_map,
+                cocone_factorization,
+            ) = quotient_base_change
     product = Spec(algebra_pushout, base_ring=base_ring)
     left_projection = affine_spec_morphism(left_pushout_map)
     right_projection = affine_spec_morphism(right_pushout_map)
