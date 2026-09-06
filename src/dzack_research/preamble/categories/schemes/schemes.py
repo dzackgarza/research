@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
+    OwnedPrincipalIdealDomains,
     RingMorphism,
     _engine_element,
     _engine_numeral,
@@ -80,6 +81,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 _SCHEME_MORPHISM_WRAPPERS = {}
@@ -1076,8 +1079,23 @@ class Schemes(OwnedCategoryOverBaseRing):
                 codomain=self,
             )
 
-        def product(self, *others):
-            return scheme_product(self, *others)
+        def product_with(self, other):
+            r"""Return ``X x_S Y``, the product asked of the two objects.
+
+            One argument is distinguished, so this is the operator spelling of
+            the binary case.  A product over an index set that is part of the
+            mathematics is named and taken over that set with
+            ``Schemes(R).product(family)``, which is the same word one level
+            up (`CON-14`).
+            """
+            schemes = self.scheme_category()
+            assert other in schemes, (
+                "a product of schemes is taken between two schemes over one base"
+            )
+            factors = (self, other)
+            return schemes.product(
+                indexed_family(Sets.Δ[1], lambda index: factors[int(index)])
+            )
 
         def point_counts(self, extension_degree):
             r"""Return ``(#X(F_q),...,#X(F_{q^n}))`` for a finite base field."""
@@ -1182,10 +1200,15 @@ class NormalSchemes(_SchemePropertyCategory):
             return True
 
     def an_object(self):
-        r"""The affine line, normal because its coordinate algebra is."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
-
-        return AffineSpace(1, self.base_ring())
+        r"""The affine line, normal because ``R[x]`` is integrally closed when ``R`` is."""
+        base = self.base_ring()
+        assert _normal_placement(base), (
+            f"the affine line over {base} is normal exactly when {base} is, and the "
+            "criterion available here is that the base is a principal ideal domain; "
+            "a normal scheme over a base outside it needs a normality predicate on "
+            "the ring, which the owned ring hierarchy does not yet state"
+        )
+        return AffineSpace(1, base)
 
 
 class SmoothSchemes(_SchemePropertyCategory):
@@ -2103,6 +2126,27 @@ def _algebra_generator_label(algebra, generator):
     assert False, f"{generator} is not a chosen algebra generator of {algebra}"
 
 
+def _normal_placement(base_ring):
+    r"""Whether \(\mathbb{A}^n_R\) and \(\mathbb{P}^n_R\) over ``base_ring`` are normal.
+
+    A scheme is normal when its local rings are integrally closed domains.
+    Affine ``n``-space over ``R`` is covered by the single polynomial ring
+    ``R[x_1,...,x_n]``, and projective ``n``-space by the degree-zero parts of
+    its graded localizations, which are again polynomial rings on ``n``
+    variables.  A polynomial ring over an integrally closed domain is
+    integrally closed, and so is every localization of one, so both spaces are
+    normal exactly when ``R`` is.
+
+    The hypothesis stated here is that ``R`` is a principal ideal domain, hence
+    a unique factorization domain, hence integrally closed; that covers
+    \(\mathbb{Z}\), every field, and every polynomial ring in one variable over
+    a field.  Normality is not asserted over a base outside that hypothesis,
+    which is why this is a criterion applied at construction and not a
+    supercategory of ``AffineSpaces``.
+    """
+    return base_ring in OwnedPrincipalIdealDomains()
+
+
 def _integral_placement(base_ring):
     try:
         return bool(_engine_ring(base_ring).is_integral_domain())
@@ -2130,6 +2174,8 @@ def _initialize_owned_affine_spectrum(
         categories.append(FiniteTypeSchemes(base))
     if algebra is base:
         categories.append(SmoothSchemes(base))
+        if _normal_placement(base):
+            categories.append(NormalSchemes(base))
     if _integral_placement(algebra):
         categories.append(IntegralSchemes(base))
     categories.extend(extra_categories)
@@ -2641,6 +2687,8 @@ def AffineSpace(dimension, base_ring, names=None):
     categories = [AffineSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
+    if _normal_placement(base):
+        categories.append(NormalSchemes(base))
     refine_scheme(scheme, base, categories)
 
     labels = tuple(engine_coordinate_ring.variable_names())
@@ -2694,6 +2742,8 @@ def ProjectiveSpace(dimension, base_ring, names=None):
     categories = [ProjectiveSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
+    if _normal_placement(base):
+        categories.append(NormalSchemes(base))
     return refine_scheme(scheme, base, categories)
 
 
@@ -2992,23 +3042,36 @@ def scheme_fiber_product(left_map, right_map):
     left_pullback = left_map.coordinate_algebra_morphism()
     right_pullback = right_map.coordinate_algebra_morphism()
     cocone_factorization = None
-    try:
-        algebra_pushout = Pushout(left_pullback, right_pullback)
-        left_pushout_map = algebra_pushout.left_pushout_map()
-        right_pushout_map = algebra_pushout.right_pushout_map()
-    except NotImplementedError:
-        quotient_base_change = _quotient_base_change_pushout(
-            left_pullback,
-            right_pullback,
+    if base_scheme is left.base_scheme():
+        # Spec R is terminal in Sch/R, so both legs are the structure
+        # morphisms and the span sits under R, the initial object of CAlg_R.
+        # A colimit under the initial object is the colimit of the discrete
+        # diagram, so X x_{Spec R} Y = Spec(A tensor_R B) and the induced map
+        # out of it is the coproduct's own factorization.
+        algebra_pushout = Coproduct(
+            left.coordinate_algebra(),
+            right.coordinate_algebra(),
         )
-        if quotient_base_change is None:
-            raise
-        (
-            algebra_pushout,
-            left_pushout_map,
-            right_pushout_map,
-            cocone_factorization,
-        ) = quotient_base_change
+        left_pushout_map, right_pushout_map = algebra_pushout.coproduct_injections()
+        cocone_factorization = algebra_pushout.from_cocone
+    else:
+        try:
+            algebra_pushout = Pushout(left_pullback, right_pullback)
+            left_pushout_map = algebra_pushout.left_pushout_map()
+            right_pushout_map = algebra_pushout.right_pushout_map()
+        except NotImplementedError:
+            quotient_base_change = _quotient_base_change_pushout(
+                left_pullback,
+                right_pullback,
+            )
+            if quotient_base_change is None:
+                raise
+            (
+                algebra_pushout,
+                left_pushout_map,
+                right_pushout_map,
+                cocone_factorization,
+            ) = quotient_base_change
     product = Spec(algebra_pushout, base_ring=base_ring)
     left_projection = affine_spec_morphism(left_pushout_map)
     right_projection = affine_spec_morphism(right_pushout_map)
@@ -3068,13 +3131,26 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         return base_object.closed_subscheme(first)
 
     class ParentMethods:
-        def codimension(self):
-            defining = getattr(self, "_preamble_defining_ideal", None)
-            codomain = self.inclusion().codomain()
-            if defining is not None and hasattr(codomain, "coordinate_algebra"):
+        def _recorded_defining_equations(self):
+            r"""The equations this subobject was cut out by, or ``None``.
 
+            A closed subobject built from equations records them; one reached
+            through the backend's own subscheme constructor does not, and
+            reads its equations back off that instead.  The datum is stamped
+            at construction because the scheme layer installs owned methods
+            onto Sage scheme parents and there is no owned class to declare a
+            field on; this is the one place that reads it.
+            """
+            return getattr(self, "_preamble_defining_equations", None)
+
+        def codimension(self):
+            codomain = self.inclusion().codomain()
+            if (
+                self._recorded_defining_equations() is not None
+                and codomain in AffineSchemes(codomain.scheme_base_ring())
+            ):
                 codomain_engine = _engine_ring(codomain.coordinate_algebra())
-                ideal_engine = defining._engine_ideal()
+                ideal_engine = self.defining_ideal_owned()._engine_ideal()
                 try:
                     quotient_dimension = ideal_engine.dimension()
                     codomain_dimension = codomain_engine.krull_dimension()
@@ -3087,18 +3163,29 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         def defining_equations(self):
             r"""Return the family of equations that cut this subscheme out."""
 
-            selected = getattr(self, "_preamble_defining_equations", None)
+            selected = self._recorded_defining_equations()
             if selected is not None:
                 return finite_family(selected, name="Defining equations")
             return finite_family(
                 self.defining_polynomials(), name="Defining equations"
             )
 
+        @cached_method
         def defining_ideal_owned(self):
-            selected = getattr(self, "_preamble_defining_ideal", None)
-            if selected is not None:
-                return selected
-            return self.defining_ideal()
+            r"""Return ``I <= O(X)``, generated by the equations cutting this out.
+
+            The ideal is derived from the equations when it is asked for, not
+            stored beside them.  A closed subobject of ``Spec A`` is
+            ``Spec(A/I)`` presented by those equations, and the owned ideal
+            additionally carries a module presentation of ``I``; computing that
+            presentation is a separate question, and asking it at construction
+            makes the subobject unbuildable wherever the presentation has no
+            backend.
+            """
+            equations = self._recorded_defining_equations()
+            if equations is None:
+                return self.defining_ideal()
+            return self.inclusion().codomain().coordinate_ring().ideal(*equations)
 
         def corestriction(self, morphism):
             r"""The factorization ``T -> Z`` of a morphism ``T -> X`` landing in ``Z``.
@@ -3356,9 +3443,7 @@ def refine_closed_subscheme(
     codomain = subscheme.ambient_space() if codomain is None else codomain
     base = codomain.scheme_base_ring()
     if defining_equations is not None:
-        equations = tuple(defining_equations)
-        subscheme._preamble_defining_equations = equations
-        subscheme._preamble_defining_ideal = codomain.coordinate_ring().ideal(*equations)
+        subscheme._preamble_defining_equations = tuple(defining_equations)
     if getattr(subscheme, "_preamble_inclusion", None) is None:
         # The subobject is the arrow, so a route that did not build one takes
         # the native embedding, retargeted at the stated codomain.
