@@ -691,13 +691,21 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
         def scalar_action(self):
-            action = self._ring_morphism_defining_module_action()
-            action._preamble_kernel_ideal_provider = self
-            return action
+            return self._ring_morphism_defining_module_action()
 
         def annihilator(self):
-            r"""Return ``Ann_R(M)=ker(R -> End_R(M))``."""
-            return self.scalar_action().kernel()
+            r"""Return ``Ann_R(M)=ker(R -> End_R(M))``.
+
+            The kernel is read from the presentation of this module rather
+            than from the morphism, which has no route to it: an ideal of
+            ``R`` cut out by a condition on ``End_R(M)`` is not something a
+            ring morphism can contract.
+            """
+            represented = self._represented_annihilator_ideal()
+            assert represented is not NotImplemented, (
+                f"the annihilator of {self} has no represented computation"
+            )
+            return represented
 
         @cached_method
         def generic_fibre_map(self):
@@ -763,11 +771,8 @@ class Modules(OwnedCategoryOverBaseRing):
                 )
 
                 return PrimeLocalization(ring, prime)
-            point = ring.spectrum()(prime)
-            localization_ring = point.local_ring()
-            localized = self.localize(localization_ring)
-            localized._preamble_localization_prime_point = point
-            return localized
+            localization_ring = ring.spectrum()(prime).local_ring()
+            return self.localize(localization_ring)
 
         localization_at_prime = localize_at_prime
 

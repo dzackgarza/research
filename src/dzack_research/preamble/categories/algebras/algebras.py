@@ -71,11 +71,51 @@ class AssociativeAlgebras(OwnedCategoryOverBaseRing):
         return "associative algebras"
 
     def super_categories(self):
+        from dzack_research.preamble.categories.algebras.lie_algebras import (
+            CommutatorLieAlgebras,
+        )
+
         ring = self.base_ring()
+        # An associative algebra is a Lie algebra under [x,y] = xy - yx, and
+        # the commutator is determined by the product, so nothing is chosen
+        # and the Lie structure is stated here rather than built.
+        commutator = (
+            [CommutatorLieAlgebras(ring)]
+            if ring in OwnedRings().Commutative()
+            else []
+        )
         base = _proper_restriction_base_ring(ring)
         if base is not None:
-            return [Modules(ring), AssociativeAlgebras(base)]
-        return [Modules(ring)]
+            return [Modules(ring), AssociativeAlgebras(base), *commutator]
+        return [Modules(ring), *commutator]
+
+    class SubcategoryMethods:
+        r"""Constructions this category owns, reachable from any subcategory."""
+
+        def commutator_lie_algebra(self):
+            r"""``(-)^- : AssAlg_R -> CommLie_R``, the commutator functor.
+
+            A functor is a method of its domain category named by the
+            construction, so this is where it is spelled.  It is the identity
+            on objects: the bracket is determined by the product, so an
+            algebra and its Lie algebra are one object, placed in both
+            categories by the supercategory declared above.
+            """
+            from dzack_research.preamble.categories.functors.commutator_lie_algebras import (
+                commutator_lie_algebra_functor,
+            )
+
+            return commutator_lie_algebra_functor(self.base_ring())
+
+    class ElementMethods:
+        def bracket(self, other):
+            r"""Return the commutator \([x,y]=xy-yx\).
+
+            Determined by the product alone, so it is stated here rather than
+            on the Lie categories above, which have no product of their own.
+            """
+            other = self.parent()(other)
+            return self * other - other * self
 
     def _call_(self, multiplication):
         return algebra_from_multiplication(multiplication, self.base_ring(), unital=False)
@@ -639,9 +679,10 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         return "matrix algebras"
 
     def super_categories(self):
-
         if self.base_ring() not in OwnedRings().Commutative():
             raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
+        # gl_n(R) is M_n(R) under the commutator, which arrives with the
+        # associative algebras above: nothing here is special to matrices.
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
             Algebras(self.base_ring()),

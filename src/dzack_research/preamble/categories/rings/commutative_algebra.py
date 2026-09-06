@@ -6,6 +6,7 @@ from sage.all import (
     Zp as _SageZp,
 )
 from sage.categories.category import Category
+from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.rings import Rings as SageRings
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
@@ -105,12 +106,13 @@ class PrimeSpectra(OwnedCategory):
 
         @cached_method
         def residue_map(self):
-            r"""Return the canonical map ``R -> kappa(p)`` attached to this point."""
-            local = self.local_ring()
-            selected = local.__dict__.get("_preamble_source_residue_map")
-            if selected is not None:
-                return selected
-            return local.residue_map() * local.localization_map()
+            r"""Return the canonical map ``R -> kappa(p)`` attached to this point.
+
+            This is the map whose factorization through ``R_p`` is the residue
+            map of the local ring, so it is asked of the local ring rather than
+            recomposed from it.
+            """
+            return self.local_ring().source_residue_map()
 
         @cached_method
         def height(self):
@@ -452,6 +454,10 @@ class QuotientRings(OwnedCategory):
         def _neg_(self):
             return self.parent()(-self.lift())
 
+        def _sub_(self, other):
+            r"""Subtraction in the additive group of ``R/I``."""
+            return self._add_(-other)
+
         def is_unit(self):
             parent = self.parent()
             if parent._preamble_engine_ring is None:
@@ -773,28 +779,60 @@ class PrimeLocalizations(OwnedCategory):
                 **rest,
             )
 
-            quotient = QuotientRing(source, prime_ideal)
-            residue = quotient if quotient in OwnedFields() else quotient.fraction_field()
-            self._preamble_residue_field = residue
-            source_to_quotient = quotient.quotient_map()
-            source_to_residue = (
-                source_to_quotient
-                if residue is quotient
-                else _canonical_map(quotient, residue) * source_to_quotient
-            )
+        def fraction_field(self):
+            r"""Return ``Frac(R_p)``, which is ``Frac(R)``.
 
-            def local_residue_image(element):
-                element = self(element)
-                numerator = source_to_residue(element.numerator())
-                denominator = source_to_residue(element.denominator())
-                return residue(numerator / denominator)
-
-            self._preamble_residue_map = ring_morphism(
-                self,
-                residue,
-                local_residue_image,
+            Localizing does not change the fraction field: ``R -> R_p`` is
+            injective for a domain and every nonzero element of ``R_p`` is
+            already invertible in ``Frac(R)``.  A ring with zero divisors has
+            no fraction field, and neither has its localization.
+            """
+            represented = self._preamble_fraction_field
+            assert represented is not None, (
+                f"{self.localization_source()} has zero divisors, so neither it nor {self} "
+                "has a fraction field"
             )
-            self._preamble_source_residue_map = source_to_residue
+            return represented
+
+        @cached_method
+        def residue_field(self):
+            r"""Return ``kappa(p) = R_p / p R_p``.
+
+            ``R/p`` is a domain because ``p`` is prime, and the classes of
+            ``R \\ p`` are exactly its nonzero elements, so inverting them gives
+            ``Frac(R/p)`` and killing ``p R_p`` afterwards changes nothing.
+            When ``p`` is maximal that fraction field is ``R/p`` itself, which
+            is what a closed point of the spectrum has.
+
+            This asks ``R`` for a quotient and a fraction field and never for a
+            fraction field of its own, so a reducible or nonreduced ``R``,
+            which has none, still has a residue field at every point.
+            """
+            quotient = QuotientRing(self.localization_source(), self.localized_prime())
+            if quotient in OwnedFields():
+                return quotient
+            return quotient.fraction_field()
+
+        @cached_method
+        def source_residue_map(self):
+            r"""Return ``R -> kappa(p)``, the value of a function at this point."""
+            quotient = QuotientRing(self.localization_source(), self.localized_prime())
+            residue = self.residue_field()
+            if residue is quotient:
+                return quotient.quotient_map()
+            return _canonical_map(quotient, residue) * quotient.quotient_map()
+
+        @cached_method
+        def residue_map(self):
+            r"""Return ``R_p -> kappa(p)``, the quotient by the maximal ideal.
+
+            ``R -> kappa(p)`` carries every ``s`` outside ``p`` to a nonzero
+            class of the domain ``R/p``, hence to a unit of its fraction field.
+            So it inverts ``R \\ p`` and the universal property of ``R_p``
+            factors it uniquely through this ring; that factorization is the
+            residue map, and its kernel is ``p R_p``.
+            """
+            return self.induced_morphism(self.source_residue_map())
 
         @cached_method
         def maximal_ideal(self):
@@ -960,17 +998,26 @@ def _quotient_ring(source, defining_ideal):
     key is the ideal itself rather than a generating set, and ideals decide
     their own equality, so ``(2)`` and ``(2,4)`` reach the same quotient of the
     integers.
+
+    A prime localization is realized by a fraction field, where every nonzero
+    ideal is the unit ideal, so a quotient read from that realization would be
+    the zero ring however small ``I`` is.  ``R_p/I R_p`` is therefore left to
+    the represented classes, whose equality is the owned membership
+    ``a - b in I R_p`` and is exact.
     """
-    engine = _engine_ring(source)
-    defining = _engine_ideal(source, defining_ideal)
-    try:
-        lifted = _engine_quotient_cover_ideal(source, defining)
-        quotient_engine = lifted.ring().quotient(lifted)
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
+    if source in PrimeLocalizations():
+        quotient_engine = None
+    else:
+        engine = _engine_ring(source)
+        defining = _engine_ideal(source, defining_ideal)
         try:
-            quotient_engine = engine.quotient(defining)
+            lifted = _engine_quotient_cover_ideal(source, defining)
+            quotient_engine = lifted.ring().quotient(lifted)
         except (AttributeError, NotImplementedError, TypeError, ValueError):
-            quotient_engine = None
+            try:
+                quotient_engine = engine.quotient(defining)
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                quotient_engine = None
 
     dimension = None
     if quotient_engine is not None and source in OwnedNoetherianRings():
@@ -992,6 +1039,13 @@ def _quotient_ring(source, defining_ideal):
             pass
         if quotient_is_domain and dimension == 0:
             quotient_is_field = True
+        if quotient_is_domain or quotient_is_field:
+            # Sage builds every quotient in its quotient-ring category and
+            # never refines it, so the realization refuses to build a fraction
+            # field over an ideal it has just proved prime.  The residue field
+            # at a point that is not closed is exactly that fraction field, so
+            # the realization is told the fact it computed.
+            quotient_engine._refine_category_(SageIntegralDomains())
 
     placements = []
     if source in OwnedNoetherianRings():
@@ -1017,8 +1071,50 @@ def _quotient_ring(source, defining_ideal):
     )
 
 
+def _localization_descent(source, elements):
+    r"""Return the ring under a tower of localizations and these elements there.
+
+    ``a/s`` is a unit exactly when ``a`` is, ``s`` being one already, so
+    inverting ``a/s`` over the tower is inverting the numerator over the ring
+    at its bottom.  The descent stops at a localization that inverts a set with
+    no chosen finite generating set, such as the complement of a prime.
+    """
+    while source in LocalizationRings() and source not in PrimeLocalizations():
+        elements = tuple(
+            source.localization_fraction_data(element)[0] for element in elements
+        )
+        source = source.localization_source()
+    return source, elements
+
+
+def _one_step_inverted_family(source, generators):
+    r"""Return the ring and the family that invert in one step what this does.
+
+    Localizing ``S^{-1}A`` at ``g = a/s`` inverts ``S`` together with ``a``:
+    ``s`` is a unit already, so ``a/s`` is a unit exactly when ``a`` is.  Then
+    ``(S^{-1}A)[1/g]`` and ``(S union {a})^{-1}A`` invert the same subset of
+    ``A``, each factors uniquely through the other by the universal property,
+    and the canonical isomorphism between them identifies the two.
+
+    Sage localizes ``A`` at a family and refuses to localize ``A[1/x]`` at
+    anything, so the one-step family over the bottom ring is the presentation
+    a realization can hold.  The owned source and map are unaffected: they
+    record the ring that was localized, not the ring underneath.
+
+    The descent stops at a localization that inverts a set with no chosen
+    finite generating set, such as the complement of a prime, which no family
+    presents.
+    """
+    inverted = tuple(generators)
+    while source in LocalizationRings() and source not in PrimeLocalizations():
+        inverted = tuple(
+            source.localization_fraction_data(element)[0] for element in inverted
+        ) + tuple(source.inverted_elements())
+        source = source.localization_source()
+    return source, inverted
+
+
 def _finite_generated_localization(source, submonoid):
-    engine = _engine_ring(source)
     try:
         generators = tuple(submonoid.monoid_generators())
     except NotImplementedError as error:
@@ -1027,9 +1123,10 @@ def _finite_generated_localization(source, submonoid):
         ) from error
     if not generators:
         return source
-    values = tuple(_engine_element(source, value) for value in generators)
+    bottom, inverted = _one_step_inverted_family(source, generators)
+    values = tuple(_engine_element(bottom, value) for value in inverted)
     try:
-        localization_engine = engine.localization(values)
+        localization_engine = _engine_ring(bottom).localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         localization_engine = None
     placements = []
@@ -1129,9 +1226,13 @@ def quotient_localization_comparison(source_quotient, localization_ring):
 
     ``S^{-1}(R/I) -> S^{-1}R/S^{-1}I``.
 
-    The currently represented comparison requires a chosen finite generating
-    set of ``S`` so that its image in ``R/I`` is an actual represented
-    submonoid.
+    Localizing ``R/I`` means inverting the image of ``S``.  Where ``S`` is
+    given by a chosen finite generating set that image is the submonoid the
+    images of those generators generate.  Where ``S`` is the complement of a
+    prime ``p`` containing ``I``, the image is the complement of the prime
+    ``p/I``, so the left side is the prime localization ``(R/I)_{p/I}`` and the
+    comparison is the local ring of a point of the closed subscheme ``V(I)``
+    read either way round.
     """
     if source_quotient not in QuotientRings():
         raise TypeError("quotient/localization compatibility starts from a represented quotient ring")
@@ -1142,23 +1243,41 @@ def quotient_localization_comparison(source_quotient, localization_ring):
         raise ValueError("the localization has the wrong source ring")
 
     source_submonoid = localization_ring.localization_submonoid()
-    try:
-        source_generators = tuple(source_submonoid.monoid_generators())
-    except NotImplementedError as error:
-        raise NotImplementedError(
-            "the quotient/localization comparison currently requires a chosen finite generating set for S"
-        ) from error
-
     quotient_map = source_quotient.quotient_map()
-    quotient_submonoid = generated_submonoid(
-        source_quotient,
-        tuple(quotient_map(generator) for generator in source_generators),
-        description=f"Image of {source_submonoid} in {source_quotient}",
-        structure_data={"kind": "quotient_image"},
-    )
-    localized_quotient = Localization(source_quotient, quotient_submonoid)
-
     defining_ideal = source_quotient.defining_ideal()
+
+    if localization_ring in PrimeLocalizations():
+        prime = localization_ring.localized_prime()
+        assert all(
+            prime.contains_ambient_element(generator)
+            for generator in defining_ideal.ideal_generators()
+        ), (
+            f"the image of the complement of {prime} in {source_quotient} is the complement "
+            f"of a prime only when {defining_ideal} lies inside {prime}; otherwise that "
+            "image contains zero and both sides of the comparison are the zero ring, which "
+            "is not constructed here"
+        )
+        localized_quotient = PrimeLocalization(
+            source_quotient,
+            quotient_map.extension_of_ideal(prime),
+        )
+    else:
+        try:
+            source_generators = tuple(source_submonoid.monoid_generators())
+        except NotImplementedError as error:
+            raise NotImplementedError(
+                "the quotient/localization comparison reads the image of S from a chosen "
+                "finite generating set, or from the prime whose complement S is"
+            ) from error
+
+        quotient_submonoid = generated_submonoid(
+            source_quotient,
+            tuple(quotient_map(generator) for generator in source_generators),
+            description=f"Image of {source_submonoid} in {source_quotient}",
+            structure_data={"kind": "quotient_image"},
+        )
+        localized_quotient = Localization(source_quotient, quotient_submonoid)
+
     extended_ideal = defining_ideal.extension_to_localization(localization_ring)
     quotient_after_localization = QuotientRing(localization_ring, extended_ideal)
 
@@ -1223,6 +1342,16 @@ def ResidueField(ring, ideal=None):
 
 
 def _PrimeLocalizationFromSubmonoid(source, submonoid):
+    r"""Return ``R_p`` for a submonoid represented as the complement of ``p``.
+
+    ``R -> R_p`` is injective exactly when ``R`` is a domain, and then ``R_p``
+    is the subring of ``Frac(R)`` whose denominators avoid ``p``, which is the
+    realization selected below.  A reducible or nonreduced ``R`` has no
+    fraction field to sit in, so it selects none: the represented fractions are
+    the object, and every question about them -- which are units, when two are
+    equal, which lie in an ideal -- is an ideal computation in ``R`` against
+    ``p`` rather than a question put to a realization.
+    """
     structure = submonoid.structure_data()
     prime_ideal = structure.get("prime_ideal")
     if prime_ideal is None:

@@ -414,10 +414,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 f"{self.localization_ring().localization_map()}"
             )
         def localization_source_module(self):
-            source = self.__dict__.get("_source_module")
-            if source is not None:
-                return source
-            return self.localization_functor().chosen_preimage(self)
+            r"""Return the ``M`` this module is ``S^{-1}M`` of."""
+            return self._source_module
 
         def localization_ring(self):
             return self._preamble_localization_ring
@@ -456,10 +454,22 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             )
 
         def localization_prime_point(self):
-            point = self.__dict__.get("_preamble_localization_prime_point")
-            if point is None:
-                raise ValueError("this localization was not selected at a prime point")
-            return point
+            r"""Return the point of ``Spec(R)`` whose local ring this localizes at.
+
+            ``M_p`` is the localization along ``R -> R_p``, and ``R_p`` names
+            the prime it inverts the complement of, so the point is read from
+            the localization ring rather than recorded a second time here.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                PrimeLocalizations,
+            )
+
+            localization_ring = self.localization_ring()
+            assert localization_ring in PrimeLocalizations(), (
+                f"{localization_ring} does not invert the complement of a prime, so "
+                f"{self} is not the localization of a module at a point of a spectrum"
+            )
+            return self.source_ring().spectrum()(localization_ring.localized_prime())
 
 
 
