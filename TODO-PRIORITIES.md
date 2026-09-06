@@ -66,37 +66,57 @@ categories, joins, anything unexported, and every category over any other ring
 still take their order from the session. That is why the four lines above still
 fail.
 
-**What was ruled out, so it is not re-derived.** A comparison key derived from
-the owned graph — `(flag, declared depth, qualified class name)` — was written,
-merged and reverted; it broke `distinguished_open` outright. The reason is
-structural, not a bug in that key:
+**The fix exists and is unmerged: `cdf80a75` on `work/discgroup`.** It replaces
+the counter with the declared depth and the qualified class name, and deletes
+the realization loop. Coverage is then a property of the key rather than of a
+sweep, so the Hom, End, Aut, axiom and unexported categories over every ring are
+included without being enumerated. Its author verified 89 categories: none
+lacking the graph key, no containment violating it, six of seven construction
+orders clean.
 
-- `_super_categories_for_classes` is handed to `dynamic_class` as the literal
-  base list, so Python's C3 requires a linear extension of every base's own MRO.
-  That constrains incomparable pairs, which is stronger than the two properties
-  Sage documents at `c3_controlled.pyx:395-403`.
-- Sage's counter is a topological index of every graph it has touched, including
-  cross-graph edges. A declared depth indexes the owned graph only. There are
-  **no** declared edges from the owned graph into `sage.categories.*` — the
-  owned root declares no supercategories, and `Sets()` is genuinely incomparable
-  with Sage's — so nothing computed from owned declarations can place a Sage
-  category relative to an owned one. Two topological indices with incomparable
-  origins interleave arbitrarily in one tuple slot.
-- An offset above Sage's counter is not available: the counter is global,
-  unbounded and monotonic, and "all owned above all Sage" is an arbitrary order
-  rather than the one the merge needs.
+**It has not been verified against the scheme layer by anyone but its author,
+and that is exactly how the previous attempt broke `main`.** An earlier version
+of the same key was merged and reverted for breaking `distinguished_open`
+outright. Verify against `AffineSpace(2, QQ).distinguished_open(...)` and the
+four lines above, in several orders, before merging.
 
-So a graph-derived key can only work if *every* category in a mixed join uses
-it, which means replacing Sage's `_cmp_key` machine-wide. That is a vendored
-library and is not to be modified without the owner's decision.
+**Why the earlier version broke, since the reason was misdiagnosed twice.** Not
+a scale mismatch between an owned depth and Sage's counter — that is real but
+there are no containments crossing the boundary, so there is nothing for it to
+violate. The cause was four preamble categories declared on Sage's bare
+`Category` rather than the owned base: `SubobjectCategory`, `RootLattices`,
+`RingedSpaces` and `LocallyRingedSpaces`. Those kept counters in the hundreds
+while their own subcategories took depths under twenty, so containment inverted
+on those edges. `cdf80a75` gives all four the owned mixin.
 
-**The next step** is the realization route, with its two holes closed: hook the
-realization to owned ring construction so every ring is covered without a
-register, and enumerate the owned categories honestly — a registry populated at
-class creation — rather than taking what happens to be exported. Verify against
-the four lines above in several orders, and against
-`AffineSpace(2, QQ).distinguished_open(...)`, not only against the discriminant
-group.
+**Two facts about the mechanism worth keeping.**
+`_super_categories_for_classes` is handed to `dynamic_class` as the literal base
+list, so Python's C3 requires a linear extension of every base's own MRO — which
+constrains incomparable pairs, and is stronger than the two properties Sage
+documents at `c3_controlled.pyx:395-403`. And an offset above Sage's counter is
+not available in any case: the counter is global, unbounded and monotonic, so
+there is no ceiling to sit above.
+
+**The seventh construction order fails for an unrelated reason, live on `main`
+— see below.**
+
+### A second live defect: recursion in the subobject Hom
+
+`overlattice_from_isotropic_subobject` raises `RecursionError` in every
+construction order, through
+
+    HomCategory.Of -> SubobjectCategory.__contains__ -> inclusion()
+      -> module_homset -> Mor -> Of
+
+so Nikulin gluing is blocked on `main` right now. The cycle arrived with the Hom
+packet-walk commits `e682549d`, `bc58132f` and `f84b9115`, after the overlattice
+fix had merged and been verified — which is why the gluing specimen in
+`c6e8e60b`'s history was true when written and is not reproducible today.
+
+The shape is a containment test that constructs the thing whose construction
+asks the containment test. Whoever takes it should decide what
+`SubobjectCategory.__contains__` is entitled to do: asking an object for its
+inclusion in order to decide membership is what closes the loop.
 
 ### The algebra node conversion, designed and part-built
 
@@ -167,6 +187,21 @@ code; leave them until `Framed` exists.
   names for one notion is wrong.
 - `OpenSubschemes` in TODO names the archived preamble's spelling; the live
   category is `OpenImmersions`.
+- `validate_two_elementary_table` is worse than linear. The first ten rows cost
+  0.5s each, predicting forty seconds for all seventy-five; it ran past thirteen
+  minutes without finishing, twice. Sixty-five of the seventy-five rows are
+  therefore **unchecked against their invariants**, and no Nikulin recipe has had
+  its flat sum compared against its nested one. Do not assume that run is cheap.
+  The cost is in the discriminant computation rather than in the sum.
+
+### Branches left standing
+
+| Branch | Head | What it is |
+| --- | --- | --- |
+| `work/discgroup` | `cdf80a75` | the graph comparison key, all four preamble holes closed, realization loop deleted. Unmerged, unverified against schemes by anyone but its author |
+| `work/algnode` | `57465081` | the algebra node split, written and red on the two failures above. Keep it — roughly 170 lines of correct and tedious partition that should not be retyped |
+| `work/packetfilter` | `f84b9115` | merged |
+| `work/algaxiom` | `9c63403b` | abandoned: the associativity check written under a superseded framing. Delete |
 
 ## Current objective and order
 
