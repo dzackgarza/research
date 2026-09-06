@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
+    OwnedPrincipalIdealDomains,
     RingMorphism,
     _engine_element,
     _engine_numeral,
@@ -1182,10 +1183,15 @@ class NormalSchemes(_SchemePropertyCategory):
             return True
 
     def an_object(self):
-        r"""The affine line, normal because its coordinate algebra is."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
-
-        return AffineSpace(1, self.base_ring())
+        r"""The affine line, normal because ``R[x]`` is integrally closed when ``R`` is."""
+        base = self.base_ring()
+        assert _normal_placement(base), (
+            f"the affine line over {base} is normal exactly when {base} is, and the "
+            "criterion available here is that the base is a principal ideal domain; "
+            "a normal scheme over a base outside it needs a normality predicate on "
+            "the ring, which the owned ring hierarchy does not yet state"
+        )
+        return AffineSpace(1, base)
 
 
 class SmoothSchemes(_SchemePropertyCategory):
@@ -2103,6 +2109,27 @@ def _algebra_generator_label(algebra, generator):
     assert False, f"{generator} is not a chosen algebra generator of {algebra}"
 
 
+def _normal_placement(base_ring):
+    r"""Whether \(\mathbb{A}^n_R\) and \(\mathbb{P}^n_R\) over ``base_ring`` are normal.
+
+    A scheme is normal when its local rings are integrally closed domains.
+    Affine ``n``-space over ``R`` is covered by the single polynomial ring
+    ``R[x_1,...,x_n]``, and projective ``n``-space by the degree-zero parts of
+    its graded localizations, which are again polynomial rings on ``n``
+    variables.  A polynomial ring over an integrally closed domain is
+    integrally closed, and so is every localization of one, so both spaces are
+    normal exactly when ``R`` is.
+
+    The hypothesis stated here is that ``R`` is a principal ideal domain, hence
+    a unique factorization domain, hence integrally closed; that covers
+    \(\mathbb{Z}\), every field, and every polynomial ring in one variable over
+    a field.  Normality is not asserted over a base outside that hypothesis,
+    which is why this is a criterion applied at construction and not a
+    supercategory of ``AffineSpaces``.
+    """
+    return base_ring in OwnedPrincipalIdealDomains()
+
+
 def _integral_placement(base_ring):
     try:
         return bool(_engine_ring(base_ring).is_integral_domain())
@@ -2130,6 +2157,8 @@ def _initialize_owned_affine_spectrum(
         categories.append(FiniteTypeSchemes(base))
     if algebra is base:
         categories.append(SmoothSchemes(base))
+        if _normal_placement(base):
+            categories.append(NormalSchemes(base))
     if _integral_placement(algebra):
         categories.append(IntegralSchemes(base))
     categories.extend(extra_categories)
@@ -2641,6 +2670,8 @@ def AffineSpace(dimension, base_ring, names=None):
     categories = [AffineSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
+    if _normal_placement(base):
+        categories.append(NormalSchemes(base))
     refine_scheme(scheme, base, categories)
 
     labels = tuple(engine_coordinate_ring.variable_names())
@@ -2694,6 +2725,8 @@ def ProjectiveSpace(dimension, base_ring, names=None):
     categories = [ProjectiveSpaces(base)]
     if _integral_placement(base):
         categories.append(IntegralSchemes(base))
+    if _normal_placement(base):
+        categories.append(NormalSchemes(base))
     return refine_scheme(scheme, base, categories)
 
 
