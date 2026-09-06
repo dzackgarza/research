@@ -608,6 +608,41 @@ class LocalizationRings(OwnedCategory):
         def localization_map(self):
             return self._preamble_localization_map
 
+        def restriction_to(self, target):
+            r"""Return the unique map ``S^{-1}R -> T^{-1}R`` commuting with the maps from ``R``.
+
+            Localization is universal among ring maps out of ``R`` that invert
+            ``S``.  So whenever ``T^{-1}R`` already inverts every element of
+            ``S``, exactly one map ``S^{-1}R -> T^{-1}R`` respects the two maps
+            from ``R``, and it sends ``a/s`` to ``a`` times the inverse of ``s``.
+            Uniqueness is what makes these maps compose: for ``S`` inside ``T``
+            inside ``U`` the composite of the two restrictions is the single
+            restriction from ``S`` to ``U``.
+
+            On spectra this is the inclusion of distinguished opens
+            ``D(fg) <= D(f)``, so sheaf restriction on an affine scheme is this
+            map and nothing further.  Taking ``T`` to be the complement of a
+            prime gives the map from a section to its germ.
+            """
+
+            assert target in LocalizationRings(), (
+                "a localization restriction lands in another localization of the same ring"
+            )
+            assert target.localization_source() is self.localization_source(), (
+                f"{self} and {target} localize different rings, so no map over the source exists"
+            )
+            assert all(target(inverted).is_unit() for inverted in self.inverted_elements()), (
+                f"{target} does not invert everything {self} inverts, so the universal "
+                "property of localization gives no map between them"
+            )
+
+            def image(element):
+                numerator = target(element.numerator())
+                denominator = target(element.denominator())
+                return numerator * denominator.inverse_of_unit()
+
+            return ring_morphism(self, target, image)
+
         def localization_fraction_data(self, element):
             r"""Return one represented fraction ``(r,s)`` for ``element=r/s``."""
             value = self(element)

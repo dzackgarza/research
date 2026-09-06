@@ -383,6 +383,27 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 localized=self,
             )
 
+        def restriction_to(self, target_ring):
+            r"""Return ``S^{-1}M -> T^{-1}M`` over the ring restriction ``S^{-1}R -> T^{-1}R``.
+
+            Both localizations are built on the same source module and keep its
+            framing, so the restriction carries a generator to the generator of
+            the same name: as fractions it is ``m/s`` to ``m/s``.  It is
+            ``S^{-1}R``-linear into the restriction of scalars of ``T^{-1}M``,
+            which is where a map between modules over different rings lives.
+
+            This is the sheaf restriction of ``M~`` along ``D(g) <= D(f)``, and
+            at a prime it is the map from a section to its germ in the stalk.
+            """
+
+            source_module = self.localization_source_module()
+            target = target_ring.localize_module(source_module)
+            restriction = self.localization_ring().restriction_to(target_ring)
+            restricted = target.restrict_scalars(restriction)
+            return module_homset(self, restricted)(
+                lambda label: restricted(target.module_generator(label))
+            )
+
         def localization_prime_point(self):
             point = self.__dict__.get("_preamble_localization_prime_point")
             if point is None:
