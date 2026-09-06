@@ -6,9 +6,12 @@ Groups*, ch. 26: ``II_{1,9} = U + E8``), so the cusp of the isotropic line
 ``Z e`` has ``E8`` as its reduction lattice.
 """
 
+import pytest
+
 from dzack_research.preamble.all import (
     NamedLattices,
     PrimitiveIsotropicSubobjects,
+    QQ,
     ZZ,
     primitive_isotropic,
 )
@@ -123,3 +126,43 @@ def test_the_two_isotropic_lines_of_two_hyperbolic_planes_are_one_orbit() -> Non
     assert witness is not None
     assert second.inclusion().is_in_image(witness(generators.unrank(0)))
     assert first.is_equivalent_to(second)
+
+
+def test_a_vector_a_sublattice_and_a_rational_line_are_four_different_things() -> None:
+    # An isotropic vector v, the sublattice Z v it spans, the rational line it
+    # spans in L tensor QQ, and the saturated sublattice cut out by that line
+    # are four objects with four homes.  Z(2v) and Z v span the same rational
+    # line, so passing to the rational line forgets exactly the index, and the
+    # saturation is what recovers it.
+    lattice = NamedLattices.U
+    vector = lattice.module_generators().unrank(0)
+    assert vector.parent() is lattice
+    assert vector.q() == 0
+
+    line = primitive_isotropic(lattice, (vector,))
+    assert line.rank() == 1
+    assert line.inclusion().codomain() is lattice
+    assert line.is_primitive()
+
+    doubled = lattice.subobject_on((2 * vector,))
+    assert doubled.rank() == 1
+    # Primitivity is the cokernel's torsion-freeness, so the index two shows up
+    # as a torsion invariant of L/Z(2v) and not in any basis matrix.
+    assert not doubled.is_primitive()
+    with pytest.raises(AssertionError):
+        primitive_isotropic(lattice, (2 * vector,))
+
+    saturated = doubled.saturation()
+    assert saturated.rank() == 1
+    assert saturated.is_primitive()
+    assert saturated.inclusion().is_in_image(vector)
+
+    rational = lattice.base_change(ZZ.Mor(QQ)(lambda integer: QQ(integer)))
+    assert rational.base_ring() is QQ
+    assert rational.rank() == lattice.rank()
+    rational_vector = rational.module_generators().unrank(0)
+    rational_line = rational.subobject_on((2 * rational_vector,))
+    # Over a field every subobject is saturated, so the doubled vector spans
+    # the same rational line as the vector itself.
+    assert rational_line.rank() == 1
+    assert rational_line.inclusion().is_in_image(rational_vector)
