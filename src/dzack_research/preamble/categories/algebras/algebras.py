@@ -242,22 +242,19 @@ class Algebras(OwnedCategoryOverBaseRing):
             return True
 
         def algebra_base_ring(self):
-            base = self.__dict__.get("_preamble_algebra_base_ring")
-            if base is not None:
-                return base
-            # A crossing out of the engine, so the result is adopted rather
-            # than asserted to be owned already.  For a ring that is its own
-            # base -- QQ, GF(p), RR -- the engine hands back its own Sage
-            # parent, and that ring is this one, possibly still being built.
-            engine = _engine_ring(self)
-            if engine is self:
-                # A ring that is its own computation, such as the exact real
-                # field, has no engine to ask; it is its own base.
-                return self
-            base = engine.base_ring()
-            if base is engine:
-                return self
-            return _own_ring(base)
+            r"""Return the scalar ring this algebra's construction declared.
+
+            Every route that builds an algebra states the ring it is an
+            algebra over: the algebra level takes it as its own datum, and a
+            ring the preamble adopts declares the ring its engine presents it
+            over, itself when there is nothing smaller.  So the answer is read
+            off the construction, and the host's own ``base`` answers for a
+            parent that threaded it through the module level instead.
+            """
+            declared = self.__dict__.get("_preamble_algebra_base_ring")
+            if declared is not None:
+                return declared
+            return _own_ring(self.base())
 
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):
@@ -1436,10 +1433,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
     Element = _OwnedAlgebraElement
 
-    def base_ring(self):
-        r"""Return the scalar ring declared by this algebra construction."""
-        return self._preamble_algebra_base_ring
-
     def __init__(
         self,
         engine,
@@ -1454,7 +1447,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         base = _owned_ring(base_ring)
         for name, value in construction_data:
             setattr(self, name, value)
-        self._preamble_algebra_base_ring = base
         self._preamble_algebra_generating_set = None if labels is None else finite_ordered_set(labels)
         placement = [Algebras(base), OwnedAlgebras(base)]
         if engine in SageCommutativeAlgebras(_engine_ring(base)):

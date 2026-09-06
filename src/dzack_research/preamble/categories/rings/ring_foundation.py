@@ -1837,13 +1837,24 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         when it constructs through the level below -- the algebra level does --
         and carrying it to the host here is what makes the module level's
         ``base_ring()`` an answer of the construction rather than state a leaf
-        restates.  A ring which is its own base declares none, and reads its
-        scalars off the engine.
+        restates.
+
+        A ring the preamble adopts has no level above it to declare one, so it
+        declares its own: the ring the engine presents it over, and itself when
+        the engine presents it over nothing smaller, since a ring is free of
+        rank one over its own scalars.  That is the same question the placement
+        asks in order to read this ring as an algebra, and asking it here is
+        what lets the module level's construction step -- registering the
+        scalar action -- run on this route with nothing left to guess.
         """
         self._engine = engine
         placement = _owned_ring_category(engine)
         if category is not None:
             placement = Category.join((placement, category))
+        if base is None:
+            scalars = _engine_scalar_ring(engine)
+            base = self if scalars is None else scalars
+        self._preamble_algebra_base_ring = base
         Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
 
@@ -1930,10 +1941,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._engine in SageNumberFields() and self._engine is not SageQQ
 
     def base_ring(self):
-        base = self._engine.base_ring()
-        if base is self._engine:
-            return self
-        return _own_ring(base) if base in SageRings() else base
+        r"""Return the scalar ring this ring's construction declared."""
+        return self.base()
 
     def variable_names(self):
         return self._engine.variable_names()
@@ -1948,18 +1957,34 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return str(latex(self._engine))
 
 
+def _engine_scalar_ring(engine: Ring):
+    r"""Return the owned ring over which ``engine`` presents this ring.
+
+    The answer is ``None`` for a ring the engine presents over itself, which is
+    every ring free of rank one over its own scalars -- ``ZZ``, ``QQ``, a
+    finite field.  A number field over the rationals or a p-adic ring over the
+    integers presents over a smaller ring, and that ring is the scalars its
+    module structure is over.  The placement below and the construction that
+    threads the scalars to the host both ask this one question.
+    """
+    base = engine.base_ring()
+    if base is engine or base not in SageRings():
+        return None
+    return _own_ring(base)
+
+
 def _owned_ring_category(engine: Ring) -> Category:
     """Return the strongest owned ring category witnessed by ``engine``."""
     category = engine.category()
     extra = []
-    base = engine.base_ring()
-    if base is not engine and base in SageRings():
+    scalars = _engine_scalar_ring(engine)
+    if scalars is not None:
         # The engine presents this ring as an algebra over a base -- a number
         # field over QQ, a p-adic ring over ZZ -- and that is the structure
         # ``base_ring()`` reports, so it is the placement recorded here.
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-        extra.append(Algebras(_own_ring(base)))
+        extra.append(Algebras(scalars))
     if category.is_subcategory(SageIntegralDomains()):
         extra.append(OwnedIntegralDomains())
     if engine is SageZZ or engine is SageQQ:
