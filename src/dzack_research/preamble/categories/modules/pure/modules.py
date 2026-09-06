@@ -2618,6 +2618,25 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
             )
 
     class ElementMethods:
+        def is_unit(self) -> bool:
+            r"""Return whether this endomorphism is invertible in \(\operatorname{End}_R(M)\).
+
+            A unit of a ring is an element with a two-sided inverse in it, and
+            an endomorphism has one in \(\operatorname{End}_R(M)\) exactly when
+            it is an isomorphism of \(M\): a bijective linear map has a
+            set-theoretic inverse, that inverse is linear, and the two compose
+            to the identity on either side.  So this is decided as injectivity
+            together with surjectivity, which are the kernel and the cokernel
+            of the morphism, and not from a determinant -- that is a criterion
+            for the special case of a finite free module, carrying hypotheses
+            the definition of a unit does not.
+
+            Reading the units of \(\operatorname{End}_R(M)\) is what gives
+            \(\operatorname{Aut}_R(M)\) its group structure, through the unit
+            group functor on the owned ring category.
+            """
+            return self.is_injective() and self.is_surjective()
+
         def trace(self):
             ring = self.parent().base_ring()
             return sum(
