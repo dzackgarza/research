@@ -84,6 +84,16 @@ class FreeGroupUnderlyingSetAdjunction(Adjunction):
 
 
 @cached_function
+def free_group_functor() -> FreeGroupFunctor:
+    return FreeGroupFunctor()
+
+
+@cached_function
+def group_underlying_set_functor() -> GroupUnderlyingSetFunctor:
+    return GroupUnderlyingSetFunctor()
+
+
+@cached_function
 def free_group_underlying_set_adjunction() -> FreeGroupUnderlyingSetAdjunction:
     return FreeGroupUnderlyingSetAdjunction()
 
@@ -92,5 +102,7 @@ __all__ = [
     "FreeGroupFunctor",
     "FreeGroupUnderlyingSetAdjunction",
     "GroupUnderlyingSetFunctor",
+    "free_group_functor",
     "free_group_underlying_set_adjunction",
+    "group_underlying_set_functor",
 ]
