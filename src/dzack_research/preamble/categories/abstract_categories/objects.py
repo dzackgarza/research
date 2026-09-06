@@ -40,6 +40,26 @@ def fold_construction(binary_construction, factors, *, name):
     return result
 
 
+def membership_by_definition(category, candidate) -> bool:
+    r"""Whether ``category``'s own definition puts ``candidate`` in it.
+
+    ``False`` unless the category states, through ``additional_condition``,
+    that it imposes no condition over its supercategories.  When it does, its
+    objects are exactly the objects lying in every one of them, and that is
+    the whole question.
+
+    A free function because an owned category that replaces
+    ``OwnedCategory.__contains__`` -- ``OwnedCategoryOverBaseRing`` does, and
+    every category over a ring reaches membership through it -- has to reach
+    the same statement.  One spelling, read wherever the question is asked.
+    """
+    if category.additional_condition() is not None:
+        return False
+    return all(
+        candidate in super_category for super_category in category.super_categories()
+    )
+
+
 class OwnedCategory(OwnedCategoryBase):
     r"""Base class for categories belonging to the owned mathematical graph.
 
@@ -75,17 +95,85 @@ class OwnedCategory(OwnedCategoryBase):
         category.
         """
 
+    def additional_condition(self):
+        r"""Return the condition this category imposes over its supercategories.
 
+        ``self`` when it imposes one and ``None`` when it does not, which is
+        the shape of Sage's ``Category.additional_structure`` and is read the
+        same way.  ``None`` is a mathematical statement, not an omission: the
+        category is the intersection of its supercategories, so its objects
+        are exactly the objects lying in every one of them, and what it adds
+        is operations and theorems rather than a further requirement.
+
+        ``FreeFormModules(R)`` is the model case.  A free form module is
+        exactly a module that is both a form module and framed free, and
+        those two are its declared supercategories, so nothing further is
+        being asked of an object and the two memberships decide it.
+        ``VectorSpaces(K)`` is the degenerate case of the same statement: its
+        one supercategory is ``Modules(K)`` and over a field there is no
+        further condition at all.
+
+        The default is ``self``, because a category normally does state
+        something of its own -- a chosen datum, an axiom, a property -- and a
+        category that has not said otherwise has not been examined.
+        """
+        return self
+
+    def __contains__(self, candidate) -> bool:
+        r"""Whether ``candidate`` is an object of this category.
+
+        Placement decides it, which is Sage's rule and the one every category
+        with a condition of its own needs: an object acquires a chosen datum
+        or an axiom by being built or refined into the category that states
+        it, and no examination of the object afterwards can recover a choice
+        nobody made.
+
+        A category that imposes no condition of its own is not decided that
+        way.  Nothing has to be *placed* in the intersection of two categories
+        to be in it, and requiring that is what left ``U`` outside
+        ``FreeFormModules(R)`` while it was in both ``FormModules(R)`` and
+        ``FramedFreeModules(R)``, and left a free module over a field outside
+        ``VectorSpaces(K)``.  Such a category answers by its definition.
+        """
+        return super().__contains__(candidate) or membership_by_definition(self, candidate)
 
 
 class OwnedParameterizedCategory(OwnedCategory):
-    r"""An owned category parameterized by one arbitrary mathematical object.
+    r"""An owned category parameterized by one object of a stated category.
 
-    The parameter is stored verbatim; this base performs no Sage-category
-    membership test. Subclasses normalize their own parameters when needed.
+    ``parameter_category`` is the statement.  ``Subgroups`` is parameterized
+    by a group, ``GSets`` by a group, ``DifferentialGradedModules`` by a
+    differential graded algebra, ``GradedAlgebraModules`` by a graded algebra,
+    ``PredicateSubgroups`` by a whole category.  Each of those is a different
+    structure, and a family that does not say which one it wants can only
+    report a wrong argument from wherever inside the first operation happened
+    to need it -- ``this API expects a preamble group``, ``no attribute
+    'grading_monoid'`` -- naming nothing about what was wanted.
+
+    Stating it does two things.  A wrong parameter is refused at the boundary,
+    against the category it should have been in, and a member of the family
+    becomes constructible without knowing anything else about it: it is
+    ``type(C)(C.parameter_category().an_object())``, which is what lets a
+    survey of the owned graph reach a parameterized family at all instead of
+    carrying a hand-written table of specimens.
+
+    A family that has not stated it says so by name, through Sage's optional
+    abstract-method protocol, and construction proceeds unchecked until it
+    does.
     """
 
+    @abstract_method(optional=True)
+    def parameter_category(self):
+        r"""Return the category this family's parameter ranges over."""
+
     def __init__(self, parameter) -> None:
+        declared = self.parameter_category
+        if declared is not NotImplemented:
+            ranges_over = declared()
+            assert parameter in ranges_over, (
+                f"{type(self).__name__} is parameterized by an object of "
+                f"{ranges_over}, and {parameter} is not one"
+            )
         self._owned_parameter = parameter
         super().__init__()
 
@@ -103,6 +191,17 @@ class Objects(OwnedCategory):
     ``Objects``/``Sets`` categories remain runtime substrate only and are not
     semantic ancestors of owned categories.
     """
+
+    def an_object(self):
+        r"""The set 2, which is an object like any other.
+
+        The root has no structure to exhibit, so its witness is whatever the
+        first level above it builds: two distinct elements, so that a map out
+        of the witness is not forced.
+        """
+        from dzack_research.preamble.categories.sets.set_categories import Sets
+
+        return Sets().an_object()
 
     class ParentMethods(OwnedParent, Parent):
         r"""The owned root of every object chain.
