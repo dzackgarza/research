@@ -12,21 +12,38 @@ standard identifications (``P^n``, ``P^1 x P^1``, a Hirzebruch surface, a
 weighted projective space) are decided by an isomorphism of fans, which by
 CLS Thm 3.3.4 is an isomorphism of the varieties.
 
-The affine charts are constructed here, not read off the backend: the chart
-of a cone is ``Spec`` of the semigroup algebra of \(S_\sigma=\sigma^\vee\cap
-M\), and a face inclusion \(\tau\preceq\sigma\) is realized as the
-distinguished open of the chart of \(\sigma\) at one monomial (CLS
-Prop. 1.3.16).  Sage's ``ToricVariety`` is the backend realization of the
-glued scheme itself, adopted the way the other non-affine schemes in this
-package are adopted.
+The affine charts are constructed here, not read off a backend: the chart of
+a cone is ``Spec`` of the semigroup algebra of \(S_\sigma=\sigma^\vee\cap M\),
+and a face inclusion \(\tau\preceq\sigma\) is realized as the distinguished
+open of the chart of \(\sigma\) at one monomial (CLS Prop. 1.3.16).  The
+variety is the scheme glued from the charts of the maximal cones along the
+transitions of their pairwise intersections, so what a session receives is an
+owned glued scheme; Sage's ``ToricVariety`` stays as the private space the
+fan-morphism construction computes in.
+
+A transition is the content the charts do not already carry.  Two charts meet
+in the chart of \(\gamma=\sigma\cap\tau\), presented on one side as
+\(k[S_\sigma][1/\chi^{m_\sigma}]\) and on the other as
+\(k[S_\tau][1/\chi^{m_\tau}]\).  Sending each chosen semigroup generator of
+\(S_\tau\) to its character on the overlap gives a morphism into the whole
+chart \(U_\tau\) that inverts \(\chi^{m_\tau}\), and the universal property of
+the localization factors it uniquely through the open.  Reading a character of
+\(S_\gamma\) inside \(k[S_\sigma][1/\chi^{m_\sigma}]\) uses
+\(S_\gamma=S_\sigma+\mathbb Z_{\ge 0}(-m_\sigma)\), which is the same
+Prop. 1.3.16.
 """
 
+from itertools import combinations
+
 from sage.matrix.constructor import matrix as _engine_matrix
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.schemes.toric.ideal import ToricIdeal as _SageToricIdeal
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
@@ -42,6 +59,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
     _engine_ring,
     _own_ring,
 )
@@ -100,6 +118,13 @@ def _semigroup_algebra(cone, base_ring):
     of the integer matrix whose columns are the \(m_i\).  The toric ideal is
     computed by ``sage.schemes.toric.ideal.ToricIdeal``, whose matrix
     convention is exactly one column per variable.
+
+    The result is an integral domain: \(k[S_\sigma]\) is the subalgebra of the
+    group algebra \(k[M]\) spanned by the characters of \(S_\sigma\), and
+    \(k[M]\) is a Laurent polynomial ring over a field, so the toric ideal is
+    prime.  That placement is what lets a localization of a chart read a
+    denominator as a power of the character it inverts, which is how the
+    transition out of a face localization is written.
     """
     generators = cone.semigroup_generators()
     names = _character_names(int(generators.cardinality()))
@@ -121,27 +146,194 @@ def _semigroup_algebra(cone, base_ring):
         presentation._from_engine_element(engine_presentation(relation))
         for relation in engine_ideal.gens()
     )
-    return FinitelyPresentedAlgebra(presentation, relations)
+    return FinitelyPresentedAlgebra(
+        presentation,
+        relations,
+        _extra_categories=(OwnedIntegralDomains(),),
+    )
+
+
+def _face_supporting_generator_positions(face, cone):
+    r"""The positions of the chosen generators of ``S_sigma`` vanishing on ``tau``.
+
+    Those generators generate the face \(\sigma^\vee\cap\tau^\perp\) of
+    \(\sigma^\vee\), so any character supported on exactly this selection cuts
+    \(\tau\) out of \(\sigma\).
+    """
+    zero = _integers().zero()
+    return tuple(
+        position
+        for position, generator in enumerate(cone.semigroup_generators())
+        if all(value == zero for value in face.pair_with(generator))
+    )
+
+
+def _face_supporting_character(face, cone):
+    r"""The character ``m`` with ``sigma cap m^perp = tau`` (CLS Prop. 1.3.16).
+
+    The sum of the chosen semigroup generators of \(S_\sigma\) that vanish on
+    \(\tau\): their sum lies in the relative interior of
+    \(\sigma^\vee\cap\tau^\perp\), so \(\sigma\cap m^\perp=\tau\).  This is the
+    lattice point whose character is inverted to reach \(U_\tau\) inside
+    \(U_\sigma\), and ``_face_supporting_character_monomial`` is its monomial.
+    """
+    characters = cone.character_lattice()
+    generators = cone.semigroup_generators()
+    supporting = characters.zero()
+    for position in _face_supporting_generator_positions(face, cone):
+        supporting = supporting + generators.unrank(position)
+    return supporting
 
 
 def _face_supporting_character_monomial(face, cone, chart):
     r"""The monomial ``chi^m`` cutting ``face`` out of ``cone`` (CLS Prop. 1.3.16).
 
-    Take ``m`` to be the sum of the chosen semigroup generators of
-    \(S_\sigma\) that vanish on \(\tau\).  Those generators generate the face
-    \(\sigma^\vee\cap\tau^\perp\) of \(\sigma^\vee\), so their sum lies in its
-    relative interior, and therefore \(\sigma\cap m^\perp=\tau\).  In
-    \(k[S_\sigma]\) the character \(\chi^m\) is then the product of the
-    corresponding variables, with no integer program to solve.
+    ``m`` is ``_face_supporting_character(face, cone)``, a sum of chosen
+    semigroup generators, so in \(k[S_\sigma]\) the character \(\chi^m\) is the
+    product of the corresponding variables with no integer program to solve.
     """
-    zero = _integers().zero()
     algebra = chart.coordinate_algebra()
     labels = tuple(algebra.algebra_generating_set())
     monomial = algebra.one()
-    for position, generator in enumerate(cone.semigroup_generators()):
-        if all(value == zero for value in face.pair_with(generator)):
-            monomial = monomial * algebra.algebra_generator(labels[position])
+    for position in _face_supporting_generator_positions(face, cone):
+        monomial = monomial * algebra.algebra_generator(labels[position])
     return monomial
+
+
+def _character_monomial(character, cone, chart):
+    r"""The monomial ``chi^m`` in ``k[S_sigma]`` of a character of ``S_sigma``.
+
+    ``m`` is a nonnegative integer combination of the chosen semigroup
+    generators, and the cone reports one such family of multiplicities; the
+    monomial is the corresponding product of variables.  Two expansions of one
+    ``m`` differ by the toric ideal, so they name one element of
+    \(k[S_\sigma]\) (CLS Prop. 1.1.9).
+    """
+    algebra = chart.coordinate_algebra()
+    labels = tuple(algebra.algebra_generating_set())
+    monomial = algebra.one()
+    for position, multiplicity in enumerate(cone.semigroup_coefficients(character)):
+        monomial = monomial * algebra.algebra_generator(labels[position]) ** int(
+            multiplicity
+        )
+    return monomial
+
+
+@cached_function
+def _affine_chart(cone, base_ring):
+    r"""``U_sigma = Spec k[S_sigma]``, one chart per cone and base (CLS Prop. 1.3.9).
+
+    The chart depends on the cone and the base field alone, so it is shared by
+    every construction that reaches it: the atlas a toric variety is glued from
+    holds exactly the objects its ``affine_chart`` answers with.
+    """
+    return Spec(_semigroup_algebra(cone, base_ring), base_ring=base_ring)
+
+
+def _face_localization(face, cone, base_ring):
+    r"""``U_tau = D(chi^{m_sigma})`` inside ``U_sigma`` for a face ``tau`` of ``sigma``."""
+    chart = _affine_chart(cone, base_ring)
+    return chart.distinguished_open(
+        _face_supporting_character_monomial(face, cone, chart)
+    )
+
+
+def _character_on_overlap(character, face, cone, base_ring):
+    r"""``chi^m`` in ``k[S_sigma][1/chi^{m_sigma}]`` for ``m`` a character of ``S_tau``.
+
+    For \(\tau=\sigma\cap m_\sigma^\perp\) one has
+    \(S_\tau=S_\sigma+\mathbb Z_{\ge 0}(-m_\sigma)\) (CLS Prop. 1.3.16), so
+    every character of \(S_\tau\) is \(m'=a-c\,m_\sigma\) with \(a\in S_\sigma\)
+    and \(c\ge 0\).  Raising \(m'\) by \(m_\sigma\) until it lies in
+    \(\sigma^\vee\) finds the least such \(c\), and the search terminates
+    because some \(c\) works; the answer is then the monomial of \(a\) divided
+    by that power of the inverted character.
+    """
+    chart = _affine_chart(cone, base_ring)
+    localized = _face_localization(face, cone, base_ring).coordinate_algebra()
+    supporting = _face_supporting_character(face, cone)
+    assert face.dual_cone_contains(character), (
+        "a character of the overlap is nonnegative on the common face"
+    )
+    shifted = character
+    exponent = 0
+    while not cone.dual_cone_contains(shifted):
+        shifted = shifted + supporting
+        exponent += 1
+    inverse = localized.localization_map()(
+        localized.inverted_element()
+    ).inverse_of_unit()
+    return localized.localization_map()(
+        _character_monomial(shifted, cone, chart)
+    ) * inverse**exponent
+
+
+def _face_transition_morphism(face, source_cone, target_cone, base_ring):
+    r"""``U_sigma cap U_tau -> U_tau cap U_sigma``, one direction of a transition.
+
+    Both sides are the chart of the common face \(\gamma\), presented as a
+    localization of a different semigroup algebra.  Sending each chosen
+    semigroup generator of \(S_\tau\) to its character on the overlap is a ring
+    morphism out of \(k[S_\tau]\), so a morphism \(U_\sigma\cap U_\tau\to
+    U_\tau\); it carries \(\chi^{m_\tau}\) to a unit, so it factors uniquely
+    through the open \(U_\tau\cap U_\sigma\).  That factorization is the
+    universal property of the localization, taken on the schemes.
+    """
+    source_open = _face_localization(face, source_cone, base_ring)
+    target_open = _face_localization(face, target_cone, base_ring)
+    target_chart = _affine_chart(target_cone, base_ring)
+    target_algebra = target_chart.coordinate_algebra()
+    labels = tuple(target_algebra.algebra_generating_set())
+    extension = target_algebra.Mor(source_open.coordinate_algebra())(
+        {
+            labels[position]: _character_on_overlap(
+                generator, face, source_cone, base_ring
+            )
+            for position, generator in enumerate(target_cone.semigroup_generators())
+        }
+    )
+    return target_open.corestriction(source_open.Mor(target_chart)(extension))
+
+
+def _face_transition(source_cone, target_cone, base_ring):
+    r"""The atlas transition between the charts of two cones of one fan.
+
+    The overlap is the chart of \(\gamma=\sigma\cap\tau\), which is a face of
+    each, so it is a distinguished open of both charts and the two directions
+    are mutually inverse.  Both presentations invert a character exactly when
+    \(\gamma\) is a proper face of each cone, which is what two distinct
+    maximal cones of a fan give: a supporting character of \(\sigma\) in
+    \(\sigma\) itself lies in \(\sigma^\perp\), where it is already a unit and
+    localizing at it says nothing.
+    """
+    assert not source_cone.is_face_of(target_cone), (
+        "a transition joins two cones neither of which is a face of the other"
+    )
+    assert not target_cone.is_face_of(source_cone), (
+        "a transition joins two cones neither of which is a face of the other"
+    )
+    face = source_cone.intersection(target_cone)
+    return Isomorphism(
+        _face_transition_morphism(face, source_cone, target_cone, base_ring),
+        _face_transition_morphism(face, target_cone, source_cone, base_ring),
+    )
+
+
+def _glued_toric_scheme(fan, base_ring):
+    r"""``X_Sigma`` glued from the charts of the maximal cones (CLS Thm. 3.1.5).
+
+    The atlas is indexed by the maximal cones themselves, so a chart is asked
+    for by the cone it belongs to, and the transitions are the face
+    localizations of the pairwise intersections.
+    """
+    cones = tuple(fan.maximal_cones())
+    return Schemes(base_ring).glue_affine_atlas(
+        {cone: _affine_chart(cone, base_ring) for cone in cones},
+        tuple(
+            _face_transition(source_cone, target_cone, base_ring)
+            for source_cone, target_cone in combinations(cones, 2)
+        ),
+    )
 
 
 class ToricSchemes(OwnedCategoryOverBaseRing):
@@ -197,6 +389,24 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             r"""The rank of ``N`` (CLS Thm. 3.1.19)."""
             return self.fan().dimension()
 
+        def relative_dimension(self):
+            r"""``dim X_Sigma`` over the base field, which is the rank of ``N``.
+
+            The charts are the spectra of the semigroup algebras of the maximal
+            cones, each of dimension ``dim N`` over a field, so the glued scheme
+            has that relative dimension (CLS Thm. 3.1.19).
+            """
+            return self.dimension()
+
+        def _toric_engine_variety(self):
+            r"""The private Sage toric space this variety's fan morphisms compute in.
+
+            Protected contract: the toric-morphism construction of this category
+            reads it on itself and on the stated codomain, and no session
+            receives it.  The variety a session holds is the glued scheme.
+            """
+            return self._preamble_toric_engine_variety
+
         def is_smooth(self) -> bool:
             r"""``X_Sigma`` is smooth exactly when every cone is smooth (CLS Thm. 3.1.19)."""
             return self.fan().is_smooth()
@@ -219,18 +429,16 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             trivial = RationalPolyhedralFans(self.cocharacter_lattice()).trivial_fan()
             return trivial.toric_variety(self.scheme_base_ring())
 
-        @cached_method
         def affine_chart(self, cone):
             r"""The affine chart ``U_sigma = Spec k[S_sigma]`` of one cone.
 
             This is the owned construction from the semigroup algebra, not a
-            patch read back from the backend.
+            patch read back from a backend.  For a maximal cone it is the chart
+            of the atlas this variety is glued from, the same object
+            ``chart(cone)`` answers with.
             """
             assert cone in self.fan(), "an affine chart is taken of a cone of this fan"
-            return Spec(
-                _semigroup_algebra(cone, self.scheme_base_ring()),
-                base_ring=self.scheme_base_ring(),
-            )
+            return _affine_chart(cone, self.scheme_base_ring())
 
         def affine_cover(self):
             r"""The charts of the maximal cones, which cover ``X_Sigma``."""
@@ -251,10 +459,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             assert face.is_face_of(cone), (
                 "a face localization is indexed by a face of the cone"
             )
-            chart = self.affine_chart(cone)
-            return chart.distinguished_open(
-                _face_supporting_character_monomial(face, cone, chart)
-            )
+            return _face_localization(face, cone, self.scheme_base_ring())
 
         def torus_orbits(self, orbit_dimension):
             r"""The torus orbits of the stated dimension, as cones of the fan.
@@ -619,7 +824,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 codomain.fan(),
             )
             return refine_scheme_morphism(
-                self.hom(engine_morphism, codomain),
+                self._toric_engine_variety().hom(
+                    engine_morphism,
+                    codomain._toric_engine_variety(),
+                ),
                 self.scheme_base_ring(),
                 domain=self,
                 codomain=codomain,
@@ -662,18 +870,23 @@ def _engine_fan_morphism(lattice_morphism, domain_fan, codomain_fan):
 def ToricVariety(fan, base_ring, polarizing_polytope=None):
     r"""The toric variety ``X_Sigma`` of a fan over a field.
 
-    The glued scheme is realized by Sage's ``ToricVariety``, which is the
-    backend for the underlying space and its coordinate data; the fan, the
-    charts, and the face localizations are the owned mathematics around it.
+    ``X_Sigma`` is the scheme glued from the affine charts of the maximal cones
+    along the face localizations of their pairwise intersections (CLS
+    Thm. 3.1.5), and that glued scheme is what a session receives.  Sage's
+    ``ToricVariety`` stays as the private space the fan-morphism construction
+    computes in; it is not the object and it does not reach a session.
     """
     base = _own_ring(base_ring)
     assert fan in RationalPolyhedralFans(fan.cocharacter_lattice()), (
         "a toric variety is built from a rational polyhedral fan"
     )
     assert bool(_engine_ring(base).is_field()), (
-        "the represented toric-variety backend is defined over a field"
+        "the semigroup algebras of the charts are algebras over a field"
     )
-    scheme = _SageToricVariety(fan._engine_fan(), base_ring=_engine_ring(base))
+    scheme = _glued_toric_scheme(fan, base)
+    scheme._preamble_toric_engine_variety = _SageToricVariety(
+        fan._engine_fan(), base_ring=_engine_ring(base)
+    )
     scheme._preamble_toric_fan = fan
     scheme._preamble_toric_polarizing_polytope = polarizing_polytope
     dimension = int(fan.dimension())
