@@ -31,6 +31,15 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
+from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreshFreeModuleOn,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_homset,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
@@ -48,6 +57,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
 from dzack_research.preamble.categories.schemes.toric.fans import (
     RationalPolyhedralFans,
     _engine_vector,
+    _owned_vector,
 )
 from dzack_research.preamble.categories.schemes.varieties import (
     Curves,
@@ -62,6 +72,17 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 
 def _integers():
     return _own_ring(SageZZ)
+
+
+def _ray_generator(ray):
+    r"""The primitive generator ``u_rho`` in ``N`` of a one-dimensional cone."""
+    return next(iter(ray.rays()))
+
+
+def _pairing_on_ray(fan, character, ray):
+    r"""``<m, u_rho>``, an integer, for a character and a ray of the fan."""
+    pairing = fan.character_cocharacter_pairing()
+    return _integers()(pairing(character, _ray_generator(ray)))
 
 
 def _character_names(count):
@@ -277,6 +298,181 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
         def canonical_divisor(self):
             r"""``K_X = -sum_rho D_rho`` (CLS Thm. 8.2.3)."""
             return -self.toric_boundary_divisor()
+
+        @cached_method
+        def character_divisor_morphism(self):
+            r"""``M -> Div_T(X)``, ``m |-> div(chi^m)`` (CLS Thm. 4.1.3).
+
+            The principal divisor of a character is
+            \(\operatorname{div}(\chi^m)=\sum_\rho\langle m,u_\rho\rangle
+            D_\rho\).  This is the map whose cokernel is the class group.
+            """
+            characters = self.character_lattice()
+            group = self.torus_invariant_divisor_group()
+            fan = self.fan()
+            rays = fan.cones(1)
+
+            def image(label):
+                character = characters.module_generator(label)
+                return group.linear_combination(
+                    {ray: _pairing_on_ray(fan, character, ray) for ray in rays}
+                )
+
+            return module_homset(characters, group)(image)
+
+        def has_torus_factor(self) -> bool:
+            r"""Whether ``X`` splits off a torus factor (CLS Prop. 3.3.9).
+
+            ``X_Sigma`` has a torus factor exactly when the ray generators fail
+            to span ``N_R``, and by CLS Thm. 4.1.3 that failure is exactly the
+            failure of ``M -> Div_T(X)`` to be injective.
+            """
+            return not self.character_divisor_morphism().is_injective()
+
+        @cached_method
+        def class_group(self):
+            r"""``Cl(X) = Div_T(X)/div(chi^M)`` (CLS Thm. 4.1.3).
+
+            The sequence ``M -> Div_T(X) -> Cl(X) -> 0`` is exact for every
+            fan, so the class group is this cokernel whether or not ``X`` has a
+            torus factor; it is exact on the left exactly when ``X`` has none.
+            """
+            return ClassGroup(self.character_divisor_morphism().cokernel())
+
+        @cached_method
+        def class_group_projection(self):
+            r"""The quotient ``Div_T(X) ->> Cl(X)``.
+
+            The class group is presented on the same prime divisors as
+            ``Div_T(X)``, so the quotient sends each generator to the generator
+            of the same name.
+            """
+            group = self.torus_invariant_divisor_group()
+            classes = self.class_group()
+            return module_homset(group, classes)(
+                {
+                    label: classes.module_generator(label)
+                    for label in group.module_generating_set()
+                }
+            )
+
+        def divisor_class(self, divisor):
+            r"""The class in ``Cl(X)`` of a torus-invariant divisor."""
+            return self.class_group_projection()(divisor)
+
+        @cached_method
+        def local_divisor_group(self, cone):
+            r"""``Div_T(U_sigma)``, free on the rays of one cone (CLS §4.1)."""
+            return FreshFreeModuleOn(
+                _integers(),
+                finite_ordered_set(tuple(cone.faces(1))),
+            )
+
+        @cached_method
+        def local_character_divisor_morphism(self, cone):
+            r"""``M -> Div_T(U_sigma)``, the principal divisors on one chart."""
+            characters = self.character_lattice()
+            local = self.local_divisor_group(cone)
+            fan = self.fan()
+            rays = cone.faces(1)
+
+            def image(label):
+                character = characters.module_generator(label)
+                return local.linear_combination(
+                    {ray: _pairing_on_ray(fan, character, ray) for ray in rays}
+                )
+
+            return module_homset(characters, local)(image)
+
+        def is_cartier(self, divisor) -> bool:
+            r"""Whether ``D = sum a_rho D_rho`` is Cartier (CLS Thm. 4.2.8).
+
+            ``D`` is Cartier exactly when every maximal cone ``sigma`` admits
+            ``m_sigma`` in ``M`` with ``<m_sigma, u_rho> = -a_rho`` for every
+            ``rho`` in ``sigma(1)``; that is, exactly when the local
+            coefficient divisor lies in the image of ``M -> Div_T(U_sigma)``.
+            Membership in that image is decided by the cokernel of the map.
+            """
+            group = self.torus_invariant_divisor_group()
+            coefficients = module_coefficients(divisor, group)
+            zero = _integers().zero()
+            for cone in self.fan().maximal_cones():
+                local = self.local_divisor_group(cone)
+                quotient = self.local_character_divisor_morphism(cone).cokernel()
+                local_divisor = local.linear_combination(
+                    {ray: -coefficients.get(ray, zero) for ray in cone.faces(1)}
+                )
+                if quotient.cokernel_projection()(local_divisor) != quotient.zero():
+                    return False
+            return True
+
+        @cached_method
+        def picard_group(self):
+            r"""``Pic(X) = CDiv_T(X)/M`` (CLS Thm. 4.2.1).
+
+            On a smooth fan every torus-invariant Weil divisor is Cartier (CLS
+            Prop. 4.2.6), so ``CDiv_T(X) = Div_T(X)`` and the Picard group is
+            the quotient this returns.  On a fan that is not smooth
+            ``CDiv_T(X)`` is the proper subgroup that ``is_cartier`` decides one
+            divisor at a time; constructing that subgroup is a kernel out of the
+            free divisor group into a finitely presented cokernel, and the
+            module layer represents kernels only between free modules.
+            """
+            assert self.fan().is_smooth(), (
+                "the Picard group is constructed on a smooth fan, where every "
+                "Weil divisor is Cartier; on a singular fan ask is_cartier of "
+                "the divisors in question, since the group of torus-invariant "
+                "Cartier divisors has no represented construction"
+            )
+            return PicardGroup(self.character_divisor_morphism().cokernel())
+
+        def divisor_polytope(self, divisor):
+            r"""``P_D = {m in M_R : <m,u_rho> >= -a_rho for all rho}`` (CLS (4.3.2)).
+
+            For an ample divisor this is the polytope whose normal fan is
+            ``Sigma``, so it recovers the polarizing polytope of a variety
+            built from one.
+            """
+            from sage.geometry.polyhedron.constructor import Polyhedron
+            from sage.rings.rational_field import QQ as SageQQ
+
+            from dzack_research.preamble.categories.schemes.polytopes import (
+                ConvexPolytope,
+            )
+
+            assert self.fan().is_complete(), (
+                "the polytope of a divisor is bounded on a complete fan"
+            )
+            group = self.torus_invariant_divisor_group()
+            coefficients = module_coefficients(divisor, group)
+            zero = _integers().zero()
+            cocharacters = self.cocharacter_lattice()
+            inequalities = [
+                [int(coefficients.get(ray, zero))]
+                + [
+                    int(entry)
+                    for entry in _engine_vector(cocharacters, _ray_generator(ray))
+                ]
+                for ray in self.fan().cones(1)
+            ]
+            return ConvexPolytope(
+                Polyhedron(ieqs=inequalities, base_ring=SageQQ),
+                lattice=self.character_lattice(),
+            )
+
+        def divisor_section_characters(self, divisor):
+            r"""The characters spanning ``H^0(X, O_X(D))`` (CLS Prop. 4.3.3).
+
+            ``H^0(X,O_X(D))`` has the characters ``chi^m`` for ``m`` a lattice
+            point of ``P_D`` as a basis, so the lattice points of the divisor
+            polytope are returned as elements of ``M``.
+            """
+            characters = self.character_lattice()
+            return finite_ordered_image(
+                self.divisor_polytope(divisor).integral_points(),
+                lambda point: _owned_vector(characters, point),
+                name="Section characters",
+            )
 
         def log_pair(self):
             r"""The toric log pair ``(X, sum_rho D_rho)``."""
