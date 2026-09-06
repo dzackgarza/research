@@ -638,6 +638,16 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         def algebra_base_ring(self):
             return self._preamble_base_ring
 
+        def is_commutative(self) -> bool:
+            r"""``M_n(R)`` commutes exactly when ``n <= 1``.
+
+            This category is over a commutative ring, so the only obstruction
+            is the size of the matrices.  Rank one gives ``R`` itself and rank
+            zero the zero ring; from rank two the matrix units ``e_{12}`` and
+            ``e_{21}`` fail to commute.
+            """
+            return self.nrows() <= 1
+
         @cached_method
         def _ring_morphism_defining_algebra_structure(self):
 
