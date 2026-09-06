@@ -232,7 +232,9 @@ class SchemeMorphism(Morphism):
     def graph_morphism(self):
         r"""``Gamma_f = (id, f): X -> X x_S Y``."""
         identity = self.domain().categorical_identity_morphism()
-        return scheme_product(self.domain(), self.codomain()).from_product_cone(identity, self)
+        return scheme_product(self.domain(), self.codomain()).from_product_cone(
+            (identity, self)
+        )
 
     @cached_method
     def graph_subscheme(self):
@@ -680,37 +682,6 @@ class Schemes(OwnedCategoryOverBaseRing):
         def _categorical_pullback(self, left_morphism, right_morphism):
             return scheme_fiber_product(left_morphism, right_morphism)
 
-        def glue(self, charts, overlaps, transitions):
-            r"""``X`` glued from charts along isomorphic opens (Stacks, Tag 01JA).
-
-            The data are schemes ``X_i``, open subschemes ``U_ij <= X_i``, and
-            isomorphisms ``phi_ji: U_ij -> U_ji`` with ``phi_ij = phi_ji^{-1}``
-            and ``phi_ki = phi_kj phi_ji`` on the triple overlaps.
-
-            The result is not representable here, and the obstruction is one
-            architectural fact rather than a missing algorithm: an owned scheme
-            morphism is represented by a native scheme morphism of the backend,
-            and a glued scheme has no such representative.  The backend's own
-            glued scheme stores the two open immersions and answers nothing
-            else, not even its base ring, so an object built on it would admit
-            no morphism and the second half of this construction -- gluing
-            morphisms out of compatible local ones -- would be unstatable.
-
-            What is representable is everything that lives on a cover of one
-            affine scheme: `AffineSchemes.distinguished_open_cover` builds the
-            cover, `DistinguishedAffineCover.glue_modules` and
-            `glue_invertible_module` descend sheaves along it, and
-            `CoverRefinement` compares two covers.  Removing the obstruction
-            means making a scheme morphism owned data rather than a wrapper
-            around a backend morphism, which is a design decision, not an edit.
-            """
-            assert False, (
-                "gluing schemes needs an owned scheme morphism that does not wrap a backend "
-                "scheme morphism: a glued scheme has no backend representative, so it could "
-                "carry no Hom and no glued morphism; sheaves on a cover of one affine scheme "
-                "are built with distinguished_open_cover and glue_modules instead"
-            )
-
         def equalizer(self, left, right):
             r"""Return the equalizer ``Eq(f, g) -> X`` of two parallel morphisms."""
             assert left.domain() is right.domain() and left.codomain() is right.codomain(), (
@@ -959,7 +930,7 @@ class Schemes(OwnedCategoryOverBaseRing):
         def diagonal_morphism(self):
             r"""``Delta: X -> X x_S X``, the cone map with both legs the identity."""
             identity = self.categorical_identity_morphism()
-            return scheme_product(self, self).from_product_cone(identity, identity)
+            return scheme_product(self, self).from_product_cone((identity, identity))
 
         @cached_method
         def diagonal_subscheme(self):
@@ -1900,8 +1871,11 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
                 self.projection(index) for index in range(self.number_of_factors())
             )
 
-        def from_product_cone(self, *legs):
-            r"""The unique morphism ``T -> prod_i X_i`` with the stated components.
+        def from_product_cone(self, legs):
+            r"""The unique morphism ``T -> prod_i X_i`` with the stated legs.
+
+            A cone over the product is the family of legs ``f_i: T -> X_i``,
+            indexed the way the factors are, so that is the datum this takes.
 
             For affine factors the product is ``Spec`` of the coproduct of
             coordinate algebras, so the cone map is the cocone map on
@@ -1909,20 +1883,24 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
             factor generator under a projection pullback, and it is sent to
             that generator's image under the corresponding leg.
             """
-            legs = tuple(legs[0]) if len(legs) == 1 and isinstance(legs[0], (tuple, list)) else legs
             factors = self.factors()
-            assert len(legs) == int(factors.cardinality().finite_value()), (
+            legs = _finite_factor_family(legs, name="Product cone legs")
+            assert legs.cardinality() == factors.cardinality(), (
                 "a product cone has one leg per factor"
             )
-            source = legs[0].domain()
+            leg_labels = tuple(legs.index_set())
+            source = legs[leg_labels[0]].domain()
             base = self.scheme_base_ring()
-            assert all(leg.domain() is source for leg in legs), "a cone has one apex"
+            assert all(legs[label].domain() is source for label in leg_labels), (
+                "a cone has one apex"
+            )
             assert self in AffineSchemes(base) and source in AffineSchemes(base), (
                 "the represented product cone map currently requires affine schemes"
             )
             product_algebra = self.coordinate_algebra()
             images = {}
-            for index, leg in enumerate(legs):
+            for index, label in enumerate(leg_labels):
+                leg = legs[label]
                 factor = factors[index]
                 assert leg.codomain() is factor, f"leg {index} must land in factor {index}"
                 projection_pullback = self.projection(index).coordinate_algebra_morphism()
@@ -1935,8 +1913,8 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
                     )
             pullback = product_algebra.Mor(source.coordinate_algebra())(images)
             cone = _affine_morphism_from_pullback(source, self, pullback)
-            for index, leg in enumerate(legs):
-                assert self.projection(index) * cone == leg, (
+            for index, label in enumerate(leg_labels):
+                assert self.projection(index) * cone == legs[label], (
                     f"the product cone map does not recover leg {index}"
                 )
             return cone
