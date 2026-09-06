@@ -321,6 +321,22 @@ class CoxeterDiagrams(OwnedCategory):
             normalized = _engine_component_matrix(self.schlafli_tensor())
             return (2 * normalized).determinant()
 
+        def vinberg_invariant_matrix(self):
+            r"""Return the Vinberg invariant matrix of this diagram.
+
+            The projective invariants \([4b(r_v,r_w)^2:q(r_v)q(r_w)]\) of the
+            pairs of mirrors.  On a rooted diagram they come from the root
+            Gram and are exact over the base ring; on an unrooted one only the
+            bonds are available, and the invariants are the algebraic numbers
+            \(4\cos^2(\pi/m)\).  The passage back to the Coxeter matrix loses
+            the distinction between parallel and divergent mirrors.
+            """
+            from dzack_research.preamble.categories.vinberg_invariants import (
+                VinbergInvariantMatrices,
+            )
+
+            return VinbergInvariantMatrices().from_coxeter_diagram(self)
+
         def coxeter_group(self):
             r"""Return the Coxeter group \(W\) of this diagram.
 
