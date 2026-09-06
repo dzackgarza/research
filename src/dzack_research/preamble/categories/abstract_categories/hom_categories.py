@@ -858,6 +858,16 @@ class HomCategoryOf(Category):
         r"""Return the represented fixed Hom class for these endpoints."""
         return self.fixed_category_class()
 
+    def _inherits_morphisms_from(self, supercategory, domain, codomain) -> bool:
+        r"""Whether this family may reuse ``supercategory``'s object literally.
+
+        The Hom family itself has nothing further to ask: the class of what it
+        would build against the class of what it inherits already decides it.
+        A family that carves its objects out of a Hom overrides this, because
+        the carving is only the same when the Hom is.
+        """
+        return True
+
     def _cached_between(self, domain, codomain):
         r"""Return the exact cached fixed-endpoint object, if present.
 
@@ -904,33 +914,50 @@ class HomCategoryOf(Category):
             ) or isinstance(cached, fixed_class):
                 return cached
             self._objects.pop((id(domain), id(codomain)), None)
-        if self.FixedCategoryClass is FixedHomCategory and fixed_class is FixedHomCategory:
-            inherited = []
-            for supercategory in _packet_supercategories(self.base_category()):
-                if domain not in supercategory or codomain not in supercategory:
-                    continue
-                candidate = self.family_over(supercategory).Of(domain, codomain)
-                if all(candidate is not known for known in inherited):
-                    inherited.append(candidate)
+        # What decides whether this category needs a Hom parent of its own is
+        # whether the Hom it would build differs from one it already inherits,
+        # not whether a class was declared somewhere in its Python ancestry: a
+        # property subcategory inherits the declaration of the category it
+        # refines and would build exactly the parent that category built.  So
+        # the supercategories are always walked, and a candidate survives when
+        # this category states nothing stronger than the class it already is.
+        inherited = []
+        for supercategory in _packet_supercategories(self.base_category()):
+            if domain not in supercategory or codomain not in supercategory:
+                continue
+            if not self._inherits_morphisms_from(supercategory, domain, codomain):
+                continue
+            candidate = self.family_over(supercategory).Of(domain, codomain)
+            if not (
+                fixed_class is FixedHomCategory or isinstance(candidate, fixed_class)
+            ):
+                continue
+            if all(candidate is not known for known in inherited):
+                inherited.append(candidate)
 
-            if len(inherited) == 1:
-                # No new Hom declaration means this is a full/property
-                # subcategory for morphism purposes.  Reuse the inherited Hom
-                # object literally rather than fabricating a second homset.
-                result = inherited[0]
-            elif len(inherited) > 1:
-                raise TypeError(
-                    f"{self.base_category()} inherits incompatible Hom constructions; "
-                    "declare _HomCategory explicitly"
-                )
-            else:
-                represented = _category_homset(self.base_category(), domain, codomain)
-                if isinstance(represented, Category):
-                    result = represented
-                else:
-                    result = fixed_class(self, domain, codomain)
-        else:
+        if len(inherited) == 1:
+            # One inherited Hom of the class this category would have built:
+            # the subcategory adds no morphisms, so reuse that object literally
+            # rather than fabricating a second parent for the same maps.
+            result = inherited[0]
+        elif fixed_class is not FixedHomCategory:
+            # This family states a Hom class of its own.  Nothing it inherits
+            # is that class, or several inherited ones disagree; either way it
+            # is not, for morphism purposes, a subcategory of any single one,
+            # and it builds what it declared.
             result = fixed_class(self, domain, codomain)
+        elif inherited:
+            raise TypeError(
+                f"{self.base_category()} inherits incompatible Hom constructions; "
+                "declare _HomCategory explicitly"
+            )
+        else:
+            represented = _category_homset(self.base_category(), domain, codomain)
+            result = (
+                represented
+                if isinstance(represented, Category)
+                else fixed_class(self, domain, codomain)
+            )
         return self._remember_between(domain, codomain, result)
 
     Between = Of
@@ -947,6 +974,21 @@ class HomCategoryOf(Category):
 
     def _repr_(self) -> str:
         return f"Hom-category packet of {self.base_category()}"
+
+
+def _carves_the_same_hom(self, supercategory, domain, codomain) -> bool:
+    r"""Whether this category and ``supercategory`` have one and the same Hom.
+
+    The monomorphisms, epimorphisms and isomorphisms of a category are cut out
+    of its Hom, so a subcategory inherits them exactly when it inherits the
+    Hom they are cut from.  A category of Lie algebras and the modules under
+    it agree on which linear maps are bijections and disagree on which maps
+    are morphisms at all, so its automorphisms are its own.
+    """
+    return (
+        category_packet(self.base_category()).Homs().Of(domain, codomain)
+        is category_packet(supercategory).Homs().Of(domain, codomain)
+    )
 
 
 class EndCategoryOf(HomCategoryOf):
@@ -967,7 +1009,12 @@ class EndCategoryOf(HomCategoryOf):
         if cached is not None:
             return cached
         endomorphisms = category_packet(self.base_category()).Homs().Of(obj, obj)
-        endomorphisms.attach_end_family(self)
+        # A Hom shared with the category above is the same set of morphisms, so
+        # its endomorphisms are the same too and the End object is that one.
+        # The role is carried by whichever family reached it first; a category
+        # that inherits the Hom reuses the object rather than claiming it.
+        if endomorphisms.end_family() is None:
+            endomorphisms.attach_end_family(self)
         return self._remember_between(obj, obj, endomorphisms)
 
     def Between(self, domain, codomain):
@@ -983,6 +1030,8 @@ class RestrictedHomCategoryOf(HomCategoryOf):
     r"""A family of fixed-endpoint subcategories of an existing ``Mor``."""
 
     FixedCategoryClass = FixedRestrictedHomCategory
+
+    _inherits_morphisms_from = _carves_the_same_hom
 
     def accepts(self, arrow) -> bool:
         raise NotImplementedError
@@ -1028,6 +1077,8 @@ class IsoCategoryOf(HomCategoryOf):
     FixedCategoryClass = FixedIsoCategory
     _declaration_name = "_IsoCategory"
 
+    _inherits_morphisms_from = _carves_the_same_hom
+
     def family_over(self, category):
         return category_packet(category).Isos()
 
@@ -1072,7 +1123,11 @@ class AutCategoryOf(IsoCategoryOf):
         if cached is not None:
             return cached
         automorphisms = category_packet(self.base_category()).Isos().Of(obj, obj)
-        automorphisms.attach_aut_family(self)
+        # As for End above: a shared Iso object has the same isomorphisms, so
+        # the same automorphisms, and the role stays with the family that
+        # reached it first.
+        if automorphisms.aut_family() is None:
+            automorphisms.attach_aut_family(self)
         return self._remember_between(obj, obj, automorphisms)
 
     def Between(self, domain, codomain):

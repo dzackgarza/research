@@ -173,10 +173,10 @@ class CommutatorLieAlgebras(LieAlgebras):
 def lie_algebra_homset(domain, codomain) -> LieAlgebraHomset:
     r"""``Hom_{R-Lie}(domain, codomain)`` for ``R`` the base of ``domain``.
 
-    ``LieAlgebras(R)`` owns the one Hom of two Lie algebras.  Its
-    subcategories state no morphisms of their own, so asking one of them for
-    a Hom builds a second parent for the same maps; this is the spelling that
-    reaches the canonical one, as ``algebra_homset`` does for algebras.
+    The session spelling, as ``algebra_homset`` is for algebras.  A
+    subcategory of Lie algebras that states no morphisms of its own reaches
+    this same object when asked, so which category is asked does not change
+    the answer.
     """
     return LieAlgebras(domain.base_ring()).Mor(domain, codomain)
 
