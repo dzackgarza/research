@@ -33,6 +33,7 @@ from dzack_research.preamble.categories.modules.tensor_products import tensor_pr
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
+    PrincipalIdealDomains,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -699,6 +700,117 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
         def presentation(self):
             return self.presentation_ring(), self.relations()
+
+        def _represented_structure_morphism_kernel_is_zero(self) -> bool:
+            r"""Decide whether the selected scalar map has zero kernel by elimination.
+
+            For ``A = R[x_1,...,x_n]/I`` the kernel of ``R -> A`` is
+            ``I cap R``.  When the selected computation ring is the relative
+            polynomial ring itself, or its canonical flattening, eliminate the
+            algebra variables and ask the established polynomial-ideal backend
+            for this intersection.
+            """
+
+            presentation = self.presentation_ring()
+            presentation_engine = _engine_ring(presentation)
+            algebra_engine = _engine_ring(self)
+            try:
+                cover = algebra_engine.cover_ring()
+                defining_ideal = algebra_engine.defining_ideal()
+            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+                raise NotImplementedError(
+                    "the selected algebra presentation has no quotient-cover elimination backend"
+                ) from error
+
+            if cover is presentation_engine:
+                algebra_variables = tuple(presentation_engine.gens())
+            else:
+                flattening_factory = getattr(
+                    presentation_engine,
+                    "flattening_morphism",
+                    None,
+                )
+                if flattening_factory is None:
+                    raise NotImplementedError(
+                        "the selected relative presentation has no canonical polynomial flattening"
+                    )
+                flattening = flattening_factory()
+                if flattening.codomain() is not cover:
+                    raise NotImplementedError(
+                        "the quotient cover is not the canonical flattening of the selected presentation"
+                    )
+                algebra_variables = tuple(
+                    flattening(generator) for generator in presentation_engine.gens()
+                )
+
+            try:
+                scalar_kernel = defining_ideal.elimination_ideal(algebra_variables)
+            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+                raise NotImplementedError(
+                    "the selected polynomial backend cannot eliminate the algebra variables"
+                ) from error
+            return bool(scalar_kernel.is_zero())
+
+        def is_torsion_free(self) -> bool:
+            r"""Decide torsion-freeness in the supported integral PID-algebra regime.
+
+            If ``R`` and ``A`` are domains, then the ``R``-module ``A`` is
+            torsion-free exactly when the unital structure map ``R -> A`` is
+            injective: a nonzero scalar in the kernel kills ``1_A``, while an
+            injective scalar map and absence of zero divisors make multiplication
+            by every nonzero scalar injective.
+            """
+
+            base = self.base_ring()
+            if bool(_engine_ring(base).is_field()):
+                return True
+            if base not in PrincipalIdealDomains():
+                raise NotImplementedError(
+                    "torsion-freeness of this algebra is currently decided over a represented PID"
+                )
+            if not bool(self.is_integral_domain()):
+                raise NotImplementedError(
+                    "the represented PID-algebra torsion criterion currently requires an integral target"
+                )
+            return self._represented_structure_morphism_kernel_is_zero()
+
+        def _represented_primitive_hypersurface_relative_dimension(self) -> int:
+            r"""Return the common fibre dimension for a primitive hypersurface presentation."""
+
+            relations = self.relations()
+            if not relations.cardinality().is_finite() or int(relations.cardinality()) != 1:
+                raise NotImplementedError(
+                    "the represented relative-dimension criterion currently requires one defining equation"
+                )
+            labels = self.presentation_ring().algebra_generating_set()
+            if not labels.cardinality().is_finite():
+                raise NotImplementedError(
+                    "the represented hypersurface criterion requires finitely many relative variables"
+                )
+            variable_count = int(labels.cardinality())
+            if variable_count == 0:
+                raise NotImplementedError(
+                    "the represented hypersurface criterion requires a positive relative affine dimension"
+                )
+
+            relation_index = next(iter(relations.index_set()))
+            relation = relations.value(relation_index)
+            presentation = self.presentation_ring()
+            presentation_engine = _engine_ring(presentation)
+            backend_relation = presentation_engine(
+                _engine_element(presentation, relation)
+            )
+            coefficient_ideal = self.base_ring().ideal(
+                *tuple(
+                    self.base_ring()._from_engine_element(coefficient)
+                    for coefficient in backend_relation.coefficients()
+                )
+            )
+            if coefficient_ideal != self.base_ring().ideal(self.base_ring().one()):
+                raise NotImplementedError(
+                    "the selected hypersurface equation is not primitive over the base"
+                )
+            return variable_count - 1
 
         def algebra_presentation_morphism(self):
             return self._preamble_algebra_presentation_morphism
