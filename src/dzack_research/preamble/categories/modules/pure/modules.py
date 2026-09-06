@@ -528,6 +528,19 @@ class Modules(OwnedCategoryOverBaseRing):
             ring = _owned_ring(base_ring)
             self._preamble_base_ring = ring
             super().__init__(base=ring, **rest)
+
+        def __init_extra__(self) -> None:
+            r"""Register the action of this module's ring on its own elements.
+
+            A module is an abelian group together with a ring acting on it, so
+            recording the ring is only half of what this level constructs; the
+            action is the other half, and ``r*m`` is what it is called at a
+            prompt.  Sage calls this hook from ``Parent.__init__`` for every
+            parent of this category, whatever route constructed it, so one
+            declaration here reaches a module built through the chain and a
+            ring the preamble adopts alike, and neither has anything to state
+            about its scalars afterwards.
+            """
             register_module_scalar_action(self)
 
         def Mor(self, codomain, category=None):
