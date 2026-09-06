@@ -1,5 +1,14 @@
-r"""Primitive totally isotropic sublattices, flags, and full-orthogonal-group orbits."""
+r"""Primitive totally isotropic sublattices, flags, and full-orthogonal-group orbits.
 
+The orbit representatives, the equivalence witness and the stabilizer are
+mathematical operations of this file; the algorithm realizing each one is
+asked for by name from the ordered capability layer, so no engine is named
+here.  An operation no registered provider supplies refuses by naming its
+capability and what would provision it, which is the owned behaviour until a
+provider arrives.
+"""
+
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -141,11 +150,14 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
     rank = lattice.base_ring()(rank)
     if rank <= lattice.base_ring().zero():
         raise ValueError("an isotropic orbit rank must be positive")
-    from py_polyhedral.binaries import indefinite_form_isotropic_k_stuff
-
     nature = "flag" if flag else "plane"
     result = []
-    for block in indefinite_form_isotropic_k_stuff(_gram_rows(lattice), int(rank), nature):
+    for block in engine_capabilities.compute(
+        "lattice.indefinite_isotropic_subspace_orbits",
+        _gram_rows(lattice),
+        int(rank),
+        nature,
+    ):
         basis = tuple(
             lattice.linear_combination(
                 {
@@ -175,13 +187,13 @@ def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
     right_rows = _basis_rows(right)
     if len(left_rows) != len(right_rows):
         return None
-    from py_polyhedral.binaries import (
-        indefinite_form_test_equivalence_isotropic_k_plane,
-    )
-
     nature = "flag" if flag else "plane"
-    witness = indefinite_form_test_equivalence_isotropic_k_plane(
-        _gram_rows(lattice), left_rows, right_rows, choice=nature
+    witness = engine_capabilities.compute(
+        "lattice.indefinite_isotropic_subspace_isometry_witness",
+        _gram_rows(lattice),
+        left_rows,
+        right_rows,
+        choice=nature,
     )
     if witness is None:
         return None
@@ -201,14 +213,15 @@ def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
 def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
     r"""Return generators of the full-orthogonal-group stabilizer of an isotropic subobject/flag."""
     lattice = orthogonal_group.domain()
-    from py_polyhedral.binaries import indefinite_form_stabilizer_isotropic_subspace
-
     nature = "flag" if flag else "plane"
     isometries = finite_ordered_set(
         tuple(
             orthogonal_group._from_backend_row_action(rows)
-            for rows in indefinite_form_stabilizer_isotropic_subspace(
-                _gram_rows(lattice), _basis_rows(obj), choice=nature
+            for rows in engine_capabilities.compute(
+                "lattice.indefinite_isotropic_subspace_stabilizer",
+                _gram_rows(lattice),
+                _basis_rows(obj),
+                choice=nature,
             )
         )
     )
