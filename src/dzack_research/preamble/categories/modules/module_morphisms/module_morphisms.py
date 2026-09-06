@@ -55,19 +55,15 @@ def _has_finite_free_framing(module) -> bool:
 def _solve_left_integrally_element(system, target, ring):
     r"""Return the row-coefficient element ``a`` with ``a*system = target``."""
 
-    if ring not in OwnedRings():
-        raise TypeError("integral solving requires an owned coefficient ring")
+    from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
-    try:
-        matrix_parent = system.parent()
-    except AttributeError:
-        matrix_parent = None
-    if matrix_parent is not None and callable(getattr(matrix_parent, "matrix_shape", None)):
-        matrix_system = system
-    else:
-        raise TypeError("an integral linear system is an owned matrix Hom element")
+    assert ring in OwnedRings(), "integral solving requires an owned coefficient ring"
+    assert system.parent() in MatrixSpaces(ring), (
+        f"an integral linear system over {ring} is an element of a matrix homset "
+        f"over it, and {system.parent()} is not one"
+    )
 
-    transposed = matrix_system.transpose()
+    transposed = system.transpose()
     smith, left, right = transposed.smith_form()
 
     target_labels = left.domain().module_generating_set()
