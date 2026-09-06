@@ -22,7 +22,7 @@ from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.categories.map import Map
-from sage.categories.morphism import Morphism
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.number_fields import NumberFields as SageNumberFields
 from sage.categories.principal_ideal_domains import PrincipalIdealDomains as SagePrincipalIdealDomains
 from sage.categories.rings import Rings as SageRings
@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.magmas import (
     AdditiveGroups,
     AdditiveMonoids,
@@ -903,6 +904,12 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             raise TypeError("a ring morphism object requires two owned rings")
         return _ring_mor_category(domain, codomain)
 
+    # Functors out of rings, sited on their domain.
+
+    def unit_group(self):
+        r"""``R |-> R^x : Ring -> Grp``."""
+        return UnitGroupFunctor()
+
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
 
@@ -1469,6 +1476,64 @@ class PrimeFields(OwnedCategory):
 
     def super_categories(self):
         return [OwnedFields()]
+
+
+@cached_function
+def unit_group(ring):
+    r"""Return \(R^\times\), the group of units of the owned ring ``ring``.
+
+    A ring is a monoid under multiplication, and its invertible elements are a
+    submonoid: the identity is invertible, and a product of invertibles is
+    invertible.  That submonoid is a group, because every one of its elements
+    has an inverse by the very predicate that admitted it, so the group law is
+    the ring's multiplication and nothing is chosen.
+
+    Invertibility is asked of the ring element.  A ring whose elements do not
+    decide it has no represented unit group, and that absence is a gap on the
+    element interface rather than a second construction here.
+    """
+    from dzack_research.preamble.categories.group.groups import OwnedGroups
+    from dzack_research.preamble.categories.group.submonoids import predicate_submonoid
+
+    assert ring in OwnedRings(), f"the unit group of {ring} requires an owned ring"
+    units = predicate_submonoid(
+        ring,
+        lambda element: element.is_unit(),
+        f"{ring}^×",
+    )
+    return refine(units, OwnedGroups())
+
+
+class UnitGroupFunctor(Functor):
+    r"""\(R\mapsto R^\times\) and \(f\mapsto f|_{R^\times}\), from rings to groups.
+
+    A ring morphism carries a unit to a unit: from \(rs = 1\) it gives
+    \(f(r)f(s) = 1\), so the restriction is defined with no further data, and
+    functoriality is the functoriality of restriction.
+
+    Applied to \(\operatorname{End}_{\mathbf C}(X)\) this is
+    \(\operatorname{Aut}_{\mathbf C}(X)\): an endomorphism is invertible in the
+    endomorphism ring exactly when it is an isomorphism of \(X\).
+    """
+
+    def __init__(self) -> None:
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        super().__init__(OwnedRings(), OwnedGroups())
+
+    def _apply_object(self, ring):
+        return unit_group(ring)
+
+    def _apply_morphism(self, morphism):
+        source = self.object_image(morphism.domain())
+        target = self.object_image(morphism.codomain())
+        return SetMorphism(
+            source.Mor(target),
+            lambda unit: target(morphism(unit)),
+        )
+
+    def _repr_(self):
+        return "Unit group functor"
 
 
 class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategory):
