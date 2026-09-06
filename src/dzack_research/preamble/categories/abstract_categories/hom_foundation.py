@@ -61,3 +61,56 @@ def underlying_set_homset(domain, codomain):
     result = UnderlyingSetHomset(domain, codomain)
     _underlying_set_homsets[key] = result
     return result
+
+
+class CategoryPacketMethods:
+    r"""The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface.
+
+    Sited here, below the packet itself, so that the owned category bases can
+    carry it: an axiom category is built from those bases, states no morphisms
+    of its own, and must still be askable for the Hom of the category it
+    refines.
+    """
+
+    def _category_packet(self):
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            category_packet,
+        )
+
+        return category_packet(self)
+
+    def HomCategory(self):
+        return self._category_packet().Homs()
+
+    def EndCategory(self):
+        return self._category_packet().Ends()
+
+    def MonoCategory(self):
+        return self._category_packet().Monos()
+
+    def EpiCategory(self):
+        return self._category_packet().Epis()
+
+    def IsoCategory(self):
+        return self._category_packet().Isos()
+
+    def AutCategory(self):
+        return self._category_packet().Auts()
+
+    def Mor(self, source, target):
+        return self.HomCategory().Of(source, target)
+
+    def End(self, obj):
+        return self.EndCategory().Of(obj)
+
+    def Mono(self, source, target):
+        return self.MonoCategory().Of(source, target)
+
+    def Epi(self, source, target):
+        return self.EpiCategory().Of(source, target)
+
+    def Iso(self, source, target):
+        return self.IsoCategory().Of(source, target)
+
+    def Aut(self, obj):
+        return self.AutCategory().Of(obj)
