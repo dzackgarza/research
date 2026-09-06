@@ -144,9 +144,14 @@ class IsometryPrimitiveExtension:
             "gamma . Disc(g_+) . gamma^{-1} has to be formed on the glue "
             "subgroups H_+ <= A_{L^f} and H_- <= A_{(L^f)^perp}(-1); the twist "
             "on the codomain means Disc(g_-) and gamma are not currently "
-            "composable as owned morphisms.  The missing operation is the "
-            "action of a discriminant automorphism on the twist A(-1), which "
-            "the owned torsion form modules do not supply"
+            "composable as owned morphisms.  The missing operation is one "
+            "named arrow: twist(scalar) in "
+            "modules/framed/formed/torsion_form_modules.py builds A(-1) as a "
+            "new parent on the same underlying presented module but has no "
+            "action on morphisms, so an automorphism of A is carried to none "
+            "of A(-1).  Giving the twist that action -- it is the identity on "
+            "the underlying module -- makes the composite above an ordinary "
+            "composition of owned morphisms"
         )
 
     def equivariant_vector_orbit_representatives(self, square):
@@ -164,8 +169,9 @@ class IsometryPrimitiveExtension:
             "subgroup of O(L^f) x O((L^f)^perp) preserving the glue.  The "
             "forward half of that description is invariant_restriction and "
             "coinvariant_restriction; the missing half is the one stated on "
-            "centralizer_element, the action of a discriminant automorphism on "
-            "the twist A(-1).  For the orbits under the full O(L) use "
+            "centralizer_element, an action on morphisms for twist(scalar) in "
+            "modules/framed/formed/torsion_form_modules.py.  For the orbits "
+            "under the full O(L) use "
             "L.O().vector_orbit_representatives(square)"
         )
 

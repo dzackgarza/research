@@ -17,26 +17,47 @@ which is the definition; the computation goes through the finite quotient
 the orbit of ``S_L`` under the finite group ``rho(G)`` indexes the right
 cosets ``G_L \\ G``, a transporter between two commensurable lattices is a
 preimage of an element carrying one subgroup to the other, and a double coset
-space ``V \\ G / G_L`` is computed in that finite image.  This is why the
-whole family is one computation: the finite quotient carries all four
-answers.
+space ``V \\ G / G_L`` is computed in that finite image.  One finite quotient
+therefore carries the three answers that would otherwise be a search in an
+infinite group; the stabilizer itself is a predicate and needs no search.
 
-None of it is computed here, and the obstruction is not the algorithm.  The
-preamble has no object for a ``ZZ``-lattice sitting inside a ``QQ``-vector
-space: a module morphism is required to have one base ring for its domain and
-codomain, so the inclusion ``L -> V`` that the commensurability relation
-``d M <= L <= M`` is made of cannot be formed, and neither can ``F_M``, which
-is a quotient of two of these.  Base change carries a lattice to
-``L tensor QQ`` and back along a stated ring morphism, but it does not make
-two different lattices subobjects of one rational space, which is what
-commensurability compares.  Until that object exists there is nothing here for
-an engine to compute against.
+The objects are formed by restriction of scalars.  ``V`` is a module over
+``QQ``; ``restrict_scalars(V, ZZ.Mor(QQ)(...))`` in
+``modules/pure/modules.py`` reads the same additive group as a module over
+``ZZ``, and that view accepts subobject data and joins ``ModuleSubobjects``,
+so a lattice in ``V`` is an honest monomorphism ``L -> Res(V)`` with one base
+ring on both sides.  The relation ``d M <= L <= M`` is three such
+monomorphisms inside one restricted module, and ``F_M`` is a quotient of two
+of them.  Nothing about a lattice in a rational space is unsayable here.
 
-The algorithm itself is owned upstream: ``polyhedral_common`` carries it as
+What is missing is two things, and neither is the object.
+
+The first is the morphism half of the restriction functor for this ring map.
+``RestrictionOfScalarsFunctor`` in ``functors/scalar_change.py`` materializes
+``Res(g)`` by naming images of a framing, and refuses without one; the view
+carries a framing only when the extension ring is a finitely generated free
+module over the base ring.  ``QQ`` is not that over ``ZZ``, so ``Res(V)`` has
+no framing and ``Res(g)`` cannot be formed.  Until it can, ``g(L) = L`` has no
+owned composite to be stated as, even though every object in it exists.  That
+is the module Hom surface's to supply, and it is also what the
+scalar-extension adjunction's ``unit`` guards on.
+
+The second is the algorithm.  ``polyhedral_common`` carries it as
 ``01_RatIntAutomorphy``, the rational matrix group integralization, and
-``sage-indefinite-port`` is the port that will supply it to this preamble
-through the capability layer.  When it arrives it will be one capability
-whose four entry points are the four operations named below.
+``sage-indefinite-port`` is the port that will supply it through the
+capability layer.  Note which of the four rows needs it: once ``Res(g)``
+exists, ``integral_stabilizer`` is definitional, a predicate subgroup cut out
+by ``Res(g)(L) = L`` decided on the finite generators of ``L``, with no engine
+called at all.  The transporter, the right cosets and the double cosets are
+the ones that need the finite quotient computed, because deciding emptiness or
+enumerating a transversal is a search in a group that is infinite.
+
+A third gap bounds the argument the operations take.  The preamble names no
+general linear group of a module: ``module_homset(V, V)`` is the endomorphism
+set, and the group of its units is not an owned object.  A rational group
+here is therefore a subgroup of ``V.Aut()`` for a rational lattice
+(``rational_lattices.py``), which is the arithmetic case this program uses,
+and not the full ``GL(V)`` the rows are stated over.
 
 What *is* owned, so a caller does not come here for it:
 
@@ -53,15 +74,18 @@ What *is* owned, so a caller does not come here for it:
 """
 
 _ABSENCE = (
-    "the preamble owns no ZZ-lattice inside a QQ-vector space, so the "
-    "commensurability relation d M <= L <= M this operation is stated on "
-    "cannot be formed: a module morphism requires one base ring, which makes "
-    "the inclusion L -> V and the finite quotient M/dM both unsayable.  The "
-    "algorithm is polyhedral_common's 01_RatIntAutomorphy, whose port in "
-    "sage-indefinite-port would supply it once that object exists.  For a "
-    "stabilizer inside one lattice use the predicate subgroups of O(L); for "
-    "the orbit splitting of a finite-index subgroup of O(L) use the finite "
-    "character quotient of orthogonal_quotients"
+    "the objects exist -- a lattice in V is a monomorphism L -> Res_ZZ(V) "
+    "through restriction of scalars, and d M <= L <= M is three of them in "
+    "one restricted module -- but Res(g) does not: the restriction functor "
+    "materializes a morphism by naming images of a framing, and Res_ZZ(V) "
+    "carries none because QQ is not a finitely generated free ZZ-module.  "
+    "Supplying that morphism is the module Hom surface's, and it is what "
+    "g(L) = L needs to be stated as an owned composite.  The computation on "
+    "top of it is polyhedral_common's 01_RatIntAutomorphy, arriving through "
+    "sage-indefinite-port and the capability layer.  For a stabilizer inside "
+    "one lattice use the predicate subgroups of O(L); for the orbit splitting "
+    "of a finite-index subgroup of O(L) use the finite character quotient of "
+    "orthogonal_quotients"
 )
 
 
@@ -69,7 +93,7 @@ def integral_stabilizer(rational_group, lattice):
     r"""Return ``G ∩ GL(L)`` for a rational matrix group and a lattice in its space."""
     assert False, (
         f"the integral stabilizer of {lattice} in {rational_group} is not "
-        f"computed: {_ABSENCE}"
+        f"stated: {_ABSENCE}"
     )
 
 
