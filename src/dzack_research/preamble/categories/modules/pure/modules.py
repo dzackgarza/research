@@ -2048,6 +2048,22 @@ def _represented_finite_presentation(module) -> bool:
     return module in ModulesWithChosenFinitePresentation(module.base_ring())
 
 
+def _represented_framed_free(module) -> bool:
+    r"""Return whether ``module`` carries the framed free construction.
+
+    Membership, not ``is_framed() and is_free()``.  Those two are true of
+    every module that happens to be framed and free -- the zero presented
+    module is one, and it is the discriminant module of a unimodular lattice
+    -- while the backend they were standing in for is the one a module gets
+    by being *constructed* free.
+    """
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FramedFreeModules,
+    )
+
+    return module in FramedFreeModules(module.base_ring())
+
+
 @cached_function(key=lambda left, right: (id(left), id(right)))
 def _module_tensor_product(left, right):
     r"""Return the represented categorical tensor product ``left tensor right``."""
@@ -2055,7 +2071,7 @@ def _module_tensor_product(left, right):
     if _owned_ring(right.base_ring()) != ring:
         raise ValueError("a tensor product requires one common base ring")
 
-    represented_free = bool(left.is_framed()) and bool(left.is_free()) and bool(right.is_framed()) and bool(right.is_free())
+    represented_free = _represented_framed_free(left) and _represented_framed_free(right)
     represented_presented = _represented_finite_presentation(left) and _represented_finite_presentation(right)
     if not represented_free and not represented_presented:
         raise NotImplementedError("the tensor product has no selected represented module backend for these factors")

@@ -17,7 +17,6 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from sage.structure.element import Element
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -42,8 +41,14 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
     ``R = ZZ``, where Sage's :class:`QmodnZ` computes ``QQ / n ZZ``.
     """
 
-    class ElementMethods(Element):
-        r"""What a class in \(\operatorname{Frac}(R)/R\) is."""
+    class ElementMethods(ModuleElement):
+        r"""What a class in \(\operatorname{Frac}(R)/R\) is.
+
+        A class in \(K/R\) is an element of a module over \(R\), so it
+        subtracts and is scaled like one.  ``Element`` leaves ``x - y``
+        raising, and the polarization \(q(x+y)-q(x)-q(y)\) of a discriminant
+        quadratic form is one of the places that reaches it.
+        """
 
         def __init__(self, parent, backend_element) -> None:
             ModuleElement.__init__(self, parent)
