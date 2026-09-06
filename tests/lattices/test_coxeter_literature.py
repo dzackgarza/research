@@ -30,7 +30,7 @@ and is not enumerated here.
 """
 
 import pytest
-from sage.all import CoxeterMatrix, SymmetricGroup, factorial
+from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
 from dzack_research.preamble.all import CoxeterDiagrams
 
@@ -212,6 +212,50 @@ def test_an_exceptional_finite_type_is_elliptic_of_the_tabulated_rank(cartan_typ
     assert diagram.is_elliptic()
     if letter in FAMILY_SCHLAEFLIAN:
         assert diagram.schlaflian() == FAMILY_SCHLAEFLIAN[letter](rank)
+
+
+@pytest.mark.parametrize("bond", [3, 4, 5, 6, 7, 12])
+def test_the_rank_two_schlaeflian_is_four_sine_squared(bond) -> None:
+    r"""\(\det C = 4\sin^2(\pi/p)\) for the rank-two diagram \([p]\).
+
+    \(C = [[2, -2\cos(\pi/p)], [-2\cos(\pi/p), 2]]\), so the determinant is
+    \(4 - 4\cos^2(\pi/p)\).  It is positive for every finite \(p\) and tends to
+    zero as the mirrors become parallel, which is the rank-two case of the
+    family determinant table.  The arithmetic is exact in the real algebraic
+    numbers, so the identity is an equality and not an approximation.
+    """
+    diagram = bracket_diagram(bond)
+
+    assert diagram.schlaflian() == 4 * AA(sin(pi / bond)) ** 2
+    assert diagram.is_elliptic()
+
+
+@pytest.mark.parametrize("cartan_type,rank", [(["A", 2], 2), (["A", 3], 3), (["D", 4], 4)])
+def test_the_root_gram_of_a_simply_laced_diagram_is_minus_its_schlaefli_matrix(
+    cartan_type, rank
+) -> None:
+    r"""For roots of square \(-2\) the root Gram is \(-C\).
+
+    The Schlaefli matrix is \(C_{vv}=2\), \(C_{vw}=-2\cos(\pi/m_{vw})\), and a
+    simply-laced diagram has \(m\in\{2,3\}\), so \(C_{vw}\in\{0,-1\}\) off the
+    diagonal.  This repository's roots have square \(-2\), which is exactly
+    \(-C_{vv}\), and adjacent roots pair to \(+1 = -C_{vw}\).  The two matrices
+    are therefore negatives of one another, and the sign is the whole content
+    of the convention: a diagram is elliptic when \(C\) is positive definite
+    and the root lattice is negative definite.
+
+    The hypothesis is simple lacing.  A \(B_2\) realization has a root of
+    square \(-4\), and no scaling relates its Gram to a matrix with \(2\) on
+    every diagonal entry.
+    """
+    diagram = CoxeterDiagrams().from_cartan_type(cartan_type, rooted=True)
+    schlafli = diagram.schlafli_tensor()
+    gram = diagram.root_gram_tensor()
+
+    assert diagram.vinberg_invariant_matrix().is_simply_laced()
+    for row in range(rank):
+        for column in range(rank):
+            assert gram[row, column] == -2 * schlafli[row, column]
 
 
 @pytest.mark.parametrize("cartan_type", sorted(EXCEPTIONAL_ORDERS))
