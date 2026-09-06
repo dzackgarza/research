@@ -8,7 +8,6 @@ from dzack_research.preamble.all import (
     GF,
     IntegralDomains,
     LocalRings,
-    NN,
     NoetherianRings,
     PolynomialRing,
     PowerSeriesRing,
@@ -915,21 +914,28 @@ def test_general_module_materializes_from_an_underlying_set_and_action() -> None
     assert module.annihilator() == module.scalar_action().kernel()
 
 
-def test_localization_denominator_reads_back_as_a_power_of_the_inverted_element() -> None:
+def test_map_induced_out_of_a_localization_is_independent_of_the_representative() -> None:
     ring = PolynomialRing(QQ, "x")
     x = ring.algebra_generator("x")
     inverted = ring.localization(x)
-
     assert inverted.inverted_element() == x
-    assert (inverted.fraction(ring.one(), x) ** 3).denominator_exponent() == NN(3)
-    assert inverted(x**2).denominator_exponent() == NN(0)
+
+    to_fractions = ring.fraction_field_map()
+    induced = inverted.induced_morphism(to_fractions)
+
+    over_x = inverted.fraction(ring.one(), x)
+    over_x_squared = over_x * inverted.fraction(x, x)
+    assert over_x == over_x_squared
+    assert induced(over_x) == induced(over_x_squared)
+
+    assert induced(inverted.localization_map()(x + 1)) == to_fractions(x + 1)
+    assert induced(over_x) * to_fractions(x) == to_fractions(ring.one())
 
     with pytest.raises(AssertionError, match="not a power of the inverted element"):
-        inverted(ring.one() / ring(2)).denominator_exponent()
+        induced(inverted(ring.one() / ring(2)))
 
     plane = PolynomialRing(QQ, ("x", "y"))
-    plane_x = plane.algebra_generator("x")
     with pytest.raises(AssertionError, match="a localization at a single element"):
-        plane.localization(plane_x, plane.algebra_generator("y")).fraction(
-            plane.one(), plane_x
-        ).denominator_exponent()
+        plane.localization(
+            plane.algebra_generator("x"), plane.algebra_generator("y")
+        ).induced_morphism(plane.fraction_field_map())

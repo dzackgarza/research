@@ -345,23 +345,20 @@ class LocalizationRings(OwnedCategory):
         def denominator(self):
             return self._denominator
 
-        def denominator_exponent(self):
-            r"""Return ``n`` where the represented denominator is ``f^n``.
+        def _denominator_exponent(self):
+            r"""Return ``n`` where this fraction's represented denominator is ``f^n``.
 
-            Here ``f`` is the element the parent inverts, so this reads a
-            fraction of ``A[1/f]`` back as ``a/f^n``.  It is the exponent of the
-            *represented* denominator, which the fraction carries as constructed
-            data, not an invariant of the element: ``a/f`` and ``af/f^2`` are the
-            same element of ``A[1/f]`` and report ``1`` and ``2``.  A morphism
-            out of ``A[1/f]`` is written with it, sending ``a/f^n`` to the image
-            of ``a`` times the inverse of the image of ``f`` raised to ``n``,
-            which needs no computation inside ``A[1/f]`` itself.
+            Protected contract: the parent's ``induced_morphism`` reads this
+            presentation datum once and no caller outside this category sees it.
+            It is not an invariant of the element, since ``a/f`` and ``af/f^2``
+            are equal in ``A[1/f]`` and report ``1`` and ``2``.  What is
+            invariant is the induced map, which sends both to ``g(a)g(f)^{-1}``.
 
-            Dividing the denominator by ``f`` until nothing remains decides the
-            question over a domain in which ``f`` is neither zero nor a unit:
-            the divisibility chain descends, and a unit is never divisible by a
-            non-unit, so a denominator that is not a power of ``f`` is refused
-            rather than searched for.
+            Dividing the denominator by ``f`` until nothing remains decides
+            whether it is a power, over a domain in which ``f`` is neither zero
+            nor a unit: the divisibility chain descends, and a unit is never
+            divisible by a non-unit, so a denominator that is not a power of
+            ``f`` is refused rather than searched for.
             """
             parent = self.parent()
             source = parent.localization_source()
@@ -723,6 +720,41 @@ class LocalizationRings(OwnedCategory):
                 "is named here only for a localization at a single element"
             )
             return inverted.unrank(0)
+
+        def induced_morphism(self, morphism):
+            r"""Return the unique ``S^{-1}R -> T`` extending ``g: R -> T``.
+
+            Localization is universal among ring maps out of ``R`` that invert
+            ``S``.  So when ``g`` carries the inverted element to a unit exactly
+            one map out of ``S^{-1}R`` composes with the localization map to give
+            ``g``, and it sends ``a/f^n`` to ``g(a)g(f)^{-n}``.  Which
+            representative of a fraction is used does not matter, and that is
+            what makes this the public word while the denominator's exponent
+            stays private data of the fraction.
+
+            A transition map of a toric atlas is such a map: the pullback to a
+            face localization is a ring morphism out of the source that carries
+            the inverted character to a unit.
+            """
+            source = self.localization_source()
+            assert morphism.domain() is source, (
+                f"a map induced out of {self} extends a ring morphism out of {source}"
+            )
+            inverted = self.inverted_element()
+            inverted_image = morphism(inverted)
+            assert inverted_image.is_unit(), (
+                f"{morphism} does not carry {inverted} to a unit, so it does not factor "
+                f"through {self}"
+            )
+            inverse = inverted_image.inverse_of_unit()
+
+            def image(element):
+                fraction = self(element)
+                return morphism(fraction.numerator()) * inverse ** int(
+                    fraction._denominator_exponent()
+                )
+
+            return ring_morphism(self, morphism.codomain(), image)
 
         def localization_map(self):
             return self._preamble_localization_map
