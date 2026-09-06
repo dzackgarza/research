@@ -23,6 +23,19 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 
 
+def _owned_rational(coordinate):
+    r"""One coordinate as an owned rational.
+
+    This is the ingress boundary of the polytope constructors: a caller writes
+    coordinates as ordinary integers, as engine rationals, or as owned
+    rationals, and the probe is the one place that admits all three.
+    """
+    parent = getattr(coordinate, "parent", lambda: None)()
+    if parent in (SageZZ, SageQQ):
+        return _own_ring(SageQQ)._from_engine_element(SageQQ(coordinate))
+    return _own_ring(SageQQ)(coordinate)
+
+
 class ConvexPolytopes(OwnedCategory):
     r"""Rational convex polytopes in a chosen coordinate lattice.
 
@@ -44,6 +57,33 @@ class ConvexPolytopes(OwnedCategory):
             )
         )
 
+    def from_halfspaces(self, halfspaces, lattice=None):
+        r"""The polytope cut out by a family of affine halfspaces.
+
+        Each halfspace is the pair ``(b, a)`` of the constant and the linear
+        part of ``b + <a, x> >= 0`` in the coordinates of ``lattice``, so the
+        family is the halfspace description of the intersection.  A polytope
+        is bounded, and an unbounded intersection is refused rather than
+        truncated.  Passing from this description to the vertices is the
+        private polyhedral computation.
+        """
+        rationals = _own_ring(SageQQ)
+        engine_rows = [
+            [
+                _engine_element(rationals, _owned_rational(constant)),
+                *(
+                    _engine_element(rationals, _owned_rational(coefficient))
+                    for coefficient in linear_part
+                ),
+            ]
+            for constant, linear_part in halfspaces
+        ]
+        polyhedron = Polyhedron(ieqs=engine_rows, base_ring=SageQQ)
+        assert polyhedron.is_compact(), (
+            "a polytope is a bounded intersection of halfspaces"
+        )
+        return _convex_polytope(engine_polyhedron=polyhedron, lattice=lattice)
+
     @classmethod
     def _repr_object_names(cls):
         return "convex polytopes"
@@ -52,25 +92,30 @@ class ConvexPolytopes(OwnedCategory):
         return [Sets()]
 
     class ParentMethods:
-        def __init__(self, vertices, lattice=None, require_integral=False, **rest) -> None:
+        def __init__(
+            self,
+            vertices=None,
+            lattice=None,
+            require_integral=False,
+            engine_polyhedron=None,
+            **rest,
+        ) -> None:
             integers = _own_ring(SageZZ)
             rationals = _own_ring(SageQQ)
 
-            if vertices in ConvexPolytopes():
+            # A polytope is fixed by its vertices, by an owned polytope being
+            # re-placed, or by an exact polyhedron the private computation
+            # layer produced (from a face, a dilation, or a halfspace
+            # description).  The third route is named rather than recognized.
+            if engine_polyhedron is not None:
+                polyhedron = engine_polyhedron
+            elif vertices in ConvexPolytopes():
                 polyhedron = vertices._engine_polyhedron()
                 if lattice is None:
                     lattice = vertices.ambient_lattice()
-            elif hasattr(vertices, "vertices") and hasattr(vertices, "dim"):
-                polyhedron = vertices
             else:
-                def owned_rational(coordinate):
-                    parent = getattr(coordinate, "parent", lambda: None)()
-                    if parent in (SageZZ, SageQQ):
-                        return rationals._from_engine_element(SageQQ(coordinate))
-                    return rationals(coordinate)
-
                 owned_vertices = tuple(
-                    tuple(owned_rational(coordinate) for coordinate in vertex)
+                    tuple(_owned_rational(coordinate) for coordinate in vertex)
                     for vertex in vertices
                 )
                 engine_vertices = [
@@ -81,18 +126,20 @@ class ConvexPolytopes(OwnedCategory):
 
             ambient_dimension = int(polyhedron.ambient_dim())
             if lattice is None:
-
                 lattice = BasedFreeModule(integers, ambient_dimension)
-            if lattice.base_ring() is not integers:
-                raise TypeError("the ambient lattice of a rational polytope is an owned ZZ-module")
-            if int(lattice.rank()) != ambient_dimension:
-                raise ValueError("the ambient lattice rank must equal the coordinate dimension")
+            assert lattice.base_ring() is integers, (
+                "the ambient lattice of a rational polytope is an owned ZZ-module"
+            )
+            assert int(lattice.rank()) == ambient_dimension, (
+                "the ambient lattice rank must equal the coordinate dimension"
+            )
 
             self._polyhedron = polyhedron
             self._ambient_lattice = lattice
             self._require_integral = bool(require_integral)
-            if self._require_integral and not self._vertices_are_integral():
-                raise ValueError("a lattice polytope must have integral vertices")
+            assert not self._require_integral or self._vertices_are_integral(), (
+                "a lattice polytope must have integral vertices"
+            )
 
             super().__init__(**rest)
 
@@ -168,7 +215,7 @@ class ConvexPolytopes(OwnedCategory):
             return finite_ordered_set(
                 tuple(
                     _convex_polytope(
-                        facet.as_polyhedron(),
+                        engine_polyhedron=facet.as_polyhedron(),
                         lattice=self.ambient_lattice(),
                         require_integral=self.is_lattice_polytope(),
                     )
@@ -301,8 +348,9 @@ class ConvexPolytopes(OwnedCategory):
         def _dilate(self, scalar):
             integers = _own_ring(SageZZ)
             scalar = integers(scalar)
-            if scalar < integers.zero():
-                raise ValueError("Ehrhart dilation factors are nonnegative")
+            assert scalar >= integers.zero(), (
+                "Ehrhart dilation factors are nonnegative"
+            )
             return LatticePolytope(
                 [tuple(scalar * coordinate for coordinate in vertex) for vertex in self.vertices()],
                 lattice=self.ambient_lattice(),
@@ -310,8 +358,9 @@ class ConvexPolytopes(OwnedCategory):
 
         def ehrhart_polynomial(self, variable="t"):
             r"""Return the exact owned Ehrhart polynomial by interpolation."""
-            if not self.is_lattice_polytope():
-                raise TypeError("the Ehrhart polynomial is defined here for lattice polytopes")
+            assert self.is_lattice_polytope(), (
+                "the Ehrhart polynomial is defined here for lattice polytopes"
+            )
 
             rationals = _own_ring(SageQQ)
             integers = _own_ring(SageZZ)
@@ -339,8 +388,9 @@ class ConvexPolytopes(OwnedCategory):
             from math import comb
 
             integers = _own_ring(SageZZ)
-            if not self.is_lattice_polytope():
-                raise TypeError("the h* vector is defined here for lattice polytopes")
+            assert self.is_lattice_polytope(), (
+                "the h* vector is defined here for lattice polytopes"
+            )
             d = int(self.dimension())
             counts = [
                 integers.one() if k == 0 else integers(int(self._dilate(k).n_integral_points()))
@@ -372,11 +422,13 @@ class ConvexPolytopes(OwnedCategory):
             )
 
         def polar_dual(self):
-            if int(self.dimension()) != int(self._engine_polyhedron().ambient_dim()):
-                raise ValueError("polar duality here requires a full-dimensional polytope")
+            assert int(self.dimension()) == int(
+                self._engine_polyhedron().ambient_dim()
+            ), "polar duality here requires a full-dimensional polytope"
             origin = (SageQQ.zero(),) * int(self._engine_polyhedron().ambient_dim())
-            if not self._engine_polyhedron().interior_contains(origin):
-                raise ValueError("the polar dual is bounded only when the origin is interior")
+            assert self._engine_polyhedron().interior_contains(origin), (
+                "the polar dual is bounded only when the origin is interior"
+            )
             polar = self._engine_polyhedron().polar()
             if all(
                 coordinate in SageZZ
@@ -482,7 +534,12 @@ class LatticePolygons(OwnedCategory):
 
 
 
-def _convex_polytope(vertices, lattice=None, require_integral=False):
+def _convex_polytope(
+    vertices=None,
+    lattice=None,
+    require_integral=False,
+    engine_polyhedron=None,
+):
     r"""Return the polytope its category generates, placed by what it is.
 
     Integrality of the vertices and affine dimension two are the two
@@ -494,6 +551,7 @@ def _convex_polytope(vertices, lattice=None, require_integral=False):
         vertices=vertices,
         lattice=lattice,
         require_integral=require_integral,
+        engine_polyhedron=engine_polyhedron,
     )
     integral = probe.is_lattice_polytope()
     plane = int(probe.dimension()) == 2
@@ -522,8 +580,7 @@ def ConvexPolytope(vertices, lattice=None):
 
 def ConvexPolygon(vertices, lattice=None):
     polytope = ConvexPolytope(vertices, lattice=lattice)
-    if polytope.dimension() != 2:
-        raise ValueError("a convex polygon has affine dimension two")
+    assert polytope.dimension() == 2, "a convex polygon has affine dimension two"
     return polytope
 
 
@@ -533,8 +590,7 @@ def LatticePolytope(vertices, lattice=None):
 
 def LatticePolygon(vertices, lattice=None):
     polytope = LatticePolytope(vertices, lattice=lattice)
-    if polytope.dimension() != 2:
-        raise ValueError("a lattice polygon has affine dimension two")
+    assert polytope.dimension() == 2, "a lattice polygon has affine dimension two"
     return polytope
 
 

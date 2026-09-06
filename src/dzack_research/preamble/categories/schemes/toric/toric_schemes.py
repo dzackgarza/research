@@ -512,11 +512,8 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             ``Sigma``, so it recovers the polarizing polytope of a variety
             built from one.
             """
-            from sage.geometry.polyhedron.constructor import Polyhedron
-            from sage.rings.rational_field import QQ as SageQQ
-
             from dzack_research.preamble.categories.schemes.polytopes import (
-                ConvexPolytope,
+                ConvexPolytopes,
             )
 
             assert self.fan().is_complete(), (
@@ -526,16 +523,15 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             coefficients = module_coefficients(divisor, group)
             zero = _integers().zero()
             cocharacters = self.cocharacter_lattice()
-            inequalities = [
-                [int(coefficients.get(ray, zero))]
-                + [
-                    int(entry)
-                    for entry in _engine_vector(cocharacters, _ray_generator(ray))
-                ]
+            halfspaces = tuple(
+                (
+                    coefficients.get(ray, zero),
+                    tuple(_engine_vector(cocharacters, _ray_generator(ray))),
+                )
                 for ray in self.fan().cones(1)
-            ]
-            return ConvexPolytope(
-                Polyhedron(ieqs=inequalities, base_ring=SageQQ),
+            )
+            return ConvexPolytopes().from_halfspaces(
+                halfspaces,
                 lattice=self.character_lattice(),
             )
 
