@@ -671,6 +671,9 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     scheme_fiber_product,
     scheme_product,
 )
+from dzack_research.preamble.categories.schemes.cyclic_covers import (  # noqa: F401
+    CyclicCovers,
+)
 from dzack_research.preamble.categories.sets import (  # noqa: F401
     CardinalComparison,
     Cardinalities,
