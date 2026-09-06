@@ -33,7 +33,22 @@ class LieAlgebras(OwnedCategoryOverBaseRing):
 
 
 class CommutatorLieAlgebras(LieAlgebras):
-    r"""Associative algebras with bracket ``[x,y]=xy-yx``."""
+    r"""Associative algebras read as Lie algebras under \([x,y]=xy-yx\).
+
+    The bracket is stated by
+    :class:`~dzack_research.preamble.categories.algebras.algebras.AssociativeAlgebras`,
+    which owns the product it is built from; this category adds the Lie
+    structure that product determines.  The passage is named by
+    ``AssociativeAlgebras(R).commutator_lie_algebra()``.
+
+    Membership is a fact about every associative algebra over a commutative
+    ring, but a category that knows its objects are associative must declare
+    this one for itself.  Saying it once on ``AssociativeAlgebras`` would put
+    that category both above and below this one; saying it through the
+    restriction-of-scalars edge instead puts the shared
+    ``LieAlgebras.ParentMethods`` at two incompatible depths, which Sage
+    refuses when it linearizes the parent class.
+    """
 
     @classmethod
     def _repr_object_names(cls):
@@ -45,11 +60,6 @@ class CommutatorLieAlgebras(LieAlgebras):
             LieAlgebras(self.base_ring()),
             AssociativeAlgebras(self.base_ring()),
         ]
-
-    class ElementMethods:
-        def bracket(self, other):
-            other = self.parent()(other)
-            return self * other - other * self
 
 
 __all__ = ["CommutatorLieAlgebras", "LieAlgebras"]

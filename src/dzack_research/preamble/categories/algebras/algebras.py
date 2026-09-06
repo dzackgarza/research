@@ -77,6 +77,34 @@ class AssociativeAlgebras(OwnedCategoryOverBaseRing):
             return [Modules(ring), AssociativeAlgebras(base)]
         return [Modules(ring)]
 
+    class SubcategoryMethods:
+        r"""Constructions this category owns, reachable from any subcategory."""
+
+        def commutator_lie_algebra(self):
+            r"""``(-)^- : AssAlg_R -> CommLie_R``, the commutator functor.
+
+            A functor is a method of its domain category named by the
+            construction, so this is where it is spelled.  It is the identity
+            on objects: the bracket is determined by the product, so an
+            algebra and its Lie algebra are one object, placed in both
+            categories by the supercategory declared above.
+            """
+            from dzack_research.preamble.categories.functors.commutator_lie_algebras import (
+                commutator_lie_algebra_functor,
+            )
+
+            return commutator_lie_algebra_functor(self.base_ring())
+
+    class ElementMethods:
+        def bracket(self, other):
+            r"""Return the commutator \([x,y]=xy-yx\).
+
+            Determined by the product alone, so it is stated here rather than
+            on the Lie categories above, which have no product of their own.
+            """
+            other = self.parent()(other)
+            return self * other - other * self
+
     def _call_(self, multiplication):
         return algebra_from_multiplication(multiplication, self.base_ring(), unital=False)
 
@@ -639,13 +667,20 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         return "matrix algebras"
 
     def super_categories(self):
+        from dzack_research.preamble.categories.algebras.lie_algebras import (
+            CommutatorLieAlgebras,
+        )
 
         if self.base_ring() not in OwnedRings().Commutative():
             raise TypeError("the canonical R-algebra structure on End_R(F) needs commutative R")
+        # gl_n(R) is M_n(R) under the commutator, and the commutator is
+        # determined by the matrix product, so the Lie structure is not a
+        # second object and no construction chooses it.
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
             Algebras(self.base_ring()),
             FramedAlgebras(self.base_ring()),
+            CommutatorLieAlgebras(self.base_ring()),
         ]
 
     class ParentMethods:
