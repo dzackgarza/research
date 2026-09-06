@@ -44,7 +44,7 @@ class IsometryPrimitiveExtension:
         assert isometry.codomain() is lattice, (
             "a primitive extension is cut out by an automorphism of one lattice"
         )
-        assert lattice.is_finite_rank() and lattice.is_nondegenerate(), (
+        assert lattice.module_rank().is_finite() and lattice.is_nondegenerate(), (
             "the invariant and coinvariant lattices span L only when L is a "
             "finite nondegenerate lattice"
         )

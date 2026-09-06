@@ -33,7 +33,7 @@ class VectorPrimitiveExtension:
         )
         if vector.q() == 0:
             raise ValueError("VectorPrimitiveExtension requires an anisotropic vector")
-        if not lattice.is_finite_rank() or not lattice.is_nondegenerate():
+        if not lattice.module_rank().is_finite() or not lattice.is_nondegenerate():
             raise ValueError("VectorPrimitiveExtension requires a finite nondegenerate lattice")
 
         line = lattice.subobject_on((vector,))

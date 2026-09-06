@@ -2261,7 +2261,7 @@ A missing semantic API is not external scope. It is evidence that the local feat
 **Bad:**
 
 ```python
-if M.is_finite_rank():
+if M.module_rank().is_finite():
     A = f.matrix()
     ...
 else:

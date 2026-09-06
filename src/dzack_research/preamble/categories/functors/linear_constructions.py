@@ -150,7 +150,7 @@ class OrthogonalDirectSumBifunctor(Bifunctor):
         super().__init__(category, category, category)
 
     def _apply_pair_object(self, left, right):
-        if not left.is_finite_rank() or not right.is_finite_rank():
+        if not left.module_rank().is_finite() or not right.module_rank().is_finite():
             raise NotImplementedError("the active orthogonal-sum bifunctor uses finite concatenated bases")
         return left + right
 

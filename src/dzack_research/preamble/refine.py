@@ -111,17 +111,27 @@ def _rebuild_morphism_class(morphism: Morphism, category: Category) -> None:
 
 
 def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> None:
-    """Require every owned certified property before category admission."""
+    """Require every owned certified property before category admission.
+
+    A category states the property that admits an object as the sequence of
+    owned operations that reads it off, left to right: ``"is_even"`` asks the
+    lattice, ``"module_rank.is_finite"`` asks the lattice for its rank and the
+    rank for its finiteness.  The last operation answers ``True`` or the
+    object does not belong.
+    """
     for candidate_category in category.all_super_categories(proper=False):
         category_type = type(candidate_category)
         if not category_type.__module__.startswith(_PREAMBLE_PACKAGE):
             continue
-        predicate_name = getattr(category_type, "_certifying_predicate", None)
-        if predicate_name is None:
+        statement = getattr(category_type, "_certifying_predicate", None)
+        if statement is None:
             continue
-        assert getattr(obj, predicate_name)() is True, (
+        answer = obj
+        for operation in statement.split("."):
+            answer = getattr(answer, operation)()
+        assert answer is True, (
             f"refining {obj} into {candidate_category} requires "
-            f"{predicate_name}() to hold"
+            f"{statement}() to hold"
         )
 
 

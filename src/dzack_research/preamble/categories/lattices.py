@@ -1206,7 +1206,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert left.parent() is self
             assert right.parent() is self
             gram = self.gram_tensor()
-            if self.is_finite_rank():
+            if self.module_rank().is_finite():
                 return gram.contract(left.to_vector(), right.to_vector())
             return gram(left._vector, right._vector)
 
@@ -1228,13 +1228,16 @@ class Lattices(OwnedCategoryOverBaseRing):
         def module_rank(self):
             r"""Return the rank of this lattice as a free module.
 
+            The answer is a cardinal, so a lattice on a countably infinite
+            generating set answers with an aleph rather than refusing.
+
             EXAMPLES::
 
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)(ZZ^2).module_rank()
+                sage: from dzack_research.preamble.all import *
+                sage: Lattices(ZZ)(FreeModule(ZZ, 2)).module_rank()
                 2
-                sage: Lattices(ZZ)(ZZ^NN).module_rank()
-                +Infinity
+                sage: Lattices(ZZ)(FreeModuleFunctor(ZZ)(NN)).module_rank()
+                ℵ_0
             """
             return self._module.module_rank()
 
@@ -1274,22 +1277,9 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return discriminant_of_gram(self.gram_tensor())
 
-        def is_finite_rank(self) -> bool:
-            r"""Return whether this lattice is free of finite rank.
-
-            EXAMPLES::
-
-                sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: Lattices(ZZ)(ZZ^2).is_finite_rank()
-                True
-                sage: Lattices(ZZ)(ZZ^NN).is_finite_rank()
-                False
-            """
-            return self.module_rank() != Infinity
-
         def determinant(self):
             r"""Return the determinant of a finite-rank lattice form."""
-            if not self.is_finite_rank():
+            if not self.module_rank().is_finite():
                 raise TypeError("the determinant requires a finite-rank lattice")
 
             rank = int(self.module_rank())
@@ -1320,7 +1310,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     # unions of nondegenerate finite stages.
                     return all(stage.is_nondegenerate() for stage in gram._objects)
                 case _:
-                    if not self.is_finite_rank():
+                    if not self.module_rank().is_finite():
                         raise NotImplementedError("nondegeneracy of this infinite Gram presentation is not decided")
                     return self.determinant() != 0
 
@@ -1343,7 +1333,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 def is_twice(value) -> bool:
                     return _engine_element(ring, ring(value)) in twice_ring
 
-            if self.is_finite_rank():
+            if self.module_rank().is_finite():
                 gram = self.gram_tensor()
                 return all(is_twice(gram[i, i]) for i in range(int(self.module_rank())))
 
@@ -1370,7 +1360,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError("lattice level is currently implemented for integral ZZ-lattices")
-            if not self.is_finite_rank() or not self.is_nondegenerate():
+            if not self.module_rank().is_finite() or not self.is_nondegenerate():
                 raise ValueError("lattice level requires a finite nondegenerate lattice")
 
             discriminant = self.discriminant_module()
@@ -1399,7 +1389,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             if _engine_ring(self.base_ring()) is not SageZZ:
                 raise NotImplementedError("the live genus object currently implements integral ZZ-lattices")
-            if not self.is_finite_rank() or not self.is_nondegenerate():
+            if not self.module_rank().is_finite() or not self.is_nondegenerate():
                 raise ValueError("a genus here requires a finite nondegenerate lattice")
             if not self.is_even():
                 raise NotImplementedError(
@@ -1417,7 +1407,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return whether the correlation ``L -> L^#`` is an isomorphism."""
             if not self.is_nondegenerate():
                 return False
-            if self.is_finite_rank():
+            if self.module_rank().is_finite():
                 return bool(self.determinant().is_unit())
 
             gram = self.gram_tensor()
@@ -1467,7 +1457,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: U.subobject_on((U.module_generator(0),)).is_totally_isotropic()
                 True
             """
-            assert self.is_finite_rank(), "total isotropy is decided here on a finite generating set"
+            assert self.module_rank().is_finite(), "total isotropy is decided here on a finite generating set"
             zero = self.base_ring().zero()
             return all(
                 value == zero
@@ -1512,7 +1502,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             if isinstance(self.gram_tensor(), _IdentityGram):
                 return Lattices(self.base_ring())(self.dual_module())
-            if not self.is_finite_rank():
+            if not self.module_rank().is_finite():
                 raise NotImplementedError("the metric dual of this infinite non-identity Gram presentation is not materialized")
 
 
@@ -1619,7 +1609,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             exactly when the inherited form is integral on that span.
             """
             assert _engine_ring(self.base_ring()) is SageZZ
-            assert self.is_finite_rank() and self.is_nondegenerate()
+            assert self.module_rank().is_finite() and self.is_nondegenerate()
 
             from functools import reduce
 
@@ -1785,7 +1775,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise NotImplementedError(
                     "even overlattice enumeration is currently implemented for integral ZZ-lattices"
                 )
-            if not self.is_even() or not self.is_finite_rank() or not self.is_nondegenerate():
+            if not self.is_even() or not self.module_rank().is_finite() or not self.is_nondegenerate():
                 raise ValueError(
                     "even overlattice enumeration requires a finite nondegenerate even lattice"
                 )
@@ -1809,7 +1799,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise NotImplementedError(
                     "the current Nikulin primitive-embedding criterion is for integral ZZ-lattices"
                 )
-            if not self.is_even() or not self.is_finite_rank() or not self.is_nondegenerate():
+            if not self.is_even() or not self.module_rank().is_finite() or not self.is_nondegenerate():
                 raise ValueError(
                     "Nikulin's primitive-embedding criterion requires a finite nondegenerate even lattice"
                 )
@@ -2254,13 +2244,13 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def is_positive_definite(self) -> bool:
             return bool(
-                self.is_finite_rank()
+                self.module_rank().is_finite()
                 and self.signature_pair() == signature_pair(self.module_rank(), 0)
             )
 
         def is_negative_definite(self) -> bool:
             return bool(
-                self.is_finite_rank()
+                self.module_rank().is_finite()
                 and self.signature_pair() == signature_pair(0, self.module_rank())
             )
 
@@ -2713,7 +2703,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 class FiniteRankLattices(OwnedCategoryOverBaseRing):
     r"""Lattices whose underlying free module has finite rank."""
 
-    _certifying_predicate = "is_finite_rank"
+    _certifying_predicate = "module_rank.is_finite"
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -2729,13 +2719,6 @@ class FiniteRankLattices(OwnedCategoryOverBaseRing):
             Lattices(self.base_ring()),
             FinitelyGeneratedFreeModules(self.base_ring()),
         ]
-
-    class ParentMethods:
-        # No base: `Lattices` is a super category above, so the category graph
-        # already delivers its methods.  Naming it here states the class graph
-        # by hand, which is what the tied named classes replace.
-        def is_finite_rank(self) -> bool:
-            return True
 
 
 class NondegenerateLattices(OwnedCategoryOverBaseRing):

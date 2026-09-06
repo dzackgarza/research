@@ -376,9 +376,6 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return self.module_generating_set().cardinality()
 
-        def is_finite_rank(self) -> bool:
-            return self.module_rank().is_finite()
-
         def is_torsion_free(self) -> bool:
             r"""A free module over a domain is torsion-free.
 

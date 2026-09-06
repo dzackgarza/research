@@ -28,7 +28,7 @@ from dzack_research.preamble.rings.real import RR
 
 
 def _definite_sign(lattice):
-    if not lattice.is_finite_rank():
+    if not lattice.module_rank().is_finite():
         raise TypeError("definiteness algorithms here require finite rank")
     _signature = lattice.signature_pair()
     positive, negative = _signature.first(), _signature.second()

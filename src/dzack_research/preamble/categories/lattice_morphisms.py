@@ -92,7 +92,7 @@ class LatticeMorphism(ModuleMorphism):
         ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
         domain = self.domain()
         codomain = self.codomain()
-        if domain.is_finite_rank() and codomain.is_finite_rank():
+        if domain.module_rank().is_finite() and codomain.module_rank().is_finite():
             pulled_back = codomain.gram_tensor().pullback(self)
             if not pulled_back.is_equal_tensor(domain.gram_tensor()):
                 raise ValueError("the stated module morphism does not preserve the lattice form")
@@ -116,8 +116,8 @@ class LatticeEmbedding(LatticeMorphism):
         LatticeMorphism.__init__(self, parent, images)
         if (
             verify_injective
-            and self.domain().is_finite_rank()
-            and self.codomain().is_finite_rank()
+            and self.domain().module_rank().is_finite()
+            and self.codomain().module_rank().is_finite()
             and not ModuleMorphism.is_injective(self)
         ):
             raise ValueError("a lattice embedding must be injective")
@@ -260,8 +260,8 @@ class LatticeEmbedding(LatticeMorphism):
                 "discriminant inclusions are currently implemented for integral ZZ-lattices"
             )
         if not (
-            source.is_finite_rank()
-            and target.is_finite_rank()
+            source.module_rank().is_finite()
+            and target.module_rank().is_finite()
             and source.is_nondegenerate()
             and target.is_nondegenerate()
         ):
@@ -341,7 +341,7 @@ class LatticeIsometry(LatticeEmbedding):
 
     def __init__(self, parent, images) -> None:
         LatticeEmbedding.__init__(self, parent, images)
-        if self.domain().is_finite_rank() and self.codomain().is_finite_rank() and not ModuleMorphism.is_surjective(self):
+        if self.domain().module_rank().is_finite() and self.codomain().module_rank().is_finite() and not ModuleMorphism.is_surjective(self):
             raise ValueError("a lattice isometry must be surjective")
 
     def is_surjective(self) -> bool:
@@ -487,7 +487,7 @@ class LatticeIsometry(LatticeEmbedding):
         lattice = self.domain()
         if _engine_ring(lattice.base_ring()) is not SageZZ:
             raise NotImplementedError("the current exact spinor-norm seam is for integral ZZ-lattices")
-        if not lattice.is_finite_rank() or not lattice.is_nondegenerate():
+        if not lattice.module_rank().is_finite() or not lattice.is_nondegenerate():
             raise ValueError("the real spinor norm requires a finite nondegenerate lattice")
 
         ring = lattice.base_ring()
@@ -553,7 +553,7 @@ class LatticeIsometry(LatticeEmbedding):
             raise ValueError(
                 "the hermitian Miranda--Morrison centralizer-image backend requires an even lattice"
             )
-        if not lattice.is_finite_rank() or not lattice.is_nondegenerate():
+        if not lattice.module_rank().is_finite() or not lattice.is_nondegenerate():
             raise ValueError(
                 "the centralizer discriminant image requires a finite nondegenerate lattice"
             )
@@ -717,7 +717,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
 
     def _codomain_is_even_unimodular_indefinite(self) -> bool:
         target = self.codomain()
-        if not target.is_finite_rank() or not target.is_nondegenerate():
+        if not target.module_rank().is_finite() or not target.is_nondegenerate():
             return False
         _signature = target.signature_pair()
         positive, negative = _signature.first(), _signature.second()
@@ -742,11 +742,11 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         """
         source = self.domain()
         target = self.codomain()
-        if not target.is_finite_rank() or not target.is_definite():
+        if not target.module_rank().is_finite() or not target.is_definite():
             raise NotImplementedError(
                 "embedding enumeration is currently implemented for finite definite targets"
             )
-        if not source.is_finite_rank():
+        if not source.module_rank().is_finite():
             raise NotImplementedError(
                 "embedding enumeration requires a finite-rank source"
             )
@@ -776,7 +776,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         yield from assign(())
 
     def is_empty(self):
-        if self.codomain().is_finite_rank() and self.codomain().is_definite():
+        if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
             for _embedding in self:
                 return False
             return True
@@ -795,7 +795,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         return Unknown
 
     def an_element(self):
-        if self.codomain().is_finite_rank() and self.codomain().is_definite():
+        if self.codomain().module_rank().is_finite() and self.codomain().is_definite():
             for embedding in self:
                 return embedding
             raise ValueError("the embedding homset is empty")
@@ -837,7 +837,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             categories.append(OwnedGroups())
             if (
                 _engine_ring(domain.base_ring()) is SageZZ
-                and domain.is_finite_rank()
+                and domain.module_rank().is_finite()
                 and domain.is_definite()
             ):
                 categories.append(OwnedFiniteGroups())
@@ -1081,7 +1081,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             raise NotImplementedError(
                 "the active orthogonal-group engine currently computes integral ZZ-lattices"
             )
-        if not lattice.is_finite_rank() or not lattice.is_definite():
+        if not lattice.module_rank().is_finite() or not lattice.is_definite():
             raise NotImplementedError(
                 "the available Sage engine computes full generators only for finite definite lattices"
             )
@@ -1325,7 +1325,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         codomain = self.codomain()
         if domain is codomain:
             return False
-        if not domain.is_finite_rank() or not codomain.is_finite_rank():
+        if not domain.module_rank().is_finite() or not codomain.module_rank().is_finite():
             return Unknown
         if domain.module_rank() != codomain.module_rank():
             return True

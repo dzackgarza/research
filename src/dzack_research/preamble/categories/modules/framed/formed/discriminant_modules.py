@@ -812,7 +812,7 @@ def _all_discriminant_subgroups(ambient):
 
 def DiscriminantModule(lattice):
     r"""Return the literal cokernel of ``L -> L^#`` with descended forms when supported."""
-    assert lattice.is_finite_rank() and lattice.is_nondegenerate()
+    assert lattice.module_rank().is_finite() and lattice.is_nondegenerate()
 
     prototype = lattice.correlation_morphism().cokernel()
     ring = lattice.base_ring()

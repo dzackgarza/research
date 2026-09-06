@@ -988,7 +988,7 @@ def generator_pairings(lattice, element):
         case _PairingGram():
             return gram.pairings_against(element._vector)
         case _:
-            assert lattice.is_finite_rank()
+            assert lattice.module_rank().is_finite()
             return {label: element.b(lattice.module_generator(label)) for label in lattice.module_generating_set()}
 
 
