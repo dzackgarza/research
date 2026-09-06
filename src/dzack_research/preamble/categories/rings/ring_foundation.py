@@ -182,13 +182,21 @@ class RingMorphism(Morphism):
         )
 
     def kernel(self):
-        r"""Return the kernel ideal ``f^{-1}(0)`` of this ring morphism."""
-        provider = self.__dict__.get("_preamble_kernel_ideal_provider")
-        if provider is not None:
-            represented = provider._represented_annihilator_ideal()
-            if represented is not NotImplemented:
-                return represented
+        r"""Return the kernel ideal ``f^{-1}(0)`` of this ring morphism.
+
+        A ring morphism ``R -> End_R(M)`` is the scalar action that makes ``M``
+        an ``R``-module, and ``rho(r) = 0`` says exactly that ``r`` kills
+        ``M``, so its kernel is ``Ann_R(M)``.  The module is the endomorphism
+        Hom-object's own domain, so nothing has to be carried on the morphism
+        for it to be found.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            LinearHomModules,
+        )
+
         codomain = self.codomain()
+        if codomain in LinearHomModules(self.domain()) and codomain.domain() is codomain.codomain():
+            return codomain.domain().annihilator()
         return self.contraction_of_ideal(codomain.ideal(codomain.zero()))
 
 
