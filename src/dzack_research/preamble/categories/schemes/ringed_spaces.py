@@ -7,6 +7,9 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoryPacketMethods,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -425,8 +428,112 @@ class AffineModuleSheaf(SageObject):
             verify_linearity=False,
         )
 
+    def sheaf_category(self):
+        r"""``QCoh(X)``, the category this sheaf is an object of."""
+        return QuasiCoherentSheaves(self.scheme())
+
     def _repr_(self):
         return f"Affine module sheaf associated to {self.module()} on {self.scheme()}"
+
+
+class QuasiCoherentSheaves(OwnedParameterizedCategory):
+    r"""Quasi-coherent ``O_X``-modules on one scheme ``X``.
+
+    On an affine ``X = Spec A`` the association ``M |-> M~`` is an equivalence
+    onto this category, inverse to global sections (Stacks, Tag 01I8).  The
+    category is therefore abelian and monoidal exactly because ``Modules(A)``
+    is, and every operation below is the module operation read through that
+    equivalence rather than a second definition of the same thing.  For the
+    same reason a morphism of quasi-coherent sheaves on an affine scheme is a
+    morphism of the two modules, so no separate arrow type is introduced.
+
+    On a scheme that is not affine no object of this category is represented:
+    a quasi-coherent sheaf there is gluing data, which
+    :meth:`DistinguishedAffineCover.glue_modules` assembles from modules on
+    the charts and transition isomorphisms on the overlaps.
+    """
+
+    def scheme(self):
+        return self.base()
+
+    def _repr_object_names(self):
+        return f"quasi-coherent sheaves on {self.scheme()}"
+
+    def super_categories(self):
+        return [Sets()]
+
+    def __contains__(self, candidate) -> bool:
+        ringed_space = getattr(candidate, "ringed_space", None)
+        return ringed_space is not None and ringed_space() is self.scheme()
+
+    def module_category(self):
+        r"""``Modules(A)``: the category this one is equivalent to, for affine ``X``."""
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+        from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
+
+        scheme = self.scheme()
+        assert scheme in AffineSchemes(scheme.scheme_base_ring()), (
+            "the equivalence with a module category is stated on an affine scheme; on a glued "
+            "scheme a quasi-coherent sheaf is gluing data over an affine cover"
+        )
+        return Modules(scheme.coordinate_algebra())
+
+    def associated_sheaf(self, module):
+        r"""``M |-> M~``, the equivalence out of ``Modules(A)``."""
+        assert module in self.module_category(), (
+            "the associated sheaf is taken of a module over the coordinate algebra"
+        )
+        return self.scheme().associated_module_sheaf(module)
+
+    def global_sections(self, sheaf):
+        r"""``M~ |-> M``, the inverse equivalence."""
+        assert sheaf in self, "global sections are taken of a sheaf on this scheme"
+        return sheaf.global_sections()
+
+    def sheaf_morphisms(self, source, target):
+        r"""``Hom_{O_X}(M~, N~) = Hom_A(M, N)``, where morphisms of these sheaves live."""
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            module_homset,
+        )
+
+        return module_homset(self.global_sections(source), self.global_sections(target))
+
+    def tensor_product(self, factors):
+        r"""``(M tensor_A N)~``: the equivalence carries the monoidal structure."""
+        modules = tuple(self.global_sections(factor) for factor in factors)
+        return self.associated_sheaf(self.module_category().tensor_product(modules))
+
+    def kernel(self, sheaf_morphism):
+        r"""``(ker f)~``, the kernel of the module morphism underlying ``f``.
+
+        Taking ``~`` is exact, so the kernel of the sheaf morphism is the
+        sheaf of the kernel; the subobject the module kernel returns is a
+        module over the same algebra and is the object here.
+        """
+        return self.associated_sheaf(sheaf_morphism.kernel())
+
+    def cokernel(self, sheaf_morphism):
+        r"""``(coker f)~``, carried by the same exactness."""
+        return self.associated_sheaf(sheaf_morphism.cokernel())
+
+    def local_presentation(self, sheaf):
+        r"""``O_X^m -> O_X^n``, the presentation whose cokernel is ``F``.
+
+        A finitely presented module has a chosen relation morphism between
+        free modules, and the equivalence reads it as a morphism of free
+        ``O_X``-modules; the hypothesis is exactly that chosen presentation,
+        which is what makes the sheaf coherent on this affine chart.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModulesWithChosenFinitePresentation,
+        )
+
+        module = self.global_sections(sheaf)
+        assert module in ModulesWithChosenFinitePresentation(module.base_ring()), (
+            "a local presentation of a quasi-coherent sheaf requires a chosen finite "
+            "presentation of the module it comes from"
+        )
+        return module.presentation()
 
 
 class RingedSpaces(CategoryPacketMethods, Category):
@@ -481,6 +588,7 @@ __all__ = [
     "CoverRefinement",
     "DistinguishedAffineCover",
     "LocallyRingedSpaces",
+    "QuasiCoherentSheaves",
     "RingedSpaces",
     "SchemeUnderlyingSpace",
     "StructureSheaf",
