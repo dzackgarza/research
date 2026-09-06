@@ -17,12 +17,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import Zmod, ring_
 
 
 def test_the_integer_grading_carries_its_canonical_parity() -> None:
-    parity = GradedCommutativeAlgebras(ZZ).parity_homomorphism()
+    algebras = GradedCommutativeAlgebras(ZZ)
+    degrees = algebras.grading_monoid()
+    parity = algebras.parity_homomorphism()
 
-    assert parity.domain() is ZZ
+    assert parity.domain() is degrees
     assert parity.codomain() is Zmod(2)
-    assert parity(ZZ(3)) == Zmod(2)(1)
-    assert parity(ZZ(4)) == Zmod(2)(0)
+    assert parity(degrees(3)) == Zmod(2)(1)
+    assert parity(degrees(4)) == Zmod(2)(0)
 
 
 def test_a_superalgebra_is_graded_by_the_parity_it_states() -> None:
