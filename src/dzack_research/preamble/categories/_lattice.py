@@ -34,6 +34,7 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
     _engine_ring,
     _own_ring,
 )
@@ -378,6 +379,12 @@ class Lattice(Parent, IndexedGenerators):
                 return self.b(other)
             if other in self.parent().base_ring():
                 return self._lmul_(self.parent().base_ring()(other))
+            return NotImplemented
+
+        def __rmul__(self, scalar):
+            r"""Return \(r\cdot v\): the scalar action, written on the left."""
+            if scalar in self.parent().base_ring():
+                return self._lmul_(self.parent().base_ring()(scalar))
             return NotImplemented
 
         def __pow__(self, exponent):
@@ -807,7 +814,7 @@ class _BiproductGram(_PairingGram):
         )
 
     def _pairing_name(self) -> str:
-        return f"{self._left.gram_tensor()._pairing_name()} ⊕ {self._right.gram_tensor()._pairing_name()}"
+        return f"{_gram_name(self._left.gram_tensor())} ⊕ {_gram_name(self._right.gram_tensor())}"
 
 
 class _ColimitGram(_PairingGram):
@@ -877,6 +884,16 @@ class _ColimitGram(_PairingGram):
 
     def _pairing_name(self) -> str:
         return "colim_n G_n"
+
+
+def _gram_name(gram) -> str:
+    r"""Name a Gram block in text: a pairing rule by its own name, ``U`` by its, a finite array by its rank."""
+    match gram:
+        case _PairingGram():
+            return gram._pairing_name()
+        case _:
+            name = _hyperbolic_plane_name(gram)
+            return name if name is not None else f"G_{gram.tensor_shape()[0]}"
 
 
 def diagonal_gram(module, exceptions, default=1):
@@ -1040,7 +1057,8 @@ def _format_disc_latex(disc) -> str:
     r"""Format the discriminant with its prime factorization."""
     if disc in (-1, 0, 1):
         return str(disc)
-    factorization = factor(disc)
+    # Factorization is the engine's; the owned integer crosses once, here.
+    factorization = factor(_engine_element(disc.parent(), disc))
     factorization_latex = str(latex(factorization))
     if factorization_latex == str(disc):
         return str(disc)
@@ -1069,12 +1087,14 @@ def lattice_latex(lattice: Lattice, ring_tex: str) -> str:
 
     if rank == Infinity:
         if signature_field is QQ:
-            pos, neg = lattice.signature_pair()
+            _signature = lattice.signature_pair()
+            pos, neg = _signature.first(), _signature.second()
             invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)}, \\quad \\mathrm{{sig}}(L) = ({latex(pos)}, {neg}) \\\\"
         else:
             invariants = f"L \\in \\mathrm{{Lattices}}({ring_tex}), \\quad \\mathrm{{rk}}(L) = {latex(rank)} \\\\"
     elif signature_field is QQ:
-        pos, neg = lattice.signature_pair()
+        _signature = lattice.signature_pair()
+        pos, neg = _signature.first(), _signature.second()
         disc_latex = _format_disc_latex(lattice.discriminant())
         invariants = (
             f"L \\in \\mathrm{{Lattices}}({ring_tex}), "
