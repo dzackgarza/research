@@ -27,7 +27,7 @@ def test_the_group_algebra_of_the_symmetric_group(build, name) -> None:
     assert algebra not in CommutativeAlgebras(ring)
     assert algebra.center().rank() == 3
     assert algebra.augmentation()(algebra(group.one())) == ring.one()
-    assert algebra(group.group_generators().unrank(0)) * algebra(group.group_generators().unrank(0).inverse()) == algebra.one()
+    assert algebra(group.group_generators()[0]) * algebra(group.group_generators()[0].inverse()) == algebra.one()
 
 
 def test_the_group_algebra_by_subscript_notation() -> None:
@@ -47,7 +47,7 @@ def test_the_regular_representation_is_the_group_algebra_as_a_module() -> None:
     assert regular.rank() == 6
     assert regular.module_invariants().rank() == 1
     assert regular.character()(group.one()) == 6
-    assert regular.character()(group.group_generators().unrank(0)) == 0
+    assert regular.character()(group.group_generators()[0]) == 0
 
 
 # ---------------------------------------------------------------------------
@@ -88,7 +88,7 @@ def test_galois_group_of_an_extension_and_its_fixed_fields() -> None:
     galois = GaloisGroup(field, QQ)
     assert galois.order() == 4
     assert galois == field.galois_group()
-    subgroup = galois.subgroup([galois.group_generators().unrank(0) ** 2])
+    subgroup = galois.subgroup([galois.group_generators()[0] ** 2])
     fixed = galois.fixed_field(subgroup)
     assert fixed.degree() == 2
     assert fixed.discriminant() == 5
@@ -423,7 +423,7 @@ def test_products_semidirect_products_and_presentations_of_groups() -> None:
     three = Groups.C(3)
     assert two.direct_product(three).is_isomorphic_to(Groups.C(6))
     assert (two * three).order() == 6
-    inversion = two.Mor(three.Aut())({two.group_generators().unrank(0): three.Aut()(lambda h: h.inverse())})
+    inversion = two.Mor(three.Aut())({two.group_generators()[0]: three.Aut()(lambda h: h.inverse())})
     assert three.semidirect_product(two, inversion).is_isomorphic_to(Groups.S(3))
     assert Groups.S(3).presentation().group_generators().cardinality() == 2
     assert Groups.S(3).presentation().defining_relations().cardinality() >= 3
@@ -506,7 +506,7 @@ def test_set_operations_by_their_usual_names() -> None:
     assert Singleton().cardinality() == 1
     assert Set(range(5)).cardinality() == 5
     assert FiniteOrderedSet(("a", "b", "c")).cardinality() == 3
-    assert FiniteOrderedSet(("a", "b", "c")).rank("b") == 1
+    assert FiniteOrderedSet(("a", "b", "c")).ranking_map()("b") == 1
     assert OrderedSet(("a", "b", "c")) in TotallyOrderedSets()
     assert Family({"p": 1, "q": 2}).cardinality() == 2
     assert Family({"p": 1, "q": 2})["q"] == 2

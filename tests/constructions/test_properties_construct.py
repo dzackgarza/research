@@ -78,7 +78,7 @@ def test_cyclic_groups_and_their_homomorphisms(n, m) -> None:
     assert Product(cyclic, Groups.C(m)).order() == n * m
     assert Product(cyclic, Groups.C(m)).is_isomorphic_to(Groups.C(n * m)) == (gcd(n, m) == 1)
     assert cyclic.subgroups().cardinality() == number_of_divisors(n)
-    assert cyclic.group_generators().unrank(0).order() == n
+    assert cyclic.group_generators()[0].order() == n
 
 
 @survey

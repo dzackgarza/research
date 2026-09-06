@@ -129,7 +129,7 @@ def test_a_rooted_diagram_from_a_root_lattice() -> None:
     assert diagram.is_rooted()
     assert diagram.roots().cardinality() == 2
     assert diagram.root_gram_tensor() == a2.gram_tensor()
-    reflection = a2.reflection(a2.simple_roots().unrank(0))
+    reflection = a2.reflection(a2.simple_roots()[0])
     assert reflection * reflection == a2.O().one()
     assert reflection in a2.O()
 
@@ -172,9 +172,9 @@ def test_indexed_families_of_special_functions() -> None:
     hermite = HermitePolynomials()
     assert characters.cardinality() == aleph0
     assert hermite.cardinality() == aleph0
-    assert characters.rank(characters.unrank(3)) == 3
-    assert hermite.rank(hermite.unrank(4)) == 4
-    assert hermite.unrank(2) != hermite.unrank(3)
+    assert characters.ranking_map()(characters[3]) == 3
+    assert hermite.ranking_map()(hermite[4]) == 4
+    assert hermite[2] != hermite[3]
 
 
 # ---------------------------------------------------------------------------

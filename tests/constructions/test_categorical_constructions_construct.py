@@ -144,7 +144,7 @@ def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
     product = Product(symmetric, two)
     free_product = Coproduct(two, three)
     sign = symmetric.Mor(two)(
-        {g: (two.group_generators().unrank(0) if g.order() == 2 else two.one()) for g in symmetric.group_generators()}
+        {g: (two.group_generators()[0] if g.order() == 2 else two.one()) for g in symmetric.group_generators()}
     )
 
     assert product in Groups()

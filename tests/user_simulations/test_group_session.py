@@ -43,7 +43,7 @@ def test_a_finite_group_session(name) -> None:
     assert (group in AbelianGroups()) == (classes == order)
 
     # Elements, orders, cyclic subgroups.
-    g = group.group_generators().unrank(0)
+    g = group.group_generators()[0]
     rendered(g)
     assert g * g.inverse() == group.one()
     cyclic = group.subgroup([g])

@@ -53,7 +53,7 @@ def test_a_representation_theory_session(name, coefficients) -> None:
     assert permutation in Modules(ring)
     assert permutation.rank() == degree
     assert permutation.group() is group
-    generator = group.group_generators().unrank(0)
+    generator = group.group_generators()[0]
     assert permutation.action_of(generator) * permutation.action_of(generator.inverse()) == permutation.action_of(group.one())
     invariants = permutation.module_invariants()
     coinvariants = permutation.module_coinvariants()
