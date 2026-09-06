@@ -780,6 +780,64 @@ class ModuleMorphism(Morphism):
             raise NotImplementedError("this cokernel has no represented quotient-module backend")
         return quotient
 
+    @cached_method
+    def cokernel_projection(self):
+        r"""Return the quotient map ``q : B -> coker(self)``.
+
+        The cokernel is presented on the generators of the codomain, with the
+        images of this morphism added as relations.  So the quotient map sends
+        each generator to the generator of the same name, and no second model
+        of the quotient is built to state it.
+        """
+        quotient = self.cokernel()
+        codomain = self.codomain()
+        return module_homset(codomain, quotient)(
+            lambda label: quotient.module_generator(label)
+        )
+
+    def section(self):
+        r"""Return ``s`` with ``self . s`` the identity, for an epimorphism onto a free module.
+
+        A section chooses one preimage of each generator of the codomain.
+        Those choices assemble into a morphism exactly when the codomain is
+        free on those generators, since then there is no relation for them to
+        respect: this is projectivity of a free module, and the construction
+        exhibits the splitting rather than asserting that one exists.
+        """
+
+        codomain = self.codomain()
+        assert self.is_surjective(), "only an epimorphism has a section"
+        assert codomain.is_free(), (
+            f"a section chooses a preimage of each generator, and {codomain} must be "
+            "free for those choices to respect no relation"
+        )
+        return module_homset(codomain, self.domain())(
+            lambda label: self.lift(codomain.module_generator(label))
+        )
+
+    def retraction(self):
+        r"""Return ``r`` with ``r . self`` the identity, for a split monomorphism.
+
+        Splitting ``i : A -> B`` is the same as splitting the quotient
+        ``q : B -> B/i(A)``.  Given a section ``s`` of ``q``, each ``b``
+        differs from ``s(q(b))`` by an element of ``i(A)``, and ``i`` is
+        injective, so ``r(b) = i^{-1}(b - s(q(b)))`` is well defined and
+        restricts to the identity on ``A``.  The section exists when the
+        cokernel is free, which over a principal ideal domain is exactly when
+        this monomorphism splits.
+        """
+
+        assert self.is_injective(), "only a monomorphism has a retraction"
+        quotient_map = self.cokernel_projection()
+        splitting = quotient_map.section()
+        codomain = self.codomain()
+
+        def image(label):
+            generator = codomain.module_generator(label)
+            return self.lift(generator - splitting(quotient_map(generator)))
+
+        return module_homset(codomain, self.domain())(image)
+
 
 class FramingMorphism(ModuleMorphism):
     r"""A declared surjective linear map from a free framed module."""

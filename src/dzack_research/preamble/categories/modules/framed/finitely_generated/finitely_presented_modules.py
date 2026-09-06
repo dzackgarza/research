@@ -574,6 +574,19 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return super().is_torsion_free()
             return all(invariant == 0 or invariant.is_unit() for invariant in self._invariants_with_units())
 
+        def is_free(self) -> bool:
+            r"""Over a PID a finitely generated module is free exactly when it is torsion-free.
+
+            This is the structure theorem: the decomposition has no cyclic
+            torsion summand exactly when no invariant factor is a nonzero
+            non-unit, and what is left is a sum of copies of ``R``.  So a
+            presented module answers here rather than inheriting the default
+            for a module with no known basis.
+            """
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().is_free()
+            return self.is_torsion_free()
+
         def is_zero(self):
             if self.base_ring() not in PrincipalIdealDomains():
                 inherited = getattr(super(), "is_zero", None)
