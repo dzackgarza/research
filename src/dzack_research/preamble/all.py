@@ -484,6 +484,10 @@ from dzack_research.preamble.categories.lattice_morphisms import (  # noqa: F401
     LatticeMorphism,
 )
 from dzack_research.preamble.categories.isotropic_orbits import IsotropicFlag  # noqa: F401
+from dzack_research.preamble.categories.isotropic_parabolics import (  # noqa: F401
+    PrimitiveIsotropicSubobjects,
+    primitive_isotropic,
+)
 from dzack_research.preamble.categories.lattices import (  # noqa: F401
     EvenLattices,
     FiniteRankLattices,
