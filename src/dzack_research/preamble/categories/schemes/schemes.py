@@ -975,6 +975,11 @@ class AffineSchemes(_SchemePropertyCategory):
 
             return KahlerDifferentials(self.coordinate_algebra())
 
+        def is_flat(self) -> bool:
+            r"""Return whether this represented affine scheme is flat over its base."""
+
+            return bool(self.coordinate_algebra().is_flat())
+
         def differential_rank_drop_subscheme(self, rank):
             r"""Return the closed Fitting stratum ``V(Fitt_rank(Omega^1_{X/S}))``."""
 
@@ -1020,6 +1025,49 @@ class AffineSchemes(_SchemePropertyCategory):
                         "the represented singular subscheme requires equidimensional fibres"
                     )
             return self.differential_rank_drop_subscheme(dimension)
+
+        def relative_nonsmooth_subscheme(self):
+            r"""Return the relative nonsmooth locus in the supported flat hypersurface regime.
+
+            For a flat morphism locally of finite presentation, smoothness at a
+            point is equivalent to smoothness of the fibre there (Stacks
+            Project, Tags 01V8 and 01V9).  For a primitive hypersurface over a
+            univariate polynomial ring over a perfect field, every fibre is a
+            hypersurface of the same represented dimension and the Jacobian
+            criterion is detected by the corresponding Fitting ideal of
+            relative differentials.
+            """
+
+            if not self.is_flat():
+                raise NotImplementedError(
+                    "the relative nonsmooth Fitting criterion requires represented flatness"
+                )
+            base = self.scheme_base_ring()
+            algebra = self.coordinate_algebra()
+            if algebra not in AlgebrasWithChosenFinitePresentation(base):
+                raise NotImplementedError(
+                    "the relative nonsmooth locus requires a chosen finite algebra presentation"
+                )
+
+            base_engine = _engine_ring(base)
+            try:
+                coefficient_field = base_engine.base_ring()
+                supported_perfect_base = (
+                    base_engine.ngens() == 1
+                    and bool(coefficient_field.is_field())
+                    and bool(coefficient_field.is_perfect())
+                )
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                supported_perfect_base = False
+            if not supported_perfect_base:
+                raise NotImplementedError(
+                    "the relative hypersurface smoothness criterion currently requires k[t] with k perfect"
+                )
+
+            relative_dimension = (
+                algebra._represented_primitive_hypersurface_relative_dimension()
+            )
+            return self.differential_rank_drop_subscheme(relative_dimension)
 
         def distinguished_open(self, element):
             r"""Return \(D(f)\subseteq X\), the open locus where ``element`` is a unit.
