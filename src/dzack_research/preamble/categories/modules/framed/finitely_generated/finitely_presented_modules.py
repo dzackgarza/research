@@ -444,21 +444,27 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             # ring presents the annihilator too.
             labels = tuple(self.module_generating_set())
             assert labels, "a module with no generators is zero and its annihilator is the unit ideal"
-            annihilator = self._annihilator_of_module_generator(labels[0])
+            annihilator = self.annihilator_of(self.module_generator(labels[0]))
             for label in labels[1:]:
                 annihilator = annihilator.intersection(
-                    self._annihilator_of_module_generator(label)
+                    self.annihilator_of(self.module_generator(label))
                 )
             return annihilator
 
-        def _annihilator_of_module_generator(self, label):
-            r"""Return ``Ann_R(e) = ker(R -> M, r |-> r e)`` as an ideal of ``R``."""
+        def annihilator_of(self, element):
+            r"""Return ``Ann_R(m) = ker(R -> M, r |-> r m)`` as an ideal of ``R``.
+
+            For ``M = coker(A)`` presented on generators and ``v`` the
+            coordinates of ``m``, this is the transporter ``(Im(A) :_R v)``:
+            the scalars carrying ``v`` into the relations.  Stating it as the
+            kernel of multiplication by ``m`` computes it with the presentation
+            algorithm the module already owns, and gives every element of the
+            module its annihilator rather than only the module its own.
+            """
             ring = self.base_ring()
             coordinate = finite_ordered_set(("r",))
             line = self.presentation().codomain()._fresh_free_module_on(coordinate)
-            multiplication = module_homset(line, self)(
-                {"r": self.module_generator(label)}
-            )
+            multiplication = module_homset(line, self)({"r": self(element)})
             kernel = multiplication.kernel()
             inclusion = kernel.inclusion()
             scalars = tuple(
