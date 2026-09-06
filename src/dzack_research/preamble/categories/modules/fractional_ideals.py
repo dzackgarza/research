@@ -42,7 +42,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     FramedModules,
     ModuleSubobjects,
-    Modules,
     ProjectiveModules,
     RestrictedScalarsModules,
     restrict_scalars,
@@ -67,8 +66,17 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         return "fractional ideals"
 
     def super_categories(self):
+        r"""A fractional ideal is a framed submodule of the fraction field.
 
-        return [Modules(self.base_ring()), ModuleSubobjects(self.base_ring())]
+        ``FramedModules`` because this level chooses the spanning values and
+        hands them up as the framing.  Declaring the level that consumes a
+        datum is what puts it after this one in the linearization; listing it
+        beside this category in a join leaves the order to C3, which ran the
+        framing level first and left the framing keyword with nothing to
+        consume it.
+        """
+        ring = self.base_ring()
+        return [FramedModules(ring), ModuleSubobjects(ring)]
 
     class ElementMethods(ModuleElement):
         def __init__(self, parent, value) -> None:
@@ -611,7 +619,7 @@ def _fractional_ideal_object(ring, fraction_field, values, integral):
     placement = [FractionalIdeals(ring)]
     if integral:
         placement.append(Ideals(ring))
-    placement.extend([FramedModules(ring), FinitelyGeneratedModules(ring)])
+    placement.append(FinitelyGeneratedModules(ring))
     return object_of(
         Category.join(placement),
         base_ring=ring,
