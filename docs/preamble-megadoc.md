@@ -13082,7 +13082,7 @@ Number fields carrying the primitive element selected by their presentation.
 A category over a ring, normalized to the session's owned ring.
 
 - **defined at** `src/dzack_research/preamble/categories/rings/ring_foundation.py:1214`
-- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7f8532351a60>
+- **could not be built**: NotImplementedError: <abstract method super_categories at 0x7f96e81d9a60>
 
 ### Objects
 
@@ -14405,6 +14405,64 @@ Categorical wrapper around one native Sage scheme morphism.
 
 ### Supporting classes
 
+#### `FiniteGluedInvariantQuotient` <sub>CLASS</sub>
+
+The quotient of a finite equivariant affine gluing by a finite group.
+
+```text
+The input is a finite indexed family of affine ``G``-schemes, one indexed
+family of source-overlap isomorphisms, and one indexed family of their
+descended quotient-overlap isomorphisms.  The construction verifies that
+every source transition is ``G``-equivariant, checks the quotient descent
+squares, glues the source and quotient atlases, and retains the induced
+global action and quotient morphism.
+
+For a represented affine target, an invariant map out of the glued source
+factors uniquely through the quotient: existence is obtained chartwise from
+the affine invariant quotient, and uniqueness follows chartwise from that
+same universal property and globally from finite-gluing maps-out.
+```
+
+- **defined at** `src/dzack_research/preamble/categories/schemes/invariant_quotient_gluing.py:225`
+- **built by** `FiniteGluedInvariantQuotient(base_ring: 'Parent', acting_group: 'Parent', acted_charts: 'IndexedFamily', source_transitions: 'IndexedFamily', quotient_transitions: 'IndexedFamily')`
+
+**Operations**
+
+- `acted_chart(index: 'Hashable') -> 'Scheme'`
+- `acted_charts() -> 'IndexedFamily'`
+- `acting_group() -> 'Parent'`
+- `action() -> 'SetMorphism'`
+- `action_of(group_element: 'Element') -> 'SchemeMorphism'`
+- `base_ring() -> 'Parent'`
+- `chart_index_set() -> 'Parent'`
+- `chart_indices() -> 'Parent'`
+- `factor_invariant_affine_morphism(morphism: 'SchemeMorphism') -> 'SchemeMorphism'`
+  - Return the unique affine-target factor of an invariant source morphism.
+- `factor_through_quotient(morphism: 'SchemeMorphism') -> 'SchemeMorphism'`
+  - Return the unique affine-target factor of an invariant source morphism.
+- `global_action() -> 'SetMorphism'`
+- `local_quotient(index: 'Hashable') -> 'Scheme'`
+- `local_quotient_morphism(index: 'Hashable') -> 'SchemeMorphism'`
+- `local_quotients() -> 'IndexedFamily'`
+- `local_source_quotient_morphism(index: 'Hashable') -> 'SchemeMorphism'`
+  - Return the affine quotient pullback on the corresponding source chart.
+- `normalize_chart_index(index: 'Hashable') -> 'Hashable'`
+- `pair_index_set() -> 'Parent'`
+- `quotient() -> 'Scheme'`
+- `quotient_morphism() -> 'SchemeMorphism'`
+- `quotient_overlap_factor(source_index: 'Hashable', target_index: 'Hashable') -> 'SchemeMorphism'`
+- `quotient_scheme() -> 'Scheme'`
+- `quotient_transition_between(source_index: 'Hashable', target_index: 'Hashable') -> 'CategoricalIsomorphism'`
+- `quotient_transitions() -> 'IndexedFamily'`
+- `source() -> 'Scheme'`
+- `source_chart(index: 'Hashable') -> 'Scheme'`
+- `source_chart_action(index: 'Hashable', group_element: 'Element') -> 'SchemeMorphism'`
+- `source_charts() -> 'IndexedFamily'`
+- `source_overlap_action(source_index: 'Hashable', target_index: 'Hashable', group_element: 'Element') -> 'SchemeMorphism'`
+- `source_scheme() -> 'Scheme'`
+- `source_transition_between(source_index: 'Hashable', target_index: 'Hashable') -> 'CategoricalIsomorphism'`
+- `source_transitions() -> 'IndexedFamily'`
+
 #### `SchemeUnderlyingSpace` <sub>CLASS</sub>
 
 The underlying topological space of a represented ringed space.
@@ -14509,6 +14567,13 @@ base retains the coordinate algebra's represented scalar base.
 
 - **defined at** `src/dzack_research/preamble/categories/schemes/affine_spec.py:40`
 - **built by** `affine_spec_functor(base_ring)`
+
+#### `glued_invariant_quotient` <sub>FUNCTION</sub>
+
+Construct a verified finite glued invariant quotient.
+
+- **defined at** `src/dzack_research/preamble/categories/schemes/invariant_quotient_gluing.py:796`
+- **built by** `glued_invariant_quotient(base_ring: 'Parent', acting_group: 'Parent', acted_charts: 'IndexedFamily', source_transitions: 'IndexedFamily', quotient_transitions: 'IndexedFamily') -> 'FiniteGluedInvariantQuotient'`
 
 #### `scheme_fiber_product` <sub>FUNCTION</sub>
 
@@ -17848,7 +17913,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 Load a Sage file and restore this session's owned scalar vocabulary.
 
-- **defined at** `src/dzack_research/preamble/all.py:794`
+- **defined at** `src/dzack_research/preamble/all.py:796`
 - **built by** `load(filename: str, globals: dict | None = None, attach: bool = False) -> None`
 
 #### `lzip` <sub>FUNCTION</sub>
@@ -18117,6 +18182,7 @@ Return the sum of pairwise terms from two equally sized iterables.
 | `FiniteGaloisExtension` | class | Groups, Profinite Groups & Galois Theory |
 | `FiniteGaloisQuotient` | object | Groups, Profinite Groups & Galois Theory |
 | `FiniteGaloisSubgroup` | object | Groups, Profinite Groups & Galois Theory |
+| `FiniteGluedInvariantQuotient` | class | Schemes & Algebraic Geometry |
 | `FiniteGroupClassFunction` | morphism | Groups, Profinite Groups & Galois Theory |
 | `FiniteGroups` | function | Groups, Profinite Groups & Galois Theory |
 | [`FinitePowerSetFunctor`](#fun-finitepowersetfunctor) | functor | Functors & Adjunctions |
@@ -18549,6 +18615,7 @@ Return the sum of pairwise terms from two equally sized iterables.
 | `free_resolution` | function | Modules, Complexes & Homological Algebra |
 | `g_set_homset` | function | Groups, Profinite Groups & Galois Theory |
 | `generated_submonoid` | function | Groups, Profinite Groups & Galois Theory |
+| `glued_invariant_quotient` | function | Schemes & Algebraic Geometry |
 | `gluing_route_discriminant_classes` | function | Abstract Category Theory & Universal Constructions |
 | `graded_algebra_homset` | function | Algebras & Differential Graded Algebras |
 | `graded_lebesgue_algebra` | function | Function Spaces & Analysis |

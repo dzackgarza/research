@@ -645,6 +645,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     ConvexPolytopes,
     Curves,
     FiberProductSchemes,
+    FiniteGluedInvariantQuotient,
     FiniteTypeSchemes,
     IntegralSchemes,
     LatticePolygon,
@@ -671,6 +672,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     StructureSheaf,
     Surfaces,
     Varieties,
+    glued_invariant_quotient,
     scheme_fiber_product,
     scheme_product,
 )
