@@ -275,8 +275,60 @@ class DistinguishedAffineCover(SageObject):
 
         return ModuleGluingDatum(self, local_modules, transitions)
 
+    def common_refinement(self, other):
+        r"""The refinement ``{D(f_i g_j)}`` of this cover and ``other``, with its comparison maps."""
+
+        assert other.ambient_scheme() is self.ambient_scheme(), "covers of one scheme are refined together"
+        return CoverRefinement(self, other)
+
     def _repr_(self):
         return f"Distinguished affine cover of {self.ambient_scheme()} by {len(self.opens())} opens"
+
+
+class CoverRefinement(SageObject):
+    r"""``{D(f_i g_j)}`` refining ``{D(f_i)}`` and ``{D(g_j)}`` on one affine scheme.
+
+    A refinement of a cover ``U = {U_i}`` is a cover ``V = {V_k}`` with a map
+    ``k |-> i(k)`` of index sets and inclusions ``V_k <= U_{i(k)}`` (Stacks,
+    Tag 00VI).  The common refinement of two distinguished covers is indexed
+    by pairs ``(i, j)``, refines both through the two projections, and its
+    inclusions are open immersions whose pullbacks are the restriction maps of
+    the structure sheaf, so restriction along ``X > U_i > V_{ij}`` composes
+    to restriction along ``X > V_{ij}``.
+    """
+
+    def __init__(self, first_cover, second_cover) -> None:
+        self._coarse_covers = (first_cover, second_cover)
+        first = first_cover.defining_elements()
+        second = second_cover.defining_elements()
+        self._index_pairs = tuple(
+            (left, right) for left in range(len(first)) for right in range(len(second))
+        )
+        self._fine_cover = DistinguishedAffineCover(
+            first_cover.ambient_scheme(),
+            tuple(first[left] * second[right] for left, right in self._index_pairs),
+        )
+
+    def ambient_scheme(self):
+        return self._fine_cover.ambient_scheme()
+
+    def coarse_cover(self, which):
+        return self._coarse_covers[int(which)]
+
+    def fine_cover(self):
+        return self._fine_cover
+
+    def index_map(self, which, fine_index):
+        r"""``k |-> i(k)``: the coarse chart of cover ``which`` containing fine chart ``k``."""
+        return self._index_pairs[int(fine_index)][int(which)]
+
+    def inclusion(self, which, fine_index):
+        r"""The open immersion ``V_k -> U_{i(k)}`` into the chosen coarse cover."""
+        coarse_open = self.coarse_cover(which).open(self.index_map(which, fine_index))
+        return self.fine_cover().open(fine_index).inclusion_into(coarse_open)
+
+    def _repr_(self):
+        return f"Common refinement of {self.coarse_cover(0)} and {self.coarse_cover(1)}"
 
 
 class AffineModuleSheaf(SageObject):
@@ -300,6 +352,12 @@ class AffineModuleSheaf(SageObject):
 
     def global_sections(self):
         return self.module()
+
+    def stalk(self, point):
+        r"""``M~_p = M_p``, the module localized at the prime of the point."""
+        spectrum = self.scheme().underlying_space()
+        assert point.parent() is spectrum, "a stalk is taken at a point of the scheme's own spectrum"
+        return self.module().localize_at_prime(point.ideal())
 
     def sections_on_distinguished_open(self, distinguished_open):
         if not _is_distinguished_open_of(distinguished_open, self.scheme()):
@@ -420,6 +478,7 @@ class LocallyRingedSpaces(CategoryPacketMethods, Category):
 
 __all__ = [
     "AffineModuleSheaf",
+    "CoverRefinement",
     "DistinguishedAffineCover",
     "LocallyRingedSpaces",
     "RingedSpaces",

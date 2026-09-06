@@ -635,6 +635,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     AffineSpace,
     AffineSpaces,
     ClosedEmbeddings,
+    ClosedSubschemes,
     SchemeMonomorphisms,
     ConvexPolygon,
     ConvexPolygons,
@@ -668,8 +669,14 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     StructureSheaf,
     Surfaces,
     Varieties,
+    SchemeBaseChangeFunctor,
+    SliceBaseChangeAdjunction,
+    SliceCompositionFunctor,
+    SlicePullbackFunctor,
+    scheme_base_change_functor,
     scheme_fiber_product,
     scheme_product,
+    slice_base_change_adjunction,
 )
 from dzack_research.preamble.categories.sets import (  # noqa: F401
     CardinalComparison,

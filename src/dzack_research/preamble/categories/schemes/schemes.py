@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_numeral,
     _engine_ring,
     _own_ring,
+    _proper_restriction_base_ring,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
@@ -215,6 +216,138 @@ class SchemeMorphism(Morphism):
 
     pullback_on_coordinate_algebras = coordinate_algebra_morphism
 
+    @cached_method
+    def graph_morphism(self):
+        r"""``Gamma_f = (id, f): X -> X x_S Y``."""
+        identity = self.domain().categorical_identity_morphism()
+        return scheme_product(self.domain(), self.codomain()).from_product_cone(identity, self)
+
+    @cached_method
+    def graph_subscheme(self):
+        r"""The closed subscheme ``Gamma_f <= X x_S Y`` cut out by ``1 tensor b - f^#(b) tensor 1``.
+
+        The graph is the inverse image of the diagonal of ``Y`` under
+        ``f x id``, so it is closed whenever ``Y`` is separated; affine ``Y``
+        is.  The graph morphism factors through it as an isomorphism.
+        """
+        base = self.codomain().scheme_base_ring()
+        assert self.codomain() in AffineSchemes(base), (
+            "the graph is represented as a closed subscheme for affine targets"
+        )
+        product = scheme_product(self.domain(), self.codomain())
+        to_domain = product.projection(0).coordinate_algebra_morphism()
+        to_codomain = product.projection(1).coordinate_algebra_morphism()
+        pullback = self.coordinate_algebra_morphism()
+        algebra = self.codomain().coordinate_algebra()
+        equations = tuple(
+            to_codomain(algebra.algebra_generator(label))
+            - to_domain(pullback(algebra.algebra_generator(label)))
+            for label in algebra.algebra_generating_set()
+        )
+        return product.closed_subscheme(equations)
+
+    def inverse_image(self, closed_subscheme):
+        r"""``f^{-1}(Z) = X x_Y Z`` as a closed subscheme of ``X``.
+
+        For ``Z = V(I) <= Spec B`` and ``f: Spec A -> Spec B`` this is
+        ``V(f^#(I) A)``; the restriction ``f^{-1}(Z) -> Z`` of ``f`` is the
+        corestriction of ``f`` composed with the inclusion.
+        """
+        assert closed_subscheme.ambient_scheme() is self.codomain(), (
+            "the inverse image is taken of a closed subscheme of the codomain"
+        )
+        base = self.domain().scheme_base_ring()
+        assert self.domain() in AffineSchemes(base) and self.codomain() in AffineSchemes(base), (
+            "the represented inverse image currently requires affine schemes"
+        )
+        pullback = self.coordinate_algebra_morphism()
+        equations = tuple(
+            pullback(equation) for equation in closed_subscheme.defining_equations()
+        )
+        return self.domain().closed_subscheme(equations)
+
+    def fixed_subscheme(self):
+        r"""``X^f = Eq(f, id_X)``, the fixed subscheme of an endomorphism."""
+        assert self.domain() is self.codomain(), "a fixed subscheme is that of an endomorphism"
+        return Schemes(self.domain().scheme_base_ring()).equalizer(
+            self,
+            self.domain().categorical_identity_morphism(),
+        )
+
+    def _engine_pullback_with_trivial_base_map(self):
+        r"""The pullback ``B -> A`` realized in the engine over one coefficient ring.
+
+        Sage computes kernels and surjectivity of a ring map by Gröbner
+        elimination on its graph ideal, which it refuses for a map stated
+        with a separate base map.  Both coordinate algebras here lie over one
+        scalar ring, so the map is restated on the generators alone.
+        """
+        pullback = self.coordinate_algebra_morphism()
+        source_algebra = pullback.domain()
+        target_algebra = pullback.codomain()
+        assert source_algebra in FramedAlgebras(source_algebra.base_ring()), (
+            "the engine realization requires a chosen algebra generating set on the codomain algebra"
+        )
+        target_engine = _engine_ring(target_algebra)
+        return _engine_ring(source_algebra).hom(
+            [
+                target_engine(_engine_element(target_algebra, pullback(source_algebra.algebra_generator(label))))
+                for label in source_algebra.algebra_generating_set()
+            ],
+            target_engine,
+        )
+
+    @cached_method
+    def scheme_theoretic_image(self):
+        r"""The closed subscheme ``V(ker f^#) <= Y`` for affine ``f: Spec A -> Spec B``.
+
+        The scheme-theoretic image is the smallest closed subscheme through
+        which ``f`` factors; for affine ``f`` its ideal sheaf is the kernel of
+        ``f^#`` (Stacks, Tag 01R7).  The kernel is computed by the engine's
+        elimination on the graph ideal.
+        """
+        base = self.domain().scheme_base_ring()
+        assert self.domain() in AffineSchemes(base) and self.codomain() in AffineSchemes(base), (
+            "the represented scheme-theoretic image currently requires affine schemes"
+        )
+        kernel = self._engine_pullback_with_trivial_base_map().kernel()
+        algebra = self.codomain().coordinate_algebra()
+        equations = tuple(algebra._from_engine_element(generator) for generator in kernel.gens())
+        return self.codomain().closed_subscheme(equations)
+
+    def direct_image(self, sheaf):
+        r"""``f_* N~ = (Res_{f^#} N)~`` for affine ``f: Spec B -> Spec A`` (Stacks, Tag 01I8)."""
+        assert sheaf.scheme() is self.domain(), "a direct image is taken of a sheaf on the source"
+        module = sheaf.module().restrict_scalars(self.coordinate_algebra_morphism())
+        return self.codomain().associated_module_sheaf(module)
+
+    def module_pullback(self, sheaf):
+        r"""``f^* M~ = (M tensor_A B)~``, scalar extension along ``f^#`` (Stacks, Tag 01I8).
+
+        This is the pullback of quasi-coherent modules, ``O_X tensor f^{-1}
+        O_Y f^{-1} M~``; the inverse-image sheaf ``f^{-1} M~`` itself is not
+        quasi-coherent and is not represented here.
+        """
+        assert sheaf.scheme() is self.codomain(), "a module pullback is taken of a sheaf on the target"
+        module = sheaf.module().base_change(self.coordinate_algebra_morphism())
+        return self.domain().associated_module_sheaf(module)
+
+    def inverse_image_sheaf(self, sheaf):
+        r"""``f^{-1} F``, the topological inverse image of a sheaf."""
+        assert False, (
+            "the inverse image f^{-1} of a quasi-coherent sheaf is not quasi-coherent, and no "
+            "sheaf on the underlying space beyond the distinguished-open basis is represented; "
+            "the quasi-coherent pullback f^* = O_X tensor f^{-1}(-) is module_pullback"
+        )
+
+    def is_closed_immersion(self) -> bool:
+        r"""Whether ``f^#`` is surjective, for affine ``f`` (Stacks, Tag 01HV)."""
+        base = self.domain().scheme_base_ring()
+        assert self.domain() in AffineSchemes(base) and self.codomain() in AffineSchemes(base), (
+            "closed immersions are currently decided for affine schemes"
+        )
+        return bool(self._engine_pullback_with_trivial_base_map().is_surjective())
+
     def __eq__(self, other) -> bool:
         r"""Decide equality from represented pullbacks or the native scheme."""
         if not isinstance(other, SchemeMorphism):
@@ -302,8 +435,24 @@ class SchemeMorCategory(CategoricalHomset):
 
 
 def _scheme_mor_category(domain, codomain):
-    schemes = Schemes(_scheme_base_ring(domain))
-    return schemes.Mor(domain, codomain)
+    r"""Return ``Mor_{Sch/S}(X, Y)`` for the finest base ``S`` both schemes lie over.
+
+    A scheme over ``R`` is a scheme over every ring ``R`` restricts to, so the
+    Hom between two schemes is taken in the slice over the first common base
+    in the domain's restriction tower; ``ZZ`` is the terminal case, and every
+    scheme lies over it.
+    """
+    for base in _scheme_base_tower(_scheme_base_ring(domain)):
+        if codomain in Schemes(base):
+            return Schemes(base).Mor(domain, codomain)
+    assert False, "every scheme is a scheme over the integers"
+
+
+def _scheme_base_tower(base_ring):
+    r"""Yield ``R``, then each proper scalar base below it, ending at ``ZZ``."""
+    while base_ring is not None:
+        yield base_ring
+        base_ring = _proper_restriction_base_ring(base_ring)
 
 
 def _scheme_base_ring(scheme):
@@ -321,6 +470,19 @@ def _has_scheme_placement(scheme, category_class) -> bool:
             "_preamble_scheme_category_types",
             (),
         )
+    )
+
+
+def _placed_over_stated_base(candidate, category, placement_class) -> bool:
+    r"""Membership in a category stated relative to its base ring.
+
+    Affine spaces, projective spaces and products are constructions over one
+    base: ``A^n_Q`` is a ``Z``-scheme but not an affine space over ``Z``.
+    """
+    return (
+        candidate in Schemes(category.base_ring())
+        and candidate.scheme_base_ring() is category.base_ring()
+        and _has_scheme_placement(candidate, placement_class)
     )
 
 
@@ -387,11 +549,22 @@ class Schemes(OwnedCategoryOverBaseRing):
         return f"schemes over {self.base_ring()}"
 
     def super_categories(self):
-        return [LocallyRingedSpaces()]
+        r"""A scheme over ``R`` is a scheme over the scalar base of ``R``.
+
+        Composing ``X -> Spec R`` with ``Spec R -> Spec R_0`` for the structure
+        map ``R_0 -> R`` places every ``R``-scheme in ``Sch/R_0``; the same
+        tower ``Algebras(R) <= Algebras(R_0)`` sits underneath affine ones.
+        """
+        base = _proper_restriction_base_ring(self.base_ring())
+        if base is None:
+            return [LocallyRingedSpaces()]
+        return [LocallyRingedSpaces(), Schemes(base)]
 
     def __contains__(self, candidate) -> bool:
+        stated = getattr(candidate, "_preamble_scheme_base_ring", None)
         return (
-            getattr(candidate, "_preamble_scheme_base_ring", None) is self.base_ring()
+            stated is not None
+            and any(base is self.base_ring() for base in _scheme_base_tower(stated))
             and _has_scheme_placement(candidate, Schemes)
         )
 
@@ -422,6 +595,46 @@ class Schemes(OwnedCategoryOverBaseRing):
 
         def _categorical_pullback(self, left_morphism, right_morphism):
             return scheme_fiber_product(left_morphism, right_morphism)
+
+        def equalizer(self, left, right):
+            r"""Return the equalizer ``Eq(f, g) -> X`` of two parallel morphisms."""
+            assert left.domain() is right.domain() and left.codomain() is right.codomain(), (
+                "an equalizer is taken of two parallel morphisms"
+            )
+            return self._categorical_equalizer(left, right)
+
+        def _categorical_equalizer(self, left, right):
+            r"""``Eq(f, g)`` for affine ``f, g: Spec A -> Spec B``.
+
+            The equalizer is the closed subscheme cut out by the ideal
+            ``(f^#(b) - g^#(b) : b in B)``; a chosen generating set of ``B``
+            generates that ideal because both pullbacks are ``R``-algebra
+            maps.  Its universal property is that of the closed immersion:
+            ``h: T -> X`` factors through it exactly when ``h^#`` kills the
+            ideal, which is ``f h = g h`` (Stacks, Tag 01JR).
+            """
+            source = left.domain()
+            target = left.codomain()
+            base = source.scheme_base_ring()
+            assert source in AffineSchemes(base) and target in AffineSchemes(base), (
+                "the represented equalizer currently requires affine schemes"
+            )
+            target_algebra = target.coordinate_algebra()
+            assert target_algebra in FramedAlgebras(target_algebra.base_ring()), (
+                "the represented equalizer requires a chosen algebra generating set on the target"
+            )
+            left_pullback = left.coordinate_algebra_morphism()
+            right_pullback = right.coordinate_algebra_morphism()
+            equations = tuple(
+                left_pullback(target_algebra.algebra_generator(label))
+                - right_pullback(target_algebra.algebra_generator(label))
+                for label in target_algebra.algebra_generating_set()
+            )
+            equalizer = source.closed_subscheme(equations)
+            assert left * equalizer.inclusion() == right * equalizer.inclusion(), (
+                "the equalizer inclusion does not equalize the two morphisms"
+            )
+            return equalizer
 
 
     @cached_method
@@ -578,6 +791,37 @@ class Schemes(OwnedCategoryOverBaseRing):
         def as_slice_object(self):
             return self.scheme_category().as_slice_object(self)
 
+        @cached_method
+        def diagonal_morphism(self):
+            r"""``Delta: X -> X x_S X``, the cone map with both legs the identity."""
+            identity = self.categorical_identity_morphism()
+            return scheme_product(self, self).from_product_cone(identity, identity)
+
+        @cached_method
+        def diagonal_subscheme(self):
+            r"""The closed subscheme ``Delta(X) <= X x_S X`` for affine ``X``.
+
+            For ``X = Spec A`` the diagonal is ``Spec`` of the multiplication
+            ``A tensor_R A -> A``, whose kernel is generated by
+            ``a tensor 1 - 1 tensor a`` over a generating set of ``A``; an affine
+            scheme is separated, so this is a closed immersion.  The diagonal
+            morphism factors through it as an isomorphism.
+            """
+            base = self.scheme_base_ring()
+            assert self in AffineSchemes(base), (
+                "the diagonal is represented as a closed subscheme for affine schemes; "
+                "for a glued scheme it is closed exactly when the scheme is separated"
+            )
+            product = scheme_product(self, self)
+            left = product.projection(0).coordinate_algebra_morphism()
+            right = product.projection(1).coordinate_algebra_morphism()
+            algebra = self.coordinate_algebra()
+            equations = tuple(
+                left(algebra.algebra_generator(label)) - right(algebra.algebra_generator(label))
+                for label in algebra.algebra_generating_set()
+            )
+            return product.closed_subscheme(equations)
+
         def point_morphism(self, coordinates):
             base = self.scheme_base_ring()
             engine_base = _engine_ring(base)
@@ -692,7 +936,18 @@ class Schemes(OwnedCategoryOverBaseRing):
             return self.point_counts(degree)[degree - 1]
 
 class _SchemePropertyCategory(OwnedCategoryOverBaseRing):
+    r"""A full subcategory of ``Sch/R`` cut out by one property.
+
+    A property is *absolute* when it descends the base tower: an affine,
+    integral or normal ``R``-scheme is affine, integral or normal as a scheme
+    over every scalar base of ``R``, and separatedness descends because
+    ``Spec R -> Spec R_0`` is affine, hence separated, and separated
+    morphisms compose.  Finite type, smoothness and (quasi-)projectivity are
+    stated relative to the base and are read only over the stated one.
+    """
+
     property_name = "scheme property"
+    absolute = False
 
     def _repr_object_names(self):
         return f"{self.property_name} schemes over {self.base_ring()}"
@@ -701,14 +956,16 @@ class _SchemePropertyCategory(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring())]
 
     def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Schemes(self.base_ring())
-            and _has_scheme_placement(candidate, type(self).__mro__[1])
-        )
+        if not _has_scheme_placement(candidate, type(self).__mro__[1]):
+            return False
+        if candidate not in Schemes(self.base_ring()):
+            return False
+        return self.absolute or candidate.scheme_base_ring() is self.base_ring()
 
 
 class SeparatedSchemes(_SchemePropertyCategory):
     property_name = "separated"
+    absolute = True
 
     class ParentMethods:
         def is_separated(self):
@@ -739,6 +996,7 @@ class FiniteTypeSchemes(_SchemePropertyCategory):
 
 class IntegralSchemes(_SchemePropertyCategory):
     property_name = "integral"
+    absolute = True
 
     class ParentMethods:
         def is_integral(self):
@@ -755,6 +1013,7 @@ class IntegralSchemes(_SchemePropertyCategory):
 
 class NormalSchemes(_SchemePropertyCategory):
     property_name = "normal"
+    absolute = True
 
     class ParentMethods:
         def is_normal(self):
@@ -783,6 +1042,7 @@ class SmoothSchemes(_SchemePropertyCategory):
 
 class AffineSchemes(_SchemePropertyCategory):
     property_name = "affine"
+    absolute = True
 
     def an_object(self):
         r"""The affine line over the base ring."""
@@ -803,6 +1063,20 @@ class AffineSchemes(_SchemePropertyCategory):
     class ParentMethods:
         def is_affine(self):
             return True
+
+        def dimension(self):
+            r"""The Krull dimension of ``Spec A``, which is that of ``A``."""
+            return self.coordinate_algebra().krull_dimension()
+
+        def relative_dimension(self):
+            r"""``dim A - dim R`` for ``Spec A -> Spec R``.
+
+            This is the relative dimension of an equidimensional scheme of
+            finite type and flat over an integral base; it is the number the
+            engine's ``dimension_relative`` reports for affine space, and it
+            extends that value to every affine spectrum.
+            """
+            return self.dimension() - self.scheme_base_ring().krull_dimension()
 
         def coordinate_algebra(self):
             selected = getattr(self, "_preamble_coordinate_algebra", None)
@@ -910,6 +1184,22 @@ class AffineSchemes(_SchemePropertyCategory):
             r"""Return ``M~`` on the represented distinguished-open basis of this affine scheme."""
 
             return self.structure_sheaf().associated_module_sheaf(module)
+
+        def relative_spectrum(self, algebra_structure):
+            r"""``Spec_X(B~) -> X`` for the ``O_X``-algebra given by ``A -> B`` (Stacks, Tag 01LQ).
+
+            On affine ``X = Spec A`` a quasi-coherent ``O_X``-algebra is an
+            ``A``-algebra, stated as the ``R``-algebra morphism ``A -> B``
+            that makes ``B`` one; its relative spectrum is ``Spec B`` with the
+            structure morphism ``Spec`` of that map, an object of ``Sch/X``.
+            Base change along ``X' -> X`` gives ``Spec_{X'}(B tensor_A A')``,
+            which is the fibre product ``Spec_X(B) x_X X'``.
+            """
+            assert algebra_structure.domain() is self.coordinate_algebra(), (
+                "a quasi-coherent algebra on Spec A is stated by an algebra map out of A"
+            )
+            structure_morphism = affine_spec_morphism(algebra_structure)
+            return self.scheme_category().SliceOver(self)(structure_morphism)
 
 
 class _AffineGSchemes(OwnedCategory):
@@ -1158,6 +1448,7 @@ class _AffineGSchemes(OwnedCategory):
 
 class QuasiAffineSchemes(_SchemePropertyCategory):
     property_name = "quasi-affine"
+    absolute = True
 
     def an_object(self):
         r"""The affine line, which is affine."""
@@ -1214,11 +1505,16 @@ class ProjectiveSchemes(_SchemePropertyCategory):
             return True
 
         def closed_subscheme(self, *equations):
+            r"""``V_+(f_1, ..., f_k)``, cut out by homogeneous equations."""
             equations = (
                 tuple(equations[0])
                 if len(equations) == 1 and isinstance(equations[0], (tuple, list))
                 else tuple(equations)
             )
+            for equation in equations:
+                assert equation.is_homogeneous(), (
+                    f"{equation} is not homogeneous, so it cuts out no closed subscheme of {self}"
+                )
             return refine_closed_subscheme(self.subscheme(equations), self)
 
 
@@ -1240,10 +1536,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         ]
 
     def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Schemes(self.base_ring())
-            and _has_scheme_placement(candidate, AffineSpaces)
-        )
+        return _placed_over_stated_base(candidate, self, AffineSpaces)
 
     class ParentMethods:
         def zeta_function(self):
@@ -1281,10 +1574,7 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         ]
 
     def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Schemes(self.base_ring())
-            and _has_scheme_placement(candidate, ProjectiveSpaces)
-        )
+        return _placed_over_stated_base(candidate, self, ProjectiveSpaces)
 
     class ParentMethods:
         def zeta_function(self):
@@ -1323,10 +1613,7 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
         return [Schemes(self.base_ring())]
 
     def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Schemes(self.base_ring())
-            and _has_scheme_placement(candidate, ProductSchemes)
-        )
+        return _placed_over_stated_base(candidate, self, ProductSchemes)
 
     class ParentMethods:
         def factors(self):
@@ -1344,6 +1631,47 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
             return tuple(
                 self.projection(index) for index in range(self.number_of_factors())
             )
+
+        def from_product_cone(self, *legs):
+            r"""The unique morphism ``T -> prod_i X_i`` with the stated components.
+
+            For affine factors the product is ``Spec`` of the coproduct of
+            coordinate algebras, so the cone map is the cocone map on
+            algebras: each generator of the product algebra is the image of a
+            factor generator under a projection pullback, and it is sent to
+            that generator's image under the corresponding leg.
+            """
+            legs = tuple(legs[0]) if len(legs) == 1 and isinstance(legs[0], (tuple, list)) else legs
+            factors = self.factors()
+            assert len(legs) == int(factors.cardinality().finite_value()), (
+                "a product cone has one leg per factor"
+            )
+            source = legs[0].domain()
+            base = self.scheme_base_ring()
+            assert all(leg.domain() is source for leg in legs), "a cone has one apex"
+            assert self in AffineSchemes(base) and source in AffineSchemes(base), (
+                "the represented product cone map currently requires affine schemes"
+            )
+            product_algebra = self.coordinate_algebra()
+            images = {}
+            for index, leg in enumerate(legs):
+                factor = factors[index]
+                assert leg.codomain() is factor, f"leg {index} must land in factor {index}"
+                projection_pullback = self.projection(index).coordinate_algebra_morphism()
+                leg_pullback = leg.coordinate_algebra_morphism()
+                factor_algebra = factor.coordinate_algebra()
+                for label in factor_algebra.algebra_generating_set():
+                    generator = factor_algebra.algebra_generator(label)
+                    images[_algebra_generator_label(product_algebra, projection_pullback(generator))] = (
+                        leg_pullback(generator)
+                    )
+            pullback = product_algebra.Mor(source.coordinate_algebra())(images)
+            cone = _affine_morphism_from_pullback(source, self, pullback)
+            for index, leg in enumerate(legs):
+                assert self.projection(index) * cone == leg, (
+                    f"the product cone map does not recover leg {index}"
+                )
+            return cone
 
 
 class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
@@ -1367,10 +1695,15 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
         ]
 
     def __contains__(self, candidate) -> bool:
-        return (
-            candidate in Schemes(self.base_ring())
-            and _has_scheme_placement(candidate, ProductProjectiveSpaces)
-        )
+        return _placed_over_stated_base(candidate, self, ProductProjectiveSpaces)
+
+
+def _algebra_generator_label(algebra, generator):
+    r"""The label of an element that is one of the algebra's chosen generators."""
+    for label in algebra.algebra_generating_set():
+        if algebra.algebra_generator(label) == generator:
+            return label
+    assert False, f"{generator} is not a chosen algebra generator of {algebra}"
 
 
 def _integral_placement(base_ring):
@@ -2340,6 +2673,81 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                 return selected
             return self.defining_ideal()
 
+        def corestriction(self, morphism):
+            r"""The factorization ``T -> Z`` of a morphism ``T -> X`` landing in ``Z``.
+
+            A morphism into ``X`` factors through the closed subscheme
+            ``Z = V(I)`` exactly when its pullback kills ``I`` (Stacks, Tag
+            01QP); for affine endpoints the factor is ``Spec`` of the induced
+            map ``A/I -> O(T)`` on the presentation's generators.
+            """
+            assert morphism.codomain() is self.ambient_scheme(), (
+                "a corestriction is taken of a morphism into the ambient scheme"
+            )
+            source = morphism.domain()
+            base = source.scheme_base_ring()
+            assert source in AffineSchemes(base) and self in AffineSchemes(base), (
+                "the represented corestriction currently requires affine schemes"
+            )
+            pullback = morphism.coordinate_algebra_morphism()
+            for equation in self.defining_equations():
+                assert pullback(equation) == source.coordinate_algebra().zero(), (
+                    f"{morphism} does not factor through {self}: its pullback does not kill {equation}"
+                )
+            quotient_map = self.inclusion().coordinate_algebra_morphism()
+            algebra = self.coordinate_algebra()
+            factor_pullback = algebra.Mor(source.coordinate_algebra())(
+                {
+                    label: pullback(
+                        self.ambient_scheme().coordinate_algebra().algebra_generator(label)
+                    )
+                    for label in algebra.algebra_generating_set()
+                }
+            )
+            factor = _affine_morphism_from_pullback(source, self, factor_pullback)
+            assert self.inclusion() * factor == morphism, (
+                "the corestriction does not recover the morphism through the inclusion"
+            )
+            assert quotient_map.domain() is self.ambient_scheme().coordinate_algebra()
+            return factor
+
+        def ideal_sheaf(self):
+            r"""``I_Z = I~``, the quasi-coherent ideal sheaf of ``Z = V(I)`` on affine ``X``."""
+            ambient = self.ambient_scheme()
+            assert ambient in AffineSchemes(ambient.scheme_base_ring()), (
+                "the ideal sheaf is represented on an affine ambient scheme"
+            )
+            return ambient.associated_module_sheaf(self.defining_ideal_owned())
+
+
+class ClosedSubschemes(OwnedCategoryOverBaseRing):
+    r"""Closed subschemes of schemes over ``R``: a scheme with its closed immersion.
+
+    An object is a scheme ``Z`` together with the chosen closed immersion
+    ``Z -> X`` into its ambient scheme.  ``ClosedEmbeddings(X)`` is the fibre
+    of this category over one ambient ``X``, where the subobject order and
+    the ideal-sheaf data live; this category collects those fibres over all
+    ``R``-schemes so that "is a closed subscheme" is a placement a session
+    can ask without naming the ambient.
+    """
+
+    def an_object(self):
+        r"""The origin of the affine line."""
+        line = AffineSpace(1, self.base_ring())
+        first = next(iter(line.coordinate_algebra().algebra_generators()))
+        return line.closed_subscheme(first)
+
+    def _repr_object_names(self):
+        return f"closed subschemes of schemes over {self.base_ring()}"
+
+    def super_categories(self):
+        return [Schemes(self.base_ring())]
+
+    def __contains__(self, candidate) -> bool:
+        return candidate in Schemes(self.base_ring()) and _has_scheme_placement(
+            candidate, ClosedEmbeddings
+        )
+
 
 class OpenImmersions(_SchemeSubobjectsOf):
     r"""Subobjects of ``X`` whose inclusion is an open immersion.
@@ -2365,6 +2773,25 @@ class OpenImmersions(_SchemeSubobjectsOf):
             if not self.is_distinguished_open():
                 raise ValueError("this open immersion is not represented by one distinguished element")
             return self._preamble_distinguished_open_element
+
+        def inclusion_into(self, larger_open):
+            r"""The open immersion ``D(g) -> D(f)`` when ``D(g) <= D(f)`` in one affine scheme.
+
+            Its pullback is the restriction ``O(D(f)) -> O(D(g))`` of the
+            structure sheaf, which exists exactly when ``f`` is a unit on
+            ``D(g)``; composed with the inclusion of ``D(f)`` it is the
+            inclusion of ``D(g)``.
+            """
+            ambient = self.ambient_scheme()
+            assert larger_open.ambient_scheme() is ambient, (
+                "an inclusion between distinguished opens is taken in one affine scheme"
+            )
+            restriction = ambient.structure_sheaf().restriction_map(larger_open, self)
+            inclusion = _affine_morphism_from_pullback(self, larger_open, restriction)
+            assert larger_open.inclusion() * inclusion == self.inclusion(), (
+                "the inclusion between distinguished opens does not compose to the inclusion into the scheme"
+            )
+            return inclusion
 
 
 class SchemeMonomorphisms(MonoCategoryOf):
@@ -2402,13 +2829,18 @@ def refine_closed_subscheme(
             domain=subscheme,
             codomain=ambient,
         )
-    return refine_scheme(subscheme, base, [ClosedEmbeddings(ambient)])
+    return refine_scheme(
+        subscheme,
+        base,
+        [ClosedEmbeddings(ambient), ClosedSubschemes(base)],
+    )
 
 __all__ = [
     "AffineSchemes",
     "AffineSpace",
     "AffineSpaces",
     "ClosedEmbeddings",
+    "ClosedSubschemes",
     "FiberProductSchemes",
     "FiniteTypeSchemes",
     "IntegralSchemes",
