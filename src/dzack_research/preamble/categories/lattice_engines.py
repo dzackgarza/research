@@ -1,14 +1,27 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
+from functools import partial
 from importlib.util import find_spec
 from pathlib import Path
 import shutil
 
+from py_polyhedral.binaries import (
+    binary_available,
+    indefinite_form_automorphism_group,
+    indefinite_form_get_orbit_representative,
+    indefinite_form_isotropic_k_stuff,
+    indefinite_form_stabilizer_isotropic_subspace,
+    indefinite_form_stabilizer_vector,
+    indefinite_form_test_equivalence,
+    indefinite_form_test_equivalence_isotropic_k_plane,
+    indefinite_form_test_equivalence_vector,
+)
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.engine_capabilities import (
+    EngineAbsence,
     EngineCapabilityUnavailable,
     engine_capabilities,
 )
@@ -132,6 +145,14 @@ end
 """
 
 
+_OSCAR_PROVIDER = "oscar-via-sage-julia-bridge"
+_OSCAR_PROVISIONING = (
+    "clone github.com/dzackgarza/sage-julia-bridge and run `just setup` there: it "
+    "installs the bridge into Sage's environment, instantiates the bridge's Julia "
+    "project with its JSON dependency, and loads Oscar from the Julia depot"
+)
+
+
 class _OscarLatticeAdapter:
     r"""One retained-callable OSCAR realization behind ``sage-julia-bridge``."""
 
@@ -174,8 +195,8 @@ class _OscarLatticeAdapter:
                 JuliaError = ()
             if JuliaError and isinstance(error, JuliaError):
                 raise EngineCapabilityUnavailable(
-                    "OSCAR lattice capabilities require a provisioned sage-julia-bridge "
-                    "Julia project; run the bridge Julia-dependency setup"
+                    "lattice.oscar-adapter",
+                    (EngineAbsence(_OSCAR_PROVIDER, _OSCAR_PROVISIONING),),
                 ) from error
             raise
         if (
@@ -281,21 +302,24 @@ _oscar_lattices = _OscarLatticeAdapter()
 
 engine_capabilities.register(
     "lattice.rational_spinor_norm_sign",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.rational_spinor_norm_sign,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
     "lattice.centralizer_discriminant_image",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.centralizer_discriminant_image,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
     "lattice.even_unimodular_primitive_embedding",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.even_unimodular_primitive_embedding,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 
 
@@ -321,6 +345,92 @@ def even_unimodular_primitive_embedding(gram, positive, negative):
         gram,
         positive,
         negative,
+    )
+
+
+# ---------------------------------------------------------------------------
+# polyhedral_common, reached through the ``py_polyhedral`` wrapper.
+#
+# The wrapper owns the boundary: it writes the matrix files the programs read
+# and resolves each program from ``PATH`` at call time, so nothing here names
+# a build directory or an absolute executable.  Registering the operations
+# here puts them in the same ordered layer as the Sage-native and OSCAR
+# realizations, so a caller asks for the operation and receives either the
+# result or an absence that states what provisions it.
+# ---------------------------------------------------------------------------
+
+_POLYHEDRAL_PROVIDER = "polyhedral-common-via-py-polyhedral"
+
+_POLYHEDRAL_BUILD = (
+    "clone github.com/MathieuDutSik/polyhedral_common, build the indefinite-form "
+    "programs with `make -C src_indefinite`, and link them into a directory on PATH"
+)
+
+_POLYHEDRAL_NO_PROGRAM = (
+    "polyhedral_common builds no program of this name: `src_indefinite/Makefile` "
+    "lists the drivers it compiles and this is not among them.  The routine "
+    "itself is in `src_indefinite/CombinedAlgorithms.h`, so the operation "
+    "arrives with a command-line driver added upstream, not with any install"
+)
+
+_POLYHEDRAL_REALIZATIONS = (
+    (
+        "lattice.indefinite_automorphism_group",
+        "INDEF_FORM_AutomorphismGroup",
+        indefinite_form_automorphism_group,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_isometry_witness",
+        "INDEF_FORM_TestEquivalence",
+        indefinite_form_test_equivalence,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_vector_isometry_witness",
+        "INDEF_FORM_TestEquivalenceVector",
+        indefinite_form_test_equivalence_vector,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_orbit_representative",
+        "INDEF_FORM_GetOrbitRepresentative",
+        indefinite_form_get_orbit_representative,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_orbits",
+        "INDEF_FORM_GetOrbit_IsotropicKplane",
+        indefinite_form_isotropic_k_stuff,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_stabilizer",
+        "INDEF_FORM_StabilizerIsotropicPlane",
+        indefinite_form_stabilizer_isotropic_subspace,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_vector_stabilizer",
+        "INDEF_FORM_StabilizerVector",
+        indefinite_form_stabilizer_vector,
+        _POLYHEDRAL_NO_PROGRAM,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_isometry_witness",
+        "INDEF_FORM_TestEquivalenceIsotropicKplane",
+        indefinite_form_test_equivalence_isotropic_k_plane,
+        _POLYHEDRAL_NO_PROGRAM,
+    ),
+)
+
+for _capability, _binary, _operation, _provisioning in _POLYHEDRAL_REALIZATIONS:
+    engine_capabilities.register(
+        _capability,
+        _POLYHEDRAL_PROVIDER,
+        _operation,
+        available=partial(binary_available, _binary),
+        provisioning=_provisioning,
     )
 
 
