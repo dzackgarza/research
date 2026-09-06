@@ -11,7 +11,9 @@ two-elementary involutions).  Both discriminant groups then have order
 
 from dzack_research.preamble.all import (
     Involutions,
+    Lattices,
     NamedLattices,
+    ZZ,
     cyclotomic_summand,
     isometry_primitive_extension,
 )
@@ -119,3 +121,129 @@ def test_the_enriques_cyclotomic_summands_are_the_two_eigen_sublattices() -> Non
     assert cyclotomic_summand(involution, 1).rank() == 10
     assert cyclotomic_summand(involution, 2).rank() == 12
     assert cyclotomic_summand(involution, 3).rank() == 0
+
+
+def _a2_diagram_involution():
+    r"""Return ``A2`` with the involution swapping its two simple roots.
+
+    The Gram matrix of ``A2`` is symmetric under that swap, so the swap is an
+    isometry.  It fixes ``a1 + a2``, of square ``-2``, and negates
+    ``a1 - a2``, of square ``-6``: the invariant and coinvariant lattices are
+    both of rank one and their discriminant groups have orders two and six.
+    """
+    lattice = Lattices(ZZ)("A2")
+    labels = tuple(lattice.module_generating_set())
+    first, second = tuple(lattice.module_generators())
+    return lattice, lattice.Aut()({labels[0]: second, labels[1]: first})
+
+
+def _negation(summand):
+    r"""Return ``-1`` in ``O(summand)``, an isometry of every lattice."""
+    return summand.Aut()(
+        tuple(-generator for generator in summand.module_generators())
+    )
+
+
+def test_a_compatible_pair_reassembles_the_swap_of_the_hyperbolic_plane() -> None:
+    lattice, swap = _hyperbolic_swap()
+    extension = isometry_primitive_extension(swap)
+
+    invariant_part = extension.invariant_restriction(swap)
+    coinvariant_part = extension.coinvariant_restriction(swap)
+    assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
+
+    assembled = extension.centralizer_element(invariant_part, coinvariant_part)
+    assert assembled.parent() is lattice.Aut()
+    assert assembled == swap
+
+
+def test_reassembly_inverts_restriction_on_the_four_pairs_over_the_hyperbolic_plane() -> None:
+    lattice, swap = _hyperbolic_swap()
+    extension = isometry_primitive_extension(swap)
+    invariant_summand = extension.invariant.inclusion().domain()
+    coinvariant_summand = extension.coinvariant.inclusion().domain()
+
+    # Both summands have rank one, so each orthogonal group is {1,-1} and
+    # there are four pairs.  A_{Z(e+f)} has order two and so has no
+    # automorphism but the identity, so every pair preserves the glue graph:
+    # the four assembled isometries are the whole of O(U), which is the
+    # centralizer of the swap because O(U) is abelian.
+    pairs = tuple(
+        (invariant_part, coinvariant_part)
+        for invariant_part in (
+            invariant_summand.Aut().one(),
+            _negation(invariant_summand),
+        )
+        for coinvariant_part in (
+            coinvariant_summand.Aut().one(),
+            _negation(coinvariant_summand),
+        )
+    )
+    assert all(
+        extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
+        for invariant_part, coinvariant_part in pairs
+    )
+    assembled = tuple(
+        extension.centralizer_element(invariant_part, coinvariant_part)
+        for invariant_part, coinvariant_part in pairs
+    )
+
+    for pair, element in zip(pairs, assembled, strict=True):
+        invariant_part, coinvariant_part = pair
+        assert element in extension.centralizer_group()
+        assert extension.invariant_restriction(element) == invariant_part
+        assert extension.coinvariant_restriction(element) == coinvariant_part
+
+    identity, swap_again, _negated_swap, negation = assembled
+    assert identity == lattice.Aut().one()
+    assert swap_again == swap
+    assert all(
+        negation(generator) == -generator
+        for generator in lattice.module_generators()
+    )
+
+
+def test_the_a2_diagram_involution_reassembles_across_a_nontrivial_glue() -> None:
+    lattice, involution = _a2_diagram_involution()
+    extension = isometry_primitive_extension(involution)
+
+    assert extension.invariant.rank() == 1
+    assert extension.coinvariant.rank() == 1
+    assert extension.invariant.discriminant_group().cardinality() == 2
+    assert extension.coinvariant.discriminant_group().cardinality() == 6
+    # A_{Z(a1-a2)} is cyclic of order six, on which negation acts
+    # non-trivially; the glue subgroup is its subgroup of order two, and the
+    # index of the orthogonal sum is that order.
+    assert extension.index() == 2
+    assert extension.gluing_subgroup().cardinality() == 2
+
+    invariant_part = extension.invariant_restriction(involution)
+    coinvariant_part = extension.coinvariant_restriction(involution)
+    assert extension.pair_preserves_glue_graph(invariant_part, coinvariant_part)
+    assert (
+        extension.centralizer_element(invariant_part, coinvariant_part)
+        == involution
+    )
+
+
+def test_the_a2_centralizer_splits_the_single_root_orbit_in_two() -> None:
+    lattice, involution = _a2_diagram_involution()
+    extension = isometry_primitive_extension(involution)
+
+    roots = lattice.vectors_of_square(-2)
+    assert len(roots) == 6
+    assert len(lattice.O().vector_orbit_representatives(-2)) == 1
+
+    # The centralizer of the diagram involution in O(A2) is generated by that
+    # involution and by -1, so it has order four: the orbit of a1 is
+    # {a1, a2, -a1, -a2} and the orbit of a1 + a2 is {a1 + a2, -(a1 + a2)}.
+    representatives = extension.equivariant_vector_orbit_representatives(-2)
+    assert len(representatives) == 2
+    assert all(representative in roots for representative in representatives)
+    assert len(
+        tuple(
+            representative
+            for representative in representatives
+            if involution(representative) == representative
+        )
+    ) == 1

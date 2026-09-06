@@ -18,12 +18,10 @@ anisotropic vector.  The two share the owned pieces they stand on: the
 invariant lattice and formed coinvariants of the isometry, ``glue_map`` for
 the anti-isometry, and ``centralizer`` for the subgroup.
 
-What this file adds is the decomposition as one object, the two restriction
-morphisms ``O(L,f) -> O(L^f)`` and ``O(L,f) -> O((L^f)^perp)`` carrying the
-forward half of that isomorphism, and the cyclotomic summands
-``ker Phi_d(f)`` of a finite-order isometry.  Assembling an element of
-``O(L,f)`` from a compatible pair is the inverse half and is not implemented
-here; the obstruction is stated on ``centralizer_element``.
+What this file adds is the decomposition as one object, both halves of that
+isomorphism -- the restriction morphisms ``O(L,f) -> O(L^f)`` and
+``O(L,f) -> O((L^f)^perp)`` forwards, and ``centralizer_element`` back -- and
+the cyclotomic summands ``ker Phi_d(f)`` of a finite-order isometry.
 """
 
 from sage.misc.cachefunc import cached_method
@@ -134,46 +132,160 @@ class IsometryPrimitiveExtension:
             for generator in inclusion.domain().module_generators()
         )
 
-    def centralizer_element(self, invariant_part, coinvariant_part):
-        r"""Assemble ``g`` in ``O(L,f)`` from a compatible pair of restrictions."""
-        assert False, (
-            "assembling an element of O(L,f) from a pair (g_+, g_-) is the "
-            "inverse of invariant_restriction and coinvariant_restriction.  It "
-            "requires the pair's induced discriminant automorphisms to be "
-            "carried across the glue anti-isometry, so the composite "
-            "gamma . Disc(g_+) . gamma^{-1} has to be formed on the glue "
-            "subgroups H_+ <= A_{L^f} and H_- <= A_{(L^f)^perp}(-1); the twist "
-            "on the codomain means Disc(g_-) and gamma are not currently "
-            "composable as owned morphisms.  The missing operation is one "
-            "named arrow: twist(scalar) in "
-            "modules/framed/formed/torsion_form_modules.py builds A(-1) as a "
-            "new parent on the same underlying presented module but has no "
-            "action on morphisms, so an automorphism of A is carried to none "
-            "of A(-1).  Giving the twist that action -- it is the identity on "
-            "the underlying module -- makes the composite above an ordinary "
-            "composition of owned morphisms"
+    @cached_method
+    def orthogonal_sum_inclusion(self):
+        r"""Return the finite-index inclusion ``L^f + (L^f)^perp -> L``.
+
+        The two summands are orthogonal of complementary rank, so their
+        orthogonal sum is a lattice in its own right and this arrow is the
+        primitive extension the class is named for.  Its cokernel has order
+        :meth:`index`, so that scalar carries every vector of ``L`` into the
+        image: an isometry of the two summands is read on ``L`` by clearing
+        that one denominator.
+        """
+        invariant_inclusion = self.invariant.inclusion()
+        coinvariant_inclusion = self.coinvariant.inclusion()
+        invariant_summand = invariant_inclusion.domain()
+        coinvariant_summand = coinvariant_inclusion.domain()
+        summands = invariant_summand + coinvariant_summand
+        return summands.Emb(self.lattice)(
+            tuple(
+                invariant_inclusion(generator)
+                for generator in invariant_summand.module_generators()
+            )
+            + tuple(
+                coinvariant_inclusion(generator)
+                for generator in coinvariant_summand.module_generators()
+            )
         )
 
-    def equivariant_vector_orbit_representatives(self, square):
-        r"""Return ``O(L,f)``-orbit representatives of the vectors of ``square``."""
-        assert False, (
-            f"the O(L,f)-orbits of the vectors of square {square} in "
-            f"{self.lattice} are not computed.  The owned subgroup-orbit route "
-            "splits a full O(L) orbit through the finite quotient of a "
-            "character of O(L) -- discriminant, determinant or real spinor "
-            "norm -- and the centralizer of an isometry is not cut out by such "
-            "a character, so that route does not describe it.  The "
-            "equivariant orbits are read off the pair description instead: a "
-            "vector of L is a pair of vectors of L^f and (L^f)^perp glued "
-            "across gamma, and its orbit is the orbit of that pair under the "
-            "subgroup of O(L^f) x O((L^f)^perp) preserving the glue.  The "
-            "forward half of that description is invariant_restriction and "
-            "coinvariant_restriction; the missing half is the one stated on "
-            "centralizer_element, an action on morphisms for twist(scalar) in "
-            "modules/framed/formed/torsion_form_modules.py.  For the orbits "
-            "under the full O(L) use "
-            "L.O().vector_orbit_representatives(square)"
+    def glue_graph(self):
+        r"""Return the graph of ``gamma`` inside ``A_{L^f} x A_{(L^f)^perp}(-1)``.
+
+        Nikulin presents ``L`` by the subgroup ``L/(L^f + (L^f)^perp)``, which
+        sits in the sum of the two discriminant forms as the graph of the
+        anti-isometry ``gamma``.  The graph is a finite group of order
+        :meth:`index`, and it is what an isometry of the two summands has to
+        preserve in order to be an isometry of ``L``.
+        """
+        glue = self.glue()
+        gluing = glue.domain()
+        into_invariant = gluing.inclusion()
+        into_coinvariant = glue.codomain().inclusion()
+        return tuple(
+            (into_invariant(element), into_coinvariant(glue(element)))
+            for element in gluing.elements()
         )
+
+    def pair_preserves_glue_graph(self, invariant_part, coinvariant_part) -> bool:
+        r"""Return whether ``(g_+, g_-)`` carries the graph of ``gamma`` onto itself.
+
+        The pair acts on the sum of the two discriminant forms by its induced
+        discriminant automorphisms ``Disc(g_+)`` and ``Disc(g_-)``, the second
+        read on the twist ``A_{(L^f)^perp}(-1)`` in which ``gamma`` lands.  It
+        extends to an isometry of ``L`` exactly when that action preserves the
+        graph, which is Nikulin's criterion for a primitive extension.  Both
+        maps are automorphisms of finite forms, so preserving the graph
+        setwise is the same as permuting it.
+        """
+        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+            TorsionQuadraticFormModules,
+        )
+
+        twist = TorsionQuadraticFormModules(self.lattice.base_ring()).twist_functor(-1)
+        invariant_action = invariant_part.discriminant_morphism()
+        coinvariant_action = twist(coinvariant_part.discriminant_morphism())
+        graph = self.glue_graph()
+        return all(
+            (invariant_action(invariant_class), coinvariant_action(coinvariant_class))
+            in graph
+            for invariant_class, coinvariant_class in graph
+        )
+
+    def centralizer_element(self, invariant_part, coinvariant_part):
+        r"""Assemble ``g`` in ``O(L,f)`` from a compatible pair of restrictions.
+
+        This is the inverse of :meth:`invariant_restriction` and
+        :meth:`coinvariant_restriction`.  A pair ``(g_+, g_-)`` in
+        ``O(L^f) x O((L^f)^perp)`` is an element of ``O(L,f)`` under two
+        conditions.  It has to extend to ``L``, which is
+        :meth:`pair_preserves_glue_graph`.  It then has to commute with ``f``,
+        and since ``f`` is the identity on ``L^f`` that is the single
+        condition that ``g_-`` commutes with ``f`` restricted to
+        ``(L^f)^perp``.
+
+        The extension itself is one denominator.  The orthogonal sum has index
+        ``m`` in ``L``, so ``m x`` lies in the sum for every ``x`` in ``L``;
+        applying the pair there and dividing by ``m`` again gives ``g x``, and
+        the division is exact because the pair preserves the graph.  The
+        returned arrow is built in ``O(L)``, whose constructor is what proves
+        the assembled map preserves the form and is bijective.
+        """
+        lattice = self.lattice
+        invariant_inclusion = self.invariant.inclusion()
+        coinvariant_inclusion = self.coinvariant.inclusion()
+        invariant_summand = invariant_inclusion.domain()
+        coinvariant_summand = coinvariant_inclusion.domain()
+        assert invariant_part.parent() is invariant_summand.Aut(), (
+            "the invariant half of the pair is an element of O(L^f)"
+        )
+        assert coinvariant_part.parent() is coinvariant_summand.Aut(), (
+            "the coinvariant half of the pair is an element of O((L^f)^perp)"
+        )
+        coinvariant_isometry = self.coinvariant_restriction(self.isometry)
+        assert (
+            coinvariant_part * coinvariant_isometry
+            == coinvariant_isometry * coinvariant_part
+        ), (
+            "an element of O(L,f) restricts on (L^f)^perp to the centralizer "
+            "of f there; the stated g_- does not commute with f"
+        )
+        assert self.pair_preserves_glue_graph(invariant_part, coinvariant_part), (
+            "the stated pair does not preserve the graph of the glue "
+            "anti-isometry, so it is an isometry of L^f + (L^f)^perp that does "
+            "not extend to L"
+        )
+
+        ring = lattice.base_ring()
+        scalar = ring(int(self.index().finite_value()))
+        inclusion = self.orthogonal_sum_inclusion()
+        summands = inclusion.domain()
+        moved = module_homset(summands, lattice)(
+            tuple(
+                invariant_inclusion(invariant_part(generator))
+                for generator in invariant_summand.module_generators()
+            )
+            + tuple(
+                coinvariant_inclusion(coinvariant_part(generator))
+                for generator in coinvariant_summand.module_generators()
+            )
+        )
+        scaling = module_homset(lattice, lattice)(
+            tuple(
+                lattice.scalar_multiple(scalar, generator)
+                for generator in lattice.module_generators()
+            )
+        )
+
+        def image(label):
+            scaled = lattice.scalar_multiple(scalar, lattice.module_generator(label))
+            return scaling.lift(moved(inclusion.lift(scaled)))
+
+        return lattice.O()(image)
+
+    def equivariant_vector_orbit_representatives(self, square):
+        r"""Return ``O(L,f)``-orbit representatives of the vectors of ``square``.
+
+        The centralizer is a subgroup of ``O(L)`` cut out by a predicate and
+        not by a character, so the finite-character quotient that splits an
+        ``O(L)`` orbit does not describe it.  What describes it is the group
+        itself, and acting with it is a finite computation exactly when
+        ``O(L)`` is finite, which for a lattice is definiteness; the
+        assertion in the owning subgroup operation states that hypothesis.
+        For the orbits under the full ``O(L)`` use
+        ``L.O().vector_orbit_representatives(square)``.
+        """
+        return self.centralizer_group().vector_orbit_representatives(square)
 
     def __repr__(self) -> str:
         return f"Primitive extension of {self.lattice} cut out by {self.isometry}"
