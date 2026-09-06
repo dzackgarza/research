@@ -556,9 +556,15 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return cardinal(sum(1 for invariant in self._invariants_with_units() if invariant == 0))
 
         def is_torsion(self):
+            r"""Read torsion off the invariant factors over a PID, else take the generic fibre."""
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().is_torsion()
             return self.rank() == 0
 
         def is_torsion_free(self):
+            r"""Over a PID ``M`` is torsion-free exactly when no invariant factor is a nonzero non-unit."""
+            if self.base_ring() not in PrincipalIdealDomains():
+                return super().is_torsion_free()
             return all(invariant == 0 or invariant.is_unit() for invariant in self._invariants_with_units())
 
         def is_zero(self):

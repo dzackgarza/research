@@ -560,6 +560,31 @@ class Modules(OwnedCategoryOverBaseRing):
             r"""Return ``Ann_R(M)=ker(R -> End_R(M))``."""
             return self.scalar_action().kernel()
 
+        @cached_method
+        def generic_fibre_map(self):
+            r"""Return the unit ``M -> K tensor_R M`` of scalar extension to ``Frac(R)``."""
+            ring = self.base_ring()
+            assert ring in IntegralDomains(), (
+                f"the generic fibre of a module over {ring} needs an integral-domain base"
+            )
+            return Modules(ring).base_change_adjunction(ring.fraction_field_map()).unit(self)
+
+        def torsion_submodule(self):
+            r"""Return ``Tor(M) = ker(M -> K tensor_R M)`` over an integral domain.
+
+            An element is torsion exactly when some nonzero scalar kills it, and
+            over a domain that is exactly when it dies in the generic fibre: the
+            unit of scalar extension along ``R -> K`` inverts every nonzero
+            scalar and nothing else.  So the torsion submodule is that unit's
+            kernel, computed as a kernel rather than read off a decomposition
+            that only a principal ideal domain supplies.
+            """
+            return self.generic_fibre_map().kernel()
+
+        def is_torsion_free(self) -> bool:
+            r"""Return whether ``Tor(M)=0``, that is whether ``M -> K tensor_R M`` is injective."""
+            return self.generic_fibre_map().is_injective()
+
         def scalar_multiple(self, scalar, element):
             r"""Return ``r*m = rho_M(r)(m)``."""
             return self.scalar_action()(self.base_ring()(scalar))(element)
@@ -935,6 +960,15 @@ class FinitelyGeneratedModules(OwnedCategoryOverBaseRing):
             if ring not in IntegralDomains():
                 raise TypeError("generic rank is defined here over an integral domain")
             return self.fiber_dimension(ring.spectrum().generic_point())
+
+        def is_torsion(self) -> bool:
+            r"""Return whether ``K tensor_R M = 0`` over an integral domain.
+
+            The generic fibre is a vector space over ``K``, so it vanishes
+            exactly when its dimension does.  A free module of positive rank is
+            therefore not torsion, whatever its relations look like.
+            """
+            return self.generic_rank() == 0
 
 
 class FinitelyPresentedModules(OwnedCategoryOverBaseRing):

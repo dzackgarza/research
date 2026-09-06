@@ -1001,6 +1001,25 @@ class OwnedIntegralDomains(OwnedCategory):
         def is_integral_domain(self, *args, **kwargs):
             return True
 
+        @cached_method
+        def fraction_field_map(self):
+            r"""Return the localization map ``R -> Frac(R)``.
+
+            This is the localization of ``R`` at its nonzero elements, so it is
+            injective exactly because ``R`` is a domain.  Scalar extension along
+            it is the generic fibre: a module dies under it exactly on its
+            torsion, and an ideal extends along it to the unit ideal exactly
+            when it is nonzero.
+            """
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _canonical_map,
+            )
+
+            field = self.fraction_field()
+            if field is self:
+                return ring_homset(self, self).identity()
+            return _canonical_map(self, field)
+
 
 class OwnedPrincipalIdealDomains(OwnedCategory):
     r"""Principal ideal domains in the owned ring hierarchy."""
