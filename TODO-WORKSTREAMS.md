@@ -149,6 +149,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| D-flatness-xy-t-20260906 | D/M/S — represent supported module flatness over PIDs, certify `QQ[t] -> QQ[t][x,y]/(xy-t)` torsion-free/flat from the exact chosen presentation, and use that flatness hypothesis to represent the relative nonsmooth Fitting locus of the `xy=t` family | ChatGPT continuation `2026-09-06-flatness-xy-t`; `/home/dzack/research` | write: `src/dzack_research/preamble/categories/modules/pure/modules.py`; `src/dzack_research/preamble/categories/algebras/algebras.py`; `src/dzack_research/preamble/categories/schemes/schemes.py`; `tests/algebras/test_module_structure.py`; `tests/schemes/test_affine_schemes.py`; `docs/preamble-megadoc.md`; `docs/preamble-graph.json`; `docs/preamble-graph.dot`; `docs/preamble-graph.html` | `e05dcd2d`; consumes D conormal/Fitting/singular release `f06a8c7d`, P relative presentation `289d4756`, R/M localization/Fitting releases | 2026-09-06T04:57:54Z |
 
 ### Existing work awaiting adoption
 
