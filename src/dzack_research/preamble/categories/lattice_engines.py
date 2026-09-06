@@ -1,14 +1,28 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
+from functools import partial
+from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
 import shutil
 
+from py_polyhedral.binaries import (
+    binary_available,
+    indefinite_form_automorphism_group,
+    indefinite_form_get_orbit_representative,
+    indefinite_form_isotropic_k_stuff,
+    indefinite_form_stabilizer_isotropic_subspace,
+    indefinite_form_stabilizer_vector,
+    indefinite_form_test_equivalence,
+    indefinite_form_test_equivalence_isotropic_k_plane,
+    indefinite_form_test_equivalence_vector,
+)
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.engine_capabilities import (
+    EngineAbsence,
     EngineCapabilityUnavailable,
     engine_capabilities,
 )
@@ -132,6 +146,14 @@ end
 """
 
 
+_OSCAR_PROVIDER = "oscar-via-sage-julia-bridge"
+_OSCAR_PROVISIONING = (
+    "clone github.com/dzackgarza/sage-julia-bridge and run `just setup` there: it "
+    "installs the bridge into Sage's environment, instantiates the bridge's Julia "
+    "project with its JSON dependency, and loads Oscar from the Julia depot"
+)
+
+
 class _OscarLatticeAdapter:
     r"""One retained-callable OSCAR realization behind ``sage-julia-bridge``."""
 
@@ -174,8 +196,8 @@ class _OscarLatticeAdapter:
                 JuliaError = ()
             if JuliaError and isinstance(error, JuliaError):
                 raise EngineCapabilityUnavailable(
-                    "OSCAR lattice capabilities require a provisioned sage-julia-bridge "
-                    "Julia project; run the bridge Julia-dependency setup"
+                    "lattice.oscar-adapter",
+                    (EngineAbsence(_OSCAR_PROVIDER, _OSCAR_PROVISIONING),),
                 ) from error
             raise
         if (
@@ -281,21 +303,24 @@ _oscar_lattices = _OscarLatticeAdapter()
 
 engine_capabilities.register(
     "lattice.rational_spinor_norm_sign",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.rational_spinor_norm_sign,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
     "lattice.centralizer_discriminant_image",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.centralizer_discriminant_image,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
     "lattice.even_unimodular_primitive_embedding",
-    "oscar-via-sage-julia-bridge",
+    _OSCAR_PROVIDER,
     _oscar_lattices.even_unimodular_primitive_embedding,
     available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
 )
 
 
@@ -321,6 +346,205 @@ def even_unimodular_primitive_embedding(gram, positive, negative):
         gram,
         positive,
         negative,
+    )
+
+
+# ---------------------------------------------------------------------------
+# The indefinite-lattice algorithms, in the order the layer offers them.
+#
+# ``sage-indefinite-port`` is where these algorithms are going: it ports the
+# ``INDEF_FORM_*`` kernels onto the owned formed-lattice category, so a ported
+# operation computes in the session instead of through a file protocol.  It is
+# the first provider of every capability below.
+#
+# ``polyhedral_common``, reached through the ``py_polyhedral`` wrapper, is the
+# realization being replaced, and it is what computes today.  The wrapper owns
+# that boundary: it writes the matrix files the programs read and resolves each
+# program from ``PATH`` at call time, so nothing here names a build directory
+# or an absolute executable.
+#
+# The second entry is not a fallback.  It is the realization the layer reaches
+# while the port of that operation is outstanding, and when neither provider is
+# available the refusal carries both absences with both remedies.
+#
+# The port depends on this package, so it is imported lazily, inside the
+# availability predicate, the same way the OSCAR adapter reaches the Julia
+# bridge.  A capability the port does not expose yet names its own module and
+# attribute as ``None``; filling those in is what turns the port on for that
+# operation.
+# ---------------------------------------------------------------------------
+
+_PORT_PROVIDER = "sage-indefinite-port"
+_PORT_PACKAGE = "sage_indefinite_port"
+_PORT_INSTALL = (
+    "sage -pip install --no-deps -e /home/dzack/gitclones/sage-indefinite-port"
+)
+
+
+def _port_provisioning(kernel, ported):
+    r"""State how ``kernel`` becomes available from the port."""
+    if ported:
+        return f"install the port into Sage's environment with `{_PORT_INSTALL}`"
+    return (
+        f"install the port into Sage's environment with `{_PORT_INSTALL}`; the "
+        f"operation itself arrives with sage-indefinite-port's port of {kernel}"
+    )
+
+
+def _port_available(module_name, attribute) -> bool:
+    r"""Return whether the port exposes this operation in this session."""
+    if module_name is None or find_spec(_PORT_PACKAGE) is None:
+        return False
+    return attribute in vars(import_module(module_name))
+
+
+def _port_operation(module_name, attribute, /, *args, **kwargs):
+    return vars(import_module(module_name))[attribute](*args, **kwargs)
+
+
+# Capability, the kernel the port carries it under, module, attribute.  The
+# kernel names are the ones declared in `src_indefinite/CombinedAlgorithms.h`,
+# except INDEF_FORM_Invariant, which is in `src_indefinite/IndefiniteFormFundamental.h`.
+# They are not the driver names: the driver INDEF_FORM_TestEquivalenceVector
+# calls the kernel INDEF_FORM_EquivalenceVector, and INDEF_FORM_StabilizerIsotropicPlane
+# calls INDEF_FORM_Stabilizer_IsotropicKplane.
+_PORT_REALIZATIONS = (
+    (
+        "lattice.indefinite_isometry_prefilter",
+        "INDEF_FORM_Invariant",
+        "sage_indefinite_port.invariants",
+        "lattice_prefilter",
+    ),
+    (
+        "lattice.indefinite_automorphism_group",
+        "INDEF_FORM_AutomorphismGroup",
+        None,
+        None,
+    ),
+    ("lattice.indefinite_isometry_witness", "INDEF_FORM_TestEquivalence", None, None),
+    (
+        "lattice.indefinite_vector_isometry_witness",
+        "INDEF_FORM_EquivalenceVector",
+        None,
+        None,
+    ),
+    (
+        "lattice.indefinite_orbit_representative",
+        "INDEF_FORM_GetOrbitRepresentative",
+        None,
+        None,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_orbits",
+        "INDEF_FORM_GetOrbit_IsotropicKplane",
+        None,
+        None,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_stabilizer",
+        "INDEF_FORM_Stabilizer_IsotropicKplane",
+        None,
+        None,
+    ),
+    ("lattice.indefinite_vector_stabilizer", "INDEF_FORM_StabilizerVector", None, None),
+    (
+        "lattice.indefinite_isotropic_subspace_isometry_witness",
+        "INDEF_FORM_Equivalence_IsotropicKplane",
+        None,
+        None,
+    ),
+)
+
+for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
+    engine_capabilities.register(
+        _capability,
+        _PORT_PROVIDER,
+        partial(_port_operation, _module, _attribute),
+        available=partial(_port_available, _module, _attribute),
+        provisioning=_port_provisioning(_kernel, _module is not None),
+    )
+
+
+_POLYHEDRAL_PROVIDER = "polyhedral-common-via-py-polyhedral"
+
+_POLYHEDRAL_BUILD = (
+    "clone github.com/MathieuDutSik/polyhedral_common, build the indefinite-form "
+    "programs with `make -C src_indefinite`, and link them into a directory on PATH"
+)
+
+
+def _polyhedral_no_program(kernel):
+    r"""State that this operation has no program, and where it comes from instead.
+
+    ``src_indefinite/Makefile`` lists the drivers polyhedral_common compiles and
+    these are not among them, so no build or install produces them.  The kernel
+    exists in ``src_indefinite/CombinedAlgorithms.h``, and the operation reaches
+    the session through the port of that kernel.
+    """
+    return (
+        "polyhedral_common builds no program of this name, so the operation "
+        f"arrives with sage-indefinite-port's port of {kernel}"
+    )
+
+
+_POLYHEDRAL_REALIZATIONS = (
+    (
+        "lattice.indefinite_automorphism_group",
+        "INDEF_FORM_AutomorphismGroup",
+        indefinite_form_automorphism_group,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_isometry_witness",
+        "INDEF_FORM_TestEquivalence",
+        indefinite_form_test_equivalence,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_vector_isometry_witness",
+        "INDEF_FORM_TestEquivalenceVector",
+        indefinite_form_test_equivalence_vector,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_orbit_representative",
+        "INDEF_FORM_GetOrbitRepresentative",
+        indefinite_form_get_orbit_representative,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_orbits",
+        "INDEF_FORM_GetOrbit_IsotropicKplane",
+        indefinite_form_isotropic_k_stuff,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_stabilizer",
+        "INDEF_FORM_StabilizerIsotropicPlane",
+        indefinite_form_stabilizer_isotropic_subspace,
+        _POLYHEDRAL_BUILD,
+    ),
+    (
+        "lattice.indefinite_vector_stabilizer",
+        "INDEF_FORM_StabilizerVector",
+        indefinite_form_stabilizer_vector,
+        _polyhedral_no_program("INDEF_FORM_StabilizerVector"),
+    ),
+    (
+        "lattice.indefinite_isotropic_subspace_isometry_witness",
+        "INDEF_FORM_TestEquivalenceIsotropicKplane",
+        indefinite_form_test_equivalence_isotropic_k_plane,
+        _polyhedral_no_program("INDEF_FORM_Equivalence_IsotropicKplane"),
+    ),
+)
+
+for _capability, _binary, _operation, _provisioning in _POLYHEDRAL_REALIZATIONS:
+    engine_capabilities.register(
+        _capability,
+        _POLYHEDRAL_PROVIDER,
+        _operation,
+        available=partial(binary_available, _binary),
+        provisioning=_provisioning,
     )
 
 
