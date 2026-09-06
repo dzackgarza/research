@@ -408,17 +408,30 @@ class LocalizationRings(OwnedCategory):
             largest exponent the monomial uses -- so the criterion is that the
             product lies in ``sqrt((a))``.
 
-            This is an ideal computation in ``R`` and needs nothing of
-            ``S^{-1}R``, which is what lets a localization of a ring with zero
-            divisors answer.  A prime localization inverts a submonoid with no
-            finite generating set and states the criterion for it separately.
+            This is an ideal computation and needs nothing of ``S^{-1}R``,
+            which is what lets a localization of a ring with zero divisors
+            answer.  It is made in the ring at the bottom of a tower of
+            localizations, where the ideals are: ``a/s`` is a unit exactly when
+            ``a`` is, so a tower inverts a single family over that ring and the
+            question descends to it unchanged.  A prime localization inverts a
+            submonoid with no finite generating set and states the criterion
+            for it separately.
             """
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _localization_descent,
+                _one_step_inverted_family,
+            )
+
             parent = self.parent()
             source = parent.localization_source()
-            inverted_product = source.one()
-            for inverted in parent.inverted_elements():
+            bottom, inverted_family = _one_step_inverted_family(
+                source, parent.inverted_elements()
+            )
+            bottom, (numerator,) = _localization_descent(source, (self.numerator(),))
+            inverted_product = bottom.one()
+            for inverted in inverted_family:
                 inverted_product = inverted_product * inverted
-            return source.ideal(self.numerator()).radical().contains_ambient_element(
+            return bottom.ideal(numerator).radical().contains_ambient_element(
                 inverted_product
             )
 
@@ -778,6 +791,11 @@ class LocalizationRings(OwnedCategory):
             map and nothing further.  Taking ``T`` to be the complement of a
             prime gives the map from a section to its germ.
 
+            The same open arises the other way, by localizing the chart
+            ``S^{-1}R`` itself at ``g``.  Then the target's source is this ring
+            rather than ``R``, and the map over it is that localization's own
+            map, which the two constructions of ``D(fg)`` share.
+
             Between two prime localizations the containment ``S <= T`` is
             ``R \\ q <= R \\ p``, that is ``p <= q``, so ``R_q -> R_p`` exists
             exactly when ``p`` specializes to ``q``: the germ at a point maps
@@ -793,6 +811,11 @@ class LocalizationRings(OwnedCategory):
             assert target in LocalizationRings(), (
                 "a localization restriction lands in another localization of the same ring"
             )
+            if target.localization_source() is self:
+                # The overlap was built by localizing this chart, so the map
+                # over it is that localization's own map: it is already the
+                # unique map out of this ring inverting what the target adds.
+                return target.localization_map()
             assert target.localization_source() is self.localization_source(), (
                 f"{self} and {target} localize different rings, so no map over the source exists"
             )
