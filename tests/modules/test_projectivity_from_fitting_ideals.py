@@ -45,11 +45,11 @@ def test_a_free_module_has_its_rank_as_the_projective_rank_at_a_point() -> None:
     assert free.projective_rank(point) == 2
 
 
-def test_the_local_trivialization_is_an_isomorphism_of_that_rank() -> None:
+def test_the_local_free_trivialization_is_an_isomorphism_of_that_rank() -> None:
     free = BasedFreeModule(ZZ, finite_ordered_set(("g", "h")))
     point = ZZ.spectrum()(ZZ.ideal(ZZ(5)))
 
-    trivialization = free.local_trivialization(point)
+    trivialization = free.local_free_trivialization(point)
 
     assert trivialization.codomain() is free.localize_at_prime(point)
     assert trivialization.domain().rank() == free.projective_rank(point)

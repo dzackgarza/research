@@ -199,33 +199,6 @@ class KahlerDifferentialModules(OwnedCategoryOverBaseRing):
                 }
             )
 
-        def cotangent_space(self, point):
-            r"""Return ``Omega^1_{A/R} tensor_A kappa(p)``, the cotangent space at ``p``.
-
-            The cotangent space is the fibre of the differential module, so it
-            is the module fibre already owned by finitely generated modules and
-            not a second construction.  Its dimension over the residue field is
-            the embedding dimension at ``p``, which is why smoothness is read
-            here.
-            """
-            return self.fiber(point)
-
-        def tangent_space(self, point):
-            r"""Return the Zariski tangent space, the dual of the cotangent space.
-
-            A derivation into the residue field is a ``kappa(p)``-linear map on
-            the cotangent space, by the representing property of
-            ``Omega^1_{A/R}``.  So the tangent space is the internal Hom of the
-            cotangent space into the residue field, taken in vector spaces over
-            it, and no separate model of tangent vectors is built.
-            """
-            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-                ring_as_module,
-            )
-
-            residue = point.residue_field()
-            return InternalHom(self.cotangent_space(point), ring_as_module(residue))
-
         def non_smooth_locus(self, relative_dimension):
             r"""Return ``V(Fitt_d(Omega^1_{A/R}))`` for the supplied relative dimension ``d``.
 

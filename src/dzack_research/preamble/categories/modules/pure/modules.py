@@ -1208,7 +1208,7 @@ class ProjectiveModules(OwnedCategoryOverBaseRing):
                 raise TypeError("projective_rank currently requires a finite projective module")
             return self.fiber_dimension(point)
 
-        def local_trivialization(self, point):
+        def local_free_trivialization(self, point):
             r"""Return the isomorphism ``R_p^r -> M_p`` at a point of the spectrum.
 
             By Nakayama a family whose images span the fibre ``M(p)`` generates
