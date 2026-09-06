@@ -96,7 +96,6 @@ def test_a_closed_subscheme_carries_its_inclusion_and_knows_its_codimension() ->
 
     assert divisor in Schemes(QQ)
     assert divisor in ClosedEmbeddings(affine)
-    assert divisor.ambient_scheme() is affine
     assert divisor.inclusion() in Schemes(QQ).Mor(divisor, affine)
     assert divisor.inclusion().domain() is divisor
     assert divisor.inclusion().codomain() is affine
@@ -343,7 +342,7 @@ def test_xy_zero_fiber_has_represented_singular_closed_subscheme() -> None:
 
     singular = special_fiber.singular_subscheme()
 
-    assert singular.ambient_scheme() is special_fiber
+    assert singular.inclusion().codomain() is special_fiber
     assert singular.defining_ideal_owned() == special_algebra.ideal(x0, y0)
     assert tuple(singular.defining_equations()) == (y0, x0)
     assert singular.coordinate_algebra().krull_dimension() == 0
@@ -371,7 +370,7 @@ def test_xy_equals_t_family_is_flat_with_relative_nonsmooth_node() -> None:
 
     assert family.is_flat()
     nonsmooth = family.relative_nonsmooth_subscheme()
-    assert nonsmooth.ambient_scheme() is family
+    assert nonsmooth.inclusion().codomain() is family
     assert nonsmooth.defining_ideal_owned() == family_algebra.ideal(xbar, ybar)
     assert family.relative_differentials().fitting_ideal(1) == family_algebra.ideal(
         xbar,

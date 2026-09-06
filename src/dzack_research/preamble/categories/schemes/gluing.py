@@ -43,10 +43,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     restrict_scalars,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_ring,
-    ring_morphism,
-)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     OpenImmersions,
@@ -65,42 +62,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
-
-def _factor_affine_map_through_distinguished_open(morphism, open_subscheme):
-    r"""Factor ``morphism : T -> X`` through the represented ``D(f) subseteq X``."""
-
-    ambient = open_subscheme.ambient_scheme()
-    if morphism.codomain() is not ambient:
-        raise ValueError("distinguished-open factorization requires the stated ambient codomain")
-    base = ambient.scheme_base_ring()
-    if morphism.domain() not in AffineSchemes(base):
-        raise TypeError("the represented distinguished-open factorization requires an affine source")
-    if open_subscheme not in OpenImmersions(ambient) or not open_subscheme.is_distinguished_open():
-        raise TypeError("the target open must be represented by one distinguished element")
-
-    ambient_algebra = ambient.coordinate_algebra()
-    source_algebra = morphism.domain().coordinate_algebra()
-    open_algebra = open_subscheme.coordinate_algebra()
-    pullback = morphism.coordinate_algebra_morphism()
-    defining_element = ambient_algebra(open_subscheme.distinguished_open_element())
-    pulled_element = source_algebra(pullback(defining_element))
-    if not pulled_element.is_unit():
-        raise ValueError("the scheme morphism does not land in the stated distinguished open")
-
-    def factor_pullback(element):
-        numerator, denominator = open_algebra.localization_fraction_data(element)
-        numerator_image = source_algebra(pullback(numerator))
-        denominator_image = source_algebra(pullback(denominator))
-        return numerator_image * denominator_image.inverse_of_unit()
-
-    return morphism.domain().Mor(open_subscheme)(
-        ring_morphism(
-            open_algebra,
-            source_algebra,
-            factor_pullback,
-        )
-    )
 
 
 def _family_on_finite_ordered_set(index_set, values, *, name, noun):
@@ -846,10 +807,7 @@ class _FiniteSchemeGluingDatum(SageObject):
             third_index,
         )
         source_overlap = self.overlap(source_index, target_index)
-        into_source_overlap = _factor_affine_map_through_distinguished_open(
-            source_triple.inclusion(),
-            source_overlap,
-        )
+        into_source_overlap = source_overlap.corestriction(source_triple.inclusion())
         transition = self.transition_between(source_index, target_index).forward()
         through_target_overlap = transition * into_source_overlap
         target_chart_map = (
@@ -861,15 +819,9 @@ class _FiniteSchemeGluingDatum(SageObject):
             source_index,
             third_index,
         )
-        try:
-            restricted = _factor_affine_map_through_distinguished_open(
-                target_chart_map,
-                target_triple,
-            )
-        except ValueError as error:
-            raise ValueError(
-                "a finite-atlas transition does not preserve the represented triple-overlap domain"
-            ) from error
+        # A transition that does not preserve the triple overlap fails to land
+        # in this distinguished open, and the corestriction says so.
+        restricted = target_triple.corestriction(target_chart_map)
         self._triple_transition_maps.append((key, restricted))
         return restricted
 

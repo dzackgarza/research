@@ -60,7 +60,7 @@ def test_coordinate_swap_fixed_subscheme_is_the_diagonal_equalizer() -> None:
     inclusion = fixed.inclusion()
     quotient = inclusion.coordinate_algebra_morphism()
 
-    assert fixed.ambient_scheme() is acted
+    assert fixed.inclusion().codomain() is acted
     assert inclusion.domain() is fixed
     assert inclusion.codomain() is acted
     assert quotient(x) == quotient(y)
