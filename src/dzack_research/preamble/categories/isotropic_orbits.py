@@ -32,7 +32,7 @@ def primitive_isotropic_subobject(lattice, basis):
     elements = tuple(_held(lattice, element) for element in basis)
     assert elements, "an isotropic sublattice is spanned by a nonempty family"
     subobject = primitive_isotropic(lattice, elements)
-    assert int(subobject.rank()) == len(elements), (
+    assert subobject.rank() == finite_ordered_set(elements).cardinality(), (
         "the stated isotropic family is linearly dependent, so it does not "
         "frame the sublattice it spans"
     )
