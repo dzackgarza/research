@@ -21059,7 +21059,7 @@
       "operations": {},
       "inherits": [],
       "specimens": [],
-      "problem": "NotImplementedError: <abstract method super_categories at 0x7f8532351a60>"
+      "problem": "NotImplementedError: <abstract method super_categories at 0x7f96e81d9a60>"
     },
     "OwnedCompleteLocalRings": {
       "display": "OwnedCompleteLocalRings",
