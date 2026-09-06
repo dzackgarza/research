@@ -1157,7 +1157,8 @@ class OwnedFields(OwnedCategory):
 
     class ParentMethods:
         def maximal_ideal(self):
-            return _engine_ring(self).ideal(0)
+            r"""Return the zero ideal, the unique maximal ideal of a field."""
+            return self.ideal(self.zero())
 
         def residue_field(self):
             return self
