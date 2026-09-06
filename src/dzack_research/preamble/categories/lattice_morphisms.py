@@ -304,15 +304,17 @@ class LatticeEmbedding(LatticeMorphism):
             source_vector = source_dual_form * basis_covector
             target_vector = inclusion_tensor * source_vector
             extended_covector = target_form_tensor * target_vector
-            try:
-                integral_coefficients = tuple(
-                    target_ring(coefficient) for coefficient in extended_covector
-                )
-            except (TypeError, ValueError) as error:
+            if any(
+                coefficient not in target_ring for coefficient in extended_covector
+            ):
                 raise ValueError(
                     "the lattice embedding is not an orthogonal direct summand: "
-                    "extension by zero does not send the selected dual lattice into the ambient dual lattice"
-                ) from error
+                    "extension by zero does not send the selected dual lattice into "
+                    "the dual lattice of the codomain"
+                )
+            integral_coefficients = tuple(
+                target_ring(coefficient) for coefficient in extended_covector
+            )
             dual_element = target_dual.linear_combination(
                 {
                     target_label: coefficient
@@ -950,11 +952,15 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         if self.domain() is not self.codomain():
             raise ValueError("a discriminant preimage is defined for an automorphism group")
         target = self.domain().discriminant_group().orthogonal_group()
-        ambient = subgroup if subgroup is target else getattr(subgroup, "supergroup", lambda: None)()
+        containing_group = (
+            subgroup
+            if subgroup is target
+            else getattr(subgroup, "supergroup", lambda: None)()
+        )
         if (
-            ambient is None
-            or getattr(ambient, "domain", lambda: None)() is not target.domain()
-            or getattr(ambient, "is_quadratic", lambda: None)()
+            containing_group is None
+            or getattr(containing_group, "domain", lambda: None)() is not target.domain()
+            or getattr(containing_group, "is_quadratic", lambda: None)()
             != target.is_quadratic()
         ):
             raise ValueError("the subgroup must lie in O(A_L)")
