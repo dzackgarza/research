@@ -355,9 +355,10 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return framing_morphism(self, self, self.module_generator)
 
-        def _free_biproduct_with(self, other, labels, factors):
-            r"""Return the free biproduct realization when both factors are framed free."""
-            if other not in FramedFreeModules(self.base_ring()):
+        def _free_biproduct_over(self, labels, factors):
+            r"""Return the free biproduct realization when every factor is framed free."""
+            free = FramedFreeModules(self.base_ring())
+            if not all(factor in free for factor in factors):
                 return NotImplemented
             return FreshFreeModuleOn(
                 self.base_ring(),

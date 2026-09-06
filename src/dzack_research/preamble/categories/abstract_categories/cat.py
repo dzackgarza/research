@@ -11,10 +11,7 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
 from sage.categories.objects import Objects as SageObjects
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
-    fold_construction,
-)
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     IdentityFunctor,
@@ -277,9 +274,6 @@ class Cat(Category):
             )
 
             return SuperobjectCategory(self, base_object)
-        def _fold_construction(self, binary_construction, factors, *, name):
-            r"""Return the construction over a finite family, from the binary one."""
-            return fold_construction(binary_construction, factors, name=name)
 
     def ArrowCategory(self):
         r"""Return the arrow category of ``Cat``.
@@ -332,15 +326,25 @@ class Cat(Category):
         return Category.meet(members)
 
     def product(self, factors):
-        r"""Return the product of a finite family of categories.
+        r"""Return $\prod_{i \in I} C_i$, the product of a family of categories.
 
         This is the same word as ``Modules(R).product``: ``Cat`` is a category
         with products, and its objects happen to be categories.  ``C * D`` is
         the operator notation that delegates here.
+
+        The represented product category is ``ProductCategory``, whose objects
+        are pairs ``(X, Y)`` addressed as ``first()`` and ``second()`` and over
+        which the bifunctors are defined, so only the two-element index set is
+        represented.  A larger index set is not folded into nested pairs: that
+        object has projections only to the two halves of the nest, which is
+        not the product over the index set that was asked for.
         """
-        return fold_construction(
-            self._categorical_product, factors, name="Product factors"
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            _two_factors_of,
         )
+
+        left, right = _two_factors_of(factors, name="Product factors")
+        return self._categorical_product(left, right)
 
     def _categorical_product(self, left, right):
         from dzack_research.preamble.categories.abstract_categories.category_constructions import (

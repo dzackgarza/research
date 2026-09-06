@@ -1,5 +1,6 @@
 """Owned categories of modules and vector spaces."""
 
+import itertools
 import operator
 from dataclasses import dataclass
 
@@ -22,7 +23,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     _category_homset,
 )
-from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
+from dzack_research.preamble.categories.abstract_categories.products import (
+    _factor_family,
+    _finite_factor_family,
+)
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleHomset,
@@ -47,6 +51,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _proper_restriction_base_ring,
     ring_morphism,
 )
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
@@ -340,33 +345,48 @@ class Modules(OwnedCategoryOverBaseRing):
             return tensor_algebra_adjunction(self.base_ring())
 
         def tensor_product(self, factors):
-            r"""Return the tensor product of a finite family of objects of this category."""
-            return self._fold_construction(self._categorical_tensor_product, factors, name="Tensor product factors")
+            r"""Return $\bigotimes_{i \in I} M_i$ for an indexed family of modules.
+
+            The tensor product is taken over the index set: its generating set
+            is the product of the factors' generating sets over $I$, so a
+            generator is a section of that family rather than a nest of pairs.
+            """
+            family = _finite_factor_family(factors, name="Tensor factors")
+            assert all(factor in self for factor in family), (
+                "a module tensor product requires modules over one ring"
+            )
+            return _module_tensor_product(family)
 
         def _categorical_tensor_product(self, left, right):
-            if left not in self or right not in self:
-                raise TypeError("a module tensor product requires two modules over one ring")
-            return _module_tensor_product(left, right)
+            return self.tensor_product((left, right))
 
         def biproduct(self, factors):
-            r"""Return the biproduct of a finite family of objects of this category."""
-            return self._fold_construction(self._categorical_biproduct, factors, name="Biproduct factors")
+            r"""Return $\bigoplus_{i \in I} M_i$ for an indexed family of modules.
+
+            The biproduct is taken over the index set: its generating set is
+            the coproduct of the factors' generating sets over $I$, so the
+            injection and the projection at $i$ are arrows between $M_i$ and
+            the one biproduct, not composites through a nested binary one.
+            """
+            family = _finite_factor_family(factors, name="Biproduct factors")
+            assert all(factor in self for factor in family), (
+                "a module biproduct requires modules over one ring"
+            )
+            return _module_biproduct(family)
 
         def _categorical_biproduct(self, left, right):
-            if left not in self or right not in self:
-                raise TypeError("a module biproduct requires two modules over one ring")
-            return _module_biproduct(left, right)
+            return self.biproduct((left, right))
 
         def product(self, factors):
-            r"""Return the product of a finite family of objects of this category."""
-            return self._fold_construction(self._categorical_product, factors, name="Product factors")
+            r"""Return $\prod_{i \in I} M_i$, which over a finite index set is the biproduct."""
+            return self.biproduct(factors)
 
         def _categorical_product(self, left, right):
             return self._categorical_biproduct(left, right)
 
         def coproduct(self, factors):
-            r"""Return the coproduct of a finite family of objects of this category."""
-            return self._fold_construction(self._categorical_coproduct, factors, name="Coproduct factors")
+            r"""Return $\coprod_{i \in I} M_i$, which over a finite index set is the biproduct."""
+            return self.biproduct(factors)
 
         def _categorical_coproduct(self, left, right):
             return self._categorical_biproduct(left, right)
@@ -622,12 +642,12 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = point
             return NotImplemented
 
-        def _free_biproduct_with(self, other, labels, factors):
-            _ = (other, labels, factors)
+        def _free_biproduct_over(self, labels, factors):
+            _ = (labels, factors)
             return NotImplemented
 
-        def _presented_biproduct_with(self, other, labels, factors):
-            _ = (other, labels, factors)
+        def _presented_biproduct_over(self, labels, factors):
+            _ = (labels, factors)
             return NotImplemented
 
         def _presented_module_from_relation_rows(
@@ -1853,14 +1873,15 @@ def twist_scalar_action(module, ring_endomorphism):
     return restrict_scalars(module, ring_endomorphism)
 
 
-def _tensor_label_set(left, right):
+def _tensor_label_set(factors):
+    r"""Return $\prod_{i \in I} S_i$, the generating set of $\bigotimes_i M_i$.
 
-    indices = Sets.Δ[1]
-    left_labels = left.module_generating_set()
-    right_labels = right.module_generating_set()
+    A generator of the tensor product is one generator chosen in each factor,
+    which is a section of the family of generating sets over the index set.
+    """
     return CartesianProductOfFamily(
-        indices,
-        lambda index: left_labels if int(index) == 0 else right_labels,
+        factors.index_set(),
+        lambda index: factors.value(index).module_generating_set(),
     )
 
 
@@ -1877,7 +1898,9 @@ class BilinearMap(SageObject):
         self._left = left
         self._right = right
         self._codomain = codomain
-        self._generator_indices = _tensor_label_set(left, right)
+        self._generator_indices = _tensor_label_set(
+            _factor_family((left, right), name="Tensor factors")
+        )
 
         if isinstance(generator_images, dict):
             size = self._generator_indices.cardinality()
@@ -2006,10 +2029,24 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
         def tensor_factor(self, index):
             return self.tensor_factors()[index]
 
+        def _two_factors(self):
+            r"""The two factors, where the universal map of this product is bilinear.
+
+            A tensor product over an index set of any size is constructed
+            here, but its universal multilinear map is represented only for
+            two factors, because ``BilinearMap`` is the only multilinear map
+            the preamble owns.
+            """
+            factors = self.tensor_factors()
+            assert factors.cardinality() == cardinal(2), (
+                "the universal map of a tensor product is represented here only "
+                "for two factors, where it is a bilinear map"
+            )
+            return self.tensor_factor(0), self.tensor_factor(1)
+
         def pure_tensor(self, left_element, right_element):
             r"""Return the universal pure tensor of two elements."""
-            left = self.tensor_factor(0)
-            right = self.tensor_factor(1)
+            left, right = self._two_factors()
 
             left_coefficients = module_coefficients(left_element, left)
             right_coefficients = module_coefficients(right_element, right)
@@ -2024,8 +2061,7 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             )
 
         def universal_bilinear_map(self):
-            left = self.tensor_factor(0)
-            right = self.tensor_factor(1)
+            left, right = self._two_factors()
             labels = self.module_generating_set()
             return BilinearMap(
                 left,
@@ -2035,8 +2071,7 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
             )
 
         def from_bilinear(self, bilinear):
-            left = self.tensor_factor(0)
-            right = self.tensor_factor(1)
+            left, right = self._two_factors()
             if bilinear.left_factor() is not left or bilinear.right_factor() is not right:
                 raise ValueError("the bilinear map has different tensor factors")
 
@@ -2070,63 +2105,70 @@ def _module_tensor_product(left, right):
     ring = _owned_ring(left.base_ring())
     if _owned_ring(right.base_ring()) != ring:
         raise ValueError("a tensor product requires one common base ring")
+@cached_function(key=lambda factors: (factors.index_set(), tuple(map(id, factors))))
+def _module_tensor_product(factors):
+    r"""Return $\bigotimes_{i \in I} M_i$ over the family's own index set."""
+    values = tuple(factors)
+    assert values, "a tensor product is taken over a nonempty family of factors"
+    ring = _owned_ring(values[0].base_ring())
+    assert all(_owned_ring(factor.base_ring()) == ring for factor in values), (
+        "a tensor product requires one common base ring"
+    )
 
-    represented_free = _represented_framed_free(left) and _represented_framed_free(right)
-    represented_presented = _represented_finite_presentation(left) and _represented_finite_presentation(right)
+    represented_free = all(_represented_framed_free(factor) for factor in values)
+    represented_presented = all(
+        _represented_finite_presentation(factor) for factor in values
+    )
     if not represented_free and not represented_presented:
         raise NotImplementedError("the tensor product has no selected represented module backend for these factors")
 
-    tensor_labels = _tensor_label_set(left, right)
-    tensor_factors = indexed_family(
-        Sets.Δ[1],
-        lambda index: left if int(index) == 0 else right,
-        name="Tensor factors",
-    )
+    tensor_labels = _tensor_label_set(factors)
 
     if represented_free:
-        return left._fresh_free_module_on(
+        return values[0]._fresh_free_module_on(
             tensor_labels,
             _extra_categories=(TensorProductModules(ring),),
-            _extra_construction_data={"tensor_factors": tensor_factors},
+            _extra_construction_data={"tensor_factors": factors},
         )
 
-    left_labels = left.module_generating_set()
-    right_labels = right.module_generating_set()
-    if not left_labels.cardinality().is_finite() or not right_labels.cardinality().is_finite():
+    label_sets = tuple(factor.module_generating_set() for factor in values)
+    if not all(labels.cardinality().is_finite() for labels in label_sets):
         raise TypeError("the selected presentation backend requires finite framings")
 
     width = int(tensor_labels.cardinality().finite_value())
+    ranking = factors.index_set().ranking_map()
     rows = []
-    left_relations = left._selected_presentation_rows() or ()
-    right_relations = right._selected_presentation_rows() or ()
 
-    for relation in left_relations:
-        for right_label in right_labels:
-            row = [ring.zero()] * width
-            for left_position, coefficient in enumerate(relation):
-                if coefficient:
-                    left_label = left_labels[left_position]
-                    pair = _tensor_pair(tensor_labels, left_label, right_label)
-                    row[tensor_labels.ranking_map()(pair)] = coefficient
-            rows.append(row)
-
-    for left_label in left_labels:
-        for relation in right_relations:
-            row = [ring.zero()] * width
-            for right_position, coefficient in enumerate(relation):
-                if coefficient:
-                    right_label = right_labels[right_position]
-                    pair = _tensor_pair(tensor_labels, left_label, right_label)
-                    row[tensor_labels.ranking_map()(pair)] = coefficient
-            rows.append(row)
+    # A relation of one factor, tensored with a generator chosen in each of
+    # the others, is a relation of the product; over a family of presented
+    # modules those exhaust the relations of the tensor product.
+    for position, factor_labels in enumerate(label_sets):
+        elsewhere_sets = tuple(
+            labels for other, labels in enumerate(label_sets) if other != position
+        )
+        for relation in values[position]._selected_presentation_rows() or ():
+            for elsewhere in itertools.product(*elsewhere_sets):
+                row = [ring.zero()] * width
+                for label_position, coefficient in enumerate(relation):
+                    if coefficient:
+                        section = (
+                            elsewhere[:position]
+                            + (factor_labels[label_position],)
+                            + elsewhere[position:]
+                        )
+                        label = tensor_labels(
+                            lambda place, section=section: section[int(ranking(place))]
+                        )
+                        row[tensor_labels.ranking_map()(label)] = coefficient
+                rows.append(row)
 
     result = NotImplemented
-    for presentation_owner in (left, right):
+    for presentation_owner in values:
         result = presentation_owner._presented_module_from_relation_rows(
             tensor_labels,
             rows,
             extra_categories=(TensorProductModules(ring),),
-            extra_construction_data={"tensor_factors": tensor_factors},
+            extra_construction_data={"tensor_factors": factors},
         )
         if result is not NotImplemented:
             break
@@ -2135,28 +2177,21 @@ def _module_tensor_product(left, right):
     return result
 
 
-def _biproduct_label_set(left, right):
+def _biproduct_label_set(factors):
+    r"""Return $\coprod_{i \in I} S_i$, the generating set of $\bigoplus_i M_i$.
 
-    indices = Sets.Δ[1]
-    left_labels = left.module_generating_set()
-    right_labels = right.module_generating_set()
+    A generator of the biproduct is a generator of exactly one factor,
+    remembering which; that is a point of the coproduct of the family of
+    generating sets over the index set.
+    """
     return CoproductOfFamily(
-        indices,
-        lambda index: left_labels if int(index) == 0 else right_labels,
+        factors.index_set(),
+        lambda index: factors.value(index).module_generating_set(),
     )
 
 
-def _biproduct_label(label_set, side, label):
-    return label_set(side, label)
-
-
-def _biproduct_factor_family(left, right):
-
-    return indexed_family(
-        Sets.Δ[1],
-        lambda index: left if int(index) == 0 else right,
-        name="Biproduct factors",
-    )
+def _biproduct_label(label_set, index, label):
+    return label_set(index, label)
 
 
 class BiproductModules(OwnedCategoryOverBaseRing):
@@ -2190,109 +2225,137 @@ class BiproductModules(OwnedCategoryOverBaseRing):
         def biproduct_factor(self, index):
             return self.biproduct_factors()[index]
 
-        def left_inclusion(self):
-            left = self.biproduct_factor(0)
-            labels = self.module_generating_set()
+        def injection(self, index):
+            r"""Return \(\iota_i : M_i \to \bigoplus_{j \in I} M_j\).
 
-            return module_homset(left, self)(lambda label: self.module_generator(_biproduct_label(labels, 0, label)))
+            A biproduct is a coproduct, so it has one injection per index, and
+            each is an arrow out of that factor itself.
+            """
+            summand = self.biproduct_factor(index)
+            labels = self.module_generating_set()
+            return module_homset(summand, self)(
+                lambda label: self.module_generator(_biproduct_label(labels, index, label))
+            )
+
+        def projection(self, index):
+            r"""Return \(\pi_i : \bigoplus_{j \in I} M_j \to M_i\)."""
+            summand = self.biproduct_factor(index)
+            place = self.module_generating_set().index_set()(index)
+
+            def image(label):
+                if label.summand_index() == place:
+                    return summand.module_generator(label.summand_element())
+                return summand.zero()
+
+            return module_homset(self, summand)(image)
+
+        def left_inclusion(self):
+            r"""Return \(\iota_0\), the injection at the first index."""
+            return self.injection(0)
 
         def right_inclusion(self):
-            right = self.biproduct_factor(1)
-            labels = self.module_generating_set()
+            r"""Return \(\iota_1\), the injection at the second index."""
+            return self.injection(1)
 
-            return module_homset(right, self)(lambda label: self.module_generator(_biproduct_label(labels, 1, label)))
-
-        def left_injection(self):
-            r"""Return \(\iota_0 : M_0 \to M_0 \oplus M_1\)."""
-            return self._summand_injection(0)
-
-        def right_injection(self):
-            r"""Return \(\iota_1 : M_1 \to M_0 \oplus M_1\)."""
-            return self._summand_injection(1)
-
-        def _summand_injection(self, position):
-            r"""A biproduct is a coproduct, so it has these beside its projections."""
-            summand = self.biproduct_factor(position)
-            labels = self.module_generating_set()
-            return module_homset(summand, self)({label: self.module_generator(_biproduct_label(labels, position, label)) for label in summand.module_generating_set()})
+        left_injection = left_inclusion
+        right_injection = right_inclusion
 
         def left_projection(self):
-            left = self.biproduct_factor(0)
-
-            def image(label):
-                if int(label.summand_index()) == 0:
-                    return left.module_generator(label.summand_element())
-                return left.zero()
-
-            return module_homset(self, left)(image)
+            r"""Return \(\pi_0\), the projection at the first index."""
+            return self.projection(0)
 
         def right_projection(self):
-            right = self.biproduct_factor(1)
+            r"""Return \(\pi_1\), the projection at the second index."""
+            return self.projection(1)
 
-            def image(label):
-                if int(label.summand_index()) == 1:
-                    return right.module_generator(label.summand_element())
-                return right.zero()
+        def from_coproduct_cocone(self, legs):
+            r"""The unique map \(\bigoplus_i M_i \to X\) with the stated legs.
 
-            return module_homset(self, right)(image)
+            A cocone under the biproduct is the family of legs
+            \(f_i : M_i \to X\), indexed the way the factors are, so that is
+            the datum this takes.  A generator of the biproduct lies in one
+            factor and remembers which, so its image is the value of that
+            index's leg.
+            """
+            factors = self.biproduct_factors()
+            legs = _finite_factor_family(legs, name="Coproduct cocone legs")
+            assert legs.index_set() == factors.index_set(), (
+                "a cocone under a biproduct has one leg per factor"
+            )
+            target = legs[factors.index_set().ranking_map().inverse()(0)].codomain()
+            assert all(leg.codomain() is target for leg in legs), (
+                "a cocone has one apex"
+            )
+            assert all(
+                legs.value(index).domain() is factors.value(index)
+                for index in factors.index_set()
+            ), "each leg of the cocone starts at its own factor"
 
-        def from_summands(self, left_map, right_map):
-            r"""Return the unique map ``self -> X`` extending both summand maps."""
-            if left_map.domain() is not self.biproduct_factor(0):
-                raise ValueError("the left map has the wrong source")
-            if right_map.domain() is not self.biproduct_factor(1):
-                raise ValueError("the right map has the wrong source")
-            if left_map.codomain() is not right_map.codomain():
-                raise ValueError("the summand maps require one common target")
-
-            return module_homset(self, left_map.codomain())(
-                lambda label: (
-                    left_map(self.biproduct_factor(0).module_generator(label.summand_element()))
-                    if int(label.summand_index()) == 0
-                    else right_map(self.biproduct_factor(1).module_generator(label.summand_element()))
+            return module_homset(self, target)(
+                lambda label: legs.value(label.summand_index())(
+                    factors.value(label.summand_index()).module_generator(
+                        label.summand_element()
+                    )
                 )
             )
 
-        def to_product(self, left_map, right_map):
-            r"""Return the unique map ``X -> self`` with the specified projections."""
-            if left_map.domain() is not right_map.domain():
-                raise ValueError("the product maps require one common source")
-            if left_map.codomain() is not self.biproduct_factor(0):
-                raise ValueError("the left map has the wrong target")
-            if right_map.codomain() is not self.biproduct_factor(1):
-                raise ValueError("the right map has the wrong target")
+        def from_product_cone(self, legs):
+            r"""The unique map \(X \to \prod_i M_i\) with the stated legs.
 
-            source = left_map.domain()
+            A cone over the biproduct is the family of legs
+            \(f_i : X \to M_i\), indexed the way the factors are.  The image
+            of a generator of the apex is the sum over the index set of the
+            coordinates of its images, each placed at its own index.
+            """
+            factors = self.biproduct_factors()
+            legs = _finite_factor_family(legs, name="Product cone legs")
+            assert legs.index_set() == factors.index_set(), (
+                "a cone over a biproduct has one leg per factor"
+            )
+            source = legs[factors.index_set().ranking_map().inverse()(0)].domain()
+            assert all(leg.domain() is source for leg in legs), "a cone has one apex"
+            assert all(
+                legs.value(index).codomain() is factors.value(index)
+                for index in factors.index_set()
+            ), "each leg of the cone lands in its own factor"
+
             labels = self.module_generating_set()
 
             def image(source_label):
+                generator = source.module_generator(source_label)
                 coefficients = {}
-                for target_label, coefficient in module_coefficients(
-                    left_map(source.module_generator(source_label)),
-                    self.biproduct_factor(0),
-                ).items():
-                    coefficients[_biproduct_label(labels, 0, target_label)] = coefficient
-                for target_label, coefficient in module_coefficients(
-                    right_map(source.module_generator(source_label)),
-                    self.biproduct_factor(1),
-                ).items():
-                    coefficients[_biproduct_label(labels, 1, target_label)] = coefficient
+                for index in factors.index_set():
+                    for target_label, coefficient in module_coefficients(
+                        legs.value(index)(generator), factors.value(index)
+                    ).items():
+                        coefficients[_biproduct_label(labels, index, target_label)] = coefficient
                 return self.linear_combination(coefficients)
 
             return module_homset(source, self)(image)
 
+        def from_summands(self, left_map, right_map):
+            r"""Return the unique map ``self -> X`` extending both summand maps."""
+            return self.from_coproduct_cocone((left_map, right_map))
 
-@cached_function
-def _module_biproduct(left, right):
-    ring = _owned_ring(left.base_ring())
-    if _owned_ring(right.base_ring()) != ring:
-        raise ValueError("a biproduct requires one common base ring")
+        def to_product(self, left_map, right_map):
+            r"""Return the unique map ``X -> self`` with the specified projections."""
+            return self.from_product_cone((left_map, right_map))
 
-    labels = _biproduct_label_set(left, right)
-    factors = _biproduct_factor_family(left, right)
-    result = left._free_biproduct_with(right, labels, factors)
+
+@cached_function(key=lambda factors: (factors.index_set(), tuple(factors)))
+def _module_biproduct(factors):
+    r"""Return $\bigoplus_{i \in I} M_i$ over the family's own index set."""
+    values = tuple(factors)
+    assert values, "a biproduct is taken over a nonempty family of factors"
+    ring = _owned_ring(values[0].base_ring())
+    assert all(_owned_ring(factor.base_ring()) == ring for factor in values), (
+        "a biproduct requires one common base ring"
+    )
+
+    labels = _biproduct_label_set(factors)
+    result = values[0]._free_biproduct_over(labels, factors)
     if result is NotImplemented:
-        result = left._presented_biproduct_with(right, labels, factors)
+        result = values[0]._presented_biproduct_over(labels, factors)
     if result is NotImplemented:
         raise NotImplementedError("the represented module factors provide no biproduct realization")
     return result

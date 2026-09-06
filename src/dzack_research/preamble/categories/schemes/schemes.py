@@ -680,10 +680,19 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     class SubcategoryMethods:
         def product(self, factors):
-            r"""Return the product of a finite family of objects of this category."""
-            return self._fold_construction(
-                self._categorical_product, factors, name="Product factors"
+            r"""Return $\prod_{i \in I} X_i$ for an indexed family of schemes.
+
+            The product is taken over the index set: the coordinates of every
+            factor sit side by side in the one product, so the projection to
+            the factor at $i$ is an arrow out of that product rather than a
+            composite through nested binary products.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _finite_factor_family,
             )
+
+            family = _finite_factor_family(factors, name="Product factors")
+            return scheme_product(tuple(family))
 
         def _categorical_product(self, left, right):
             return scheme_product(left, right)

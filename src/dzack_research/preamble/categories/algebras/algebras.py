@@ -16,7 +16,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     _category_homset,
 )
-from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
+from dzack_research.preamble.categories.abstract_categories.products import (
+    _finite_factor_family,
+    _two_factors_of,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
@@ -542,15 +545,27 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return de_rham_functor(self.base_ring())
 
             def product(self, factors):
-                r"""Return the product of a finite family of objects of this category."""
-                return self._fold_construction(self._categorical_product, factors, name="Product factors")
+                r"""Return $\prod_{i \in I} A_i$, the product of a family of algebras."""
+                left, right = _two_factors_of(factors, name="Product factors")
+                return self._categorical_product(left, right)
 
             def _categorical_product(self, left, right):
                 raise NotImplementedError("the represented categorical product of commutative algebras is not yet implemented")
 
             def coproduct(self, factors):
-                r"""Return the coproduct of a finite family of objects of this category."""
-                return self._fold_construction(self._categorical_coproduct, factors, name="Coproduct factors")
+                r"""Return $\coprod_{i \in I} A_i = \bigotimes_{i \in I} A_i$ over the base ring.
+
+                The represented coproduct is the two-factor tensor product the
+                factors themselves supply, through
+                ``_commutative_algebra_coproduct``; there is no backend taking
+                an index set, so only the two-element one is represented.  A
+                larger index set is not folded into nested tensor products:
+                that object has injections only into the halves of the nest,
+                which is not the coproduct over the index set that was asked
+                for.
+                """
+                left, right = _two_factors_of(factors, name="Coproduct factors")
+                return self._categorical_coproduct(left, right)
 
             def _categorical_coproduct(self, left, right):
                 operation = getattr(left, "_commutative_algebra_coproduct", None)
