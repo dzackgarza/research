@@ -1,3 +1,5 @@
+import pytest
+
 from dzack_research.preamble.all import (
     AffineSpace,
     ArtinianRings,
@@ -6,6 +8,7 @@ from dzack_research.preamble.all import (
     GF,
     IntegralDomains,
     LocalRings,
+    NN,
     NoetherianRings,
     PolynomialRing,
     PowerSeriesRing,
@@ -910,3 +913,23 @@ def test_general_module_materializes_from_an_underlying_set_and_action() -> None
 
     assert module.annihilator() == field.ideal(field.zero())
     assert module.annihilator() == module.scalar_action().kernel()
+
+
+def test_localization_denominator_reads_back_as_a_power_of_the_inverted_element() -> None:
+    ring = PolynomialRing(QQ, "x")
+    x = ring.algebra_generator("x")
+    inverted = ring.localization(x)
+
+    assert inverted.inverted_element() == x
+    assert (inverted.fraction(ring.one(), x) ** 3).denominator_exponent() == NN(3)
+    assert inverted(x**2).denominator_exponent() == NN(0)
+
+    with pytest.raises(AssertionError, match="not a power of the inverted element"):
+        inverted(ring.one() / ring(2)).denominator_exponent()
+
+    plane = PolynomialRing(QQ, ("x", "y"))
+    plane_x = plane.algebra_generator("x")
+    with pytest.raises(AssertionError, match="a localization at a single element"):
+        plane.localization(plane_x, plane.algebra_generator("y")).fraction(
+            plane.one(), plane_x
+        ).denominator_exponent()

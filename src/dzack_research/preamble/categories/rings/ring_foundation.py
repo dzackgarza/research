@@ -62,6 +62,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.set_categories import (
     CountablyInfiniteSets,
     FiniteSets,
+    NN,
     Sets,
     UncountableSets,
 )
@@ -343,6 +344,52 @@ class LocalizationRings(OwnedCategory):
 
         def denominator(self):
             return self._denominator
+
+        def denominator_exponent(self):
+            r"""Return ``n`` where the represented denominator is ``f^n``.
+
+            Here ``f`` is the element the parent inverts, so this reads a
+            fraction of ``A[1/f]`` back as ``a/f^n``.  It is the exponent of the
+            *represented* denominator, which the fraction carries as constructed
+            data, not an invariant of the element: ``a/f`` and ``af/f^2`` are the
+            same element of ``A[1/f]`` and report ``1`` and ``2``.  A morphism
+            out of ``A[1/f]`` is written with it, sending ``a/f^n`` to the image
+            of ``a`` times the inverse of the image of ``f`` raised to ``n``,
+            which needs no computation inside ``A[1/f]`` itself.
+
+            Dividing the denominator by ``f`` until nothing remains decides the
+            question over a domain in which ``f`` is neither zero nor a unit:
+            the divisibility chain descends, and a unit is never divisible by a
+            non-unit, so a denominator that is not a power of ``f`` is refused
+            rather than searched for.
+            """
+            parent = self.parent()
+            source = parent.localization_source()
+            inverted = source(parent.inverted_element())
+            denominator = source(self.denominator())
+
+            assert source in OwnedIntegralDomains(), (
+                f"{source} is not an integral domain, and dividing a denominator by "
+                f"{inverted} decides whether it is a power only over a domain"
+            )
+            assert not inverted.is_zero() and not inverted.is_unit(), (
+                f"{inverted} is zero or a unit in {source}, so {parent} is the zero ring or "
+                f"{source} itself and a denominator does not determine an exponent"
+            )
+            assert not denominator.is_zero(), (
+                f"the denominator of {self} is zero, and zero is not a power of {inverted}"
+            )
+
+            exponent = 0
+            remaining = denominator
+            while remaining != source.one():
+                assert inverted.divides(remaining), (
+                    f"the denominator {denominator} of {self} is not a power of the inverted "
+                    f"element {inverted}, so it has no exponent"
+                )
+                remaining = remaining // inverted
+                exponent += 1
+            return NN(exponent)
 
         def _add_(self, other):
             return self.parent().fraction(
@@ -659,6 +706,23 @@ class LocalizationRings(OwnedCategory):
                 return self.localization_submonoid().monoid_generators()
             except NotImplementedError as error:
                 raise NotImplementedError("this localization submonoid has no chosen finite generating set") from error
+
+        def inverted_element(self):
+            r"""Return the one element ``f`` this localization inverts.
+
+            Localizing at a single ``f`` is the distinguished open ``D(f)``, and
+            there every represented denominator is a power of ``f``, so a
+            fraction is read as ``a/f^n``.  A localization at several elements
+            inverts every monomial in them, so a denominator is described by one
+            exponent per inverted element rather than by a single natural
+            number; that reading is not stated here.
+            """
+            inverted = self.inverted_elements()
+            assert inverted.cardinality() == 1, (
+                f"{self} inverts {inverted.cardinality()} elements, and an inverted element "
+                "is named here only for a localization at a single element"
+            )
+            return inverted.unrank(0)
 
         def localization_map(self):
             return self._preamble_localization_map
