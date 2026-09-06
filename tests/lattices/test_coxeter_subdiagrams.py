@@ -93,6 +93,72 @@ def test_the_symmetric_group_on_the_triangle_fuses_the_subdiagrams_into_three_or
     assert diagram.maximal_parabolic_subdiagrams().cardinality() == 1
 
 
+def test_triality_orders_the_subdiagram_orbits_of_d4_by_the_orbit_relation() -> None:
+    r"""The orbit order on the elliptic subdiagrams of \(D_4\).
+
+    \(D_4\) is a star: the centre \(2\) joined to the three outer nodes
+    \(1,3,4\), every bond three, so \(\operatorname{Aut}\) is the symmetric
+    group on the outer nodes, of order six.  Every induced subdiagram of a
+    finite-type diagram is finite type, hence elliptic, so all sixteen vertex
+    subsets appear and an orbit is fixed by whether it holds the centre and by
+    how many outer nodes it holds: eight orbits.
+
+    The order is on orbits, not on representatives: \([H]\leq[K]\) when some
+    member of \([H]\) is an induced subdiagram of some member of \([K]\).  The
+    claims below are what that order says about the star.  The centre is in no
+    subdiagram spanned by outer nodes, so its orbit is not below the orbit of
+    the three outer nodes even though it is smaller; an outer node and a pair
+    of outer nodes are.
+    """
+    diagram = CoxeterDiagrams().from_cartan_type(["D", 4])
+
+    assert diagram.Aut().order() == 6
+    assert diagram.elliptic_subdiagrams().cardinality() == 16
+
+    poset = diagram.elliptic_subdiagram_orbit_poset()
+    orbits = {frozenset(member.index_set()): member for member in poset}
+
+    assert set(orbits) == {
+        frozenset(),
+        frozenset({1}),
+        frozenset({2}),
+        frozenset({1, 2}),
+        frozenset({1, 3}),
+        frozenset({1, 2, 3}),
+        frozenset({1, 3, 4}),
+        frozenset({1, 2, 3, 4}),
+    }
+
+    centre = orbits[frozenset({2})]
+    outer_node = orbits[frozenset({1})]
+    outer_pair = orbits[frozenset({1, 3})]
+    centre_and_outer = orbits[frozenset({1, 2})]
+    three_outer = orbits[frozenset({1, 3, 4})]
+
+    assert not poset.is_lequal(centre, three_outer)
+    assert not poset.is_lequal(centre_and_outer, three_outer)
+    assert poset.is_lequal(outer_node, three_outer)
+    assert poset.is_lequal(outer_pair, three_outer)
+    assert poset.is_lequal(outer_pair, orbits[frozenset({1, 2, 3})])
+
+    assert poset.bottom() is orbits[frozenset()]
+    assert poset.top() is orbits[frozenset({1, 2, 3, 4})]
+
+
+def test_the_triangle_is_its_own_only_parabolic_subdiagram_orbit() -> None:
+    r"""The parabolic orbit poset of affine \(A_2\) is a single point.
+
+    The triangle is parabolic and no proper subdiagram of it is: its proper
+    subdiagrams are the empty one, the vertices and the edges, all elliptic.
+    So there is one parabolic orbit, and the order on it is trivial.
+    """
+    poset = affine_a2().parabolic_subdiagram_orbit_poset()
+
+    assert poset.cardinality() == 1
+    assert poset.top() is poset.bottom()
+    assert frozenset(poset.top().index_set()) == frozenset({0, 1, 2})
+
+
 def test_a_disconnected_diagram_splits_into_its_components() -> None:
     r"""Two orthogonal mirrors give two components, each a single vertex."""
     diagram = CoxeterDiagrams().from_coxeter_matrix([[1, 2], [2, 1]])

@@ -379,21 +379,26 @@ class CoxeterDiagrams(OwnedCategory):
 
             return _own_group(self._bond_preserving_permutation_group())
 
+        def _orbit_vertex_sets(self, diagram):
+            r"""Return the vertex sets of the :meth:`Aut`-orbit of ``diagram``."""
+            vertices = tuple(diagram.index_set())
+            if not vertices:
+                # The empty vertex set is fixed by every permutation.
+                return (frozenset(),)
+            group = self._bond_preserving_permutation_group()
+            return tuple(
+                frozenset(image)
+                for image in group.orbit(vertices, action="OnSets")
+            )
+
         def _vertex_set_orbits(self, subdiagrams):
             r"""Return one representative subdiagram per :meth:`Aut`-orbit."""
-            group = self._bond_preserving_permutation_group()
             seen = set()
             representatives = []
             for diagram in subdiagrams:
-                vertices = tuple(diagram.index_set())
-                if frozenset(vertices) in seen:
+                if frozenset(diagram.index_set()) in seen:
                     continue
-                if vertices:
-                    for image in group.orbit(vertices, action="OnSets"):
-                        seen.add(frozenset(image))
-                else:
-                    # The empty vertex set is fixed by every permutation.
-                    seen.add(frozenset())
+                seen.update(self._orbit_vertex_sets(diagram))
                 representatives.append(diagram)
             return finite_ordered_set(tuple(representatives))
 
@@ -468,6 +473,49 @@ class CoxeterDiagrams(OwnedCategory):
             r"""Return the parabolic induced subdiagrams ordered by inclusion."""
             return self._subdiagram_poset_on(
                 self.parabolic_subdiagrams(connected=connected)
+            )
+
+        def _subdiagram_orbit_poset_on(self, representatives):
+            r"""Return the orbit order on one representative per :meth:`Aut`-orbit.
+
+            The order on orbits, not on the representatives:
+            \([H]\leq[K]\) when some member of \([H]\) is an induced
+            subdiagram of some member of \([K]\).  :meth:`Aut` is transitive
+            on each orbit, so an automorphism carrying that member of \([K]\)
+            to the representative of \([K]\) carries the member of \([H]\)
+            along, and the relation holds exactly when some member of
+            \([H]\) has its vertices inside the representative of \([K]\),
+            which is what is asked here.
+
+            It is a partial order.  Reflexive, because a representative is a
+            member of its own orbit.  Antisymmetric, because every member of
+            an orbit has the same number of vertices, so two containments
+            force equality and hence one orbit.  Transitive, by the same
+            transport of the containment along an automorphism.
+            """
+            members = tuple(representatives)
+            orbit_vertex_sets = {
+                id(diagram): self._orbit_vertex_sets(diagram) for diagram in members
+            }
+
+            def below(left, right) -> bool:
+                target = frozenset(right.index_set())
+                return any(
+                    vertices <= target for vertices in orbit_vertex_sets[id(left)]
+                )
+
+            return Poset((members, below))
+
+        def elliptic_subdiagram_orbit_poset(self, *, connected=False):
+            r"""Return the elliptic subdiagram orbits in the orbit order."""
+            return self._subdiagram_orbit_poset_on(
+                self.elliptic_subdiagram_orbits(connected=connected)
+            )
+
+        def parabolic_subdiagram_orbit_poset(self, *, connected=False):
+            r"""Return the parabolic subdiagram orbits in the orbit order."""
+            return self._subdiagram_orbit_poset_on(
+                self.parabolic_subdiagram_orbits(connected=connected)
             )
 
         def root_realization(self):
