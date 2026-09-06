@@ -61,7 +61,6 @@ def _polygon_svg_document(
     reads the way the plane does.
     """
     vertices = tuple(vertices)
-    assert len(vertices) >= 3, "a polygon has at least three vertices"
     margin = 1.0
     left, bottom, right, top = _bounds(
         (*vertices, *interior_points, *boundary_points)
@@ -198,6 +197,7 @@ def polygon_svg(polygon, highlighted_sides=(), distinguished_point=None, size=42
     interior and boundary lattice points; this only lays them out.
     """
     assert int(polygon.dimension()) == 2, "this view draws a polygon"
+    assert polygon.n_vertices() >= 3, "a polygon has at least three vertices"
     vertices = tuple(_plane_point(vertex) for vertex in polygon.vertices())
     if polygon.is_lattice_polytope():
         interior = tuple(_plane_point(point) for point in polygon.interior_integral_points())
@@ -219,7 +219,10 @@ def polygon_svg(polygon, highlighted_sides=(), distinguished_point=None, size=42
 def ade_polygon_svg(ade_log_pair, size=420):
     r"""The polygon of an ADE log pair, with ``p*`` and its decorated sides."""
     sides = tuple(
-        ade_log_pair.side_decorations()[position].side
+        tuple(
+            int(vertex)
+            for vertex in ade_log_pair.side_decorations()[position].side
+        )
         for position in ade_log_pair.side_decorations().index_set()
     )
     return polygon_svg(

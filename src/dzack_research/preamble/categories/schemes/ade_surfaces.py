@@ -42,21 +42,34 @@ from dzack_research.preamble.categories.sets.finite_families import finite_famil
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
 )
+from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.tensors.tensor import tensor
+from dzack_research.static_types import ProductOfNaturalNumbers
+
+
+def _side(first, second):
+    r"""The side of ``Q`` joining two vertices, as a point of ``NN x NN``.
+
+    A vertex of ``Q`` is named by its position in the boundary order, which is
+    a natural number, so a side is a point of the square of the natural
+    numbers.
+    """
+    return (NN**2)((first, second))
 
 
 @dataclass(frozen=True)
 class SideDecoration:
     r"""The decoration of one side of ``Q`` incident to ``p*``.
 
-    ``side`` is the pair of vertex positions the side joins, ``length_class``
-    is ``"long"`` or ``"short"``, and ``vertex_colour`` is ``"white"`` or
-    ``"black"``.  The classification is Alexeev--Thompson's, and it
-    distinguishes ADE types whose polygons otherwise agree.
+    ``side`` is the point of ``NN x NN`` naming the two vertices the side
+    joins, ``length_class`` is ``"long"`` or ``"short"``, and
+    ``vertex_colour`` is ``"white"`` or ``"black"``.  The classification is
+    Alexeev--Thompson's, and it distinguishes ADE types whose polygons
+    otherwise agree.
     """
 
-    side: tuple[int, int]
+    side: ProductOfNaturalNumbers
     length_class: str
     vertex_colour: str
 
@@ -117,26 +130,26 @@ def _a_family_polygon_data(rank, variant, parameter):
     if left_short and right_short:
         vertices = ((0, 2), (1, 0), (2 * parameter - 1, 0))
         decorations = (
-            SideDecoration((0, 1), "short", "black"),
-            SideDecoration((0, 2), "short", "black"),
+            SideDecoration(_side(0, 1), "short", "black"),
+            SideDecoration(_side(0, 2), "short", "black"),
         )
     elif left_short:
         vertices = ((0, 2), (1, 0), (2 * parameter - 1, 0))
         decorations = (
-            SideDecoration((0, 1), "short", "black"),
-            SideDecoration((0, 2), "long", "white"),
+            SideDecoration(_side(0, 1), "short", "black"),
+            SideDecoration(_side(0, 2), "long", "white"),
         )
     elif right_short:
         vertices = ((0, 2), (0, 0), (2 * parameter - 1, 0))
         decorations = (
-            SideDecoration((0, 1), "long", "white"),
-            SideDecoration((0, 2), "short", "black"),
+            SideDecoration(_side(0, 1), "long", "white"),
+            SideDecoration(_side(0, 2), "short", "black"),
         )
     else:
         vertices = ((0, 2), (0, 0), (2 * parameter, 0))
         decorations = (
-            SideDecoration((0, 1), "long", "white"),
-            SideDecoration((0, 2), "long", "white"),
+            SideDecoration(_side(0, 1), "long", "white"),
+            SideDecoration(_side(0, 2), "long", "white"),
         )
     return (vertices, (0, 2), finite_family(decorations, name="Side decorations"))
 

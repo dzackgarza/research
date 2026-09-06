@@ -7,6 +7,7 @@ from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.element import parent as engine_parent
 
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.tensors.tensor import tensor
@@ -26,12 +27,13 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 def _owned_rational(coordinate):
     r"""One coordinate as an owned rational.
 
-    This is the ingress boundary of the polytope constructors: a caller writes
-    coordinates as ordinary integers, as engine rationals, or as owned
-    rationals, and the probe is the one place that admits all three.
+    This is the ingress boundary of the polytope constructors, and the one
+    place that admits all three ways a caller writes a coordinate: as an
+    ordinary integer, as an engine rational, or as an owned rational.  The
+    parent of the incoming value decides which, through Sage's own parent
+    function rather than by asking the value for an attribute.
     """
-    parent = getattr(coordinate, "parent", lambda: None)()
-    if parent in (SageZZ, SageQQ):
+    if engine_parent(coordinate) in (SageZZ, SageQQ):
         return _own_ring(SageQQ)._from_engine_element(SageQQ(coordinate))
     return _own_ring(SageQQ)(coordinate)
 
