@@ -1240,6 +1240,57 @@ def module_homset(domain, codomain) -> ModuleHomset:
     return domain.module_category().Mor(domain, codomain)
 
 
+class SubFramingMorphism(ModuleEmbedding):
+    r"""The free module functor applied to an injection of framings.
+
+    An injection of framing sets is split, and the free functor is a left
+    adjoint that carries the splitting, so this is a split monomorphism and
+    both membership in its image and the lift are decided on labels: an
+    element of the larger free module comes from the smaller one exactly when
+    it is supported on the smaller framing, and its preimage has the same
+    coefficients.
+
+    That is what the class buys over the general route below, which builds the
+    matrix of images and solves a linear system.  The smaller framing may be
+    infinite, as the degree-two piece of an algebra on countably many
+    generators is, and then no matrix exists to solve against.
+    """
+
+    def is_in_image(self, element) -> bool:
+        r"""Return whether ``element`` is supported on the smaller framing."""
+        if element.parent() is not self.codomain():
+            return False
+        source_labels = self.domain().module_generating_set()
+        return all(
+            label in source_labels
+            for label in module_coefficients(element, self.codomain())
+        )
+
+    def lift(self, element):
+        r"""Return the unique element of the smaller free module mapping here."""
+        assert self.is_in_image(element), f"{element} is not in the image of {self}"
+        return self.domain().linear_combination(
+            module_coefficients(element, self.codomain())
+        )
+
+
+def sub_framing_morphism(domain, codomain) -> SubFramingMorphism:
+    r"""Construct the inclusion of a free module on part of another's framing.
+
+    The caller states by calling this that the domain's framing injects into
+    the codomain's under the labels they share.  Linearity is not checked
+    because there is nothing to check: the morphism is the image of an
+    injection of sets under the free functor, which is linear by construction,
+    and the domain may be infinite.
+    """
+
+    return SubFramingMorphism(
+        module_homset(domain, codomain),
+        codomain.module_generator,
+        verify_linearity=False,
+    )
+
+
 def framing_morphism(domain, codomain, images) -> FramingMorphism:
     homset = module_homset(domain, codomain)
     framing = FramingMorphism(homset, images)
