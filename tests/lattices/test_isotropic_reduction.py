@@ -123,3 +123,31 @@ def test_the_reflection_in_a_root_is_parabolic_but_not_unipotent() -> None:
     assert levi_image != reduction.Aut().one()
     assert levi_image * levi_image == reduction.Aut().one()
     assert reflection not in reduction.unipotent_kernel()
+
+
+def test_lifting_minus_one_splits_the_lattice_along_the_chosen_lifts() -> None:
+    r"""\(-\mathrm{id}_{K_I}\) lifts to \(\mathrm{id}_M\perp(-\mathrm{id}_{K'})\).
+
+    For \(L=U\oplus A_2\) and \(I=\mathbb Ze\) the chosen lifts span a copy
+    \(K'\) of \(A_2\) whose orthogonal complement \(M\) is unimodular, so the
+    Levi quotient lifts.  The lift fixes \(M\) pointwise and negates \(K'\),
+    which a lift that merely happened to be parabolic would not do.
+    """
+    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("A2")
+    isotropic = lattice.module_generator(0)
+    reduction = isotropic.isotropic_reduction()
+    negation = reduction.Aut()(
+        lambda label: -reduction.module_generator(label)
+    )
+
+    lifted = reduction.lift_isometry(negation)
+
+    assert lifted(isotropic) == isotropic
+    assert lifted != lattice.Aut().one()
+    assert lifted * lifted == lattice.Aut().one()
+
+    complement_inclusion = reduction.orthogonal_complement().inclusion()
+    lifts = reduction.reduction_lifts()
+    for label in reduction.module_generating_set():
+        embedded_lift = complement_inclusion(lifts(label))
+        assert lifted(embedded_lift) == -embedded_lift
