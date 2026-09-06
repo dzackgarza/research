@@ -354,17 +354,26 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
 
 
 def primitive_isotropic(lattice, module_generating_set):
-    r"""Return the primitive totally isotropic subobject spanned by the stated elements."""
+    r"""Return the primitive totally isotropic subobject spanned by the stated elements.
+
+    Both admission conditions are decided before the subobject is refined, so
+    a refused span leaves no wrongly placed object behind in the subobject
+    cache.
+    """
     subobject = lattice.subobject_on(module_generating_set)
     assert subobject.is_primitive(), (
         "a primitive isotropic subobject has torsion-free cokernel; the stated "
         "span is not saturated in its lattice"
     )
-    refined = refine(subobject, PrimitiveIsotropicSubobjects(lattice.base_ring()))
-    assert refined.is_totally_isotropic(), (
-        "the stated span is not totally isotropic for the lattice form"
-    )
-    return refined
+    zero = lattice.base_ring().zero()
+    embedded = subobject.embedded_module_generators()
+    labels = subobject.module_generating_set()
+    assert all(
+        lattice.b(embedded[left], embedded[right]) == zero
+        for left in labels
+        for right in labels
+    ), "the stated span is not totally isotropic for the lattice form"
+    return refine(subobject, PrimitiveIsotropicSubobjects(lattice.base_ring()))
 
 
 __all__ = ["PrimitiveIsotropicSubobjects", "primitive_isotropic"]
