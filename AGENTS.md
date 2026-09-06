@@ -96,6 +96,45 @@ drawn from it is not the agent's to make and not yours to accept.
 The doc edits that *are* yours: recording completion the delivered artifact
 proves, and changes the user instructed in this session. Nothing else.
 
+## Chat is not a persistence layer (always-on)
+
+You are a language model. You have no memory. This conversation ends and
+nothing in it survives — not into the next session, not to the next agent,
+and not to you an hour from now once the context is compacted.
+
+So **"understood", "you're right", "noted", "I'll keep that in mind"**, and
+restating a correction back to the person who just made it are not responses
+to a correction. They are the absence of one. Nothing about future behaviour
+changed, including your own, and the reply made it look otherwise.
+
+A correction, a ruling, a policy, a design decision, a hard-won fact: if it
+should affect what anyone does later, it has to land somewhere that outlives
+the conversation.
+
+| What was learned | Where it lands |
+| --- | --- |
+| how the system must be built; a rule binding every future agent | `AGENTS.md`, `CLAUDE.md`, the repo's own docs |
+| a durable lesson about how to work; an expectation the user corrected | the agent-memory vault |
+| what changed, why, and what was ruled out | the commit message body |
+| a gotcha owned by an external tool or engine | that project's traps document |
+| remaining work, gaps, a decision still owed | TODOs, plan cards, GitHub issues |
+| a mathematical fact the code must reproduce | a spec, a test, a docstring at the site |
+
+The test, applied before replying to any correction:
+
+> **When this conversation is gone, what still carries the change?**
+
+If the answer is "nothing", the correction was received and not acted on.
+
+This is also *why* narrating is worse than merely wasteful. Narration spends
+the reply on what already happened, which is the one thing a reply cannot
+preserve, while the artifact that could preserve it goes unwritten. Write the
+artifact first; the reply then has almost nothing left to say, which is the
+correct amount.
+
+Agreement is not action. Acknowledging a correction and recording it are two
+different acts, and only the second one does anything.
+
 ## Notebook workflow note
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.
