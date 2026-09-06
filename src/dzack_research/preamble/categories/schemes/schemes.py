@@ -2300,11 +2300,94 @@ def Spec(ring_or_algebra, base_ring=None):
     return scheme
 
 
-def _engine_affine_pullback(pullback):
-    r"""Return the private Sage ring map realizing an affine pullback."""
+def _selected_or_rebuilt_engine_morphism(pullback):
+    r"""The realization the morphism chose when it was built, else one rebuilt from a framing.
+
+    A ring morphism answers with its selected realization and otherwise
+    declines, which is not the end of the question: a framed domain still lets
+    the generic bridge rebuild the native map from the images of the algebra
+    generators, and that is where a plain ``Spec`` of a localization map is
+    answered.
+    """
     if isinstance(pullback, RingMorphism):
-        return pullback._engine_morphism_crossing()
+        try:
+            return pullback._engine_morphism_crossing()
+        except NotImplementedError:
+            pass
     return _engine_algebra_morphism(pullback)
+
+
+def _engine_coordinate_pullback(pullback):
+    r"""Return the private Sage ring map realizing one coordinate pullback.
+
+    A morphism that selected an engine realization when it was built supplies
+    it, and a framed algebra lets the generic bridge rebuild one from the
+    images of the algebra generators.  Where neither holds, a canonical Sage
+    coercion between the two engines is an admissible realization once it is
+    checked against the owned morphism on a finite family of elements that
+    already determines a map out of the source, since agreeing there is
+    agreeing everywhere.
+
+    Two sources supply such a family.  A relative selected presentation can
+    have a flattened Sage quotient engine whose polynomial generators include
+    generators of the scalar ring, so the owned morphism holds the right map
+    while the bridge cannot rebuild the flattened one; there the family is the
+    algebra generators together with the scalar generators through the
+    structure morphism.  A localization has no algebra generating family at
+    all, and a map out of ``S^{-1}A`` is determined by its restriction along
+    the map from the ring below, so there the family comes from the framed
+    algebra at the foot of the localization tower.  That is the case a
+    distinguished open of a distinguished open reaches, where the two engines
+    are one-step Sage localizations of one ring and the coercion between them
+    is the map over that ring.
+    """
+    try:
+        return _selected_or_rebuilt_engine_morphism(pullback)
+    except (NotImplementedError, ValueError) as error:
+        source_algebra = pullback.domain()
+        target_algebra = pullback.codomain()
+        base = source_algebra.base_ring()
+        if source_algebra in LocalizationRings():
+            test_values = _elements_determining_maps_out_of(source_algebra, base)
+            if test_values is None:
+                raise error
+        else:
+            scalar_base = base.base_ring()
+            if (
+                source_algebra not in FramedAlgebras(base)
+                or base not in FramedAlgebras(scalar_base)
+            ):
+                raise error
+            algebra_labels = source_algebra.algebra_generating_set()
+            scalar_labels = base.algebra_generating_set()
+            if (
+                not algebra_labels.cardinality().is_finite()
+                or not scalar_labels.cardinality().is_finite()
+            ):
+                raise error
+            test_values = tuple(
+                source_algebra.algebra_generator(label)
+                for label in algebra_labels
+            ) + tuple(
+                source_algebra(
+                    source_algebra.algebra_structure_morphism()(
+                        base.algebra_generator(label)
+                    )
+                )
+                for label in scalar_labels
+            )
+        engine_morphism = _engine_ring(target_algebra).coerce_map_from(
+            _engine_ring(source_algebra)
+        )
+        if engine_morphism is None:
+            raise error
+        if any(
+            engine_morphism(_engine_element(source_algebra, value))
+            != _engine_element(target_algebra, pullback(value))
+            for value in test_values
+        ):
+            raise error
+        return engine_morphism
 
 
 def _affine_morphism_from_pullback(
@@ -2320,7 +2403,7 @@ def _affine_morphism_from_pullback(
             "an affine scheme morphism requires a pullback from the codomain algebra to the domain algebra"
         )
     native = _native_scheme_homset(domain, codomain)(
-        _engine_affine_pullback(pullback),
+        _engine_coordinate_pullback(pullback),
         check=False,
     )
     return SchemeMorphism(
@@ -2624,70 +2707,8 @@ def affine_spec_morphism(algebra_morphism):
         raise ValueError("affine Spec requires an algebra morphism over one scalar base")
     source_scheme = Spec(target_algebra, base_ring=ring)
     target_scheme = Spec(source_algebra, base_ring=ring)
-    try:
-        engine_morphism = _engine_algebra_morphism(algebra_morphism)
-    except (NotImplementedError, ValueError) as error:
-        # A relative selected presentation can have a flattened Sage quotient
-        # engine whose polynomial generators include generators of the scalar
-        # ring.  The owned algebra morphism still contains the right map, but
-        # the generic framed-algebra bridge cannot reconstruct that flattened
-        # native map from the relative algebra generators alone.  A canonical
-        # Sage coercion is an admissible private realization only after checking
-        # it on finite generating families for both the algebra and its scalar
-        # ring.
-        #
-        # A localization is framed by no algebra generating family at all, so
-        # the same admissibility argument runs off a different finite family:
-        # a map out of ``S^{-1}A`` is determined by its restriction along the
-        # map from the ring below, and the foot of the localization tower is
-        # framed.  This is the case a distinguished open of a distinguished
-        # open reaches, where the engines are the two one-step Sage
-        # localizations of one ring and the coercion between them is the map
-        # over that ring.
-        base = source_algebra.base_ring()
-        if source_algebra in LocalizationRings():
-            test_values = _elements_determining_maps_out_of(source_algebra, base)
-            if test_values is None:
-                raise error
-        else:
-            scalar_base = base.base_ring()
-            if (
-                source_algebra not in FramedAlgebras(base)
-                or base not in FramedAlgebras(scalar_base)
-            ):
-                raise error
-            algebra_labels = source_algebra.algebra_generating_set()
-            scalar_labels = base.algebra_generating_set()
-            if (
-                not algebra_labels.cardinality().is_finite()
-                or not scalar_labels.cardinality().is_finite()
-            ):
-                raise error
-            test_values = tuple(
-                source_algebra.algebra_generator(label)
-                for label in algebra_labels
-            ) + tuple(
-                source_algebra(
-                    source_algebra.algebra_structure_morphism()(
-                        base.algebra_generator(label)
-                    )
-                )
-                for label in scalar_labels
-            )
-        engine_source = _engine_ring(source_algebra)
-        engine_target = _engine_ring(target_algebra)
-        engine_morphism = engine_target.coerce_map_from(engine_source)
-        if engine_morphism is None:
-            raise error
-
-        if any(
-            engine_morphism(_engine_element(source_algebra, value))
-            != _engine_element(target_algebra, algebra_morphism(value))
-            for value in test_values
-        ):
-            raise error
     native = _native_scheme_homset(source_scheme, target_scheme)(
-        engine_morphism, check=False
+        _engine_coordinate_pullback(algebra_morphism), check=False
     )
     morphism = refine_scheme_morphism(
         native,
