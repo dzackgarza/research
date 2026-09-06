@@ -20,6 +20,11 @@ from dzack_research.preamble.categories.divisors.invertible_sheaves import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 if TYPE_CHECKING:
     from sage.structure.element import Element
@@ -41,7 +46,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.categories.schemes.ringed_spaces import (
         DistinguishedAffineCover,
     )
-    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
 CYCLIC_COVER_VARIABLE = "z"
@@ -117,8 +121,11 @@ class CyclicCoverAlgebra(SageObject):
             raise ValueError("the branch section and line bundle require one affine cover")
 
         branch_power = InvertibleSheaf(branch_datum)
-        for left in range(len(line_bundle.cover().opens())):
-            for right in range(left + 1, len(line_bundle.cover().opens())):
+        charts = Sets.Δ[len(line_bundle.cover().opens()) - 1]
+        for left in charts:
+            for right in charts:
+                if left >= right:
+                    continue
                 expected = line_bundle.transition_unit(left, right) ** degree
                 actual = branch_power.transition_unit(left, right)
                 if actual != expected:
@@ -130,16 +137,19 @@ class CyclicCoverAlgebra(SageObject):
         self._branch_power = branch_power
         self._branch_section = branch_parent(branch_section)
         self._degree = degree
+        self._chart_index_set = charts
         self._local_branch_coefficients = tuple(
             _rank_one_coefficient(
                 branch_power.local_module(index),
                 self._branch_section.component(index),
             )
-            for index in range(len(line_bundle.cover().opens()))
+            for index in charts
         )
-        self._local_algebras = tuple(
-            self._build_local_algebra(index)
-            for index in range(len(line_bundle.cover().opens()))
+        self._local_algebras = tuple(self._build_local_algebra(index) for index in charts)
+        self._local_algebra_family = indexed_family(
+            charts,
+            lambda index: self._local_algebras[int(index)],
+            name="Cyclic cover chart algebras",
         )
         self._gluing_datum = self._build_algebra_gluing_datum()
 
@@ -158,44 +168,51 @@ class CyclicCoverAlgebra(SageObject):
     def cover(self) -> DistinguishedAffineCover:
         return self.line_bundle().cover()
 
+    def chart_index_set(self) -> Parent:
+        r"""Return the atlas the charts are labelled by, the ordinal ``Δ[n-1]``."""
+
+        return self._chart_index_set
+
     def scheme(self) -> Parent:
         return self.line_bundle().scheme()
 
-    def local_branch_coefficient(self, index: int) -> Element:
+    def local_branch_coefficient(self, index: Integer) -> Element:
         return self._local_branch_coefficients[int(index)]
 
-    def _build_local_algebra(self, index: int) -> Parent:
+    def _build_local_algebra(self, index: Integer) -> Parent:
         return cyclic_cover_presentation(
             self.cover().open(index).coordinate_algebra(),
             self.local_branch_coefficient(index),
             self.degree(),
         )
 
-    def local_algebra(self, index: int) -> Parent:
+    def local_algebra(self, index: Integer) -> Parent:
         return self._local_algebras[int(index)]
 
-    def local_algebras(self) -> tuple[Parent, ...]:
-        return self._local_algebras
+    def local_algebras(self) -> IndexedFamily:
+        r"""Return the chart algebras as the family they are, labelled by the atlas."""
 
-    def local_underlying_module(self, index: int) -> Parent:
+        return self._local_algebra_family
+
+    def local_underlying_module(self, index: Integer) -> Parent:
         r"""Return the same local algebra object, carrying its rank-``n`` module basis."""
 
         return self.local_algebra(index)
 
-    def local_multiplication(self, index: int) -> ModuleMorphism:
+    def local_multiplication(self, index: Integer) -> ModuleMorphism:
         return self.local_algebra(index).multiplication_morphism()
 
-    def local_presentation(self, index: int) -> tuple[Parent, IndexedFamily]:
+    def local_presentation(self, index: Integer) -> tuple[Parent, IndexedFamily]:
         return self.local_algebra(index).presentation()
 
-    def local_equation(self, index: int) -> Element:
+    def local_equation(self, index: Integer) -> Element:
         relations = self.local_algebra(index).relations()
         return relations.value(next(iter(relations.index_set())))
 
     def _transition(
         self,
-        source_index: int,
-        target_index: int,
+        source_index: Integer,
+        target_index: Integer,
     ) -> CategoricalIsomorphism:
         source = self.cover().restrict_algebra(
             self.local_algebra(source_index),
@@ -223,12 +240,16 @@ class CyclicCoverAlgebra(SageObject):
         return Isomorphism(forward, inverse)
 
     def _build_algebra_gluing_datum(self) -> AlgebraGluingDatum:
+        charts = self.chart_index_set()
+        # The descent datum in gluing.py addresses charts by position, so the
+        # labels are ranked back to positions at that boundary and nowhere else.
         transitions = {
-            (left, right): self._transition(left, right)
-            for left in range(len(self.local_algebras()))
-            for right in range(left + 1, len(self.local_algebras()))
+            (int(left), int(right)): self._transition(left, right)
+            for left in charts
+            for right in charts
+            if left < right
         }
-        return self.cover().glue_algebras(self.local_algebras(), transitions)
+        return self.cover().glue_algebras(self._local_algebras, transitions)
 
     def gluing_datum(self) -> AlgebraGluingDatum:
         return self._gluing_datum
@@ -246,8 +267,8 @@ class CyclicCoverAlgebra(SageObject):
 
     def restricted_algebra(
         self,
-        chart_index: int,
-        *intersection_indices: int,
+        chart_index: Integer,
+        *intersection_indices: Integer,
     ) -> Parent:
         return self.gluing_datum().restricted_algebra(
             chart_index,
@@ -256,8 +277,8 @@ class CyclicCoverAlgebra(SageObject):
 
     def transition(
         self,
-        source_index: int,
-        target_index: int,
+        source_index: Integer,
+        target_index: Integer,
     ) -> CategoricalIsomorphism:
         return self.gluing_datum().transition(source_index, target_index)
 
