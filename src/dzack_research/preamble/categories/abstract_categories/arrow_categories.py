@@ -7,9 +7,11 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -199,6 +201,156 @@ class ArrowCategory(OwnedCategory):
 
     def _repr_(self) -> str:
         return f"Arrow category of {self.base_category()}"
+
+
+class _EndofunctorAlgebraHomset(ArrowHomset):
+    r"""Morphisms ``f`` with ``f a = b T(f)`` between ``T``-algebras.
+
+    The ambient arrow category stores the commuting square. Here its left
+    edge is not another chosen datum: it is forced to be ``T(f)`` by the
+    endofunctor. Thus one underlying arrow determines one structured
+    morphism, exactly as in ``Inserter(T, Id)``.
+    """
+
+    def _element_constructor_(self, left, right=None):
+        category = self.arrow_category()
+        if right is None:
+            right = left
+            left = category.endofunctor()(right)
+        else:
+            expected = category.endofunctor()(right)
+            if left != expected:
+                raise ValueError(
+                    "the left edge of an endofunctor-algebra map must be the image of its underlying morphism"
+                )
+            left = expected
+        return CommutativeSquare(self, left, right)
+
+
+class _EndofunctorAlgebraForgetfulFunctor(Functor):
+    r"""The carrier functor ``Alg(T) -> C``."""
+
+    _faithful = True
+
+    def __init__(self, algebras) -> None:
+        self._algebras = algebras
+        super().__init__(algebras, algebras.base_category())
+
+    def _apply_object(self, algebra):
+        return algebra.target_object()
+
+    def _apply_morphism(self, morphism):
+        return morphism.right()
+
+    def _repr_(self) -> str:
+        return f"Carrier functor {self.domain()} -> {self.codomain()}"
+
+
+class _EndofunctorAlgebraCategory(Category):
+    r"""The category of algebras of an endofunctor ``T : C -> C``.
+
+    An object is the exact arrow ``a : T(X) -> X`` in ``C``. The existing
+    arrow-object construction retains that arrow without rebuilding either
+    endpoint, while this category cuts its Hom-sets down from arbitrary
+    commuting squares to the squares whose left edge is ``T(f)``. Hence its
+    objects and morphisms are precisely those of ``Inserter(T, Id_C)``.
+    """
+
+    def __init__(self, endofunctor) -> None:
+        if not isinstance(endofunctor, Functor):
+            raise TypeError("an endofunctor algebra requires a represented functor")
+        if endofunctor.domain() is not endofunctor.codomain():
+            raise ValueError("an endofunctor must have one common domain and codomain")
+        self._endofunctor = endofunctor
+        self._arrow_category = ArrowCategory(endofunctor.domain())
+        self._homsets = {}
+        super().__init__()
+
+    def _make_named_class_key(self, name):
+        return self._endofunctor._cache_key()
+
+    def endofunctor(self):
+        return self._endofunctor
+
+    def base_category(self):
+        return self.endofunctor().domain()
+
+    def arrow_category(self):
+        return self._arrow_category
+
+    def super_categories(self):
+        return [self.arrow_category()]
+
+    def __contains__(self, candidate) -> bool:
+        if candidate not in self.arrow_category():
+            return False
+        carrier = candidate.target_object()
+        return (
+            carrier in self.base_category()
+            and candidate.source_object() is self.endofunctor()(carrier)
+        )
+
+    def algebra(self, carrier, structure):
+        r"""Return ``(carrier, structure : T(carrier) -> carrier)``.
+
+        Both the supplied carrier and the supplied structure arrow are kept
+        literally. In particular two different structure arrows on one
+        carrier produce two different algebra objects whose carrier functor
+        returns that same carrier object.
+        """
+        if carrier not in self.base_category():
+            raise TypeError("the carrier is not an object of the endofunctor's category")
+        if structure.domain() is not self.endofunctor()(carrier):
+            raise ValueError("the structure morphism must start at T(carrier)")
+        if structure.codomain() is not carrier:
+            raise ValueError("the structure morphism must end at its exact supplied carrier")
+        return self.arrow_category()(structure)
+
+    def carrier(self, algebra):
+        if algebra not in self:
+            raise TypeError("the object is not an algebra of this endofunctor")
+        return algebra.target_object()
+
+    def structure(self, algebra):
+        if algebra not in self:
+            raise TypeError("the object is not an algebra of this endofunctor")
+        return algebra.arrow()
+
+    def Mor(self, source, target):
+        if source not in self or target not in self:
+            raise TypeError("an endofunctor-algebra Hom requires two algebras of this endofunctor")
+        key = (id(source), id(target))
+        cached = self._homsets.get(key)
+        if cached is not None and cached.domain() is source and cached.codomain() is target:
+            return cached
+        result = _EndofunctorAlgebraHomset(self, source, target)
+        self._homsets[key] = result
+        return result
+
+    def homomorphism(self, source, target, underlying_morphism):
+        r"""Equip ``f`` with its forced commuting square ``(T(f), f)``."""
+        return self.Mor(source, target)(underlying_morphism)
+
+    @cached_method
+    def forgetful(self):
+        return _EndofunctorAlgebraForgetfulFunctor(self)
+
+    def identity(self, algebra):
+        return self.Mor(algebra, algebra).identity()
+
+    def compose(self, second, first):
+        if first.codomain() is not second.domain():
+            raise ValueError("endofunctor-algebra morphisms are not composable")
+        return second * first
+
+    def _repr_(self) -> str:
+        return f"Algebras of {self.endofunctor()}"
+
+
+@cached_function(key=lambda endofunctor: id(endofunctor))
+def EndofunctorAlgebras(endofunctor):
+    r"""Return ``Inserter(T, Id)``, represented by exact arrow objects."""
+    return _EndofunctorAlgebraCategory(endofunctor)
 
 
 class SliceHomset(ArrowHomset):
@@ -700,6 +852,7 @@ __all__ = [
     "Isomorphism",
     "IsoArrowCategory",
     "EndArrowCategory",
+    "EndofunctorAlgebras",
     "AutomorphismArrowCategory",
     "ArrowCategory",
     "ArrowHomset",

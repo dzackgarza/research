@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     DirectSumDecomposition,
     DirectSumObjects,
     EndArrowCategory,
+    EndofunctorAlgebras,
     EndCategoryConstruction,
     EndCategoryOf,
     EpiCategoryConstruction,
