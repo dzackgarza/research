@@ -51,7 +51,7 @@ class OwnedCategory(OwnedCategoryBase):
     """
 
     @abstract_method
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""Return one object of this category.
 
         A witness that the category is inhabited, and the datum every construction
@@ -140,10 +140,10 @@ class OwnedParameterizedCategory(OwnedCategory):
     """
 
     @abstract_method(optional=True)
-    def parameter_category(self):
+    def parameter_category(self) -> Category:
         r"""Return the category this family's parameter ranges over."""
 
-    def __init__(self, parameter) -> None:
+    def __init__(self, parameter: Parent) -> None:
         declared = self.parameter_category
         if declared is not NotImplemented:
             ranges_over = declared()
@@ -154,10 +154,10 @@ class OwnedParameterizedCategory(OwnedCategory):
         self._owned_parameter = parameter
         super().__init__()
 
-    def parameter(self):
+    def parameter(self) -> Parent:
         return self._owned_parameter
 
-    def base(self):
+    def base(self) -> Parent:
         return self.parameter()
 
 
@@ -169,7 +169,7 @@ class Objects(OwnedCategory):
     semantic ancestors of owned categories.
     """
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The set 2, which is an object like any other.
 
         The root has no structure to exhibit, so its witness is whatever the
