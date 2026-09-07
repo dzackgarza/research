@@ -29,9 +29,28 @@ This is one of the few places where an explicit `case`/`match` or other routing 
 
 **Diagnose recurring slop by generator, not by instance.**  A new occurrence of a known pattern is repaired by the existing rule; it does not earn another bespoke exception or workaround.  Add a catalogue entry only when review discovers a genuinely new code-shape generator.  The principal generators include presentation/object confusion, theorem proxies replacing definitions, stored or witness-free structure, signature-porting from a foreign ontology, contaminated prescriptions, and laundering mathematically correct failures instead of repairing what they expose.
 
-**Specialization should be modular and dependency direction should normally point toward foundations.**  Adding a new specialized category should usually mean adding a subtree that imports the general categories it refines, declares its supercategories, and contributes its own methods, constructions, and algorithms.  Existing supercategories and unrelated siblings should ordinarily remain unaware that the new descendant exists.  A design in which `Cat.Products`, `Modules(R)`, or another general ancestor must import or branch on `MyVerySpecialResearchLatticeCategory` has the dependency direction backwards and gives a leaf addition an unreasonable blast radius.  Upward knowledge is not absolutely forbidden—occasionally a new leaf exposes a genuinely missing general abstraction—but it is a strong signal to recheck ownership and dataflow.
+**Construct the defining data at their mathematical owner.** Start a category contribution by reading its immediate structure owners and constructors.
+State the added datum, its domain and codomain, and the equations its morphisms preserve in that category's documentation.
+Pass the datum through the owning constructor so its concrete accessors are fulfilled there.
+Alternative constructors must establish the same datum, including the maps that transport it between presentations.
+An inherited method name alone does not establish its required state.
 
-A useful extension test follows: **adding a mathematically local feature should have a mathematically local code footprint**.  A new leaf category, refinement, or specialized algorithm should not require edits across generic ancestors merely to register its existence.  Conversely, when implementing a feature forces repeated edits to global dispatchers, ancestor modules, unrelated siblings, or public export surfaces, first ask which mathematical owner or abstraction is missing.
+Distinguish properties from additional choices.
+A property refinement retains the existing structure; a selected action, multiplication, framing, or presentation requires construction data.
+Specify morphisms as well as objects when adding structure.
+Reuse a universal construction through a structural functor only with the corresponding preservation or creation result and canonical maps.
+
+**Keep specialization at its own owner.** A specialized constructor calls its general mathematical construction.
+Adding a leaf should ordinarily require changes to that leaf and its immediate mathematical dependencies.
+A generic owner importing the new descendant indicates a missing construction interface.
+Read the [construction and inheritance proposal](references/preamble-architecture.md) for current examples and the proposed repair.
+The [architecture prerequisite](TODO.md#architecture-before-dependent-implementation) sets their implementation order.
+
+For review, follow one public constructor through its defining datum, one nonidentity structural-functor image, and one inherited operation.
+Include the resulting objects, morphism endpoints, and defining equations in the mathematical example.
+Inspect required operations on the actual generated classes through Sage's abstract-method discovery.
+Write the example at the existing owning test surface, subject to the expectation-subtree rules and the current verification policy.
+Keep the category declaration, constructor signature, and executable contract as the discoverable source; derive reports from them.
 
 These principles are more important than any current list of prohibited code shapes.  The policy codes below record concrete consequences and reviewable failure modes, but contributors should apply the discovery, ownership, locality, and dependency-direction model to new code even when no existing example names the exact violation.
 

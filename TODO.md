@@ -7,7 +7,7 @@ Recorded findings and completion notes retain their original scope; inspect the 
 
 ## Contents
 
-- [Execution priorities](#execution-priorities): [verification rule](#testing-is-deferred-until-every-other-item-is-done-always-on), [handoff](#handoff-2026-09-06), [objective](#current-objective-and-order), [dependency graph](#remaining-workstreams-as-a-dependency-graph), [framework boundary](#how-much-category-theory-to-implement-here).
+- [Execution priorities](#execution-priorities): [architecture prerequisite](#architecture-before-dependent-implementation), [verification rule](#testing-is-deferred-until-every-other-item-is-done-always-on), [handoff](#handoff-2026-09-06), [objective](#current-objective-and-order), [dependency graph](#remaining-workstreams-as-a-dependency-graph), [framework boundary](#how-much-category-theory-to-implement-here).
 - [Remediation queue](#remediation-queue): [scheme and inheritance work](#active-scheme-and-inheritance-work), [collections](#collection-and-finiteness-remediation), [typing](#typing-and-witnesses), [category witnesses](#witnesses-what-an_object-found).
 - [Mathematical requirements](#mathematical-requirements): [architecture](#0-owned-category-and-backend-neutral-architecture), [modules](#8-remaining-module-level-algorithms), [commutative algebra](#84-commutative-algebra-foundation-required-by-scheme-theory), [schemes](#9-scheme-and-algebraic-geometry-foundation), [lattices](#3-integral-lattices-elements-reductions-and-arithmetic-groups-semantic-api-contracts), [port audit](#24-port-completion-audit).
 - [Organization findings](#organization-findings): [current work](#current-organization-work), [earlier assessment](#earlier-assessment), [finiteness and coordinates](#finitary-and-coordinate-overfitting-audit).
@@ -17,6 +17,65 @@ Recorded findings and completion notes retain their original scope; inspect the 
 
 Use these priorities to select work from the [remediation queue](#remediation-queue),
 [mathematical requirements](#mathematical-requirements), and [organization findings](#organization-findings).
+
+### Architecture before dependent implementation
+
+The [construction and inheritance proposal](references/preamble-architecture.md) records the current source assessment and proposed mathematical design.
+This section owns its implementation work.
+Agree on the design before changing the shared architecture.
+Prioritize the affected construction owners before expanding or polishing their dependent APIs.
+Existing mathematical requirements retain their scope; the dependencies below determine when to implement them.
+
+- [ ] Align the shared module, algebra, and chosen-presentation interfaces with `sage-categories`.
+  Use the [existing general-algebra decision and unfinished conversion](#the-algebra-node-conversion-designed-and-part-built).
+  Reconcile the sibling algebra specification with that node and its associative/unital and Lie subcategories.
+  Settle the morphisms of selected presentations and the uniform defining-data contract.
+  Use the existing module-object specification for the internal action parameters and the enriched endomorphism presentation.
+  Keep generic monoidal, functor, class-construction, and static-projection machinery at the [framework owner](#how-much-category-theory-to-implement-here).
+
+- [ ] Establish required defining data through the common construction path.
+  Coordinate `owned_category.py`, `refine.py`, ordinary parents, engine adoption, and `CategoricalHomset` initialization.
+  Each category constructs its own data and fulfills the corresponding accessors before returning an object.
+  Property refinement retains that data.
+  **First mathematical specimen:** the left regular module over `M_2(Q)`, its action into additive-group endomorphisms, and an inherited scalar operation.
+  The defining action sends `E_12` to an additive endomorphism that is not `R`-linear.
+
+- [ ] Thread all module constructors through the defining action.
+  Start with general actions, free modules, selected finite presentations, restriction of scalars, localizations, and underlying algebra modules.
+  Each route exposes the same module-owned structure morphism and uses it for scalar evaluation.
+  Construct `Z/6Z` from a presentation and from its action, with an explicit intertwining isomorphism.
+  Include a free-plus-torsion module and a module with infinite indexing data.
+  Derived actions use the existing scalar-change and quotient functors on objects and morphisms.
+
+- [ ] Construct algebra objects through the general multiplication owner and its underlying module.
+  The multiplication route accepts its defining morphism at the stated generality.
+  Finite tables and unit-recovery algorithms are specialized constructors.
+  Thread associative unital central structure maps through this same construction.
+  Place Lie identities over the general multiplication category and give the commutator functor its changed multiplication.
+  Derive Hom conditions from preservation of the specified operations, including units where present.
+  Give Lie cokernels their ideal-quotient construction; the Cartan inclusion in `sl_2(Q)` distinguishes it from a module quotient.
+
+- [ ] Make the generic group-action constructor produce the action datum in its supplied category.
+  Reuse the functor `BG -> C` and natural-transformation definitions.
+  Finite G-sets and affine G-schemes construct that datum at their own owners.
+  Move scheme-specific construction out of `GObjects._call_` and group-algebra specialization out of the generic module constructor.
+
+- [ ] Require chosen framings and presentations at their construction owners.
+  Keep finite-generation and finite-presentation properties separate from selected data.
+  Preserve chosen presentation arrows and the transport maps produced by normalization.
+  Invariant factors classify underlying PID modules; adding a contractible free summand distinguishes selected presentations with the same cokernel.
+
+- [ ] Attach discoverable contracts to the surviving owners.
+  Use required constructor inputs for defining data, abstract operations where needed, and Sage's inherited contract discovery.
+  State public constructor and morphism types at those owners.
+  Add focused Import Linter boundaries for the generic-to-specialized dependencies identified in the proposal.
+  Write mathematical examples for alternate constructor routes, nonidentity functor images, and category-specific universal maps; record them as unverified.
+  Apply the [verification rule](#testing-is-deferred-until-every-other-item-is-done-always-on) below.
+
+Module and algebra repairs precede dependent ideal, tensor, scalar-change, local-ring, and scheme API expansion.
+Inspect the immediate construction dependency before resuming each existing work item.
+Broad annotation, package-layout, export, and leaf-method consolidation follow the interfaces that survive these repairs.
+Independent mathematical algorithms can proceed when they use an established interface and add no competing construction owner.
 
 ### Testing is deferred until every other item is done (always-on)
 
@@ -224,8 +283,8 @@ Develop a general scheme-theory toolkit built on the preamble's affine-local alg
 This research proceeds while `~/gitclones/sage-categories` develops the replacement category framework.
 The preamble must remain usable, organized, and extensible throughout that work.
 
-1. Build a coherent affine-local algebraic foundation: rings, ideals, modules, algebras, their morphisms, and their constructions.
-2. Thread underlying structures and constructors through that foundation so higher constructions reuse its algorithms.
+1. Complete the [construction and inheritance prerequisite](#architecture-before-dependent-implementation) for the foundation used by the next consumer.
+2. Build affine-local rings, ideals, modules, algebras, and their constructions through those shared owners and structural functors.
 3. Build relative schemes, covers and sheaves, group actions, divisors, cycles, cohomology, and families through those algebraic owners.
 4. Continue arithmetic lattice orbits, centralizers, embeddings, and reflection geometry as subsequent research applications.
 
@@ -243,6 +302,12 @@ not merely that it would be tidier to wait.
 
 ```mermaid
 graph TD
+    Q["Q. Defining data, constructors,<br/>structure functors and Hom contracts"] --> A
+    Q --> B
+    Q --> D
+    Q --> E
+    Q --> I
+    Q --> K
     A["A. Covers become atlases"] --> F["F. §11 divisors, Picard,<br/>cycles, cohomology, linear systems"]
     A --> H["H. §17 ADE double cover"]
     B["B. Toric atlas gluing"] --> H
@@ -1040,11 +1105,9 @@ Apply these constructor requirements to the construction needed by the active ge
 
 - eliminate import-order-dependent ring/module/algebra structure installation.
 
-Repair shared initialization before adding dependent implementations. Use the local Cat boundary defined above to bound the repair.
-
-- [x] Audit remaining `refine()` calls against the architectural boundary: owned constructors build objects through cooperative `super()` calls; each leaf constructs only its immediate declared supercategory object; refinement is limited to constructor-computed membership in subcategories that add properties or axioms, and never supplies construction data after instantiation.
-
-**Status: complete.** The remaining delayed-construction uses of `refine()` were removed from enriched Hom/End objects, formed and discriminant modules, Kähler derivations, Lebesgue graded objects, root/group lattices, vector-space base changes, number-field/order views, finite product enumeration, and native-scheme adoption. Constructor-owned data now enter through the corresponding object/view construction paths; the scheme adapter performs its structural adoption explicitly rather than through the property-refinement helper. The remaining production `refine()` calls admit only constructor-computed properties or axioms (finite/finite-support, abelian/finite, prime-field, torsion, finite-presentation, nondegeneracy/lattice properties, and projectivity). The old import-time ring/module/algebra installer family is absent from the production source census.
+The [architecture prerequisite](#architecture-before-dependent-implementation) owns this repair and its completion state.
+Apply it to ordinary and adopted parents, enriched Hom/End objects, formed and discriminant modules, derivations, graded objects, scalar changes, number-field/order constructions, and scheme adoption.
+The [current source assessment](references/preamble-architecture.md#class-assembly-and-initialization-have-separate-paths) identifies the initialization paths that must meet the same contract.
 
 ### Fundamental scheme theory
 
