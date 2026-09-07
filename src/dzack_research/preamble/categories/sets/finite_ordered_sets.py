@@ -96,7 +96,14 @@ def _finite_ordered_presentation(elements):
 
 
 
-def ordered_enumerated_set(index_set, element_at, *, index_of, contains=None, name=None):
+def ordered_enumerated_set(
+    index_set: Parent,
+    element_at: Callable[[object], object],
+    *,
+    index_of: Callable[[object], object | None],
+    contains: Callable[[object], bool] | None = None,
+    name: str | None = None,
+) -> Parent:
     r"""Return the ordered image of ``index_set`` under the stated enumeration."""
     return object_of(
         OrderedEnumeratedSets(),
@@ -108,7 +115,14 @@ def ordered_enumerated_set(index_set, element_at, *, index_of, contains=None, na
     )
 
 
-def finite_ordered_image(index_set, element_at, *, index_of=None, contains=None, name=None):
+def finite_ordered_image(
+    index_set: Parent,
+    element_at: Callable[[object], object],
+    *,
+    index_of: Callable[[object], object | None] | None = None,
+    contains: Callable[[object], bool] | None = None,
+    name: str | None = None,
+) -> Parent:
     r"""Return a finite ordered image without materializing its members."""
     return FiniteOrderedSets().ObjectType.from_indexed(
         index_set,
@@ -119,7 +133,12 @@ def finite_ordered_image(index_set, element_at, *, index_of=None, contains=None,
     )
 
 
-def finite_ordered_filter(source, predicate, *, name=None):
+def finite_ordered_filter(
+    source: Parent,
+    predicate: Callable[[object], bool],
+    *,
+    name: str | None = None,
+) -> Parent:
     r"""Return the finite ordered subset cut out by ``predicate`` lazily."""
     return object_of(
         FiniteFilteredOrderedSets(), source=source, predicate=predicate, name=name
@@ -422,7 +441,9 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         def _repr_(self):
             return self._filtered_name or f"Ordered subset of {self.source()}"
 
-def finite_ordered_set(elements):
+def finite_ordered_set(
+    elements: Parent | tuple[object, ...] | list[object] | range,
+) -> Parent:
     r"""Transport one known finite ordered enumeration to an owned set."""
     if elements in FiniteOrderedSets():
         return elements

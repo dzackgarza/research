@@ -161,7 +161,7 @@ class FiniteOrdinalSets(OwnedCategory):
 
 
 @cached_function
-def finite_ordinal_set(size):
+def finite_ordinal_set(size: int) -> Parent:
     r"""The ordinal $\{0,\dots,n-1\}$.
 
     Interned by its size, because an ordinal is determined by how much it
@@ -171,7 +171,7 @@ def finite_ordinal_set(size):
     return object_of(FiniteOrdinalSets(), size=int(size))
 
 
-def counting_ordinal(source):
+def counting_ordinal(source: Parent) -> Parent:
     r"""Return the ordinal that counts ``source``.
 
     That is $\{0,\dots,n-1\}$ when $|X| = n$ and $\omega$ when $X$ is
@@ -188,7 +188,11 @@ def counting_ordinal(source):
     return NN
 
 
-def ranking_isomorphism(source, position_of, point_at):
+def ranking_isomorphism(
+    source: Parent,
+    position_of: Callable[[object], object],
+    point_at: Callable[[object], object],
+) -> CategoricalIsomorphism:
     r"""Return the enumeration of ``source`` as one isomorphism onto its ordinal.
 
     An enumeration is a bijection $X \xrightarrow{\ \sim\ }
@@ -746,19 +750,19 @@ class Sets(OwnedCategory):
                 return not cardinal(candidate.cardinality()).is_finite()
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 return False
-def FiniteSets():
+def FiniteSets() -> Category:
     r"""The category of finite sets."""
     return Sets().Finite()
 
 
-def InfiniteSets():
+def InfiniteSets() -> Category:
     r"""The category of infinite sets."""
     return Sets().Infinite()
 
 
 
 
-def Set(source):
+def Set(source: object) -> Parent:
     r"""Return ``source`` as an owned set whenever this constructor creates it."""
     if source in Sets() or source in SageSets():
         return source
@@ -767,12 +771,22 @@ def Set(source):
     return finite_ordered_set(tuple(SageSet(source)))
 
 
-def ConditionSet(universe, predicate):
+def ConditionSet(
+    universe: Parent,
+    predicate: Callable[[object], bool],
+) -> Parent:
     r"""Return the subset of ``universe`` cut out by ``predicate``."""
     return SageConditionSet(universe, predicate)
 
 
-def ImageSet(map_, domain_subset, *, category=None, is_injective=None, inverse=None):
+def ImageSet(
+    map_: Callable[[object], object],
+    domain_subset: Parent,
+    *,
+    category: Category | None = None,
+    is_injective: bool | None = None,
+    inverse: Callable[[object], object] | None = None,
+) -> Parent:
     r"""Return the represented image of ``domain_subset`` under ``map_``."""
     try:
         domain_cardinality = domain_subset.cardinality()
@@ -805,11 +819,19 @@ class SetSurjection(OwnedSetMorphism):
         return True
 
 
-def set_injection(domain, codomain, function):
+def set_injection(
+    domain: Parent,
+    codomain: Parent,
+    function: Callable[[object], object],
+) -> SetInjection:
     return SetInjection(Sets().Mor(domain, codomain), function)
 
 
-def set_surjection(domain, codomain, function):
+def set_surjection(
+    domain: Parent,
+    codomain: Parent,
+    function: Callable[[object], object],
+) -> SetSurjection:
     return SetSurjection(Sets().Mor(domain, codomain), function)
 
 
@@ -1090,7 +1112,7 @@ class PowerSets(OwnedCategory):
 
 
 @cached_function
-def PowerSet(base_set):
+def PowerSet(base_set: Parent) -> Parent:
     return object_of(PowerSets(), base_set=base_set)
 
 
@@ -1162,7 +1184,7 @@ class FunctionSets(OwnedCategory):
 
 
 @cached_function
-def ExponentialOfSets(codomain, exponent):
+def ExponentialOfSets(codomain: Parent, exponent: Parent) -> Parent:
     return _function_set_of(codomain, exponent)
 
 
@@ -1237,7 +1259,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
 
 @cached_function
-def SubsetsOfSize(source, subset_cardinality):
+def SubsetsOfSize(source: Parent, subset_cardinality: int) -> Parent:
     return object_of(
         FixedCardinalitySubsetSets(),
         source=source,
@@ -1300,7 +1322,7 @@ class FinitePowerSets(OwnedCategory):
 
 
 @cached_function
-def FiniteSubsets(source):
+def FiniteSubsets(source: Parent) -> Parent:
     return object_of(FinitePowerSets(), source=source)
 
 
@@ -1817,7 +1839,10 @@ DisjointUnionsOfSets = CoproductsOfSets
 
 
 @cached_function
-def CartesianProductOfFamily(index_set, family):
+def CartesianProductOfFamily(
+    index_set: Parent,
+    family: Callable[[object], Parent],
+) -> Parent:
     return _cartesian_product_of(index_set, family)
 
 
@@ -1828,15 +1853,19 @@ def _cartesian_product_of_tuple(factors):
     return _cartesian_product_of(index_set, family)
 
 
-def CartesianProductOfSets(*factors):
+def CartesianProductOfSets(*factors: Parent) -> Parent:
     return _cartesian_product_of_tuple(tuple(factors))
 
 
-def cartesian_product_of(factors):
+def cartesian_product_of(factors: Iterable[Parent]) -> Parent:
     return CartesianProductOfSets(*tuple(factors))
 
 
-def CartesianProductMorphism(source, target, component_morphisms):
+def CartesianProductMorphism(
+    source: Parent,
+    target: Parent,
+    component_morphisms: Callable[[object], SetMorphism],
+) -> SetMorphism:
     r"""Return the componentwise map between two dependent products."""
     if source.index_set() != target.index_set():
         raise ValueError("componentwise product maps require one index set")
@@ -1853,7 +1882,10 @@ def CartesianProductMorphism(source, target, component_morphisms):
 
 
 @cached_function
-def CoproductOfFamily(index_set, family):
+def CoproductOfFamily(
+    index_set: Parent,
+    family: Callable[[object], Parent],
+) -> Parent:
     return object_of(CoproductsOfSets(), index_set=index_set, family=family)
 
 
@@ -1864,11 +1896,15 @@ def _coproduct_of_tuple(cofactors):
     )
 
 
-def CoproductOfSets(*cofactors):
+def CoproductOfSets(*cofactors: Parent) -> Parent:
     return _coproduct_of_tuple(tuple(cofactors))
 
 
-def CoproductMorphism(source, target, component_morphisms):
+def CoproductMorphism(
+    source: Parent,
+    target: Parent,
+    component_morphisms: Callable[[object], SetMorphism],
+) -> SetMorphism:
     r"""Return the componentwise map between two dependent coproducts."""
     if source.index_set() != target.index_set():
         raise ValueError("componentwise coproduct maps require one index set")
@@ -2136,7 +2172,7 @@ class FinitelySupportedFunctionSets(OwnedCategory):
 
 
 
-def placement_of(parent):
+def placement_of(parent: Parent) -> Category:
     r"""Return the strongest represented owned Set cardinality category for ``parent``."""
     if parent in FiniteSets():
         return FiniteSets()

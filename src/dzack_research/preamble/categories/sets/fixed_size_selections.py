@@ -404,7 +404,12 @@ class FixedSizeSelections(Parent):
 
 
 @cached_function(key=lambda source, selection_size, repetition: (id(source), int(selection_size), bool(repetition)))
-def fixed_size_selections(source, selection_size, *, repetition):
+def fixed_size_selections(
+    source: Parent,
+    selection_size: int,
+    *,
+    repetition: bool,
+) -> FixedSizeSelections:
     result = FixedSizeSelections(
         source,
         selection_size,
@@ -413,11 +418,11 @@ def fixed_size_selections(source, selection_size, *, repetition):
     return result
 
 
-def ordered_subsets_of_size(source, size):
+def ordered_subsets_of_size(source: Parent, size: int) -> FixedSizeSelections:
     return fixed_size_selections(source, size, repetition=False)
 
 
-def multisets_of_size(source, size):
+def multisets_of_size(source: Parent, size: int) -> FixedSizeSelections:
     return fixed_size_selections(source, size, repetition=True)
 
 

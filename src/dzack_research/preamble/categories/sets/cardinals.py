@@ -917,11 +917,11 @@ def Ordinals() -> OrdinalSemiring:
     return object_of(OrdinalSemirings())
 
 
-def ordinal(value) -> Ordinal:
+def ordinal(value: object) -> Ordinal:
     return Ordinals()(value)
 
 
-def omega(index) -> Ordinal:
+def omega(index: object) -> Ordinal:
     return Ordinals().initial(index)
 
 
@@ -933,7 +933,7 @@ def _cardinal_with_expression(expression) -> "Cardinalities.ObjectType":
     return object_of(Cardinalities(), expression=expression)
 
 
-def cardinal(value) -> "Cardinalities.ObjectType":
+def cardinal(value: object) -> "Cardinalities.ObjectType":
     if value in Cardinalities():
         return value
     if value == Infinity:
@@ -952,7 +952,7 @@ def cardinal(value) -> "Cardinalities.ObjectType":
     return _cardinal_with_expression(_FiniteCardinal(integer))
 
 
-def aleph(index) -> "Cardinalities.ObjectType":
+def aleph(index: object) -> "Cardinalities.ObjectType":
     return _cardinal_with_expression(_AlephCardinal(ordinal(index)))
 
 
