@@ -138,17 +138,22 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             self._preamble_localization_functor = localization_functor
             source_ring = localization_ring.localization_source()
             framed_source = source_module in FramedModules(source_ring)
+            module_generating_set = None
+            module_generator_function = None
             if framed_source:
                 # Localization chooses no new framing: it carries the source
                 # generators to their images in S^{-1}M.
-                self._preamble_module_generating_set = (
-                    source_module.module_generating_set()
-                )
-                self._preamble_module_generator_function = lambda label: self.fraction(
+                module_generating_set = source_module.module_generating_set()
+                module_generator_function = lambda label: self.fraction(
                     source_module.module_generator(label)
                 )
                 self._preamble_module_coefficient_function = self._framing_coefficients
-            super().__init__(base_ring=localization_ring, **rest)
+            super().__init__(
+                base_ring=localization_ring,
+                module_generating_set=module_generating_set,
+                module_generator_function=module_generator_function,
+                **rest,
+            )
 
         def _framing_coefficients(self, element):
             r"""Return coefficients of a localization fraction in the source framing."""
