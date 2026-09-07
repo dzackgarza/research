@@ -228,6 +228,15 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 f"stabilizer of {point} in {self}",
             )
 
+        def orbit_stabilizers(self):
+            r"""The family of point stabilizers indexed by the orbit classes."""
+            orbits = self.orbits()
+            return finite_indexed_family(
+                orbits,
+                lambda orbit: self.stabilizer(orbit.representative()),
+                name=f"Orbit stabilizers of {self}",
+            )
+
         def is_transitive_action(self) -> bool:
             r"""Whether the action has one orbit."""
             return bool(self.orbits().cardinality() == cardinal(1))
@@ -259,13 +268,8 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 return free
             return self.is_transitive_action()
 
-        def transporter(self, source, target):
-            r"""Return the unique ``g`` with ``g.source = target``.
-
-            On a torsor existence and uniqueness are automatic.  On a general
-            finite ``G``-set this method still computes the same equation and
-            rejects the cases of no solution or multiple solutions.
-            """
+        def transporter_witness(self, source, target):
+            r"""Return one ``g`` with ``g.source = target`` when one exists."""
             if source not in self or target not in self:
                 raise ValueError("a transporter requires two points of the G-set")
             group = self.acting_group()
@@ -273,18 +277,24 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 raise NotImplementedError(
                     "represented transporter search currently requires a finite acting group"
                 )
-            result = None
             for group_element in group:
-                if self.act(group_element, source) != target:
-                    continue
-                if result is not None:
-                    raise ValueError(
-                        f"the transporter from {source} to {target} is not unique"
-                    )
-                result = group_element
-            if result is None:
-                raise ValueError(f"no group element moves {source} to {target}")
-            return result
+                if self.act(group_element, source) == target:
+                    return group_element
+            raise ValueError(f"no group element moves {source} to {target}")
+
+        def transporter(self, source, target):
+            r"""Return the unique transporter between two points of a torsor.
+
+            A general action has a transporter *coset*, not a unique element.
+            ``transporter_witness`` is the generic finite-action operation;
+            this spelling is reserved for the torsor case.
+            """
+            if self.is_torsor() is not True:
+                raise ValueError(
+                    "a unique transporter is defined here only for a torsor; "
+                    "use transporter_witness() for a general action"
+                )
+            return self.transporter_witness(source, target)
 
         @cached_method
         def ranking_map(self):

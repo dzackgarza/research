@@ -178,3 +178,10 @@ def test_transitive_action_with_nontrivial_stabilizer_is_not_a_torsor() -> None:
         if group_element != group.one() and group_element in stabilizer
     ]
     assert nonidentity_fixers
+
+    witness = natural.transporter_witness(1, 2)
+    assert natural.act(witness, 1) == 2
+    orbit = natural.orbits().orbit_of(1)
+    orbit_stabilizers = natural.orbit_stabilizers()
+    assert orbit_stabilizers.index_set() is natural.orbits()
+    assert group.one() in orbit_stabilizers[orbit]
