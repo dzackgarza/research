@@ -10,30 +10,23 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
+from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
-def _common_category(*objects):
+def _common_category(*objects: Parent) -> Category:
     if not objects:
         raise ValueError("a categorical construction requires at least one object")
     return Category.meet([obj.category() for obj in objects])
 
 
-def _category_operation(operation, *objects, arguments=None):
-    common = _common_category(*objects)
-    method_name = f"_categorical_{operation}"
-    for category in common.all_super_categories():
-        method = getattr(category, method_name, None)
-        if method is not None:
-            return method(*(objects if arguments is None else arguments))
-    raise NotImplementedError(
-        f"no represented {operation.replace('_', '-')} is owned by a common category of "
-        + ", ".join(map(str, objects))
-    )
-
-
 def TensorProduct(left: Parent, right: Parent) -> Parent:
-    return _category_operation("tensor_product", left, right)
+    category = _common_category(left, right)
+    construction = category._categorical_tensor_product
+    assert construction is not NotImplemented, (
+        f"no represented tensor product is owned by a common category of {left}, {right}"
+    )
+    return construction(left, right)
 
 
 def TensorSquare(obj: Parent) -> Parent:
@@ -41,53 +34,92 @@ def TensorSquare(obj: Parent) -> Parent:
 
 
 def Biproduct(left: Parent, right: Parent) -> Parent:
-    return _category_operation("biproduct", left, right)
+    category = _common_category(left, right)
+    construction = category._categorical_biproduct
+    assert construction is not NotImplemented, (
+        f"no represented biproduct is owned by a common category of {left}, {right}"
+    )
+    return construction(left, right)
 
 
 def Product(left: Parent, right: Parent) -> Parent:
-    return _category_operation("product", left, right)
+    category = _common_category(left, right)
+    construction = category._categorical_product
+    assert construction is not NotImplemented, (
+        f"no represented product is owned by a common category of {left}, {right}"
+    )
+    return construction(left, right)
 
 
 def Coproduct(left: Parent, right: Parent) -> Parent:
-    return _category_operation("coproduct", left, right)
+    category = _common_category(left, right)
+    construction = category._categorical_coproduct
+    assert construction is not NotImplemented, (
+        f"no represented coproduct is owned by a common category of {left}, {right}"
+    )
+    return construction(left, right)
 
 
-def _ProductMorphism(left_morphism, right_morphism, *, source, target):
-    return _category_operation(
-        "product_morphism",
+def _ProductMorphism(
+    left_morphism: Morphism,
+    right_morphism: Morphism,
+    *,
+    source: Parent,
+    target: Parent,
+) -> Morphism:
+    category = _common_category(
         left_morphism.domain(), right_morphism.domain(),
         left_morphism.codomain(), right_morphism.codomain(),
-        arguments=(left_morphism, right_morphism, source, target),
     )
+    construction = category._categorical_product_morphism
+    assert construction is not NotImplemented, (
+        "no represented product-morphism construction is owned by the common category"
+    )
+    return construction(left_morphism, right_morphism, source, target)
 
 
-def _CoproductMorphism(left_morphism, right_morphism, *, source, target):
-    return _category_operation(
-        "coproduct_morphism",
+def _CoproductMorphism(
+    left_morphism: Morphism,
+    right_morphism: Morphism,
+    *,
+    source: Parent,
+    target: Parent,
+) -> Morphism:
+    category = _common_category(
         left_morphism.domain(), right_morphism.domain(),
         left_morphism.codomain(), right_morphism.codomain(),
-        arguments=(left_morphism, right_morphism, source, target),
     )
+    construction = category._categorical_coproduct_morphism
+    assert construction is not NotImplemented, (
+        "no represented coproduct-morphism construction is owned by the common category"
+    )
+    return construction(left_morphism, right_morphism, source, target)
 
 
 def Pushout(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     if left_morphism.domain() is not right_morphism.domain():
         raise ValueError("pushout arrows require one common domain")
-    return _category_operation(
-        "pushout",
+    category = _common_category(
         left_morphism.domain(), left_morphism.codomain(), right_morphism.codomain(),
-        arguments=(left_morphism, right_morphism),
     )
+    construction = category._categorical_pushout
+    assert construction is not NotImplemented, (
+        "no represented pushout is owned by a common category of the span"
+    )
+    return construction(left_morphism, right_morphism)
 
 
 def FiberProduct(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     if left_morphism.codomain() is not right_morphism.codomain():
         raise ValueError("fiber-product arrows require one common codomain")
-    return _category_operation(
-        "pullback",
+    category = _common_category(
         left_morphism.domain(), right_morphism.domain(), left_morphism.codomain(),
-        arguments=(left_morphism, right_morphism),
     )
+    construction = category._categorical_pullback
+    assert construction is not NotImplemented, (
+        "no represented pullback is owned by a common category of the cospan"
+    )
+    return construction(left_morphism, right_morphism)
 
 
 def Kernel(morphism: Morphism) -> Parent:
@@ -105,12 +137,15 @@ def Equalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
         or left_morphism.codomain() is not right_morphism.codomain()
     ):
         raise ValueError("equalizer arrows must be parallel")
-    return _category_operation(
-        "equalizer",
+    category = _common_category(
         left_morphism.domain(),
         left_morphism.codomain(),
-        arguments=(left_morphism, right_morphism),
     )
+    construction = category._categorical_equalizer
+    assert construction is not NotImplemented, (
+        "no represented equalizer is owned by the arrows' common category"
+    )
+    return construction(left_morphism, right_morphism)
 
 
 def Coequalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
@@ -120,46 +155,54 @@ def Coequalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
         or left_morphism.codomain() is not right_morphism.codomain()
     ):
         raise ValueError("coequalizer arrows must be parallel")
-    return _category_operation(
-        "coequalizer",
+    category = _common_category(
         left_morphism.domain(),
         left_morphism.codomain(),
-        arguments=(left_morphism, right_morphism),
     )
+    construction = category._categorical_coequalizer
+    assert construction is not NotImplemented, (
+        "no represented coequalizer is owned by the arrows' common category"
+    )
+    return construction(left_morphism, right_morphism)
 
 
-def _nonempty_parallel_family(morphisms, construction):
+def _parallel_family(
+    morphisms: IndexedFamily | Sequence[Morphism],
+    construction: str,
+) -> tuple[IndexedFamily, Morphism]:
+    family = morphisms if isinstance(morphisms, IndexedFamily) else finite_family(morphisms)
+    indices = iter(family.index_set())
     try:
-        reference = morphisms[0]
-    except (AttributeError, IndexError) as error:
+        first_index = next(indices)
+    except StopIteration as error:
         raise ValueError(f"a {construction} family must be nonempty") from error
-    return reference
+    return family, family[first_index]
 
 
 def EqualizerOfFamily(
     morphisms: IndexedFamily | Sequence[Morphism],
 ) -> Parent:
     r"""Return the represented wide equalizer of a nonempty arrow family."""
-    reference = _nonempty_parallel_family(morphisms, "wide equalizer")
-    return _category_operation(
-        "equalizer_family",
-        reference.domain(),
-        reference.codomain(),
-        arguments=(morphisms,),
+    family, reference = _parallel_family(morphisms, "wide equalizer")
+    category = _common_category(reference.domain(), reference.codomain())
+    construction = category._categorical_equalizer_family
+    assert construction is not NotImplemented, (
+        "no represented wide equalizer is owned by the arrows' common category"
     )
+    return construction(family)
 
 
 def CoequalizerOfFamily(
     morphisms: IndexedFamily | Sequence[Morphism],
 ) -> Parent:
     r"""Return the represented wide coequalizer of a nonempty arrow family."""
-    reference = _nonempty_parallel_family(morphisms, "wide coequalizer")
-    return _category_operation(
-        "coequalizer_family",
-        reference.domain(),
-        reference.codomain(),
-        arguments=(morphisms,),
+    family, reference = _parallel_family(morphisms, "wide coequalizer")
+    category = _common_category(reference.domain(), reference.codomain())
+    construction = category._categorical_coequalizer_family
+    assert construction is not NotImplemented, (
+        "no represented wide coequalizer is owned by the arrows' common category"
     )
+    return construction(family)
 
 
 def Subobjects(

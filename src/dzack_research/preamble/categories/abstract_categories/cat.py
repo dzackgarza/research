@@ -11,12 +11,14 @@ from sage.misc.cachefunc import cached_method
 from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
+from sage.misc.abstract_method import abstract_method
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from sage.categories.objects import Objects as SageObjects
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     Functor,
@@ -206,6 +208,82 @@ class Cat(Category):
         def ElementType(self) -> type[Element]:
             r"""Return the complete implementation type for their elements."""
             return self.element_class
+
+        @abstract_method(optional=True)
+        def _categorical_tensor_product(self, left: Parent, right: Parent) -> Parent:
+            r"""Return this category's represented tensor product of two objects."""
+
+        @abstract_method(optional=True)
+        def _categorical_biproduct(self, left: Parent, right: Parent) -> Parent:
+            r"""Return this category's represented biproduct of two objects."""
+
+        @abstract_method(optional=True)
+        def _categorical_product(self, left: Parent, right: Parent) -> Parent:
+            r"""Return this category's represented product of two objects."""
+
+        @abstract_method(optional=True)
+        def _categorical_coproduct(self, left: Parent, right: Parent) -> Parent:
+            r"""Return this category's represented coproduct of two objects."""
+
+        @abstract_method(optional=True)
+        def _categorical_pushout(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ) -> Parent:
+            r"""Return this category's represented pushout of a span."""
+
+        @abstract_method(optional=True)
+        def _categorical_pullback(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ) -> Parent:
+            r"""Return this category's represented pullback of a cospan."""
+
+        @abstract_method(optional=True)
+        def _categorical_equalizer(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ) -> Parent:
+            r"""Return this category's represented equalizer of parallel arrows."""
+
+        @abstract_method(optional=True)
+        def _categorical_coequalizer(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ) -> Parent:
+            r"""Return this category's represented coequalizer of parallel arrows."""
+
+        @abstract_method(optional=True)
+        def _categorical_equalizer_family(self, morphisms: IndexedFamily) -> Parent:
+            r"""Return this category's represented equalizer of an indexed arrow family."""
+
+        @abstract_method(optional=True)
+        def _categorical_coequalizer_family(self, morphisms: IndexedFamily) -> Parent:
+            r"""Return this category's represented coequalizer of an indexed arrow family."""
+
+        @abstract_method(optional=True)
+        def _categorical_product_morphism(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+            source: Parent,
+            target: Parent,
+        ) -> Morphism:
+            r"""Return the induced morphism between represented binary products."""
+
+        @abstract_method(optional=True)
+        def _categorical_coproduct_morphism(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+            source: Parent,
+            target: Parent,
+        ) -> Morphism:
+            r"""Return the induced morphism between represented binary coproducts."""
 
         def fiber_product(self, left_leg: Morphism, right_leg: Morphism) -> Parent:
             r"""Return the fiber product of the cospan these two legs form.
