@@ -528,7 +528,7 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
 
-        return [Algebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def is_free(self) -> bool:

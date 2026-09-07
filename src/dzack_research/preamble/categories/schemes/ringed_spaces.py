@@ -308,7 +308,7 @@ class DistinguishedAffineCover(SageObject):
         chart_index = self.chart_label(chart_index)
         chart = self.open(chart_index)
         chart_ring = chart.coordinate_algebra()
-        if algebra not in Algebras(chart_ring):
+        if algebra not in Algebras(chart_ring).Associative().Unital():
             raise ValueError("a local algebra must be defined over the selected affine chart")
         indices = self.intersection_indices(chart_index, *intersection_indices)
         target = self.intersection(*indices)
@@ -324,7 +324,7 @@ class DistinguishedAffineCover(SageObject):
         ring_map = self.ambient_scheme().structure_sheaf().restriction_map(chart, target)
         restricted = AlgebraScalarExtensionFunctor(ring_map)(algebra)
         target_ring = target.coordinate_algebra()
-        if restricted not in Algebras(target_ring):
+        if restricted not in Algebras(target_ring).Associative().Unital():
             raise ArithmeticError(
                 "algebra scalar extension did not land over the intersection section ring"
             )

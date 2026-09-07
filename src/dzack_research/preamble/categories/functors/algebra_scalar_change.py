@@ -84,7 +84,10 @@ class AlgebraScalarExtensionFunctor(Functor):
         self._ring_map = ring_map
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
-        super().__init__(Algebras(self._source_ring), Algebras(self._target_ring))
+        super().__init__(
+            Algebras(self._source_ring).Associative().Unital(),
+            Algebras(self._target_ring).Associative().Unital(),
+        )
 
     def ring_map(self):
         return self._ring_map
@@ -121,7 +124,10 @@ class AlgebraRestrictionOfScalarsFunctor(Functor):
         self._ring_map = ring_map
         self._source_ring = _owned_ring(ring_map.domain())
         self._target_ring = _owned_ring(ring_map.codomain())
-        super().__init__(Algebras(self._target_ring), Algebras(self._source_ring))
+        super().__init__(
+            Algebras(self._target_ring).Associative().Unital(),
+            Algebras(self._source_ring).Associative().Unital(),
+        )
 
     def ring_map(self):
         return self._ring_map

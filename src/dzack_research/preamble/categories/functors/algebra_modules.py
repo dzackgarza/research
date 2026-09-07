@@ -1,8 +1,10 @@
 r"""The forgetful functor \(U\colon R\text{-}\mathbf{Alg}\to R\text{-}\mathbf{Mod}\).
 
-An associative unital \(R\)-algebra is already an \(R\)-module, so \(U\) adds
-no structure and takes nothing away; it names the passage and settles which
-module state the answer arrives with.
+An algebra carries an underlying \(R\)-module, but the algebra category is not
+identified with a subcategory of modules.  An exact equipped algebra returns
+the supplied module literally; a legacy parent with independent module
+placement returns that module object; otherwise this owner supplies one
+realization module on the same algebra elements and scalar action.
 
 An algebra that carries a module framing is that framed module.  A free
 construction carries none: \(T_R(M)\) and \(\operatorname{Sym}_R(M)\) have one
@@ -14,6 +16,8 @@ the free module on those names, and is summed the same way.
 
 from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import ModuleElement
+from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -36,16 +40,132 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
     _engine_element,
     _engine_ring,
     _owned_ring,
 )
+from dzack_research.preamble.owned_category import object_of
 
 
 from dzack_research.preamble.categories.modules.tensor_products import (
     _flatten_tensor_label,
     _nested_tensor_label,
 )
+
+
+class _UnderlyingAlgebraModules(OwnedCategoryOverBaseRing):
+    r"""Realization modules for legacy algebras with no independent module placement."""
+
+    def super_categories(self):
+        return [Modules(self.base_ring())]
+
+    class ParentMethods:
+        def __init__(self, algebra, **rest) -> None:
+            self._realized_algebra = algebra
+            category = rest.get("category")
+            if category is None:
+                raise TypeError("an underlying algebra module requires its module category")
+            super().__init__(base_ring=category.base_ring(), **rest)
+
+        def realized_object(self):
+            return self._realized_algebra
+
+        def realize(self, element):
+            element = self(element)
+            return element.underlying_element()
+
+        def from_realization(self, element):
+            return self(element)
+
+        def _element_constructor_(self, element):
+            if getattr(element, "parent", lambda: None)() is self:
+                return element
+            underlying = getattr(element, "underlying_element", None)
+            if callable(underlying):
+                element = underlying()
+            return self.element_class(self, self.realized_object()(element))
+
+        def __contains__(self, element) -> bool:
+            return getattr(element, "parent", lambda: None)() is self
+
+        def zero(self):
+            return self(self.realized_object().zero())
+
+        def _owned_scalar_multiple(self, scalar, element):
+            algebra = self.realized_object()
+            ordinary = Algebras(self.base_ring()).Associative().Unital()
+            if algebra not in ordinary:
+                raise NotImplementedError(
+                    "a legacy nonunital algebra needs an explicit represented scalar-action module"
+                )
+            structure = algebra.algebra_structure_morphism()
+            scalar_image = algebra(structure(self.base_ring()(scalar)))
+            return self(
+                scalar_image * algebra(self.realize(element))
+            )
+
+        def _repr_(self):
+            return f"Underlying {self.base_ring()}-module of {self.realized_object()}"
+
+    class ElementMethods(ModuleElement):
+        r"""One legacy algebra element read in its forgetful module."""
+
+        def __init__(self, parent, underlying_element) -> None:
+            ModuleElement.__init__(self, parent)
+            self._underlying_element = underlying_element
+
+        def underlying_element(self):
+            return self._underlying_element
+
+        def _add_(self, other):
+            parent = self.parent()
+            return parent(
+                self.underlying_element() + parent.realize(other)
+            )
+
+        def _sub_(self, other):
+            parent = self.parent()
+            return parent(
+                self.underlying_element() - parent.realize(other)
+            )
+
+        def _neg_(self):
+            return self.parent()(-self.underlying_element())
+
+        def _lmul_(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _rmul_(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _acted_upon_(self, actor, self_on_left):
+            _ = self_on_left
+            try:
+                scalar = self.parent().base_ring()(actor)
+            except (TypeError, ValueError):
+                return None
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _richcmp_(self, other, op):
+            if getattr(other, "parent", lambda: None)() is not self.parent():
+                return NotImplemented
+            if op == op_EQ:
+                return self.underlying_element() == other.underlying_element()
+            if op == op_NE:
+                return self.underlying_element() != other.underlying_element()
+            return NotImplemented
+
+        def _repr_(self):
+            return repr(self.underlying_element())
+
+
+@cached_function(key=lambda algebra, ring: (id(algebra), id(ring)))
+def _legacy_algebra_underlying_module(algebra, ring):
+    return object_of(
+        _UnderlyingAlgebraModules(ring),
+        algebra=algebra,
+    )
 
 
 def _monomial_exponents(exponents):
@@ -273,9 +393,11 @@ class AlgebraUnderlyingModuleFunctor(Functor):
     def _apply_object(self, algebra):
         r"""Return the underlying \(R\)-module of one algebra.
 
-        An algebra already is an \(R\)-module, so when it has a module framing
-        of its own that framing is the underlying module and there is nothing
-        to build.
+        An equipped algebra retains its exact carrier, and that carrier is the
+        answer.  Legacy engine-backed algebra parents can already carry their
+        represented module structure directly; returning those parents here is
+        the action of this functor, not an assertion that the algebra category
+        is a subcategory of modules.
 
         A free construction \(T_R(M)\) or \(\operatorname{Sym}_R(M)\) has no
         finite framing: it has one homogeneous module generator for each word
@@ -286,12 +408,22 @@ class AlgebraUnderlyingModuleFunctor(Functor):
         is \(\operatorname{Sym}_R\) of the free module on those names, so the
         graded pieces are there to be summed whichever route built it.
 
-        Every remaining algebra is answered by itself.  It is an \(R\)-module
-        by its structure map, and no framing of it is chosen here: an algebra
-        given by generators and relations has one only when its construction
-        computed one.
+        Every remaining legacy algebra is represented by an unframed module
+        realization on the same algebra elements and the algebra's selected
+        scalar action.  This is a genuine object of ``Modules(R)``; the
+        algebra parent is not silently treated as a module merely because it
+        once lay under a category-inclusion edge.
         """
         ring = self.base_ring()
+        target_object = getattr(algebra, "target_object", None)
+        arrow = getattr(algebra, "arrow", None)
+        if callable(target_object) and callable(arrow):
+            carrier = target_object()
+            structure = arrow()
+            if carrier in Modules(ring) and structure.codomain() is carrier:
+                return carrier
+        if algebra in Modules(ring):
+            return algebra
         if algebra in FramedModules(ring):
             return algebra
         match algebra:
@@ -300,11 +432,16 @@ class AlgebraUnderlyingModuleFunctor(Functor):
             case _ if algebra in SymmetricAlgebras(ring):
                 return _free_algebra_underlying_module(algebra, ring)
             case _:
-                return algebra
+                return _legacy_algebra_underlying_module(algebra, ring)
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
+        right = getattr(morphism, "right", None)
+        if callable(right):
+            underlying = right()
+            if underlying.domain() is source and underlying.codomain() is target:
+                return underlying
         return UnderlyingAlgebraModuleMorphism(
             module_homset(source, target),
             morphism,

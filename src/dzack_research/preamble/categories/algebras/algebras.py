@@ -1,4 +1,4 @@
-"""Associative unital algebras over an owned base ring."""
+"""Algebras over an owned base ring, with identities represented as refinements."""
 
 from sage.categories.category import Category
 from sage.categories.commutative_algebras import (
@@ -9,8 +9,16 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
+from sage.structure.element import ModuleElement
+from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    EndofunctorAlgebras,
+)
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    TensorProduct,
+    TensorSquare,
+)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -33,6 +41,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     TensorProductModules,
 )
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -43,7 +52,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
-    _proper_restriction_base_ring,
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
@@ -54,85 +62,11 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.refine import refine
 
 from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
-    AssociativeAlgebraHomCategoryConstruction,
     AssociativeAlgebraHomset,
-    AssociativeAlgebraMorphism,
 )
-
-
-class AssociativeAlgebras(OwnedCategoryOverBaseRing):
-    r"""Associative \(R\)-algebras, not necessarily unital.
-
-    An associative algebra is an \(R\)-module with an associative bilinear
-    product. A unit is extra structure: the owned unital category is
-    :class:`Algebras`. Convolution \(L^1(\mathbb R)\) is the standard
-    non-unital example.
-    """
-
-    # Two categories with different Homs sit above this one -- the modules it
-    # is linear over and the Lie algebra its commutator makes it -- and it is
-    # neither of them: an associative algebra morphism preserves the product.
-    _HomCategory = AssociativeAlgebraHomCategoryConstruction
-
-    def an_object(self):
-        r"""The base ring itself, associative over itself."""
-        return self.base_ring()
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "associative algebras"
-
-    def super_categories(self):
-        from dzack_research.preamble.categories.algebras.lie_algebras import (
-            CommutatorLieAlgebras,
-        )
-
-        ring = self.base_ring()
-        # An associative algebra is a Lie algebra under [x,y] = xy - yx, and
-        # the commutator is determined by the product, so nothing is chosen
-        # and the Lie structure is stated here rather than built.
-        commutator = (
-            [CommutatorLieAlgebras(ring)]
-            if ring in OwnedRings().Commutative()
-            else []
-        )
-        base = _proper_restriction_base_ring(ring)
-        if base is not None:
-            return [Modules(ring), AssociativeAlgebras(base), *commutator]
-        return [Modules(ring), *commutator]
-
-    class SubcategoryMethods:
-        r"""Constructions this category owns, reachable from any subcategory."""
-
-        def commutator_lie_algebra(self):
-            r"""``(-)^- : AssAlg_R -> CommLie_R``, the commutator functor.
-
-            A functor is a method of its domain category named by the
-            construction, so this is where it is spelled.  It is the identity
-            on objects: the bracket is determined by the product, so an
-            algebra and its Lie algebra are one object, placed in both
-            categories by the supercategory declared above.
-            """
-            from dzack_research.preamble.categories.functors.commutator_lie_algebras import (
-                commutator_lie_algebra_functor,
-            )
-
-            return commutator_lie_algebra_functor(self.base_ring())
-
-    class ElementMethods:
-        def bracket(self, other):
-            r"""Return the commutator \([x,y]=xy-yx\).
-
-            Determined by the product alone, so it is stated here rather than
-            on the Lie categories above, which have no product of their own.
-            """
-            other = self.parent()(other)
-            return self * other - other * self
-
-    def _call_(self, multiplication):
-        return algebra_from_multiplication(multiplication, self.base_ring(), unital=False)
 
 
 class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
@@ -153,14 +87,17 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
         multiplication = module_homset(TensorSquare(line), line)({(label, label): line.module_generator(label)})
-        return algebra_from_multiplication(multiplication)
+        return Algebras(self.base_ring()).Associative()(line, multiplication)
 
     @classmethod
     def _repr_object_names(cls):
         return "associative algebras with chosen multiplication"
 
     def super_categories(self):
-        return [AssociativeAlgebras(self.base_ring())]
+        return [
+            AlgebrasWithChosenMultiplication(self.base_ring()),
+            AssociativeAlgebras(self.base_ring()),
+        ]
 
     class ParentMethods:
         def __init__(
@@ -240,18 +177,434 @@ class AlgebraHomCategoryConstruction(HomCategoryConstruction):
     """
 
     def fixed_category_class_for(self, domain, codomain):
-        _ = codomain
+        if _has_exact_algebra_carrier(domain) or _has_exact_algebra_carrier(codomain):
+            return UnitalMultiplicativeAlgebraHomset
         return domain._algebra_homset_class()
 
 
-class Algebras(OwnedCategoryOverBaseRing):
-    r"""Associative unital algebras over ``R``.
+def _algebra_element_in_module(algebra, module, element):
+    r"""Read one algebra element in its represented forgetful module."""
+    if _has_exact_algebra_carrier(algebra):
+        return algebra._carrier_element(element)
+    from_realization = getattr(module, "from_realization", None)
+    if callable(from_realization):
+        return from_realization(algebra(element))
+    return module(algebra(element))
 
-    The structure morphism is \(\eta\colon R\to Z(A)\).  The forgetful
-    functor \(U\colon\mathbf{Alg}_R\to\mathbf{Mod}_R\) is
-    :func:`~dzack_research.preamble.categories.functors.algebra_modules.algebra_underlying_module_functor`.
-    Multiplication is the \(R\)-module morphism
-    \(m\colon A\otimes_R A\to A\).
+
+def _module_element_in_algebra(algebra, module, element):
+    r"""Read one forgetful-module element back in its algebra realization."""
+    if _has_exact_algebra_carrier(algebra):
+        return algebra(element)
+    realize = getattr(module, "realize", None)
+    if callable(realize):
+        return algebra(realize(element))
+    return algebra(element)
+
+
+def _algebra_product_in_module(algebra, module, left, right):
+    r"""Evaluate the algebra product and return its forgetful-module value."""
+    product = algebra.product(
+        _module_element_in_algebra(algebra, module, left),
+        _module_element_in_algebra(algebra, module, right),
+    )
+    return _algebra_element_in_module(algebra, module, product)
+
+
+class MultiplicativeAlgebraMorphism(Morphism):
+    r"""An ``R``-linear map satisfying ``f m_A = m_B (f tensor f)``."""
+
+    def __init__(self, parent, underlying_morphism) -> None:
+        Morphism.__init__(self, parent)
+        source_module = self.domain().underlying_module()
+        target_module = self.codomain().underlying_module()
+        selected = getattr(underlying_morphism, "underlying_morphism", None)
+        if callable(selected):
+            underlying_morphism = selected()
+        if not (
+            isinstance(underlying_morphism, ModuleMorphism)
+            and underlying_morphism.domain() is source_module
+            and underlying_morphism.codomain() is target_module
+        ):
+            underlying_morphism = module_homset(source_module, target_module)(
+                underlying_morphism
+            )
+        tensor_square = None
+        source_exact = _has_exact_algebra_carrier(self.domain())
+        target_exact = _has_exact_algebra_carrier(self.codomain())
+        if source_exact and target_exact:
+            source_multiplication = self.domain().multiplication_morphism()
+            target_multiplication = self.codomain().multiplication_morphism()
+            tensor_square = tensor_product_morphism(
+                underlying_morphism,
+                underlying_morphism,
+                source=source_multiplication.domain(),
+                target=target_multiplication.domain(),
+            )
+            if (
+                underlying_morphism * source_multiplication
+                != target_multiplication * tensor_square
+            ):
+                raise ValueError("the stated map does not preserve multiplication")
+        else:
+            if not source_module.is_framed():
+                raise NotImplementedError(
+                    "multiplicativity at a mixed exact/legacy algebra Hom requires a finite framed source module"
+                )
+            labels = source_module.module_generating_set()
+            if not labels.cardinality().is_finite():
+                raise NotImplementedError(
+                    "multiplicativity at a mixed exact/legacy algebra Hom requires finitely many source generators"
+                )
+            for left_label in labels:
+                left = source_module.module_generator(left_label)
+                for right_label in labels:
+                    right = source_module.module_generator(right_label)
+                    source_product = _algebra_product_in_module(
+                        self.domain(),
+                        source_module,
+                        left,
+                        right,
+                    )
+                    left_image = underlying_morphism(left)
+                    right_image = underlying_morphism(right)
+                    target_product = _algebra_product_in_module(
+                        self.codomain(),
+                        target_module,
+                        left_image,
+                        right_image,
+                    )
+                    if underlying_morphism(source_product) != target_product:
+                        raise ValueError(
+                            "the stated map does not preserve multiplication"
+                        )
+        self._underlying_morphism = underlying_morphism
+        self._tensor_square_morphism = tensor_square
+
+    def underlying_morphism(self):
+        return self._underlying_morphism
+
+    right = underlying_morphism
+
+    def tensor_square_morphism(self):
+        if self._tensor_square_morphism is None:
+            raise NotImplementedError(
+                "this mixed exact/legacy algebra map has no represented tensor-square map"
+            )
+        return self._tensor_square_morphism
+
+    left = tensor_square_morphism
+
+    def _call_(self, element):
+        target_module = self.codomain().underlying_module()
+        image = self.underlying_morphism()(
+            self.domain()._carrier_element(element)
+        )
+        return _module_element_in_algebra(
+            self.codomain(),
+            target_module,
+            image,
+        )
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, MultiplicativeAlgebraMorphism):
+            return False
+        return (
+            self.parent() is other.parent()
+            and self.underlying_morphism() == other.underlying_morphism()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    __hash__ = None
+
+    def __mul__(self, other):
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        category = self.parent().hom_family().base_category()
+        return category.Mor(
+            other.domain(),
+            self.codomain(),
+        )(self.underlying_morphism() * other.underlying_morphism())
+
+
+class MultiplicativeAlgebraHomset(CategoricalHomset):
+    r"""The common fixed-endpoint Hom of algebras with represented carriers."""
+
+    Element = MultiplicativeAlgebraMorphism
+
+    def __call__(self, underlying_morphism):
+        return self._element_constructor_(underlying_morphism)
+
+    def _element_constructor_(self, underlying_morphism):
+        return self.element_class(self, underlying_morphism)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only on an endomorphism Hom-set")
+        module = self.domain().underlying_module()
+        return self(module_homset(module, module).identity())
+
+    def _repr_(self):
+        return f"Mor_Alg({self.domain()}, {self.codomain()})"
+
+
+class UnitalMultiplicativeAlgebraMorphism(MultiplicativeAlgebraMorphism):
+    r"""A multiplicative linear map that also preserves the selected unit."""
+
+    def __init__(self, parent, underlying_morphism) -> None:
+        super().__init__(parent, underlying_morphism)
+        if self(self.domain().one()) != self.codomain().one():
+            raise ValueError("the stated map does not preserve the unit")
+
+
+class UnitalMultiplicativeAlgebraHomset(MultiplicativeAlgebraHomset):
+    r"""The fixed Hom of exact-carrier associative unital algebras."""
+
+    Element = UnitalMultiplicativeAlgebraMorphism
+
+    def _repr_(self):
+        return f"Mor_UnitalAlg({self.domain()}, {self.codomain()})"
+
+
+def _has_exact_algebra_carrier(algebra) -> bool:
+    target_object = getattr(algebra, "target_object", None)
+    underlying_module = getattr(algebra, "underlying_module", None)
+    return (
+        callable(target_object)
+        and callable(underlying_module)
+        and underlying_module() is target_object()
+    )
+
+
+class GeneralAlgebraHomCategoryConstruction(HomCategoryConstruction):
+    r"""Select the common multiplication-preserving Hom implementation."""
+
+    def fixed_category_class_for(self, domain, codomain):
+        if _has_exact_algebra_carrier(domain) or _has_exact_algebra_carrier(codomain):
+            return MultiplicativeAlgebraHomset
+        return AssociativeAlgebraHomset
+
+
+class UnitalGeneralAlgebraHomCategoryConstruction(HomCategoryConstruction):
+    r"""The unit-preserving common Hom of possibly nonassociative unital algebras."""
+
+    FixedCategoryClass = UnitalMultiplicativeAlgebraHomset
+
+
+def _unit_morphism_from_element(module, unit, ring):
+    r"""Return the linear map ``U_R(R) -> module`` determined by ``1 |-> unit``."""
+    from dzack_research.preamble.categories.functors.algebra_modules import (
+        algebra_underlying_module_functor,
+    )
+
+    ring = _owned_ring(ring)
+    scalar_module = algebra_underlying_module_functor(ring)(ring)
+    realize = getattr(scalar_module, "realize", None)
+
+    def scalar_value(scalar):
+        return realize(scalar) if callable(realize) else ring(scalar)
+
+    return ModuleMorphism(
+        module_homset(scalar_module, module),
+        lambda scalar: module.scalar_multiple(
+            scalar_value(scalar),
+            unit,
+        ),
+        elementwise=True,
+    )
+
+
+class _UnitalAlgebraParentMethods:
+    @cached_method
+    def one(self):
+        selected = self.__dict__.get("_preamble_algebra_unit")
+        if selected is not None:
+            return self(selected)
+        return super().one()
+
+    def unit_morphism(self):
+        selected = self.__dict__.get("_preamble_algebra_unit_morphism")
+        if selected is None:
+            raise NotImplementedError(
+                "this unital algebra has no retained R-to-A unit morphism"
+            )
+        return selected
+
+
+def _equip_unit(algebra, unit_morphism, category):
+    r"""Retain ``eta:R->M`` and verify its two unit equations when decidable."""
+    ring = category.base_ring()
+    module = algebra.underlying_module()
+    from dzack_research.preamble.categories.functors.algebra_modules import (
+        algebra_underlying_module_functor,
+    )
+
+    scalar_module = algebra_underlying_module_functor(ring)(ring)
+    if not isinstance(unit_morphism, Morphism):
+        raise TypeError("a unit is supplied as a morphism R -> M")
+    if (
+        unit_morphism.domain() is not scalar_module
+        or unit_morphism.codomain() is not module
+    ):
+        raise ValueError(
+            "the unit morphism must have exact endpoints U_R(R) -> underlying_module(A)"
+        )
+    unit = unit_morphism(scalar_module(ring.one()))
+    multiplication = algebra.multiplication_morphism()
+    tensor = multiplication.domain()
+    is_framed = getattr(module, "is_framed", None)
+    if callable(is_framed) and is_framed():
+        labels = module.module_generating_set()
+        if labels.cardinality().is_finite():
+            for label in labels:
+                element = module.module_generator(label)
+                left = multiplication(tensor.pure_tensor(unit, element))
+                right = multiplication(tensor.pure_tensor(element, unit))
+                if left != element or right != element:
+                    raise ValueError(
+                        f"the stated unit fails a unit equation on module generator {label!r}"
+                    )
+    algebra._preamble_algebra_unit_morphism = unit_morphism
+    algebra._preamble_algebra_unit = unit
+    refine(algebra, category)
+    return algebra
+
+
+class _CommutativeUnitalAlgebraSubcategoryMethods:
+    r"""Constructions that require commutative associative unital algebras."""
+
+    def spectrum(self):
+        r"""``Spec_R : CAlg_R^op -> AffSch_R``, the affine spectrum functor."""
+        from dzack_research.preamble.categories.schemes.affine_spec import (
+            affine_spec_functor,
+        )
+
+        return affine_spec_functor(self.base_ring())
+
+    def de_rham(self):
+        r"""``DR_R : CAlg_R -> SCDGA_R``, the algebraic de Rham functor."""
+        from dzack_research.preamble.categories.functors.de_rham import (
+            de_rham_functor,
+        )
+
+        return de_rham_functor(self.base_ring())
+
+    def product(self, factors):
+        r"""Return the product of a represented two-object family."""
+        left, right = _two_factors_of(factors, name="Product factors")
+        return self._categorical_product(left, right)
+
+    def _categorical_product(self, left, right):
+        raise NotImplementedError(
+            "the represented categorical product of commutative algebras is not yet implemented"
+        )
+
+    def coproduct(self, factors):
+        r"""Return the represented two-factor tensor-product coproduct."""
+        left, right = _two_factors_of(factors, name="Coproduct factors")
+        return self._categorical_coproduct(left, right)
+
+    def _categorical_coproduct(self, left, right):
+        operation = getattr(left, "_commutative_algebra_coproduct", None)
+        if operation is None:
+            operation = getattr(right, "_commutative_algebra_coproduct", None)
+        if operation is None:
+            raise NotImplementedError(
+                "neither factor carries a represented commutative-algebra coproduct backend"
+            )
+        return operation(left, right)
+
+    def _categorical_coproduct_morphism(
+        self,
+        left_morphism,
+        right_morphism,
+        source,
+        target,
+    ):
+        return source.from_cocone(
+            target.left_coproduct_map() * left_morphism,
+            target.right_coproduct_map() * right_morphism,
+        )
+
+    def pushout(self, left_leg, right_leg):
+        r"""Return the pushout of a represented commutative-algebra span."""
+        assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
+        return self._categorical_pushout(left_leg, right_leg)
+
+    def _categorical_pushout(self, left_morphism, right_morphism):
+        left = left_morphism.codomain()
+        right = right_morphism.codomain()
+        operation = getattr(left, "_commutative_algebra_pushout", None)
+        if operation is None:
+            operation = getattr(right, "_commutative_algebra_pushout", None)
+        if operation is None:
+            raise NotImplementedError(
+                "neither factor carries a represented commutative-algebra pushout backend"
+            )
+        return operation(left_morphism, right_morphism)
+
+
+class _CommutativeUnitalAlgebraParentMethods:
+    def is_commutative(self) -> bool:
+        return True
+
+    def _quotient_by_algebra_elements(self, elements):
+        r"""Return ``A/(f_1,...,f_r)`` through the selected ring presentation."""
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            _quotient_by_algebra_elements_backend,
+        )
+
+        return _quotient_by_algebra_elements_backend(self, elements)
+
+
+class _AlgebraTensorSquareFunctor(Functor):
+    r"""The diagonal tensor-square endofunctor on modules over a commutative ring."""
+
+    def __init__(self, base_ring) -> None:
+        self._base_ring = _owned_ring(base_ring)
+        modules = Modules(self._base_ring)
+        super().__init__(modules, modules)
+
+    def base_ring(self):
+        return self._base_ring
+
+    def _apply_object(self, module):
+        return TensorSquare(module)
+
+    def _apply_morphism(self, morphism):
+        return tensor_product_morphism(
+            morphism,
+            morphism,
+            source=self(morphism.domain()),
+            target=self(morphism.codomain()),
+        )
+
+    def _repr_(self) -> str:
+        return f"Tensor-square endofunctor on {self.domain()}"
+
+
+@cached_function(key=lambda base_ring: id(_owned_ring(base_ring)))
+def _algebra_tensor_square_functor(base_ring):
+    ring = _owned_ring(base_ring)
+    if ring not in OwnedRings().Commutative():
+        raise NotImplementedError(
+            "constructing an algebra from M tensor_R M over a noncommutative base requires a represented bimodule tensor product"
+        )
+    return _AlgebraTensorSquareFunctor(ring)
+
+
+class Algebras(OwnedCategoryOverBaseRing):
+    r"""``R``-modules equipped with one bilinear multiplication.
+
+    This is the algebra node.  Its datum is a morphism
+    \(m:A\otimes_R A\to A\); associativity, a chosen two-sided unit,
+    commutativity, and the Lie identities are refinements above this node.
+    The relation to ``Modules(R)`` is therefore the forgetful functor, not a
+    category inclusion: the algebra object retains the exact supplied module
+    as its carrier rather than turning that module into another category
+    object in place.
     """
 
     def an_object(self):
@@ -263,11 +616,16 @@ class Algebras(OwnedCategoryOverBaseRing):
         return "algebras"
 
     def super_categories(self):
-        ring = self.base_ring()
-        base = _proper_restriction_base_ring(ring)
-        if base is not None:
-            return [AssociativeAlgebras(ring), Algebras(base)]
-        return [OwnedRings(), AssociativeAlgebras(ring)]
+        return [Sets()]
+
+    class SubcategoryMethods:
+        def Associative(self):
+            r"""Return the refinement satisfying ``(xy)z=x(yz)``."""
+            return self._with_axiom("Associative")
+
+        def Unital(self):
+            r"""Return the refinement equipped with a two-sided unit."""
+            return self._with_axiom("Unital")
 
     def Mor(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_{R-Alg}(domain,codomain)``."""
@@ -275,30 +633,99 @@ class Algebras(OwnedCategoryOverBaseRing):
             raise TypeError("an R-algebra Hom requires two R-algebras")
         return self.HomCategory().Of(domain, codomain)
 
-    _HomCategory = AlgebraHomCategoryConstruction
+    _HomCategory = GeneralAlgebraHomCategoryConstruction
 
     class ParentMethods:
-        def scalar_multiple(self, scalar, element):
-            r"""``a x`` for ``a`` in the algebra is the product, the regular module; a base scalar acts through the structure map."""
-            match scalar:
-                case _ if scalar in self:
-                    return self(scalar) * self(element)
-                case _:
-                    return super().scalar_multiple(scalar, element)
-
-        def _algebra_homset_class(self):
-            r"""Return the fixed-endpoint homset class this algebra's maps take."""
-            return AlgebraHomset
-
-        def algebra_homset(self, hom_family, codomain):
-            r"""Return the fixed-endpoint homset selected by this algebra category."""
-            return self._algebra_homset_class()(hom_family, self, codomain)
-
         def base_ring(self):
             return self.algebra_base_ring()
 
         def is_algebra(self) -> bool:
             return True
+
+        def _element_constructor_(self, element):
+            r"""Read an algebra element in the exact retained module."""
+            if not _has_exact_algebra_carrier(self):
+                return super()._element_constructor_(element)
+            module = self.underlying_module()
+            if getattr(element, "parent", lambda: None)() is self:
+                return element
+            underlying = getattr(element, "underlying_element", None)
+            if callable(underlying):
+                element = underlying()
+            return self.element_class(self, module(element))
+
+        def __contains__(self, element) -> bool:
+            if not _has_exact_algebra_carrier(self):
+                return super().__contains__(element)
+            return getattr(element, "parent", lambda: None)() is self
+
+        def zero(self):
+            if not _has_exact_algebra_carrier(self):
+                return super().zero()
+            module = self.underlying_module()
+            return self(module.zero())
+
+        def module_generating_set(self):
+            if not _has_exact_algebra_carrier(self):
+                return super().module_generating_set()
+            return self.underlying_module().module_generating_set()
+
+        def module_generator(self, label):
+            if not _has_exact_algebra_carrier(self):
+                return super().module_generator(label)
+            module = self.underlying_module()
+            return self(module.module_generator(label))
+
+        def _carrier_element(self, element):
+            module = self.underlying_module()
+            if not _has_exact_algebra_carrier(self):
+                realized = self(element)
+                from_realization = getattr(module, "from_realization", None)
+                return (
+                    from_realization(realized)
+                    if callable(from_realization)
+                    else realized
+                )
+            if getattr(element, "parent", lambda: None)() is self:
+                underlying = getattr(element, "underlying_element", None)
+                if not callable(underlying):
+                    raise TypeError("an equipped algebra element has no carrier value")
+                return underlying()
+            return module(element)
+
+        def scalar_multiple(self, scalar, element):
+            r"""Use exactly the scalar action of the retained module."""
+            if not _has_exact_algebra_carrier(self):
+                module = self.underlying_module()
+                if module is self:
+                    return super().scalar_multiple(scalar, element)
+                ordinary = Algebras(self.base_ring()).Associative().Unital()
+                if self in ordinary:
+                    scalar = self.base_ring()(scalar)
+                    scalar_image = self(
+                        self.algebra_structure_morphism()(scalar)
+                    )
+                    return scalar_image * self(element)
+                return super().scalar_multiple(scalar, element)
+            module = self.underlying_module()
+            return self(
+                module.scalar_multiple(scalar, self._carrier_element(element))
+            )
+
+        def product(self, left, right):
+            r"""Evaluate the selected multiplication on two carrier elements."""
+            if not _has_exact_algebra_carrier(self):
+                return self(left) * self(right)
+            module = self.underlying_module()
+            multiplication = self.multiplication_morphism()
+            return self(
+                multiplication(
+                    multiplication.domain().pure_tensor(
+                        self._carrier_element(left),
+                        self._carrier_element(right),
+                    )
+                )
+            )
 
         # The scalar ring an algebra was constructed over, when a level above
         # declared one.  Declared here so a reader of this category sees the
@@ -316,13 +743,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             own ``base`` answers for a parent that threaded it through the
             module level instead.
 
-            An algebra that states no smaller scalars is an algebra over
-            itself, and that is what is answered.  It is not a guess standing
-            in for a missing declaration: an algebra is a ring, a ring is free
-            of rank one over its own scalars, and so \(A\) is a rank-one
-            \(A\)-algebra whatever else it is.  A smaller base is a *chosen*
-            distinguished one, and where nothing chose, the canonical
-            structure every algebra carries is the answer.
+            Engine-backed ring algebras may still read their host base here;
+            exact equipped algebras set the declared scalar ring on the
+            structured object itself.  No assertion that a general algebra is
+            a ring is made at this node.
             """
             declared = self._preamble_algebra_base_ring
             if declared is not None:
@@ -332,33 +756,13 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return self
             return _own_ring(host_base)
 
-        @cached_method
-        def _ring_morphism_defining_algebra_structure(self):
-            base = self.algebra_base_ring()
-            center = self.ring_center()
-
-            return ring_morphism(
-                base,
-                center,
-                lambda scalar: center(self(scalar)),
+        def underlying_module(self):
+            r"""Return the exact carrier under ``Alg_R -> Mod_R``."""
+            from dzack_research.preamble.categories.functors.algebra_modules import (
+                algebra_underlying_module_functor,
             )
 
-        def _owned_scalar_multiple(self, scalar, element):
-            r"""Apply the ``R``-algebra scalar action ``r*a = eta(r)a``."""
-            scalar = self.base_ring()(scalar)
-            element = self(element)
-            scalar_image = self(self.algebra_structure_morphism()(scalar))
-            return scalar_image * element
-
-        @cached_method
-        def algebra_structure_morphism(self):
-            r"""The structure morphism \(\eta\colon R\to Z(A)\) of this \(R\)-algebra."""
-            eta = self._ring_morphism_defining_algebra_structure()
-            center = self.ring_center()
-            if eta.codomain() is center:
-                return eta
-
-            return ring_morphism(eta.domain(), center, eta)
+            return algebra_underlying_module_functor(self.base_ring())(self)
 
         @cached_method
         def multiplication_morphism(self):
@@ -372,8 +776,15 @@ class Algebras(OwnedCategoryOverBaseRing):
             if selected is not None:
                 return selected
 
+            arrow = getattr(self, "arrow", None)
+            if callable(arrow):
+                multiplication = arrow()
+                module = self.underlying_module()
+                if multiplication.codomain() is module:
+                    return multiplication
+
             ring = self.algebra_base_ring()
-            module = self
+            module = self.underlying_module()
             try:
                 tensor = TensorProduct(module, module)
             except NotImplementedError as error:
@@ -393,10 +804,17 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         def Mor(self, codomain, category=None):
             base = self.base_ring()
-            if category is None and base is self:
+            if category is None and base is self and self in OwnedRings():
                 return OwnedRings.ParentMethods.Mor(self, codomain)
             algebras = Algebras(base)
-            if category is None or category.is_subcategory(algebras):
+            ordinary = algebras.Associative().Unital()
+            if category is None:
+                if self in ordinary and codomain in ordinary:
+                    return ordinary.Mor(self, codomain)
+                return algebras.Mor(self, codomain)
+            if category.is_subcategory(ordinary):
+                return ordinary.Mor(self, codomain)
+            if category.is_subcategory(algebras):
                 return algebras.Mor(self, codomain)
             return _category_homset(category, self, codomain)
 
@@ -413,14 +831,31 @@ class Algebras(OwnedCategoryOverBaseRing):
                 Equalizer,
             )
 
-            labels = self.module_generating_set()
+            module = self.underlying_module()
+            multiplication = self.multiplication_morphism()
+            tensor = multiplication.domain()
+            labels = module.module_generating_set()
             assert labels.cardinality().is_finite(), "the centre is computed here from a finite module generating set"
-            endomorphisms = module_homset(self, self)
+            endomorphisms = module_homset(module, module)
 
             def commutation_equalizer(label):
-                element = self.module_generator(label)
-                left = endomorphisms({other: element * self.module_generator(other) for other in labels})
-                right = endomorphisms({other: self.module_generator(other) * element for other in labels})
+                element = module.module_generator(label)
+                left = endomorphisms(
+                    {
+                        other: multiplication(
+                            tensor.pure_tensor(module.module_generator(other), element)
+                        )
+                        for other in labels
+                    }
+                )
+                right = endomorphisms(
+                    {
+                        other: multiplication(
+                            tensor.pure_tensor(element, module.module_generator(other))
+                        )
+                        for other in labels
+                    }
+                )
                 return Equalizer(left, right)
 
             equalizers = iter(labels)
@@ -432,142 +867,225 @@ class Algebras(OwnedCategoryOverBaseRing):
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(Algebras(self.base_ring())):
                 raise TypeError("this is not an algebra homset category")
-            return algebra_homset(self, codomain)
+            ordinary = Algebras(self.base_ring()).Associative().Unital()
+            if self in ordinary and codomain in ordinary:
+                return ordinary.Mor(self, codomain)
+            return Algebras(self.base_ring()).Mor(self, codomain)
 
-    def _call_(self, multiplication):
-        return algebra_from_multiplication(multiplication, self.base_ring(), unital=True)
+    def _call_(self, module, multiplication=None):
+        r"""Equip the exact supplied module with the exact supplied product."""
+        if multiplication is None:
+            multiplication = module
+            module = multiplication.codomain()
+        ring = self.base_ring()
+        if module not in Modules(ring):
+            raise TypeError("an R-algebra carrier must be an R-module")
+        tensor_square = _algebra_tensor_square_functor(ring)
+        if multiplication.domain() is not tensor_square(module):
+            raise ValueError("the multiplication must have the exact canonical tensor square of the supplied module as domain")
+        if multiplication.codomain() is not module:
+            raise ValueError("the multiplication must have the exact supplied module as codomain")
+        structured = EndofunctorAlgebras(tensor_square).algebra(module, multiplication)
+        structured._preamble_algebra_base_ring = ring
+        refine(structured, AlgebrasWithChosenMultiplication(ring))
+        return structured
 
-    class Commutative(CategoryWithAxiom):
-        r"""Commutative associative unital algebras over ``R``."""
+    class Associative(CategoryWithAxiom):
+        r"""Algebras whose selected multiplication is associative."""
 
-        @classmethod
-        def _repr_object_names(cls):
-            return "commutative algebras"
+        _HomCategory = GeneralAlgebraHomCategoryConstruction
 
         class SubcategoryMethods:
-            r"""Constructions this category owns, reachable from any subcategory."""
+            def Unital(self):
+                r"""Return the associative refinement with a two-sided unit."""
+                return self._with_axiom("Unital")
 
-            def spectrum(self):
-                r"""``Spec_R : CAlg_R^op -> AffSch_R``, the affine spectrum functor.
+        @classmethod
+        def _repr_object_names(cls):
+            return "associative algebras"
 
-                A functor is a method of its domain category named by the
-                construction, so this is where ``Spec`` is spelled.  It is
-                contravariant: a map of algebras is a map of affine schemes the
-                other way.  Applied to an algebra it gives the scheme, whose
-                underlying space is the prime spectrum that ring already
-                answers with.
-                """
-                from dzack_research.preamble.categories.schemes.affine_spec import (
-                    affine_spec_functor,
+        def _call_(self, module, multiplication=None):
+            if module in Algebras(self.base_ring()):
+                algebra = module
+            else:
+                algebra = Algebras(self.base_ring())(module, multiplication)
+            refine(algebra, self)
+            return algebra
+
+        class Unital(CategoryWithAxiom):
+            r"""Associative unital algebras: the ring objects among algebras."""
+
+            @classmethod
+            def _repr_object_names(cls):
+                return "algebras"
+
+            def extra_super_categories(self):
+                return [
+                    Algebras(self.base_ring()).Unital(),
+                    OwnedRings(),
+                ]
+
+            _HomCategory = AlgebraHomCategoryConstruction
+
+            def _call_(self, algebra_or_module, multiplication=None, unit=None):
+                if algebra_or_module in Algebras(self.base_ring()):
+                    algebra = algebra_or_module
+                    if unit is None:
+                        unit = multiplication
+                    if algebra not in Algebras(self.base_ring()).Associative():
+                        refine(algebra, Algebras(self.base_ring()).Associative())
+                else:
+                    if multiplication is None or unit is None:
+                        raise TypeError(
+                            "an associative unital algebra requires M, multiplication, and eta:R->M"
+                        )
+                    algebra = Algebras(self.base_ring()).Associative()(
+                        algebra_or_module,
+                        multiplication,
+                    )
+                if unit is None:
+                    raise TypeError("a unital algebra requires a unit morphism eta:R->M")
+                return _equip_unit(algebra, unit, self)
+
+            class Commutative(CategoryWithAxiom):
+                r"""Commutative associative unital ``R``-algebras."""
+
+                _HomCategory = AlgebraHomCategoryConstruction
+                SubcategoryMethods = _CommutativeUnitalAlgebraSubcategoryMethods
+                ParentMethods = _CommutativeUnitalAlgebraParentMethods
+
+                @classmethod
+                def _repr_object_names(cls):
+                    return "commutative algebras"
+
+                def extra_super_categories(self):
+                    return [Algebras(self.base_ring()).Commutative()]
+
+                def an_object(self):
+                    from dzack_research.preamble.categories.functors.free_algebras import (
+                        SymmetricAlgebraFunctor,
+                    )
+
+                    return SymmetricAlgebraFunctor(self.base_ring())(
+                        Modules(self.base_ring()).an_object()
+                    )
+
+            class ParentMethods(_UnitalAlgebraParentMethods):
+                def _algebra_homset_class(self):
+                    return AlgebraHomset
+
+                def algebra_homset(self, hom_family, codomain):
+                    return self._algebra_homset_class()(hom_family, self, codomain)
+
+                @cached_method
+                def _ring_morphism_defining_algebra_structure(self):
+                    base = self.algebra_base_ring()
+                    center = self.ring_center()
+                    selected_unit = self.__dict__.get(
+                        "_preamble_algebra_unit_morphism"
+                    )
+                    if selected_unit is not None:
+                        from dzack_research.preamble.categories.functors.algebra_modules import (
+                            algebra_underlying_module_functor,
+                        )
+
+                        scalar_module = algebra_underlying_module_functor(base)(base)
+                        return ring_morphism(
+                            base,
+                            center,
+                            lambda scalar: center(
+                                self(
+                                    selected_unit(
+                                        scalar_module(base(scalar))
+                                    )
+                                )
+                            ),
+                        )
+                    return ring_morphism(
+                        base,
+                        center,
+                        lambda scalar: center(self(scalar)),
+                    )
+
+                def _owned_scalar_multiple(self, scalar, element):
+                    r"""Apply the selected ``R``-module scalar action."""
+                    scalar = self.base_ring()(scalar)
+                    element = self(element)
+                    selected = getattr(element, "_lmul_", None)
+                    if callable(selected):
+                        return selected(scalar)
+                    scalar_image = self(self.algebra_structure_morphism()(scalar))
+                    return scalar_image * element
+
+                @cached_method
+                def algebra_structure_morphism(self):
+                    r"""The central unital structure morphism ``R -> Z(A)``."""
+                    eta = self._ring_morphism_defining_algebra_structure()
+                    center = self.ring_center()
+                    if eta.codomain() is center:
+                        return eta
+                    return ring_morphism(eta.domain(), center, eta)
+
+                @cached_method
+                def one(self):
+                    selected = self.__dict__.get("_preamble_algebra_unit")
+                    if selected is not None:
+                        return self(selected)
+                    source = self.__dict__.get("_preamble_multiplication_source_module")
+                    source_unit = self.__dict__.get("_preamble_source_algebra_unit")
+                    if source is None:
+                        return super().one()
+                    if source_unit is None:
+                        source_unit = source.one()
+                    _forget, equip = self._multiplication_transport_maps()
+                    return self(equip(source_unit))
+
+    class Unital(CategoryWithAxiom):
+        r"""Algebras equipped with a selected two-sided unit, without associativity."""
+
+        _HomCategory = UnitalGeneralAlgebraHomCategoryConstruction
+        ParentMethods = _UnitalAlgebraParentMethods
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "unital algebras"
+
+        def _call_(self, algebra_or_module, multiplication=None, unit=None):
+            if algebra_or_module in Algebras(self.base_ring()):
+                algebra = algebra_or_module
+                if unit is None:
+                    unit = multiplication
+            else:
+                if multiplication is None or unit is None:
+                    raise TypeError(
+                        "a unital algebra requires M, multiplication, and eta:R->M"
+                    )
+                algebra = Algebras(self.base_ring())(
+                    algebra_or_module,
+                    multiplication,
                 )
+            if unit is None:
+                raise TypeError("a unital algebra requires a unit morphism eta:R->M")
+            return _equip_unit(algebra, unit, self)
 
-                return affine_spec_functor(self.base_ring())
-
-            def de_rham(self):
-                r"""``DR_R : CAlg_R -> SCDGA_R``, the algebraic de Rham functor.
-
-                The same rule as the spectrum: a functor is a method of its
-                domain category, named by the construction.
-                """
-                from dzack_research.preamble.categories.functors.de_rham import (
-                    de_rham_functor,
-                )
-
-                return de_rham_functor(self.base_ring())
-
-            def product(self, factors):
-                r"""Return $\prod_{i \in I} A_i$, the product of a family of algebras."""
-                left, right = _two_factors_of(factors, name="Product factors")
-                return self._categorical_product(left, right)
-
-            def _categorical_product(self, left, right):
-                raise NotImplementedError("the represented categorical product of commutative algebras is not yet implemented")
-
-            def coproduct(self, factors):
-                r"""Return $\coprod_{i \in I} A_i = \bigotimes_{i \in I} A_i$ over the base ring.
-
-                The represented coproduct is the two-factor tensor product the
-                factors themselves supply, through
-                ``_commutative_algebra_coproduct``; there is no backend taking
-                an index set, so only the two-element one is represented.  A
-                larger index set is not folded into nested tensor products:
-                that object has injections only into the halves of the nest,
-                which is not the coproduct over the index set that was asked
-                for.
-                """
-                left, right = _two_factors_of(factors, name="Coproduct factors")
-                return self._categorical_coproduct(left, right)
-
-            def _categorical_coproduct(self, left, right):
-                operation = getattr(left, "_commutative_algebra_coproduct", None)
-                if operation is None:
-                    operation = getattr(right, "_commutative_algebra_coproduct", None)
-                if operation is None:
-                    raise NotImplementedError("neither factor carries a represented commutative-algebra coproduct backend")
-                return operation(left, right)
-
-            def _categorical_coproduct_morphism(self, left_morphism, right_morphism, source, target):
-                return source.from_cocone(
-                    target.left_coproduct_map() * left_morphism,
-                    target.right_coproduct_map() * right_morphism,
-                )
-
-            def pushout(self, left_leg, right_leg):
-                r"""Return the pushout of the span these two legs form.
-
-                The span is the diagram, and the pushout is its colimit; the legs
-                are named here because the span object is the datum, not an arity.
-                """
-                assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
-                return self._categorical_pushout(left_leg, right_leg)
-
-            def _categorical_pushout(self, left_morphism, right_morphism):
-                left = left_morphism.codomain()
-                right = right_morphism.codomain()
-                operation = getattr(left, "_commutative_algebra_pushout", None)
-                if operation is None:
-                    operation = getattr(right, "_commutative_algebra_pushout", None)
-                if operation is None:
-                    raise NotImplementedError("neither factor carries a represented commutative-algebra pushout backend")
-                return operation(left_morphism, right_morphism)
-
-        _HomCategory = AlgebraHomCategoryConstruction
-
-        def an_object(self):
-            r"""The polynomial algebra on one generator."""
-            from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
-            from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-            return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
+    class Commutative(CategoryWithAxiom):
+        r"""Algebras whose selected multiplication is commutative."""
 
         @classmethod
         def _repr_object_names(cls):
             return "commutative algebras"
+
+        def an_object(self):
+            r"""A commutative product supplied by an ordinary commutative ring."""
+            return CommutativeAlgebras(self.base_ring()).an_object()
 
         class ParentMethods:
             def is_commutative(self) -> bool:
                 return True
 
-            def _quotient_by_algebra_elements(self, elements):
-                r"""Return ``A/(f_1,...,f_r)`` with its quotient map ``A ->> A/(f)``.
-
-                For ``A = P/I`` this is ``P/(I + (f)~)``: the chosen
-                presentation of ``A`` is carried forward and the new equations
-                are lifted onto it, so a second closed embedding into an
-                already presented algebra reaches the same construction as the
-                first instead of stacking a quotient on a quotient.  A free
-                polynomial algebra is the case ``I = 0``, which is why one
-                declaration serves both.
-                """
-                from dzack_research.preamble.categories.algebras.free_algebras import (
-                    _quotient_by_algebra_elements_backend,
-                )
-
-                return _quotient_by_algebra_elements_backend(self, elements)
-
 
 class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
-    r"""Unital algebras interned on a chosen morphism \(A\otimes_R A\to A\)."""
+    r"""Algebras retaining their multiplication as an exact chosen morphism."""
 
     def an_object(self):
         r"""``R`` itself, presented by a chosen multiplication.
@@ -584,54 +1102,80 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
         multiplication = module_homset(TensorSquare(line), line)({(label, label): line.module_generator(label)})
-        return algebra_from_multiplication(multiplication)
+        return Algebras(self.base_ring())(line, multiplication)
 
     @classmethod
     def _repr_object_names(cls):
         return "algebras with chosen multiplication"
 
     def super_categories(self):
-        return [
-            AssociativeAlgebrasWithChosenMultiplication(self.base_ring()),
-            Algebras(self.base_ring()),
-        ]
+        return [Algebras(self.base_ring())]
 
     class ParentMethods:
-        @cached_method
-        def one(self):
-            selected = self.__dict__.get("_preamble_algebra_unit")
-            if selected is not None:
-                return selected
-            source = self._preamble_multiplication_source_module
-            multiplication = self._preamble_source_multiplication
-            unit_source = self._preamble_source_algebra_unit
-            if unit_source is None:
-                unit_source = source.one() if source in Algebras(self.base_ring()) else _unit_from_multiplication(multiplication)
-            _forget, equip = self._multiplication_transport_maps()
-            return equip(unit_source)
-
         def multiplication_morphism(self):
             selected = self.__dict__.get("_preamble_multiplication_morphism")
             if selected is not None:
                 return selected
+            arrow = getattr(self, "arrow", None)
+            if callable(arrow):
+                multiplication = arrow()
+                if multiplication.codomain() is self.underlying_module():
+                    return multiplication
             return self._transported_multiplication_morphism()
 
-        def _owned_scalar_multiple(self, scalar, element):
-            r"""Use the selected underlying module action on an interned algebra."""
-            scalar = self.base_ring()(scalar)
-            element = self(element)
-            return element._lmul_(scalar)
+    class ElementMethods(ModuleElement):
+        r"""An algebra element retaining one exact element of the carrier module."""
 
-        def _ring_morphism_defining_algebra_structure(self):
-            base = self.algebra_base_ring()
-            center = self.ring_center()
-            unit = self.one()
+        def __init__(self, parent, underlying_element) -> None:
+            ModuleElement.__init__(self, parent)
+            self._underlying_element = underlying_element
 
-            return ring_morphism(
-                base,
-                center,
-                lambda scalar: center(unit._lmul_(base(scalar))),
+        def underlying_element(self):
+            return self._underlying_element
+
+        def _add_(self, other):
+            parent = self.parent()
+            return parent(
+                self.underlying_element() + parent._carrier_element(other)
             )
+
+        def _sub_(self, other):
+            parent = self.parent()
+            return parent(
+                self.underlying_element() - parent._carrier_element(other)
+            )
+
+        def _neg_(self):
+            return self.parent()(-self.underlying_element())
+
+        def _lmul_(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _rmul_(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _acted_upon_(self, actor, self_on_left):
+            _ = self_on_left
+            try:
+                scalar = self.parent().base_ring()(actor)
+            except (TypeError, ValueError):
+                return None
+            return self.parent().scalar_multiple(scalar, self)
+
+        def _mul_(self, other):
+            return self.parent()(self.parent().product(self, other))
+
+        def _richcmp_(self, other, op):
+            if getattr(other, "parent", lambda: None)() is not self.parent():
+                return NotImplemented
+            if op == op_EQ:
+                return self.underlying_element() == other.underlying_element()
+            if op == op_NE:
+                return self.underlying_element() != other.underlying_element()
+            return NotImplemented
+
+        def _repr_(self):
+            return repr(self.underlying_element())
 
 
 class FramedAlgebras(OwnedCategoryOverBaseRing):
@@ -649,7 +1193,7 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
         return "framed algebras"
 
     def super_categories(self):
-        return [Algebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def cardinality(self):
@@ -716,7 +1260,7 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         # associative algebras above: nothing here is special to matrices.
         return [
             MatrixEndomorphismSpaces(self.base_ring()),
-            Algebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital(),
             FramedAlgebras(self.base_ring()),
         ]
 
@@ -788,7 +1332,7 @@ class FinitelyPresentedAlgebras(OwnedCategoryOverBaseRing):
         return "finitely presented algebras"
 
     def super_categories(self):
-        return [Algebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def is_finitely_presented(self) -> bool:
@@ -1465,9 +2009,9 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
 
 
-def algebra_homset(domain, codomain) -> AlgebraHomset:
+def algebra_homset(domain, codomain):
     r"""``Hom_{R-Alg}(domain, codomain)`` for ``R`` the base of ``domain``; both must be placed over ``R``."""
-    return Algebras(domain.base_ring()).Mor(domain, codomain)
+    return Algebras(domain.base_ring()).Associative().Unital().Mor(domain, codomain)
 
 
 @cached_function
@@ -1503,7 +2047,7 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
         return "owned algebras"
 
     def super_categories(self):
-        return [Algebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def _ring_morphism_defining_algebra_structure(self):
@@ -1540,7 +2084,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         for name, value in construction_data:
             setattr(self, name, value)
         self._preamble_algebra_generating_set = None if labels is None else finite_ordered_set(labels)
-        placement = [Algebras(base), OwnedAlgebras(base)]
+        placement = [Algebras(base).Associative().Unital(), OwnedAlgebras(base)]
         if engine in SageCommutativeAlgebras(_engine_ring(base)):
             placement.append(CommutativeAlgebras(base))
         if labels is not None:
@@ -1782,10 +2326,13 @@ def algebra_from_multiplication(
     placement = []
     if unital:
         if unit is None:
-            unit = module.one() if module in Algebras(ring) else _unit_from_multiplication(multiplication)
-        placement.append(AlgebrasWithChosenMultiplication(ring))
-    else:
-        placement.append(AssociativeAlgebrasWithChosenMultiplication(ring))
+            unit = (
+                module.one()
+                if module in Algebras(ring).Associative().Unital()
+                else _unit_from_multiplication(multiplication)
+            )
+        placement.append(Algebras(ring).Associative().Unital())
+    placement.append(AssociativeAlgebrasWithChosenMultiplication(ring))
     if commutative is None:
         commutative = _multiplication_is_commutative(multiplication)
     if commutative and unital:
@@ -1933,7 +2480,13 @@ __all__ = [
 def CommutativeAlgebras(base_ring):
     r"""The category of commutative ``R``-algebras.
 
-    The session name for ``Algebras(R).Commutative()``: commutativity is an
-    axiom on the multiplication, and this is the category it cuts out.
+    This conventional name retains the usual associative-unital meaning.
+    Commutativity itself remains an independent axiom on the general algebra
+    node.
     """
-    return Algebras(base_ring).Commutative()
+    return Algebras(base_ring).Associative().Unital().Commutative()
+
+
+def AssociativeAlgebras(base_ring):
+    r"""The associative refinement of the general ``R``-algebra node."""
+    return Algebras(base_ring).Associative()

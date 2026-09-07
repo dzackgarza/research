@@ -25,10 +25,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
-    algebra_from_multiplication,
+    _unit_from_multiplication,
+    _unit_morphism_from_element,
     algebra_homset,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.refine import refine
 
 
 def _homogeneous_degree(element):
@@ -202,7 +204,7 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
     def super_categories(self):
 
         graded_modules = GradedModules(self.base_ring(), self.grading_monoid())
-        algebra = Algebras(self.base_ring())
+        algebra = Algebras(self.base_ring()).Associative().Unital()
         return [algebra, graded_modules]
 
     class ParentMethods:
@@ -356,12 +358,19 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             raise TypeError(
                 f"{module} is not a module graded by {self.grading_monoid()}"
             )
-        return algebra_from_multiplication(
-            multiplication,
+        unit = _unit_from_multiplication(multiplication)
+        eta = _unit_morphism_from_element(
+            module,
+            unit,
             self.base_ring(),
-            unital=True,
-            extra_categories=(self,),
         )
+        algebra = Algebras(self.base_ring()).Associative().Unital()(
+            module,
+            multiplication,
+            eta,
+        )
+        refine(algebra, self)
+        return algebra
 
 
 __all__ = [

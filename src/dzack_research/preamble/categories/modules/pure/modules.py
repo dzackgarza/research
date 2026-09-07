@@ -2719,7 +2719,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         from dzack_research.preamble.categories.algebras.algebras import (
-            AssociativeAlgebras,
+            Algebras,
         )
 
         # End_R(F) is a ring under composition and linear over the base, and a
@@ -2730,7 +2730,7 @@ class MatrixEndomorphismSpaces(OwnedCategoryOverBaseRing):
         return [
             MatrixSpaces(self.base_ring()),
             OwnedRings(),
-            AssociativeAlgebras(self.base_ring()),
+            Algebras(self.base_ring()).Associative().Unital(),
         ]
 
     # The three above state three different morphisms, so this names which of

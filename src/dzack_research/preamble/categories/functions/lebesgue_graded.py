@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AssociativeAlgebras,
     AssociativeAlgebrasWithChosenMultiplication,
     CommutativeAlgebras,
+    _unit_morphism_from_element,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.forms.forms import Pairings
@@ -166,7 +167,7 @@ class LebesgueGradedModules(OwnedCategoryOverBaseRing):
             """
             ring = self.base_ring()
             match self:
-                case _ if self in Algebras(ring):
+                case _ if self in Algebras(ring).Unital():
                     return self.degree_projection(
                         self.grading_monoid().monoidal_unit()
                     )
@@ -513,11 +514,16 @@ class _LebesgueAlgebraFromMultiplication(Parent):
             self._preamble_algebra_unit = self._from_components(
                 {unit_degree: self.graded_piece(unit_degree).one()}
             )
+            self._preamble_algebra_unit_morphism = _unit_morphism_from_element(
+                self,
+                self._preamble_algebra_unit,
+                ring,
+            )
 
     def _repr_(self) -> str:
         ring = self._preamble_algebra_base_ring
         match self:
-            case _ if self in Algebras(ring):
+            case _ if self in Algebras(ring).Unital():
                 return "graded Lebesgue algebra"
             case _:
                 return "Lebesgue convolution algebra"
@@ -525,7 +531,7 @@ class _LebesgueAlgebraFromMultiplication(Parent):
     def _latex_(self) -> str:
         ring = self._preamble_algebra_base_ring
         match self:
-            case _ if self in Algebras(ring):
+            case _ if self in Algebras(ring).Unital():
                 return r"\bigoplus_s L^{1/s}(\mathbb{R})"
             case _:
                 return r"\bigoplus_{s\in[0,1]} L^{1/s}(\mathbb{R})"
@@ -546,7 +552,7 @@ class _LebesgueAlgebraFromMultiplication(Parent):
             return self._from_components({degree: value})
         ring = self._preamble_algebra_base_ring
         match self:
-            case _ if self in Algebras(ring):
+            case _ if self in Algebras(ring).Unital():
                 return self._from_components(
                     {
                         self.grading_monoid().monoidal_unit(): Lp(Infinity)(value),

@@ -348,7 +348,7 @@ class OrdersWithChosenIntegralBasis(Category):
         integers = _own_ring(SageZZ)
         return [
             OwnedOrders(),
-            Algebras(integers),
+            Algebras(integers).Associative().Unital(),
             FinitelyGeneratedFreeModules(integers),
         ]
 

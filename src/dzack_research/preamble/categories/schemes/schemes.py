@@ -68,6 +68,7 @@ from dzack_research.preamble.categories.abstract_categories.products import _fin
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
+    CommutativeAlgebras,
     FramedAlgebras,
     _engine_algebra_morphism,
 )
@@ -654,8 +655,10 @@ class Schemes(OwnedCategoryOverBaseRing):
         r"""A scheme over ``R`` is a scheme over the scalar base of ``R``.
 
         Composing ``X -> Spec R`` with ``Spec R -> Spec R_0`` for the structure
-        map ``R_0 -> R`` places every ``R``-scheme in ``Sch/R_0``; the same
-        tower ``Algebras(R) <= Algebras(R_0)`` sits underneath affine ones.
+        map ``R_0 -> R`` places every ``R``-scheme in ``Sch/R_0``.  Algebra
+        scalar restriction is represented by its own functor rather than by a
+        category inclusion, so no analogous ``Algebras(R) <= Algebras(R_0)``
+        edge is asserted here.
         """
         base = _proper_restriction_base_ring(self.base_ring())
         if base is None:
@@ -2701,7 +2704,7 @@ def affine_spec_morphism(algebra_morphism):
     source_algebra = algebra_morphism.domain()
     target_algebra = algebra_morphism.codomain()
     ring = source_algebra.base_ring()
-    if source_algebra not in Algebras(ring) or target_algebra not in Algebras(ring):
+    if source_algebra not in CommutativeAlgebras(ring) or target_algebra not in CommutativeAlgebras(ring):
         raise TypeError("affine Spec acts on a represented algebra morphism")
     if source_algebra.base_ring() is not target_algebra.base_ring():
         raise ValueError("affine Spec requires an algebra morphism over one scalar base")

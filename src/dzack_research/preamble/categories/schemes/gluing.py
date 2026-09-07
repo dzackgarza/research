@@ -1542,7 +1542,7 @@ class AlgebraGluingDatum(Parent):
             chart_index,
             *intersection_indices,
         ).coordinate_algebra()
-        if restricted not in Algebras(target):
+        if restricted not in Algebras(target).Associative().Unital():
             raise TypeError("algebra scalar extension did not preserve the algebra structure")
         if restricted not in AlgebrasWithChosenFinitePresentation(target):
             raise TypeError("algebra scalar extension did not preserve the chosen finite presentation")
@@ -2026,7 +2026,7 @@ class CompatibleLocalAlgebraSections(CompatibleLocalSectionsModule):
         category = (
             CommutativeAlgebras(self._preamble_base_ring)
             if self._preamble_is_commutative
-            else Algebras(self._preamble_base_ring)
+            else Algebras(self._preamble_base_ring).Associative().Unital()
         )
         Parent.__init__(self, category=category)
 

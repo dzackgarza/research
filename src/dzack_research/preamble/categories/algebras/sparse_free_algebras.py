@@ -247,7 +247,7 @@ class SparseFreeAlgebra(Parent):
         self._graded_piece_cache: dict[int, SparseFreeAlgebraDegreeModule] = {}
         flavor_category = TensorAlgebras(self._base_ring) if flavor == "tensor" else SymmetricAlgebras(self._base_ring)
         categories: list[Any] = [
-            Algebras(self._base_ring),
+            Algebras(self._base_ring).Associative().Unital(),
             flavor_category,
             GradedFreeAlgebras(self._base_ring),
             FramedAlgebras(self._base_ring),

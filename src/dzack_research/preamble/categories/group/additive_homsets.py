@@ -69,7 +69,7 @@ class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
         assert self.base_ring() in OwnedRings().Commutative(), (
             "pointwise scalar enrichment requires a commutative scalar ring"
         )
-        return [AdditiveHomGroups(), Algebras(self.base_ring())]
+        return [AdditiveHomGroups(), Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def scalar_multiple(self, scalar, morphism):

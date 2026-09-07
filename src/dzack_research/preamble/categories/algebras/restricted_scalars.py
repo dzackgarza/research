@@ -62,7 +62,7 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
         return "restricted-scalars algebras"
 
     def super_categories(self):
-        return [Algebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     class ParentMethods:
         def ring_map(self):

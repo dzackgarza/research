@@ -768,7 +768,7 @@ class PrimeLocalizations(OwnedCategory):
             base = source.base_ring()
             algebra_source = (
                 source
-                if base is not None and source in Algebras(base)
+                if base is not None and source in Algebras(base).Associative().Unital()
                 else None
             )
             super().__init__(
@@ -1137,13 +1137,13 @@ def _finite_generated_localization(source, submonoid):
     base = source.base_ring()
     algebra_source = (
         source
-        if base is not None and source in Algebras(base)
+        if base is not None and source in Algebras(base).Associative().Unital()
         else None
     )
     algebra_categories = []
     if algebra_source is not None:
         algebra_base = algebra_source.base_ring()
-        algebra_categories = [Algebras(algebra_base), OwnedAlgebras(algebra_base)]
+        algebra_categories = [Algebras(algebra_base).Associative().Unital(), OwnedAlgebras(algebra_base)]
         if algebra_source in CommutativeAlgebras(algebra_base):
             algebra_categories.append(CommutativeAlgebras(algebra_base))
     return object_of(
@@ -1369,11 +1369,11 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     base = source.base_ring()
     algebra_source = (
         source
-        if base is not None and source in Algebras(base)
+        if base is not None and source in Algebras(base).Associative().Unital()
         else None
     )
     if algebra_source is not None:
-        placements.extend((Algebras(base), OwnedAlgebras(base)))
+        placements.extend((Algebras(base).Associative().Unital(), OwnedAlgebras(base)))
         if source in CommutativeAlgebras(base):
             placements.append(CommutativeAlgebras(base))
     return object_of(

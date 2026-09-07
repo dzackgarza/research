@@ -16,8 +16,9 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
-    algebra_from_multiplication,
+    _unit_morphism_from_element,
     algebra_homset,
+    CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import AugmentedAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
@@ -40,6 +41,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.refine import refine
 
 
 class GroupAlgebras(OwnedCategoryOverBaseRing):
@@ -87,10 +89,11 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             the conjugation orbit of its representative.
             """
             group = self.group()
+            module = self.underlying_module()
             class_sums = finite_ordered_set(
                 [
                     sum(
-                        self.module_generator(element)
+                        module.module_generator(element)
                         for element in {
                             g * representative * g.inverse() for g in group
                         }
@@ -98,7 +101,7 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
                     for representative in group.conjugacy_classes_representatives()
                 ]
             )
-            return self.subobject_on(class_sums)
+            return module.subobject_on(class_sums)
 
         @cached_method
         def group_inclusion(self):
@@ -112,8 +115,16 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
         def augmentation(self):
             r"""The algebra morphism \(\varepsilon\colon R[G]\to R\), \(g\mapsto 1\)."""
             ring = self.base_ring()
-            counit = module_homset(self, ring)(
-                {label: ring.one() for label in self.module_generating_set()}
+            from dzack_research.preamble.categories.functors.algebra_modules import (
+                algebra_underlying_module_functor,
+            )
+
+            target_module = algebra_underlying_module_functor(ring)(ring)
+            counit = module_homset(self.underlying_module(), target_module)(
+                {
+                    label: target_module(ring.one())
+                    for label in self.module_generating_set()
+                }
             )
             return algebra_homset(self, ring)(counit)
 
@@ -163,14 +174,14 @@ def GroupAlgebra(base_ring, group):
             for right in elements
         }
     )
-    return algebra_from_multiplication(
-        multiplication,
-        ring,
-        extra_categories=(GroupAlgebras(ring),),
-        extra_construction_data={"group": group},
-        unit=module.module_generator(group.one()),
-        commutative=group.is_abelian(),
-    )
+    unit_element = module.module_generator(group.one())
+    unit = _unit_morphism_from_element(module, unit_element, ring)
+    algebra = Algebras(ring).Associative().Unital()(module, multiplication, unit)
+    algebra._preamble_group = group
+    refine(algebra, GroupAlgebras(ring))
+    if group.is_abelian():
+        refine(algebra, CommutativeAlgebras(ring))
+    return algebra
 
 
 class GroupAlgebraFunctor(Functor):
@@ -184,7 +195,7 @@ class GroupAlgebraFunctor(Functor):
     def __init__(self, base_ring) -> None:
         ring = _owned_ring(base_ring)
         self._base_ring = ring
-        super().__init__(OwnedGroups(), Algebras(ring))
+        super().__init__(OwnedGroups(), Algebras(ring).Associative().Unital())
 
     def base_ring(self):
         return self._base_ring
@@ -195,9 +206,11 @@ class GroupAlgebraFunctor(Functor):
     def _apply_morphism(self, group_morphism):
         source = self(group_morphism.domain())
         target = self(group_morphism.codomain())
-        linear = module_homset(source, target)(
+        source_module = source.underlying_module()
+        target_module = target.underlying_module()
+        linear = module_homset(source_module, target_module)(
             {
-                label: target.module_generator(group_morphism(label))
+                label: target_module.module_generator(group_morphism(label))
                 for label in source.module_generating_set()
             }
         )

@@ -55,7 +55,7 @@ class ConstructionAlgebraHomset(CategoricalHomset):
             raise ValueError("construction algebra maps require one common base ring")
         CategoricalHomset.__init__(
             self,
-            HomCategoryConstruction(Algebras(domain.base_ring())),
+            HomCategoryConstruction(Algebras(domain.base_ring()).Associative().Unital()),
             domain,
             codomain,
         )

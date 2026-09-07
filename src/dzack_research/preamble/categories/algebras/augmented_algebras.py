@@ -58,7 +58,7 @@ class AugmentedAlgebras(OwnedCategoryOverBaseRing):
         return "augmented algebras"
 
     def super_categories(self):
-        return [Algebras(self.base_ring())]
+        return [Algebras(self.base_ring()).Associative().Unital()]
 
     def _call_(self, augmentation):
         return augmented_algebra(augmentation)
@@ -208,7 +208,7 @@ def augmented_algebra(augmentation):
         raise TypeError("an augmentation is an algebra morphism to the base ring")
     domain = augmentation.domain()
     base = _owned_ring(domain.base_ring())
-    if domain not in Algebras(base):
+    if domain not in Algebras(base).Associative().Unital():
         raise TypeError(f"{domain} is not an algebra over {base}")
     aug_codomain = _owned_ring(augmentation.codomain())
     if not _augmentation_codomain_is_allowed(domain, base, aug_codomain):

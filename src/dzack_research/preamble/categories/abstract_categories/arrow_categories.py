@@ -151,12 +151,12 @@ class ArrowCategory(OwnedCategory):
 
     def __contains__(self, candidate) -> bool:
         category = getattr(candidate, "category", lambda: None)()
-        base_category = getattr(category, "base_category", None)
-        return (
-            base_category is not None
-            and isinstance(category, ArrowCategory)
-            and base_category() == self.base_category()
-        )
+        if category is None:
+            return False
+        try:
+            return category.is_subcategory(self)
+        except (AttributeError, TypeError):
+            return False
 
     def object(self, arrow):
         if not isinstance(arrow, Morphism):
@@ -212,6 +212,15 @@ class _EndofunctorAlgebraHomset(ArrowHomset):
     morphism, exactly as in ``Inserter(T, Id)``.
     """
 
+    class Element(CommutativeSquare):
+        r"""A structured map acting through its exact carrier morphism."""
+
+        def underlying_morphism(self):
+            return self.right()
+
+        def _call_(self, element):
+            return self.underlying_morphism()(element)
+
     def _element_constructor_(self, left, right=None):
         category = self.arrow_category()
         if right is None:
@@ -224,7 +233,7 @@ class _EndofunctorAlgebraHomset(ArrowHomset):
                     "the left edge of an endofunctor-algebra map must be the image of its underlying morphism"
                 )
             left = expected
-        return CommutativeSquare(self, left, right)
+        return self.element_class(self, left, right)
 
 
 class _EndofunctorAlgebraForgetfulFunctor(Functor):

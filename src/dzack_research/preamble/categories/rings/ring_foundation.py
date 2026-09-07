@@ -1105,7 +1105,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             # The integers are being constructed when this runs for them, so
             # asking the adapter for them again would construct them again.
             integers = self if _engine_ring(self) is SageZZ else _own_ring(SageZZ)
-            placements = [Algebras(integers)]
+            placements = [Algebras(integers).Associative().Unital()]
             if self.is_commutative() is True:
                 placements.extend((OwnedRings().Commutative(), CommutativeAlgebras(self)))
             refine(self, placements)
@@ -2105,7 +2105,7 @@ def _owned_ring_category(engine: Ring) -> Category:
         # ``base_ring()`` reports, so it is the placement recorded here.
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
-        extra.append(Algebras(scalars))
+        extra.append(Algebras(scalars).Associative().Unital())
     if category.is_subcategory(SageIntegralDomains()):
         extra.append(OwnedIntegralDomains())
     if engine is SageZZ or engine is SageQQ:
