@@ -4,6 +4,8 @@ This document defines the contribution policies for the repository.
 All contributions must follow the categorized policy index below.
 Each policy has a unique alphanumeric identifier.
 
+Use the [task complexity guide](COMPLEXITY.md) to score work and select a model and reasoning effort.
+
 * * *
 
 ## Preamble design philosophy

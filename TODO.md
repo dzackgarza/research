@@ -205,6 +205,8 @@ Record completion on the existing detailed item and its construction's release.
 
 ### Selecting parallel releases
 
+Use the [task complexity guide](COMPLEXITY.md) to assign reasoning capability after identifying the required release and its contracts.
+
 Start shared architecture work in C.
 Engine provisioning/adapters in E and upstream framework development in F can proceed on their own declared interfaces.
 N can consume an existing mathematical release when the current notebook policy permits it.
