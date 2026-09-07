@@ -164,7 +164,7 @@ Fix a category $\mathcal{C}$ of locally ringed spaces, a class $\mathscr{L}$ of 
 A *$\mathscr{A}$-atlas* for $X \in \mathcal{C}$ is an effective epimorphism $p\colon \coprod_{i \in I} L_i \to X$ with each $L_i \in \mathscr{L}$ and each component an $\mathscr{A}$-morphism.
 Different choices of $\mathscr{A}$ yield different Grothendieck topologies and geometric objects:
 
-| Admissible morphisms | Topology | Geometric objects |
+| Admissible morphisms $\mathscr{A}$ | Topology | Geometric objects |
 |---|---|---|
 | Open immersions | Zariski | Schemes |
 | Étale morphisms | Étale | Algebraic spaces, Deligne–Mumford stacks |
