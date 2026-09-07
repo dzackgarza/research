@@ -23,7 +23,7 @@ Categories of objects with chosen structure are instead described by their forge
 ::: {#def-subobject-relation}
 A *subobject* of $M\in C$ is an isomorphism class of monomorphisms $i\colon N\hookrightarrow M$.
 A representative of the subobject is a specific monomorphism.
-Two representatives $i\colon N\hookrightarrow M$ and $i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism $u\colon N\xrightarrow{\sim}N'$ with $i=i'\circ u$ [@Mac94, I.5].
+Two representatives $i\colon N\hookrightarrow M$ and $i'\colon N'\hookrightarrow M$ define the same subobject when there is an isomorphism $u\colon N\xrightarrow{\sim}N'$ with $i=i'\circ u$ [@MM12, I.5].
 :::
 
 A factorization from the subobject represented by $i\colon N\hookrightarrow M$ to the one represented by $j\colon P\hookrightarrow M$ is a morphism $f\colon N\to P$ with $i=j\circ f$.
