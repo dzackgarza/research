@@ -20,7 +20,7 @@ boundary \(D=\pi^*C\) on \(X\).  The archived branch polynomials return one
 polynomial for four different decorated \(A\) families and one for both \(D\)
 families, so they do not distinguish the types they are indexed by and cannot
 be ported as recorded; and the cover itself needs the general cyclic-cover
-construction of PORT_TODO §13, which is not live.
+construction in the root TODO.md §13, which is not live.
 """
 
 from dataclasses import dataclass

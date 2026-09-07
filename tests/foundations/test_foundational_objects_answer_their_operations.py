@@ -8,7 +8,7 @@ a working foundation and a hollow one.
 This file asserts what the graph *does*.  Each test takes one of the same ten
 roots, builds a small object, and asks it for the elementary operations its
 categories promise, against values a reader can check by hand.  It is the
-termination condition for `TODO-PRIORITIES.md` Priority 3 step 7: while any of
+termination condition for the root `TODO.md` Priority 3 step 7: while any of
 these fails, removing a Sage supercategory edge has taken away mathematics that
 was never restored at its owned owner.
 

@@ -41,11 +41,7 @@ agent-memory maintain move <key> --to global/advice
 
 ## Preamble coding prerequisites
 
-Before writing or editing code under `src/dzack_research/preamble/`, first read **all current root-level `*TODO*.md` files** that govern preamble work. These currently include:
-
-- `TODO.md`
-- `TODO-ORGANIZATION.md`
-- `PORT_TODO.md`
+Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains the execution priorities, remediation queue, mathematical requirements, organization findings, and work coordination.
 
 Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. If the generated megadoc may be stale relative to the live source tree, regenerate it with `just preamble-megadoc` and then read the generated `docs/preamble-megadoc.md`.
 
