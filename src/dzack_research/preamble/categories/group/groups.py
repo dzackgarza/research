@@ -1665,6 +1665,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             return ~self
 
     class ParentMethods:
+        @cached_method
+        def classifying_category(self):
+            r"""Return ``BG``, with one object and this group's elements as arrows."""
+            from dzack_research.preamble.categories.group.classifying_categories import (
+                ClassifyingCategory,
+            )
+
+            return ClassifyingCategory(self)
+
         def Mor(self, codomain, category=None):
             groups = OwnedGroups()
             if category is None or (isinstance(category, OwnedCategory) and category.is_subcategory(groups)):
