@@ -82,7 +82,7 @@ def _packet_supercategories(category):
 class HomArrowObject(Parent):
     r"""An arrow regarded as an object of a fixed-endpoint Hom category."""
 
-    def __init__(self, arrow) -> None:
+    def __init__(self, arrow: Morphism) -> None:
         self._arrow = arrow
         Parent.__init__(self, category=SageSets())
 
@@ -135,7 +135,14 @@ class CategoricalHomset(OwnedHomset, Category):
         # name their own construction data, so the signature stays open.
         return typecall(cls, *arguments, **options)
 
-    def __init__(self, family, domain, codomain, *, category=None) -> None:
+    def __init__(
+        self,
+        family: "HomCategoryOf",
+        domain: Parent,
+        codomain: Parent,
+        *,
+        category: Category | None = None,
+    ) -> None:
         self._family = family
         self._end_family = None
         self._aut_family = None
@@ -282,7 +289,12 @@ class HomArrowDiscreteHomset(CategoricalHomset):
 
     Element = HomArrowIdentity
 
-    def __init__(self, hom_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        hom_category: CategoricalHomset | "FixedHomCategory",
+        domain: HomArrowObject,
+        codomain: HomArrowObject,
+    ) -> None:
         self._hom_category = hom_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(hom_category), domain, codomain
@@ -311,7 +323,12 @@ class FixedHomCategory(Category):
         # ``Hom_C(A,B)`` with a previously created ``Hom_C(A',B')``.
         return typecall(cls, family, domain, codomain)
 
-    def __init__(self, family, domain, codomain) -> None:
+    def __init__(
+        self,
+        family: "HomCategoryOf",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._family = family
         self._end_family = None
         self._aut_family = None
@@ -511,7 +528,14 @@ class RestrictedHomCategoryParent(Parent, FixedRestrictedHomCategory):
     def __classcall__(cls, *arguments, **options):
         return typecall(cls, *arguments, **options)
 
-    def __init__(self, family, domain, codomain, *, category=None) -> None:
+    def __init__(
+        self,
+        family: "RestrictedHomCategoryOf",
+        domain: Parent,
+        codomain: Parent,
+        *,
+        category: Category | None = None,
+    ) -> None:
         FixedRestrictedHomCategory.__init__(self, family, domain, codomain)
         Parent.__init__(
             self,
@@ -538,7 +562,14 @@ class RestrictedHomCategoryParent(Parent, FixedRestrictedHomCategory):
 class CategoricalIsomorphism(Morphism):
     r"""An isomorphism represented by mutually inverse arrows."""
 
-    def __init__(self, parent, forward, inverse, *, verify=True) -> None:
+    def __init__(
+        self,
+        parent: Parent,
+        forward: Morphism,
+        inverse: Morphism,
+        *,
+        verify: bool = True,
+    ) -> None:
         Morphism.__init__(self, parent)
         if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
             raise ValueError("the forward map has the wrong endpoints")
@@ -684,7 +715,7 @@ class HomCategories(Category):
 class CategoryPacket(SageObject):
     r"""The coordinated ``C / Hom_C / End_C / Iso_C / Aut_C`` packet."""
 
-    def __init__(self, category) -> None:
+    def __init__(self, category: Category) -> None:
         self._category = category
         # Family objects are deliberately lazy.  A family category such as
         # ``Mono_C`` has ``Hom_C`` as a semantic supercategory, and Sage asks
@@ -794,7 +825,7 @@ class HomCategoryOf(Category):
             return declared(base_category)
         return super(HomCategoryOf, cls).__classcall__(cls, base_category)
 
-    def __init__(self, base_category) -> None:
+    def __init__(self, base_category: Category) -> None:
         self._base_category = base_category
         # Several owned Hom-family specializations choose a concrete fixed
         # Hom parent class from the endpoints.  Keep that endpoint cache on
