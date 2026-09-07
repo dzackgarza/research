@@ -5,6 +5,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from sage.categories.category import Category
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
@@ -50,11 +51,13 @@ class ContravariantFunctor(Functor):
     def base_domain(self):
         return self._base_domain
 
+    @abstract_method
     def _apply_contravariant_object(self, obj):
-        raise NotImplementedError
+        r"""Return the image of one object of the underlying covariant domain."""
 
+    @abstract_method
     def _apply_contravariant_morphism(self, morphism):
-        raise NotImplementedError
+        r"""Return the reversed image of one morphism of the underlying domain."""
 
     def _apply_object(self, opposite_object):
         return self._apply_contravariant_object(opposite_object.underlying_object())
@@ -99,11 +102,13 @@ class Bifunctor(Functor):
     def right_domain(self):
         return self.domain().second_category()
 
+    @abstract_method
     def _apply_pair_object(self, left, right):
-        raise NotImplementedError
+        r"""Return the image of one object pair."""
 
+    @abstract_method
     def _apply_pair_morphism(self, left_morphism, right_morphism):
-        raise NotImplementedError
+        r"""Return the image of one morphism pair."""
 
     def _apply_object(self, pair):
         return self._apply_pair_object(pair.first(), pair.second())

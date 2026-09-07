@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedCategoryMixin,
 )
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
@@ -991,8 +992,9 @@ class RestrictedHomCategoryOf(HomCategoryOf):
 
     _inherits_morphisms_from = _carves_the_same_hom
 
+    @abstract_method
     def accepts(self, arrow) -> bool:
-        raise NotImplementedError
+        r"""Whether ``arrow`` belongs to this restricted Hom family."""
 
     def super_categories(self):
         inherited = [

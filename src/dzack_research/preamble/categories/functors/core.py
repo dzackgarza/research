@@ -7,6 +7,7 @@ category graph and no registry of relationships.
 
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
+from sage.misc.abstract_method import abstract_method
 from sage.structure.sage_object import SageObject
 
 
@@ -35,11 +36,13 @@ class Functor(SageObject):
     def codomain(self):
         return self._codomain
 
+    @abstract_method
     def _apply_object(self, obj):
-        raise NotImplementedError("a functor must specify its action on objects")
+        r"""Return the image of one object of the domain."""
 
+    @abstract_method
     def _apply_morphism(self, morphism):
-        raise NotImplementedError("a functor must specify its action on morphisms")
+        r"""Return the image of one morphism of the domain."""
 
     def _cached_image(self, preimage):
         recorded = self._provenance.get(id(preimage))
@@ -272,11 +275,13 @@ class Adjunction(SageObject):
     def right_adjoint(self) -> Functor:
         return self._right_adjoint
 
+    @abstract_method
     def unit(self, obj):
-        raise NotImplementedError("an adjunction must supply its unit")
+        r"""Return the unit component at ``obj``."""
 
+    @abstract_method
     def counit(self, obj):
-        raise NotImplementedError("an adjunction must supply its counit")
+        r"""Return the counit component at ``obj``."""
 
     def hom_set_isomorphism_forward(self, morphism, source=None):
         r"""Transpose ``f:F(A)->B`` to ``U(f) after eta_A``."""
