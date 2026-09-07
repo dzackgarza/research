@@ -2,21 +2,237 @@
 
 This file owns the work queue for `src/dzack_research/preamble/`, including archive-derived requirements.
 Read it before changing the preamble, together with the generated `docs/preamble-megadoc.md`.
-Execution priorities, mathematical requirements, source findings, and work claims are organized below.
+The workstreams and their DAG organize execution; detailed requirements, source findings, and work claims follow.
 Recorded findings and completion notes retain their original scope; inspect the current owner before using them to select work.
 
 ## Contents
 
-- [Execution priorities](#execution-priorities): [architecture prerequisite](#architecture-before-dependent-implementation), [verification rule](#testing-is-deferred-until-every-other-item-is-done-always-on), [handoff](#handoff-2026-09-06), [objective](#current-objective-and-order), [dependency graph](#remaining-workstreams-as-a-dependency-graph), [framework boundary](#how-much-category-theory-to-implement-here).
+- [Execution priorities](#execution-priorities): [DAG](#remaining-workstreams-as-a-dependency-graph), [workstreams](#workstreams), [requirement ownership](#requirement-ownership), [parallel releases](#selecting-parallel-releases), [architecture prerequisite](#architecture-before-dependent-implementation), [verification rule](#testing-is-deferred-until-every-other-item-is-done-always-on), [handoff](#handoff-2026-09-06), [objective](#current-objective-and-order), [framework boundary](#how-much-category-theory-to-implement-here).
 - [Remediation queue](#remediation-queue): [scheme and inheritance work](#active-scheme-and-inheritance-work), [collections](#collection-and-finiteness-remediation), [typing](#typing-and-witnesses), [category witnesses](#witnesses-what-an_object-found).
 - [Mathematical requirements](#mathematical-requirements): [architecture](#0-owned-category-and-backend-neutral-architecture), [modules](#8-remaining-module-level-algorithms), [commutative algebra](#84-commutative-algebra-foundation-required-by-scheme-theory), [schemes](#9-scheme-and-algebraic-geometry-foundation), [lattices](#3-integral-lattices-elements-reductions-and-arithmetic-groups-semantic-api-contracts), [port audit](#24-port-completion-audit).
 - [Organization findings](#organization-findings): [current work](#current-organization-work), [earlier assessment](#earlier-assessment), [finiteness and coordinates](#finitary-and-coordinate-overfitting-audit).
-- [Work coordination](#work-coordination): [workstreams](#workstreams), [schedule](#parallel-schedule), [lock boundaries](#lock-boundaries), [claim and release](#claim-and-release), [active claims](#active-claims), [progress](#overall-progress).
+- [Work coordination](#work-coordination): [edit locations](#edit-locations), [schedule](#parallel-schedule), [lock boundaries](#lock-boundaries), [claim and release](#claim-and-release), [active claims](#active-claims), [progress](#overall-progress).
 
 ## Execution priorities
 
 Use these priorities to select work from the [remediation queue](#remediation-queue),
 [mathematical requirements](#mathematical-requirements), and [organization findings](#organization-findings).
+
+### Current objective and order
+
+Develop a general scheme-theory toolkit built on the preamble's affine-local algebra, modules, and categorical constructions.
+This research proceeds while `~/gitclones/sage-categories` develops the replacement category framework.
+The preamble must remain usable, organized, and extensible throughout that work.
+
+1. Complete the [construction and inheritance prerequisite](#architecture-before-dependent-implementation) for the foundation used by the next consumer.
+2. Build affine-local rings, ideals, modules, algebras, and their constructions through those shared owners and structural functors.
+3. Build relative schemes, covers and sheaves, group actions, divisors, cycles, cohomology, and families through those algebraic owners.
+4. Continue arithmetic lattice orbits, centralizers, embeddings, and reflection geometry as subsequent research applications.
+
+Steps 1–3 form one dependency-driven work stream. General constructions become available in notebooks before the framework transfer.
+An arithmetic calculation moves earlier when that geometry requires its result.
+Integrate with `sage-categories` alongside this application order when it supports the complete construction being transferred.
+Each work unit completes a reusable mathematical construction, including its maps, inherited operations, and supported algorithms.
+
+### Remaining workstreams as a dependency graph
+
+This DAG and the workstream table own execution order for the full preamble TODO.
+The detailed checklists and source assessments below retain their mathematical scope and completion records.
+
+An arrow means that the target consumes a named construction, with its objects and maps, from the source.
+It does not require every item in the source workstream to finish first.
+Inspect an existing release against the current architecture contract before using it.
+Dependencies describe mathematical inputs; file reservations describe which edits can proceed together.
+
+A, M, J, V, H, Q, B, and O have separate release nodes where combining their stages would hide an input or impose a false barrier.
+E, F, and N run alongside the mathematical work: engine integration and research use consume the particular released interface they need.
+Their table rows state those task-specific inputs.
+General geometry has scheduling priority over independent arithmetic applications.
+
+```mermaid
+flowchart TD
+    C["C. Category construction<br/>and shared contracts"]
+    M0["M0. Module actions<br/>and presentations"]
+    P["P. Algebras and<br/>relative presentations"]
+    A0["A0. Categorical<br/>group actions"]
+    A1["A1. Group modules and<br/>representation functors"]
+    E["E. Engine interfaces"]
+    R["R. Local rings<br/>and ideals"]
+    M1["M1. Exact local<br/>module algorithms"]
+    S["S. Affine schemes<br/>and base change"]
+    D["D. Differentials<br/>and local criteria"]
+    H0["H0. Homological algebra"]
+    G["G. Covers, gluing<br/>and sheaves"]
+    J0["J0. Projective and<br/>toric chart algebras"]
+    J1["J1. Projective and<br/>toric schemes"]
+    V0["V0. Invertible sheaves"]
+    Q0["Q0. Affine fixed loci<br/>and quotients"]
+    Q1["Q1. Glued actions<br/>and quotients"]
+    B0["B0. Relative Spec<br/>and cyclic covers"]
+    B1["B1. Branch and<br/>ramification geometry"]
+    V1["V1. Divisors, cycles<br/>and linear systems"]
+    L["L. Completions<br/>and singularities"]
+    H1["H1. Geometric cohomology<br/>and comparisons"]
+    Y["Y. Families, blowups<br/>and quotient geometry"]
+    O0["O0. Forms, lattices<br/>and rooted diagrams"]
+    O1["O1. Arithmetic groups<br/>and reflection algorithms"]
+    I["I. ADE log pairs"]
+    F["F. Upstream framework"]
+    N["N. Research use<br/>and display"]
+    U["U. Transfer completion,<br/>consolidation and port audit"]
+    T["T. Final verification"]
+    X["External: sage-indefinite-port<br/>required arithmetic operations"]
+    C --> M0
+    M0 --> P
+    C --> A0
+    A0 --> A1
+    P --> A1
+    P --> R
+    R --> M1
+    R --> S
+    M1 --> D
+    S --> D
+    M1 --> H0
+    S --> G
+    M1 --> G
+    P --> J0
+    J0 --> J1
+    G --> J1
+    G --> V0
+    A0 --> Q0
+    S --> Q0
+    Q0 --> Q1
+    G --> Q1
+    V0 --> B0
+    A0 --> B0
+    B0 --> B1
+    D --> B1
+    V0 --> V1
+    J1 --> V1
+    H0 --> V1
+    D --> L
+    D --> H1
+    V1 --> H1
+    L --> Y
+    H1 --> Y
+    B1 --> Y
+    Q1 --> Y
+    A1 --> O0
+    E --> O0
+    O0 --> O1
+    B0 --> I
+    V1 --> I
+    L --> I
+    O0 --> I
+    I --> U
+    Y --> U
+    O1 --> U
+    F --> U
+    U --> T
+    V1 --> B1
+    X -->|"rational-integral and recursive cases"| O1
+    classDef support fill:#eef3f8,stroke:#64748b
+    class E,F,N,X support
+```
+
+### Workstreams
+
+The letters retain the work-board owners. Numbered nodes are successive releases within one workstream.
+For example, M0 and M1 both belong to M; the active Q claim belongs to Q1.
+Each row links the detailed requirements that the executor must read.
+The output column states the common mathematical acceptance condition for that release.
+
+| Node | Workstream and detailed requirements | Required inputs | Output |
+| --- | --- | --- | --- |
+| **C — Category foundations and construction contracts** | Required defining data; owned category/Hom graphs; constructor and refinement boundaries; sets, cardinals, functors, adjunctions, and common contract discovery. [Architecture repair](#architecture-before-dependent-implementation); [§0](#0-owned-category-and-backend-neutral-architecture); [constructor/refinement](#constructor-and-refinement-repairs); [Priority 3](#priority-3--foundational-owned-category-graph-and-hom-architecture). | Existing architecture proposal and source | A constructed object, element, and nonidentity morphism expose their inherited data and operations through the declared mathematical owners. |
+| **E — Engine interfaces and provisioning** | Owned/Sage scalar crossings; Singular and GAP interfaces; persistent Julia/OSCAR/Hecke bridge; optional Macaulay2 and specialized polyhedral interfaces. [Engine obligations](#existing-engine-integration-obligations); [realization boundary](#62-engine-capabilityrealization-boundary). | Selected engine's interface and the consuming owner's data contract | A required engine operation returns owned mathematical results and structural maps through its existing private adapter. Provision only the engine required by a selected construction. |
+| **F — Framework development** | General structure-functor, monoidal-action, class-construction, and static-projection development in sage-categories; complete-dependency transfers at each mathematical owner. [Framework boundary](#how-much-category-theory-to-implement-here); [transfer contract](#transfer-by-complete-mathematical-dependency). | Upstream specifications | The selected upstream release supports the complete constructor, morphism, functor, and inherited-operation path required by the transferred preamble subsystem. |
+| **N — Research use, display, and optional external examples** | Notebook integration of released constructions; 2D/3D polytope and diagram displays; rich representations; useful database examples and classified-polytope probes. [§19](#19-visualization-and-display-helpers-non-blocking); [§20 external examples](#20-archived-framework-specifications-without-complete-source-implementations). | Selected mathematical object's release | A notebook or display consumes the actual released mathematical object. Database and display work starts only when its owning construction exists. |
+| **M0 — Module actions, framings, and presentations** | Defining action into additive-group endomorphisms; chosen versus existing presentations; free modules, tensor/Hom/biproduct constructions, duality, graded powers, general rank and cardinality. [Module requirements](#8-remaining-module-level-algorithms); [collections](#collection-and-finiteness-remediation); [framing design](#framed-designed-and-not-built). | `C` | Direct-action and presentation constructors produce compatible structure morphisms. The noncommutative regular module and a free-plus-torsion module distinguish the contract. |
+| **A0 — Group actions in a category** | Generic G-objects, G-sets, equivariant maps, restriction along group morphisms, and transport through functors. [§13.1](#131-group-actions-in-a-category). | `C` | A single action construction returns G-objects and equivariant morphisms in the supplied category. |
+| **P — Algebra structure and relative presentations** | General multiplication, Lie/associative/unital structure and preserving maps; underlying modules; free/graded algebras; quotients, scalar change, and parameter maps. [Algebra conversion](#the-algebra-node-conversion-designed-and-part-built); [equations and fibers](#equations-affine-maps-and-fibers). | `M0` | The general multiplication route and the associative unital structure-map route share their underlying module contract; relative presentations retain computable base changes. |
+| **A1 — Group modules and representation functors** | Group algebras/modules; restriction, induction, coinduction, invariants, coinvariants, and restricted automorphism actions. [§7](#7-representation-theory-of-rg-modules-and-group-lattices); [§8.3](#83-module-automorphism-groupsaction-homsets). | `A0`, `M0`, `P` | Group-module constructions use the existing scalar-change functors and preserve their action morphisms. |
+| **R — Local rings, ideals, and normalization** | Quotient/localization comparison; prime-local units and ideals; residue maps; total quotient rings, local lengths, normalization, conductors, and local algebraic predicates. [Local algebra](#localizations-stalks-and-exact-modules); [divisor/completion inputs](#divisors-cycles-and-completed-local-geometry). | `P` | The reducible special fiber of xy=t has the required local ring, maximal ideal, residue map, and quotient/localization comparisons. |
+| **J0 — Projective and toric chart algebras** | Graded localization, degree-zero projective charts, character/cocharacter modules, fans, polytopes, cone algebras, and face-localization maps. [Projective charts](#affine-covers-invertible-sheaves-and-cyclic-covers); [§16](#16-toric-schemes-and-varieties). | `P`, `M0` | A projective standard chart and a toric cone chart have their actual coordinate algebras, lattice data, and overlap localization maps. |
+| **M1 — Exact modules over local bases** | Localized equality, vanishing, and relation membership; exact maps; fibers, annihilators, Fitting ideals, rank strata, projectivity, and local trivializations. [§8.2](#82-presented-modules-over-more-general-bases); [local module algorithms](#localizations-stalks-and-exact-modules); [local criteria](#differentials-singular-loci-and-flatness). | `M0`, `R` | Localization kills QQ[x]/(x) when x is inverted, through the selected relation algorithm; transported and directly constructed maps use the same exact-module operations. |
+| **S — Affine schemes and base change** | Spec on ring maps; relative equations, successive closed embeddings, opens, stalks, scheme products, pullbacks, slices, and basic family morphisms. [§9.1–9.3](#9-scheme-and-algebraic-geometry-foundation); [§10](#10-categorical-scheme-operations-and-products); [scheme repairs](#active-scheme-and-inheritance-work). | `P`, `R` | The family xy=t, its special fiber, its local rings, and their structural maps are constructed through the common algebraic owners. |
+| **O0 — Forms, lattices, finite invariants, and diagrams** | Form/module Hom ownership; lattice elements and subobjects; discriminant modules, odd/even gluing, embeddings, finite isometry data, configuration/polyhedral primitives, and rooted Coxeter diagrams. [§3](#3-integral-lattices-elements-reductions-and-arithmetic-groups-semantic-api-contracts); [§6.1–6.2](#6-coxeter-diagrams-reflection-groups-and-vinberg-theory); [form consolidation](#13-collapse-represented-forms-onto-universal-hom-objects). | `M0`, `A1`, `E` | The selected form, inclusion, discriminant map, or gluing correspondence returns its actual mathematical morphisms; odd bilinear gluing is included. |
+| **D — Differentials and geometric local criteria** | Relative differentials, conormal maps, tangent/cotangent objects, differential base change, Fitting loci, smoothness, singular loci, and supported flatness criteria. [Differential requirements](#differentials-singular-loci-and-flatness); [§12](#12-singularities-of-curves-and-schemes). | `M1`, `S` | The differential/Fitting calculation for xy=t determines its supported relative loci and tangent maps with the required hypotheses. |
+| **H0 — Homological algebra** | Resolutions and chain-map lifting; functorial Tor/Ext; exactness; cohomology of supplied complexes; DGA multiplication through the algebra owner. [Resolutions and cohomology](#group-actions-toric-geometry-and-global-cohomology); [semantic API repairs](#priority-5--repair-semantic-apis-before-downstream-numerical-consumers). | `M1` | A nonidentity input map induces the required Tor/Ext or cohomology map through an actual chain map and the owned kernel/image/quotient construction. |
+| **G — Covers, gluing, and sheaves** | Covering families, overlap maps, refinements, scheme/morphism gluing, structure sheaves, module/algebra descent, sections, and sheaf operations. [Covering-family design](#covering-families-and-atlases); [§9.4](#94-affine-covers-gluing-and-sheaves); [local-to-global inputs](#affine-covers-invertible-sheaves-and-cyclic-covers). | `S`, `M1` | Local sections and morphisms glue through the actual overlap pullbacks; the construction works for a covering family and its refinement. |
+| **Q0 — Affine fixed loci and quotients** | Scheme actions; fixed ideals/equalizers; supported invariant algebras and quotient maps; invariant-map factorization and affine freeness criteria. [§13.3](#133-fixed-subschemes-and-quotients). | `A0`, `S` | An affine action gives its fixed subscheme and quotient morphism, with factorization of a nonconstant invariant map. |
+| **O1 — Arithmetic groups and hyperbolic reflection** | Arithmetic subgroups, rational-integral cosets and transporters, centralizers, isotropic vectors/flags, indefinite recursion, parabolics, reduction complexes, and Vinberg/chamber algorithms. [§3.4–3.8](#34-orthogonal-and-arithmetic-groups-g--lo-and-subgroup-constructors); [§5](#5-indefinite-recursion-parabolic-induction-and-milestones); [§6.3](#63-hyperbolic-reflection-algorithms); [arithmetic application order](#arithmetic-and-reflection-applications-after-the-geometry-prerequisites). | `O0`, `A1`, `E`; external port for the named arithmetic cases | The selected orbit calculation returns representatives, stabilizers, and transporters under its exact arithmetic group. Rational-integral and recursive cases consume the required sage-indefinite-port operations. |
+| **J1 — Projective and toric schemes** | Assembly of projective/toric charts; fan morphisms; polytope polarizations; toric closed subschemes and supported geometric identifications. [§16](#16-toric-schemes-and-varieties); [non-affine products](#10-categorical-scheme-operations-and-products). | `J0`, `G` | Chart data assemble into an owned scheme and a nonidentity scheme morphism with the stated coordinate pullbacks. |
+| **V0 — Invertible sheaves and line-bundle operations** | Rank-one descent, transition units, local trivializations, tensor products, powers, module duality, pullbacks, and section maps. [Line bundles](#112-line-bundlesintersections); [rank-one gluing](#affine-covers-invertible-sheaves-and-cyclic-covers). | `G`, `M1` | A nontrivial transition unit determines an invertible sheaf; its tensor powers and pullback use the same descent construction. |
+| **Q1 — Glued equivariant schemes and quotients** | Equivariant chart transitions, descended overlap maps, glued actions and quotients, descent of automorphisms, and global fixed-point-free criteria. [§13.3](#133-fixed-subschemes-and-quotients); [active Q reservation](#active-claims). | `Q0`, `G` | Compatible affine quotient charts assemble with their descended transitions and the required global quotient map. |
+| **L — Completions and singularities** | Adic completions, local-base maximal ideals, normalization comparisons, singularity invariants and models, Milnor/Tjurina data, delta invariants, and formal local bases. [§12](#12-singularities-of-curves-and-schemes); [completed local geometry](#divisors-cycles-and-completed-local-geometry). | `R`, `M1`, `D` | A supported singular local polynomial quotient has its completion and structural comparisons; its local invariant is computed from the corresponding algebra. |
+| **B0 — Relative Spec and cyclic covers** | Algebra sheaves, relative Spec, cyclic-cover multiplication and local equations, deck actions, and base change. [§13.2](#132-relative-cyclic-covers-and-deck-groups); [relative Spec](#94-affine-covers-gluing-and-sheaves). | `P`, `V0`, `A0` | The algebra associated to a line bundle and branch section glues to the covering scheme, with its map to the base and deck action. |
+| **V1 — Divisors, Picard groups, cycles, and linear systems** | Cartier/Weil/Pic/Cl constructions and comparisons; local multiplicities, intersections, Chow groups, projective bundles, sections, section/Cox rings, jets, and linear systems. [§11.1–11.5](#11-picard-groups-line-bundles-intersections-cohomology-and-sections); [local divisor inputs](#divisors-cycles-and-completed-local-geometry); [archived geometric specifications](#20-archived-framework-specifications-without-complete-source-implementations). | `V0`, `R`, `J1`, `H0` | A supported scheme supplies divisors and their invertible sheaves, comparison maps, and the stated intersection or section-space construction. |
+| **B1 — Branch and ramification geometry** | Branch and ramification subschemes, supported smoothness criteria, canonical-bundle formulas, and lifts preserving the branch data. [§13.2](#132-relative-cyclic-covers-and-deck-groups); [relative Spec](#94-affine-covers-gluing-and-sheaves). | `B0`, `D`, `V1` | The covering morphism supplies its supported branch/ramification constructions through the differential and divisor owners. |
+| **H1 — Geometric cohomology and comparison maps** | Geometric complexes, sheaf cohomology, integral topology and cup products, cycle maps, fundamental groups, Hodge data, and higher direct images. [§11.3](#113-cohomologysections); [§11.5–11.6](#115-algebraic-cycles-and-cycle-classes); [geometric complexes](#group-actions-toric-geometry-and-global-cohomology); [§15](#15-families-local-bases-and-higher-direct-images). | `H0`, `G`, `D`, `V1` | A specified geometric construction supplies the complex and comparison map whose cohomology is returned, including the selected coefficients and topology. |
+| **I — ADE and toric log-pair applications** | Decorated ADE polygons and polytopes, toric boundaries, branch sections, double covers, deck involutions, log pairs, and source examples. [§17](#17-ade-and-toric-log-pair-geometry). | `J1`, `B0`, `V1`, `L`, `O0` | The selected ADE log pair is constructed from its toric base and branch section through the general cover, divisor, and diagram owners. |
+| **Y — Families, complete intersections, and quotient geometry** | Complete-intersection data and adjunction, del Pezzo geometry, blowups, DVR/formal/analytic families, higher-direct-image applications, monodromy, compatible cover/quotient families, and Enriques examples. [§14](#14-complete-intersections-del-pezzo-geometry-and-blowups); [§15](#15-families-local-bases-and-higher-direct-images); [§13 applications](#13-cyclic-covers-involutions-fixed-loci-and-quotients); [§20 geometric applications](#20-archived-framework-specifications-without-complete-source-implementations). | `S`, `L`, `V1`, `H1`, `B1`, `Q1` | A selected relative geometric construction retains its base morphism, fibers, and comparison maps; each claimed property follows from its supplying local or cohomological operation. |
+| **U — Transfer completion, consolidation, and port audit** | Remaining per-subsystem framework transfers; surviving package/export layout; broad collection and Python cleanup; complete archive-port audit; generated preamble documentation and terminology review. [Layout](#filesystem-and-package-organization); [cleanup](#broad-collection-and-python-cleanup); [§24](#24-port-completion-audit); [organization findings](#organization-findings). | `I`, `Y`, `O1`, `F` | Every required mathematical dependency has one surviving owner and all archive requirements have a recorded disposition; the generated documentation describes that source. |
+| **T — Final verification** | The final permitted execution phase, including the valid archived mathematical assertions and public construction examples. [Verification policy](#testing-is-deferred-until-every-other-item-is-done-always-on); [§24 examples](#24-port-completion-audit). | `U` | Execute the repository's prescribed mathematical verification after the required work is complete; repair failures at the owning construction. |
+
+### Requirement ownership
+
+The workstream rows select mathematical owners rather than create a second checklist.
+Use this map for source sections that contain work for several owners.
+Record completion on the existing detailed item and its construction's release.
+
+| Detailed source | Workstream assignment |
+| --- | --- |
+| [Architecture prerequisite](#architecture-before-dependent-implementation) | C owns shared construction and contracts; M0 owns module actions and chosen data; P owns multiplication; A0 owns generic actions; F supplies the replacement framework. |
+| [Recorded priorities 0.5–6](#recorded-consolidation-work) | C: Hom identity, categories, sets/cardinals, abstract families, functors, adjunctions, symbolic-function ownership, and import/declaration boundaries. M0: module ranks, free framings, tensor/biproduct/internal-Hom construction. O0: form Hom and embeddings. P: graded power-algebra reuse. M1: annihilators, fibers, saturation, and local exactness. H0: resolutions and cohomology. A: invariants and action preservation. E: scalar/engine crossings. U: final layout and cleanup. Recorded completion notes keep their original scope. |
+| [Active scheme and inheritance work](#active-scheme-and-inheritance-work) | R: local units and ideals. M1: localized equality and vanishing. P: relative/iterated quotients and underlying algebra modules. C: shared initialization. G: sheaves and gluing. The later geometric outcomes belong to J, V, H, B, Q, L, and Y. |
+| [Collection/finiteness](#collection-and-finiteness-remediation) and [finitary overfitting](#finitary-and-coordinate-overfitting-audit) | C supplies sets/families; M0 supplies framings and multilinear constructions. A owns group/action collections, O owns lattice/Coxeter collections, J owns fan/polytope collections. Each mathematical stream fixes its active collections; U owns the remaining broad sweep. |
+| [Typing and witnesses](#typing-and-witnesses), [witness findings](#witnesses-what-an_object-found) | C owns category parameters, generated class contracts, joins, and generic Hom/diagram constructors. M0/P own module/algebra state and grading. S/G/J own the named scheme objects and products. O0 owns formed-module placement. Types and examples for a specialized construction remain with that construction. |
+| [§8.4 equations](#equations-affine-maps-and-fibers) and [localizations](#localizations-stalks-and-exact-modules) | P owns relative algebra presentations and scalar maps; R owns local rings/ideals; M1 owns local module algorithms; S owns the resulting geometric maps and fibers. |
+| [§8.4 differentials](#differentials-singular-loci-and-flatness) | M1 owns annihilators, Fitting ideals, rank and local trivializations; D owns differential constructions and the geometric criteria that consume those results. |
+| [§8.4 covers](#affine-covers-invertible-sheaves-and-cyclic-covers) | G owns restriction/gluing, J0 chart algebras, V0 invertible sheaves, P multiplication, and B relative Spec/covers. |
+| [§8.4 divisors/completions](#divisors-cycles-and-completed-local-geometry) | R owns total quotient rings, normalization, conductors, and local lengths; V1 owns divisor/Picard comparisons; L owns completion and formal local bases. |
+| [§8.4 actions/toric/cohomology](#group-actions-toric-geometry-and-global-cohomology) | A owns actions, Q invariant-algebra quotients, J toric constructions, H0 resolutions, and H1 geometric complexes and comparison maps. E owns the [engine obligations](#existing-engine-integration-obligations). |
+| [§§9–10](#9-scheme-and-algebraic-geometry-foundation) | S owns affine schemes, subobjects, products, and base change; G extends these through gluing and supplies sheaf operations; J supplies projective/toric charts and schemes; D/L supply smoothness, normality, and singularity inputs; B owns relative Spec. |
+| [§11](#11-picard-groups-line-bundles-intersections-cohomology-and-sections) | V0 owns invertible-sheaf construction; V1 owns divisors, cycle groups, intersections, sections, and linear systems; H0 supplies local Tor/Ext; H1 owns higher/geometric cohomology, cycle-class maps, topology, and Hodge comparisons. |
+| [§13](#13-cyclic-covers-involutions-fixed-loci-and-quotients) and [§7](#7-representation-theory-of-rg-modules-and-group-lattices) | A owns the action/representation construction; Q owns fixed loci and quotients; B owns cyclic covers and deck actions; V1/H1 supply section/cohomology actions; Y owns the combined K3/Enriques and relative-family applications. |
+| [§§12, 14, 15](#12-singularities-of-curves-and-schemes) | S supplies basic family morphisms and fibers; D local criteria; L singularities and formal bases; V1 canonical/divisor constructions; H1 higher direct images and topological comparisons; Y their complete-intersection, blowup, family, and monodromy applications. |
+| [§3](#3-integral-lattices-elements-reductions-and-arithmetic-groups-semantic-api-contracts), [§5](#5-indefinite-recursion-parabolic-induction-and-milestones), and [§6](#6-coxeter-diagrams-reflection-groups-and-vinberg-theory) | O0 owns form/lattice and finite discriminant/gluing data, embeddings, finite configurations, polyhedral primitives, and rooted diagrams. O1 owns arithmetic subgroups, cosets, centralizers, isotropic flags, reduction/recursion, and hyperbolic reflection algorithms. M0/A/E supply shared module/action/engine operations. |
+| [§16](#16-toric-schemes-and-varieties) and [§17](#17-ade-and-toric-log-pair-geometry) | J0/J1 own toric construction; V1/H1 own its divisor/cohomology outputs; I owns the ADE/log-pair application through B's cover and O0's diagram constructions. |
+| [§20](#20-archived-framework-specifications-without-complete-source-implementations) | B: relative Spec. V1: section spaces, jets, Bertini, and divisor/eigensection comparisons. A/Q: linearizations and fixed-point evaluation. H1: Lefschetz comparisons. L/I: singular orbits and ADE parity cases. Y: complete-intersection and compatibility applications. G/Q/L retain their own gluing, quotient, and local-global comparison maps. N: useful database/classification examples. E/U: late polyhedral adapter consolidation. |
+| [Organization findings](#organization-findings) | Apply each finding at the corresponding C/M/P/A/R/S/G/J/V/H/O owner; F supplies transfer support and U finishes surviving layout. [Earlier assessment](#earlier-assessment) is source evidence for those owners, not an additional execution sequence. |
+| [§19](#19-visualization-and-display-helpers-non-blocking) and [§24](#24-port-completion-audit) | N owns optional display/research examples. U owns archive coverage and source consolidation. T owns execution of the required mathematical assertions under the standing verification policy. |
+
+### Selecting parallel releases
+
+Start shared architecture work in C.
+Engine provisioning/adapters in E and upstream framework development in F can proceed on their own declared interfaces.
+N can consume an existing mathematical release when the current notebook policy permits it.
+
+After C's relevant construction contract, M0 and A0 can proceed independently.
+P follows M0; A1, R, and J0 then consume the particular module/algebra constructions they need.
+S uses relative presentations and local-ring maps; M1 develops exact local-module algorithms alongside S.
+D, H0, and G consume those released maps according to the DAG.
+
+J1 assembles charts through G.
+V0 supplies line bundles to B0 before divisor groups, intersection theory, or higher cohomology are required.
+B1 adds differential/divisor criteria to the cover.
+Q0's affine quotients precede Q1's gluing.
+V1, L, and H1 supply the independent inputs consumed by Y and I.
+
+O0 uses existing module, action, and engine releases; arithmetic work remains lower priority than the general geometry.
+Only the O1 cases named in its row require the external arithmetic port.
+An external dependency on O1 does not hold up O0, I, or the geometry streams.
+
+Transfer a complete subsystem as soon as F supplies that subsystem's required public interface.
+Its mathematical workstream owns the consumer conversion; U collects the remaining transfers and final consolidation.
+U is complete after all required content terminals and transfer obligations are complete.
+Each mathematical release includes its required public-session and notebook construction examples.
+N's additional research use and optional display/database work do not delay the mathematical programme.
+T remains the final execution phase under the existing verification rule.
+
+Use [edit locations](#edit-locations) and [lock boundaries](#lock-boundaries) to choose concurrent writers.
+Shared dependencies permit parallel work only when the actual edit paths and changing interfaces are compatible.
 
 ### Architecture before dependent implementation
 
@@ -277,70 +493,7 @@ code; leave them until `Framed` exists.
 | `work/packetfilter` | `f84b9115` | merged |
 | `work/algaxiom` | `9c63403b` | abandoned: the associativity check written under a superseded framing. Delete |
 
-### Current objective and order
-
-Develop a general scheme-theory toolkit built on the preamble's affine-local algebra, modules, and categorical constructions.
-This research proceeds while `~/gitclones/sage-categories` develops the replacement category framework.
-The preamble must remain usable, organized, and extensible throughout that work.
-
-1. Complete the [construction and inheritance prerequisite](#architecture-before-dependent-implementation) for the foundation used by the next consumer.
-2. Build affine-local rings, ideals, modules, algebras, and their constructions through those shared owners and structural functors.
-3. Build relative schemes, covers and sheaves, group actions, divisors, cycles, cohomology, and families through those algebraic owners.
-4. Continue arithmetic lattice orbits, centralizers, embeddings, and reflection geometry as subsequent research applications.
-
-Steps 1–3 form one dependency-driven work stream. General constructions become available in notebooks before the framework transfer.
-An arithmetic calculation moves earlier when that geometry requires its result.
-Integrate with `sage-categories` alongside this application order when it supports the complete construction being transferred.
-Each work unit completes a reusable mathematical construction, including its maps, inherited operations, and supported algorithms.
-
-### Remaining workstreams as a dependency graph
-
-The queues are written by subject, which hides what actually orders the work.
-This graph is that order. A node is a unit one agent, or a small parallel group,
-can take end to end. An edge means the head cannot start until the tail lands,
-not merely that it would be tidier to wait.
-
-```mermaid
-graph TD
-    Q["Q. Defining data, constructors,<br/>structure functors and Hom contracts"] --> A
-    Q --> B
-    Q --> D
-    Q --> E
-    Q --> I
-    Q --> K
-    A["A. Covers become atlases"] --> F["F. §11 divisors, Picard,<br/>cycles, cohomology, linear systems"]
-    A --> H["H. §17 ADE double cover"]
-    B["B. Toric atlas gluing"] --> H
-    F --> G["G. §12, §14, §15<br/>singularities, blowups, families"]
-    F --> I["I. §20 framework specifications"]
-    C["C. Odd bilinear glue map"] --> L
-    D["D. §8.2 and §8.3 residue"] --> L
-    E["E. Remediation queue"] --> L
-    G --> L["L. §24 audit, megadoc,<br/>terminology audit"]
-    H --> L
-    I --> L
-    K["K. §0 purity migration"] --> L
-    J["J. §3.x and §5 indefinite residue<br/>(gated on sage-indefinite-port)"] --> L
-    L --> M["M. The single verification pass"]
-```
-
-| Node | Unit | Depends on | Relative size | State |
-| --- | --- | --- | --- | --- |
-| A | A cover is a covering family; invertible sheaves re-site onto one. **Decided 2026-09-06, see below.** The scheme half has landed; the sheaf half has not | — | 0.75 remaining | ready |
-| B | The toric variety becomes an owned glued scheme, its face-localization transitions written through the localization's universal property | — | 0.5 | done |
-| C | The odd bilinear analogue of the primitive-extension correspondence, so the glue map is not even-only | — | 0.5 | ready |
-| D | The general module through `rho: R -> End(M)`, linearity dispatch, rank stratifications on the spectrum | — | 0.75 | ready |
-| E | The remediation queue in `TODO.md`: scheme and inheritance items, collection and finiteness, typing, and the defects the category witnesses found | — | 1 | ready |
-| F | Divisors, Picard and class groups, line bundles and intersections, cohomology and sections, linear systems, cycles | A | 2 | blocked |
-| G | Singularities of curves and schemes, complete intersections and blowups, families and higher direct images | F | 1 | blocked |
-| H | The ADE double cover, which needs a line bundle on a variety that is not affine | A, B | 0.5 | blocked |
-| I | The archived framework specifications: relative spectrum, jets, Bertini, linearizations, Lefschetz | F | 1 | blocked |
-| J | The rational-integral coset rows and the indefinite recursion, which wait on generating sets for arithmetic subgroups and on `01_RatIntAutomorphy` | the port | — | externally gated |
-| K | The purity migration: owned categories only in the mathematical graph, and the dynamic-peek surface | — | 2.5 | ready, run last |
-| L | Port-completion audit, megadoc regeneration, fresh-context terminology audit | every content node | 0.75 | closing |
-| M | The one verification pass | L | 0.5 to a day | terminal |
-
-#### Node A, decided: a cover is a covering family
+#### Covering families and atlases
 
 The covering-family construction applies to locally ringed spaces and includes classical atlases.
 For smooth manifolds its maps are local diffeomorphisms; for topological manifolds they are local homeomorphisms.
@@ -1206,28 +1359,10 @@ Choose cleanup by the correctness and readability of the surviving mathematical 
 
 ### Dependency summary
 
-The active dependency chain is:
-
-```text
-affine-local rings, modules, algebras, and their structure functors
-    -> shared inheritance and constructor threading
-        -> relative schemes, affine covers, stalks, and sheaf gluing
-            -> actions, covers, cycles, invariants, and families
-                -> notebook research and arithmetic applications
-
-local part of a geometric computation
-    -> restriction to charts or stalks
-        -> algorithms at the algebraic category owner
-            -> local results assembled through the geometric maps
-
-sage-categories framework development proceeds alongside this chain
-    -> complete prerequisite implementations for a preamble subsystem
-        -> subsystem rewritten as leaves, retaining its mathematical algorithms
-            -> cleanup of the resulting interfaces
-```
-
-Follow mathematical dependencies within the selected construction.
-A shared repair belongs with the consumer that needs it, and its implementation belongs at the shared owner.
+The [DAG](#remaining-workstreams-as-a-dependency-graph) and [requirement ownership](#requirement-ownership) define the order.
+A geometric construction uses local algebra through its restriction and gluing maps.
+The local algorithm stays at its algebraic owner; its consumer assembles the result.
+Framework transfer follows the complete-dependency rule above.
 
 ## Remediation queue
 
@@ -1466,12 +1601,8 @@ Its foundation is a coherent algebraic subtree with reusable module, ring, algeb
 
 ### Geometry delivery sequence
 
-The steps below read as a line, which is how they were first written. What
-actually orders the remaining work, including which steps can run at the same
-time and which are waiting on one architectural decision, is the dependency
-graph in
-[execution priorities](#remaining-workstreams-as-a-dependency-graph).
-Read that before picking a step.
+The checklist below records geometry outcomes.
+Use the [workstream assignments](#requirement-ownership) and [DAG](#remaining-workstreams-as-a-dependency-graph) to select their order and shared inputs.
 
 - [ ] Close the quotient/localization/module dependencies in §8.4 using the family `xy=t`, its reducible special fiber, and its local rings.
   Extend the existing distinguished-open construction with restriction maps on functions and modules.
@@ -2848,60 +2979,40 @@ Use this board to select parallel work, reserve edit paths, release reservations
 Read [active claims](#active-claims) before editing a shared owner.
 Scheme foundations precede orbit applications; each construction follows its mathematical dependencies.
 
-### Workstreams
+### Edit locations
 
-Paths in this section are relative to `src/dzack_research/preamble/categories/` unless stated otherwise.
-A prerequisite means the named operation and its maps are available at a recorded commit.
-It does not require completion of the whole supplying workstream.
-The source assessment predates ongoing edits: each claimant must inspect the current implementation before selecting a remaining item.
+Paths are relative to `src/dzack_research/preamble/categories/` unless stated otherwise.
+The [workstream table](#workstreams) owns scope and dependencies; this table identifies the existing source owners to inspect.
+A numbered release retains its parent stream's edit locations.
 
-| Stream | Work and first release | Prerequisites for that release | Principal edit locations |
-| --- | --- | --- | --- |
-| C — construction and inheritance | A needed algebra construction uses its underlying module's initialized arithmetic, presentation, and morphism operations. Bound each repair by its actual consumer. | Existing construction that exposes the missing inheritance; criteria in execution priorities. | `algebras/algebras.py`, `functors/algebra_modules.py`; common runtime paths below only when required. |
-| R — local rings and ideals | Quotient-ring prime localization, local units, residue maps, and localized ideal operations. First specimen: the special fiber of `xy=t`, localized at `(x,y)`. | Existing quotient and ideal/module owners; request C only for an observed construction failure. | `rings/ring_foundation.py`, `rings/commutative_algebra.py`, `rings/commutative_ideals.py`. |
-| M — exact modules over local bases | Presentation-based localized equality and vanishing, exact maps, fibers, annihilators, and local freeness. First release: localization detects a module killed by an inverted element. | R's denominator/unit contract for prime-local cases; finite-monoid presentation work can start against existing localization. | `modules/localizations.py`, `modules/framed/finitely_generated/finitely_presented_modules.py`, `modules/module_morphisms/module_morphisms.py`, `modules/pure/modules.py`, `functors/module_localization.py`. |
-| P — relative algebra presentations | Quotients of quotients, parameter structure maps, scalar change, pushouts, and compatible underlying modules. First release: `xy=t` as an algebra over the parameter ring and its special fiber. | Existing presentations and module operations; C only where inherited structure fails. | `algebras/free_algebras.py`, `algebras/algebras.py`, `algebras/restricted_scalars.py`, `functors/algebra_scalar_change.py`, `functors/algebra_modules.py`. |
-| D — differential and local criteria | Differential localization/base change, conormal maps, tangent/cotangent spaces, and supported smoothness/flatness criteria. First release: the differential/Fitting calculation for `xy=t` feeds its singular subscheme and stalks. | P for relative presentations; R/M for localized modules and fibers; S for geometric loci. Algebraic differential maps can precede the scheme connection. | `algebras/derivations.py`, `algebras/kahler_differentials.py`; M owns new Fitting/local-freeness algorithms. |
-| S — affine schemes and families | Equations, successive closed embeddings, distinguished opens, fiber products, parameter morphisms, and their pullbacks. First release: the family `xy=t`, its special fiber, and the maps between them. | P's presentations and maps; R only for opens/stalks. A family morphism can precede a flatness result from D. | `schemes/schemes.py`, `schemes/affine_spec.py`, `schemes/ringed_spaces.py`. |
-| G — covers, gluing, and sheaves | Restriction morphisms, overlaps, refinements, gluing, and sheaves of modules/algebras. First release: compatible local sections and module maps on a distinguished affine cover. | S's open immersions and coordinate pullbacks; R's localization maps; M's localized module maps. | `schemes/ringed_spaces.py`, `schemes/schemes.py`; claim new cover/sheaf files by exact path. |
-| J — projective and toric charts | Graded localization and degree-zero charts; character/cocharacter modules, cone algebras, and overlap maps. First releases: projective standard charts, then an affine toric chart with its actual character module. | P for chart algebras; existing integer modules, module duality, graded algebras, and polytopes. G is needed to assemble charts, not to construct individual charts. | `algebras/graded_algebras.py`, `schemes/polytopes.py`; claim projective/toric files separately. Shared presentation changes belong to P. |
-| A — group actions | Common categorical actions and equivariant maps, integrating existing G-sets and group modules. First release: the same action construction specializes to these existing categories. | Existing group/Hom/functor owners; C for changes to common categorical construction. | `group/g_sets.py`, `modules/group_modules/group_modules.py`, `functors/g_sets.py`, `functors/group_actions.py`, `functors/group_scalar_change.py`. |
-| Q — scheme actions and quotients | Affine fixed ideals, supported invariant algebras, quotient maps, and freeness predicates with stated hypotheses. First release: an affine involution's fixed subscheme and quotient morphism. | A and S/P for affine work; G for gluing equivariant charts and global quotients. New invariant-module algorithms belong to M/A. | Claim scheme action/quotient files separately; shared `schemes/schemes.py` and `algebras/free_algebras.py` require their own locks. |
-| V — line bundles, divisors, and cycles | Invertible sheaves, Cartier/Weil constructions, supported Pic/Cl calculations, local multiplicities, and intersections. First releases: a rank-one gluing datum; a principal divisor computed through local algebra. | G and M's local trivializations for invertible sheaves; R's local lengths/vanishing orders for multiplicities. Normalization, total quotient rings, and local factoriality extend R. | `divisors/`; claim line-bundle/cycle files separately. Ring algorithms stay with R, module/form algorithms with M or their existing owner. |
-| B — relative Spec and branched covers | Algebra sheaves and relative Spec; cyclic cover multiplication, local equations, base change, and deck actions. First release: local cover algebras glue over a line bundle's trivializing cover. | P, G, and V's invertible sheaves; A/Q for deck actions; D for ramification calculations. Local cyclic algebras can precede gluing. | Claim relative-Spec/cover files separately; shared algebra multiplication and underlying modules require C/P locks. |
-| L — completions and singularities | Local-base maximal ideals, supported adic completions, normalization, local singularity models, and formal/DVR families. First release: completion of a supported local polynomial quotient with its structural maps. | R's local rings; M for module completion; S for placing the result at a point/in a family. Topological disc families additionally need H's topology. | `rings/commutative_algebra.py` overlaps R; claim local-singularity files separately. |
-| H — homological and topological invariants | Longer resolutions, Tor/Ext, geometric complexes, integral cohomology/cup products, Hodge data, cycle maps, and higher direct images in supported cases. First releases distinguish a supplied complex's cohomology from a scheme's constructed complex. | Existing exact module operations for supplied complexes; M for wider resolution regimes; G for cover-derived complexes; D for de Rham inputs; V for cycle sources. Topological models/comparison maps are separate inputs. | `modules/cochain_complexes.py`, `modules/dg_modules.py`, `algebras/cohomology_algebras.py`, `algebras/de_rham_algebras.py`, relevant functors; M owns shared kernel/resolution edits. |
-| N — research notebooks | Use each released construction for explicit geometry, recording the required next operation. | Only the operations used by that notebook; follow its kernel and file ownership. | Exact files in `computations/notebooks/`; the live kernel is a separate shared resource. |
-| F — framework development and transfer | `sage-categories` develops the replacement independently. Transfer one complete preamble dependency when its constructors, functors, and inherited operations are usable there. | Transfer criterion in execution priorities; record the upstream commit consumed. | Upstream development stays in `~/gitclones/sage-categories`. A transfer claims common runtime and every affected preamble leaf/consumer. |
-| O — orbit and reflection applications | Extend the arithmetic applications in the mathematical requirements after the geometry prerequisites needed by research. | Existing module/form/action owners and the particular required algorithms. | Exact lattice, arithmetic-group, Coxeter, or engine files selected for the construction. |
+| Stream | Principal edit locations |
+| --- | --- |
+| C | `abstract_categories/`, `sets/`, `functors/core.py`; common runtime files `src/dzack_research/preamble/owned_category.py`, `owned_category_bases.py`, and `refine.py`. |
+| R | `rings/ring_foundation.py`, `rings/commutative_algebra.py`, `rings/commutative_ideals.py`. |
+| M | `modules/localizations.py`, `modules/framed/finitely_generated/finitely_presented_modules.py`, `modules/module_morphisms/module_morphisms.py`, `modules/pure/modules.py`, `functors/module_localization.py`. M0 also uses `modules/general_modules.py`, framed free modules, tensors, internal Hom, powers, and their existing functors. |
+| P | `algebras/free_algebras.py`, `algebras/algebras.py`, `algebras/restricted_scalars.py`, `functors/algebra_scalar_change.py`, `functors/algebra_modules.py`. |
+| D | `algebras/derivations.py`, `algebras/kahler_differentials.py`; M owns new Fitting/local-freeness algorithms. |
+| S | `schemes/schemes.py`, `schemes/affine_spec.py`, `schemes/ringed_spaces.py`. |
+| G | `schemes/ringed_spaces.py`, `schemes/schemes.py`; claim new cover/sheaf files by exact path. |
+| J | `algebras/graded_algebras.py`, `schemes/polytopes.py`; claim projective/toric files separately. Shared presentation changes belong to P. |
+| A | `group/g_sets.py`, `modules/group_modules/group_modules.py`, `functors/g_sets.py`, `functors/group_actions.py`, `functors/group_scalar_change.py`. |
+| Q | Claim scheme action/quotient files separately; shared `schemes/schemes.py` and `algebras/free_algebras.py` require their own locks. |
+| V | `divisors/`; claim line-bundle/cycle files separately. Ring algorithms stay with R, module/form algorithms with M or their existing owner. |
+| B | Claim relative-Spec/cover files separately; shared algebra multiplication and underlying modules require C/P locks. |
+| L | `rings/commutative_algebra.py` overlaps R; claim local-singularity files separately. |
+| H | `modules/cochain_complexes.py`, `modules/dg_modules.py`, `algebras/cohomology_algebras.py`, `algebras/de_rham_algebras.py`, relevant functors; M owns shared kernel/resolution edits. |
+| N | Exact files in `computations/notebooks/`; the live kernel is a separate shared resource. |
+| F | Upstream development stays in `~/gitclones/sage-categories`. A transfer claims common runtime and every affected preamble leaf/consumer. |
+| O | Exact lattice, arithmetic-group, Coxeter, or engine files selected for the construction. |
+| E | Existing ring/engine adapters, `lattice_engines.py`, and the owning external bridge repositories when a shared conversion requires repair. |
+| Y | The selected family, blowup, complete-intersection, or quotient application and its existing scheme/sheaf owners. |
+| I | `schemes/ade_surfaces.py` and the selected toric, cover, divisor, or diagram consumer. |
+| U/T | Exact surviving source, export, generated-document, archive-comparison, or verification files required by the closing task. |
 
 ### Parallel schedule
 
-**First allocations:** R, P, A, and H's supplied-complex work can proceed together when their declared paths are disjoint.
-M can work on finite-localization presentation calculations alongside R; prime-local integration waits for R's released maps.
-C repairs a named shared dependency when required. P and C serialize edits to algebra construction and its underlying-module functor.
-N and upstream F can proceed throughout against the interfaces they actually use.
-
-**After individual releases:** S consumes P's equations and maps while D develops differential comparisons.
-J can construct chart algebras alongside S.
-A permits Q's affine work once S's scheme maps exist.
-G starts with S's distinguished opens and R/M's restriction maps.
-S and G serialize their shared scheme files; separate files alone do not resolve changing coordinate-map contracts.
-
-**After gluing and local module releases:** V, toric/projective assembly in J, global actions in Q, and geometric complexes in H can proceed together.
-Their changes to G's shared sheaf/cover interfaces serialize.
-B consumes V's invertible sheaves and G/P's algebra gluing; it need not wait for Pic/Cl computation or intersection theory.
-L can extend a released local-algebra interface alongside these geometric consumers, but serializes with R in `commutative_algebra.py`.
-Families begin in S; flatness comes from D/M, formal local models from L, and higher direct images from H.
-
-**Transfer:** upstream F requires no preamble lock during independent framework development.
-A preamble transfer pauses edits to its affected dependency chain, including C and the relevant mathematical owners.
-Unrelated leaves and notebooks using a separate released checkout can continue.
-O remains lower priority than the requested general geometry; it does not become a prerequisite for toric modules or cohomology lattices.
-
-These are dependency releases, not whole-phase barriers.
-A worker may use an already available operation immediately after inspecting its implementation and maps.
-If the operation needs repair, return that repair to its mathematical owner and update the consumer's prerequisite.
+Use [selecting parallel releases](#selecting-parallel-releases) and the [DAG](#remaining-workstreams-as-a-dependency-graph).
+The active claims below retain their resources and owners; changing the workstream map does not release a reservation.
 
 ### Lock boundaries
 
@@ -2914,11 +3025,11 @@ Renaming requires both source and destination reservations.
 | Shared resource | Reserve together when changing its contract | Affected work |
 | --- | --- | --- |
 | Runtime category construction | `src/dzack_research/preamble/owned_category.py`, `owned_category_bases.py`, `refine.py` under that same root; exact affected files in `categories/abstract_categories/` and `categories/functors/core.py` | C/F; coordinate affected leaf constructors before resuming consumers. |
-| Ring localization and ideal representation | The three R files in the stream table | R/M/D/G/V/L; R and L cannot independently edit their shared file. |
-| Module presentations and exact maps | The M files in the stream table; add `modules/internal_hom.py`, `tensor_products.py`, `base_change.py`, or `functors/scalar_change.py` only when edited | M/D/V/H/A; shared algorithms have one writer. |
-| Algebra presentations and underlying modules | The P files in the stream table | C/P/D/J/B/Q; constructor and morphism changes need a common released interface. |
-| Affine schemes and restriction/gluing | The S/G files in the stream table | S/G/J/Q/V/B/L; serialize shared files, then narrow claims as distinct owners emerge. |
-| Actions | The A files in the stream table; exact group/Hom files when needed | A/Q/B/O; reserve common abstract-category files separately. |
+| Ring localization and ideal representation | The R files in [edit locations](#edit-locations) | R/M/D/G/V/L; R and L cannot independently edit their shared file. |
+| Module presentations and exact maps | The M files in [edit locations](#edit-locations); add `modules/internal_hom.py`, `tensor_products.py`, `base_change.py`, or `functors/scalar_change.py` only when edited | M/D/V/H/A; shared algorithms have one writer. |
+| Algebra presentations and underlying modules | The P files in [edit locations](#edit-locations) | C/P/D/J/B/Q; constructor and morphism changes need a common released interface. |
+| Affine schemes and restriction/gluing | The S/G files in [edit locations](#edit-locations) | S/G/J/Q/V/B/L; serialize shared files, then narrow claims as distinct owners emerge. |
+| Actions | The A files in [edit locations](#edit-locations); exact group/Hom files when needed | A/Q/B/O; reserve common abstract-category files separately. |
 | Forms and lattices | Exact files in `categories/modules/framed/formed/`, `categories/forms/`, and the existing lattice owners | V/H/J/O; using their public operations needs no write lock. |
 | Imports and generated documentation | Exact `__init__.py`/session entrypoints; `docs/preamble-megadoc.md` and `docs/preamble-graph.{json,dot,html}` as one generated set | All streams. One worker integrates exports and regenerates a coherent source snapshot. |
 | Live notebook kernel | `kernel:<server>:<kernel-id>`, plus each edited notebook path | One worker changes a kernel's state at a time. Read/execution use follows the repo's japi rules. |
