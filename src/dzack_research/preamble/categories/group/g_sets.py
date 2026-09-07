@@ -208,6 +208,84 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             r"""The fixed-point set ``X^G``."""
             return FiniteGSets(self.acting_group()).fixed_points_functor()(self)
 
+        def stabilizer(self, point):
+            r"""The subgroup ``G_point = {g in G : g.point = point}``.
+
+            This is a predicate subgroup of the acting group.  Membership is
+            exact from the represented action and does not require choosing
+            generators for the stabilizer.
+            """
+            if point not in self:
+                raise ValueError(f"{point} is not a point of {self}")
+            from dzack_research.preamble.categories.group.predicate_subgroups import (
+                predicate_subgroup,
+            )
+
+            group = self.acting_group()
+            return predicate_subgroup(
+                group,
+                lambda group_element: self.act(group_element, point) == point,
+                f"stabilizer of {point} in {self}",
+            )
+
+        def is_transitive_action(self) -> bool:
+            r"""Whether the action has one orbit."""
+            return bool(self.orbits().cardinality() == cardinal(1))
+
+        def is_free_action(self):
+            r"""Whether every point stabilizer is trivial, when decidable.
+
+            A nonempty finite set cannot carry a free action of an infinite
+            group.  For a finite acting group, direct finite enumeration is an
+            exact backend for the point-stabilizer condition.
+            """
+            group = self.acting_group()
+            if group.is_finite() is False:
+                return False
+            if group.is_finite() is not True:
+                return Unknown
+            identity = group.one()
+            return all(
+                self.act(group_element, point) != point
+                for point in self
+                for group_element in group
+                if group_element != identity
+            )
+
+        def is_torsor(self):
+            r"""Whether this finite represented action is free and transitive."""
+            free = self.is_free_action()
+            if free is not True:
+                return free
+            return self.is_transitive_action()
+
+        def transporter(self, source, target):
+            r"""Return the unique ``g`` with ``g.source = target``.
+
+            On a torsor existence and uniqueness are automatic.  On a general
+            finite ``G``-set this method still computes the same equation and
+            rejects the cases of no solution or multiple solutions.
+            """
+            if source not in self or target not in self:
+                raise ValueError("a transporter requires two points of the G-set")
+            group = self.acting_group()
+            if group.is_finite() is not True:
+                raise NotImplementedError(
+                    "represented transporter search currently requires a finite acting group"
+                )
+            result = None
+            for group_element in group:
+                if self.act(group_element, source) != target:
+                    continue
+                if result is not None:
+                    raise ValueError(
+                        f"the transporter from {source} to {target} is not unique"
+                    )
+                result = group_element
+            if result is None:
+                raise ValueError(f"no group element moves {source} to {target}")
+            return result
+
         @cached_method
         def ranking_map(self):
             r"""The point set's own enumeration, read on this $G$-set.
@@ -514,6 +592,12 @@ def fixed_point_set(g_set):
 
 
 class Torsors(Category):
+    r"""The category of free transitive ``G``-sets."""
+
+    @staticmethod
+    def __classcall__(cls, group):
+        return Category.__classcall__(cls, _owned_group(group))
+
     def __init__(self, group):
         self._group = group
         super().__init__()
@@ -532,14 +616,66 @@ class Torsors(Category):
     def _repr_object_names(self):
         return f"torsors under {self._group}"
 
+    def __contains__(self, candidate) -> bool:
+        if candidate not in FiniteGSets(self.group()):
+            return False
+        return candidate.is_torsor() is True
+
+    def _call_(self, candidate):
+        if candidate not in self:
+            raise ValueError(f"{candidate} is not a torsor under {self.group()}")
+        return candidate
+
     class ParentMethods:
         @abstract_method
         def an_element(self):
             r"""Return the chosen point trivializing this torsor."""
 
+        def acting_group(self):
+            r"""Return the group named by this torsor's category node."""
+            for placement in self.category().all_super_categories(proper=False):
+                if isinstance(placement, Torsors):
+                    return placement.group()
+            raise AssertionError(f"{self} is not placed in a torsor category")
+
+        def __iter__(self):
+            r"""Enumerate through a chosen point and the free transitive action."""
+            chosen = self.an_element()
+            return (
+                self.act(group_element, chosen)
+                for group_element in self.acting_group()
+            )
+
+        def cardinality(self):
+            r"""``|T| = |G|`` for a ``G``-torsor."""
+            return self.acting_group().cardinality()
+
         def transporter(self, source, target):
-            r"""Return the unique group element carrying ``source`` to ``target`` when computable."""
-            return Unknown
+            r"""Return the unique group element carrying ``source`` to ``target``.
+
+            The search is an exact finite backend; the torsor axioms provide
+            existence and uniqueness, not an additional certificate object.
+            """
+            group = self.acting_group()
+            if group.is_finite() is not True:
+                raise NotImplementedError(
+                    "represented torsor transport currently requires a finite acting group"
+                )
+            result = None
+            for group_element in group:
+                if self.act(group_element, source) != target:
+                    continue
+                if result is not None:
+                    raise AssertionError(
+                        "two group elements carry the same torsor point to the target; "
+                        "this action is not free"
+                    )
+                result = group_element
+            if result is None:
+                raise AssertionError(
+                    f"no group element moves {source} to {target}; this action is not transitive"
+                )
+            return result
 
 
 __all__ = [

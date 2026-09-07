@@ -7,6 +7,7 @@ from dzack_research.preamble.all import (
     Groups,
     Modules,
     Sets,
+    Torsors,
     finite_g_set,
 )
 from dzack_research.preamble.categories.group.classifying_categories import ClassifyingFunctor
@@ -135,3 +136,45 @@ def test_sign_module_uses_the_same_action_functor_and_equivariant_map_semantics(
     assert representation.action_functor().domain() is classifying
     assert representation.action_functor()(arrow) == representation.action_of(generator)
     assert transformation.naturality_square(arrow)[0] == transformation.naturality_square(arrow)[1]
+
+
+def test_regular_finite_g_set_is_a_torsor_with_unique_transporters_and_stabilizers() -> None:
+    group = Groups.S(3)
+    regular = finite_g_set(tuple(group), group, lambda left, right: left * right)
+    identity = group.one()
+    target = group.group_generators()[0]
+
+    assert regular.is_transitive_action()
+    assert regular.is_free_action()
+    assert regular.is_torsor()
+    assert regular in Torsors(group)
+    assert regular.transporter(identity, target) == target
+    assert regular.transporter(target, target) == identity
+
+    stabilizer = regular.stabilizer(identity)
+    assert stabilizer.supergroup() is group
+    assert identity in stabilizer
+    assert all(
+        group_element not in stabilizer
+        for group_element in group
+        if group_element != identity
+    )
+
+
+def test_transitive_action_with_nontrivial_stabilizer_is_not_a_torsor() -> None:
+    group = Groups.S(3)
+    points = (1, 2, 3)
+    natural = finite_g_set(points, group, lambda group_element, point: group_element(point))
+
+    assert natural.is_transitive_action()
+    assert not natural.is_free_action()
+    assert not natural.is_torsor()
+    assert natural not in Torsors(group)
+
+    stabilizer = natural.stabilizer(1)
+    nonidentity_fixers = [
+        group_element
+        for group_element in group
+        if group_element != group.one() and group_element in stabilizer
+    ]
+    assert nonidentity_fixers
