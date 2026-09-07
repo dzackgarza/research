@@ -3123,7 +3123,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `A0-categorical-actions-20260907-1348` | A0 / categorical `BG -> C` actions | Chat takeover 2026-09-07 13:48 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/g_sets.py; src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/g_sets.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py` (write) | `59b157712eeebb7c5d55ab144f917f8c625a3460` | 2026-09-07T05:54:47Z |
+| `A0-categorical-actions-20260907-1348` | A0 / categorical `BG -> C` actions | Chat takeover 2026-09-07 13:48 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/g_sets.py; src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/g_sets.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; src/dzack_research/preamble/categories/group/g_objects.py; tests/groups/test_categorical_group_actions.py` (write) | `59b157712eeebb7c5d55ab144f917f8c625a3460` | 2026-09-07T05:56:33Z |
 
 #### Existing work awaiting adoption
 
