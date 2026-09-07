@@ -21,11 +21,7 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.engine_capabilities import (
-    EngineAbsence,
-    EngineCapabilityUnavailable,
-    engine_capabilities,
-)
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
     tensor,
@@ -145,7 +141,7 @@ _OSCAR_PROVIDER = "oscar-via-sage-julia-bridge"
 _OSCAR_PROVISIONING = (
     "clone github.com/dzackgarza/sage-julia-bridge and run `just setup` there: it "
     "installs the bridge into Sage's environment, instantiates the bridge's Julia "
-    "project with its JSON dependency, and loads Oscar from the Julia depot"
+    "project with its JSON and Oscar dependencies"
 )
 
 
@@ -159,25 +155,14 @@ class _OscarLatticeAdapter:
         return juliaup.exists() or shutil.which("julia") is not None
 
     def _bridge(self):
-        try:
-            from sage_julia_bridge import JuliaError, julia
-            module_loaded = julia.sage(
-                "isdefined(Main, :DzackResearchOscarLatticeAdapter)"
-            )
-            if not module_loaded:
-                julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
-            return julia
-        except Exception as error:
-            try:
-                from sage_julia_bridge import JuliaError
-            except Exception:
-                JuliaError = ()
-            if JuliaError and isinstance(error, JuliaError):
-                raise EngineCapabilityUnavailable(
-                    "lattice.oscar-adapter",
-                    (EngineAbsence(_OSCAR_PROVIDER, _OSCAR_PROVISIONING),),
-                ) from error
-            raise
+        from sage_julia_bridge import julia
+
+        module_loaded = julia.sage(
+            "isdefined(Main, :DzackResearchOscarLatticeAdapter)"
+        )
+        if not module_loaded:
+            julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
+        return julia
 
     def rational_spinor_norm_sign(self, gram, isometry):
         bridge = self._bridge()
