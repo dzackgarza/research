@@ -51,6 +51,11 @@ def _map_to_product(product, legs):
     return product.from_product_cone(tuple(legs))
 
 
+class AffineGroupSchemeHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return AffineGroupSchemeHomset
+
+
 class AffineGroupSchemes(OwnedCategoryOverBaseRing):
     r"""Affine group schemes over ``Spec(R)``, represented by their structure maps."""
 
@@ -74,6 +79,8 @@ class AffineGroupSchemes(OwnedCategoryOverBaseRing):
     def an_object(self):
         return roots_of_unity_group_scheme(self.base_ring(), 1)
 
+    _HomCategory = AffineGroupSchemeHomCategoryConstruction
+
 
 class AffineGroupScheme(Parent):
     r"""One affine group scheme with actual scheme-theoretic structure morphisms."""
@@ -93,7 +100,7 @@ class AffineGroupScheme(Parent):
             raise ValueError("the group-scheme unit must land in G")
         if inverse.domain() is not scheme or inverse.codomain() is not scheme:
             raise ValueError("the group-scheme inverse must be a morphism G -> G")
-        if unit.domain() not in Schemes(base):
+        if unit.domain() is not scheme.base_scheme():
             raise ValueError("the group-scheme unit must start at the represented base scheme")
         self._verify_group_diagrams()
         Parent.__init__(self, category=category)
@@ -152,8 +159,66 @@ class AffineGroupScheme(Parent):
     def actions(self):
         return AffineGroupSchemeActions(self)
 
+    def Mor(self, target):
+        return self.category().Mor(self, target)
+
     def _repr_(self):
         return f"Affine group scheme on {self.scheme()}"
+
+
+class AffineGroupSchemeMorphism(Morphism):
+    r"""A scheme morphism preserving affine group-scheme multiplication."""
+
+    def __init__(self, parent, arrow) -> None:
+        Morphism.__init__(self, parent)
+        self._arrow = arrow
+
+    def underlying_arrow(self):
+        return self._arrow
+
+    def __mul__(self, other):
+        if not isinstance(other, AffineGroupSchemeMorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return other.domain().Mor(self.codomain())(
+            self.underlying_arrow() * other.underlying_arrow()
+        )
+
+    def _repr_(self):
+        return f"Group-scheme morphism from {self.domain()} to {self.codomain()}"
+
+
+class AffineGroupSchemeHomset(CategoricalHomset):
+    r"""Morphisms of affine group schemes over one represented base."""
+
+    Element = AffineGroupSchemeMorphism
+
+    def _element_constructor_(self, arrow):
+        source = self.domain()
+        target = self.codomain()
+        schemes = Schemes(source.base_ring())
+        arrow = schemes.Mor(source.scheme(), target.scheme())(arrow)
+
+        source_square = source.multiplication().domain()
+        target_square = target.multiplication().domain()
+        first, second = source_square.projections()
+        arrow_times_arrow = _map_to_product(
+            target_square,
+            (arrow * first, arrow * second),
+        )
+        if arrow * source.multiplication() != target.multiplication() * arrow_times_arrow:
+            raise ValueError("the scheme morphism does not preserve group-scheme multiplication")
+        if arrow * source.unit_morphism() != target.unit_morphism():
+            raise ValueError("the scheme morphism does not preserve the group-scheme unit")
+        if arrow * source.inverse_morphism() != target.inverse_morphism() * arrow:
+            raise ValueError("the scheme morphism does not preserve the group-scheme inverse")
+        return self.element_class(self, arrow)
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity belongs to a group-scheme endomorphism Hom")
+        return self(self.domain().scheme().categorical_identity_morphism())
 
 
 _ACTION_CATEGORIES = {}
@@ -214,6 +279,8 @@ class AffineGroupSchemeAction(Parent):
         base = group.base_ring()
         if scheme not in AffineSchemes(base):
             raise TypeError("an affine group-scheme action requires an affine scheme over the group base")
+        if scheme.base_scheme() is not group.base_scheme():
+            raise ValueError("the group scheme and acted scheme must have the same represented base")
         product = action_morphism.domain()
         if not _product_has_factors(product, (group.scheme(), scheme)):
             raise ValueError("a group-scheme action must have domain G x_S X")
