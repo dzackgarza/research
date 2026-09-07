@@ -213,6 +213,19 @@ class UnderlyingFiniteGSetFunctor(Functor):
     def _apply_morphism(self, morphism):
         return self._generic_forgetful(morphism)
 
+    def chosen_preimage(self, image):
+        r"""Recover the represented ``G``-set whose underlying finite set is ``image``.
+
+        In this concrete finite model, forgetting the action changes the
+        category in which the same parent is read; it does not replace the
+        parent by its point-set presentation.  Hence an image that still lies
+        in ``FiniteGSets(G)`` has itself as its unique represented preimage.
+        Other images fall back to ordinary functor provenance.
+        """
+        if image in FiniteGSets(self.group()):
+            return image
+        return super().chosen_preimage(image)
+
     def _repr_(self):
         return f"Underlying finite-set functor on {self.group()}-sets"
 
