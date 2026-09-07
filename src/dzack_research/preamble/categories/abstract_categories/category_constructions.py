@@ -17,7 +17,11 @@ from sage.structure.parent import Parent
 class OppositeMorphism(Morphism):
     r"""An arrow of ``C^op`` represented by the reverse arrow in ``C``."""
 
-    def __init__(self, parent, underlying_arrow) -> None:
+    def __init__(
+        self,
+        parent: "OppositeHomset",
+        underlying_arrow: Morphism,
+    ) -> None:
         Morphism.__init__(self, parent)
         if underlying_arrow.domain() is not self.codomain().underlying_object():
             raise ValueError("the underlying opposite arrow has the wrong domain")
@@ -39,7 +43,12 @@ class OppositeMorphism(Morphism):
 class OppositeHomset(CategoricalHomset):
     Element = OppositeMorphism
 
-    def __init__(self, opposite_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        opposite_category: "OppositeCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._opposite_category = opposite_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(opposite_category), domain, codomain
@@ -82,7 +91,7 @@ class OppositeCategory(OwnedCategory):
         def _repr_(self) -> str:
             return f"op({self.underlying_object()})"
 
-    def __init__(self, base_category) -> None:
+    def __init__(self, base_category: Category) -> None:
         self._base_category = base_category
         super().__init__()
 
@@ -130,7 +139,12 @@ class OppositeCategory(OwnedCategory):
 class ProductMorphism(Morphism):
     r"""A pair of morphisms in a product category."""
 
-    def __init__(self, parent, first, second) -> None:
+    def __init__(
+        self,
+        parent: "ProductHomset",
+        first: Morphism,
+        second: Morphism,
+    ) -> None:
         Morphism.__init__(self, parent)
         if first.domain() is not self.domain().first() or first.codomain() is not self.codomain().first():
             raise ValueError("the first component has the wrong endpoints")
@@ -156,7 +170,12 @@ class ProductMorphism(Morphism):
 class ProductHomset(CategoricalHomset):
     Element = ProductMorphism
 
-    def __init__(self, product_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        product_category: "ProductCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._product_category = product_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(product_category), domain, codomain
@@ -212,7 +231,7 @@ class ProductCategory(OwnedCategory):
         def _repr_(self) -> str:
             return f"({self.first()}, {self.second()})"
 
-    def __init__(self, first_category, second_category) -> None:
+    def __init__(self, first_category: Category, second_category: Category) -> None:
         self._first_category = first_category
         self._second_category = second_category
         super().__init__()

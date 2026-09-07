@@ -14,6 +14,7 @@ from sage.categories.objects import Objects as SageObjects
 from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
+    Functor,
     IdentityFunctor,
     NaturalTransformation,
 )
@@ -23,7 +24,11 @@ from dzack_research.preamble.categories.functors.core import (
 class CategoryObject(Parent):
     r"""A Sage category regarded as an object of ``Cat``."""
 
-    def __init__(self, category_of_categories, represented_category) -> None:
+    def __init__(
+        self,
+        category_of_categories: "Cat",
+        represented_category: Category,
+    ) -> None:
         self._category_of_categories = category_of_categories
         self._represented_category = represented_category
         Parent.__init__(self, category=category_of_categories)
@@ -41,7 +46,7 @@ class CategoryObject(Parent):
 class CategoryFunctorMorphism(Morphism):
     r"""A live functor regarded as a morphism in ``Cat``."""
 
-    def __init__(self, parent, functor) -> None:
+    def __init__(self, parent: "CategoryFunctorHomset", functor: Functor) -> None:
         Morphism.__init__(self, parent)
         if functor.domain() != self.domain().represented_category():
             raise ValueError("the functor has the wrong Cat-domain")
@@ -73,7 +78,12 @@ class CategoryFunctorMorphism(Morphism):
 class CategoryFunctorHomset(CategoricalHomset):
     Element = CategoryFunctorMorphism
 
-    def __init__(self, category_of_categories, domain, codomain) -> None:
+    def __init__(
+        self,
+        category_of_categories: "Cat",
+        domain: CategoryObject,
+        codomain: CategoryObject,
+    ) -> None:
         self._category_of_categories = category_of_categories
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(category_of_categories), domain, codomain
@@ -360,7 +370,11 @@ class Cat(Category):
 class NaturalTransformationMorphism(Morphism):
     r"""A natural transformation as a morphism in a functor category."""
 
-    def __init__(self, parent, transformation) -> None:
+    def __init__(
+        self,
+        parent: "NaturalTransformationHomset",
+        transformation: NaturalTransformation,
+    ) -> None:
         Morphism.__init__(self, parent)
         if transformation.source() is not self.domain().arrow().functor():
             raise ValueError("the natural transformation has the wrong source functor")
@@ -396,7 +410,12 @@ class NaturalTransformationMorphism(Morphism):
 class NaturalTransformationHomset(CategoricalHomset):
     Element = NaturalTransformationMorphism
 
-    def __init__(self, functor_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        functor_category: "FunctorCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._functor_category = functor_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(functor_category), domain, codomain
@@ -433,7 +452,12 @@ class NaturalTransformationHomset(CategoricalHomset):
 class FunctorCategory(Category):
     r"""The category ``[C,D]`` of represented functors and natural transformations."""
 
-    def __init__(self, category_of_categories, domain, codomain) -> None:
+    def __init__(
+        self,
+        category_of_categories: Cat,
+        domain: Category,
+        codomain: Category,
+    ) -> None:
         self._cat = category_of_categories
         self._domain_category = domain
         self._codomain_category = codomain
@@ -489,7 +513,7 @@ class FunctorCategory(Category):
 class NaturalIsomorphism:
     r"""A selected pair of mutually inverse natural transformations."""
 
-    def __init__(self, forward, inverse) -> None:
+    def __init__(self, forward: Morphism, inverse: Morphism) -> None:
         if forward.domain() is not inverse.codomain() or forward.codomain() is not inverse.domain():
             raise ValueError("inverse natural transformations have reversed endpoints")
         self._forward = forward

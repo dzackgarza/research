@@ -20,7 +20,12 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 class CommutativeSquare(Morphism):
     r"""A morphism between two arrow objects, i.e. a commuting square."""
 
-    def __init__(self, parent, left, right) -> None:
+    def __init__(
+        self,
+        parent: "ArrowHomset",
+        left: Morphism,
+        right: Morphism,
+    ) -> None:
         Morphism.__init__(self, parent)
         source = self.domain().arrow()
         target = self.codomain().arrow()
@@ -74,7 +79,12 @@ class CommutativeSquare(Morphism):
 class ArrowHomset(CategoricalHomset):
     Element = CommutativeSquare
 
-    def __init__(self, arrow_category, source, target) -> None:
+    def __init__(
+        self,
+        arrow_category: "ArrowCategory",
+        source: Parent,
+        target: Parent,
+    ) -> None:
         self._arrow_category = arrow_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(arrow_category), source, target
@@ -133,7 +143,7 @@ class ArrowCategory(OwnedCategory):
         def _repr_(self) -> str:
             return f"Arrow object ({self.source_object()} -> {self.target_object()})"
 
-    def __init__(self, base_category) -> None:
+    def __init__(self, base_category: Category) -> None:
         self._base_category = base_category
         self._arrow_objects = {}
         self._homsets = {}
@@ -241,7 +251,7 @@ class _EndofunctorAlgebraForgetfulFunctor(Functor):
 
     _faithful = True
 
-    def __init__(self, algebras) -> None:
+    def __init__(self, algebras: "_EndofunctorAlgebraCategory") -> None:
         self._algebras = algebras
         super().__init__(algebras, algebras.base_category())
 
@@ -265,7 +275,7 @@ class _EndofunctorAlgebraCategory(Category):
     objects and morphisms are precisely those of ``Inserter(T, Id_C)``.
     """
 
-    def __init__(self, endofunctor) -> None:
+    def __init__(self, endofunctor: Functor) -> None:
         if not isinstance(endofunctor, Functor):
             raise TypeError("an endofunctor algebra requires a represented functor")
         if endofunctor.domain() is not endofunctor.codomain():
@@ -384,7 +394,7 @@ class SliceHomset(ArrowHomset):
 class SliceCategory(ArrowCategory):
     r"""The slice category \(C/X\)."""
 
-    def __init__(self, base_category, base_object) -> None:
+    def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
             raise TypeError("the slice base must be an object of its base category")
         self._base_object = base_object
@@ -433,7 +443,7 @@ class CosliceHomset(ArrowHomset):
 class CosliceCategory(ArrowCategory):
     r"""The coslice category \(X/C\)."""
 
-    def __init__(self, base_category, base_object) -> None:
+    def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
             raise TypeError("the coslice base must be an object of its base category")
         self._base_object = base_object
@@ -542,7 +552,11 @@ def _subobject_source(subobject):
 class SubobjectMorphism(Morphism):
     r"""The unique commuting-triangle map between two represented subobjects."""
 
-    def __init__(self, parent, factor_morphism) -> None:
+    def __init__(
+        self,
+        parent: "SubobjectHomset",
+        factor_morphism: Morphism,
+    ) -> None:
         Morphism.__init__(self, parent)
         if factor_morphism.domain() is not _subobject_source(self.domain()):
             raise ValueError("the subobject factor has the wrong domain")
@@ -574,7 +588,12 @@ class SubobjectMorphism(Morphism):
 class SubobjectHomset(CategoricalHomset):
     Element = SubobjectMorphism
 
-    def __init__(self, subobject_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        subobject_category: "SubobjectCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._subobject_category = subobject_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(subobject_category), domain, codomain
@@ -615,7 +634,7 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
     triangles between those inclusions.
     """
 
-    def __init__(self, base_category, base_object) -> None:
+    def __init__(self, base_category: Category, base_object: Parent) -> None:
         if base_object not in base_category:
             raise TypeError("the subobject base must lie in its base category")
         self._base_category = base_category
@@ -706,7 +725,7 @@ class SuperobjectCategory(CosliceCategory):
 class WideSubcategory(Category):
     r"""A category with the same objects as ``C`` and a selected class of arrows."""
 
-    def __init__(self, base_category, arrow_category) -> None:
+    def __init__(self, base_category: Category, arrow_category: ArrowCategory) -> None:
         if arrow_category.base_category() != base_category:
             raise ValueError("the selected arrows must belong to the stated base category")
         self._base_category = base_category
@@ -742,7 +761,12 @@ class WideSubcategory(Category):
 class CoreHomset(CategoricalHomset):
     Element = CategoricalIsomorphism
 
-    def __init__(self, core_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        core_category: "CoreCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._core_category = core_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(core_category), domain, codomain
@@ -782,7 +806,7 @@ class CoreHomset(CategoricalHomset):
 class CoreCategory(Category):
     r"""The maximal subgroupoid (core) of a represented category."""
 
-    def __init__(self, base_category) -> None:
+    def __init__(self, base_category: Category) -> None:
         self._base_category = base_category
         self._homsets = {}
         super().__init__()

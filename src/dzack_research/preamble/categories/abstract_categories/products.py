@@ -1,5 +1,7 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
+from collections.abc import Iterable
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -21,13 +23,13 @@ from dzack_research.preamble.categories.abstract_categories.functors import (
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.functors.core import NaturalTransformation
+from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 
 
 class DiagramCategory(FunctorCategory):
     r"""The functor category ``[J,C]`` of diagrams of one shape."""
 
-    def __init__(self, index_category, target_category) -> None:
+    def __init__(self, index_category: Category, target_category: Category) -> None:
         super().__init__(Cat(), index_category, target_category)
 
     def index_category(self):
@@ -63,7 +65,7 @@ def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
 class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
-    def __init__(self, parent, apex_map) -> None:
+    def __init__(self, parent: "ConeHomset", apex_map: Morphism) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cone map has the wrong domain apex")
@@ -87,7 +89,7 @@ class ConeMorphism(Morphism):
 class CoconeMorphism(Morphism):
     r"""A morphism of cocones, determined by its apex map."""
 
-    def __init__(self, parent, apex_map) -> None:
+    def __init__(self, parent: "CoconeHomset", apex_map: Morphism) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cocone map has the wrong domain apex")
@@ -113,7 +115,12 @@ class CoconeMorphism(Morphism):
 class ConeHomset(CategoricalHomset):
     Element = ConeMorphism
 
-    def __init__(self, cone_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        cone_category: "ConeCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._cone_category = cone_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(cone_category), domain, codomain
@@ -129,7 +136,12 @@ class ConeHomset(CategoricalHomset):
 class CoconeHomset(CategoricalHomset):
     Element = CoconeMorphism
 
-    def __init__(self, cocone_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        cocone_category: "CoconeCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._cocone_category = cocone_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(cocone_category), domain, codomain
@@ -177,7 +189,7 @@ class ConeCategory(OwnedCategory):
         def _repr_(self) -> str:
             return f"Cone with apex {self.apex()} over {self.diagram()}"
 
-    def __init__(self, diagram) -> None:
+    def __init__(self, diagram: Functor) -> None:
         self._diagram = diagram
         super().__init__()
 
@@ -248,7 +260,7 @@ class CoconeCategory(OwnedCategory):
         def _repr_(self) -> str:
             return f"Cocone with apex {self.apex()} under {self.diagram()}"
 
-    def __init__(self, diagram) -> None:
+    def __init__(self, diagram: Functor) -> None:
         self._diagram = diagram
         super().__init__()
 
@@ -341,7 +353,7 @@ class CoproductCoconeCategory(CoconeCategory):
 
 
 class LimitsOfCategory(Category):
-    def __init__(self, index_category, target_category) -> None:
+    def __init__(self, index_category: Category, target_category: Category) -> None:
         self._index_category = index_category
         self._target_category = target_category
         super().__init__()
@@ -414,7 +426,7 @@ def _two_factors_of(factors, *, name="Selected factors"):
 class BiproductCategory(Category):
     r"""Objects equipped with the selected finite biproduct structure."""
 
-    def __init__(self, factors) -> None:
+    def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:
         self._factors = _finite_factor_family(factors, name="Biproduct factors")
         super().__init__()
 
@@ -440,7 +452,7 @@ DirectSumCategory = BiproductCategory
 class TensorProductCategory(Category):
     r"""Objects equipped with a chosen tensor-product universal bilinear map."""
 
-    def __init__(self, factors) -> None:
+    def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:
         self._factors = _finite_factor_family(factors, name="Tensor factors")
         super().__init__()
 

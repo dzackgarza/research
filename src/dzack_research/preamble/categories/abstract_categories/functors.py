@@ -1,5 +1,7 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
+from collections.abc import Callable
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -37,13 +39,13 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
     _ProductMorphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 
 
 class ContravariantFunctor(Functor):
     r"""A functor ``C^op -> D`` with convenience calls on arrows of ``C``."""
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, domain: Category, codomain: Category) -> None:
 
         self._base_domain = domain
         super().__init__(OppositeCategory(domain), codomain)
@@ -92,7 +94,12 @@ class ContravariantFunctor(Functor):
 class Bifunctor(Functor):
     r"""A functor ``C x D -> E`` with a two-argument convenience API."""
 
-    def __init__(self, left_domain, right_domain, codomain) -> None:
+    def __init__(
+        self,
+        left_domain: Category,
+        right_domain: Category,
+        codomain: Category,
+    ) -> None:
 
         super().__init__(ProductCategory(left_domain, right_domain), codomain)
 
@@ -143,7 +150,7 @@ class Bifunctor(Functor):
 class DomainFunctor(Functor):
     r"""The domain functor ``Arr(C) -> C``."""
 
-    def __init__(self, category) -> None:
+    def __init__(self, category: Category) -> None:
         super().__init__(ArrowCategory(category), category)
 
     def _apply_object(self, arrow_object):
@@ -156,7 +163,7 @@ class DomainFunctor(Functor):
 class CodomainFunctor(Functor):
     r"""The codomain functor ``Arr(C) -> C``."""
 
-    def __init__(self, category) -> None:
+    def __init__(self, category: Category) -> None:
         super().__init__(ArrowCategory(category), category)
 
     def _apply_object(self, arrow_object):
@@ -170,7 +177,7 @@ class CodomainFunctor(Functor):
 class DiscreteMorphism(Morphism):
     r"""The unique identity arrow of a discrete-category object."""
 
-    def __init__(self, parent) -> None:
+    def __init__(self, parent: "DiscreteHomset") -> None:
         Morphism.__init__(self, parent)
         if self.domain() is not self.codomain():
             raise ValueError("a discrete category has no arrow between distinct objects")
@@ -184,7 +191,12 @@ class DiscreteMorphism(Morphism):
 class DiscreteHomset(CategoricalHomset):
     Element = DiscreteMorphism
 
-    def __init__(self, discrete_category, domain, codomain) -> None:
+    def __init__(
+        self,
+        discrete_category: "DiscreteCategory",
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         self._discrete_category = discrete_category
         CategoricalHomset.__init__(
             self, HomCategoryConstruction(discrete_category), domain, codomain
@@ -229,7 +241,7 @@ class DiscreteCategory(OwnedCategory):
         def _repr_(self) -> str:
             return repr(self.value())
 
-    def __init__(self, object_set) -> None:
+    def __init__(self, object_set: Parent) -> None:
         if object_set not in Sets():
             raise TypeError("a discrete category is constructed from a set")
         self._object_set = object_set
@@ -301,7 +313,12 @@ class DiscreteCategories(Category):
 class DiscreteFunctor(Functor):
     r"""A functor between discrete categories induced by a map of object sets."""
 
-    def __init__(self, domain, codomain, object_map) -> None:
+    def __init__(
+        self,
+        domain: DiscreteCategory,
+        codomain: DiscreteCategory,
+        object_map: Morphism | Callable[[object], object],
+    ) -> None:
         if not isinstance(object_map, Morphism):
             object_map = SetMorphism(
                 Sets().Mor(domain.object_set(), codomain.object_set()),
@@ -341,7 +358,12 @@ class ObjectSetFunctor(Functor):
 class DiscreteDiagram(Functor):
     r"""A functor from a discrete category, specified on its objects."""
 
-    def __init__(self, index_category, codomain, values) -> None:
+    def __init__(
+        self,
+        index_category: Category,
+        codomain: Category,
+        values: IndexedFamily,
+    ) -> None:
         if index_category not in DiscreteCategories():
             raise TypeError("a discrete diagram requires a discrete index category")
         self._values = values
@@ -361,7 +383,7 @@ class DiscreteDiagram(Functor):
 class ConstantDiagram(Functor):
     r"""The constant functor from an index category at one object."""
 
-    def __init__(self, index_category, codomain, value) -> None:
+    def __init__(self, index_category: Category, codomain: Category, value: Parent) -> None:
         if value not in codomain:
             raise TypeError("the constant value lies outside the codomain")
         self._value = value
@@ -465,7 +487,7 @@ __all__ = [
 class DiagonalFunctor(Functor):
     r"""The diagonal functor ``C -> C x C``."""
 
-    def __init__(self, category) -> None:
+    def __init__(self, category: Category) -> None:
 
         self._product_category = ProductCategory(category, category)
         super().__init__(category, self._product_category)
@@ -485,7 +507,7 @@ class DiagonalFunctor(Functor):
 class ProductFunctor(Functor):
     r"""The binary categorical product functor ``C x C -> C`` where represented."""
 
-    def __init__(self, category) -> None:
+    def __init__(self, category: Category) -> None:
 
         self._product_category = ProductCategory(category, category)
         super().__init__(self._product_category, category)
@@ -505,7 +527,7 @@ class ProductFunctor(Functor):
 class CoproductFunctor(Functor):
     r"""The binary categorical coproduct functor ``C x C -> C`` where represented."""
 
-    def __init__(self, category) -> None:
+    def __init__(self, category: Category) -> None:
 
         self._product_category = ProductCategory(category, category)
         super().__init__(self._product_category, category)

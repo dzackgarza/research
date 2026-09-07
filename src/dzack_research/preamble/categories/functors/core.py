@@ -5,6 +5,9 @@ categories remain the domain and codomain; this module adds no parallel
 category graph and no registry of relationships.
 """
 
+from collections.abc import Callable
+
+from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
@@ -16,7 +19,7 @@ class Functor(SageObject):
 
     _faithful = False
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, domain: Category, codomain: Category) -> None:
         self._domain = domain
         self._codomain = codomain
         # One identity-based provenance store for everything this functor
@@ -132,7 +135,7 @@ class Functor(SageObject):
 
 
 class IdentityFunctor(Functor):
-    def __init__(self, category) -> None:
+    def __init__(self, category: Category) -> None:
         super().__init__(category, category)
 
     def _apply_object(self, obj):
@@ -166,7 +169,7 @@ class CategoryInclusionFunctor(Functor):
 
     _faithful = True
 
-    def __init__(self, subcategory, supercategory) -> None:
+    def __init__(self, subcategory: Category, supercategory: Category) -> None:
         if not subcategory.is_subcategory(supercategory):
             raise ValueError(f"{subcategory} is not a subcategory of {supercategory}")
         super().__init__(subcategory, supercategory)
@@ -230,7 +233,12 @@ class CompositeFunctor(Functor):
 class NaturalTransformation(SageObject):
     r"""A natural transformation ``source => target`` given by its components."""
 
-    def __init__(self, source: Functor, target: Functor, component) -> None:
+    def __init__(
+        self,
+        source: Functor,
+        target: Functor,
+        component: Callable[[object], Morphism],
+    ) -> None:
         if source.domain() != target.domain() or source.codomain() != target.codomain():
             raise ValueError("a natural transformation requires parallel functors")
         self._source = source
