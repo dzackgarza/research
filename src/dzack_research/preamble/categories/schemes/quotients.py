@@ -40,7 +40,11 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.categories.schemes.schemes import AffineSchemes, Schemes
+from dzack_research.preamble.categories.schemes.schemes import (
+    AffineGSchemes,
+    AffineSchemes,
+    Schemes,
+)
 
 
 class AffineQuotientFunctor(Functor):
@@ -72,8 +76,8 @@ class AffineQuotientFunctor(Functor):
         return f"Affine quotient by {self.acting_group()}"
 
 
-class AffineSectionModuleFunctor(ContravariantFunctor):
-    r"""``Gamma: GObjects(G, Sch_R)^op -> Modules(R[G])`` on affine actions.
+class _AffineSectionModuleFunctor(ContravariantFunctor):
+    r"""``Gamma: AffGSch_G^op -> Modules(R[G])`` on represented affine actions.
 
     The sections of an affine ``G``-scheme ``X = Spec(B)`` carry one
     ``G``-action, and contravariance fixes which one.  Pullback composes the
@@ -101,7 +105,7 @@ class AffineSectionModuleFunctor(ContravariantFunctor):
         self._base_ring = base
         ContravariantFunctor.__init__(
             self,
-            GObjects(group, Schemes(base)),
+            AffineGSchemes(group, base),
             Modules(GroupAlgebra(base, group)),
         )
 
@@ -139,4 +143,4 @@ class AffineSectionModuleFunctor(ContravariantFunctor):
         return f"Sections with their {self.acting_group()}-action"
 
 
-__all__ = ["AffineQuotientFunctor", "AffineSectionModuleFunctor"]
+__all__ = ["AffineQuotientFunctor"]

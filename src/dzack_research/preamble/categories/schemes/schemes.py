@@ -1551,6 +1551,19 @@ class AffineGSchemes(OwnedCategory):
         identity = scheme.categorical_identity_morphism()
         return self(scheme, lambda _group_element: identity)
 
+    def global_sections_functor(self):
+        r"""Return ``Gamma(-, O): AffGSch_G^op -> Modules(R[G])``.
+
+        For a left action on ``X``, the induced left action on sections is
+        ``g . s = (g^{-1})^* s``; the inverse is forced by pullback
+        contravariance.
+        """
+        from dzack_research.preamble.categories.schemes.quotients import (
+            _AffineSectionModuleFunctor,
+        )
+
+        return _AffineSectionModuleFunctor(self.acting_group(), self.base_ring())
+
     def _call_(self, scheme, action):
         r"""Equip an affine scheme with the chosen left action of this group.
 

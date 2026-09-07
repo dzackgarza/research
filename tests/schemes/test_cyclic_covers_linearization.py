@@ -19,11 +19,8 @@ element on sections is pullback along its inverse and scales ``z`` by
 construction that composed pullbacks the wrong way round is visible here.
 """
 
-from dzack_research.preamble.all import GF, PolynomialRing, QQ
+from dzack_research.preamble.all import AffineGSchemes, GF, PolynomialRing, QQ
 from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
-from dzack_research.preamble.categories.schemes.quotients import (
-    AffineSectionModuleFunctor,
-)
 
 
 def test_the_deck_action_splits_the_cover_sections_by_the_powers_of_z() -> None:
@@ -31,11 +28,10 @@ def test_the_deck_action_splits_the_cover_sections_by_the_powers_of_z() -> None:
     x = algebra.algebra_generator("x")
     covers = CyclicCovers(algebra, 2)
     cover = covers(x**4 - algebra.one())
-    generator = covers.deck_group().group_generators()[0]
-    sections = AffineSectionModuleFunctor(
-        covers.deck_group(),
-        algebra,
-    ).object_image(cover)
+    group = covers.constant_deck_group()
+    generator = group.group_generators()[0]
+    acted = cover.constant_deck_action()
+    sections = AffineGSchemes(group, algebra).global_sections_functor().object_image(acted)
 
     trivial_summand = sections.module_generator(0)
     sign_summand = sections.module_generator(1)
@@ -51,12 +47,14 @@ def test_the_action_on_sections_is_pullback_along_the_inverse() -> None:
     x = algebra.algebra_generator("x")
     covers = CyclicCovers(algebra, 3)
     cover = covers(x)
-    generator = covers.deck_group().group_generators()[0]
+    group = covers.constant_deck_group()
+    generator = group.group_generators()[0]
     root_of_unity = covers.deck_root_of_unity()
-    sections_functor = AffineSectionModuleFunctor(covers.deck_group(), algebra)
-    sections = sections_functor.object_image(cover)
+    acted = cover.constant_deck_action()
+    sections_functor = AffineGSchemes(group, algebra).global_sections_functor()
+    sections = sections_functor.object_image(acted)
 
-    deck = cover.Mor(cover)(cover.action_of(generator))
+    deck = acted.Mor(acted)(acted.action_of(generator))
     pullback = sections_functor.morphism_image(deck)
     sign_summand = sections.module_generator(1)
 
