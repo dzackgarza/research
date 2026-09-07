@@ -2,6 +2,7 @@
 
 from collections.abc import Callable, Iterable
 from itertools import count
+from typing import Any, SupportsInt, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
@@ -36,6 +37,11 @@ from dzack_research.preamble.categories.sets.cardinals import (
     cardinal,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+
+IndexT = TypeVar("IndexT")
+SourcePointT = TypeVar("SourcePointT")
+TargetPointT = TypeVar("TargetPointT")
 
 
 
@@ -190,8 +196,8 @@ def counting_ordinal(source: Parent) -> Parent:
 
 def ranking_isomorphism(
     source: Parent,
-    position_of: Callable[[object], object],
-    point_at: Callable[[object], object],
+    position_of: Callable[[SourcePointT], SupportsInt],
+    point_at: Callable[[int], SourcePointT],
 ) -> CategoricalIsomorphism:
     r"""Return the enumeration of ``source`` as one isomorphism onto its ordinal.
 
@@ -254,7 +260,7 @@ class OwnedSetMorphism(SetMorphism):
     def __init__(
         self,
         parent: "SetMorCategory",
-        function: Callable[[object], object],
+        function: Callable[[SourcePointT], TargetPointT],
     ) -> None:
         SetMorphism.__init__(self, parent, function)
         self._owned_function = function
@@ -273,7 +279,7 @@ class OwnedSetMorphism(SetMorphism):
         """
         return self._owned_function(element, *args, **kwargs)
 
-    def __eq__(self, other) -> bool:
+    def __eq__(self, other: Any) -> bool:
         r"""Two set maps agree when they agree at every point.
 
         That is decidable when the source is a finite enumerated set, and not
@@ -762,7 +768,7 @@ def InfiniteSets() -> Category:
 
 
 
-def Set(source: object) -> Parent:
+def Set(source: Parent | Iterable[SourcePointT]) -> Parent:
     r"""Return ``source`` as an owned set whenever this constructor creates it."""
     if source in Sets() or source in SageSets():
         return source
@@ -773,19 +779,19 @@ def Set(source: object) -> Parent:
 
 def ConditionSet(
     universe: Parent,
-    predicate: Callable[[object], bool],
+    predicate: Callable[[SourcePointT], bool],
 ) -> Parent:
     r"""Return the subset of ``universe`` cut out by ``predicate``."""
     return SageConditionSet(universe, predicate)
 
 
 def ImageSet(
-    map_: Callable[[object], object],
+    map_: Callable[[SourcePointT], TargetPointT],
     domain_subset: Parent,
     *,
     category: Category | None = None,
     is_injective: bool | None = None,
-    inverse: Callable[[object], object] | None = None,
+    inverse: Callable[[TargetPointT], SourcePointT] | None = None,
 ) -> Parent:
     r"""Return the represented image of ``domain_subset`` under ``map_``."""
     try:
@@ -822,7 +828,7 @@ class SetSurjection(OwnedSetMorphism):
 def set_injection(
     domain: Parent,
     codomain: Parent,
-    function: Callable[[object], object],
+    function: Callable[[SourcePointT], TargetPointT],
 ) -> SetInjection:
     return SetInjection(Sets().Mor(domain, codomain), function)
 
@@ -830,7 +836,7 @@ def set_injection(
 def set_surjection(
     domain: Parent,
     codomain: Parent,
-    function: Callable[[object], object],
+    function: Callable[[SourcePointT], TargetPointT],
 ) -> SetSurjection:
     return SetSurjection(Sets().Mor(domain, codomain), function)
 
@@ -843,7 +849,7 @@ class SetInclusion(OwnedSetMorphism):
         domain: Parent,
         codomain: Parent,
         characteristic_morphism: SetMorphism | None = None,
-        finite_members: Iterable[object] | None = None,
+        finite_members: Iterable[SourcePointT] | None = None,
     ) -> None:
         parent = Sets().Mor(domain, codomain)
         SetMorphism.__init__(self, parent, lambda member: codomain(member))
@@ -1359,7 +1365,7 @@ class CartesianProductsOfSets(OwnedCategory):
         def __init__(
             self,
             parent: Parent,
-            components: Callable[[object], object],
+            components: Callable[[IndexT], SourcePointT],
         ) -> None:
             Element.__init__(self, parent)
             self._components = components
@@ -1413,7 +1419,7 @@ class CartesianProductsOfSets(OwnedCategory):
         def __init__(
             self,
             index_set: Parent,
-            family: Callable[[object], Parent],
+            family: Callable[[IndexT], Parent],
             **rest,
         ) -> None:
             assert index_set in Sets(), (
@@ -1593,7 +1599,12 @@ class CoproductsOfSets(OwnedCategory):
     class ElementMethods(Element):
         r"""What an element of a coproduct of a family is."""
 
-        def __init__(self, parent: Parent, index: object, value: object) -> None:
+        def __init__(
+            self,
+            parent: Parent,
+            index: IndexT,
+            value: SourcePointT,
+        ) -> None:
             Element.__init__(self, parent)
             normalized = parent.index_set()(index)
             self._index = normalized
@@ -1627,7 +1638,7 @@ class CoproductsOfSets(OwnedCategory):
         def __init__(
             self,
             index_set: Parent,
-            family: Callable[[object], Parent],
+            family: Callable[[IndexT], Parent],
             **rest,
         ) -> None:
             assert index_set in Sets(), (
@@ -1841,7 +1852,7 @@ DisjointUnionsOfSets = CoproductsOfSets
 @cached_function
 def CartesianProductOfFamily(
     index_set: Parent,
-    family: Callable[[object], Parent],
+    family: Callable[[IndexT], Parent],
 ) -> Parent:
     return _cartesian_product_of(index_set, family)
 
@@ -1864,7 +1875,7 @@ def cartesian_product_of(factors: Iterable[Parent]) -> Parent:
 def CartesianProductMorphism(
     source: Parent,
     target: Parent,
-    component_morphisms: Callable[[object], SetMorphism],
+    component_morphisms: Callable[[IndexT], SetMorphism],
 ) -> SetMorphism:
     r"""Return the componentwise map between two dependent products."""
     if source.index_set() != target.index_set():
@@ -1884,7 +1895,7 @@ def CartesianProductMorphism(
 @cached_function
 def CoproductOfFamily(
     index_set: Parent,
-    family: Callable[[object], Parent],
+    family: Callable[[IndexT], Parent],
 ) -> Parent:
     return object_of(CoproductsOfSets(), index_set=index_set, family=family)
 
@@ -1903,7 +1914,7 @@ def CoproductOfSets(*cofactors: Parent) -> Parent:
 def CoproductMorphism(
     source: Parent,
     target: Parent,
-    component_morphisms: Callable[[object], SetMorphism],
+    component_morphisms: Callable[[IndexT], SetMorphism],
 ) -> SetMorphism:
     r"""Return the componentwise map between two dependent coproducts."""
     if source.index_set() != target.index_set():
@@ -1944,7 +1955,7 @@ class NaturalNumberSets(OwnedCategory):
     class ElementMethods(Element):
         r"""What a natural number is."""
 
-        def __init__(self, parent: Parent, value: object) -> None:
+        def __init__(self, parent: Parent, value: SupportsInt) -> None:
             Element.__init__(self, parent)
             # This constructor is an ingress boundary.  It accepts the owned
             # integer view without importing the higher ring theory back into Sets;

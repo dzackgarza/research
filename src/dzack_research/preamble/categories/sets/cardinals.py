@@ -5,11 +5,12 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
+from typing import SupportsInt
 
 from sage.categories.morphism import Morphism
 from sage.categories.semirings import Semirings
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.rings.infinity import Infinity
+from sage.rings.infinity import AnInfinity, Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
@@ -105,11 +106,11 @@ class CardinalityHomset(CategoricalHomset):
     ) -> None:
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
-    def cardinality(self):
+    def cardinality(self) -> "Cardinalities.ObjectType":
         return cardinal(1 if Cardinalities().le(self.domain(), self.codomain()) else 0)
 
     @cached_method
-    def unique_morphism(self):
+    def unique_morphism(self) -> CardinalityMorphism:
         if not Cardinalities().le(self.domain(), self.codomain()):
             raise ValueError(f"there is no cardinality morphism {self.domain()} -> {self.codomain()}")
         return self.element_class(self)
@@ -119,21 +120,21 @@ class CardinalityHomset(CategoricalHomset):
             raise ValueError(f"{morphism} is not in {self}")
         return self.unique_morphism()
 
-    def identity(self):
+    def identity(self) -> CardinalityMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism homset")
         return self.unique_morphism()
 
 
 class CardinalityHomCategoryConstruction(HomCategoryConstruction):
-    def fixed_category_class(self):
+    def fixed_category_class(self) -> type[CardinalityHomset]:
         return CardinalityHomset
 
 
 class Cardinalities(OwnedCategory):
     r"""The thin category associated to the represented cardinal order."""
 
-    def an_object(self):
+    def an_object(self) -> "Cardinalities.ObjectType":
         r"""The cardinal three."""
         return cardinal(3)
 
@@ -145,7 +146,11 @@ class Cardinalities(OwnedCategory):
     def _repr_(self) -> str:
         return "Category of cardinalities"
 
-    def Mor(self, domain, codomain) -> CardinalityHomset:
+    def Mor(
+        self,
+        domain: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        codomain: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> CardinalityHomset:
         return CardinalityHomCategoryConstruction(self).Of(
             cardinal(domain), cardinal(codomain)
         )
@@ -155,10 +160,10 @@ class Cardinalities(OwnedCategory):
             self._expression = expression
             super().__init__(**rest)
 
-        def expression(self):
+        def expression(self) -> _CardinalExpression:
             return self._expression
 
-        def cardinality(self):
+        def cardinality(self) -> "Cardinalities.ObjectType":
             return self
 
         def sort_key(self) -> tuple[int, str]:
@@ -275,13 +280,13 @@ class Cardinalities(OwnedCategory):
         def is_uncountably_infinite(self) -> bool:
             return self.is_infinite() and self.is_uncountable()
 
-        def aleph_index(self):
+        def aleph_index(self) -> Ordinal:
             expression = self.expression()
             if not isinstance(expression, _AlephCardinal):
                 raise ValueError(f"{self} is not an aleph cardinal")
             return expression.index
 
-        def initial_ordinal(self):
+        def initial_ordinal(self) -> Ordinal:
             return omega(self.aleph_index())
 
         def _finite_int(self) -> int:
@@ -290,7 +295,7 @@ class Cardinalities(OwnedCategory):
                 raise ValueError(f"{self} is not a finite cardinal")
             return expression.value
 
-        def finite_value(self):
+        def finite_value(self) -> int:
             r"""Return the ordinary nonnegative integer representing this finite cardinal."""
             expression = self.expression()
             if not isinstance(expression, _FiniteCardinal):
@@ -323,10 +328,10 @@ class Cardinalities(OwnedCategory):
                 raise TypeError("a cardinal morphism lies in Cardinalities")
             return Cardinalities().Mor(self, codomain)
 
-    def zero(self):
+    def zero(self) -> "Cardinalities.ObjectType":
         return cardinal(0)
 
-    def one(self):
+    def one(self) -> "Cardinalities.ObjectType":
         return cardinal(1)
 
     def sum(self, *summands):
@@ -571,7 +576,7 @@ class OrdinalSemiringMorphism(Morphism):
     def __init__(
         self,
         parent: "OrdinalSemiringHomset",
-        function: Callable[[object], object],
+        function: Callable[[Ordinal], Ordinal],
     ) -> None:
         Morphism.__init__(self, parent)
         if not callable(function):
@@ -620,7 +625,7 @@ class OrdinalSemiringHomset(CategoricalHomset):
             function = lambda element, morphism=function: morphism(element)
         return self.element_class(self, function)
 
-    def identity(self):
+    def identity(self) -> OrdinalSemiringMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         identity = self(lambda element: element)
@@ -629,7 +634,7 @@ class OrdinalSemiringHomset(CategoricalHomset):
 
 
 class OrdinalSemiringHomCategoryConstruction(HomCategoryConstruction):
-    def fixed_category_class(self):
+    def fixed_category_class(self) -> type[OrdinalSemiringHomset]:
         return OrdinalSemiringHomset
 
 
@@ -643,7 +648,7 @@ class OrdinalSemirings(OwnedCategory):
             Element.__init__(self, parent)
             self._expression = expression
 
-        def expression(self):
+        def expression(self) -> _OrdinalExpression:
             return self._expression
 
         def __hash__(self) -> int:
@@ -734,13 +739,13 @@ class OrdinalSemirings(OwnedCategory):
         def is_initial(self) -> bool:
             return isinstance(self.expression(), _InitialOrdinal)
 
-        def initial_index(self):
+        def initial_index(self) -> Ordinal:
             expression = self.expression()
             if not isinstance(expression, _InitialOrdinal):
                 raise ValueError(f"{self} is not an initial ordinal")
             return expression.index
 
-        def cardinality(self):
+        def cardinality(self) -> "Cardinalities.ObjectType":
             expression = self.expression()
             if isinstance(expression, _FiniteOrdinal):
                 return cardinal(expression.value)
@@ -780,7 +785,7 @@ class OrdinalSemirings(OwnedCategory):
                 return f"({expression.left} *o {expression.right})"
             return f"({expression.base} ^o {expression.exponent})"
 
-    def an_object(self):
+    def an_object(self) -> OrdinalSemiring:
         r"""The semiring of ordinals."""
         return Ordinals()
 
@@ -917,11 +922,11 @@ def Ordinals() -> OrdinalSemiring:
     return object_of(OrdinalSemirings())
 
 
-def ordinal(value: object) -> Ordinal:
+def ordinal(value: Ordinal | SupportsInt) -> Ordinal:
     return Ordinals()(value)
 
 
-def omega(index: object) -> Ordinal:
+def omega(index: Ordinal | SupportsInt) -> Ordinal:
     return Ordinals().initial(index)
 
 
@@ -933,7 +938,9 @@ def _cardinal_with_expression(expression) -> "Cardinalities.ObjectType":
     return object_of(Cardinalities(), expression=expression)
 
 
-def cardinal(value: object) -> "Cardinalities.ObjectType":
+def cardinal(
+    value: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+) -> "Cardinalities.ObjectType":
     if value in Cardinalities():
         return value
     if value == Infinity:
@@ -952,7 +959,7 @@ def cardinal(value: object) -> "Cardinalities.ObjectType":
     return _cardinal_with_expression(_FiniteCardinal(integer))
 
 
-def aleph(index: object) -> "Cardinalities.ObjectType":
+def aleph(index: Ordinal | SupportsInt) -> "Cardinalities.ObjectType":
     return _cardinal_with_expression(_AlephCardinal(ordinal(index)))
 
 

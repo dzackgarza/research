@@ -1,13 +1,19 @@
 """Owned indexed families of mathematical values."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
+from typing import Any, Generic, TypeVar
 
 from sage.misc.unknown import Unknown
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 
-class IndexedFamily(SageObject):
+IndexT = TypeVar("IndexT")
+ValueT = TypeVar("ValueT")
+MappedValueT = TypeVar("MappedValueT")
+
+
+class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
     r"""A family ``(x_i)_{i in I}`` retaining its indexing set.
 
     A family is not the set of its values: different indices may have equal
@@ -19,7 +25,7 @@ class IndexedFamily(SageObject):
     def __init__(
         self,
         index_set: Parent,
-        value: Callable[[object], object],
+        value: Callable[[IndexT], ValueT],
         *,
         name: str | None = None,
     ) -> None:
@@ -38,7 +44,7 @@ class IndexedFamily(SageObject):
 
         return cardinal(self.index_set().cardinality())
 
-    def value(self, index):
+    def value(self, index: IndexT) -> ValueT:
         normalized = self.index_set()(index)
         try:
             return self._value_cache[normalized]
@@ -52,7 +58,7 @@ class IndexedFamily(SageObject):
 
     __call__ = value
 
-    def __getitem__(self, index):
+    def __getitem__(self, index: IndexT) -> ValueT:
         r"""The value at ``index``, or -- failing that -- at that position."""
         try:
             normalized = self.index_set()(index)
@@ -63,10 +69,15 @@ class IndexedFamily(SageObject):
     def items(self):
         return ((index, self.value(index)) for index in self.index_set())
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[ValueT]:
         return (self.value(index) for index in self.index_set())
 
-    def map(self, function, *, name=None):
+    def map(
+        self,
+        function: Callable[[ValueT], MappedValueT],
+        *,
+        name: str | None = None,
+    ) -> "IndexedFamily[IndexT, MappedValueT]":
         if not callable(function):
             raise TypeError("a family map must be callable")
         return IndexedFamily(
@@ -75,7 +86,7 @@ class IndexedFamily(SageObject):
             name=name,
         )
 
-    def __eq__(self, other):
+    def __eq__(self, other: Any):
         r"""Return extensional equality, or ``Unknown`` when undecidable."""
         if self is other:
             return True
@@ -122,10 +133,10 @@ class IndexedFamily(SageObject):
 
 def indexed_family(
     index_set: Parent,
-    value: Callable[[object], object],
+    value: Callable[[IndexT], ValueT],
     *,
     name: str | None = None,
-) -> IndexedFamily:
+) -> IndexedFamily[IndexT, ValueT]:
     r"""Return the family ``index |-> value(index)`` over ``index_set``."""
     return IndexedFamily(index_set, value, name=name)
 

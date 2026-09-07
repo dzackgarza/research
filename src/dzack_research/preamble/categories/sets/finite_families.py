@@ -1,6 +1,7 @@
 """Finite indexed families on the canonical finite ordinal."""
 
 from collections.abc import Iterable
+from typing import TypeVar
 
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
@@ -9,8 +10,11 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
+ValueT = TypeVar("ValueT")
+
+
 def finite_family(
-    values: IndexedFamily | Iterable[object],
+    values: IndexedFamily | Iterable[ValueT],
     *,
     name: str | None = None,
 ) -> IndexedFamily:

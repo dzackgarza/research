@@ -2,6 +2,7 @@
 
 from collections.abc import Callable
 from itertools import islice
+from typing import TypeVar
 
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
@@ -20,6 +21,10 @@ from dzack_research.preamble.categories.sets.set_categories import (
     ranking_isomorphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+
+IndexT = TypeVar("IndexT")
+PointT = TypeVar("PointT")
 
 
 
@@ -98,10 +103,10 @@ def _finite_ordered_presentation(elements):
 
 def ordered_enumerated_set(
     index_set: Parent,
-    element_at: Callable[[object], object],
+    element_at: Callable[[IndexT], PointT],
     *,
-    index_of: Callable[[object], object | None],
-    contains: Callable[[object], bool] | None = None,
+    index_of: Callable[[PointT], IndexT | None],
+    contains: Callable[[PointT], bool] | None = None,
     name: str | None = None,
 ) -> Parent:
     r"""Return the ordered image of ``index_set`` under the stated enumeration."""
@@ -117,10 +122,10 @@ def ordered_enumerated_set(
 
 def finite_ordered_image(
     index_set: Parent,
-    element_at: Callable[[object], object],
+    element_at: Callable[[IndexT], PointT],
     *,
-    index_of: Callable[[object], object | None] | None = None,
-    contains: Callable[[object], bool] | None = None,
+    index_of: Callable[[PointT], IndexT | None] | None = None,
+    contains: Callable[[PointT], bool] | None = None,
     name: str | None = None,
 ) -> Parent:
     r"""Return a finite ordered image without materializing its members."""
@@ -135,7 +140,7 @@ def finite_ordered_image(
 
 def finite_ordered_filter(
     source: Parent,
-    predicate: Callable[[object], bool],
+    predicate: Callable[[PointT], bool],
     *,
     name: str | None = None,
 ) -> Parent:
@@ -159,10 +164,10 @@ class OrderedEnumeratedSets(OwnedCategory):
         def __init__(
             self,
             index_set: Parent,
-            element_at: Callable[[object], object],
+            element_at: Callable[[IndexT], PointT],
             *,
-            index_of: Callable[[object], object | None],
-            contains: Callable[[object], bool] | None = None,
+            index_of: Callable[[PointT], IndexT | None],
+            contains: Callable[[PointT], bool] | None = None,
             name: str | None = None,
             finite: bool = False,
             **rest,
@@ -266,7 +271,7 @@ class FiniteOrderedSets(OwnedCategory):
     class ParentMethods:
         def __init__(
             self,
-            elements: Parent | tuple[object, ...] | list[object] | range,
+            elements: Parent | tuple[PointT, ...] | list[PointT] | range,
             **rest,
         ) -> None:
             index_set, element_at, index_of, contains = _finite_ordered_presentation(elements)
@@ -355,7 +360,7 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         def __init__(
             self,
             source: Parent,
-            predicate: Callable[[object], bool],
+            predicate: Callable[[PointT], bool],
             *,
             name: str | None = None,
             **rest,
@@ -442,7 +447,7 @@ class FiniteFilteredOrderedSets(OwnedCategory):
             return self._filtered_name or f"Ordered subset of {self.source()}"
 
 def finite_ordered_set(
-    elements: Parent | tuple[object, ...] | list[object] | range,
+    elements: Parent | tuple[PointT, ...] | list[PointT] | range,
 ) -> Parent:
     r"""Transport one known finite ordered enumeration to an owned set."""
     if elements in FiniteOrderedSets():

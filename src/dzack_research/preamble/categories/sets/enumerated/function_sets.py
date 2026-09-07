@@ -1,6 +1,7 @@
 r"""Enumerated sets of functions, indexed by \(\mathbb N\) or by \(\mathbb Z\)."""
 
 from operator import index as integer_index
+from typing import SupportsIndex
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
@@ -8,6 +9,7 @@ from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
+from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
@@ -28,7 +30,7 @@ def _nonnegative_integer(value, *, error_type):
     return ZZ(value)
 
 
-def integer_from_natural(n: object) -> Integer:
+def integer_from_natural(n: SupportsIndex) -> Integer:
     r"""The bijection \(\mathbb N\to\mathbb Z\) sending \(0,1,2,3,4,\ldots\) to \(0,1,-1,2,-2,\ldots\)."""
     n = _nonnegative_integer(n, error_type=IndexError)
     if n == 0:
@@ -38,7 +40,7 @@ def integer_from_natural(n: object) -> Integer:
     return -n // 2
 
 
-def natural_from_integer(k: object) -> Integer:
+def natural_from_integer(k: SupportsIndex) -> Integer:
     r"""The inverse of :func:`integer_from_natural`."""
     k = ZZ(k)
     if k == 0:
@@ -48,7 +50,11 @@ def natural_from_integer(k: object) -> Integer:
     return -2 * k
 
 
-def indexed_symbol(prefix: str, index: object, latex_prefix: str) -> object:
+def indexed_symbol(
+    prefix: str,
+    index: SupportsIndex,
+    latex_prefix: str,
+) -> Expression:
     r"""The symbol in \(\mathrm{SR}\) for this prefix and integer index."""
     index = ZZ(index)
     if index >= 0:
@@ -59,7 +65,7 @@ def indexed_symbol(prefix: str, index: object, latex_prefix: str) -> object:
 
 
 def index_of_symbol(
-    elt: object,
+    elt: Expression,
     prefix: str,
     latex_prefix: str | None = None,
 ) -> Integer:

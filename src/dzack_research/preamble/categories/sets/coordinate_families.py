@@ -1,7 +1,9 @@
 """Finite coordinate presentations built from owned indexed families."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
+from typing import TypeVar
 
+from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -13,6 +15,11 @@ from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfFamily,
     Sets,
 )
+
+
+LeftLabelT = TypeVar("LeftLabelT")
+RightLabelT = TypeVar("RightLabelT")
+CoordinateValueInputT = TypeVar("CoordinateValueInputT")
 
 
 def finite_framing(module: Parent) -> Parent:
@@ -33,7 +40,10 @@ def coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
     )
 
 
-def coerce_family_value(value_module: Parent, value: object) -> object:
+def coerce_family_value(
+    value_module: Parent,
+    value: CoordinateValueInputT,
+) -> Element:
     return (
         value
         if getattr(value, "parent", lambda: None)() is value_module
@@ -45,7 +55,7 @@ def coordinate_family(
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,
-    datum: object,
+    datum: IndexedFamily | Element | Iterable[Iterable[CoordinateValueInputT]],
     *,
     name: str,
 ) -> IndexedFamily:
@@ -54,7 +64,7 @@ def coordinate_family(
     if isinstance(datum, IndexedFamily):
         source_indices = datum.index_set()
 
-        def transported(pair):
+        def transported(pair: Element) -> Element:
             source_pair = source_indices(lambda index: pair.component(index))
             return coerce_family_value(value_module, datum[source_pair])
 
@@ -110,9 +120,9 @@ def coordinate_family(
 
 def coordinate_pair(
     values: IndexedFamily,
-    left_label: object,
-    right_label: object,
-) -> object:
+    left_label: LeftLabelT,
+    right_label: RightLabelT,
+) -> Element:
     indices = values.index_set()
     return values[
         indices(lambda index: left_label if int(index) == 0 else right_label)
@@ -123,7 +133,7 @@ def coordinate_family_from_function(
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,
-    function: Callable[[object, object], object],
+    function: Callable[[LeftLabelT, RightLabelT], CoordinateValueInputT],
     *,
     name: str,
 ) -> IndexedFamily:
