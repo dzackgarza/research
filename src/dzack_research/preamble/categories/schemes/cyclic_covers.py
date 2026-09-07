@@ -22,19 +22,17 @@ The covers constructed in this category are the globally trivialized ones,
 algebra ``A[z]/(z^n - f)``.  The graded summand ``A z^i`` is the
 trivialization of ``L^{-i}``.
 
-The deck group is ``mu_n``.  Over scalars containing a primitive ``n``-th root
-of unity ``zeta`` it is the constant group ``C_n``, acting by ``z -> zeta z``
-over the base; that is the case constructed here.  Without such a root, or in
-a characteristic dividing ``n``, the deck group is the group scheme ``mu_n``,
-which the preamble does not own, and the construction says so rather than
-letting a constant group stand in for a scheme.
+The deck group is always the group scheme ``mu_n``, acting through the scheme
+morphism whose coordinate pullback sends ``z`` to ``u z``.  When the scalars
+contain a primitive ``n``-th root of unity ``zeta`` and ``n`` is invertible,
+this action also has the familiar constant ``C_n`` realization
+``z -> zeta z``.  The two notions are kept separate: the constant action is an
+additional identification, never a replacement for ``mu_n``.
 
-The quotient by the deck action is ``X`` again: the generator multiplies the
-summand ``A z^i`` by ``zeta^i``, so an invariant element has ``a_i = 0`` for
-``0 < i < n`` and the invariant subalgebra is the degree-zero part ``A``.
-That is a theorem about the grading, not an invariant-ring computation, and
-it is what this category supplies in place of the general linear-action
-backend, which does not apply to a quotient presentation.
+The quotient by the deck action is ``X`` again: the ``mu_n``-coaction gives
+the summand ``A z^i`` weight ``i`` modulo ``n``, so the invariant subalgebra is
+the degree-zero part ``A``.  This is a theorem about the grading, not an
+invariant-ring computation, and it does not require a primitive root of unity.
 
 The relative spectrum of a cover algebra whose ``L`` is not trivial is a
 stated gap.  ``Spec`` builds an affine scheme from an owned algebra with a
@@ -64,8 +62,15 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.affine_spec import SpecFunctor
 from dzack_research.preamble.categories.schemes.schemes import (
+    AffineSchemes,
     AffineGSchemes,
     Spec,
+    _affine_morphism_from_pullback,
+    scheme_product,
+)
+from dzack_research.preamble.categories.schemes.group_schemes import (
+    AffineGroupSchemeActions,
+    roots_of_unity_group_scheme,
 )
 from dzack_research.preamble.refine import refine
 
@@ -146,7 +151,21 @@ class CyclicCovers(OwnedCategory):
 
     @cached_method
     def deck_group(self):
-        r"""Return ``C_n``, the constant deck group of a degree-``n`` cover."""
+        r"""Return the canonical deck group scheme ``mu_n``."""
+        return roots_of_unity_group_scheme(
+            self.base_algebra(),
+            self.cover_degree(),
+        )
+
+    @cached_method
+    def deck_group_scheme(self):
+        r"""Return the canonical deck group scheme ``mu_n``."""
+        return self.deck_group()
+
+    @cached_method
+    def constant_deck_group(self):
+        r"""Return the abstract cyclic group ``C_n`` for a chosen constant realization."""
+        self.deck_root_of_unity()
         return OwnedGroups().C(self.cover_degree())
 
     @cached_method
@@ -158,7 +177,7 @@ class CyclicCovers(OwnedCategory):
         )
 
     def super_categories(self):
-        return [AffineGSchemes(self.deck_group(), self.base_algebra())]
+        return [AffineSchemes(self.base_algebra())]
 
     def _repr_object_names(self):
         return (
@@ -174,33 +193,37 @@ class CyclicCovers(OwnedCategory):
         algebra = self.base_algebra()
         section = algebra(branch_section)
         degree = self.cover_degree()
-        root_of_unity = self.deck_root_of_unity()
 
         cover_algebra = cyclic_cover_presentation(algebra, section, degree)
         cover = Spec(cover_algebra)
         image = cover_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
-
-        group = self.deck_group()
-        generator = group.group_generators()[0]
-        exponents = {}
-        element = group.one()
-        for exponent in range(degree):
-            exponents[element] = exponent
-            element = element * generator
-
-        def deck_action(group_element):
-            scaling = cover_algebra(root_of_unity ** exponents[group_element])
-            return SpecFunctor(algebra)(
-                cover_algebra.Mor(cover_algebra)(
-                    {CYCLIC_COVER_VARIABLE: scaling * image}
+        group_scheme = self.deck_group_scheme()
+        product = scheme_product(group_scheme.scheme(), cover)
+        product_algebra = product.coordinate_algebra()
+        group_pullback = product.projection(0).coordinate_algebra_morphism()
+        cover_pullback = product.projection(1).coordinate_algebra_morphism()
+        group_coordinate = group_scheme.scheme().coordinate_algebra().algebra_generator("u")
+        action_pullback = cover_algebra.Mor(product_algebra)(
+            {
+                CYCLIC_COVER_VARIABLE: (
+                    group_pullback(group_coordinate) * cover_pullback(image)
                 )
-            )
+            }
+        )
+        action_morphism = _affine_morphism_from_pullback(
+            product,
+            cover,
+            action_pullback,
+        )
+        group_scheme_action = AffineGroupSchemeActions(group_scheme)(
+            cover,
+            action_morphism,
+        )
 
-        acted = AffineGSchemes(group, algebra)(cover, deck_action)
-        acted._preamble_cyclic_branch_section = section
-        acted._preamble_cyclic_cover_degree = degree
-        acted._preamble_cyclic_deck_root_of_unity = root_of_unity
-        return refine(acted, self)
+        cover._preamble_cyclic_branch_section = section
+        cover._preamble_cyclic_cover_degree = degree
+        cover._preamble_deck_group_scheme_action = group_scheme_action
+        return refine(cover, self)
 
     class ParentMethods:
         def cover_degree(self):
@@ -212,8 +235,59 @@ class CyclicCovers(OwnedCategory):
             return self._preamble_cyclic_branch_section
 
         def deck_root_of_unity(self):
-            r"""Return the primitive ``n``-th root of unity the deck generator scales by."""
-            return self._preamble_cyclic_deck_root_of_unity
+            r"""Return a primitive root identifying ``mu_n`` with the constant ``C_n`` here."""
+            return CyclicCovers(
+                self.scheme_base_ring(),
+                self.cover_degree(),
+            ).deck_root_of_unity()
+
+        def deck_group_scheme(self):
+            r"""Return the canonical deck group scheme ``mu_n``."""
+            return CyclicCovers(
+                self.scheme_base_ring(),
+                self.cover_degree(),
+            ).deck_group_scheme()
+
+        def deck_group_scheme_action(self):
+            r"""Return the canonical action ``mu_n x X -> X``."""
+            return self._preamble_deck_group_scheme_action
+
+        def constant_deck_action(self):
+            r"""Return the constant ``C_n`` action selected by a primitive root of unity.
+
+            This is defined precisely when ``deck_root_of_unity()`` succeeds;
+            the underlying ``mu_n`` action exists independently of that choice.
+            """
+            group = CyclicCovers(
+                self.scheme_base_ring(),
+                self.cover_degree(),
+            ).constant_deck_group()
+            return AffineGSchemes(group, self.scheme_base_ring())(
+                self,
+                self.constant_deck_transformation,
+            )
+
+        def constant_deck_transformation(self, group_element):
+            r"""Return the selected constant deck automorphism of this cover."""
+            root_of_unity = self.deck_root_of_unity()
+            group = CyclicCovers(
+                self.scheme_base_ring(),
+                self.cover_degree(),
+            ).constant_deck_group()
+            generator = group.group_generators()[0]
+            degree = self.cover_degree()
+            exponents = {}
+            element = group.one()
+            for exponent in range(degree):
+                exponents[element] = exponent
+                element = element * generator
+            cover_algebra = self.coordinate_algebra()
+            scaling = cover_algebra(root_of_unity ** exponents[group_element])
+            return SpecFunctor(self.scheme_base_ring())(
+                cover_algebra.Mor(cover_algebra)(
+                    {CYCLIC_COVER_VARIABLE: scaling * self.cover_variable()}
+                )
+            )
 
         def cover_variable(self):
             r"""Return ``z``, whose ``n``-th power is the branch section."""
@@ -233,11 +307,10 @@ class CyclicCovers(OwnedCategory):
         def invariant_algebra(self):
             r"""Return ``A``: the deck invariants are the degree-zero summand.
 
-            The generator multiplies ``A z^i`` by ``zeta^i`` and ``zeta`` is a
-            primitive ``n``-th root of unity, so an invariant element has
-            ``zeta^i a_i = a_i`` and hence ``a_i = 0`` for ``0 < i < n``.  No
-            invariant-ring computation is involved, and the general linear
-            backend does not apply to this quotient presentation.
+            The ``mu_n``-coaction gives ``A z^i`` weight ``i`` modulo ``n``;
+            its invariants are therefore the degree-zero summand ``A``.  No
+            primitive root of unity is required, and no invariant-ring
+            computation is involved.
             """
             return self.scheme_base_ring()
 
