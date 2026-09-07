@@ -9,6 +9,7 @@ from sage.categories.homset import Homset
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.combinat.subset import Subsets as SageSubsets
+from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ
@@ -49,6 +50,7 @@ class EnumeratedSets(OwnedCategory):
         return [Sets()]
 
     class ParentMethods:
+        @abstract_method
         def ranking_map(self):
             r"""Return the isomorphism onto the ordinal counting this set.
 
@@ -57,7 +59,6 @@ class EnumeratedSets(OwnedCategory):
             this one arrow: it takes a point to its position, and its
             :meth:`inverse` takes a position back to the point there.
             """
-            raise NotImplementedError("this enumerated set has no represented ranking map")
 
         def __getitem__(self, position):
             r"""Return the point at ``position``, the ranking map run backwards."""
