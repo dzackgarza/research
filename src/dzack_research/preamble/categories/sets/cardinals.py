@@ -59,6 +59,16 @@ class _IndexedProductCardinal:
     factors: Callable
 
 
+_CardinalExpression = (
+    _FiniteCardinal
+    | _AlephCardinal
+    | _PowerCardinal
+    | _SupremumCardinal
+    | _IndexedSumCardinal
+    | _IndexedProductCardinal
+)
+
+
 class CardinalComparison(Enum):
     LESS = -1
     EQUAL = 0
@@ -141,7 +151,7 @@ class Cardinalities(OwnedCategory):
         )
 
     class ParentMethods:
-        def __init__(self, expression, **rest) -> None:
+        def __init__(self, expression: _CardinalExpression, **rest) -> None:
             self._expression = expression
             super().__init__(**rest)
 
@@ -544,6 +554,17 @@ class _OrdinalPower:
     exponent: "Ordinal"
 
 
+_OrdinalExpression = (
+    _FiniteOrdinal
+    | _InitialOrdinal
+    | _NaturalSum
+    | _NaturalProduct
+    | _OrdinalSum
+    | _OrdinalProduct
+    | _OrdinalPower
+)
+
+
 class OrdinalSemiringMorphism(Morphism):
     r"""A declared homomorphism between represented ordinal semirings."""
 
@@ -618,7 +639,7 @@ class OrdinalSemirings(OwnedCategory):
     class ElementMethods(Element):
         r"""What an ordinal is."""
 
-        def __init__(self, parent, expression) -> None:
+        def __init__(self, parent: Parent, expression: _OrdinalExpression) -> None:
             Element.__init__(self, parent)
             self._expression = expression
 

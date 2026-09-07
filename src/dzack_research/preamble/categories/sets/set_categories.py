@@ -89,7 +89,7 @@ class FiniteOrdinalSets(OwnedCategory):
         return [EnumeratedSets(), TotallyOrderedSets(), FiniteEnumeratedSets()]
 
     class ParentMethods:
-        def __init__(self, size, **rest) -> None:
+        def __init__(self, size: int, **rest) -> None:
             self._size = int(size)
             assert self._size >= 0, "a finite ordinal cardinality is nonnegative"
             super().__init__(facade=True, **rest)
@@ -957,7 +957,7 @@ class PowerSets(OwnedCategory):
         return [Sets()]
 
     class ParentMethods:
-        def __init__(self, base_set, **rest) -> None:
+        def __init__(self, base_set: Parent, **rest) -> None:
             assert base_set in Sets(), "a power set is formed from an owned set"
             self._base_set = base_set
             super().__init__(**rest)
@@ -1120,7 +1120,7 @@ class FunctionSets(OwnedCategory):
         return [Sets()]
 
     class ParentMethods:
-        def __init__(self, codomain, exponent, **rest) -> None:
+        def __init__(self, codomain: Parent, exponent: Parent, **rest) -> None:
             assert codomain in Sets() and exponent in Sets(), (
                 "an exponential requires two owned sets"
             )
@@ -1177,7 +1177,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
         return [Sets()]
 
     class ParentMethods:
-        def __init__(self, source, subset_cardinality, **rest) -> None:
+        def __init__(self, source: Parent, subset_cardinality: int, **rest) -> None:
             self._source = source
             self._subset_cardinality = int(subset_cardinality)
             assert self._subset_cardinality >= 0, "a subset cardinality is nonnegative"
@@ -1256,7 +1256,7 @@ class FinitePowerSets(OwnedCategory):
         return [Sets()]
 
     class ParentMethods:
-        def __init__(self, source, **rest) -> None:
+        def __init__(self, source: Parent, **rest) -> None:
             self._source = source
             super().__init__(**rest)
 
@@ -1334,7 +1334,11 @@ class CartesianProductsOfSets(OwnedCategory):
     class ElementMethods(Element):
         r"""What an element of a product of a family is."""
 
-        def __init__(self, parent, components) -> None:
+        def __init__(
+            self,
+            parent: Parent,
+            components: Callable[[object], object],
+        ) -> None:
             Element.__init__(self, parent)
             self._components = components
 
@@ -1384,7 +1388,12 @@ class CartesianProductsOfSets(OwnedCategory):
 
     class ParentMethods:
 
-        def __init__(self, index_set, family, **rest) -> None:
+        def __init__(
+            self,
+            index_set: Parent,
+            family: Callable[[object], Parent],
+            **rest,
+        ) -> None:
             assert index_set in Sets(), (
                 "the index object of a product family must be an owned set"
             )
@@ -1562,7 +1571,7 @@ class CoproductsOfSets(OwnedCategory):
     class ElementMethods(Element):
         r"""What an element of a coproduct of a family is."""
 
-        def __init__(self, parent, index, value) -> None:
+        def __init__(self, parent: Parent, index: object, value: object) -> None:
             Element.__init__(self, parent)
             normalized = parent.index_set()(index)
             self._index = normalized
@@ -1593,7 +1602,12 @@ class CoproductsOfSets(OwnedCategory):
 
     class ParentMethods:
 
-        def __init__(self, index_set, family, **rest) -> None:
+        def __init__(
+            self,
+            index_set: Parent,
+            family: Callable[[object], Parent],
+            **rest,
+        ) -> None:
             assert index_set in Sets(), (
                 "the index object of a coproduct family must be an owned set"
             )
@@ -1894,7 +1908,7 @@ class NaturalNumberSets(OwnedCategory):
     class ElementMethods(Element):
         r"""What a natural number is."""
 
-        def __init__(self, parent, value) -> None:
+        def __init__(self, parent: Parent, value: object) -> None:
             Element.__init__(self, parent)
             # This constructor is an ingress boundary.  It accepts the owned
             # integer view without importing the higher ring theory back into Sets;

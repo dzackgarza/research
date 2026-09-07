@@ -1,5 +1,6 @@
 """Owned ordered enumerated sets with finite sets as a refinement."""
 
+from collections.abc import Callable
 from itertools import islice
 
 from sage.categories.category import Category
@@ -138,13 +139,13 @@ class OrderedEnumeratedSets(OwnedCategory):
     class ParentMethods:
         def __init__(
             self,
-            index_set,
-            element_at,
+            index_set: Parent,
+            element_at: Callable[[object], object],
             *,
-            index_of,
-            contains=None,
-            name=None,
-            finite=False,
+            index_of: Callable[[object], object | None],
+            contains: Callable[[object], bool] | None = None,
+            name: str | None = None,
+            finite: bool = False,
             **rest,
         ) -> None:
             assert callable(element_at), (
@@ -244,7 +245,11 @@ class FiniteOrderedSets(OwnedCategory):
         return [OrderedEnumeratedSets(), FiniteSets()]
 
     class ParentMethods:
-        def __init__(self, elements, **rest) -> None:
+        def __init__(
+            self,
+            elements: Parent | tuple[object, ...] | list[object] | range,
+            **rest,
+        ) -> None:
             index_set, element_at, index_of, contains = _finite_ordered_presentation(elements)
             super().__init__(
                 index_set,
@@ -328,7 +333,14 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         return [OrderedEnumeratedSets(), FiniteSets()]
 
     class ParentMethods:
-        def __init__(self, source, predicate, *, name=None, **rest) -> None:
+        def __init__(
+            self,
+            source: Parent,
+            predicate: Callable[[object], bool],
+            *,
+            name: str | None = None,
+            **rest,
+        ) -> None:
 
             assert cardinal(source.cardinality()).is_finite(), (
                 "a finite ordered filter requires a finite source set"
