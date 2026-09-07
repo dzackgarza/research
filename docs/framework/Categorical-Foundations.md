@@ -24,7 +24,7 @@ The category of elements is its $\mathbf{Set}$-valued special case [@nlab:grothe
 ::: {#def-subcategory}
 ## Subobjects, full and replete subcategories
 
-A *subobject* of $Y\in\mathcal C$ is a monomorphism $m:X\to Y$ in $\mathcal C$; the datum is the arrow $m$, not merely the domain $X$ [@Lur26, Tag 04VD]. Equivalently, $m$ is a subterminal object of the slice $\mathcal C_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
+A *subobject* of $Y\in\mathcal C$ is a monomorphism $m:X\to Y$ in $\mathcal C$; the datum is the arrow $m$, not merely the domain $X$ [@Lur18c, Tag 04VD]. Equivalently, $m$ is a subterminal object of the slice $\mathcal C_{/Y}$, and if the relevant pullback exists, $m$ is monic exactly when the diagonal $\Delta_m:X\to X\times_Y X$ is an equivalence.
 
 For ordinary $\mathbf{Cat}$, a functor $F:\mathcal A\to\mathcal B$ is monic if and only if it is injective on objects and faithful; hence subobjects in $\mathbf{Cat}$ are ordinary subcategories, up to isomorphism over $\mathcal B$.
 In $\operatorname{Cat}_{\infty,\infty}$, a monomorphism must also contain every equivalence between objects in its image, so not every ordinary subcategory remains a subobject after passing to $\operatorname{Cat}_{\infty,\infty}$.
@@ -34,7 +34,7 @@ $$
 \operatorname{Map}_{\mathcal D}(x,y)\simeq\operatorname{Map}_{\mathcal C}(x,y).
 $$
 It is *replete* if every object of $\mathcal C$ equivalent to an object of $\mathcal D$ also belongs to $\mathcal D$.
-An isomorphism-invariant property of objects of $\mathcal C$ defines a replete full subcategory [@stacks-001D; @nlab:replete_subcategory].
+An isomorphism-invariant property of objects of $\mathcal C$ defines a replete full subcategory [@The25, Tag 001D; @nlab:replete_subcategory].
 :::
 
 ::: {#def-concrete-category}
@@ -52,7 +52,7 @@ An *abelian category* is an additive category in which every morphism has a kern
 $$
 \operatorname{Coim}(f)\longrightarrow\operatorname{Im}(f)
 $$
-is an isomorphism [@stacks-0109]. In an abelian category, a morphism is monic exactly when its kernel is zero and epic exactly when its cokernel is zero.
+is an isomorphism [@The25, Tag 0109]. In an abelian category, a morphism is monic exactly when its kernel is zero and epic exactly when its cokernel is zero.
 :::
 
 ## Arrow and functor categories

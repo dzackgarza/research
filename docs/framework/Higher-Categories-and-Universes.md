@@ -415,7 +415,7 @@ $$
 \Pi_\infty\colon\mathbf{Cat}_{\infty,\infty}\longrightarrow\mathcal S
 $$
 is the underlying homotopy type obtained by inverting every morphism.
-The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur26, Tags 01DQ and 02F5].
+The right adjoint $C\mapsto C^\simeq$ is the core obtained by retaining every object and only the equivalences [@Lur18c, Tags 01DQ and 02F5].
 :::
 
 
@@ -583,7 +583,7 @@ f\text{ is }n\text{-truncated}
 \Delta_f\colon X\longrightarrow X\times_YX
 \text{ is }(n-1)\text{-truncated}
 $$
-[@Lur26, Tags 05F8 and 05FS].
+[@Lur18c, Tags 05F8 and 05FS].
 
 For a type $S$, $n$-truncation means $\pi_k(S,s)=0$ for every point $s$ and every $k>n$.
 A $(-2)$-truncated type is contractible, a $(-1)$-truncated type is empty or contractible, and a $0$-truncated type is a set.
@@ -660,7 +660,7 @@ $$
 \subseteq
 \mathbf{Cat}_{\infty,\infty}
 $$
-on the locally $(n-1)$-truncated higher categories [@Lur26, Tag 05EA].
+on the locally $(n-1)$-truncated higher categories [@Lur18c, Tag 05EA].
 Its inclusion supplies $\iota_n$ after an equivalence $\mathbf{Cat}_n^{\mathrm{loc}}\simeq\mathbf{Cat}_n$ has been established.
 Its left and right adjoints, when they exist, supply $\tau_{\leq n}$ and $\tau_{\leq n}^{\mathrm R}$.
 
