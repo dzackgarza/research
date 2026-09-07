@@ -124,7 +124,7 @@ class ArrowCategory(OwnedCategory):
     class ParentMethods:
         r"""A morphism of ``C`` regarded as an object of ``Arr(C)``."""
 
-        def __init__(self, arrow, **rest) -> None:
+        def __init__(self, arrow: Morphism, **rest) -> None:
             self._arrow = arrow
             super().__init__(**rest)
 

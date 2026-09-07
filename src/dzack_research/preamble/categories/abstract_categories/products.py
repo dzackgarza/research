@@ -158,7 +158,12 @@ class ConeCategory(OwnedCategory):
     r"""The category of cones over one represented diagram."""
 
     class ParentMethods:
-        def __init__(self, apex, transformation, **rest) -> None:
+        def __init__(
+            self,
+            apex: Parent,
+            transformation: NaturalTransformation,
+            **rest,
+        ) -> None:
             self._apex = apex
             self._transformation = transformation
             super().__init__(**rest)
@@ -229,7 +234,12 @@ class CoconeCategory(OwnedCategory):
     r"""The category of cocones under one represented diagram."""
 
     class ParentMethods:
-        def __init__(self, apex, transformation, **rest) -> None:
+        def __init__(
+            self,
+            apex: Parent,
+            transformation: NaturalTransformation,
+            **rest,
+        ) -> None:
             self._apex = apex
             self._transformation = transformation
             super().__init__(**rest)

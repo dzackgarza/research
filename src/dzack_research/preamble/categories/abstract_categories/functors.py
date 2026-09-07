@@ -228,7 +228,7 @@ class DiscreteCategory(OwnedCategory):
     class ParentMethods:
         r"""One object of the discrete category on a set."""
 
-        def __init__(self, value, **rest) -> None:
+        def __init__(self, value: object, **rest) -> None:
             self._value = value
             super().__init__(**rest)
 

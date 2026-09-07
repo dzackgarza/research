@@ -33,7 +33,7 @@ class DirectSumObjects(OwnedCategory):
         return [Objects()]
 
     class ParentMethods:
-        def __init__(self, summands, **rest) -> None:
+        def __init__(self, summands: IndexedFamily, **rest) -> None:
             if not isinstance(summands, IndexedFamily):
                 raise TypeError("a selected direct-sum decomposition is an indexed family")
             self._preamble_direct_sum_summands = summands

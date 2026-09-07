@@ -78,7 +78,7 @@ class OppositeCategory(OwnedCategory):
     class ParentMethods:
         r"""An object of ``C`` regarded as an object of ``C^op``."""
 
-        def __init__(self, underlying_object, **rest) -> None:
+        def __init__(self, underlying_object: Parent, **rest) -> None:
             self._underlying_object = underlying_object
             super().__init__(**rest)
 
@@ -214,7 +214,7 @@ class ProductCategory(OwnedCategory):
     class ParentMethods:
         r"""An object ``(X,Y)`` of a product category ``C x D``."""
 
-        def __init__(self, first, second, **rest) -> None:
+        def __init__(self, first: Parent, second: Parent, **rest) -> None:
             self._first = first
             self._second = second
             super().__init__(**rest)
