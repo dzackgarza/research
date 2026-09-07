@@ -116,7 +116,7 @@ function centralizer_discriminant_image(gram_entries, isometry_entries)
     coinvariant_rank = nrows(basis_matrix(coinvariant_lattice(lattice_with_isometry)))
     image, _ = image_centralizer_in_Oq(lattice_with_isometry)
     generators = [matrix(generator) for generator in gens(image)]
-    return (generators, order(image), invariant_rank, coinvariant_rank)
+    return [generators, order(image), invariant_rank, coinvariant_rank]
 end
 
 function even_unimodular_primitive_embedding(gram_entries, positive, negative)
@@ -132,17 +132,12 @@ function even_unimodular_primitive_embedding(gram_entries, positive, negative)
         basis_matrix(source_in_target);
         side = :left,
     )
-    return (
+    return [
         change_base_ring(ZZ, gram_matrix(target)),
         change_base_ring(ZZ, embedding),
-    )
+    ]
 end
 end
-[
-    DzackResearchOscarLatticeAdapter.rational_spinor_norm_sign,
-    DzackResearchOscarLatticeAdapter.centralizer_discriminant_image,
-    DzackResearchOscarLatticeAdapter.even_unimodular_primitive_embedding,
-]
 """
 
 
@@ -155,10 +150,7 @@ _OSCAR_PROVISIONING = (
 
 
 class _OscarLatticeAdapter:
-    r"""One retained-callable OSCAR realization behind ``sage-julia-bridge``."""
-
-    def __init__(self) -> None:
-        self._functions = None
+    r"""One persistent OSCAR realization behind ``sage-julia-bridge``."""
 
     def available(self) -> bool:
         if find_spec("sage_julia_bridge") is None:
@@ -166,29 +158,15 @@ class _OscarLatticeAdapter:
         juliaup = Path.home() / ".juliaup" / "bin" / "julia"
         return juliaup.exists() or shutil.which("julia") is not None
 
-    def _load_functions(self):
-        if self._functions is not None:
-            try:
-                for function in self._functions:
-                    function.identity_key()
-                return self._functions
-            except Exception as error:
-                # Only a stale/released bridge handle should invalidate this
-                # cache.  Import lazily so absence of Julia never prevents
-                # construction of an owned lattice.
-                from sage_julia_bridge import (
-                    JuliaReleasedObjectError,
-                    JuliaStaleObjectError,
-                )
-
-                if not isinstance(error, (JuliaReleasedObjectError, JuliaStaleObjectError)):
-                    raise
-                self._functions = None
-
+    def _bridge(self):
         try:
-            from sage_julia_bridge import JuliaError, JuliaHandle, julia
-
-            functions = julia.sage(_OSCAR_LATTICE_ADAPTER_SOURCE)
+            from sage_julia_bridge import JuliaError, julia
+            module_loaded = julia.sage(
+                "isdefined(Main, :DzackResearchOscarLatticeAdapter)"
+            )
+            if not module_loaded:
+                julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
+            return julia
         except Exception as error:
             try:
                 from sage_julia_bridge import JuliaError
@@ -200,19 +178,12 @@ class _OscarLatticeAdapter:
                     (EngineAbsence(_OSCAR_PROVIDER, _OSCAR_PROVISIONING),),
                 ) from error
             raise
-        if (
-            not isinstance(functions, list)
-            or len(functions) != 3
-            or any(not isinstance(function, JuliaHandle) for function in functions)
-        ):
-            raise RuntimeError("sage-julia-bridge did not retain the OSCAR lattice callables")
-        self._functions = tuple(functions)
-        return self._functions
 
     def rational_spinor_norm_sign(self, gram, isometry):
-        function = self._load_functions()[0]
+        bridge = self._bridge()
         value = SageQQ(
-            function(
+            bridge.call(
+                "DzackResearchOscarLatticeAdapter.rational_spinor_norm_sign",
                 _integer_engine_matrix(gram),
                 _integer_engine_matrix(isometry, transpose=True),
             )
@@ -222,8 +193,8 @@ class _OscarLatticeAdapter:
         return SageZZ.one() if value > 0 else -SageZZ.one()
 
     def centralizer_discriminant_image(self, gram, isometry):
-        function = self._load_functions()[1]
-        result = function(
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.centralizer_discriminant_image",
             _integer_engine_matrix(gram),
             _integer_engine_matrix(isometry, transpose=True),
         )
@@ -252,8 +223,8 @@ class _OscarLatticeAdapter:
         )
 
     def even_unimodular_primitive_embedding(self, gram, positive, negative):
-        function = self._load_functions()[2]
-        result = function(
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.even_unimodular_primitive_embedding",
             _integer_engine_matrix(gram),
             int(positive),
             int(negative),
