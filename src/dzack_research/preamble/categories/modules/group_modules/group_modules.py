@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.algebras.group_algebras import (
 from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
+from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.group.class_functions import (
     finite_group_class_function,
 )
@@ -132,7 +133,11 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
         return Modules(ring).trivial_action(self.acting_group())(Modules(ring).an_object())
 
     def _call_(self, module, action):
-        r"""Equip an ``R``-module with a left ``G``-action, ``action(g, m)``."""
+        r"""Equip an ``R``-module from ``BG -> Modules(R)`` or ``action(g,m)``."""
+        if isinstance(action, Functor):
+            if action.domain() != self.acting_group().classifying_category():
+                raise ValueError("the action functor has the wrong acting group")
+            return _equip_action(module, action)
         return _equip_action(module, self.acting_group(), action)
 
     def is_semisimple(self) -> bool:
@@ -357,6 +362,22 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             endomorphisms = Modules(self.base_ring()).Mor(self, self)
             labels = self.module_generating_set()
             return Sets().Mor(self.group(), endomorphisms)(lambda group_element: endomorphisms({label: self.module_generator(group_element * label) for label in labels}))
+
+        @cached_method
+        def action_functor(self):
+            if not self._is_the_regular_module():
+                return super().action_functor()
+            from dzack_research.preamble.categories.functors.group_actions import (
+                GroupActionFunctor,
+            )
+
+            action = self.action()
+            return GroupActionFunctor(
+                self.group(),
+                Modules(self.base_ring()),
+                self,
+                lambda group_element: action(group_element),
+            )
 
         def is_trivial_action(self) -> bool:
             if self._is_the_regular_module():
@@ -654,6 +675,13 @@ class GroupModuleMorphism(ModuleMorphism):
             verify_linearity=False,
         )
 
+    def natural_transformation(self):
+        r"""Return this equivariant map as the corresponding transformation ``BG => C``."""
+        source = self.domain().action_functor()
+        target = self.codomain().action_functor()
+        component = self.parent().underlying_homset()(self)
+        return NaturalTransformation(source, target, lambda _obj: component)
+
 
 class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
     Element = GroupModuleMorphism
@@ -718,18 +746,32 @@ def _equip_action(module, group_or_action, action=None, *, _action_is_trivial=Fa
         raise NotImplementedError("equipping an action requires a represented finite presentation")
     if action is None:
         action = group_or_action
-        if not isinstance(action, Map):
-            raise TypeError("with two arguments, an action morphism whose domain is the acting group is expected")
-        match action.domain():
-            case group_algebra if group_algebra in GroupAlgebras(base_ring):
-                # ``rho: R[G] -> End_R(M)`` restricted along ``G -> R[G]``.
-                group = group_algebra.group()
-                ring_action = action
+        if isinstance(action, Functor):
+            classifying = action.domain()
+            if action.codomain() != Modules(base_ring):
+                raise ValueError("a module action functor must land in Modules(R)")
+            group = _owned_group(classifying.group())
+            if action(classifying.an_object()) is not module:
+                raise ValueError("the action functor must select the module being equipped")
+            arrows = classifying.Mor(classifying.an_object(), classifying.an_object())
+            functor_action = action
 
-                def action(group_element, vector):
-                    return ring_action(group_algebra.module_generator(group_element))(vector)
-            case acting_group:
-                group = _owned_group(acting_group)
+            def action(group_element, vector):
+                return functor_action(arrows(group_element))(vector)
+
+        elif not isinstance(action, Map):
+            raise TypeError("with two arguments, an action functor or morphism with the acting group as domain is expected")
+        else:
+            match action.domain():
+                case group_algebra if group_algebra in GroupAlgebras(base_ring):
+                    # ``rho: R[G] -> End_R(M)`` restricted along ``G -> R[G]``.
+                    group = group_algebra.group()
+                    ring_action = action
+
+                    def action(group_element, vector):
+                        return ring_action(group_algebra.module_generator(group_element))(vector)
+                case acting_group:
+                    group = _owned_group(acting_group)
     else:
         group = _owned_group(group_or_action)
 

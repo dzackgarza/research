@@ -9,9 +9,10 @@ conjugation.  The forgetful functor to ``C`` is evaluation at the one object
 of ``BG``.
 
 ``GSets(G)`` is ``GObjects(G, Sets())``, and ``Modules(R[G])`` refines
-``GObjects(G, Modules(R))``.  A specialization constructs its objects through
-``C``'s own constructor and supplies the action as the one datum of this
-level: a function from group elements to data that ``Mor_C(X, X)`` accepts.
+``GObjects(G, Modules(R))``.  The generic constructor takes the actual functor
+``BG -> C``.  Represented specializations may retain their concrete carrier,
+but expose that same functor through ``action_functor()``; their private
+elementwise action data are only a realization of the categorical action.
 """
 
 from sage.categories.category import Category
@@ -24,7 +25,9 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
@@ -70,6 +73,16 @@ class EquivariantMorphism(Morphism):
     def underlying_arrow(self):
         r"""Return the same morphism read in the underlying category."""
         return self._arrow
+
+    def natural_transformation(self):
+        r"""Return the corresponding natural transformation between action functors."""
+        from dzack_research.preamble.categories.functors.core import NaturalTransformation
+
+        return NaturalTransformation(
+            self.domain().action_functor(),
+            self.codomain().action_functor(),
+            lambda _obj: self.underlying_arrow(),
+        )
 
     def _call_(self, element):
         return self._arrow(element)
@@ -175,20 +188,51 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         return self._category
 
     def super_categories(self):
-        return [self.underlying_category()]
+        # G-objects are not a subcategory of C: forgetting an action is a
+        # functor, not an inclusion.  Concrete represented specializations
+        # (finite G-sets, R[G]-modules, affine G-schemes) separately list both
+        # this category and their underlying concrete category as supers.
+        from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+        return [Objects()]
 
     def _repr_object_names(self):
         return f"{self.acting_group()}-objects in {self.underlying_category()._repr_object_names()}"
 
     _HomCategory = GObjectHomCategoryConstruction
 
-    def _call_(self, obj, action):
-        r"""Equip a represented object of ``C`` with the stated ``G``-action.
+    def functor_category(self):
+        r"""Return the represented functor category ``[BG,C]``."""
+        return Cat().Mor(
+            self.acting_group().classifying_category(),
+            self.underlying_category(),
+        )
 
-        Each specialization owns the construction boundary needed to keep the
-        underlying mathematical object separate from the newly acted object.
-        The represented scheme specialization is currently affine.
+    def __contains__(self, candidate) -> bool:
+        if candidate in self.functor_category():
+            return True
+        return super().__contains__(candidate)
+
+    def _call_(self, datum, action=None):
+        r"""Construct a ``G``-object from an actual functor ``BG -> C``.
+
+        ``GObjects(G,C)(F)`` is the generic constructor.  The two-argument
+        spelling remains only as the concrete affine-scheme compatibility
+        boundary while that specialization owns a carrier object in ``C``.
+        Finite G-sets and R[G]-modules construct through their own categories.
         """
+        if action is None:
+            if not isinstance(datum, Functor):
+                raise TypeError("a generic G-object is constructed from a functor BG -> C")
+            if datum.domain() != self.acting_group().classifying_category():
+                raise ValueError("the action functor has the wrong classifying-category domain")
+            if datum.codomain() != self.underlying_category():
+                raise ValueError("the action functor has the wrong underlying-category codomain")
+            return self.functor_category()(datum)
+
+        obj = datum
+        # Compatibility boundary for the existing represented affine-scheme
+        # specialization, which retains its concrete carrier and quotient API.
         category = self.underlying_category()
         if obj not in category:
             raise TypeError(f"{obj} is not an object of {category}")
@@ -211,6 +255,32 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 raise NotImplementedError(
                     f"no represented constructor equips an object of {category} with a group action"
                 )
+
+    def Mor(self, source, target):
+        r"""Equivariant morphisms, as natural transformations on generic actions."""
+        functors = self.functor_category()
+        if source in functors and target in functors:
+            return functors.Mor(source, target)
+        return CategoryPacketMethods.Mor(self, source, target)
+
+    def forgetful_functor(self):
+        r"""Evaluation at the unique object, ``GObjects(G,C) -> C``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            ForgetGroupActionFunctor,
+        )
+
+        return ForgetGroupActionFunctor(self.acting_group(), self.underlying_category())
+
+    def transport(self, functor):
+        r"""Postcompose actions by ``functor: C -> D``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            TransportGroupActionFunctor,
+        )
+
+        assert functor.domain() == self.underlying_category(), (
+            "transport must start in the underlying category"
+        )
+        return TransportGroupActionFunctor(self.acting_group(), functor)
 
     def restriction(self, group_morphism):
         r"""Return ``phi^*: GObjects(G, C) -> GObjects(H, C)`` for ``phi: H -> G``.
@@ -288,6 +358,32 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             return self._preamble_underlying_category
 
         @cached_method
+        def action_functor(self):
+            r"""Return this represented action as the actual functor ``BG -> C``."""
+            from dzack_research.preamble.categories.functors.group_actions import (
+                GroupActionFunctor,
+            )
+
+            endomorphisms = self.underlying_category().Mor(self, self)
+            datum = self._preamble_action_datum
+            functor = GroupActionFunctor(
+                self.acting_group(),
+                self.underlying_category(),
+                self,
+                lambda group_element: endomorphisms(datum(group_element)),
+            )
+            action = Sets().Mor(self.acting_group(), endomorphisms)(
+                lambda group_element: functor(
+                    functor.domain().Mor(
+                        functor.domain().an_object(),
+                        functor.domain().an_object(),
+                    )(group_element)
+                )
+            )
+            _verify_relators(action, self.acting_group(), endomorphisms)
+            return functor
+
+        @cached_method
         def action(self):
             r"""Return the chosen action as the set morphism ``G -> Mor_C(X, X)``.
 
@@ -296,12 +392,13 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             images are checked against the group's chosen relators once, here.
             """
             endomorphisms = self.underlying_category().Mor(self, self)
-            datum = self._preamble_action_datum
-            action = Sets().Mor(self.acting_group(), endomorphisms)(
-                lambda group_element: endomorphisms(datum(group_element))
+            functor = self.action_functor()
+            classifying = functor.domain()
+            point = classifying.an_object()
+            arrows = classifying.Mor(point, point)
+            return Sets().Mor(self.acting_group(), endomorphisms)(
+                lambda group_element: functor(arrows(group_element))
             )
-            _verify_relators(action, self.acting_group(), endomorphisms)
-            return action
 
         @cached_method
         def action_of(self, group_element):

@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
+from dzack_research.preamble.categories.functors.core import NaturalTransformation
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _engine_group,
@@ -242,6 +243,15 @@ class GSetMorphism(SetMorphism):
         return Sets().Mor(self.domain().point_set(), self.codomain().point_set())(
             lambda point: self(point)
         )
+
+    def natural_transformation(self):
+        r"""Return this equivariant map as the corresponding transformation ``BG => Set``."""
+        source = self.domain().action_functor()
+        target = self.codomain().action_functor()
+        component = Sets().Mor(self.domain(), self.codomain())(
+            lambda point: self(point)
+        )
+        return NaturalTransformation(source, target, lambda _obj: component)
 
     def is_injective(self) -> bool:
         return self._as_set_map().is_injective()

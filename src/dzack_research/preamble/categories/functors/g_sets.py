@@ -16,6 +16,7 @@ from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.group.g_sets import (
     FiniteGSets,
+    GSets,
     OrbitSets,
     _finite_g_set_from_action,
     fixed_point_set,
@@ -200,16 +201,17 @@ class UnderlyingFiniteGSetFunctor(Functor):
 
     def __init__(self, group) -> None:
         self._group = _owned_group(group)
+        self._generic_forgetful = GSets(self._group).forgetful_functor()
         super().__init__(FiniteGSets(self._group), FiniteSets())
 
     def group(self):
         return self._group
 
     def _apply_object(self, g_set):
-        return g_set
+        return self._generic_forgetful(g_set)
 
     def _apply_morphism(self, morphism):
-        return Sets().Mor(morphism.domain(), morphism.codomain())(morphism)
+        return self._generic_forgetful(morphism)
 
     def _repr_(self):
         return f"Underlying finite-set functor on {self.group()}-sets"
