@@ -3123,6 +3123,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| `A1-restricted-automorphisms-20260907-1555` | A1 / equivariant automorphisms and stable-piece restrictions | Chat continuation 2026-09-07 15:55 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; tests/groups/test_restricted_actions.py` (write) | `5fcb841cd22366f2d8f1036929900ed053be0fa5` | 2026-09-07T07:22:27Z |
 | `C-set-public-signatures-20260907-1630` | C / public set and cardinal construction signatures | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/sets/cardinals.py; src/dzack_research/preamble/categories/sets/finite_ordered_sets.py; src/dzack_research/preamble/categories/sets/fixed_size_selections.py; src/dzack_research/preamble/categories/sets/set_categories.py` (write) | `7310bad8a9ac5315887b60a594e5e95b7f4d01f6` | 2026-09-07T07:20:49Z |
 
 #### Existing work awaiting adoption
