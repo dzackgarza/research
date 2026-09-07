@@ -95,3 +95,32 @@ The dual convention applies to corepresentable covariant functors.
 For every presheaf $F\colon C^{\mathrm{op}}\to\mathbf{Set}$, use the category of elements and discrete-fibration convention of @def-category-of-elements.
 Thus the projection $\int_C F\to C$ is a discrete fibration; no additional opposite category is taken after forming $\int_C F$.
 :::
+
+::: {#def-smooth-manifold}
+## Smooth manifolds as locally ringed spaces
+
+Let $\mathsf{LRS}_{\mathbb{R}}$ denote the category of locally $\mathbb{R}$-ringed spaces: topological spaces equipped with a sheaf of $\mathbb{R}$-algebras whose stalks are local rings [@nlab:locally_ringed_space]. The standard local model of dimension $n$ is
+$$
+M_n := (\mathbb{R}^n,\, C^\infty_{\mathbb{R}^n}),
+$$
+the Euclidean space with its sheaf of smooth real-valued functions.
+
+A *smooth atlas* for an object $X \in \mathsf{LRS}_{\mathbb{R}}$ is a morphism $p\colon U \to X$ such that:
+
+1. $U$ is isomorphic to a coproduct of local models: $U \cong \coprod_{i \in I} M_{n_i}$.
+
+2. For every component inclusion $\iota_i\colon M_{n_i} \hookrightarrow U$, the composite $p \circ \iota_i\colon M_{n_i} \to X$ is an open immersion.
+
+3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair
+$$
+U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
+$$
+
+A *smooth manifold* is an object $X \in \mathsf{LRS}_{\mathbb{R}}$ that admits a smooth atlas [@nlab:effective_epimorphism; @nlab:smooth_manifold].
+
+The data encode the classical construction as follows.
+The object $U$ is the disjoint union of charts.
+The fibered product $U \times_X U$ represents the pairwise intersections of charts in $X$.
+The two projections $\pi_1, \pi_2\colon U \times_X U \to U$ encode the transition functions.
+The coequalizer condition forces $X$ to be the colimit obtained from charts glued along their transitions: the classical manifold, recovered without point-set intersections.
+:::
