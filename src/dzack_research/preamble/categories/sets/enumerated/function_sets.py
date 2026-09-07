@@ -4,6 +4,7 @@ from operator import index as integer_index
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
+from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
@@ -27,7 +28,7 @@ def _nonnegative_integer(value, *, error_type):
     return ZZ(value)
 
 
-def integer_from_natural(n):
+def integer_from_natural(n: object) -> Integer:
     r"""The bijection \(\mathbb N\to\mathbb Z\) sending \(0,1,2,3,4,\ldots\) to \(0,1,-1,2,-2,\ldots\)."""
     n = _nonnegative_integer(n, error_type=IndexError)
     if n == 0:
@@ -37,7 +38,7 @@ def integer_from_natural(n):
     return -n // 2
 
 
-def natural_from_integer(k):
+def natural_from_integer(k: object) -> Integer:
     r"""The inverse of :func:`integer_from_natural`."""
     k = ZZ(k)
     if k == 0:
@@ -47,7 +48,7 @@ def natural_from_integer(k):
     return -2 * k
 
 
-def indexed_symbol(prefix: str, index, latex_prefix: str):
+def indexed_symbol(prefix: str, index: object, latex_prefix: str) -> object:
     r"""The symbol in \(\mathrm{SR}\) for this prefix and integer index."""
     index = ZZ(index)
     if index >= 0:
@@ -57,7 +58,11 @@ def indexed_symbol(prefix: str, index, latex_prefix: str):
     return SR.var(name, latex_name=rf"{latex_prefix}_{{{index}}}")
 
 
-def index_of_symbol(elt, prefix: str, latex_prefix: str | None = None):
+def index_of_symbol(
+    elt: object,
+    prefix: str,
+    latex_prefix: str | None = None,
+) -> Integer:
     r"""Return \(n\) when ``elt`` is the indexed symbol of this prefix."""
     if elt not in SR:
         raise ValueError(elt)

@@ -1,5 +1,7 @@
 """Finite indexed families on the canonical finite ordinal."""
 
+from collections.abc import Iterable
+
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -7,7 +9,11 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-def finite_family(values, *, name=None):
+def finite_family(
+    values: IndexedFamily | Iterable[object],
+    *,
+    name: str | None = None,
+) -> IndexedFamily:
     r"""Return the family over \(\Delta[k-1]\) taking the stated values in order.
 
     A finite sequence of owned values is a family, not a set: two of them may be

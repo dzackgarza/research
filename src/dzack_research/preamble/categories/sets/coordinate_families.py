@@ -1,5 +1,9 @@
 """Finite coordinate presentations built from owned indexed families."""
 
+from collections.abc import Callable
+
+from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -11,7 +15,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 
 
-def finite_framing(module):
+def finite_framing(module: Parent) -> Parent:
     r"""Return a selected module framing after asserting that it is finite."""
 
     labels = module.module_generating_set()
@@ -20,7 +24,7 @@ def finite_framing(module):
     return labels
 
 
-def coordinate_index_set(left_labels, right_labels):
+def coordinate_index_set(left_labels: Parent, right_labels: Parent) -> Parent:
     r"""Return the dependent two-factor index set for a rectangular family."""
 
     return CartesianProductOfFamily(
@@ -29,7 +33,7 @@ def coordinate_index_set(left_labels, right_labels):
     )
 
 
-def coerce_family_value(value_module, value):
+def coerce_family_value(value_module: Parent, value: object) -> object:
     return (
         value
         if getattr(value, "parent", lambda: None)() is value_module
@@ -37,7 +41,14 @@ def coerce_family_value(value_module, value):
     )
 
 
-def coordinate_family(left_labels, right_labels, value_module, datum, *, name):
+def coordinate_family(
+    left_labels: Parent,
+    right_labels: Parent,
+    value_module: Parent,
+    datum: object,
+    *,
+    name: str,
+) -> IndexedFamily:
     r"""Parse finite rectangular data as a family indexed by ``left × right``."""
     indices = coordinate_index_set(left_labels, right_labels)
     if isinstance(datum, IndexedFamily):
@@ -97,7 +108,11 @@ def coordinate_family(left_labels, right_labels, value_module, datum, *, name):
     )
 
 
-def coordinate_pair(values, left_label, right_label):
+def coordinate_pair(
+    values: IndexedFamily,
+    left_label: object,
+    right_label: object,
+) -> object:
     indices = values.index_set()
     return values[
         indices(lambda index: left_label if int(index) == 0 else right_label)
@@ -105,13 +120,13 @@ def coordinate_pair(values, left_label, right_label):
 
 
 def coordinate_family_from_function(
-    left_labels,
-    right_labels,
-    value_module,
-    function,
+    left_labels: Parent,
+    right_labels: Parent,
+    value_module: Parent,
+    function: Callable[[object, object], object],
     *,
-    name,
-):
+    name: str,
+) -> IndexedFamily:
     indices = coordinate_index_set(left_labels, right_labels)
     return indexed_family(
         indices,
