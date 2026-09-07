@@ -3124,7 +3124,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `C-set-data-signatures-20260907-1630` | C / defining-data signatures on set category implementation classes | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/sets/cardinals.py; src/dzack_research/preamble/categories/sets/finite_ordered_sets.py; src/dzack_research/preamble/categories/sets/set_categories.py` (write) | `027c097fb17fde72bf80c59c9b5c1a2192196822` | 2026-09-07T07:13:13Z |
-| `A0-finite-gset-torsors-20260907-1455` | A0 / finite G-set torsors and action stabilizers | Chat continuation 2026-09-07 14:55 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/g_sets.py; tests/groups/test_categorical_group_actions.py` (write) | `2bdbada3abe732237949eee0a3ed89701c633483` | 2026-09-07T06:58:18Z |
+| `A0-finite-gset-torsors-20260907-1455` | A0 / finite G-set torsors and action stabilizers | Chat continuation 2026-09-07 14:55 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/g_sets.py; tests/groups/test_categorical_group_actions.py; src/dzack_research/preamble/categories/functors/g_sets.py` (write) | `2bdbada3abe732237949eee0a3ed89701c633483` | 2026-09-07T07:14:39Z |
 
 #### Existing work awaiting adoption
 
