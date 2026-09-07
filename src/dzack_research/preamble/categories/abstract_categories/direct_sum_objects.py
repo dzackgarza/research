@@ -1,6 +1,7 @@
 r"""Objects equipped with a chosen finite direct-sum decomposition."""
 
 from collections.abc import Iterable
+from typing import TypeVar
 
 from sage.structure.parent import Parent
 
@@ -9,7 +10,9 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
+
+
+LabelT = TypeVar("LabelT")
 
 
 class DirectSumObjects(OwnedCategory):
@@ -46,7 +49,7 @@ class DirectSumObjects(OwnedCategory):
         def summand_index_set(self) -> Parent:
             return self._preamble_direct_sum_index_set
 
-        def summand(self, label) -> Parent:
+        def summand(self, label: LabelT) -> Parent:
             labels = self.summand_index_set()
             if label not in labels:
                 raise ValueError(f"{label!r} is not a summand label")
@@ -54,37 +57,6 @@ class DirectSumObjects(OwnedCategory):
 
         def number_of_summands(self) -> Parent:
             return self.summand_index_set().cardinality()
-
-
-def _binary_decomposition_is_valid(underlying_object, summands) -> bool:
-    if summands.cardinality() != cardinal(2):
-        return False
-    left = summands[0]
-    right = summands[1]
-    try:
-        represented = underlying_object.biproduct_factors()
-        return represented[0] is left and represented[1] is right
-    except (AttributeError, TypeError, ValueError):
-        pass
-
-    try:
-        left_inclusion = left.inclusion()
-        right_inclusion = right.inclusion()
-    except AttributeError:
-        return False
-    if (
-        left_inclusion.codomain() is not underlying_object
-        or right_inclusion.codomain() is not underlying_object
-    ):
-        return False
-
-
-    biproduct = Biproduct(left, right)
-    map_to_object = biproduct.from_summands(left_inclusion, right_inclusion)
-    try:
-        return map_to_object.is_injective() and map_to_object.is_surjective()
-    except (AttributeError, NotImplementedError):
-        return False
 
 
 def DirectSumDecomposition(
@@ -118,27 +90,12 @@ def DirectSumDecomposition(
             name=f"Direct summands of {underlying_object}",
         )
 
-    size = family.cardinality()
-    if size == cardinal(2) and not _binary_decomposition_is_valid(underlying_object, family):
-        raise ValueError(
-            "the represented backend cannot verify that the stated family is a direct-sum decomposition"
-        )
-    if size == cardinal(1):
-        only = family[0]
-        if only is not underlying_object:
-            try:
-                inclusion = only.inclusion()
-            except AttributeError as error:
-                raise ValueError("a one-summand decomposition must be the object itself") from error
-            if inclusion.codomain() is not underlying_object or not inclusion.is_surjective():
-                raise ValueError("the stated one summand does not equal the object")
-
-    selected = underlying_object.__dict__.get("_preamble_direct_sum_summands")
-    selected_labels = underlying_object.__dict__.get("_preamble_direct_sum_index_set")
-    if selected is None or selected_labels is None:
+    if underlying_object not in DirectSumObjects():
         raise ValueError(
             "direct-sum decomposition data must be supplied by the object's constructor"
         )
+    selected = underlying_object.summands()
+    selected_labels = underlying_object.summand_index_set()
     if labels != selected_labels:
         raise ValueError("the stated summand labels differ from the constructor-owned labels")
     if any(selected[label] is not family[label] for label in labels):
