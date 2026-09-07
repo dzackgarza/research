@@ -80,14 +80,20 @@ $$
 $$
 Consequently, the fiber of $\pi_0(E)\to\pi_0(B)$ need not equal $\pi_0(F)$ [@May99]. A set-valued invariant formed from this sequence must specify whether it uses the fiber after $\pi_0$ or the components of the homotopy fiber.
 
-## Generalized elements and representability
+::: {#def-generalized-element}
+## Generalized elements
 
 A *generalized element* of $X\in C$ with domain $T$ is a morphism $T\to X$.
 For a presheaf $F\colon C^{\mathrm{op}}\to\mathbf{Set}$, an element $x\in F(T)$ is an object $(T,x)$ of $\int_C F$.
+:::
 
-The presheaf $F$ is representable if there is an object $X$ and a natural isomorphism $F\cong\operatorname{Hom}_C(-,X)$.
+::: {#def-representable-presheaf}
+## Representable presheaves
+
+The presheaf $F$ is *representable* if there is an object $X$ and a natural isomorphism $F\cong\operatorname{Hom}_C(-,X)$.
 Under this isomorphism, $\operatorname{id}_X$ corresponds to the universal element.
 The dual convention applies to corepresentable covariant functors.
+:::
 
 ::: {#def-el-convention}
 ## The $\int_C F$ convention {#sec-el}

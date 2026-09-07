@@ -2,6 +2,7 @@
 
 Let $\mathcal C$ be a pointed $\infty$-category, with zero object $*$, and suppose that it has the finite limits and colimits required below.
 
+::: {#def-fiber-cofiber}
 ## Fibers and cofibers {#sec-cobase-changes}
 
 For $f\colon X\to Y$, its fiber over the canonical basepoint $0\colon *\to Y$ is defined by the cartesian square
@@ -43,7 +44,9 @@ $$
 \operatorname{Cof}(f)=Y\amalg_X *.
 $$
 These definitions specialize in pointed spaces to the usual homotopy fiber and homotopy cofiber.
+:::
 
+::: {#def-loops-suspension}
 ## Loops and suspension
 
 For an object $X$ of $\mathcal C$, loops are defined by the pullback square
@@ -83,6 +86,7 @@ $$
 \Sigma X=*\amalg_X *.
 $$
 In pointed spaces these are the usual loop-space and reduced-suspension constructions.
+:::
 
 ## Arrow categories and path spaces {#sec-interval-presentations}
 
@@ -107,8 +111,10 @@ $$
 \operatorname{Map}_*(X,\Omega Y).
 $$
 
+::: {#def-fiber-sequence}
 ## Fiber sequences
 
-A composable pair $F\to E\to B$ is a fiber sequence when $F$ is equivalent to the homotopy fiber over a specified basepoint of $B$.
+A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber over a specified basepoint of $B$.
 Applying homotopy groups gives the long exact sequence.
 Its component-level portion is the pointed-set sequence recorded in @sec-pi0-fiber.
+:::

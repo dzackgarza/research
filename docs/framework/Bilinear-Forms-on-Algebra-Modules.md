@@ -15,8 +15,7 @@ $$
 \qquad
 \eta\colon R\longrightarrow A
 $$
-satisfying the associativity and unitality diagrams [@nlab:associative_algebra].
-Equivalently, $A$ is a ring equipped with a ring homomorphism $R\to A$ whose image lies in the centre of $A$.
+satisfying the associativity and unitality diagrams [@nlab:associative_algebra]. Equivalently, $A$ is a ring equipped with a ring homomorphism $R\to A$ whose image lies in the centre of $A$.
 A homomorphism of associative unital $R$-algebras is an $R$-linear map preserving $\mu$ and $\eta$.
 Write $R\text{-}\mathbf{Alg}$ for the resulting category, and
 $$
@@ -49,8 +48,7 @@ The tensor product $A\otimes_R A$ in $R\text{-}\mathbf{Alg}$ is the monoid in $R
 $$
 (a\otimes b)(c\otimes d)=ac\otimes bd
 $$
-[@nlab:associative_algebra].
-An *algebra bilinear form* on $A$, with values in $R$, is an element of
+[@nlab:associative_algebra]. An *algebra bilinear form* on $A$, with values in $R$, is an element of
 $$
 \operatorname{Hom}_{R\text{-}\mathbf{Alg}}(A\otimes_R A,R).
 $$
@@ -128,8 +126,7 @@ The following are equivalent:
 If these hold, then $\varepsilon(x)=B(x,1_A)=B(1_A,x)$.
 
 Given (1), set $\varepsilon(x)=B(x,1_A)$.
-Then $B(x,y)=B(x,y\cdot 1_A)=B(xy,1_A)=\varepsilon(xy)$, and
-$B(1_A,y)=B(1_A,y\cdot 1_A)=B(y,1_A)$.
+Then $B(x,y)=B(x,y\cdot 1_A)=B(xy,1_A)=\varepsilon(xy)$, and $B(1_A,y)=B(1_A,y\cdot 1_A)=B(y,1_A)$.
 Given (2), $B(xy,z)=\varepsilon((xy)z)=\varepsilon(x(yz))=B(x,yz)$.
 :::
 
