@@ -189,7 +189,10 @@ class CategoryInclusionFunctor(Functor):
         return f"Inclusion {self.domain()} -> {self.codomain()}"
 
 
-def category_inclusion(subcategory, supercategory) -> CategoryInclusionFunctor:
+def category_inclusion(
+    subcategory: Category,
+    supercategory: Category,
+) -> CategoryInclusionFunctor:
     r"""Return the canonical functor attached to ``subcategory <= supercategory``."""
     return CategoryInclusionFunctor(subcategory, supercategory)
 

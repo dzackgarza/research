@@ -31,7 +31,7 @@ class UnderlyingSetHomset(OwnedHomset):
 
     Element = SetMorphism
 
-    def __init__(self, domain, codomain) -> None:
+    def __init__(self, domain: Parent, codomain: Parent) -> None:
         Homset.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, datum):

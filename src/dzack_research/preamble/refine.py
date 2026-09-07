@@ -136,7 +136,7 @@ def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> N
         )
 
 
-def realize_owned_category(obj: SageObject):
+def realize_owned_category(obj: SageObject) -> SageObject:
     r"""Realize the owned methods of the category already chosen at construction.
 
     This is runtime plumbing, not mathematical refinement.  In particular it
@@ -192,7 +192,10 @@ def run_construction_hooks(obj: SageObject, reached: set[type]) -> None:
             provider.__init_extra__(obj)
 
 
-def refine(obj: SageObject, category: Category | Iterable[Category]):
+def refine(
+    obj: SageObject,
+    category: Category | Iterable[Category],
+) -> SageObject:
     r"""Add a verified property/axiom category to an already constructed object."""
     target = category if isinstance(category, Category) else Category.join(tuple(category))
     _assert_certifying_predicates_hold(obj, target)
