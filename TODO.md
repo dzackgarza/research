@@ -3123,6 +3123,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| `A0-finite-gset-torsors-20260907-1455` | A0 / finite G-set torsors and action stabilizers | Chat continuation 2026-09-07 14:55 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/g_sets.py; tests/groups/test_categorical_group_actions.py` (write) | `2bdbada3abe732237949eee0a3ed89701c633483` | 2026-09-07T06:58:18Z |
 
 #### Existing work awaiting adoption
 
