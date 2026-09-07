@@ -3123,6 +3123,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| `A0-affine-sections-variance-20260907-1510` | A0 / affine action on sections with contravariant variance | Current ChatGPT task 2026-09-07; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/schemes.py; src/dzack_research/preamble/categories/schemes/quotients.py; src/dzack_research/preamble/all.py; tests/schemes/test_cyclic_covers_linearization.py` (write) | `f10b7948` | 2026-09-07T15:10:00Z |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
 
 #### Existing work awaiting adoption
