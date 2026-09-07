@@ -131,6 +131,27 @@ class CategoryFunctorHomset(CategoricalHomset):
     def category_of_categories(self) -> "Cat":
         return self._category_of_categories
 
+    def functor_category(self) -> "FunctorCategory":
+        return self.category_of_categories().Mor(self.domain(), self.codomain())
+
+    @property
+    def _HomCategory(self) -> type["NaturalTransformationHomCategoryConstruction"]:
+        return NaturalTransformationHomCategoryConstruction
+
+    def super_categories(self):
+        # This runtime Hom-set represents exactly the functors and natural
+        # transformations of [C,D], not a discretization of those functors.
+        return [self.functor_category()]
+
+    def object(self, functor: Functor | CategoryFunctorMorphism) -> Parent:
+        return self.functor_category().object(functor)
+
+    def _hom_endpoint(self, obj: Parent | Functor | CategoryFunctorMorphism) -> Parent:
+        return self.functor_category()._hom_endpoint(obj)
+
+    def __contains__(self, candidate: Any) -> bool:
+        return candidate in self.functor_category()
+
     def _element_constructor_(self, functor):
         if isinstance(functor, CategoryFunctorMorphism):
             if functor.parent() is self:
@@ -648,6 +669,7 @@ class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
     category, whose morphisms are actual natural transformations::
 
         sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, NaturalTransformations
+        sage: from dzack_research.preamble.categories.abstract_categories.hom_categories import category_packet
         sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
         sage: points = finite_ordered_set(("a", "b"))
         sage: category = DiscreteCategory(points)
@@ -665,12 +687,18 @@ class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
         sage: transformations = NaturalTransformations(identity, identity)
         sage: transformations is hom.Mor(hom(identity), hom(identity))
         True
+        sage: transformations is hom.arrow_set().two_hom(identity, identity)
+        True
+        sage: transformations is category_packet(hom.arrow_set()).Homs().Of(identity, identity)
+        True
         sage: eta = transformations(lambda obj: category.Mor(obj, obj).identity())
         sage: (eta * eta).component(category("a")) == eta.component(category("a"))
         True
         sage: transformations.identity() * eta is eta
         True
         sage: eta * transformations.identity() is eta
+        True
+        sage: IdentityFunctor(hom)(eta) is eta
         True
         sage: hom.identity_2(cat.arrow(identity)).parent() is transformations
         True
