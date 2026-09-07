@@ -507,6 +507,8 @@ class Modules(OwnedCategoryOverBaseRing):
 
     def _hom_parent_placement(self, domain, codomain, *, full_internal_hom=False):
         r"""Return the category chosen when the canonical module Hom is constructed."""
+        from sage.rings.integer_ring import ZZ as SageZZ
+
         from dzack_research.preamble.categories.group.additive_homsets import (
             AdditiveEndomorphismRings,
             AdditiveHomGroups,
@@ -514,7 +516,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
         ring = self.base_ring()
         if ring not in OwnedRings().Commutative():
-            return AdditiveEndomorphismRings() if domain is codomain else AdditiveHomGroups()
+            return AdditiveEndomorphismRings(_own_ring(SageZZ)) if domain is codomain else AdditiveHomGroups()
         placement = [InternalHomModules(ring) if full_internal_hom else LinearHomModules(ring)]
         free = FinitelyGeneratedFreeModules(ring)
         matrix = (
@@ -534,7 +536,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
                 placement.append(MatrixAlgebras(ring))
         elif domain is codomain:
-            placement.append(AdditiveEndomorphismRings())
+            placement.append(AdditiveEndomorphismRings(ring))
         if full_internal_hom and not matrix:
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
                 _SelectedFinitePresentationModules,

@@ -18,6 +18,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedRings,
+)
 
 
 class AdditiveHomGroups(OwnedCategory):
@@ -56,14 +60,16 @@ class AdditiveHomGroups(OwnedCategory):
             return self.parent()._owned_scalar_multiple(scalar, self)
 
 
-class AdditiveEndomorphismRings(OwnedCategory):
-    r"""Rings of additive endomorphisms, with multiplication by composition."""
+class AdditiveEndomorphismRings(OwnedCategoryOverBaseRing):
+    r"""Endomorphism algebras over their selected commutative scalar ring."""
 
     def super_categories(self):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
-        return [AdditiveHomGroups(), Algebras(_own_ring(SageZZ))]
+        assert self.base_ring() in OwnedRings().Commutative(), (
+            "pointwise scalar enrichment requires a commutative scalar ring"
+        )
+        return [AdditiveHomGroups(), Algebras(self.base_ring())]
 
     class ParentMethods:
         def scalar_multiple(self, scalar, morphism):
@@ -140,7 +146,7 @@ class AdditiveHomset(CategoricalHomset):
         self._preamble_base_ring = _own_ring(SageZZ)
         self._preamble_algebra_base_ring = self._preamble_base_ring
         self._integer_action = IntegerMulAction(SageZZ, codomain, m=codomain.zero())
-        category = AdditiveEndomorphismRings() if domain is codomain else AdditiveHomGroups()
+        category = AdditiveEndomorphismRings(self._preamble_base_ring) if domain is codomain else AdditiveHomGroups()
         super().__init__(family, domain, codomain, category=category)
 
     def _element_constructor_(self, datum):
