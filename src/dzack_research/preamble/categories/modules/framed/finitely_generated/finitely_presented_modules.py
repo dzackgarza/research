@@ -1751,11 +1751,13 @@ def _singular_presentation_kernel(morphism):
 
     Lifting to ``P``, a vector ``x`` represents a kernel element exactly when
 
-    ``F x - Q^t y - I z = 0``
+    ``F x \in \operatorname{im}(Q^t,I)``.
 
-    for some ``y,z``.  Singular syzygies of that augmented matrix therefore
-    generate the kernel lifts.  A second syzygy computation against the source
-    relations ``D`` gives an exact finite presentation of the kernel itself.
+    Singular's ``modulo(F, [Q^t \mid I])`` computes these kernel lifts
+    directly.  Applying ``modulo`` again to their matrix modulo
+    ``[D^t \mid I]`` gives the relations of the kernel presentation.  This is
+    the native formulation in Singular's tutorial, §4.3.7,
+    ``https://www.singular.uni-kl.de/ftp/pub/Math/Singular/doc/tutor.pdf``.
 
     This is a private computation crossing.  The returned object is the owned
     finitely presented module equipped with its actual inclusion into the
@@ -1819,18 +1821,26 @@ def _singular_presentation_kernel(morphism):
     n = len(source_labels)
     m = len(target_labels)
 
-    def singular_syzygies(columns_matrix):
-        total_columns = columns_matrix.ncols()
-        if total_columns == 0:
-            return matrix(singular_ring, 0, 0, [])
-        result = ff.syz(columns_matrix)
-        rows = [tuple(row) for row in result]
-        return matrix(
-            singular_ring,
-            len(rows),
-            total_columns,
-            [entry for row in rows for entry in row],
-        )
+    def singular_relation_module(relations, width):
+        columns = matrix(singular_ring, width, 0, [])
+        if relations.nrows():
+            lifted_relations = matrix(
+                singular_ring,
+                relations.nrows(),
+                width,
+                [
+                    to_singular(lift_scalar(entry))
+                    for row in _matrix_coordinate_rows(relations)
+                    for entry in row
+                ],
+            )
+            columns = columns.augment(lifted_relations.transpose())
+        for relation in coefficient_relations:
+            columns = columns.augment(
+                to_singular(backend_coefficient_relation(relation))
+                * identity_matrix(singular_ring, width)
+            )
+        return columns
 
     if m == 0:
         kernel_lifts = [tuple(singular_ring.one() if i == j else singular_ring.zero() for i in range(n)) for j in range(n)]
@@ -1846,19 +1856,13 @@ def _singular_presentation_kernel(morphism):
             n,
             [coordinate_columns[column][row] for row in range(m) for column in range(n)],
         )
-        augmented = f_matrix
-        if target_relations.nrows():
-            lifted_target_relations = matrix(
-                singular_ring,
-                target_relations.nrows(),
-                m,
-                [to_singular(lift_scalar(entry)) for row in _matrix_coordinate_rows(target_relations) for entry in row],
+        kernel_lifts = [
+            tuple(vector)
+            for vector in ff.modulo(
+                f_matrix,
+                singular_relation_module(target_relations, m),
             )
-            augmented = augmented.augment(-lifted_target_relations.transpose())
-        for relation in coefficient_relations:
-            augmented = augmented.augment(-to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, m))
-        first_syzygies = singular_syzygies(augmented)
-        kernel_lifts = [tuple(row[position] for position in range(n)) for row in first_syzygies.rows()]
+        ]
 
     kernel_count = len(kernel_lifts)
     kernel_labels = Sets.Δ[kernel_count - 1]
@@ -1872,26 +1876,16 @@ def _singular_presentation_kernel(morphism):
     else:
         kernel_columns = matrix(singular_ring, n, 0, [])
 
-    relation_augmented = kernel_columns
-    if source_relations.nrows():
-        lifted_source_relations = matrix(
-            singular_ring,
-            source_relations.nrows(),
-            n,
-            [to_singular(lift_scalar(entry)) for row in _matrix_coordinate_rows(source_relations) for entry in row],
-        )
-        relation_augmented = relation_augmented.augment(-lifted_source_relations.transpose())
-    for relation in coefficient_relations:
-        relation_augmented = relation_augmented.augment(-to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, n))
-
     if n == 0:
         kernel_relation_rows = []
     else:
-        second_syzygies = singular_syzygies(relation_augmented)
         kernel_relation_rows = [
-            tuple(from_singular(row[position]) for position in range(kernel_count))
-            for row in second_syzygies.rows()
-            if any(row[position] != 0 for position in range(kernel_count))
+            tuple(from_singular(entry) for entry in vector)
+            for vector in ff.modulo(
+                kernel_columns,
+                singular_relation_module(source_relations, n),
+            )
+            if any(entry != 0 for entry in vector)
         ]
     relation_labels = Sets.Δ[len(kernel_relation_rows) - 1]
     relation_matrix = _matrix_space_like(
@@ -1912,19 +1906,6 @@ def _singular_presentation_kernel(morphism):
         for label in kernel_labels
     }
 
-    kernel_generator_matrix = matrix(
-        singular_ring,
-        kernel_count,
-        n,
-        [entry for row in kernel_lifts for entry in row],
-    )
-    lifted_source_relation_rows = matrix(
-        singular_ring,
-        source_relations.nrows(),
-        n,
-        [to_singular(lift_scalar(entry)) for row in source_relations.rows() for entry in row],
-    )
-
     def lift_from_domain(kernel, element):
         if element.parent() is not domain:
             element = domain(element)
@@ -1939,16 +1920,14 @@ def _singular_presentation_kernel(morphism):
             n,
             [to_singular(lift_scalar(coefficients.get(label, ring.zero()))) for label in source_labels],
         )
-        spanning = kernel_generator_matrix
-        if source_relations.nrows():
-            spanning = spanning.stack(lifted_source_relation_rows)
-        for relation in coefficient_relations:
-            spanning = spanning.stack(to_singular(backend_coefficient_relation(relation)) * identity_matrix(singular_ring, n))
+        spanning = kernel_columns.augment(
+            singular_relation_module(source_relations, n)
+        )
         try:
             lifted = matrix(
                 singular_ring,
                 ff.lift(
-                    spanning.transpose(),
+                    spanning,
                     requested.transpose(),
                 ),
             )
