@@ -1,5 +1,9 @@
 r"""Objects equipped with a chosen finite direct-sum decomposition."""
 
+from collections.abc import Iterable
+
+from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -83,7 +87,11 @@ def _binary_decomposition_is_valid(underlying_object, summands) -> bool:
         return False
 
 
-def DirectSumDecomposition(underlying_object, summands, summand_index_set=None):
+def DirectSumDecomposition(
+    underlying_object: Parent,
+    summands: IndexedFamily | Iterable[Parent],
+    summand_index_set: Parent | None = None,
+) -> Parent:
     r"""Verify the constructor-owned decomposition ``underlying_object = ⊕ M_i``.
 
     Direct-sum data is construction data, so this accessor never equips an

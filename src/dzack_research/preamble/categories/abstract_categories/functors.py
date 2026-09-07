@@ -400,7 +400,7 @@ class ConstantDiagram(Functor):
         return self.codomain().Mor(value, value).identity()
 
 
-def compose_functors(second, first):
+def compose_functors(second: Functor, first: Functor) -> Functor:
     r"""Return ``second ∘ first`` in the current functor core."""
     if first.codomain() != second.domain():
         raise ValueError("functors compose only when their middle category agrees")
@@ -430,7 +430,7 @@ class NaturalTransformationSpaces(OwnedCategory):
     class ParentMethods:
         r"""The represented Hom-object of natural transformations ``F => G``."""
 
-        def __init__(self, source, target, **rest) -> None:
+        def __init__(self, source: Functor, target: Functor, **rest) -> None:
             self._source = source
             self._target = target
             super().__init__(**rest)
@@ -445,7 +445,7 @@ class NaturalTransformationSpaces(OwnedCategory):
             return f"Natural transformations {self.source()} => {self.target()}"
 
 
-def NaturalTransformations(source, target):
+def NaturalTransformations(source: Functor, target: Functor) -> Parent:
     r"""Return the represented type of natural transformations between parallel functors."""
     if source.domain() != target.domain() or source.codomain() != target.codomain():
         raise ValueError("natural transformations require parallel functors")
@@ -453,7 +453,12 @@ def NaturalTransformations(source, target):
 
 
 
-def NaturalIsomorphism(source, target, components, inverse_components):
+def NaturalIsomorphism(
+    source: Functor,
+    target: Functor,
+    components: Callable[[object], Morphism],
+    inverse_components: Callable[[object], Morphism],
+) -> tuple[NaturalTransformation, NaturalTransformation]:
     r"""Return mutually inverse natural transformations as a categorical pair."""
     return (
         NaturalTransformation(source, target, components),

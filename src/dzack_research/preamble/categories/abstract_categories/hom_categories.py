@@ -806,7 +806,7 @@ def _declared_family(category, declaration_name, default):
 
 
 @cached_function
-def category_packet(category) -> CategoryPacket:
+def category_packet(category: Category) -> CategoryPacket:
     return CategoryPacket(category)
 
 

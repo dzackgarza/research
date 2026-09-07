@@ -367,7 +367,7 @@ class _EndofunctorAlgebraCategory(Category):
 
 
 @cached_function(key=lambda endofunctor: id(endofunctor))
-def EndofunctorAlgebras(endofunctor):
+def EndofunctorAlgebras(endofunctor: Functor) -> _EndofunctorAlgebraCategory:
     r"""Return ``Inserter(T, Id)``, represented by exact arrow objects."""
     return _EndofunctorAlgebraCategory(endofunctor)
 
@@ -475,7 +475,7 @@ class CosliceCategory(ArrowCategory):
         return f"Coslice category {self.base_object()}/{self.base_category()}"
 
 
-def common_category(*objects):
+def common_category(*objects: Parent) -> Category:
     r"""Return the greatest Sage category common to the stated objects."""
     if not objects:
         raise ValueError("a common category requires at least one object")
@@ -842,27 +842,33 @@ class CoreCategory(Category):
         return f"Core of {self.base_category()}"
 
 
-def Core(base_category):
+def Core(base_category: Category) -> CoreCategory:
     return CoreCategory(base_category)
 
 
-def SliceOver(base_category, base_object):
+def SliceOver(base_category: Category, base_object: Parent) -> SliceCategory:
     return SliceCategory(base_category, base_object)
 
 
-def CosliceUnder(base_category, base_object):
+def CosliceUnder(base_category: Category, base_object: Parent) -> CosliceCategory:
     return CosliceCategory(base_category, base_object)
 
 
-def SubobjectsOf(base_category, base_object):
+def SubobjectsOf(
+    base_category: Category,
+    base_object: Parent,
+) -> SubobjectCategory:
     return SubobjectCategory(base_category, base_object)
 
 
-def SuperobjectsOf(base_category, base_object):
+def SuperobjectsOf(
+    base_category: Category,
+    base_object: Parent,
+) -> SuperobjectCategory:
     return SuperobjectCategory(base_category, base_object)
 
 
-def core_mor(domain, codomain):
+def core_mor(domain: Parent, codomain: Parent) -> CoreHomset:
     r"""Return ``Hom`` in the core of the greatest category holding both objects."""
     return Core(common_category(domain, codomain)).Mor(domain, codomain)
 
@@ -874,7 +880,10 @@ def _isomorphism_from_known_inverse_pair(forward, inverse):
     )
 
 
-def Isomorphism(forward, inverse):
+def Isomorphism(
+    forward: Morphism,
+    inverse: Morphism,
+) -> CategoricalIsomorphism:
     r"""Return the isomorphism represented by mutually inverse arrows."""
     return core_mor(forward.domain(), forward.codomain())(forward, inverse)
 

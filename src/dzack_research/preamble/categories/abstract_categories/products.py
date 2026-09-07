@@ -1,6 +1,6 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -329,7 +329,7 @@ class SpanCategory(ConeCategory):
             return f"Span {self.left_leg().codomain()} <- {self.apex()} -> {self.right_leg().codomain()}"
 
 
-def Span(left_leg, right_leg):
+def Span(left_leg: Morphism, right_leg: Morphism) -> Parent:
     r"""Return the span the two legs form, as an object.
 
     The legs share a domain, which is the apex; their codomains are the two
@@ -472,18 +472,26 @@ class TensorProductCategory(Category):
             return False
 
 
-def common_category_of(objects):
+def common_category_of(objects: IndexedFamily | Iterable[Parent]) -> Category:
     family = _finite_factor_family(objects)
     if family.cardinality() == cardinal(0):
         raise ValueError("a common category requires at least one object")
     return Category.meet([obj.category() for obj in family])
 
 
-def Cone(diagram, apex, components):
+def Cone(
+    diagram: Functor,
+    apex: Parent,
+    components: Callable[[object], Morphism],
+) -> Parent:
     return ConeCategory(diagram).cone(apex, components)
 
 
-def Cocone(diagram, apex, components):
+def Cocone(
+    diagram: Functor,
+    apex: Parent,
+    components: Callable[[object], Morphism],
+) -> Parent:
     return CoconeCategory(diagram).cocone(apex, components)
 
 
@@ -497,11 +505,17 @@ def _discrete_diagram(factors, target_category=None):
     return DiscreteDiagram(index, target, family)
 
 
-def product_cone_category(factors, target_category=None):
+def product_cone_category(
+    factors: IndexedFamily | Iterable[Parent],
+    target_category: Category | None = None,
+) -> ProductConeCategory:
     return ProductConeCategory(_discrete_diagram(factors, target_category))
 
 
-def coproduct_cocone_category(factors, target_category=None):
+def coproduct_cocone_category(
+    factors: IndexedFamily | Iterable[Parent],
+    target_category: Category | None = None,
+) -> CoproductCoconeCategory:
     return CoproductCoconeCategory(_discrete_diagram(factors, target_category))
 
 

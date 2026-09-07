@@ -4,8 +4,13 @@ The abstract layer owns only the names and category dispatch. Concrete
 mathematical categories own their represented constructions.
 """
 
+from collections.abc import Sequence
+
 from sage.categories.category import Category
+from sage.categories.morphism import Morphism
+from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
 def _common_category(*objects):
@@ -27,23 +32,23 @@ def _category_operation(operation, *objects, arguments=None):
     )
 
 
-def TensorProduct(left, right):
+def TensorProduct(left: Parent, right: Parent) -> Parent:
     return _category_operation("tensor_product", left, right)
 
 
-def TensorSquare(obj):
+def TensorSquare(obj: Parent) -> Parent:
     return TensorProduct(obj, obj)
 
 
-def Biproduct(left, right):
+def Biproduct(left: Parent, right: Parent) -> Parent:
     return _category_operation("biproduct", left, right)
 
 
-def Product(left, right):
+def Product(left: Parent, right: Parent) -> Parent:
     return _category_operation("product", left, right)
 
 
-def Coproduct(left, right):
+def Coproduct(left: Parent, right: Parent) -> Parent:
     return _category_operation("coproduct", left, right)
 
 
@@ -65,7 +70,7 @@ def _CoproductMorphism(left_morphism, right_morphism, *, source, target):
     )
 
 
-def Pushout(left_morphism, right_morphism):
+def Pushout(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     if left_morphism.domain() is not right_morphism.domain():
         raise ValueError("pushout arrows require one common domain")
     return _category_operation(
@@ -75,7 +80,7 @@ def Pushout(left_morphism, right_morphism):
     )
 
 
-def FiberProduct(left_morphism, right_morphism):
+def FiberProduct(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     if left_morphism.codomain() is not right_morphism.codomain():
         raise ValueError("fiber-product arrows require one common codomain")
     return _category_operation(
@@ -85,15 +90,15 @@ def FiberProduct(left_morphism, right_morphism):
     )
 
 
-def Kernel(morphism):
+def Kernel(morphism: Morphism) -> Parent:
     return morphism.kernel()
 
 
-def Cokernel(morphism):
+def Cokernel(morphism: Morphism) -> Parent:
     return morphism.cokernel()
 
 
-def Equalizer(left_morphism, right_morphism):
+def Equalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     r"""Return the represented equalizer of two parallel arrows."""
     if (
         left_morphism.domain() is not right_morphism.domain()
@@ -108,7 +113,7 @@ def Equalizer(left_morphism, right_morphism):
     )
 
 
-def Coequalizer(left_morphism, right_morphism):
+def Coequalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     r"""Return the represented coequalizer of two parallel arrows."""
     if (
         left_morphism.domain() is not right_morphism.domain()
@@ -131,7 +136,9 @@ def _nonempty_parallel_family(morphisms, construction):
     return reference
 
 
-def EqualizerOfFamily(morphisms):
+def EqualizerOfFamily(
+    morphisms: IndexedFamily | Sequence[Morphism],
+) -> Parent:
     r"""Return the represented wide equalizer of a nonempty arrow family."""
     reference = _nonempty_parallel_family(morphisms, "wide equalizer")
     return _category_operation(
@@ -142,7 +149,9 @@ def EqualizerOfFamily(morphisms):
     )
 
 
-def CoequalizerOfFamily(morphisms):
+def CoequalizerOfFamily(
+    morphisms: IndexedFamily | Sequence[Morphism],
+) -> Parent:
     r"""Return the represented wide coequalizer of a nonempty arrow family."""
     reference = _nonempty_parallel_family(morphisms, "wide coequalizer")
     return _category_operation(
@@ -153,7 +162,10 @@ def CoequalizerOfFamily(morphisms):
     )
 
 
-def Subobjects(base_object, category=None):
+def Subobjects(
+    base_object: Parent,
+    category: Category | None = None,
+) -> SubobjectCategory:
     base_category = base_object.category() if category is None else category
     if base_object not in base_category:
         raise TypeError("the subobject base must lie in the stated category")

@@ -3,6 +3,7 @@
 from sage.categories.homset import Homset
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
+from sage.structure.parent import Parent
 
 
 class OwnedHomset(Homset):
@@ -52,7 +53,7 @@ class UnderlyingSetHomset(OwnedHomset):
 
 _underlying_set_homsets = {}
 
-def underlying_set_homset(domain, codomain):
+def underlying_set_homset(domain: Parent, codomain: Parent) -> UnderlyingSetHomset:
     r"""Return the identity-cached plain-function Homset on these endpoints."""
     key = (id(domain), id(codomain))
     cached = _underlying_set_homsets.get(key)
