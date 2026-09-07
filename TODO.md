@@ -3017,7 +3017,7 @@ A numbered release retains its parent stream's edit locations.
 | S | `schemes/schemes.py`, `schemes/affine_spec.py`, `schemes/ringed_spaces.py`. |
 | G | `schemes/ringed_spaces.py`, `schemes/schemes.py`; claim new cover/sheaf files by exact path. |
 | J | `algebras/graded_algebras.py`, `schemes/polytopes.py`; claim projective/toric files separately. Shared presentation changes belong to P. |
-| A | `group/g_sets.py`, `modules/group_modules/group_modules.py`, `functors/g_sets.py`, `functors/group_actions.py`, `functors/group_scalar_change.py`. |
+| A | Claimed `A0-categorical-actions-20260907-1348` for the remaining A0 categorical-action release on the five A-owned paths; C prerequisite `a3017a8f` is released. |
 | Q | Claim scheme action/quotient files separately; shared `schemes/schemes.py` and `algebras/free_algebras.py` require their own locks. |
 | V | `divisors/`; claim line-bundle/cycle files separately. Ring algorithms stay with R, module/form algorithms with M or their existing owner. |
 | B | Claim relative-Spec/cover files separately; shared algebra multiplication and underlying modules require C/P locks. |
@@ -3123,6 +3123,7 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| `A0-categorical-actions-20260907-1348` | A0 / categorical `BG -> C` actions | Chat takeover 2026-09-07 13:48 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/g_sets.py; src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/g_sets.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py` (write) | `59b157712eeebb7c5d55ab144f917f8c625a3460` | 2026-09-07T05:54:47Z |
 
 #### Existing work awaiting adoption
 
