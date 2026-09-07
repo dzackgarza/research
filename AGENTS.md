@@ -43,6 +43,10 @@ agent-memory maintain move <key> --to global/advice
 
 Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains the execution priorities, remediation queue, mathematical requirements, organization findings, and work coordination.
 
+Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasoning effort.
+The [TODO workstream table](TODO.md#workstreams) records the DAG task scores and their reasons.
+Apply the guide to the responsibility actually assigned, including any shared contract design or orchestration it requires.
+
 Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. If the generated megadoc may be stale relative to the live source tree, regenerate it with `just preamble-megadoc` and then read the generated `docs/preamble-megadoc.md`.
 
 `just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
