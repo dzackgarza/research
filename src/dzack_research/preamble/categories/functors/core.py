@@ -6,6 +6,7 @@ category graph and no registry of relationships.
 """
 
 from collections.abc import Callable
+from dataclasses import dataclass
 from typing import overload
 
 from sage.categories.category import Category
@@ -14,6 +15,16 @@ from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
+
+
+@dataclass(frozen=True)
+class _FunctorImageRecord:
+    r"""One identity-retaining object or morphism image in a functor's provenance."""
+
+    source_object: Parent | None = None
+    target_object: Parent | None = None
+    source_morphism: Map | None = None
+    target_morphism: Map | None = None
 
 
 class Functor(SageObject):
@@ -29,9 +40,9 @@ class Functor(SageObject):
         # record also makes ``id`` reuse impossible while the provenance is
         # live.  Reverse lookup is intentionally derived from this same store
         # rather than maintained by a second cache.
-        self._provenance: dict[int, tuple[object, object]] = {}
+        self._provenance: dict[int, _FunctorImageRecord] = {}
 
-    def _cache_key(self):
+    def _cache_key(self) -> int:
         r"""Functors have identity semantics as parameters of categorical constructions."""
         return id(self)
 
@@ -49,26 +60,56 @@ class Functor(SageObject):
     def _apply_morphism(self, morphism: Map) -> Map:
         r"""Return the image of one morphism of the domain."""
 
-    def _cached_image(self, preimage):
+    def _cached_object_image(self, preimage: Parent) -> Parent | None:
         recorded = self._provenance.get(id(preimage))
-        if recorded is not None and recorded[0] is preimage:
-            return recorded[1]
+        if recorded is not None and recorded.source_object is preimage:
+            return recorded.target_object
         return None
 
-    def _record_image(self, preimage, image):
+    def _record_object_image(self, preimage: Parent, image: Parent) -> Parent:
         key = id(preimage)
         recorded = self._provenance.get(key)
-        if recorded is not None and recorded[0] is preimage and recorded[1] is not image:
+        if (
+            recorded is not None
+            and recorded.source_object is preimage
+            and recorded.target_object is not image
+        ):
             raise ValueError(
                 "this functor instance already selected a different image for the same preimage"
             )
-        self._provenance[key] = (preimage, image)
+        self._provenance[key] = _FunctorImageRecord(
+            source_object=preimage,
+            target_object=image,
+        )
+        return image
+
+    def _cached_morphism_image(self, preimage: Map) -> Map | None:
+        recorded = self._provenance.get(id(preimage))
+        if recorded is not None and recorded.source_morphism is preimage:
+            return recorded.target_morphism
+        return None
+
+    def _record_morphism_image(self, preimage: Map, image: Map) -> Map:
+        key = id(preimage)
+        recorded = self._provenance.get(key)
+        if (
+            recorded is not None
+            and recorded.source_morphism is preimage
+            and recorded.target_morphism is not image
+        ):
+            raise ValueError(
+                "this functor instance already selected a different image for the same preimage"
+            )
+        self._provenance[key] = _FunctorImageRecord(
+            source_morphism=preimage,
+            target_morphism=image,
+        )
         return image
 
     def object_image(self, obj: Parent) -> Parent:
         if obj not in self.domain():
             raise TypeError(f"{obj} is not an object of {self.domain()}")
-        cached = self._cached_image(obj)
+        cached = self._cached_object_image(obj)
         if cached is not None:
             return cached
         image = self._apply_object(obj)
@@ -76,14 +117,14 @@ class Functor(SageObject):
             raise TypeError(
                 f"the image of {obj} under {self} is not an object of {self.codomain()}"
             )
-        return self._record_image(obj, image)
+        return self._record_object_image(obj, image)
 
     def chosen_preimage(self, image: Parent) -> Parent:
         r"""Return the unique source object recorded for this exact functor image."""
         matches = [
-            preimage
-            for preimage, recorded_image in self._provenance.values()
-            if recorded_image is image
+            record.source_object
+            for record in self._provenance.values()
+            if record.target_object is image and record.source_object is not None
         ]
         if not matches:
             raise ValueError(f"{image} has no chosen preimage recorded by {self}")
@@ -97,7 +138,7 @@ class Functor(SageObject):
         r"""Use a provenance-validated exact image object for ``preimage``."""
         if preimage not in self.domain() or image not in self.codomain():
             raise TypeError("an adopted functor image has endpoints outside the functor")
-        return self._record_image(preimage, image)
+        return self._record_object_image(preimage, image)
 
     def on_object(self, obj: Parent) -> Parent:
         return self.object_image(obj)
@@ -105,7 +146,7 @@ class Functor(SageObject):
     def morphism_image(self, morphism: Map) -> Map:
         if not isinstance(morphism, Map):
             raise TypeError("a functor acts on a morphism through its morphism action")
-        cached = self._cached_image(morphism)
+        cached = self._cached_morphism_image(morphism)
         if cached is not None:
             return cached
         domain = self.object_image(morphism.domain())
@@ -116,7 +157,7 @@ class Functor(SageObject):
                 "a functor's morphism image must run between the cached images "
                 "of the original domain and codomain"
             )
-        return self._record_image(morphism, image)
+        return self._record_morphism_image(morphism, image)
 
     def on_morphism(self, morphism: Map) -> Map:
         return self.morphism_image(morphism)

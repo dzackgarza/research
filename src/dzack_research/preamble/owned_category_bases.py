@@ -254,11 +254,11 @@ class CategoryWithAxiom(
         self._init_cat_object()
         SageCategoryWithAxiom.__init__(self, base_category)
 
-    def base_ring(self):
+    def base_ring(self) -> Parent:
         r"""Return the base ring of the category this axiom refines."""
         return self._base_category.base_ring()
 
-    def base(self):
+    def base(self) -> Parent:
         return self._base_category.base()
 
 
