@@ -2,7 +2,7 @@
 
 from collections.abc import Callable, Iterable
 from itertools import count
-from typing import Any, SupportsInt, TypeVar
+from typing import Any, Self, SupportsInt, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
@@ -24,6 +24,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.owned_category import OwnedParent, object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     _category_homset,
     CategoricalHomset,
@@ -31,12 +32,13 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
+    CardinalityMorphism,
     Cardinalities,
     aleph,
     aleph0,
     cardinal,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 
 
 IndexT = TypeVar("IndexT")
@@ -48,7 +50,7 @@ TargetPointT = TypeVar("TargetPointT")
 class EnumeratedSets(OwnedCategory):
     r"""Sets equipped with a represented ranking/enumeration."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The ordinal 2, ranked by its own order."""
         return finite_ordinal_set(2)
 
@@ -57,7 +59,7 @@ class EnumeratedSets(OwnedCategory):
 
     class ParentMethods:
         @abstract_method
-        def ranking_map(self):
+        def ranking_map(self) -> CategoricalIsomorphism:
             r"""Return the isomorphism onto the ordinal counting this set.
 
             An enumeration is a bijection $X \xrightarrow{\ \sim\ }
@@ -74,7 +76,7 @@ class EnumeratedSets(OwnedCategory):
 class InfiniteEnumeratedSets(OwnedCategory):
     r"""Countably infinite enumerated sets."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The natural numbers, enumerated by identity."""
         return NN
 
@@ -85,7 +87,7 @@ class InfiniteEnumeratedSets(OwnedCategory):
 class FiniteOrdinalSets(OwnedCategory):
     r"""The canonical finite ordinals \(\{0,\dots,n-1\}\), lazily."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""\(\{0,1,2\}\)."""
         return finite_ordinal_set(3)
 
@@ -100,14 +102,14 @@ class FiniteOrdinalSets(OwnedCategory):
             assert self._size >= 0, "a finite ordinal cardinality is nonnegative"
             super().__init__(facade=True, **rest)
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return cardinal(self._size)
 
         def __iter__(self):
             return (NN(index) for index in range(self._size))
 
         @cached_method
-        def ranking_map(self):
+        def ranking_map(self) -> CategoricalIsomorphism:
             r"""The identity: an ordinal already *is* the ordinal counting it."""
 
             def point_at(position):
@@ -152,7 +154,7 @@ class FiniteOrdinalSets(OwnedCategory):
                 raise ValueError(element)
             return NN(position)
 
-        def le(self, left, right):
+        def le(self, left: SupportsInt, right: SupportsInt) -> bool:
             ranking = self.ranking_map()
             return ranking(left) <= ranking(right)
 
@@ -265,7 +267,7 @@ class OwnedSetMorphism(SetMorphism):
         SetMorphism.__init__(self, parent, function)
         self._owned_function = function
 
-    def __call__(self, element, *args, **kwargs):
+    def __call__(self, element: SourcePointT, *args, **kwargs) -> TargetPointT:
         r"""Send a point of the source to its point of the target.
 
         Sage's ``SetMorphism`` is typed to return an ``Element``, so a map
@@ -372,14 +374,14 @@ class SetMorCategory(CategoricalHomset):
         return morphism
 
     @cached_method
-    def identity(self):
+    def identity(self) -> OwnedSetMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for equal set endpoints")
         identity = OwnedSetMorphism(self, lambda element: element)
         identity._preamble_is_identity = True
         return identity
 
-    def identity_at(self, obj):
+    def identity_at(self, obj: Parent) -> OwnedSetMorphism:
         return Sets().Mor(obj, obj).identity()
 
     def _repr_(self):
@@ -389,7 +391,7 @@ class SetMorCategory(CategoricalHomset):
 class SetMorCategoryConstruction(HomCategoryConstruction):
     r"""The owned family $(X, Y) \mapsto \mathrm{Mor}_{\mathbf{Set}}(X, Y)$."""
 
-    def fixed_category_class(self):
+    def fixed_category_class(self) -> type[SetMorCategory]:
         return SetMorCategory
 
 
@@ -420,7 +422,7 @@ class Sets(OwnedCategory):
     ℵ = _Aleph()
     א = ℵ
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The ordinal 2: two distinct elements, so a map out of it is not forced."""
         return finite_ordinal_set(2)
 
@@ -438,7 +440,7 @@ class Sets(OwnedCategory):
         except (TypeError, ValueError):
             return False
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> SetMorCategory:
         if domain not in self or codomain not in self:
             raise TypeError("a set morphism requires two set objects")
         return _set_mor_category(domain, codomain)
@@ -451,15 +453,18 @@ class Sets(OwnedCategory):
 
 
     class SubcategoryMethods:
-        def Finite(self):
+        def Finite(self) -> Category:
             r"""Return this category with the axiom that its objects are finite."""
             return self._with_axiom("Finite")
 
-        def Infinite(self):
+        def Infinite(self) -> Category:
             r"""Return this category with the axiom that its objects are infinite."""
             return self._with_axiom("Infinite")
 
-        def product(self, family):
+        def product(
+            self,
+            family: IndexedFamily | Iterable[Parent],
+        ) -> Parent:
             r"""Return $\prod_{i \in I} X_i$ for an indexed family of objects.
 
             A product is taken over an index set, so the family carries both the
@@ -493,7 +498,10 @@ class Sets(OwnedCategory):
         def _categorical_product(self, left, right):
             return CartesianProductOfSets(left, right)
 
-        def coproduct(self, family):
+        def coproduct(
+            self,
+            family: IndexedFamily | Iterable[Parent],
+        ) -> Parent:
             r"""Return $\coprod_{i \in I} X_i$ for an indexed family of objects.
 
             The dual of :meth:`product`, and built the same way.  Folding the
@@ -538,14 +546,14 @@ class Sets(OwnedCategory):
                 lambda index: left_morphism if int(index) == 0 else right_morphism,
             )
 
-        def Homsets(self):
+        def Homsets(self) -> Category:
             r"""A Hom object of any owned category is a set."""
             return Homsets()
 
         # Functors out of ``Set``, each spelled as a method of this, their
         # domain category, and named by the construction it performs.
 
-        def free_module(self, base_ring):
+        def free_module(self, base_ring: Parent) -> Functor:
             r"""``F_R : Set -> Mod_R``, the free ``R``-module functor.
 
             The free module on a set has that set for its module generating
@@ -559,7 +567,7 @@ class Sets(OwnedCategory):
 
             return free_module_functor(base_ring)
 
-        def free_module_adjunction(self, base_ring):
+        def free_module_adjunction(self, base_ring: Parent) -> Adjunction:
             r"""``F_R -| U`` between ``Set`` and ``Mod_R``.
 
             An adjunction is a method of its left adjoint's domain category,
@@ -573,7 +581,7 @@ class Sets(OwnedCategory):
 
             return free_forgetful_adjunction(base_ring)
 
-        def free_group(self):
+        def free_group(self) -> Functor:
             r"""``F : Set -> Grp``, the free-group functor.
 
             The free group on a set carries that set as its chosen free basis,
@@ -587,7 +595,7 @@ class Sets(OwnedCategory):
 
             return free_group_functor()
 
-        def free_group_adjunction(self):
+        def free_group_adjunction(self) -> Adjunction:
             r"""``F -| U`` between ``Set`` and ``Grp``.
 
             An adjunction is a method of its left adjoint's domain category,
@@ -601,7 +609,7 @@ class Sets(OwnedCategory):
 
             return free_group_underlying_set_adjunction()
 
-        def cardinality_functor(self):
+        def cardinality_functor(self) -> Functor:
             r"""``# : core(Set) -> Card``, the cardinality functor.
 
             Cardinality is an isomorphism invariant: a bijection of sets fixes
@@ -616,7 +624,7 @@ class Sets(OwnedCategory):
 
             return cardinality_functor()
 
-        def power_set_functor(self):
+        def power_set_functor(self) -> Functor:
             r"""``P_fin : Set -> Set``, the finite subsets under direct image.
 
             Defined on every set and not only the finite ones: the finite
@@ -633,41 +641,45 @@ class Sets(OwnedCategory):
 
             return finite_power_set_functor()
 
-    def identity(self, set_object):
+    def identity(self, set_object: Parent) -> OwnedSetMorphism:
         return self.Mor(set_object, set_object).identity()
 
-    def Countable(self):
+    def Countable(self) -> Category:
         return CountableSets()
 
-    def CountablyInfinite(self):
+    def CountablyInfinite(self) -> Category:
         return CountablyInfiniteSets()
 
-    def Uncountable(self):
+    def Uncountable(self) -> Category:
         return UncountableSets()
 
-    def PartiallyOrdered(self):
+    def PartiallyOrdered(self) -> Category:
         return PartiallyOrderedSets()
 
-    def TotallyOrdered(self):
+    def TotallyOrdered(self) -> Category:
         return TotallyOrderedSets()
 
     class ParentMethods:
-        def Mor(self, codomain, category=None):
+        def Mor(
+            self,
+            codomain: Parent,
+            category: Category | None = None,
+        ) -> Category:
             if category is None:
                 return Sets().Mor(self, codomain)
             return _category_homset(category, self, codomain)
 
-        def power_set(self):
+        def power_set(self) -> Parent:
             return PowerSet(self)
 
-        def exponential(self, exponent):
+        def exponential(self, exponent: Parent) -> Parent:
             return ExponentialOfSets(self, exponent)
 
         def __mul__(self, other):
             r"""Return $X \times Y$.  A product of sets is a set."""
             return self.product_with(other)
 
-        def product_with(self, other):
+        def product_with(self, other: Parent) -> Parent:
             r"""Return $X \times Y$, the product asked of the objects.
 
             `STY-02`: the construction is asked of the objects rather than of a
@@ -688,34 +700,34 @@ class Sets(OwnedCategory):
                 raise ValueError("a set power is indexed by a nonempty finite set")
             return Sets().product(indexed_family(Sets.Δ[count - 1], lambda index: self))
 
-        def subsets_of_size(self, size):
+        def subsets_of_size(self, size: int) -> Parent:
             return SubsetsOfSize(self, size)
 
-        def finite_subsets(self):
+        def finite_subsets(self) -> Parent:
             return FiniteSubsets(self)
 
     class Finite(CategoryWithAxiom):
         r"""Sets whose cardinality is finite."""
 
-        def an_object(self):
+        def an_object(self) -> Parent:
             r"""The ordinal 2."""
             return finite_ordinal_set(2)
 
         # Functors into finite G-sets, sited on their domain.
 
-        def trivial_action(self, group):
+        def trivial_action(self, group: Parent) -> Functor:
             r"""``Triv_G : FinSet -> FinGSet_G``, every point fixed."""
             from dzack_research.preamble.categories.functors.g_sets import TrivialGSetFunctor
 
             return TrivialGSetFunctor(group)
 
-        def free_action(self, group):
+        def free_action(self, group: Parent) -> Functor:
             r"""``G x - : FinSet -> FinGSet_G``, the free ``G``-set on a set."""
             from dzack_research.preamble.categories.functors.g_sets import FreeGSetFunctor
 
             return FreeGSetFunctor(group)
 
-        def free_underlying_adjunction(self, group):
+        def free_underlying_adjunction(self, group: Parent) -> Adjunction:
             r"""``G x - -| U``."""
             from dzack_research.preamble.categories.functors.g_sets import (
                 free_g_set_underlying_adjunction,
@@ -723,7 +735,7 @@ class Sets(OwnedCategory):
 
             return free_g_set_underlying_adjunction(group)
 
-        def trivial_fixed_adjunction(self, group):
+        def trivial_fixed_adjunction(self, group: Parent) -> Adjunction:
             r"""``Triv_G -| (-)^G``."""
             from dzack_research.preamble.categories.functors.g_sets import (
                 g_set_trivial_fixed_adjunction,
@@ -742,7 +754,7 @@ class Sets(OwnedCategory):
     class Infinite(CategoryWithAxiom):
         r"""Sets whose cardinality is infinite."""
 
-        def an_object(self):
+        def an_object(self) -> Parent:
             r"""The natural numbers."""
             return NN
 
@@ -856,13 +868,13 @@ class SetInclusion(OwnedSetMorphism):
         self._characteristic_morphism = characteristic_morphism
         self._finite_members = finite_members
 
-    def inclusion(self):
+    def inclusion(self) -> Self:
         return self
 
     def is_injective(self) -> bool:
         return True
 
-    def factor_through(self, target_inclusion):
+    def factor_through(self, target_inclusion: "SetInclusion") -> SetMorphism:
         r"""Return the canonical map of subset objects when this subset is contained."""
         if target_inclusion.codomain() is not self.codomain():
             raise ValueError("subset factorization requires one common base set")
@@ -873,10 +885,10 @@ class SetInclusion(OwnedSetMorphism):
             lambda member: target_inclusion.domain()(self(member)),
         )
 
-    def underlying_set(self):
+    def underlying_set(self) -> Parent:
         return self.domain()
 
-    def characteristic_morphism(self):
+    def characteristic_morphism(self) -> SetMorphism:
         if self._characteristic_morphism is None:
             raise NotImplementedError(
                 "this subobject has no represented decidable characteristic morphism"
@@ -898,7 +910,7 @@ class SetInclusion(OwnedSetMorphism):
             return iter(self._finite_members)
         return iter(self.domain())
 
-    def cardinality(self):
+    def cardinality(self) -> Parent:
         if self._finite_members is not None:
             return cardinal(len(self._finite_members))
         return cardinal(self.domain().cardinality())
@@ -924,31 +936,31 @@ class SetInclusion(OwnedSetMorphism):
             "this subset relation has no represented decision procedure"
         )
 
-    def union(self, other):
+    def union(self, other: "SetInclusion") -> "SetInclusion":
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: member in self or member in other
         )
 
-    def intersection(self, other):
+    def intersection(self, other: "SetInclusion") -> "SetInclusion":
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: member in self and member in other
         )
 
-    def difference(self, other):
+    def difference(self, other: "SetInclusion") -> "SetInclusion":
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: member in self and member not in other
         )
 
-    def symmetric_difference(self, other):
+    def symmetric_difference(self, other: "SetInclusion") -> "SetInclusion":
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: (member in self) != (member in other)
         )
 
-    def complement(self):
+    def complement(self) -> "SetInclusion":
         return PowerSet(self.codomain()).from_predicate(lambda member: member not in self)
 
     def __or__(self, other):
@@ -977,7 +989,7 @@ class SetInclusion(OwnedSetMorphism):
 class PowerSets(OwnedCategory):
     r"""The power object \(P(X)\), represented by subobjects of ``X``."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""One object of this category."""
         return PowerSet(Sets.Δ[2])
 
@@ -990,13 +1002,13 @@ class PowerSets(OwnedCategory):
             self._base_set = base_set
             super().__init__(**rest)
 
-        def base_set(self):
+        def base_set(self) -> Parent:
             return self._base_set
 
-        def truth_values(self):
+        def truth_values(self) -> Parent:
             return Sets.Δ[1]
 
-        def characteristic_homset(self):
+        def characteristic_homset(self) -> SetMorCategory:
             return Sets().Mor(self.base_set(), self.truth_values())
 
         characteristic_hom_category = characteristic_homset
@@ -1010,10 +1022,16 @@ class PowerSets(OwnedCategory):
             domain = ConditionSet(self.base_set(), predicate)
             return SetInclusion(domain, self.base_set(), characteristic)
 
-        def from_predicate(self, predicate: Callable):
+        def from_predicate(
+            self,
+            predicate: Callable[[SourcePointT], bool],
+        ) -> SetInclusion:
             return self._subset_from_predicate(predicate)
 
-        def from_characteristic_morphism(self, characteristic_morphism):
+        def from_characteristic_morphism(
+            self,
+            characteristic_morphism: SetMorphism,
+        ) -> SetInclusion:
             if characteristic_morphism.parent() is not self.characteristic_homset():
                 raise ValueError("a characteristic morphism must lie in Hom(X, Δ[1])")
             truth = self.truth_values()(1)
@@ -1070,13 +1088,13 @@ class PowerSets(OwnedCategory):
                 return all(member in self.base_set() for member in candidate)
             return False
 
-        def top(self):
+        def top(self) -> SetInclusion:
             return self(self.base_set())
 
-        def bottom(self):
+        def bottom(self) -> SetInclusion:
             return self(())
 
-        def inverse_image_morphism(self, morphism):
+        def inverse_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
             if morphism.codomain() is not self.base_set():
                 raise ValueError("inverse image requires the morphism codomain to be the base set")
             target = PowerSet(morphism.domain())
@@ -1085,7 +1103,7 @@ class PowerSets(OwnedCategory):
                 lambda subset: target.from_predicate(lambda member: morphism(member) in subset),
             )
 
-        def direct_image_morphism(self, morphism):
+        def direct_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
             if morphism.domain() is not self.base_set():
                 raise ValueError("direct image requires the morphism domain to be the base set")
             target = PowerSet(morphism.codomain())
@@ -1104,10 +1122,10 @@ class PowerSets(OwnedCategory):
                 raise TypeError("only a finite power set has a chosen enumeration")
             return (self(subset) for subset in SageSubsets(self.base_set()))
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return cardinal(2) ** cardinal(self.base_set().cardinality())
 
-        def cardinality_comparison(self):
+        def cardinality_comparison(self) -> CardinalityMorphism:
             size = self.cardinality()
             return Cardinalities().Mor(size, size).identity()
 
@@ -1140,7 +1158,7 @@ def _function_set_of(codomain, exponent):
 class FunctionSets(OwnedCategory):
     r"""Exponentials \(Y^X=\operatorname{Hom}_{Set}(X,Y)\)."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""\(\Delta_2^{\Delta_1}\)."""
         return ExponentialOfSets(Sets.Δ[2], Sets.Δ[1])
 
@@ -1156,16 +1174,16 @@ class FunctionSets(OwnedCategory):
             self._exponent = exponent
             super().__init__(**rest)
 
-        def base(self):
+        def base(self) -> Parent:
             return self._codomain
 
-        def exponent(self):
+        def exponent(self) -> Parent:
             return self._exponent
 
         def _preamble_all_functions_finitely_supported(self) -> bool:
             return self.exponent() in FiniteSets()
 
-        def homset(self):
+        def homset(self) -> SetMorCategory:
             return Sets().Mor(self.exponent(), self.base())
 
         def __call__(self, *args, **kwargs):
@@ -1181,7 +1199,7 @@ class FunctionSets(OwnedCategory):
         def __contains__(self, function) -> bool:
             return function in self.homset()
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return cardinal(self.base().cardinality()) ** cardinal(self.exponent().cardinality())
 
         def _repr_(self) -> str:
@@ -1197,7 +1215,7 @@ def ExponentialOfSets(codomain: Parent, exponent: Parent) -> Parent:
 class FixedCardinalitySubsetSets(OwnedCategory):
     r"""The sets \([X]^k\) of subsets of one fixed finite cardinality."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""One object of this category."""
         return SubsetsOfSize(Sets.Δ[2], 2)
 
@@ -1211,13 +1229,13 @@ class FixedCardinalitySubsetSets(OwnedCategory):
             assert self._subset_cardinality >= 0, "a subset cardinality is nonnegative"
             super().__init__(**rest)
 
-        def source(self):
+        def source(self) -> Parent:
             return self._source
 
-        def subset_cardinality(self):
+        def subset_cardinality(self) -> int:
             return self._subset_cardinality
 
-        def power_set(self):
+        def power_set(self) -> Parent:
             return PowerSet(self.source())
 
         def __call__(self, *args, **kwargs):
@@ -1249,7 +1267,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
                 for subset in SageSubsets(self.source(), self.subset_cardinality())
             )
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             from math import comb
 
             source_size = cardinal(self.source().cardinality())
@@ -1276,7 +1294,7 @@ def SubsetsOfSize(source: Parent, subset_cardinality: int) -> Parent:
 class FinitePowerSets(OwnedCategory):
     r"""Finite power objects \(P_{fin}(X)\), the finite subsets of \(X\)."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""One object of this category."""
         return FiniteSubsets(Sets.Δ[2])
 
@@ -1288,10 +1306,10 @@ class FinitePowerSets(OwnedCategory):
             self._source = source
             super().__init__(**rest)
 
-        def source(self):
+        def source(self) -> Parent:
             return self._source
 
-        def power_set(self):
+        def power_set(self) -> Parent:
             return PowerSet(self.source())
 
         def __call__(self, *args, **kwargs):
@@ -1316,7 +1334,7 @@ class FinitePowerSets(OwnedCategory):
                 )
             return (self(tuple(subset)) for subset in SageSubsets(self.source()))
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             source_size = cardinal(self.source().cardinality())
             if source_size.is_finite():
                 return cardinal(2) ** source_size
@@ -1370,7 +1388,7 @@ class CartesianProductsOfSets(OwnedCategory):
             Element.__init__(self, parent)
             self._components = components
 
-        def component(self, index):
+        def component(self, index: IndexT) -> SourcePointT:
             normalized = self.parent().index_set()(index)
             value = self._components(normalized)
             return self.parent().factor(normalized)(value)
@@ -1429,10 +1447,10 @@ class CartesianProductsOfSets(OwnedCategory):
             self._family = family
             super().__init__(**rest)
 
-        def index_set(self):
+        def index_set(self) -> Parent:
             return self._index_set
 
-        def family(self):
+        def family(self) -> Callable[[IndexT], Parent]:
             return self._family
 
         def has_finite_index_set(self) -> bool:
@@ -1441,7 +1459,7 @@ class CartesianProductsOfSets(OwnedCategory):
             except (AttributeError, NotImplementedError, TypeError, ValueError):
                 return False
 
-        def factor(self, index):
+        def factor(self, index: IndexT) -> Parent:
             normalized = self.index_set()(index)
             factor = self.family()(normalized)
             if factor not in Sets():
@@ -1480,7 +1498,7 @@ class CartesianProductsOfSets(OwnedCategory):
             return self.element_class(self, assignment.__getitem__)
 
         @cached_method
-        def ranking_map(self):
+        def ranking_map(self) -> CategoricalIsomorphism:
             r"""The mixed-radix enumeration of a finite product of finite factors.
 
             The represented enumeration is the mixed-radix one, which needs a
@@ -1536,21 +1554,25 @@ class CartesianProductsOfSets(OwnedCategory):
 
             return ranking_isomorphism(self, position_of, point_at)
 
-        def projection(self, index):
+        def projection(self, index: IndexT) -> SetMorphism:
             normalized = self.index_set()(index)
             return SetMorphism(
                 Sets().Mor(self, self.factor(normalized)),
                 lambda element: element.component(normalized),
             )
 
-        def from_maps(self, source, maps):
+        def from_maps(
+            self,
+            source: Parent,
+            maps: Callable[[IndexT], SetMorphism],
+        ) -> SetMorphism:
             r"""Return the unique map into the product with the stated components."""
             return SetMorphism(
                 Sets().Mor(source, self),
                 lambda element: self(lambda index: maps(index)(element)),
             )
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return Cardinalities().indexed_product(
                 self.index_set(), lambda index: cardinal(self.factor(index).cardinality())
             )
@@ -1585,7 +1607,7 @@ class CartesianProductsOfSets(OwnedCategory):
         def _repr_(self) -> str:
             return f"Product of the family over {self.index_set()}"
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The square of the ordinal 2."""
         return CartesianProductOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
 
@@ -1610,10 +1632,10 @@ class CoproductsOfSets(OwnedCategory):
             self._index = normalized
             self._value = parent.cofactor(normalized)(value)
 
-        def summand_index(self):
+        def summand_index(self) -> IndexT:
             return self._index
 
-        def summand_element(self):
+        def summand_element(self) -> SourcePointT:
             return self._value
 
         def _repr_(self) -> str:
@@ -1648,13 +1670,13 @@ class CoproductsOfSets(OwnedCategory):
             self._family = family
             super().__init__(**rest)
 
-        def index_set(self):
+        def index_set(self) -> Parent:
             return self._index_set
 
-        def family(self):
+        def family(self) -> Callable[[IndexT], Parent]:
             return self._family
 
-        def cofactor(self, index):
+        def cofactor(self, index: IndexT) -> Parent:
             normalized = self.index_set()(index)
             cofactor = self.family()(normalized)
             if cofactor not in Sets():
@@ -1676,21 +1698,25 @@ class CoproductsOfSets(OwnedCategory):
                 index = datum
             return self.element_class(self, index, value)
 
-        def injection(self, index):
+        def injection(self, index: IndexT) -> SetMorphism:
             normalized = self.index_set()(index)
             return SetMorphism(
                 Sets().Mor(self.cofactor(normalized), self),
                 lambda element: self(normalized, element),
             )
 
-        def from_maps(self, target, maps):
+        def from_maps(
+            self,
+            target: Parent,
+            maps: Callable[[IndexT], SetMorphism],
+        ) -> SetMorphism:
             r"""Return the unique map out of the coproduct extending the stated maps."""
             return SetMorphism(
                 Sets().Mor(self, target),
                 lambda element: maps(element.summand_index())(element.summand_element()),
             )
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return Cardinalities().indexed_sum(
                 self.index_set(), lambda index: cardinal(self.cofactor(index).cardinality())
             )
@@ -1783,7 +1809,7 @@ class CoproductsOfSets(OwnedCategory):
                 diagonal += 1
 
         @cached_method
-        def ranking_map(self):
+        def ranking_map(self) -> CategoricalIsomorphism:
             r"""The lazy enumeration by rank layer, diagonalized when infinite."""
 
             def point_at(position):
@@ -1834,7 +1860,7 @@ class CoproductsOfSets(OwnedCategory):
         def _repr_(self) -> str:
             return f"Coproduct of the family over {self.index_set()}"
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The disjoint union of the ordinal 2 with itself."""
         return CoproductOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
 
@@ -1935,7 +1961,7 @@ ExponentialsOfSets = FunctionSets
 class NaturalNumberSets(OwnedCategory):
     r"""The owned set \(\mathbb{N}=\{0,1,2,\dots\}\)."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""\(\mathbb{N}\)."""
         return NN
 
@@ -1979,7 +2005,7 @@ class NaturalNumberSets(OwnedCategory):
                 raise ValueError("a natural number is nonnegative")
             self._value = value
 
-        def __int__(self):
+        def __int__(self) -> int:
             return self._value
 
         __index__ = __int__
@@ -1989,7 +2015,7 @@ class NaturalNumberSets(OwnedCategory):
             # presented it, so the hash is the number's.
             return hash(self._value)
 
-        def __eq__(self, other):
+        def __eq__(self, other: Any) -> bool:
             # The argument is genuinely arbitrary here, so the question is
             # membership rather than what class it is.
             if other not in self.parent():
@@ -2052,14 +2078,14 @@ class NaturalNumberSets(OwnedCategory):
                 index += 1
 
         @cached_method
-        def ranking_map(self):
+        def ranking_map(self) -> CategoricalIsomorphism:
             r"""The identity: $\mathbb N$ is the ordinal $\omega$ that counts it."""
             return ranking_isomorphism(self, lambda value: int(self(value)), self)
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return aleph0
 
-        def zero(self):
+        def zero(self) -> Element:
             return self(0)
 
         def _repr_(self):
@@ -2068,7 +2094,7 @@ class NaturalNumberSets(OwnedCategory):
 class Homsets(OwnedCategory):
     r"""Hom objects \(\operatorname{Hom}(X,Y)\), which are sets."""
 
-    def an_object(self):
+    def an_object(self) -> SetMorCategory:
         r"""The endomorphisms of a set, which hold at least its identity."""
         witness = Sets().an_object()
         return Sets().Mor(witness, witness)
@@ -2086,7 +2112,7 @@ class Homsets(OwnedCategory):
 class CountableSets(OwnedCategory):
     r"""Sets equipped with a countable enumeration."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The natural numbers."""
         return NN
 
@@ -2105,7 +2131,7 @@ class CountableSets(OwnedCategory):
 class CountablyInfiniteSets(OwnedCategory):
     r"""Countably infinite sets."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The natural numbers."""
         return NN
 
@@ -2124,7 +2150,7 @@ class CountablyInfiniteSets(OwnedCategory):
 class UncountableSets(OwnedCategory):
     r"""Sets whose represented cardinal is provably uncountable."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The power set of the natural numbers, uncountable by Cantor's theorem."""
         return PowerSet(NN)
 
@@ -2143,7 +2169,7 @@ class UncountableSets(OwnedCategory):
 class PartiallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a partial order."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The natural numbers under their usual order."""
         return NN
 
@@ -2154,7 +2180,7 @@ class PartiallyOrderedSets(OwnedCategory):
 class TotallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a total order."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The natural numbers, totally ordered."""
         return NN
 
@@ -2174,7 +2200,7 @@ class FinitelySupportedFunctionSets(OwnedCategory):
 
     _certifying_predicate = "_preamble_all_functions_finitely_supported"
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""Functions from the ordinal 2 to itself, all of finite support."""
         return ExponentialOfSets(finite_ordinal_set(2), finite_ordinal_set(2))
 

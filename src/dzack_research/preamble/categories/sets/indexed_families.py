@@ -39,7 +39,7 @@ class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
     def index_set(self) -> Parent:
         return self._index_set
 
-    def cardinality(self):
+    def cardinality(self) -> Parent:
         from dzack_research.preamble.categories.sets.cardinals import cardinal
 
         return cardinal(self.index_set().cardinality())
@@ -66,7 +66,7 @@ class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
             return self.value(self.index_set().ranking_map().inverse()(index))
         return self.value(normalized)
 
-    def items(self):
+    def items(self) -> Iterator[tuple[IndexT, ValueT]]:
         return ((index, self.value(index)) for index in self.index_set())
 
     def __iter__(self) -> Iterator[ValueT]:

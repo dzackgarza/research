@@ -11,6 +11,9 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalIsomorphism,
+)
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
@@ -153,7 +156,7 @@ def finite_ordered_filter(
 class OrderedEnumeratedSets(OwnedCategory):
     r"""Ordered sets presented by an index set and a bijection out of it."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The ordinal on three points."""
         return finite_ordered_set((0, 1, 2))
 
@@ -193,14 +196,14 @@ class OrderedEnumeratedSets(OwnedCategory):
 
                 refine(self, FiniteSets())
 
-        def index_set(self):
+        def index_set(self) -> Parent:
             return self._index_set
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return cardinal(self.index_set().cardinality())
 
         @cached_method
-        def ranking_map(self):
+        def ranking_map(self) -> CategoricalIsomorphism:
             r"""The chosen enumeration of this image, as one isomorphism.
 
             The presentation gives a bijection from the index set, and the
@@ -246,7 +249,7 @@ class OrderedEnumeratedSets(OwnedCategory):
                 raise ValueError(f"{element!r} is not in {self}")
             return self._element_at_function(index)
 
-        def le(self, left, right) -> bool:
+        def le(self, left: PointT, right: PointT) -> bool:
             ranking = self.ranking_map()
             return ranking(left) <= ranking(right)
 
@@ -256,7 +259,7 @@ class OrderedEnumeratedSets(OwnedCategory):
 class FiniteOrderedSets(OwnedCategory):
     r"""Finite ordered sets, without sequence-valued storage."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The three-point ordered set."""
         return finite_ordered_set((0, 1, 2))
 
@@ -285,7 +288,14 @@ class FiniteOrderedSets(OwnedCategory):
             )
 
         @staticmethod
-        def from_indexed(index_set, element_at, *, index_of=None, contains=None, name=None):
+        def from_indexed(
+            index_set: Parent,
+            element_at: Callable[[IndexT], PointT],
+            *,
+            index_of: Callable[[PointT], IndexT | None] | None = None,
+            contains: Callable[[PointT], bool] | None = None,
+            name: str | None = None,
+        ) -> Parent:
             r"""Return the finite ordered set on a chosen indexed presentation."""
             assert cardinal(index_set.cardinality()).is_finite(), (
                 "a finite ordered set requires a finite index set"
@@ -344,7 +354,7 @@ class FiniteOrderedSets(OwnedCategory):
 class FiniteFilteredOrderedSets(OwnedCategory):
     r"""A finite ordered subset selected lazily by a predicate."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The even points of a three-point ordinal."""
         return finite_ordered_filter(finite_ordered_set((0, 1, 2)), lambda x: True)
 
@@ -384,20 +394,20 @@ class FiniteFilteredOrderedSets(OwnedCategory):
                 **rest,
             )
 
-        def source(self):
+        def source(self) -> Parent:
             return self._source
 
-        def predicate(self):
+        def predicate(self) -> Callable[[PointT], bool]:
             return self._predicate
 
         def __iter__(self):
             return (element for element in self.source() if self.predicate()(element))
 
-        def cardinality(self):
+        def cardinality(self) -> Parent:
             return cardinal(sum(1 for _element in self))
 
         @cached_method
-        def ranking_map(self):
+        def ranking_map(self) -> CategoricalIsomorphism:
             r"""The enumeration the surviving members inherit from the source order."""
 
             def point_at(position):
@@ -424,7 +434,7 @@ class FiniteFilteredOrderedSets(OwnedCategory):
                 raise ValueError(f"{element!r} is not in {self}")
             return self.source()(element)
 
-        def le(self, left, right) -> bool:
+        def le(self, left: PointT, right: PointT) -> bool:
             ranking = self.ranking_map()
             return ranking(left) <= ranking(right)
 

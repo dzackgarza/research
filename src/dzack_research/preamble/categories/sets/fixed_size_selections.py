@@ -1,6 +1,8 @@
 """Fixed-size subsets and multisets of ordered enumerated sets."""
 
+from collections.abc import Iterable, Mapping
 from itertools import count
+from typing import SupportsInt, TypeVar
 
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.arith.misc import binomial
@@ -13,8 +15,14 @@ from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import E
 from dzack_research.preamble.categories.sets.set_categories import TotallyOrderedSets
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets, ranking_isomorphism
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalIsomorphism,
+)
+
+
+PointT = TypeVar("PointT")
 
 
 def _largest_combinadic_entry(rank: int, size: int) -> int:
@@ -86,7 +94,7 @@ class FixedSizeSelectionElement(Element):
             for offset, strict_position in enumerate(strict)
         )
 
-    def word(self):
+    def word(self) -> IndexedFamily:
 
         indices = Sets.Δ[self.degree() - 1]
 
@@ -102,13 +110,13 @@ class FixedSizeSelectionElement(Element):
     def __iter__(self):
         return iter(self.word())
 
-    def multiplicity(self, label) -> int:
+    def multiplicity(self, label: PointT) -> int:
         source_position = int(self.parent().source().ranking_map()(label))
         return sum(
             1 for position in self._source_positions() if position == source_position
         )
 
-    def support(self):
+    def support(self) -> Parent:
 
         def distinct_positions():
             previous = None
@@ -135,7 +143,7 @@ class FixedSizeSelectionElement(Element):
             name="Selection support",
         )
 
-    def add_label(self, label):
+    def add_label(self, label: PointT) -> "FixedSizeSelectionElement":
         target = self.parent().with_size(self.degree() + 1)
         position = int(self.parent().source().ranking_map()(label))
         if not self.allows_repetition() and self.multiplicity(label):
@@ -144,7 +152,10 @@ class FixedSizeSelectionElement(Element):
             _merge_sorted(self._source_positions(), (position,))
         )
 
-    def merged_with(self, other):
+    def merged_with(
+        self,
+        other: "FixedSizeSelectionElement",
+    ) -> "FixedSizeSelectionElement":
         if (
             not isinstance(other, FixedSizeSelectionElement)
             or other.parent().source() is not self.parent().source()
@@ -160,7 +171,10 @@ class FixedSizeSelectionElement(Element):
             _merge_sorted(self._source_positions(), other._source_positions())
         )
 
-    def wedge_with(self, other):
+    def wedge_with(
+        self,
+        other: "FixedSizeSelectionElement",
+    ) -> tuple["FixedSizeSelectionElement", int] | None:
         if self.allows_repetition() or other.allows_repetition():
             raise TypeError("wedge is defined here for subset indices")
         for label in self.support():
@@ -233,7 +247,7 @@ class FixedSizeSelections(Parent):
             categories.append(FiniteEnumeratedSets())
         Parent.__init__(self, facade=False, category=Category.join(tuple(categories)))
 
-    def source(self):
+    def source(self) -> Parent:
         return self._source
 
     def selection_size(self) -> int:
@@ -242,14 +256,14 @@ class FixedSizeSelections(Parent):
     def allows_repetition(self) -> bool:
         return self._repetition
 
-    def with_size(self, selection_size):
+    def with_size(self, selection_size: int) -> "FixedSizeSelections":
         return fixed_size_selections(
             self.source(),
             selection_size,
             repetition=self.allows_repetition(),
         )
 
-    def cardinality(self):
+    def cardinality(self) -> Parent:
 
         source_size = cardinal(self.source().cardinality())
         degree = self.selection_size()
@@ -277,7 +291,7 @@ class FixedSizeSelections(Parent):
         return source_size
 
     @cached_method
-    def ranking_map(self):
+    def ranking_map(self) -> CategoricalIsomorphism:
         r"""The combinadic enumeration: a selection *is* its combinatorial rank."""
 
         def selection_at(position):
@@ -325,7 +339,10 @@ class FixedSizeSelections(Parent):
             "a fixed-size selection is constructed by rank, source positions, or multiplicities"
         )
 
-    def from_source_rank_positions(self, positions):
+    def from_source_rank_positions(
+        self,
+        positions: Iterable[SupportsInt],
+    ) -> FixedSizeSelectionElement:
         degree = self.selection_size()
         rank = 0
         count_positions = 0
@@ -356,12 +373,15 @@ class FixedSizeSelections(Parent):
             )
         return self[rank]
 
-    def from_labels(self, labels):
+    def from_labels(self, labels: Iterable[PointT]) -> FixedSizeSelectionElement:
         return self.from_source_rank_positions(
             self.source().ranking_map()(label) for label in labels
         )
 
-    def from_multiplicities(self, multiplicities):
+    def from_multiplicities(
+        self,
+        multiplicities: Mapping[PointT, SupportsInt],
+    ) -> FixedSizeSelectionElement:
         total = sum(int(value) for value in multiplicities.values())
         if total != self.selection_size():
             raise ValueError(
@@ -393,7 +413,7 @@ class FixedSizeSelections(Parent):
                 rank += int(binomial(strict_position, offset + 1))
         return self[rank]
 
-    def singleton_power(self, label):
+    def singleton_power(self, label: PointT) -> FixedSizeSelectionElement:
         if self.selection_size() == 0:
             raise ValueError("the degree-zero selection has no singleton label")
         return self.from_multiplicities({label: self.selection_size()})

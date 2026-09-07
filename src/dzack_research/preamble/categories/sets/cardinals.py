@@ -5,8 +5,9 @@ from __future__ import annotations
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
-from typing import SupportsInt
+from typing import SupportsInt, TypeVar
 
+from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.categories.semirings import Semirings
 from sage.misc.cachefunc import cached_function, cached_method
@@ -25,6 +26,9 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
 from dzack_research.preamble.owned_category import object_of
+
+
+IndexT = TypeVar("IndexT")
 
 
 @dataclass(frozen=True)
@@ -323,7 +327,11 @@ class Cardinalities(OwnedCategory):
             from sage.rings.rational_field import QQ as SageQQ
 
             return SageQQ(self._finite_int())
-        def Mor(self, codomain, category=None):
+        def Mor(
+            self,
+            codomain: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+            category: Category | None = None,
+        ) -> CardinalityHomset:
             if category is not None and category is not Cardinalities():
                 raise TypeError("a cardinal morphism lies in Cardinalities")
             return Cardinalities().Mor(self, codomain)
@@ -334,7 +342,10 @@ class Cardinalities(OwnedCategory):
     def one(self) -> "Cardinalities.ObjectType":
         return cardinal(1)
 
-    def sum(self, *summands):
+    def sum(
+        self,
+        *summands: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> "Cardinalities.ObjectType":
         result = self.zero()
         for summand in map(cardinal, summands):
             if result.is_finite() and summand.is_finite():
@@ -345,7 +356,10 @@ class Cardinalities(OwnedCategory):
                 result = self.supremum(result, summand)
         return result
 
-    def product(self, *factors):
+    def product(
+        self,
+        *factors: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> "Cardinalities.ObjectType":
         result = self.one()
         for factor in map(cardinal, factors):
             if result == 0 or factor == 0:
@@ -358,19 +372,35 @@ class Cardinalities(OwnedCategory):
                 result = self.supremum(result, factor)
         return result
 
-    def indexed_sum(self, index_set: Parent, summands: Callable):
+    def indexed_sum(
+        self,
+        index_set: Parent,
+        summands: Callable[
+            [IndexT], "Cardinalities.ObjectType | SupportsInt | AnInfinity"
+        ],
+    ) -> "Cardinalities.ObjectType":
         size = cardinal(index_set.cardinality())
         if size.is_finite():
             return self.sum(*(summands(index) for index in index_set))
         return _cardinal_with_expression(_IndexedSumCardinal(index_set, summands))
 
-    def indexed_product(self, index_set: Parent, factors: Callable):
+    def indexed_product(
+        self,
+        index_set: Parent,
+        factors: Callable[
+            [IndexT], "Cardinalities.ObjectType | SupportsInt | AnInfinity"
+        ],
+    ) -> "Cardinalities.ObjectType":
         size = cardinal(index_set.cardinality())
         if size.is_finite():
             return self.product(*(factors(index) for index in index_set))
         return _cardinal_with_expression(_IndexedProductCardinal(index_set, factors))
 
-    def power(self, base, exponent):
+    def power(
+        self,
+        base: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        exponent: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> "Cardinalities.ObjectType":
         cardinal_base = cardinal(base)
         cardinal_exponent = cardinal(exponent)
         if cardinal_exponent == 0:
@@ -402,7 +432,10 @@ class Cardinalities(OwnedCategory):
             )
         return _cardinal_with_expression(_PowerCardinal(cardinal_base, cardinal_exponent))
 
-    def supremum(self, *cardinal_numbers):
+    def supremum(
+        self,
+        *cardinal_numbers: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> "Cardinalities.ObjectType":
         terms: list[Cardinalities.ParentMethods] = []
         for cardinal_number in map(cardinal, cardinal_numbers):
             expression = cardinal_number.expression()
@@ -423,7 +456,11 @@ class Cardinalities(OwnedCategory):
             return maximal_terms[0]
         return _cardinal_with_expression(_SupremumCardinal(tuple(maximal_terms)))
 
-    def le(self, source, target) -> bool:
+    def le(
+        self,
+        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> bool:
         left = cardinal(source)
         right = cardinal(target)
         if left == right:
@@ -463,7 +500,11 @@ class Cardinalities(OwnedCategory):
                 )
         return False
 
-    def lt(self, source, target) -> bool:
+    def lt(
+        self,
+        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> bool:
         left = cardinal(source)
         right = cardinal(target)
         if left == right:
@@ -494,13 +535,25 @@ class Cardinalities(OwnedCategory):
             )
         return False
 
-    def ge(self, source, target) -> bool:
+    def ge(
+        self,
+        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> bool:
         return self.le(target, source)
 
-    def gt(self, source, target) -> bool:
+    def gt(
+        self,
+        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> bool:
         return self.lt(target, source)
 
-    def compare(self, source, target) -> CardinalComparison:
+    def compare(
+        self,
+        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> CardinalComparison:
         left = cardinal(source)
         right = cardinal(target)
         if left == right:
@@ -515,7 +568,11 @@ class Cardinalities(OwnedCategory):
             return CardinalComparison.GREATER_OR_EQUAL
         return CardinalComparison.INCOMPARABLE
 
-    def are_incomparable(self, source, target) -> bool:
+    def are_incomparable(
+        self,
+        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+    ) -> bool:
         return not self.le(source, target) and not self.le(target, source)
 
 
@@ -690,7 +747,7 @@ class OrdinalSemirings(OwnedCategory):
         def __rmul__(self, other):
             return self.parent().natural_product(other, self)
 
-        def ordinal_sum(self, other):
+        def ordinal_sum(self, other: Ordinal | SupportsInt) -> Ordinal:
             right = self.parent()(other)
             left_expression = self.expression()
             right_expression = right.expression()
@@ -704,7 +761,7 @@ class OrdinalSemirings(OwnedCategory):
                 return right
             return self.parent().from_expression(_OrdinalSum(self, right))
 
-        def ordinal_product(self, other):
+        def ordinal_product(self, other: Ordinal | SupportsInt) -> Ordinal:
             right = self.parent()(other)
             left_expression = self.expression()
             right_expression = right.expression()
@@ -720,7 +777,7 @@ class OrdinalSemirings(OwnedCategory):
                 return right
             return self.parent().from_expression(_OrdinalProduct(self, right))
 
-        def ordinal_power(self, exponent):
+        def ordinal_power(self, exponent: Ordinal | SupportsInt) -> Ordinal:
             power = self.parent()(exponent)
             base_expression = self.expression()
             exponent_expression = power.expression()
@@ -802,7 +859,11 @@ class OrdinalSemirings(OwnedCategory):
     def super_categories(self):
         return [Objects()]
 
-    def Mor(self, domain, codomain) -> OrdinalSemiringHomset:
+    def Mor(
+        self,
+        domain: OrdinalSemiring,
+        codomain: OrdinalSemiring,
+    ) -> OrdinalSemiringHomset:
         if domain not in self or codomain not in self:
             raise TypeError("an ordinal-semiring morphism requires two ordinal semirings")
         return OrdinalSemiringHomCategoryConstruction(self).Of(domain, codomain)
@@ -815,7 +876,7 @@ class OrdinalSemirings(OwnedCategory):
         def _repr_(self) -> str:
             return "Ordinal semiring"
 
-        def from_expression(self, expression) -> Ordinal:
+        def from_expression(self, expression: _OrdinalExpression) -> Ordinal:
             return self.element_class(self, expression)
 
         def _element_constructor_(self, value):
@@ -834,7 +895,7 @@ class OrdinalSemirings(OwnedCategory):
         def one(self) -> Ordinal:
             return self(1)
 
-        def initial(self, index) -> Ordinal:
+        def initial(self, index: Ordinal | SupportsInt) -> Ordinal:
             return self.from_expression(_InitialOrdinal(self(index)))
 
         def natural_sum(self, *summands) -> Ordinal:
@@ -889,7 +950,11 @@ class OrdinalSemirings(OwnedCategory):
                 return normalized[0]
             return self.from_expression(_NaturalProduct(tuple(normalized)))
 
-        def proves_le(self, left, right) -> bool:
+        def proves_le(
+            self,
+            left: Ordinal | SupportsInt,
+            right: Ordinal | SupportsInt,
+        ) -> bool:
             source = self(left)
             target = self(right)
             if source == target:
@@ -907,7 +972,11 @@ class OrdinalSemirings(OwnedCategory):
             ):
                 return self.proves_le(source_expression.index, target_expression.index)
             return False
-        def Mor(self, codomain, category=None):
+        def Mor(
+            self,
+            codomain: OrdinalSemiring,
+            category: Category | None = None,
+        ) -> OrdinalSemiringHomset:
             if category is not None and category is not OrdinalSemirings():
                 raise TypeError("an ordinal-semiring morphism lies in OrdinalSemirings")
             return OrdinalSemirings().Mor(self, codomain)

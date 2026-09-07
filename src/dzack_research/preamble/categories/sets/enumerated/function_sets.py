@@ -18,6 +18,9 @@ from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import NN, ranking_isomorphism
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalIsomorphism,
+)
 
 
 def _nonnegative_integer(value, *, error_type):
@@ -106,7 +109,7 @@ class EnumeratedByNaturals(Category):
         return [InfiniteEnumeratedSets()]
 
     class ParentMethods:
-        def index_set(self):
+        def index_set(self) -> Parent:
             return NN
 
         def _index_from_rank(self, position):
@@ -115,7 +118,7 @@ class EnumeratedByNaturals(Category):
         def _rank_from_index(self, index):
             return _nonnegative_integer(index, error_type=ValueError)
 
-        def function(self, index):
+        def function(self, index: SupportsIndex) -> Expression:
             return self[self._rank_from_index(index)]
 
 
@@ -130,7 +133,7 @@ class EnumeratedByIntegers(Category):
         return [InfiniteEnumeratedSets()]
 
     class ParentMethods:
-        def index_set(self):
+        def index_set(self) -> Parent:
             return ZZ
 
         def _index_from_rank(self, position):
@@ -139,7 +142,7 @@ class EnumeratedByIntegers(Category):
         def _rank_from_index(self, index):
             return natural_from_integer(index)
 
-        def function(self, index):
+        def function(self, index: SupportsIndex) -> Expression:
             return self[self._rank_from_index(index)]
 
 
@@ -159,7 +162,7 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
             category=(FunctionEnumeratedSets(), self._indexing_category()),
         )
 
-    def cardinality(self):
+    def cardinality(self) -> Parent:
         return aleph0
 
     def _symbol_at_index(self, index):
@@ -178,7 +181,7 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
         )
 
     @cached_method
-    def ranking_map(self):
+    def ranking_map(self) -> CategoricalIsomorphism:
         r"""The enumeration by index, read through this set's own indexing."""
         return ranking_isomorphism(
             self,
