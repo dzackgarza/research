@@ -1,5 +1,7 @@
 r"""Opposite categories and binary products of categories."""
 
+from typing import Any
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -29,7 +31,7 @@ class OppositeMorphism(Morphism):
             raise ValueError("the underlying opposite arrow has the wrong codomain")
         self._underlying_arrow = underlying_arrow
 
-    def underlying_arrow(self):
+    def underlying_arrow(self) -> Morphism:
         return self._underlying_arrow
 
     def __mul__(self, other):
@@ -54,13 +56,13 @@ class OppositeHomset(CategoricalHomset):
             self, HomCategoryConstruction(opposite_category), domain, codomain
         )
 
-    def opposite_category(self):
+    def opposite_category(self) -> "OppositeCategory":
         return self._opposite_category
 
     def _element_constructor_(self, underlying_arrow):
         return OppositeMorphism(self, underlying_arrow)
 
-    def identity(self):
+    def identity(self) -> OppositeMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         underlying = self.domain().underlying_object()
@@ -71,7 +73,7 @@ class OppositeHomset(CategoricalHomset):
 class OppositeCategory(OwnedCategory):
     r"""The opposite category ``C^op``."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""An object of the base category, read in the opposite."""
         return self.object(self.base_category().an_object())
 
@@ -82,10 +84,10 @@ class OppositeCategory(OwnedCategory):
             self._underlying_object = underlying_object
             super().__init__(**rest)
 
-        def opposite_category(self):
+        def opposite_category(self) -> "OppositeCategory":
             return self.category()
 
-        def underlying_object(self):
+        def underlying_object(self) -> Parent:
             return self._underlying_object
 
         def _repr_(self) -> str:
@@ -98,37 +100,33 @@ class OppositeCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return self._base_category
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self._base_category
 
     def super_categories(self):
         return [Objects()]
 
     @cached_method
-    def object(self, underlying_object):
+    def object(self, underlying_object: Parent) -> Parent:
         if underlying_object not in self.base_category():
             raise TypeError("the object lies outside the base category")
         return object_of(self, underlying_object=underlying_object)
 
     __call__ = object
 
-    def __contains__(self, candidate) -> bool:
-        category = getattr(candidate, "category", lambda: None)()
-        return (
-            isinstance(category, OppositeCategory)
-            and category.base_category() == self.base_category()
-        )
+    def __contains__(self, candidate: Any) -> bool:
+        return candidate in Objects() and candidate.category() == self
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> OppositeHomset:
         if domain not in self or codomain not in self:
             raise TypeError("an opposite Hom requires two opposite objects")
         return OppositeHomset(self, domain, codomain)
 
 
-    def identity(self, obj):
+    def identity(self, obj: Parent) -> OppositeMorphism:
         return self.Mor(obj, obj).identity()
 
-    def opposite_category(self):
+    def opposite_category(self) -> Category:
         return self.base_category()
 
     def _repr_(self) -> str:
@@ -153,10 +151,10 @@ class ProductMorphism(Morphism):
         self._first = first
         self._second = second
 
-    def first(self):
+    def first(self) -> Morphism:
         return self._first
 
-    def second(self):
+    def second(self) -> Morphism:
         return self._second
 
     def __mul__(self, other):
@@ -181,7 +179,7 @@ class ProductHomset(CategoricalHomset):
             self, HomCategoryConstruction(product_category), domain, codomain
         )
 
-    def product_category(self):
+    def product_category(self) -> "ProductCategory":
         return self._product_category
 
     def _element_constructor_(self, first, second=None):
@@ -189,7 +187,7 @@ class ProductHomset(CategoricalHomset):
             first, second = first
         return ProductMorphism(self, first, second)
 
-    def identity(self):
+    def identity(self) -> ProductMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         first = self.domain().first()
@@ -204,7 +202,7 @@ class ProductHomset(CategoricalHomset):
 class ProductCategory(OwnedCategory):
     r"""The categorical product ``C x D``."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The pair of witnesses of the two factors."""
         return self.pair(
             self.first_category().an_object(),
@@ -219,13 +217,13 @@ class ProductCategory(OwnedCategory):
             self._second = second
             super().__init__(**rest)
 
-        def product_category(self):
+        def product_category(self) -> "ProductCategory":
             return self.category()
 
-        def first(self):
+        def first(self) -> Parent:
             return self._first
 
-        def second(self):
+        def second(self) -> Parent:
             return self._second
 
         def _repr_(self) -> str:
@@ -239,38 +237,33 @@ class ProductCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return self._first_category, self._second_category
 
-    def first_category(self):
+    def first_category(self) -> Category:
         return self._first_category
 
-    def second_category(self):
+    def second_category(self) -> Category:
         return self._second_category
 
     def super_categories(self):
         return [Objects()]
 
     @cached_method
-    def pair(self, first, second):
+    def pair(self, first: Parent, second: Parent) -> Parent:
         if first not in self.first_category() or second not in self.second_category():
             raise TypeError("the pair lies outside the product category")
         return object_of(self, first=first, second=second)
 
     __call__ = pair
 
-    def __contains__(self, candidate) -> bool:
-        category = getattr(candidate, "category", lambda: None)()
-        return (
-            isinstance(category, ProductCategory)
-            and candidate.first() in self.first_category()
-            and candidate.second() in self.second_category()
-        )
+    def __contains__(self, candidate: Any) -> bool:
+        return candidate in Objects() and candidate.category() == self
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> ProductHomset:
         if domain not in self or codomain not in self:
             raise TypeError("a product Hom requires two product-category objects")
         return ProductHomset(self, domain, codomain)
 
 
-    def identity(self, obj):
+    def identity(self, obj: Parent) -> ProductMorphism:
         return self.Mor(obj, obj).identity()
 
     def _repr_(self) -> str:

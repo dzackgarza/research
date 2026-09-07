@@ -13,12 +13,14 @@ latter may carry additional enrichment -- for example ``Hom_R(M,N)`` is an
 chosen category and endpoints.
 """
 
+from typing import Any
+
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
     CategoryPacketMethods,
     OwnedHomset,
     underlying_set_homset,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
@@ -86,7 +88,7 @@ class HomArrowObject(Parent):
         self._arrow = arrow
         Parent.__init__(self, category=SageSets())
 
-    def arrow(self):
+    def arrow(self) -> Morphism:
         return self._arrow
 
     underlying_arrow = arrow
@@ -170,10 +172,10 @@ class CategoricalHomset(OwnedHomset, Category):
             # callers never observe an un-enriched module Hom parent.
             refine(self, category)
 
-    def hom_family(self):
+    def hom_family(self) -> "HomCategoryOf":
         return self._family
 
-    def homset_category(self):
+    def homset_category(self) -> Category:
         r"""Return the owned mathematical category whose Hom object this is.
 
         Sage's ``Homset`` initialization still uses ``Sets()`` only as the
@@ -182,30 +184,30 @@ class CategoricalHomset(OwnedHomset, Category):
         """
         return self.hom_family().base_category()
 
-    def identity_at(self, obj):
+    def identity_at(self, obj: Parent) -> Morphism:
         return self.hom_family().Of(obj, obj).identity()
 
-    def attach_end_family(self, family) -> None:
+    def attach_end_family(self, family: "EndCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an endomorphism Hom category can carry an End-family role")
         if self._end_family is not None and self._end_family is not family:
             raise ValueError("one fixed Hom category cannot carry two End-family roles")
         self._end_family = family
 
-    def end_family(self):
+    def end_family(self) -> "EndCategoryOf | None":
         return self._end_family
 
-    def attach_aut_family(self, family) -> None:
+    def attach_aut_family(self, family: "AutCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
         if self._aut_family is not None and self._aut_family is not family:
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
         self._aut_family = family
 
-    def aut_family(self):
+    def aut_family(self) -> "AutCategoryOf | None":
         return self._aut_family
 
-    def identity_endomorphism(self):
+    def identity_endomorphism(self) -> Morphism:
         if self.end_family() is None:
             raise ValueError("this fixed Hom category has not been given an End-family role")
         identity = self.arrow_set().identity()
@@ -213,21 +215,21 @@ class CategoricalHomset(OwnedHomset, Category):
 
     one = identity_endomorphism
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self.hom_family().base_category()
 
-    def domain_object(self):
+    def domain_object(self) -> Parent:
         return self._domain_object
 
-    def codomain_object(self):
+    def codomain_object(self) -> Parent:
         return self._codomain_object
 
-    def arrow_set(self):
+    def arrow_set(self) -> Parent:
         return self
 
     underlying_homset = arrow_set
 
-    def accepts(self, arrow) -> bool:
+    def accepts(self, arrow: Morphism) -> bool:
         if not (
             isinstance(arrow, Morphism)
             and arrow.domain() is self.domain_object()
@@ -242,12 +244,12 @@ class CategoricalHomset(OwnedHomset, Category):
             return False
         return True
 
-    def object(self, arrow):
+    def object(self, arrow: Morphism) -> HomArrowObject:
         if not self.accepts(arrow):
             arrow = self(arrow)
         return _arrow_object(arrow)
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         arrow = candidate.arrow() if isinstance(candidate, HomArrowObject) else candidate
         return self.accepts(arrow)
 
@@ -267,14 +269,18 @@ class CategoricalHomset(OwnedHomset, Category):
                 )
         return supers or [Objects()]
 
-    def two_hom(self, domain, codomain):
+    def two_hom(
+        self,
+        domain: HomArrowObject | Morphism,
+        codomain: HomArrowObject | Morphism,
+    ) -> "HomArrowDiscreteHomset":
         if not isinstance(domain, HomArrowObject):
             domain = self.object(domain)
         if not isinstance(codomain, HomArrowObject):
             codomain = self.object(codomain)
         return HomArrowDiscreteHomset(self, domain, codomain)
 
-    def identity_2(self, arrow):
+    def identity_2(self, arrow: Morphism) -> "HomArrowIdentity":
         arrow_object = self.object(arrow)
         return self.two_hom(arrow_object, arrow_object).identity()
 
@@ -300,7 +306,7 @@ class HomArrowDiscreteHomset(CategoricalHomset):
             self, HomCategoryConstruction(hom_category), domain, codomain
         )
 
-    def hom_category(self):
+    def hom_category(self) -> Category:
         return self._hom_category
 
     def _element_constructor_(self, value=None):
@@ -308,7 +314,7 @@ class HomArrowDiscreteHomset(CategoricalHomset):
             raise ValueError("distinct arrows have no represented 2-morphism")
         return self.element_class(self)
 
-    def identity(self):
+    def identity(self) -> HomArrowIdentity:
         return self()
 
 
@@ -346,46 +352,46 @@ class FixedHomCategory(Category):
     def _make_named_class_key(self, name):
         return (self._family, id(self._domain_object), id(self._codomain_object))
 
-    def hom_family(self):
+    def hom_family(self) -> "HomCategoryOf":
         return self._family
 
-    def attach_end_family(self, family) -> None:
+    def attach_end_family(self, family: "EndCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an endomorphism Hom category can carry an End-family role")
         if self._end_family is not None and self._end_family is not family:
             raise ValueError("one fixed Hom category cannot carry two End-family roles")
         self._end_family = family
 
-    def end_family(self):
+    def end_family(self) -> "EndCategoryOf | None":
         return self._end_family
 
-    def attach_aut_family(self, family) -> None:
+    def attach_aut_family(self, family: "AutCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
         if self._aut_family is not None and self._aut_family is not family:
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
         self._aut_family = family
 
-    def aut_family(self):
+    def aut_family(self) -> "AutCategoryOf | None":
         return self._aut_family
 
-    def identity_endomorphism(self):
+    def identity_endomorphism(self) -> Morphism:
         if self.end_family() is None:
             raise ValueError("this fixed Hom category has not been given an End-family role")
         return self(self.arrow_set().identity())
 
     one = identity_endomorphism
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self.hom_family().base_category()
 
-    def domain_object(self):
+    def domain_object(self) -> Parent:
         return self._domain_object
 
-    def codomain_object(self):
+    def codomain_object(self) -> Parent:
         return self._codomain_object
 
-    def arrow_set(self):
+    def arrow_set(self) -> Parent:
         return _category_homset(
             self.base_category(),
             self.domain_object(),
@@ -394,7 +400,7 @@ class FixedHomCategory(Category):
 
     underlying_homset = arrow_set
 
-    def accepts(self, arrow) -> bool:
+    def accepts(self, arrow: Morphism) -> bool:
         if not (
             isinstance(arrow, Morphism)
             and arrow.domain() is self.domain_object()
@@ -414,7 +420,7 @@ class FixedHomCategory(Category):
             return False
         return True
 
-    def object(self, arrow):
+    def object(self, arrow: HomArrowObject | Morphism) -> HomArrowObject:
         if isinstance(arrow, HomArrowObject):
             arrow = arrow.arrow()
         if not self.accepts(arrow):
@@ -423,11 +429,11 @@ class FixedHomCategory(Category):
 
     __call__ = object
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         arrow = candidate.arrow() if isinstance(candidate, HomArrowObject) else candidate
         return self.accepts(arrow)
 
-    def objects(self):
+    def objects(self) -> IndexedFamily:
         arrows = self.arrow_set()
         return indexed_family(
             arrows,
@@ -435,7 +441,11 @@ class FixedHomCategory(Category):
             name=f"Arrow objects of {self}",
         )
 
-    def Mor(self, domain, codomain):
+    def Mor(
+        self,
+        domain: HomArrowObject | Morphism,
+        codomain: HomArrowObject | Morphism,
+    ) -> HomArrowDiscreteHomset:
         if not isinstance(domain, HomArrowObject):
             domain = self(domain)
         if not isinstance(codomain, HomArrowObject):
@@ -445,7 +455,7 @@ class FixedHomCategory(Category):
         return HomArrowDiscreteHomset(self, domain, codomain)
 
 
-    def identity(self, arrow_object):
+    def identity(self, arrow_object: HomArrowObject | Morphism) -> HomArrowIdentity:
         return self.Mor(arrow_object, arrow_object).identity()
 
     def super_categories(self):
@@ -475,7 +485,7 @@ class FixedHomCategory(Category):
 class FixedEndCategory(FixedHomCategory):
     r"""The category ``End_C(A)`` of endomorphisms of one object."""
 
-    def identity_endomorphism(self):
+    def identity_endomorphism(self) -> Morphism:
         return self(self.arrow_set().identity())
 
     one = identity_endomorphism
@@ -485,7 +495,7 @@ class FixedEndCategory(FixedHomCategory):
 
 
 class FixedRestrictedHomCategory(FixedHomCategory):
-    def arrow_set(self):
+    def arrow_set(self) -> Parent:
         r"""Return the existing ``Mor`` parent for these endpoints.
 
         A restricted Hom category classifies some arrows in the base
@@ -499,7 +509,7 @@ class FixedRestrictedHomCategory(FixedHomCategory):
 
     underlying_homset = arrow_set
 
-    def accepts(self, arrow) -> bool:
+    def accepts(self, arrow: Morphism) -> bool:
         return super().accepts(arrow) and self.hom_family().accepts(arrow)
 
     def super_categories(self):
@@ -552,7 +562,7 @@ class RestrictedHomCategoryParent(Parent, FixedRestrictedHomCategory):
             pass
         return candidate
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return FixedRestrictedHomCategory.accepts(
             self,
             self._underlying_arrow(candidate),
@@ -585,10 +595,10 @@ class CategoricalIsomorphism(Morphism):
         self._forward = forward
         self._inverse = inverse
 
-    def forward(self):
+    def forward(self) -> Morphism:
         return self._forward
 
-    def inverse(self):
+    def inverse(self) -> Morphism:
         return self._inverse
 
     def __call__(self, element):
@@ -613,7 +623,7 @@ class CategoricalIsomorphism(Morphism):
 
 
 class FixedIsoCategory(FixedHomCategory):
-    def accepts(self, arrow) -> bool:
+    def accepts(self, arrow: Morphism) -> bool:
         if not isinstance(arrow, CategoricalIsomorphism):
             return False
         if (
@@ -651,7 +661,7 @@ class FixedIsoCategory(FixedHomCategory):
             )
         return supers
 
-    def identity_automorphism(self):
+    def identity_automorphism(self) -> CategoricalIsomorphism:
         if self.aut_family() is None:
             raise ValueError("this isomorphism category has not been given an Aut-family role")
         if self.domain_object() is not self.codomain_object():
@@ -675,7 +685,7 @@ class FixedIsoCategory(FixedHomCategory):
 
 
 class FixedAutCategory(FixedIsoCategory):
-    def identity_automorphism(self):
+    def identity_automorphism(self) -> CategoricalIsomorphism:
         identity = self.arrow_set().identity()
         return self(
             CategoricalIsomorphism(
@@ -708,8 +718,12 @@ class HomCategories(Category):
     def super_categories(self):
         return [Objects()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return isinstance(candidate, (FixedHomCategory, CategoricalHomset))
+
+
+FixedHomObject = CategoricalHomset | FixedHomCategory
+FixedHomClass = type[CategoricalHomset] | type[FixedHomCategory]
 
 
 class CategoryPacket(SageObject):
@@ -730,47 +744,47 @@ class CategoryPacket(SageObject):
         self._isos = None
         self._auts = None
 
-    def category(self):
+    def category(self) -> Category:
         return self._category
 
     C = category
 
-    def Homs(self):
+    def Homs(self) -> "HomCategoryOf":
         if self._homs is None:
             self._homs = _declared_family(
                 self.category(), "_HomCategory", HomCategoryOf
             )
         return self._homs
 
-    def Ends(self):
+    def Ends(self) -> "EndCategoryOf":
         if self._ends is None:
             self._ends = _declared_family(
                 self.category(), "_EndCategory", EndCategoryOf
             )
         return self._ends
 
-    def Monos(self):
+    def Monos(self) -> "MonoCategoryOf":
         if self._monos is None:
             self._monos = _declared_family(
                 self.category(), "_MonoCategory", MonoCategoryOf
             )
         return self._monos
 
-    def Epis(self):
+    def Epis(self) -> "EpiCategoryOf":
         if self._epis is None:
             self._epis = _declared_family(
                 self.category(), "_EpiCategory", EpiCategoryOf
             )
         return self._epis
 
-    def Isos(self):
+    def Isos(self) -> "IsoCategoryOf":
         if self._isos is None:
             self._isos = _declared_family(
                 self.category(), "_IsoCategory", IsoCategoryOf
             )
         return self._isos
 
-    def Auts(self):
+    def Auts(self) -> "AutCategoryOf":
         if self._auts is None:
             self._auts = _declared_family(
                 self.category(), "_AutCategory", AutCategoryOf
@@ -837,16 +851,20 @@ class HomCategoryOf(Category):
     def _make_named_class_key(self, name):
         return self._base_category
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self._base_category
 
-    def family_over(self, category):
+    def family_over(self, category: Category) -> "HomCategoryOf":
         return category_packet(category).Homs()
 
-    def fixed_category_class(self):
+    def fixed_category_class(self) -> FixedHomClass:
         return self.FixedCategoryClass
 
-    def fixed_category_class_for(self, domain, codomain):
+    def fixed_category_class_for(
+        self,
+        domain: Parent,
+        codomain: Parent,
+    ) -> FixedHomClass:
         r"""Return the represented fixed Hom class for these endpoints."""
         return self.fixed_category_class()
 
@@ -890,7 +908,7 @@ class HomCategoryOf(Category):
         ]
         return supers + [HomCategories()]
 
-    def Of(self, domain, codomain):
+    def Of(self, domain: Parent, codomain: Parent) -> FixedHomObject:
         if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError("Hom endpoints must lie in the base category")
         # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
@@ -952,7 +970,7 @@ class HomCategoryOf(Category):
 
     Between = Of
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         try:
             domain = candidate.domain_object()
             codomain = candidate.codomain_object()
@@ -987,10 +1005,14 @@ class EndCategoryOf(HomCategoryOf):
     FixedCategoryClass = FixedEndCategory
     _declaration_name = "_EndCategory"
 
-    def family_over(self, category):
+    def family_over(self, category: Category) -> "EndCategoryOf":
         return category_packet(category).Ends()
 
-    def Of(self, obj, codomain=None):
+    def Of(
+        self,
+        obj: Parent,
+        codomain: Parent | None = None,
+    ) -> FixedHomObject:
         if codomain is not None and codomain is not obj:
             raise ValueError("an endomorphism category has equal endpoints")
         if obj not in self.base_category():
@@ -1007,7 +1029,7 @@ class EndCategoryOf(HomCategoryOf):
             endomorphisms.attach_end_family(self)
         return self._remember_between(obj, obj, endomorphisms)
 
-    def Between(self, domain, codomain):
+    def Between(self, domain: Parent, codomain: Parent) -> FixedHomObject:
         if domain is not codomain:
             raise ValueError("an endomorphism category has equal endpoints")
         return self.Of(domain)
@@ -1024,7 +1046,7 @@ class RestrictedHomCategoryOf(HomCategoryOf):
     _inherits_morphisms_from = _carves_the_same_hom
 
     @abstract_method
-    def accepts(self, arrow) -> bool:
+    def accepts(self, arrow: Morphism) -> bool:
         r"""Whether ``arrow`` belongs to this restricted Hom family."""
 
     def super_categories(self):
@@ -1041,10 +1063,10 @@ _RestrictedCategoryOf = RestrictedHomCategoryOf
 class MonoCategoryOf(RestrictedHomCategoryOf):
     _declaration_name = "_MonoCategory"
 
-    def family_over(self, category):
+    def family_over(self, category: Category) -> "MonoCategoryOf":
         return category_packet(category).Monos()
 
-    def accepts(self, arrow) -> bool:
+    def accepts(self, arrow: Morphism) -> bool:
         try:
             return arrow.is_injective() is True
         except (AttributeError, NotImplementedError):
@@ -1054,10 +1076,10 @@ class MonoCategoryOf(RestrictedHomCategoryOf):
 class EpiCategoryOf(RestrictedHomCategoryOf):
     _declaration_name = "_EpiCategory"
 
-    def family_over(self, category):
+    def family_over(self, category: Category) -> "EpiCategoryOf":
         return category_packet(category).Epis()
 
-    def accepts(self, arrow) -> bool:
+    def accepts(self, arrow: Morphism) -> bool:
         try:
             return arrow.is_surjective() is True
         except (AttributeError, NotImplementedError):
@@ -1070,7 +1092,7 @@ class IsoCategoryOf(HomCategoryOf):
 
     _inherits_morphisms_from = _carves_the_same_hom
 
-    def family_over(self, category):
+    def family_over(self, category: Category) -> "IsoCategoryOf":
         return category_packet(category).Isos()
 
     def super_categories(self):
@@ -1094,7 +1116,7 @@ class AutCategoryOf(IsoCategoryOf):
     FixedCategoryClass = FixedAutCategory
     _declaration_name = "_AutCategory"
 
-    def family_over(self, category):
+    def family_over(self, category: Category) -> "AutCategoryOf":
         return category_packet(category).Auts()
 
     def super_categories(self):
@@ -1105,7 +1127,11 @@ class AutCategoryOf(IsoCategoryOf):
         ]
         return [packet.Ends(), packet.Isos(), *inherited, HomCategories()]
 
-    def Of(self, obj, codomain=None):
+    def Of(
+        self,
+        obj: Parent,
+        codomain: Parent | None = None,
+    ) -> FixedHomObject:
         if codomain is not None and codomain is not obj:
             raise ValueError("an automorphism category has equal endpoints")
         if obj not in self.base_category():
@@ -1121,7 +1147,7 @@ class AutCategoryOf(IsoCategoryOf):
             automorphisms.attach_aut_family(self)
         return self._remember_between(obj, obj, automorphisms)
 
-    def Between(self, domain, codomain):
+    def Between(self, domain: Parent, codomain: Parent) -> FixedHomObject:
         if domain is not codomain:
             raise ValueError("an automorphism category has equal endpoints")
         return self.Of(domain)

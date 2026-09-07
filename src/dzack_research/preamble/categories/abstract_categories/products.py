@@ -1,6 +1,7 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
 from collections.abc import Callable, Iterable
+from typing import Any
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -32,10 +33,10 @@ class DiagramCategory(FunctorCategory):
     def __init__(self, index_category: Category, target_category: Category) -> None:
         super().__init__(Cat(), index_category, target_category)
 
-    def index_category(self):
+    def index_category(self) -> Category:
         return self.domain_category()
 
-    def target_category(self):
+    def target_category(self) -> Category:
         return self.codomain_category()
 
 
@@ -75,7 +76,7 @@ class ConeMorphism(Morphism):
             raise ValueError("the apex map does not commute with the cone legs")
         self._apex_map = apex_map
 
-    def apex_map(self):
+    def apex_map(self) -> Morphism:
         return self._apex_map
 
     def __mul__(self, other):
@@ -101,7 +102,7 @@ class CoconeMorphism(Morphism):
             raise ValueError("the apex map does not commute with the cocone legs")
         self._apex_map = apex_map
 
-    def apex_map(self):
+    def apex_map(self) -> Morphism:
         return self._apex_map
 
     def __mul__(self, other):
@@ -126,7 +127,7 @@ class ConeHomset(CategoricalHomset):
             self, HomCategoryConstruction(cone_category), domain, codomain
         )
 
-    def cone_category(self):
+    def cone_category(self) -> "ConeCategory":
         return self._cone_category
 
     def _element_constructor_(self, apex_map):
@@ -147,7 +148,7 @@ class CoconeHomset(CategoricalHomset):
             self, HomCategoryConstruction(cocone_category), domain, codomain
         )
 
-    def cocone_category(self):
+    def cocone_category(self) -> "CoconeCategory":
         return self._cocone_category
 
     def _element_constructor_(self, apex_map):
@@ -168,22 +169,22 @@ class ConeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cone_category(self):
+        def cone_category(self) -> "ConeCategory":
             return self.category()
 
-        def diagram(self):
+        def diagram(self) -> Functor:
             return self.cone_category().diagram()
 
-        def apex(self):
+        def apex(self) -> Parent:
             return self._apex
 
-        def transformation(self):
+        def transformation(self) -> NaturalTransformation:
             return self._transformation
 
-        def structure_morphism(self, index):
+        def structure_morphism(self, index: Parent) -> Morphism:
             return self.transformation().component(index)
 
-        def structure_morphisms(self):
+        def structure_morphisms(self) -> IndexedFamily:
             domain = self.diagram().domain()
             return indexed_family(
                 domain.object_set(),
@@ -201,29 +202,33 @@ class ConeCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return self._diagram
 
-    def diagram(self):
+    def diagram(self) -> Functor:
         return self._diagram
 
-    def target_category(self):
+    def target_category(self) -> Category:
         return self.diagram().codomain()
 
     def super_categories(self):
         return [OwnedObjects()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         category = getattr(candidate, "category", lambda: None)()
         return (
             isinstance(category, ConeCategory)
             and category.diagram() is self.diagram()
         )
 
-    def cone(self, apex, components):
+    def cone(
+        self,
+        apex: Parent,
+        components: Callable[[Parent], Morphism],
+    ) -> Parent:
 
         constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
         transformation = NaturalTransformation(constant, self.diagram(), components)
         return object_of(self, apex=apex, transformation=transformation)
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> ConeHomset:
         if domain not in self or codomain not in self:
             raise TypeError("a cone Hom requires two cones over the same diagram")
         return ConeHomset(self, domain, codomain)
@@ -244,22 +249,22 @@ class CoconeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cocone_category(self):
+        def cocone_category(self) -> "CoconeCategory":
             return self.category()
 
-        def diagram(self):
+        def diagram(self) -> Functor:
             return self.cocone_category().diagram()
 
-        def apex(self):
+        def apex(self) -> Parent:
             return self._apex
 
-        def transformation(self):
+        def transformation(self) -> NaturalTransformation:
             return self._transformation
 
-        def costructure_morphism(self, index):
+        def costructure_morphism(self, index: Parent) -> Morphism:
             return self.transformation().component(index)
 
-        def costructure_morphisms(self):
+        def costructure_morphisms(self) -> IndexedFamily:
             domain = self.diagram().domain()
             return indexed_family(
                 domain.object_set(),
@@ -277,29 +282,33 @@ class CoconeCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return self._diagram
 
-    def diagram(self):
+    def diagram(self) -> Functor:
         return self._diagram
 
-    def target_category(self):
+    def target_category(self) -> Category:
         return self.diagram().codomain()
 
     def super_categories(self):
         return [OwnedObjects()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         category = getattr(candidate, "category", lambda: None)()
         return (
             isinstance(category, CoconeCategory)
             and category.diagram() is self.diagram()
         )
 
-    def cocone(self, apex, components):
+    def cocone(
+        self,
+        apex: Parent,
+        components: Callable[[Parent], Morphism],
+    ) -> Parent:
 
         constant = ConstantDiagram(self.diagram().domain(), self.target_category(), apex)
         transformation = NaturalTransformation(self.diagram(), constant, components)
         return object_of(self, apex=apex, transformation=transformation)
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> CoconeHomset:
         if domain not in self or codomain not in self:
             raise TypeError("a cocone Hom requires two cocones under the same diagram")
         return CoconeHomset(self, domain, codomain)
@@ -321,17 +330,17 @@ class SpanCategory(ConeCategory):
     """
 
     class ParentMethods:
-        def target_category(self):
+        def target_category(self) -> Category:
             r"""The category the span lives in."""
             return self.cone_category().target_category()
 
-        def left_leg(self):
+        def left_leg(self) -> Morphism:
             return self.structure_morphism(self.diagram().domain()(0))
 
-        def right_leg(self):
+        def right_leg(self) -> Morphism:
             return self.structure_morphism(self.diagram().domain()(1))
 
-        def pushout(self):
+        def pushout(self) -> Parent:
             r"""Return the pushout of this span, the colimit of its diagram."""
             return self.target_category().pushout(self.left_leg(), self.right_leg())
 
@@ -443,13 +452,13 @@ class BiproductCategory(Category):
     def _make_named_class_key(self, name):
         return self._factors
 
-    def factors(self):
+    def factors(self) -> IndexedFamily:
         return self._factors
 
     def super_categories(self):
         return [OwnedObjects()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         try:
             return candidate.biproduct_factors() == self.factors()
         except (AttributeError, TypeError, ValueError):
@@ -469,13 +478,13 @@ class TensorProductCategory(Category):
     def _make_named_class_key(self, name):
         return self._factors
 
-    def tensor_factors(self):
+    def tensor_factors(self) -> IndexedFamily:
         return self._factors
 
     def super_categories(self):
         return [OwnedObjects()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         try:
             return candidate.tensor_factors() == self.tensor_factors()
         except (AttributeError, TypeError, ValueError):
@@ -492,7 +501,7 @@ def common_category_of(objects: IndexedFamily | Iterable[Parent]) -> Category:
 def Cone(
     diagram: Functor,
     apex: Parent,
-    components: Callable[[object], Morphism],
+    components: Callable[[Parent], Morphism],
 ) -> Parent:
     return ConeCategory(diagram).cone(apex, components)
 
@@ -500,7 +509,7 @@ def Cone(
 def Cocone(
     diagram: Functor,
     apex: Parent,
-    components: Callable[[object], Morphism],
+    components: Callable[[Parent], Morphism],
 ) -> Parent:
     return CoconeCategory(diagram).cocone(apex, components)
 

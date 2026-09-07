@@ -1,7 +1,8 @@
 """Dependency-light runtime foundation for owned Hom-set parents."""
 
+from sage.categories.category import Category
 from sage.categories.homset import Homset
-from sage.categories.morphism import SetMorphism
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 
@@ -15,10 +16,10 @@ class OwnedHomset(Homset):
     ``_element_constructor_``.
     """
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Morphism:
         return self._element_constructor_(*args, **kwargs)
 
-    def identity_at(self, obj):
+    def identity_at(self, obj: Parent) -> Morphism:
         if obj is not self.domain() or obj is not self.codomain():
             raise ValueError("this Hom parent does not represent endomorphisms of the stated object")
         return self.identity()
@@ -45,7 +46,7 @@ class UnderlyingSetHomset(OwnedHomset):
             raise TypeError("an underlying set map is supplied by a callable")
         return SetMorphism(self, datum)
 
-    def identity(self):
+    def identity(self) -> SetMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity requires equal endpoints")
         return SetMorphism(self, lambda element: element)
@@ -80,38 +81,38 @@ class CategoryPacketMethods:
 
         return category_packet(self)
 
-    def HomCategory(self):
+    def HomCategory(self) -> Category:
         return self._category_packet().Homs()
 
-    def EndCategory(self):
+    def EndCategory(self) -> Category:
         return self._category_packet().Ends()
 
-    def MonoCategory(self):
+    def MonoCategory(self) -> Category:
         return self._category_packet().Monos()
 
-    def EpiCategory(self):
+    def EpiCategory(self) -> Category:
         return self._category_packet().Epis()
 
-    def IsoCategory(self):
+    def IsoCategory(self) -> Category:
         return self._category_packet().Isos()
 
-    def AutCategory(self):
+    def AutCategory(self) -> Category:
         return self._category_packet().Auts()
 
-    def Mor(self, source, target):
+    def Mor(self, source: Parent, target: Parent) -> Category:
         return self.HomCategory().Of(source, target)
 
-    def End(self, obj):
+    def End(self, obj: Parent) -> Category:
         return self.EndCategory().Of(obj)
 
-    def Mono(self, source, target):
+    def Mono(self, source: Parent, target: Parent) -> Category:
         return self.MonoCategory().Of(source, target)
 
-    def Epi(self, source, target):
+    def Epi(self, source: Parent, target: Parent) -> Category:
         return self.EpiCategory().Of(source, target)
 
-    def Iso(self, source, target):
+    def Iso(self, source: Parent, target: Parent) -> Category:
         return self.IsoCategory().Of(source, target)
 
-    def Aut(self, obj):
+    def Aut(self, obj: Parent) -> Category:
         return self.AutCategory().Of(obj)

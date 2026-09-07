@@ -15,7 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 class DirectSumObjects(OwnedCategory):
     r"""Objects carrying a selected ordered family of direct summands."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""``R (+) R`` over the integers, decomposed into its two summands."""
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
             BasedFreeModule,
@@ -40,19 +40,19 @@ class DirectSumObjects(OwnedCategory):
             self._preamble_direct_sum_index_set = summands.index_set()
             super().__init__(**rest)
 
-        def summands(self):
+        def summands(self) -> IndexedFamily:
             return self._preamble_direct_sum_summands
 
-        def summand_index_set(self):
+        def summand_index_set(self) -> Parent:
             return self._preamble_direct_sum_index_set
 
-        def summand(self, label):
+        def summand(self, label) -> Parent:
             labels = self.summand_index_set()
             if label not in labels:
                 raise ValueError(f"{label!r} is not a summand label")
             return self.summands()[label]
 
-        def number_of_summands(self):
+        def number_of_summands(self) -> Parent:
             return self.summand_index_set().cardinality()
 
 

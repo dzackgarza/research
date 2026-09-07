@@ -1,11 +1,14 @@
 r"""Arrow categories, commuting squares, cores, and slice-style categories."""
 
+from typing import Any
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoricalIsomorphism,
     HomCategoryConstruction,
 )
 from sage.categories.category import Category
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.categories.sets_cat import Sets as SageSets
@@ -38,10 +41,10 @@ class CommutativeSquare(Morphism):
         self._left = left
         self._right = right
 
-    def left(self):
+    def left(self) -> Morphism:
         return self._left
 
-    def right(self):
+    def right(self) -> Morphism:
         return self._right
 
     def components(self):
@@ -90,7 +93,7 @@ class ArrowHomset(CategoricalHomset):
             self, HomCategoryConstruction(arrow_category), source, target
         )
 
-    def arrow_category(self):
+    def arrow_category(self) -> "ArrowCategory":
         return self._arrow_category
 
     def _element_constructor_(self, left, right=None):
@@ -98,7 +101,7 @@ class ArrowHomset(CategoricalHomset):
             left, right = left
         return CommutativeSquare(self, left, right)
 
-    def identity(self):
+    def identity(self) -> CommutativeSquare:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         arrow = self.domain().arrow()
@@ -108,14 +111,14 @@ class ArrowHomset(CategoricalHomset):
             category.Mor(arrow.codomain(), arrow.codomain()).identity(),
         )
 
-    def identity_at(self, obj):
+    def identity_at(self, obj: Parent) -> CommutativeSquare:
         return self.arrow_category().Mor(obj, obj).identity()
 
 
 class ArrowCategory(OwnedCategory):
     r"""The category ``Arr(C)=Fun([1],C)``."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The identity of an object of the base category, as an arrow."""
         base = self.base_category()
         witness = base.an_object()
@@ -128,16 +131,16 @@ class ArrowCategory(OwnedCategory):
             self._arrow = arrow
             super().__init__(**rest)
 
-        def arrow_category(self):
+        def arrow_category(self) -> "ArrowCategory":
             return self.category()
 
-        def arrow(self):
+        def arrow(self) -> Morphism:
             return self._arrow
 
-        def source_object(self):
+        def source_object(self) -> Parent:
             return self.arrow().domain()
 
-        def target_object(self):
+        def target_object(self) -> Parent:
             return self.arrow().codomain()
 
         def _repr_(self) -> str:
@@ -152,14 +155,14 @@ class ArrowCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return self._base_category
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self._base_category
 
     def super_categories(self):
 
         return [Sets()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         category = getattr(candidate, "category", lambda: None)()
         if category is None:
             return False
@@ -168,7 +171,7 @@ class ArrowCategory(OwnedCategory):
         except (AttributeError, TypeError):
             return False
 
-    def object(self, arrow):
+    def object(self, arrow: Morphism) -> Parent:
         if not isinstance(arrow, Morphism):
             raise TypeError("an arrow object is constructed from a morphism")
         if arrow.domain() not in self.base_category() or arrow.codomain() not in self.base_category():
@@ -192,19 +195,29 @@ class ArrowCategory(OwnedCategory):
         self._homsets[key] = result
         return result
 
-    def Mor(self, source, target):
+    def Mor(self, source: Parent, target: Parent) -> ArrowHomset:
         if source not in self or target not in self:
             raise TypeError("an arrow-category Hom requires two arrow objects")
         return self._homset(ArrowHomset, source, target)
 
 
-    def morphism(self, source, target, left, right):
+    def morphism(
+        self,
+        source: Parent,
+        target: Parent,
+        left: Morphism,
+        right: Morphism,
+    ) -> CommutativeSquare:
         return self.Mor(source, target)(left, right)
 
-    def identity(self, arrow_object):
+    def identity(self, arrow_object: Parent) -> CommutativeSquare:
         return self.Mor(arrow_object, arrow_object).identity()
 
-    def compose(self, second, first):
+    def compose(
+        self,
+        second: CommutativeSquare,
+        first: CommutativeSquare,
+    ) -> CommutativeSquare:
         if first.codomain() is not second.domain():
             raise ValueError("arrow-category squares are not composable")
         return second * first
@@ -225,7 +238,7 @@ class _EndofunctorAlgebraHomset(ArrowHomset):
     class Element(CommutativeSquare):
         r"""A structured map acting through its exact carrier morphism."""
 
-        def underlying_morphism(self):
+        def underlying_morphism(self) -> Morphism:
             return self.right()
 
         def _call_(self, element):
@@ -255,10 +268,10 @@ class _EndofunctorAlgebraForgetfulFunctor(Functor):
         self._algebras = algebras
         super().__init__(algebras, algebras.base_category())
 
-    def _apply_object(self, algebra):
+    def _apply_object(self, algebra: Parent) -> Parent:
         return algebra.target_object()
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         return morphism.right()
 
     def _repr_(self) -> str:
@@ -288,19 +301,19 @@ class _EndofunctorAlgebraCategory(Category):
     def _make_named_class_key(self, name):
         return self._endofunctor._cache_key()
 
-    def endofunctor(self):
+    def endofunctor(self) -> Functor:
         return self._endofunctor
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self.endofunctor().domain()
 
-    def arrow_category(self):
+    def arrow_category(self) -> ArrowCategory:
         return self._arrow_category
 
     def super_categories(self):
         return [self.arrow_category()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         if candidate not in self.arrow_category():
             return False
         carrier = candidate.target_object()
@@ -309,7 +322,7 @@ class _EndofunctorAlgebraCategory(Category):
             and candidate.source_object() is self.endofunctor()(carrier)
         )
 
-    def algebra(self, carrier, structure):
+    def algebra(self, carrier: Parent, structure: Morphism) -> Parent:
         r"""Return ``(carrier, structure : T(carrier) -> carrier)``.
 
         Both the supplied carrier and the supplied structure arrow are kept
@@ -325,17 +338,21 @@ class _EndofunctorAlgebraCategory(Category):
             raise ValueError("the structure morphism must end at its exact supplied carrier")
         return self.arrow_category()(structure)
 
-    def carrier(self, algebra):
+    def carrier(self, algebra: Parent) -> Parent:
         if algebra not in self:
             raise TypeError("the object is not an algebra of this endofunctor")
         return algebra.target_object()
 
-    def structure(self, algebra):
+    def structure(self, algebra: Parent) -> Morphism:
         if algebra not in self:
             raise TypeError("the object is not an algebra of this endofunctor")
         return algebra.arrow()
 
-    def Mor(self, source, target):
+    def Mor(
+        self,
+        source: Parent,
+        target: Parent,
+    ) -> _EndofunctorAlgebraHomset:
         if source not in self or target not in self:
             raise TypeError("an endofunctor-algebra Hom requires two algebras of this endofunctor")
         key = (id(source), id(target))
@@ -346,18 +363,27 @@ class _EndofunctorAlgebraCategory(Category):
         self._homsets[key] = result
         return result
 
-    def homomorphism(self, source, target, underlying_morphism):
+    def homomorphism(
+        self,
+        source: Parent,
+        target: Parent,
+        underlying_morphism: Morphism,
+    ) -> CommutativeSquare:
         r"""Equip ``f`` with its forced commuting square ``(T(f), f)``."""
         return self.Mor(source, target)(underlying_morphism)
 
     @cached_method
-    def forgetful(self):
+    def forgetful(self) -> Functor:
         return _EndofunctorAlgebraForgetfulFunctor(self)
 
-    def identity(self, algebra):
+    def identity(self, algebra: Parent) -> CommutativeSquare:
         return self.Mor(algebra, algebra).identity()
 
-    def compose(self, second, first):
+    def compose(
+        self,
+        second: CommutativeSquare,
+        first: CommutativeSquare,
+    ) -> CommutativeSquare:
         if first.codomain() is not second.domain():
             raise ValueError("endofunctor-algebra morphisms are not composable")
         return second * first
@@ -385,7 +411,7 @@ class SliceHomset(ArrowHomset):
                 raise ValueError("the fixed edge of a slice morphism is the identity")
         return CommutativeSquare(self, factor, identity)
 
-    def canonical_morphism(self):
+    def canonical_morphism(self) -> CommutativeSquare:
         inclusion = self.domain()
         target_inclusion = self.codomain()
         return self(inclusion.factor_through(target_inclusion))
@@ -403,20 +429,20 @@ class SliceCategory(ArrowCategory):
     def _make_named_class_key(self, name):
         return self.base_category(), self._base_object
 
-    def base_object(self):
+    def base_object(self) -> Parent:
         return self._base_object
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(
             self.base_category().Mor(base_object, base_object).identity()
         )
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return super().__contains__(candidate) and candidate.arrow().codomain() is self.base_object()
 
-    def Mor(self, source, target):
+    def Mor(self, source: Parent, target: Parent) -> SliceHomset:
         if source not in self or target not in self:
             raise TypeError("a slice Hom requires two arrows into the fixed base object")
         return self._homset(SliceHomset, source, target)
@@ -452,20 +478,20 @@ class CosliceCategory(ArrowCategory):
     def _make_named_class_key(self, name):
         return self.base_category(), self._base_object
 
-    def base_object(self):
+    def base_object(self) -> Parent:
         return self._base_object
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The identity of the fixed base object."""
         base_object = self.base_object()
         return self.object(
             self.base_category().Mor(base_object, base_object).identity()
         )
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return super().__contains__(candidate) and candidate.arrow().domain() is self.base_object()
 
-    def Mor(self, source, target):
+    def Mor(self, source: Parent, target: Parent) -> CosliceHomset:
         if source not in self or target not in self:
             raise TypeError("a coslice Hom requires two arrows from the fixed base object")
         return self._homset(CosliceHomset, source, target)
@@ -485,7 +511,7 @@ def common_category(*objects: Parent) -> Category:
 class EndArrowCategory(ArrowCategory):
     r"""The full subcategory of ``Arr(C)`` on endomorphisms."""
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return super().__contains__(candidate) and (
             candidate.arrow().domain() is candidate.arrow().codomain()
         )
@@ -494,7 +520,7 @@ class EndArrowCategory(ArrowCategory):
 class IsoArrowCategory(ArrowCategory):
     r"""The full subcategory of ``Arr(C)`` on explicitly represented isomorphisms."""
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return super().__contains__(candidate) and isinstance(
             candidate.arrow(), CategoricalIsomorphism
         )
@@ -503,7 +529,7 @@ class IsoArrowCategory(ArrowCategory):
 class AutomorphismArrowCategory(IsoArrowCategory):
     r"""The full subcategory of the arrow category on automorphisms."""
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return super().__contains__(candidate) and (
             candidate.arrow().domain() is candidate.arrow().codomain()
         )
@@ -518,7 +544,7 @@ class MonomorphismArrowCategory(ArrowCategory):
     sufficient in every category, so it is not the definition used here.
     """
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         if not super().__contains__(candidate):
             return False
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -534,7 +560,7 @@ class EpimorphismArrowCategory(ArrowCategory):
     As for monomorphisms, the base category's declared epi family answers.
     """
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         if not super().__contains__(candidate):
             return False
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -568,7 +594,7 @@ class SubobjectMorphism(Morphism):
             raise ValueError("the subobject factor does not commute with the inclusions")
         self._factor_morphism = factor_morphism
 
-    def factor_morphism(self):
+    def factor_morphism(self) -> Morphism:
         return self._factor_morphism
 
     def __call__(self, element):
@@ -599,7 +625,7 @@ class SubobjectHomset(CategoricalHomset):
             self, HomCategoryConstruction(subobject_category), domain, codomain
         )
 
-    def subobject_category(self):
+    def subobject_category(self) -> "SubobjectCategory":
         return self._subobject_category
 
     def _canonical_factor(self):
@@ -612,7 +638,7 @@ class SubobjectHomset(CategoricalHomset):
             return False
         return True
 
-    def canonical_morphism(self):
+    def canonical_morphism(self) -> SubobjectMorphism:
         return self(self._canonical_factor())
 
     def _element_constructor_(self, factor_morphism=None):
@@ -620,7 +646,7 @@ class SubobjectHomset(CategoricalHomset):
             factor_morphism = self._canonical_factor()
         return SubobjectMorphism(self, factor_morphism)
 
-    def identity(self):
+    def identity(self) -> SubobjectMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         return self(self.domain().inclusion().factor_through(self.domain().inclusion()))
@@ -645,10 +671,10 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
     def _make_named_class_key(self, name):
         return self._base_category, self._base_object
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self._base_category
 
-    def base_object(self):
+    def base_object(self) -> Parent:
         return self._base_object
 
     def super_categories(self):
@@ -660,20 +686,20 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
         """
         return [self.base_category()]
 
-    def slice_category(self):
+    def slice_category(self) -> SliceCategory:
         r"""Return the ambient slice ``C/X`` in which subobjects are monomorphisms."""
         return SliceCategory(self.base_category(), self.base_object())
 
-    def monomorphism_category(self):
+    def monomorphism_category(self) -> MonomorphismArrowCategory:
         r"""Return the monomorphism subcategory of the ambient arrow category."""
         return MonomorphismArrowCategory(self.base_category())
 
-    def as_slice_object(self, subobject):
+    def as_slice_object(self, subobject: Parent) -> Parent:
         if subobject not in self:
             raise TypeError("the object is not a represented subobject of the fixed base")
         return self.slice_category()(subobject.inclusion())
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         try:
             inclusion = candidate.inclusion()
         except AttributeError:
@@ -687,7 +713,7 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
             return False
         return slice_object in self.monomorphism_category()
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> SubobjectHomset:
         if domain not in self or codomain not in self:
             raise TypeError("both objects must be subobjects of the fixed base object")
         key = (id(domain), id(codomain))
@@ -699,10 +725,10 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
         return result
 
 
-    def leq(self, left, right) -> bool:
+    def leq(self, left: Parent, right: Parent) -> bool:
         return self.Mor(left, right).has_morphism()
 
-    def identity(self, subobject):
+    def identity(self, subobject: Parent) -> SubobjectMorphism:
         return self.Mor(subobject, subobject).identity()
 
     def _repr_(self) -> str:
@@ -712,7 +738,7 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
 class SuperobjectCategory(CosliceCategory):
     r"""The category of represented quotient/superobjects of one object."""
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return (
             super().__contains__(candidate)
             and candidate in EpimorphismArrowCategory(self.base_category())
@@ -735,19 +761,19 @@ class WideSubcategory(Category):
     def _make_named_class_key(self, name):
         return self._base_category, self._arrow_category
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self._base_category
 
-    def arrow_category(self):
+    def arrow_category(self) -> ArrowCategory:
         return self._arrow_category
 
     def super_categories(self):
         return [self.base_category()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return candidate in self.base_category()
 
-    def admits(self, arrow) -> bool:
+    def admits(self, arrow: Morphism) -> bool:
         try:
             arrow_object = self.arrow_category()(arrow)
         except (TypeError, ValueError):
@@ -772,10 +798,10 @@ class CoreHomset(CategoricalHomset):
             self, HomCategoryConstruction(core_category), domain, codomain
         )
 
-    def core_category(self):
+    def core_category(self) -> "CoreCategory":
         return self._core_category
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         if not isinstance(candidate, CategoricalIsomorphism):
             return False
         if candidate.domain() is not self.domain() or candidate.codomain() is not self.codomain():
@@ -795,7 +821,7 @@ class CoreHomset(CategoricalHomset):
         r"""Construct an isomorphism from an inverse pair proved by its owner."""
         return CategoricalIsomorphism(self, forward, inverse, verify=False)
 
-    def identity(self):
+    def identity(self) -> CategoricalIsomorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only on an endomorphism Hom-set")
         base = self.core_category().base_category()
@@ -814,16 +840,16 @@ class CoreCategory(Category):
     def _make_named_class_key(self, name):
         return self._base_category
 
-    def base_category(self):
+    def base_category(self) -> Category:
         return self._base_category
 
     def super_categories(self):
         return [self.base_category()]
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         return candidate in self.base_category()
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> CoreHomset:
         if domain not in self or codomain not in self:
             raise TypeError("the core Hom requires two base-category objects")
         key = (id(domain), id(codomain))
@@ -835,7 +861,7 @@ class CoreCategory(Category):
         return result
 
 
-    def identity(self, obj):
+    def identity(self, obj: Parent) -> CategoricalIsomorphism:
         return self.Mor(obj, obj).identity()
 
     def _repr_(self) -> str:

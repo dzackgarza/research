@@ -1,6 +1,7 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
 from collections.abc import Callable
+from typing import TypeVar, overload
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -42,6 +43,10 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 
 
+SourcePointT = TypeVar("SourcePointT")
+TargetPointT = TypeVar("TargetPointT")
+
+
 class ContravariantFunctor(Functor):
     r"""A functor ``C^op -> D`` with convenience calls on arrows of ``C``."""
 
@@ -50,29 +55,29 @@ class ContravariantFunctor(Functor):
         self._base_domain = domain
         super().__init__(OppositeCategory(domain), codomain)
 
-    def base_domain(self):
+    def base_domain(self) -> Category:
         return self._base_domain
 
     @abstract_method
-    def _apply_contravariant_object(self, obj):
+    def _apply_contravariant_object(self, obj: Parent) -> Parent:
         r"""Return the image of one object of the underlying covariant domain."""
 
     @abstract_method
-    def _apply_contravariant_morphism(self, morphism):
+    def _apply_contravariant_morphism(self, morphism: Map) -> Map:
         r"""Return the reversed image of one morphism of the underlying domain."""
 
-    def _apply_object(self, opposite_object):
+    def _apply_object(self, opposite_object: Parent) -> Parent:
         return self._apply_contravariant_object(opposite_object.underlying_object())
 
-    def _apply_morphism(self, opposite_morphism):
+    def _apply_morphism(self, opposite_morphism: Map) -> Map:
         return self._apply_contravariant_morphism(opposite_morphism.underlying_arrow())
 
-    def object_image(self, obj):
+    def object_image(self, obj: Parent) -> Parent:
         if obj in self.base_domain():
             obj = self.domain()(obj)
         return super().object_image(obj)
 
-    def morphism_image(self, morphism):
+    def morphism_image(self, morphism: Map) -> Map:
 
         if not isinstance(morphism, Map):
             raise TypeError("a contravariant functor acts on morphisms")
@@ -82,10 +87,10 @@ class ContravariantFunctor(Functor):
             morphism = self.domain().Mor(source, target)(morphism)
         return super().morphism_image(morphism)
 
-    def chosen_preimage(self, image):
+    def chosen_preimage(self, image: Parent) -> Parent:
         return super().chosen_preimage(image).underlying_object()
 
-    def adopt_object_image(self, preimage, image):
+    def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
         if preimage in self.base_domain():
             preimage = self.domain()(preimage)
         return super().adopt_object_image(preimage, image)
@@ -103,33 +108,37 @@ class Bifunctor(Functor):
 
         super().__init__(ProductCategory(left_domain, right_domain), codomain)
 
-    def left_domain(self):
+    def left_domain(self) -> Category:
         return self.domain().first_category()
 
-    def right_domain(self):
+    def right_domain(self) -> Category:
         return self.domain().second_category()
 
     @abstract_method
-    def _apply_pair_object(self, left, right):
+    def _apply_pair_object(self, left: Parent, right: Parent) -> Parent:
         r"""Return the image of one object pair."""
 
     @abstract_method
-    def _apply_pair_morphism(self, left_morphism, right_morphism):
+    def _apply_pair_morphism(self, left_morphism: Map, right_morphism: Map) -> Map:
         r"""Return the image of one morphism pair."""
 
-    def _apply_object(self, pair):
+    def _apply_object(self, pair: Parent) -> Parent:
         return self._apply_pair_object(pair.first(), pair.second())
 
-    def _apply_morphism(self, pair_morphism):
+    def _apply_morphism(self, pair_morphism: Map) -> Map:
         return self._apply_pair_morphism(
             pair_morphism.first(), pair_morphism.second()
         )
 
-    def object_image(self, left, right=None):
+    def object_image(self, left: Parent, right: Parent | None = None) -> Parent:
         pair = left if right is None else self.domain()(left, right)
         return super().object_image(pair)
 
-    def morphism_image(self, left_morphism, right_morphism=None):
+    def morphism_image(
+        self,
+        left_morphism: Map,
+        right_morphism: Map | None = None,
+    ) -> Map:
         if right_morphism is None:
             return super().morphism_image(left_morphism)
         if not isinstance(left_morphism, Map) or not isinstance(right_morphism, Map):
@@ -139,7 +148,23 @@ class Bifunctor(Functor):
         pair = self.domain().Mor(source, target)(left_morphism, right_morphism)
         return super().morphism_image(pair)
 
-    def __call__(self, left, right=None):
+    @overload
+    def __call__(self, left: Parent, right: None = None) -> Parent: ...
+
+    @overload
+    def __call__(self, left: Map, right: None = None) -> Map: ...
+
+    @overload
+    def __call__(self, left: Parent, right: Parent) -> Parent: ...
+
+    @overload
+    def __call__(self, left: Map, right: Map) -> Map: ...
+
+    def __call__(
+        self,
+        left: Parent | Map,
+        right: Parent | Map | None = None,
+    ) -> Parent | Map:
         if right is None:
             return super().__call__(left)
         if isinstance(left, Map) or isinstance(right, Map):
@@ -153,10 +178,10 @@ class DomainFunctor(Functor):
     def __init__(self, category: Category) -> None:
         super().__init__(ArrowCategory(category), category)
 
-    def _apply_object(self, arrow_object):
+    def _apply_object(self, arrow_object: Parent) -> Parent:
         return arrow_object.source_object()
 
-    def _apply_morphism(self, square):
+    def _apply_morphism(self, square: Map) -> Map:
         return square.left()
 
 
@@ -166,10 +191,10 @@ class CodomainFunctor(Functor):
     def __init__(self, category: Category) -> None:
         super().__init__(ArrowCategory(category), category)
 
-    def _apply_object(self, arrow_object):
+    def _apply_object(self, arrow_object: Parent) -> Parent:
         return arrow_object.target_object()
 
-    def _apply_morphism(self, square):
+    def _apply_morphism(self, square: Map) -> Map:
         return square.right()
 
 
@@ -202,10 +227,10 @@ class DiscreteHomset(CategoricalHomset):
             self, HomCategoryConstruction(discrete_category), domain, codomain
         )
 
-    def discrete_category(self):
+    def discrete_category(self) -> "DiscreteCategory":
         return self._discrete_category
 
-    def cardinality(self):
+    def cardinality(self) -> Parent:
 
         return cardinal(1 if self.domain() is self.codomain() else 0)
 
@@ -214,25 +239,25 @@ class DiscreteHomset(CategoricalHomset):
             raise ValueError("there is no arrow between distinct discrete objects")
         return DiscreteMorphism(self)
 
-    def identity(self):
+    def identity(self) -> DiscreteMorphism:
         return self()
 
 
 class DiscreteCategory(OwnedCategory):
     r"""The discrete category on one set."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""The object at a point of the underlying set."""
         return self.object(self.object_set().an_element())
 
     class ParentMethods:
         r"""One object of the discrete category on a set."""
 
-        def __init__(self, value: object, **rest) -> None:
+        def __init__(self, value: SourcePointT, **rest) -> None:
             self._value = value
             super().__init__(**rest)
 
-        def discrete_category(self):
+        def discrete_category(self) -> "DiscreteCategory":
             return self.category()
 
         def value(self):
@@ -250,13 +275,13 @@ class DiscreteCategory(OwnedCategory):
     def _make_named_class_key(self, name):
         return self._object_set
 
-    def object_set(self):
+    def object_set(self) -> Parent:
         return self._object_set
 
     def super_categories(self):
         return [Objects()]
 
-    def object(self, value):
+    def object(self, value: SourcePointT) -> Parent:
         return self._object_on(self.object_set()(value))
 
     @cached_method
@@ -272,7 +297,7 @@ class DiscreteCategory(OwnedCategory):
             and category.object_set() is self.object_set()
         )
 
-    def objects(self):
+    def objects(self) -> IndexedFamily:
 
         return indexed_family(
             self.object_set(),
@@ -280,13 +305,13 @@ class DiscreteCategory(OwnedCategory):
             name=f"Objects of {self}",
         )
 
-    def Mor(self, domain, codomain):
+    def Mor(self, domain: Parent, codomain: Parent) -> DiscreteHomset:
         if domain not in self or codomain not in self:
             raise TypeError("a discrete Hom requires two objects of the discrete category")
         return DiscreteHomset(self, domain, codomain)
 
 
-    def identity(self, obj):
+    def identity(self, obj: Parent) -> DiscreteMorphism:
         return self.Mor(obj, obj).identity()
 
     def _repr_(self) -> str:
@@ -296,7 +321,7 @@ class DiscreteCategory(OwnedCategory):
 class DiscreteCategories(Category):
     r"""The category of represented discrete categories."""
 
-    def an_object(self):
+    def an_object(self) -> Category:
         r"""The discrete category on a set."""
         return DiscreteCategory(Sets().an_object())
 
@@ -317,7 +342,7 @@ class DiscreteFunctor(Functor):
         self,
         domain: DiscreteCategory,
         codomain: DiscreteCategory,
-        object_map: Morphism | Callable[[object], object],
+        object_map: Morphism | Callable[[SourcePointT], TargetPointT],
     ) -> None:
         if not isinstance(object_map, Morphism):
             object_map = SetMorphism(
@@ -329,13 +354,13 @@ class DiscreteFunctor(Functor):
         self._object_map = object_map
         super().__init__(domain, codomain)
 
-    def object_map(self):
+    def object_map(self) -> Morphism:
         return self._object_map
 
-    def _apply_object(self, obj):
+    def _apply_object(self, obj: Parent) -> Parent:
         return self.codomain()(self.object_map()(obj.value()))
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         return self.codomain().identity(self(morphism.domain()))
 
 
@@ -345,13 +370,13 @@ class ObjectSetFunctor(Functor):
     def __init__(self) -> None:
         super().__init__(DiscreteCategories(), Sets())
 
-    def _apply_object(self, category):
+    def _apply_object(self, category: Parent) -> Parent:
 
         if isinstance(category, CategoryObject):
             category = category.represented_category()
         return category.object_set()
 
-    def _apply_morphism(self, functor):
+    def _apply_morphism(self, functor: Map) -> Map:
         return functor.functor().object_map()
 
 
@@ -369,13 +394,13 @@ class DiscreteDiagram(Functor):
         self._values = values
         super().__init__(index_category, codomain)
 
-    def diagram_objects(self):
+    def diagram_objects(self) -> IndexedFamily:
         return self._values
 
-    def _apply_object(self, index):
+    def _apply_object(self, index: Parent) -> Parent:
         return self._values(index.value())
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         image = self(morphism.domain())
         return self.codomain().Mor(image, image).identity()
 
@@ -389,13 +414,13 @@ class ConstantDiagram(Functor):
         self._value = value
         super().__init__(index_category, codomain)
 
-    def constant_value(self):
+    def constant_value(self) -> Parent:
         return self._value
 
-    def _apply_object(self, index):
+    def _apply_object(self, index: Parent) -> Parent:
         return self.constant_value()
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         value = self.constant_value()
         return self.codomain().Mor(value, value).identity()
 
@@ -417,7 +442,7 @@ ComposedFunctor = CompositeFunctor
 class NaturalTransformationSpaces(OwnedCategory):
     r"""Hom-objects of natural transformations between parallel functors."""
 
-    def an_object(self):
+    def an_object(self) -> Parent:
         r"""Transformations from the identity of ``Cat`` to itself."""
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
@@ -435,10 +460,10 @@ class NaturalTransformationSpaces(OwnedCategory):
             self._target = target
             super().__init__(**rest)
 
-        def source(self):
+        def source(self) -> Functor:
             return self._source
 
-        def target(self):
+        def target(self) -> Functor:
             return self._target
 
         def _repr_(self) -> str:
@@ -456,8 +481,8 @@ def NaturalTransformations(source: Functor, target: Functor) -> Parent:
 def NaturalIsomorphism(
     source: Functor,
     target: Functor,
-    components: Callable[[object], Morphism],
-    inverse_components: Callable[[object], Morphism],
+    components: Callable[[Parent], Morphism],
+    inverse_components: Callable[[Parent], Morphism],
 ) -> tuple[NaturalTransformation, NaturalTransformation]:
     r"""Return mutually inverse natural transformations as a categorical pair."""
     return (
@@ -497,13 +522,13 @@ class DiagonalFunctor(Functor):
         self._product_category = ProductCategory(category, category)
         super().__init__(category, self._product_category)
 
-    def product_category(self):
+    def product_category(self) -> ProductCategory:
         return self._product_category
 
-    def _apply_object(self, obj):
+    def _apply_object(self, obj: Parent) -> Parent:
         return self.product_category()(obj, obj)
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         return self.product_category().Mor(
             self(morphism.domain()), self(morphism.codomain())
         )(morphism, morphism)
@@ -517,11 +542,11 @@ class ProductFunctor(Functor):
         self._product_category = ProductCategory(category, category)
         super().__init__(self._product_category, category)
 
-    def _apply_object(self, pair):
+    def _apply_object(self, pair: Parent) -> Parent:
 
         return Product(pair.first(), pair.second())
 
-    def _apply_morphism(self, pair_morphism):
+    def _apply_morphism(self, pair_morphism: Map) -> Map:
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
         return _ProductMorphism(
@@ -537,11 +562,11 @@ class CoproductFunctor(Functor):
         self._product_category = ProductCategory(category, category)
         super().__init__(self._product_category, category)
 
-    def _apply_object(self, pair):
+    def _apply_object(self, pair: Parent) -> Parent:
 
         return Coproduct(pair.first(), pair.second())
 
-    def _apply_morphism(self, pair_morphism):
+    def _apply_morphism(self, pair_morphism: Map) -> Map:
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
         return _CoproductMorphism(

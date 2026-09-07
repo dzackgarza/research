@@ -19,7 +19,7 @@ from sage.structure.category_object import CategoryObject
 from sage.structure.parent import Parent
 
 
-def membership_by_definition(category: Category, candidate: Any) -> bool:
+def membership_by_definition(category: Category, candidate: Parent) -> bool:
     r"""Whether ``category``'s own definition puts ``candidate`` in it.
 
     ``False`` unless the category states, through ``additional_condition``,
