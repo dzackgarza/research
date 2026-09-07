@@ -291,6 +291,28 @@ class ProductCategory(OwnedCategory):
         'a'
         sage: (hom(collapse) * hom(swap)).underlying_arrow()("a")
         'b'
+
+    Unverified specimens: equal endpoints alone do not admit an arrow of a
+    factor category whose morphisms are restricted::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
+        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: category = ProductCategory(injections, Sets())
+        sage: obj = category(points, points)
+        sage: category.Mor(obj, obj)(swap, swap).first() is swap
+        True
+        sage: category.Mor(obj, obj)(collapse, swap)
+        Traceback (most recent call last):
+        ...
+        ValueError: the first map is not a morphism of the first category
+        sage: opposite = OppositeCategory(injections)
+        sage: obj = opposite(points)
+        sage: opposite.Mor(obj, obj)(swap).underlying_arrow() is swap
+        True
+        sage: opposite.Mor(obj, obj)(collapse)
+        Traceback (most recent call last):
+        ...
+        ValueError: the reversed arrow does not belong to the base category
     """
 
     _HomCategory = ProductHomCategoryConstruction

@@ -281,6 +281,23 @@ class ConeCategory(OwnedCategory):
         True
         sage: collapse * collapse == collapse
         True
+
+    Unverified specimen: even an empty cone diagram does not make a
+    non-morphism into a permitted apex map::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
+        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: empty_shape = DiscreteCategory(finite_ordered_set(()))
+        sage: diagram = ConstantDiagram(empty_shape, injections, points)
+        sage: category = ConeCategory(diagram)
+        sage: cone = category.cone(points, lambda obj: injections.identity(points))
+        sage: hom = category.Mor(cone, cone)
+        sage: hom(swap).apex_map() is swap
+        True
+        sage: hom(Sets().Mor(points, points)(lambda point: "a"))
+        Traceback (most recent call last):
+        ...
+        ValueError: the apex map is not a morphism of the diagram's target category
     """
 
     _HomCategory = ConeHomCategoryConstruction

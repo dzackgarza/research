@@ -29,7 +29,33 @@ class _FunctorImageRecord:
 
 
 class Functor(SageObject):
-    r"""A functor with explicit actions on objects and morphisms."""
+    r"""A functor with explicit actions on objects and morphisms.
+
+    Unverified specimen: a proposed identity on underlying sets is not a
+    functor to the category of injections when applied to a noninjective map::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.arrow_categories import WideSubcategory, MonomorphismArrowCategory
+        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: class ProposedInclusion(Functor):
+        ....:     def __init__(self):
+        ....:         super().__init__(Sets(), injections)
+        ....:     def _apply_object(self, obj):
+        ....:         return obj
+        ....:     def _apply_morphism(self, arrow):
+        ....:         return arrow
+        sage: points = finite_ordered_set(("a", "b"))
+        sage: maps = Sets().Mor(points, points)
+        sage: swap = maps(lambda point: {"a": "b", "b": "a"}[point])
+        sage: proposed = ProposedInclusion()
+        sage: proposed(swap) is swap
+        True
+        sage: proposed(maps(lambda point: "a"))
+        Traceback (most recent call last):
+        ...
+        TypeError: the image is not a morphism of the functor's codomain
+    """
 
     _faithful = False
 
