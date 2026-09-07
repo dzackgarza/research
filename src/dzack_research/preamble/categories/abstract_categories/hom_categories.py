@@ -39,17 +39,12 @@ from sage.structure.parent import Parent
 from dzack_research.preamble.refine import refine
 
 
-def _category_homset(category, domain, codomain):
+def _category_homset(
+    category: Category | None,
+    domain: Parent,
+    codomain: Parent,
+) -> Homset:
     r"""Return the one represented Hom-set parent for ``category`` and endpoints."""
-    constructor = getattr(category, "homset", None)
-    if constructor is not None:
-        return constructor(domain, codomain)
-    constructor = getattr(category, "hom", None)
-    if constructor is not None:
-        try:
-            return constructor(domain, codomain)
-        except (TypeError, ValueError):
-            pass
     if isinstance(category, OwnedCategory):
         return underlying_set_homset(domain, codomain)
     return Hom(domain, codomain, category)
