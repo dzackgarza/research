@@ -148,10 +148,10 @@ class Functor(SageObject):
         if not isinstance(morphism, Map):
             raise TypeError("a functor acts on a morphism through its morphism action")
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_homset,
+            _category_hom,
         )
 
-        if morphism not in _category_homset(self.domain(), morphism.domain(), morphism.codomain()):
+        if morphism not in _category_hom(self.domain(), morphism.domain(), morphism.codomain()):
             raise TypeError("the supplied map is not a morphism of the functor's domain")
         cached = self._cached_morphism_image(morphism)
         if cached is not None:
@@ -166,7 +166,7 @@ class Functor(SageObject):
                 "a functor's morphism image must run between the cached images "
                 "of the original domain and codomain"
             )
-        if image not in _category_homset(self.codomain(), domain, codomain):
+        if image not in _category_hom(self.codomain(), domain, codomain):
             raise TypeError("the image is not a morphism of the functor's codomain")
         return self._record_morphism_image(morphism, image)
 
@@ -362,7 +362,7 @@ class NaturalTransformation(SageObject):
     @cached_method(key=lambda self, obj: id(obj))
     def component(self, obj: Parent) -> Morphism:
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-            _category_homset,
+            _category_hom,
         )
 
         domain, codomain = self.source()(obj), self.target()(obj)
@@ -371,7 +371,7 @@ class NaturalTransformation(SageObject):
             raise TypeError("a natural-transformation component must be a morphism")
         if arrow.domain() is not domain or arrow.codomain() is not codomain:
             raise ValueError("a natural-transformation component has the wrong source or target")
-        if arrow not in _category_homset(self.source().codomain(), domain, codomain):
+        if arrow not in _category_hom(self.source().codomain(), domain, codomain):
             raise TypeError("the component is not a morphism of the common codomain category")
         return arrow
 

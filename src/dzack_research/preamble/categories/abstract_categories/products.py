@@ -6,6 +6,7 @@ from typing import Any
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
+    _category_hom,
     _category_homset,
 )
 from sage.categories.category import Category
@@ -87,7 +88,7 @@ class ConeMorphism(Morphism):
             raise ValueError("the cone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cone map has the wrong codomain apex")
-        if apex_map not in _category_homset(
+        if apex_map not in _category_hom(
             parent.cone_category().target_category(), self.domain().apex(), self.codomain().apex()
         ):
             raise ValueError("the apex map is not a morphism of the diagram's target category")
@@ -131,7 +132,7 @@ class CoconeMorphism(Morphism):
             raise ValueError("the cocone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cocone map has the wrong codomain apex")
-        if apex_map not in _category_homset(
+        if apex_map not in _category_hom(
             parent.cocone_category().target_category(), self.domain().apex(), self.codomain().apex()
         ):
             raise ValueError("the apex map is not a morphism of the diagram's target category")

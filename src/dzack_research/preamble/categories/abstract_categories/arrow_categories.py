@@ -6,9 +6,14 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     CategoricalIsomorphism,
     HomCategoryConstruction,
+    FixedRestrictedHomCategory,
+    RestrictedHomCategoryOf,
+    category_packet,
+    _category_hom,
     _category_homset,
 )
 from sage.categories.category import Category
+from sage.categories.homset import Homset
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
@@ -43,9 +48,9 @@ class CommutativeSquare(Morphism):
         if right.domain() is not source.codomain() or right.codomain() is not target.codomain():
             raise ValueError("the right edge has the wrong square endpoints")
         base = parent.arrow_category().base_category()
-        if left not in _category_homset(base, source.domain(), target.domain()):
+        if left not in _category_hom(base, source.domain(), target.domain()):
             raise ValueError("the left edge is not a morphism of the base category")
-        if right not in _category_homset(base, source.codomain(), target.codomain()):
+        if right not in _category_hom(base, source.codomain(), target.codomain()):
             raise ValueError("the right edge is not a morphism of the base category")
         if verify and (right * source == target * left) is not True:
             raise ValueError("the supplied edges do not establish a commuting square")
@@ -205,7 +210,7 @@ class ArrowCategory(OwnedCategory):
         base = self.base_category()
         if arrow.domain() not in base or arrow.codomain() not in base:
             return False
-        return arrow in _category_homset(base, arrow.domain(), arrow.codomain())
+        return arrow in _category_hom(base, arrow.domain(), arrow.codomain())
 
     def object(self, arrow: Morphism) -> Parent:
         if not isinstance(arrow, Morphism):
@@ -732,7 +737,7 @@ class SubobjectMorphism(Morphism):
         if factor_morphism.codomain() is not _subobject_source(self.codomain()):
             raise ValueError("the subobject factor has the wrong codomain")
         base = parent.subobject_category().base_category()
-        if factor_morphism not in _category_homset(
+        if factor_morphism not in _category_hom(
             base, _subobject_source(self.domain()), _subobject_source(self.codomain())
         ):
             raise ValueError("the subobject factor is not a morphism of the base category")
@@ -955,8 +960,110 @@ class SuperobjectCategory(CosliceCategory):
         return f"Superobjects of {self.base_object()}"
 
 
+class FixedWideHomCategory(FixedRestrictedHomCategory):
+    r"""The selected arrows in one existing Hom of the underlying category."""
+
+    def arrow_set(self) -> Homset:
+        return _category_homset(
+            self.base_category().base_category(),
+            self.domain_object(),
+            self.codomain_object(),
+        )
+
+    underlying_homset = arrow_set
+
+    def super_categories(self) -> list[Category]:
+        return [
+            category_packet(self.base_category().base_category()).Homs().Of(
+                self.domain_object(),
+                self.codomain_object(),
+            )
+        ]
+
+
+class WideHomCategoryConstruction(RestrictedHomCategoryOf):
+    r"""Hom categories cut out by a wide subcategory's arrow predicate."""
+
+    FixedCategoryClass = FixedWideHomCategory
+
+    def _inherits_morphisms_from(
+        self, supercategory: Category, domain: Parent, codomain: Parent
+    ) -> bool:
+        # The object sets agree, but the supplied predicate changes the arrows.
+        # Sharing the underlying Homset does not make the inclusion full.
+        return False
+
+    def accepts(self, arrow: Morphism) -> bool:
+        return self.base_category().admits(arrow)
+
+    def super_categories(self) -> list[Category]:
+        return [category_packet(self.base_category().base_category()).Homs()]
+
+
 class WideSubcategory(Category):
-    r"""A category with the same objects as ``C`` and a selected class of arrows."""
+    r"""A category with the same objects as ``C`` and a selected class of arrows.
+
+    The selected arrows must include every identity and be closed under
+    composition. These are hypotheses on the supplied mathematical class,
+    not properties decidable by enumerating an arbitrary category.
+    Each fixed Hom retains that class's predicate and the original arrow parent.
+
+    Unverified specimens: injections form a wide subcategory of sets. A
+    noninjective map is an underlying set map, but is not an arrow here::
+
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.functors.core import IdentityFunctor, NaturalTransformation
+        sage: points = finite_ordered_set(("a", "b"))
+        sage: injections = WideSubcategory(Sets(), MonomorphismArrowCategory(Sets()))
+        sage: maps = Sets().Mor(points, points)
+        sage: hom = injections.Mor(points, points)
+        sage: hom is injections.HomCategory().Of(points, points)
+        True
+        sage: points.Mor(points, category=injections) is hom
+        True
+        sage: hom.arrow_set() is maps
+        True
+        sage: swap = maps(lambda point: {"a": "b", "b": "a"}[point])
+        sage: collapse = maps(lambda point: "a")
+        sage: swap in hom, collapse in maps, collapse in hom
+        (True, True, False)
+        sage: hom.object(swap).arrow() is swap
+        True
+        sage: injections.compose(swap, swap) == injections.identity(points)
+        True
+        sage: identity = IdentityFunctor(injections)
+        sage: identity(swap) is swap
+        True
+        sage: identity(collapse)
+        Traceback (most recent call last):
+        ...
+        TypeError: the supplied map is not a morphism of the functor's domain
+        sage: eta = NaturalTransformation(identity, identity, lambda obj: collapse)
+        sage: eta.component(points)
+        Traceback (most recent call last):
+        ...
+        TypeError: the component is not a morphism of the common codomain category
+        sage: arrows = ArrowCategory(injections)
+        sage: obj = arrows(injections.identity(points))
+        sage: arrows.Mor(obj, obj)(swap, swap).left() is swap
+        True
+        sage: arrows.Mor(obj, obj)(collapse, collapse)
+        Traceback (most recent call last):
+        ...
+        ValueError: the left edge is not a morphism of the base category
+
+    An underlying bijection still has to lie in the selected Hom; creating a
+    runtime parent never replaces this admission check.
+    """
+
+    _HomCategory = WideHomCategoryConstruction
+
+    @staticmethod
+    @cached_function(key=lambda cls, base_category, arrow_category: (cls, id(base_category), id(arrow_category)))
+    def __classcall__(cls, base_category: Category, arrow_category: ArrowCategory):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(base_category, arrow_category)
+        return typecall(cls, base_category, arrow_category)
 
     def __init__(self, base_category: Category, arrow_category: ArrowCategory) -> None:
         if arrow_category.base_category() != base_category:
@@ -986,6 +1093,24 @@ class WideSubcategory(Category):
         except (TypeError, ValueError):
             return False
         return arrow_object in self.arrow_category()
+
+    def identity(self, obj: Parent) -> Morphism:
+        identity = _category_homset(self.base_category(), obj, obj).identity()
+        if identity not in self.Mor(obj, obj):
+            raise ValueError("the selected arrow class omits an identity")
+        return identity
+
+    def compose(self, second: Morphism, first: Morphism) -> Morphism:
+        if first.codomain() is not second.domain():
+            raise ValueError("the arrows are not composable")
+        if first not in self.Mor(first.domain(), first.codomain()):
+            raise ValueError("the first arrow is outside this wide subcategory")
+        if second not in self.Mor(second.domain(), second.codomain()):
+            raise ValueError("the second arrow is outside this wide subcategory")
+        composite = second * first
+        if composite not in self.Mor(first.domain(), second.codomain()):
+            raise ValueError("the selected arrow class is not closed under this composition")
+        return composite
 
     def _repr_(self) -> str:
         return f"Wide subcategory of {self.base_category()} with arrows in {self.arrow_category()}"
@@ -1032,9 +1157,9 @@ class CoreHomset(CategoricalHomset):
 
     def _require_base_morphisms(self, forward: Morphism, inverse: Morphism) -> None:
         base = self.core_category().base_category()
-        if forward not in _category_homset(base, self.domain(), self.codomain()):
+        if forward not in _category_hom(base, self.domain(), self.codomain()):
             raise ValueError("the forward map is not a morphism of the core's base category")
-        if inverse not in _category_homset(base, self.codomain(), self.domain()):
+        if inverse not in _category_hom(base, self.codomain(), self.domain()):
             raise ValueError("the inverse map is not a morphism of the core's base category")
 
     def _from_known_inverse_pair(self, forward, inverse):

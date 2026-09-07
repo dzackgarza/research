@@ -5,6 +5,7 @@ from typing import Any
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
+    _category_hom,
     _category_homset,
 )
 from sage.misc.cachefunc import cached_method
@@ -82,7 +83,7 @@ class OppositeHomset(CategoricalHomset):
                 raise ValueError("the opposite morphism has the wrong endpoints")
             underlying_arrow = underlying_arrow.underlying_arrow()
         base = self.opposite_category().base_category()
-        if underlying_arrow not in _category_homset(
+        if underlying_arrow not in _category_hom(
             base, self.codomain().underlying_object(), self.domain().underlying_object()
         ):
             raise ValueError("the reversed arrow does not belong to the base category")
@@ -240,9 +241,9 @@ class ProductHomset(CategoricalHomset):
         if second is None:
             first, second = first
         product = self.product_category()
-        if first not in _category_homset(product.first_category(), self.domain().first(), self.codomain().first()):
+        if first not in _category_hom(product.first_category(), self.domain().first(), self.codomain().first()):
             raise ValueError("the first map is not a morphism of the first category")
-        if second not in _category_homset(product.second_category(), self.domain().second(), self.codomain().second()):
+        if second not in _category_hom(product.second_category(), self.domain().second(), self.codomain().second()):
             raise ValueError("the second map is not a morphism of the second category")
         return ProductMorphism(self, first, second)
 

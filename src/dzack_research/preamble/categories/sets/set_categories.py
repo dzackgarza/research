@@ -27,7 +27,7 @@ from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    _category_homset,
+    _category_hom,
     CategoricalHomset,
     CategoricalIsomorphism,
     HomCategoryConstruction,
@@ -696,7 +696,7 @@ class Sets(OwnedCategory):
         ) -> Category:
             if category is None:
                 return Sets().Mor(self, codomain)
-            return _category_homset(category, self, codomain)
+            return _category_hom(category, self, codomain)
 
         def power_set(self) -> Parent:
             return PowerSet(self)

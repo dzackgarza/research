@@ -43,6 +43,22 @@ from sage.structure.dynamic_class import DynamicMetaclass
 from dzack_research.preamble.refine import refine
 
 
+def _category_hom(
+    category: Category | None,
+    domain: Parent,
+    codomain: Parent,
+) -> FixedHomObject | Homset:
+    r"""The complete selected Hom, including any defining arrow predicate.
+
+    Mathematical admission uses this object. Its private ``arrow_set`` may
+    also represent maps outside a restricted Hom category, so membership in
+    that parent alone is not admission to the selected category.
+    """
+    if isinstance(category, CategoryPacketMethods):
+        return category_packet(category).Homs().Of(domain, codomain)
+    return Hom(domain, codomain, category)
+
+
 def _category_homset(
     category: Category | None,
     domain: Parent,
@@ -50,16 +66,18 @@ def _category_homset(
 ) -> Homset:
     r"""Return the declared Hom-set for an explicitly selected category.
 
-    This is the ingress used by ``X.Mor(Y, category=C)``.  Selecting ``C``
-    must not forget its structure: linear, algebra and equivariant maps are
+    Selecting ``C`` must not forget its structure: linear, algebra and equivariant maps are
     constructed by ``C``'s declared Hom family, not by the private
     function-map substrate. An enriched Hom is also a mathematical parent;
     its inherited parent-level ``Mor`` is not the Hom of that category.
     Native Sage categories retain their native Hom ingress.
+
+    Use ``_category_hom`` for admission. This adapter provides the runtime
+    parent required by Sage morphisms, and a restricted Hom need not contain
+    every map represented by that parent.
     """
-    if isinstance(category, CategoryPacketMethods):
-        return category_packet(category).Homs().Of(domain, codomain).arrow_set()
-    return Hom(domain, codomain, category)
+    selected = _category_hom(category, domain, codomain)
+    return selected.arrow_set() if isinstance(selected, Category) else selected
 
 
 
