@@ -145,7 +145,7 @@ def _galois_orbits_of_irreducible_characters(group):
 
 def _split_irreducible_characters(module):
     r"""Return the correct public character index for the coefficient ring."""
-    ring = _engine_ring(module.base_ring())
+    ring = _engine_ring(module.coefficient_ring())
     group = module.group()
     if ring in (SageZZ, SageQQ):
         return _galois_orbits_of_irreducible_characters(group)
@@ -168,11 +168,12 @@ def _split_irreducible_characters(module):
 def _central_projector(module, character: IsotypicCharacter):
     r"""Return the central idempotent as an owned matrix endomorphism."""
     group = module.group()
-    base_ring = module.base_ring()
+    coefficient_module = module.unacted_module()
+    base_ring = module.coefficient_ring()
     engine_ring = _engine_ring(base_ring)
 
     computation_ring = _own_ring(SageQQ) if engine_ring is SageZZ else base_ring
-    rank = int(module.module_rank())
+    rank = int(coefficient_module.module_rank())
     matrices = MatrixSpace(computation_ring, rank)
     projector = matrices.zero()
     order = computation_ring(int(group.order()))
@@ -209,10 +210,10 @@ def _central_projector(module, character: IsotypicCharacter):
 
 
 def _kernel_subobject_of_matrix(module, matrix):
-
-    labels = tuple(module.module_generating_set())
+    coefficient_module = module.unacted_module()
+    labels = tuple(coefficient_module.module_generating_set())
     images = {
-        source_label: module.linear_combination(
+        source_label: coefficient_module.linear_combination(
             {
                 target_label: matrix[target_index, source_index]
                 for target_index, target_label in enumerate(labels)
@@ -221,7 +222,7 @@ def _kernel_subobject_of_matrix(module, matrix):
         )
         for source_index, source_label in enumerate(labels)
     }
-    return module_homset(module, module)(images).kernel()
+    return module_homset(coefficient_module, coefficient_module)(images).kernel()
 
 
 def isotypic_component(module, character):
@@ -238,7 +239,8 @@ def isotypic_component(module, character):
     if selected is None:
         raise ValueError(f"{character!r} is not an irreducible-character index for this module")
     projector = _central_projector(module, selected)
-    base_ring = module.base_ring()
+    coefficient_module = module.unacted_module()
+    base_ring = module.coefficient_ring()
     relation = projector - projector.parent().identity()
     if _engine_ring(base_ring) is SageZZ:
         integers = base_ring
@@ -247,13 +249,13 @@ def isotypic_component(module, character):
             denominator = denominator.lcm(entry.denominator())
         cleared = denominator * relation
 
-        relation = MatrixSpace(integers, int(module.module_rank())).from_rows(
+        relation = MatrixSpace(integers, int(coefficient_module.module_rank())).from_rows(
             [
                 [
                     cleared[row, column].numerator()
-                    for column in range(int(module.module_rank()))
+                    for column in range(int(coefficient_module.module_rank()))
                 ]
-                for row in range(int(module.module_rank()))
+                for row in range(int(coefficient_module.module_rank()))
             ]
         )
     return _kernel_subobject_of_matrix(module, relation)
@@ -261,6 +263,7 @@ def isotypic_component(module, character):
 
 def isotypic_decomposition(module):
     r"""Return ``⊕ M_chi -> M`` over the characters present in ``M``."""
+    coefficient_module = module.unacted_module()
     characters = tuple(module.isotypic_characters())
     components = tuple(isotypic_component(module, character) for character in characters)
     spanning = tuple(
@@ -268,9 +271,9 @@ def isotypic_decomposition(module):
         for component in components
         for generator in component.module_generators()
     )
-    basis = _span_basis_elements(module, spanning)
+    basis = _span_basis_elements(coefficient_module, spanning)
     return _module_subobject_spanning_with_structure(
-        module,
+        coefficient_module,
         basis,
         extra_categories=(IsotypicDecompositions(),),
         extra_construction_data={

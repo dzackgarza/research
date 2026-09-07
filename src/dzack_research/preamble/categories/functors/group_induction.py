@@ -107,6 +107,7 @@ def _finite_coset_sum(module, representatives):
     framing.  Presentation rows are generated directly from this product; no
     Python pair family or block-row list is a mathematical object.
     """
+    module = module.unacted_module()
     source_labels = module.module_generating_set()
     labels = _coset_sum_labels(representatives, source_labels)
     source_relations = _presentation_matrix(module)
@@ -167,11 +168,14 @@ class RestrictionOfActingGroupFunctor(RestrictionOfScalarsFunctor):
         return self._inclusion
 
     def _apply_object(self, group_module):
+        coefficient_module = group_module.unacted_module()
         restricted = _equip_action(
-            group_module,
+            coefficient_module,
             self.subgroup(),
-            lambda subgroup_element, vector: group_module.act(
-                self.inclusion()(subgroup_element), vector
+            lambda subgroup_element, vector: group_module.action_of(
+                self.inclusion()(subgroup_element)
+            )(
+                vector
             ),
         )
         return restricted
@@ -240,7 +244,7 @@ class InductionFunctor(ScalarExtensionFunctor):
 
     def _apply_object(self, group_module):
         module = _finite_coset_sum(group_module, self.representatives())
-        zero = group_module.base_ring().zero()
+        zero = group_module.coefficient_ring().zero()
 
         def action(group_element, vector):
             output_coefficients = {}

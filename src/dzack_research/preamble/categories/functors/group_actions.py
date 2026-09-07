@@ -213,13 +213,17 @@ def _lift_to_invariants(group_module, invariant_module, element):
     r"""Lift a known invariant element from ``group_module``."""
     if group_module.is_trivial_action():
         return group_module.forget_action_morphism()(element)
-    return invariant_module.inclusion().lift(element)
+    return invariant_module.inclusion().lift(
+        group_module.forget_action_morphism()(element)
+    )
 
 
 def _coinvariant_projection(group_module, coinvariants, element):
     if group_module.is_trivial_action():
         return group_module.forget_action_morphism()(element)
-    return coinvariants.presentation_projection()(element)
+    return coinvariants.presentation_projection()(
+        group_module.forget_action_morphism()(element)
+    )
 
 
 class TrivialActionFunctor(RestrictionOfScalarsFunctor):
@@ -238,10 +242,9 @@ class TrivialActionFunctor(RestrictionOfScalarsFunctor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return group_module_homset(source, target)(
-            lambda label: target.equip_action_morphism()(
-                morphism(morphism.domain().module_generator(label))
-            )
+        return group_module_homset(source, target)._from_equivariant_images(
+            morphism,
+            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -361,7 +364,11 @@ class CoinvariantsTrivialAdjunction(BaseChangeAdjunction):
         projection = coinvariants.presentation_projection()
         return group_module_homset(group_module, trivial)(
             lambda label: trivial.equip_action_morphism()(
-                projection(group_module.module_generator(label))
+                projection(
+                    group_module.forget_action_morphism()(
+                        group_module.module_generator(label)
+                    )
+                )
             )
         )
 
@@ -452,9 +459,7 @@ class RestrictionOfGroupActionFunctor(Functor):
                 unacted = acted.unacted_module()
 
                 def restricted_action(group_element, vector):
-                    equipped = acted.equip_action_morphism()(vector)
-                    image = acted.action_of(morphism(group_element))(equipped)
-                    return acted.forget_action_morphism()(image)
+                    return acted.action_of(morphism(group_element))(vector)
 
                 return _equip_action(
                     unacted,

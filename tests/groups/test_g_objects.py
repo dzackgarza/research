@@ -77,7 +77,8 @@ def test_the_regular_representation_is_a_g_object_in_modules() -> None:
     assert representation in GObjects(group, Modules(QQ))
     assert representation in Modules(QQ[group])
     assert representation.acting_group() is group
-    endomorphisms = Modules(QQ).Mor(representation, representation)
+    coefficient_module = representation.scalar_restriction()
+    endomorphisms = Modules(QQ).Mor(coefficient_module, coefficient_module)
     # Left translation is a left action: ``rho(gh) = rho(g) rho(h)``.
     for left in group.group_generators():
         for right in group.group_generators():

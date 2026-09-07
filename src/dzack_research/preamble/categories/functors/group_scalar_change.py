@@ -26,30 +26,22 @@ from dzack_research.preamble.categories.modules.group_modules.group_modules impo
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.functors.scalar_change import (
+    RestrictionOfScalarsFunctor,
     ScalarExtensionFunctor,
     base_change_adjunction,
 )
 
 
 def _unacted_module(group_module):
-    try:
-        return group_module.unacted_module()
-    except AttributeError:
-        return group_module
+    return group_module.unacted_module()
 
 
 def _forget_action_element(group_module, element):
-    try:
-        return group_module.forget_action_morphism()(element)
-    except AttributeError:
-        return element
+    return group_module.forget_action_morphism()(element)
 
 
 def _equip_action_element(group_module, element):
-    try:
-        return group_module.equip_action_morphism()(element)
-    except AttributeError:
-        return group_module(element)
+    return group_module.equip_action_morphism()(element)
 
 
 class GroupModuleScalarExtensionFunctor(Functor):
@@ -77,12 +69,7 @@ class GroupModuleScalarExtensionFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-
-        underlying = (
-            morphism.codomain().forget_action_morphism()
-            * morphism
-            * morphism.domain().equip_action_morphism()
-        )
+        underlying = morphism.underlying_module_morphism()
         scalar_extension = ScalarExtensionFunctor(self.ring_map())
         scalar_extension.adopt_object_image(
             morphism.domain().unacted_module(), source.unacted_module()
@@ -91,12 +78,9 @@ class GroupModuleScalarExtensionFunctor(Functor):
             morphism.codomain().unacted_module(), target.unacted_module()
         )
         transported = scalar_extension(underlying)
-        return group_module_homset(source, target)(
-            lambda label: target.equip_action_morphism()(
-                transported(
-                    source.forget_action_morphism()(source.module_generator(label))
-                )
-            )
+        return group_module_homset(source, target)._from_equivariant_images(
+            transported,
+            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -149,24 +133,19 @@ class GroupModuleRestrictionOfScalarsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        source_unacted = source.unacted_module()
-        target_unacted = target.unacted_module()
-        return group_module_homset(source, target)(
-            lambda label: target.equip_action_morphism()(
-                target_unacted.wrap(
-                    _forget_action_element(
-                        morphism.codomain(),
-                        morphism(
-                            _equip_action_element(
-                                morphism.domain(),
-                                source.forget_action_morphism()(
-                                    source.module_generator(label)
-                                ).underlying_element(),
-                            )
-                        )
-                    )
-                )
-            )
+        restriction = RestrictionOfScalarsFunctor(self.ring_map())
+        restriction.adopt_object_image(
+            morphism.domain().unacted_module(),
+            source.unacted_module(),
+        )
+        restriction.adopt_object_image(
+            morphism.codomain().unacted_module(),
+            target.unacted_module(),
+        )
+        transported = restriction(morphism.underlying_module_morphism())
+        return group_module_homset(source, target)._from_equivariant_images(
+            transported,
+            verify_linearity=False,
         )
 
     def _repr_(self):
@@ -198,14 +177,9 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
         underlying.left_adjoint().adopt_object_image(source_module, extended_module)
         underlying.right_adjoint().adopt_object_image(extended_module, restricted_module)
         unit = underlying.unit(source_module)
-        return group_module_homset(group_module, restricted)(
-            lambda label: restricted.equip_action_morphism()(
-                unit(
-                    group_module.forget_action_morphism()(
-                        group_module.module_generator(label)
-                    )
-                )
-            )
+        return group_module_homset(group_module, restricted)._from_equivariant_images(
+            unit,
+            verify_linearity=False,
         )
 
     def counit(self, group_module):
@@ -218,14 +192,9 @@ class GroupModuleBaseChangeAdjunction(Adjunction):
         underlying.right_adjoint().adopt_object_image(target_module, restricted_module)
         underlying.left_adjoint().adopt_object_image(restricted_module, extended_module)
         counit = underlying.counit(target_module)
-        return group_module_homset(extended, group_module)(
-            lambda label: group_module.equip_action_morphism()(
-                counit(
-                    extended.forget_action_morphism()(
-                        extended.module_generator(label)
-                    )
-                )
-            )
+        return group_module_homset(extended, group_module)._from_equivariant_images(
+            counit,
+            verify_linearity=False,
         )
 
     def _repr_(self):

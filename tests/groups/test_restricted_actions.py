@@ -96,7 +96,9 @@ def test_equivariant_automorphism_restricts_to_invariant_and_isotypic_pieces() -
 
     assert representation.End() is Modules(QQ[group]).End(representation)
     assert representation.Aut() is Modules(QQ[group]).Aut(representation)
-    assert representation.Aut() is not Modules(QQ).Aut(representation)
+    assert representation.Aut() is not Modules(QQ).Aut(
+        representation.scalar_restriction()
+    )
     assert automorphism.parent() is representation.Aut()
 
     standard = representation.isotypic_decomposition().nontrivial_components()[0]
