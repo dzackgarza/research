@@ -55,7 +55,7 @@ def coordinate_family(
     left_labels: Parent,
     right_labels: Parent,
     value_module: Parent,
-    datum: IndexedFamily | Element | Iterable[Iterable[CoordinateValueInputT]],
+    datum: IndexedFamily | Iterable[Iterable[CoordinateValueInputT]],
     *,
     name: str,
 ) -> IndexedFamily:
@@ -72,7 +72,7 @@ def coordinate_family(
 
     left_size = int(left_labels.cardinality())
     right_size = int(right_labels.cardinality())
-    rows = iter(datum.rows() if hasattr(datum, "rows") else datum)
+    rows = iter(datum)
     entries = {}
     for left_position in range(left_size):
         try:
