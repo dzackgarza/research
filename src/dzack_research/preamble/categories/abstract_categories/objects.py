@@ -1,5 +1,7 @@
 """Dependency-light bases for the owned mathematical category graph."""
 
+from typing import Any
+
 from sage.categories.category import Category
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
@@ -17,7 +19,7 @@ from sage.structure.category_object import CategoryObject
 from sage.structure.parent import Parent
 
 
-def membership_by_definition(category: Category, candidate: object) -> bool:
+def membership_by_definition(category: Category, candidate: Any) -> bool:
     r"""Whether ``category``'s own definition puts ``candidate`` in it.
 
     ``False`` unless the category states, through ``additional_condition``,
@@ -96,7 +98,7 @@ class OwnedCategory(OwnedCategoryBase):
         """
         return self
 
-    def __contains__(self, candidate) -> bool:
+    def __contains__(self, candidate: Any) -> bool:
         r"""Whether ``candidate`` is an object of this category.
 
         Placement decides it, which is Sage's rule and the one every category

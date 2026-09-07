@@ -6,11 +6,13 @@ category graph and no registry of relationships.
 """
 
 from collections.abc import Callable
+from typing import overload
 
 from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
+from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 
@@ -33,18 +35,18 @@ class Functor(SageObject):
         r"""Functors have identity semantics as parameters of categorical constructions."""
         return id(self)
 
-    def domain(self):
+    def domain(self) -> Category:
         return self._domain
 
-    def codomain(self):
+    def codomain(self) -> Category:
         return self._codomain
 
     @abstract_method
-    def _apply_object(self, obj):
+    def _apply_object(self, obj: Parent) -> Parent:
         r"""Return the image of one object of the domain."""
 
     @abstract_method
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         r"""Return the image of one morphism of the domain."""
 
     def _cached_image(self, preimage):
@@ -63,7 +65,7 @@ class Functor(SageObject):
         self._provenance[key] = (preimage, image)
         return image
 
-    def object_image(self, obj):
+    def object_image(self, obj: Parent) -> Parent:
         if obj not in self.domain():
             raise TypeError(f"{obj} is not an object of {self.domain()}")
         cached = self._cached_image(obj)
@@ -76,7 +78,7 @@ class Functor(SageObject):
             )
         return self._record_image(obj, image)
 
-    def chosen_preimage(self, image):
+    def chosen_preimage(self, image: Parent) -> Parent:
         r"""Return the unique source object recorded for this exact functor image."""
         matches = [
             preimage
@@ -91,16 +93,16 @@ class Functor(SageObject):
             )
         return matches[0]
 
-    def adopt_object_image(self, preimage, image):
+    def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
         r"""Use a provenance-validated exact image object for ``preimage``."""
         if preimage not in self.domain() or image not in self.codomain():
             raise TypeError("an adopted functor image has endpoints outside the functor")
         return self._record_image(preimage, image)
 
-    def on_object(self, obj):
+    def on_object(self, obj: Parent) -> Parent:
         return self.object_image(obj)
 
-    def morphism_image(self, morphism):
+    def morphism_image(self, morphism: Map) -> Map:
         if not isinstance(morphism, Map):
             raise TypeError("a functor acts on a morphism through its morphism action")
         cached = self._cached_image(morphism)
@@ -116,17 +118,23 @@ class Functor(SageObject):
             )
         return self._record_image(morphism, image)
 
-    def on_morphism(self, morphism):
+    def on_morphism(self, morphism: Map) -> Map:
         return self.morphism_image(morphism)
 
-    def __call__(self, value):
+    @overload
+    def __call__(self, value: Parent) -> Parent: ...
+
+    @overload
+    def __call__(self, value: Map) -> Map: ...
+
+    def __call__(self, value: Parent | Map) -> Parent | Map:
         return self.morphism_image(value) if isinstance(value, Map) else self.object_image(value)
 
-    def then(self, other):
+    def then(self, other: "Functor") -> "CompositeFunctor":
         r"""Return ``other ∘ self``."""
         return CompositeFunctor(self, other)
 
-    def factors(self):
+    def factors(self) -> tuple["Functor", ...]:
         return (self,)
 
     def is_faithful(self) -> bool:
@@ -138,18 +146,18 @@ class IdentityFunctor(Functor):
     def __init__(self, category: Category) -> None:
         super().__init__(category, category)
 
-    def _apply_object(self, obj):
+    def _apply_object(self, obj: Parent) -> Parent:
         return obj
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         return morphism
 
-    def chosen_preimage(self, image):
+    def chosen_preimage(self, image: Parent) -> Parent:
         if image not in self.domain():
             raise ValueError(f"{image} is not an object of {self.domain()}")
         return image
 
-    def factors(self):
+    def factors(self) -> tuple[()]:
         return ()
 
     def is_faithful(self) -> bool:
@@ -174,13 +182,13 @@ class CategoryInclusionFunctor(Functor):
             raise ValueError(f"{subcategory} is not a subcategory of {supercategory}")
         super().__init__(subcategory, supercategory)
 
-    def _apply_object(self, obj):
+    def _apply_object(self, obj: Parent) -> Parent:
         return obj
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         return morphism
 
-    def chosen_preimage(self, image):
+    def chosen_preimage(self, image: Parent) -> Parent:
         if image not in self.domain():
             raise ValueError(f"{image} is not in the included subcategory {self.domain()}")
         return image
@@ -207,23 +215,23 @@ class CompositeFunctor(Functor):
         self._second = second
         super().__init__(first.domain(), second.codomain())
 
-    def _apply_object(self, obj):
+    def _apply_object(self, obj: Parent) -> Parent:
         return self._second(self._first(obj))
 
-    def _apply_morphism(self, morphism):
+    def _apply_morphism(self, morphism: Map) -> Map:
         return self._second(self._first(morphism))
 
-    def chosen_preimage(self, image):
+    def chosen_preimage(self, image: Parent) -> Parent:
         middle = self._second.chosen_preimage(image)
         return self._first.chosen_preimage(middle)
 
-    def adopt_object_image(self, preimage, image):
+    def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
         middle = self._second.chosen_preimage(image)
         self._first.adopt_object_image(preimage, middle)
         self._second.adopt_object_image(middle, image)
         return super().adopt_object_image(preimage, image)
 
-    def factors(self):
+    def factors(self) -> tuple[Functor, ...]:
         return self._first.factors() + self._second.factors()
 
     def is_faithful(self) -> bool:
@@ -240,7 +248,7 @@ class NaturalTransformation(SageObject):
         self,
         source: Functor,
         target: Functor,
-        component: Callable[[object], Morphism],
+        component: Callable[[Parent], Morphism],
     ) -> None:
         if source.domain() != target.domain() or source.codomain() != target.codomain():
             raise ValueError("a natural transformation requires parallel functors")
@@ -254,7 +262,7 @@ class NaturalTransformation(SageObject):
     def target(self) -> Functor:
         return self._target
 
-    def component(self, obj):
+    def component(self, obj: Parent) -> Morphism:
         arrow = self._component(obj)
         if arrow.domain() is not self.source()(obj) or arrow.codomain() is not self.target()(obj):
             raise ValueError("a natural-transformation component has the wrong source or target")
@@ -262,7 +270,7 @@ class NaturalTransformation(SageObject):
 
     __call__ = component
 
-    def naturality_square(self, morphism):
+    def naturality_square(self, morphism: Map) -> tuple[Morphism, Morphism]:
         r"""Return the two composites that naturality asserts are equal."""
         left = self.target()(morphism) * self.component(morphism.domain())
         right = self.component(morphism.codomain()) * self.source()(morphism)
@@ -287,21 +295,29 @@ class Adjunction(SageObject):
         return self._right_adjoint
 
     @abstract_method
-    def unit(self, obj):
+    def unit(self, obj: Parent) -> Morphism:
         r"""Return the unit component at ``obj``."""
 
     @abstract_method
-    def counit(self, obj):
+    def counit(self, obj: Parent) -> Morphism:
         r"""Return the counit component at ``obj``."""
 
-    def hom_set_isomorphism_forward(self, morphism, source=None):
+    def hom_set_isomorphism_forward(
+        self,
+        morphism: Morphism,
+        source: Parent | None = None,
+    ) -> Morphism:
         r"""Transpose ``f:F(A)->B`` to ``U(f) after eta_A``."""
         if source is None:
             source = self.left_adjoint().chosen_preimage(morphism.domain())
         self.left_adjoint().adopt_object_image(source, morphism.domain())
         return self.right_adjoint()(morphism) * self.unit(source)
 
-    def hom_set_isomorphism_inverse(self, morphism, codomain=None):
+    def hom_set_isomorphism_inverse(
+        self,
+        morphism: Morphism,
+        codomain: Parent | None = None,
+    ) -> Morphism:
         r"""Transpose ``g:A->U(B)`` to ``epsilon_B after F(g)``."""
         if codomain is None:
             codomain = self.right_adjoint().chosen_preimage(morphism.codomain())
@@ -342,12 +358,12 @@ class CompositeAdjunction(Adjunction):
     def second(self) -> Adjunction:
         return self._second
 
-    def unit(self, obj):
+    def unit(self, obj: Parent) -> Morphism:
         first_unit = self.first().unit(obj)
         second_unit = self.second().unit(self.first().left_adjoint()(obj))
         return self.first().right_adjoint()(second_unit) * first_unit
 
-    def counit(self, obj):
+    def counit(self, obj: Parent) -> Morphism:
         first_counit = self.first().counit(self.second().right_adjoint()(obj))
         return self.second().counit(obj) * self.second().left_adjoint()(first_counit)
 
