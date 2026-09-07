@@ -1,11 +1,9 @@
 """Linear maps between represented modules."""
 
 import logging
-import operator
 from functools import reduce
 from itertools import product
 
-from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
@@ -24,6 +22,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_ring,
+    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -36,8 +35,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     Sets,
 )
-from dzack_research.preamble.refine import realize_owned_category
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -1011,17 +1008,6 @@ class ModuleEmbedding(ModuleMorphism):
         return module_homset(self.domain(), target_embedding.domain())(images)
 
 
-class _ModuleHomScalarAction(Action):
-    r"""The pointwise scalar action of the base ring on a module Hom object."""
-
-    def __init__(self, scalar_parent, homset, is_left) -> None:
-        self._homset = homset
-        Action.__init__(self, scalar_parent, homset, is_left, operator.mul)
-
-    def _act_(self, scalar, morphism):
-        return self._homset.scalar_multiple(scalar, morphism)
-
-
 def _model_smith_engine(homset):
     r"""The Smith engine of the presented model of ``homset``, when the model has one."""
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -1050,7 +1036,8 @@ def _initialize_module_hom_parent(
     """
     ring = _owned_ring(domain.base_ring())
     assert codomain in domain.module_category(), f"{codomain} is not placed as a module over {ring}"
-    parent._preamble_base_ring = ring
+    parent._preamble_base_ring = ring if ring in OwnedRings().Commutative() else _own_ring(SageZZ)
+    parent._preamble_algebra_base_ring = parent._preamble_base_ring
     placement = domain.module_category()._hom_parent_placement(
         domain,
         codomain,
@@ -1063,7 +1050,7 @@ def _initialize_module_hom_parent(
         _represented_finite_presentation,
     )
 
-    if placement.is_subcategory(MatrixSpaces(ring)):
+    if ring in OwnedRings().Commutative() and placement.is_subcategory(MatrixSpaces(ring)):
         labels = CartesianProductOfSets(
             codomain.module_generating_set(),
             domain.module_generating_set(),
@@ -1082,7 +1069,7 @@ def _initialize_module_hom_parent(
         )
 
         parent._preamble_free_module_constructor = lambda labels, **options: FreshFreeModuleOn(ring, labels, **options)
-    elif full_internal_hom and _represented_finite_presentation(domain) and _represented_finite_presentation(codomain):
+    elif ring in OwnedRings().Commutative() and full_internal_hom and _represented_finite_presentation(domain) and _represented_finite_presentation(codomain):
         # Hom(M, N) between presented modules is presented by its
         # endpoint-determined model (see ``internal_hom``); the presented-module
         # protocol reads these hooks, each of which reaches the model lazily.
@@ -1099,10 +1086,6 @@ def _initialize_module_hom_parent(
         codomain,
         category=placement,
     )
-    realize_owned_category(parent)
-    scalar_parent = ring
-    parent.register_action(_ModuleHomScalarAction(scalar_parent, parent, True))
-    parent.register_action(_ModuleHomScalarAction(scalar_parent, parent, False))
 
 
 class _ModuleHomsetCommonMethods:
@@ -1147,6 +1130,10 @@ class _ModuleHomsetCommonMethods:
         return self._preamble_base_ring
 
     def scalar_multiple(self, scalar, morphism):
+        return self._owned_scalar_multiple(scalar, morphism)
+
+    def _owned_scalar_multiple(self, scalar, morphism):
+        r"""Realize the pointwise action defining this Hom's scalar enrichment."""
         if morphism.parent() is not self:
             morphism = self(morphism)
         scalar = self.base_ring()(scalar)

@@ -85,7 +85,8 @@ def register_module_scalar_action(module) -> None:
     r"""Register ordinary ``r*m``/``m*r`` syntax for an owned module parent."""
     scalar_parent = module.base_ring()
     module.register_action(_ModuleScalarAction(scalar_parent, module, True))
-    module.register_action(_ModuleScalarAction(scalar_parent, module, False))
+    if scalar_parent in OwnedRings().Commutative():
+        module.register_action(_ModuleScalarAction(scalar_parent, module, False))
 
 
 class ModuleHomCategoryConstruction(HomCategoryConstruction):
@@ -167,25 +168,41 @@ class Modules(OwnedCategoryOverBaseRing):
         r"""``Triv_G -| (-)^G``, restriction/coextension along the augmentation."""
         return self.restriction_coextension_adjunction(self._augmentation(group))
 
-    def _call_(self, module, scalar_action):
-        r"""The ``R``-module on the additive group of ``module`` with the action ``rho: R -> End(M)``.
+    def _call_(self, datum, scalar_action=None):
+        r"""Construct the left module defined by ``rho : R -> End_Ab(X)``.
 
-        An ``R``-module is an abelian group with a ring morphism ``R -> End(M)``;
-        the abelian group here is that of ``module``, an object of any module
-        category, and ``scalar_action`` is that morphism.
+        ``Modules(R)(rho)`` obtains ``X`` from the target Hom endpoints.
+        ``Modules(R)(X, rho)`` states those same endpoints explicitly.
         """
-        from dzack_research.preamble.categories.modules.general_modules import GeneralModule
+        from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+        from dzack_research.preamble.owned_category import object_of
 
+        if scalar_action is None:
+            scalar_action = datum
+            module = scalar_action.codomain().domain()
+        else:
+            module = datum
+        assert scalar_action.parent().homset_category().is_subcategory(OwnedRings()), (
+            "a left module requires a unital ring morphism"
+        )
         assert _owned_ring(scalar_action.domain()) is self.base_ring(), f"the scalar action must be a ring morphism out of {self.base_ring()}"
-        assert scalar_action.codomain().domain() is module, f"the scalar action must land in the endomorphisms of {module}"
-        return GeneralModule(
-            self.base_ring(),
-            module,
-            addition=lambda left, right: left + right,
-            zero=module.zero(),
-            negation=lambda element: -element,
+        assert scalar_action.codomain() is AdditiveGroups().AdditiveCommutative().End(module), (
+            f"the scalar action must land in the additive endomorphism ring of {module}"
+        )
+        return object_of(
+            GeneralModules(self.base_ring()),
+            base_ring=self.base_ring(),
             rho=scalar_action,
         )
+
+    @cached_method
+    def underlying_additive_group_functor(self):
+        r"""Return the forgetful functor ``Mod_R -> Ab`` on objects and maps."""
+        from dzack_research.preamble.categories.functors.module_additive_groups import (
+            UnderlyingAdditiveGroupFunctor,
+        )
+
+        return UnderlyingAdditiveGroupFunctor(self)
 
     # Scalar change along a ring morphism ``f: R -> S``: the adjoint triple
     # ``S tensor_R - -| Res_f -| Hom_R(S, -)``, each functor spelled on its
@@ -490,7 +507,14 @@ class Modules(OwnedCategoryOverBaseRing):
 
     def _hom_parent_placement(self, domain, codomain, *, full_internal_hom=False):
         r"""Return the category chosen when the canonical module Hom is constructed."""
+        from dzack_research.preamble.categories.group.additive_homsets import (
+            AdditiveEndomorphismRings,
+            AdditiveHomGroups,
+        )
+
         ring = self.base_ring()
+        if ring not in OwnedRings().Commutative():
+            return AdditiveEndomorphismRings() if domain is codomain else AdditiveHomGroups()
         placement = [InternalHomModules(ring) if full_internal_hom else LinearHomModules(ring)]
         free = FinitelyGeneratedFreeModules(ring)
         matrix = (
@@ -504,16 +528,13 @@ class Modules(OwnedCategoryOverBaseRing):
         if matrix:
             placement.append(MatrixSpaces(ring))
             if domain is codomain:
-                if ring in OwnedRings().Commutative():
-                    from dzack_research.preamble.categories.algebras.algebras import (
-                        MatrixAlgebras,
-                    )
+                from dzack_research.preamble.categories.algebras.algebras import (
+                    MatrixAlgebras,
+                )
 
-                    placement.append(MatrixAlgebras(ring))
-                else:
-                    placement.append(MatrixEndomorphismSpaces(ring))
+                placement.append(MatrixAlgebras(ring))
         elif domain is codomain:
-            placement.append(OwnedRings())
+            placement.append(AdditiveEndomorphismRings())
         if full_internal_hom and not matrix:
             from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
                 _SelectedFinitePresentationModules,
@@ -695,21 +716,33 @@ class Modules(OwnedCategoryOverBaseRing):
             scalar = self.base_ring()(scalar)
             return element._lmul_(scalar)
 
+        def underlying_additive_group(self):
+            r"""Return the additive group on which this module's scalars act."""
+            return self
+
+        def _underlying_additive_element(self, element):
+            r"""Element map used by scalar evaluation and the forgetful functor.
+
+            Module representations with a distinct underlying additive group
+            implement this protected conversion together with
+            ``underlying_additive_group``.
+            """
+            return self(element)
+
         @cached_method
         def _ring_morphism_defining_module_action(self):
-            r"""Return ``rho_M : R -> End_R(M)``, the module structure itself."""
+            r"""Return ``rho_M : R -> End_Ab(U(M))`` from the defining presentation."""
             selected = self.__dict__.get("_preamble_scalar_action_morphism")
             if selected is not None:
                 return selected
             ring = self.base_ring()
-            endomorphisms = Modules(ring).End(self)
+            endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
 
             return ring_morphism(
                 ring,
                 endomorphisms,
                 lambda scalar: endomorphisms.elementwise(
                     lambda element: self._owned_scalar_multiple(scalar, element),
-                    verify_linearity=False,
                 ),
             )
 
@@ -757,7 +790,8 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def scalar_multiple(self, scalar, element):
             r"""Return ``r*m = rho_M(r)(m)``."""
-            return self.scalar_action()(self.base_ring()(scalar))(element)
+            underlying = self._underlying_additive_element(element)
+            return self(self.scalar_action()(self.base_ring()(scalar))(underlying))
 
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""

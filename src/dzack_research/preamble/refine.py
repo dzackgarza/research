@@ -7,7 +7,8 @@ not performed here: free modules, groups, rings and other adopted objects enter
 through owned facades that hold the Sage parent as a private engine.
 """
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Iterator
+from contextlib import contextmanager
 
 from sage.categories.category import Category
 from sage.structure.category_object import CategoryObject
@@ -152,20 +153,41 @@ def realize_owned_category(obj: SageObject):
     return obj
 
 
-def run_construction_hooks(obj: SageObject, already_reached: frozenset[type]) -> None:
+@contextmanager
+def construction_scope(obj: SageObject) -> Iterator[set[type]]:
+    r"""Share Sage's construction-hook traversal with nested refinements.
+
+    ``Parent.__init__`` calls the hooks in its initial MRO itself.  Reserve
+    those providers while it runs; refinements add their new providers to the
+    same traversal.  The set lasts only for the active construction call.
+    """
+    reached = obj.__dict__.get("_preamble_construction_hooks")
+    if reached is not None:
+        yield reached
+        return
+    reached = set(type(obj).__mro__)
+    obj._preamble_construction_hooks = reached
+    try:
+        yield reached
+    finally:
+        del obj._preamble_construction_hooks
+
+
+def run_construction_hooks(obj: SageObject, reached: set[type]) -> None:
     r"""Run the construction step of every level ``obj`` has newly reached.
 
     A category level states what it establishes on its objects in
     ``__init_extra__``, and the host runs those hooks in one pass over the MRO
     from ``Parent.__init__`` (``sage/structure/parent.pyx``).  Neither
     ``CategoryObject._refine_category_`` nor ``Parent._refine_category_`` runs
-    them, so an object that arrives at a level after construction arrives with
-    that level's step still owed.  ``already_reached`` is the MRO from before
-    the refinement, so each level's step is taken exactly once.
+    them.  ``reached`` is shared by the enclosing construction and any
+    refinement a hook requests.  Enter a provider before invoking it so a
+    nested refinement preserves the enclosing traversal.
     """
     for provider in type(obj).__mro__:
-        if provider in already_reached:
+        if provider in reached:
             continue
+        reached.add(provider)
         if "__init_extra__" in vars(provider):
             provider.__init_extra__(obj)
 
@@ -181,8 +203,8 @@ def refine(obj: SageObject, category: Category | Iterable[Category]):
         # by that already-constructed Hom theory.
         _rebuild_morphism_class(obj, target)
         return obj
-    already_reached = frozenset(type(obj).__mro__)
-    CategoryObject._refine_category_(obj, target)
-    realized = realize_owned_category(obj)
-    run_construction_hooks(obj, already_reached)
-    return realized
+    with construction_scope(obj) as reached:
+        CategoryObject._refine_category_(obj, target)
+        realized = realize_owned_category(obj)
+        run_construction_hooks(obj, reached)
+        return realized

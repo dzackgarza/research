@@ -11,16 +11,18 @@ without being restated at this level.
 """
 
 import logging
+import operator
 
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedRings,
     _engine_ring,
     _owned_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import Set
@@ -102,44 +104,60 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         def __init__(
             self,
             base_ring,
-            underlying_set,
-            addition,
-            zero,
-            negation,
-            scalar_action=None,
             rho=None,
+            *,
+            underlying_set=None,
+            addition=None,
+            zero=None,
+            negation=None,
+            scalar_action=None,
             verify=True,
             **rest,
         ) -> None:
             ring = _owned_ring(base_ring)
-            assert (scalar_action is None) != (rho is None), (
-                "a module is given either by a binary scalar action or by rho: R -> End(A), not both"
-            )
+            if rho is not None:
+                assert all(datum is None for datum in (underlying_set, addition, zero, negation, scalar_action)), (
+                    "the action morphism determines the underlying additive group"
+                )
+                assert rho.parent().homset_category().is_subcategory(OwnedRings()) and rho.domain() is ring, (
+                    "the scalar action must be a ring morphism out of the module's base ring"
+                )
+                underlying_set = rho.codomain().domain()
+                assert rho.codomain() is AdditiveGroups().AdditiveCommutative().End(underlying_set), (
+                    "the action takes values in the endomorphism ring of an additive group"
+                )
+                addition = operator.add
+                zero = underlying_set.zero()
+                negation = operator.neg
+            else:
+                assert callable(scalar_action), "an elementwise module presentation includes scalar multiplication"
             assert callable(addition) and callable(negation), (
                 "the additive structure of the underlying group is given by its operations"
             )
             self._preamble_underlying_set = Set(underlying_set)
             self._preamble_addition = addition
             self._preamble_negation = negation
-            self._preamble_input_rho = rho
-            if rho is None:
-                self._preamble_raw_scalar_action = scalar_action
-            else:
-                assert _engine_ring(rho.domain()) is _engine_ring(ring), (
-                    "the scalar action must be a ring morphism out of the module's base ring"
-                )
-                self._preamble_raw_scalar_action = lambda scalar, value: rho(scalar)(value)
-
+            assert zero in self._preamble_underlying_set, "the additive zero belongs to the underlying set"
+            self._preamble_zero_value = zero
+            self._preamble_scalar_action_morphism = rho
+            self._preamble_raw_scalar_action = scalar_action
             super().__init__(base_ring=ring, **rest)
 
-            self._preamble_zero_value = self._normalize_underlying_value(zero)
-            self._preamble_scalar_action_morphism = self._build_scalar_action_morphism()
             if verify:
                 self._verify_module_laws_when_decidable()
 
         def underlying_set(self):
             r"""Return the set this module is built on."""
             return self._preamble_underlying_set
+
+        def underlying_additive_group(self):
+            action = self._preamble_scalar_action_morphism
+            return self if action is None else action.codomain().domain()
+
+        def _underlying_additive_element(self, element):
+            if self.underlying_additive_group() is self:
+                return self(element)
+            return self(element).underlying_element()
 
         def cardinality(self):
             r"""Return the cardinality of the set this module is built on.
@@ -201,7 +219,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         def _negate_element(self, element):
             return self(self._preamble_negation(self(element).underlying_element()))
 
-        def _raw_scalar_multiple(self, scalar, element):
+        def _owned_scalar_multiple(self, scalar, element):
             return self(
                 self._preamble_raw_scalar_action(
                     self.base_ring()(scalar),
@@ -209,29 +227,12 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def _build_scalar_action_morphism(self):
-            r"""Return ``rho : R -> End(M)``, the module structure itself.
-
-            Each ``rho(r)`` is linear because ``rho`` is a ring morphism into
-            the endomorphisms: that is the hypothesis this construction is
-            given, so it is asserted here rather than re-derived on elements.
-            """
-            endomorphisms = Modules(self.base_ring()).End(self)
-            return ring_morphism(
-                self.base_ring(),
-                endomorphisms,
-                lambda scalar: endomorphisms.elementwise(
-                    lambda element: self._raw_scalar_multiple(scalar, element),
-                    verify_linearity=False,
-                ),
-            )
-
         def scalar_action_input(self):
             r"""Return the supplied ``rho`` when the module was given one."""
-            assert self._preamble_input_rho is not None, (
+            assert self._preamble_scalar_action_morphism is not None, (
                 "this module was given by a binary scalar action, not by a morphism"
             )
-            return self._preamble_input_rho
+            return self._preamble_scalar_action_morphism
 
         def _represented_annihilator_ideal(self):
             r"""Represent the scalar-action kernel by exhaustive finite enumeration.
@@ -349,15 +350,13 @@ def GeneralModule(
     addition,
     zero,
     negation,
-    scalar_action=None,
-    rho=None,
+    scalar_action,
     verify=True,
 ):
     r"""Return the ``R``-module on ``underlying_set`` with the given structure.
 
-    Either a binary ``scalar_action(r, x)`` or the ring morphism
-    ``rho : R -> End(A)`` fixes the module structure; they are the same datum
-    written two ways.
+    The supplied operations present the additive group and its scalar action.
+    A module given by ``rho : R -> End_Ab(X)`` is constructed by ``Modules(R)(rho)``.
     """
     return object_of(
         GeneralModules(_owned_ring(ring)),
@@ -367,7 +366,6 @@ def GeneralModule(
         zero=zero,
         negation=negation,
         scalar_action=scalar_action,
-        rho=rho,
         verify=verify,
     )
 

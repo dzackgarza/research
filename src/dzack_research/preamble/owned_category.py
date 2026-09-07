@@ -581,20 +581,29 @@ class OwnedParent:
         category and rewrites nothing, which is all a chain-built parent wants;
         this is the same technique ``OwnedCategoryObject`` uses one level up.
 
-        The category is recorded first, as Sage's own ``Parent.__init__`` does
-        before it runs the ``__init_extra__`` hooks: a hook a category level
-        declares -- the rings level places every ring as an algebra -- asks
-        the parent what it is, and must find the answer already there.
+        Sage records the complete category, including its facade category,
+        before invoking construction hooks.  Cooperative category
+        constructors establish their defining data before reaching this root.
         """
-        if category is not None:
-            CategoryObject._init_category_(self, category)
-        SageParent.__init__(self, **rest)
-        if category is not None and not self.category().is_subcategory(category):
-            # A facade parent makes ``Parent.__init__`` record Sage's facade
-            # category in place of the chain's; the chain's is the placement.
-            # A hook that refined the chain's category left a subcategory of
-            # it, which stays.
-            CategoryObject._init_category_(self, category)
+        from dzack_research.preamble.refine import (
+            construction_scope,
+            realize_owned_category,
+            run_construction_hooks,
+        )
+
+        with construction_scope(self) as reached:
+            SageParent.__init__(self, category=category, **rest)
+            realize_owned_category(self)
+            run_construction_hooks(self, reached)
+
+    def _init_category_(self, category: Category) -> None:
+        r"""Record the category on a parent built from its owned method chain.
+
+        This is the native ``CategoryObject.__init__`` interception point
+        used by ``Parent.__init__`` in ``sage/structure/parent.pyx``.
+        The chain already supplies ``category.parent_class``.
+        """
+        CategoryObject._init_category_(self, category)
 
     @lazy_attribute
     def element_class(self) -> type:

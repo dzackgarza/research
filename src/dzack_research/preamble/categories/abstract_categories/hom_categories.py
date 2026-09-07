@@ -33,7 +33,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
-from sage.structure.category_object import CategoryObject
+from dzack_research.preamble.refine import refine
 
 
 def _category_homset(category, domain, codomain):
@@ -153,7 +153,7 @@ class CategoricalHomset(OwnedHomset, Category):
             # can form its private Homsets/Endsets runtime category.  Complete
             # the owned enrichment while this constructor is still active;
             # callers never observe an un-enriched module Hom parent.
-            CategoryObject._refine_category_(self, category)
+            refine(self, category)
 
     def hom_family(self):
         return self._family

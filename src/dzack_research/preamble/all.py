@@ -403,6 +403,7 @@ from dzack_research.preamble.categories.functors.module_localization import (
     module_localization_functor,
 )
 from dzack_research.preamble.categories.group import (  # noqa: F401
+    AdditiveGroups,
     AbelianGroups,
     AbsoluteDecompositionGroup,
     AbsoluteGaloisGroup,

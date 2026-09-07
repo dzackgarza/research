@@ -5,6 +5,9 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryConstruction,
+)
 
 class Magmas(OwnedCategory):
     def super_categories(self):
@@ -78,6 +81,14 @@ class AdditiveGroups(OwnedCategory):
 
     class AdditiveCommutative(CategoryWithAxiom):
         """Additive groups whose addition is commutative."""
+
+        class _HomCategory(HomCategoryConstruction):
+            def fixed_category_class(self):
+                from dzack_research.preamble.categories.group.additive_homsets import (
+                    AdditiveHomset,
+                )
+
+                return AdditiveHomset
 
         @classmethod
         def _repr_object_names(cls):
