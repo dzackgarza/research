@@ -835,6 +835,28 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
     An object is an object ``A`` of the base category equipped with its chosen
     monomorphism ``A.inclusion(): A -> X``.  Morphisms are the commuting
     triangles between those inclusions.
+
+    Unverified specimen: a represented module subobject retains its selected
+    inclusion when its fixed-base placement and its Hom are requested::
+
+        sage: from dzack_research.preamble.all import Modules, ZZ
+        sage: from dzack_research.preamble.refine import refine
+        sage: submodule = ZZ.ideal(2)
+        sage: inclusion = submodule.inclusion()
+        sage: category = SubobjectCategory(Modules(ZZ), inclusion.codomain())
+        sage: submodule in category
+        True
+        sage: _ = refine(submodule, category)
+        sage: submodule in category
+        True
+        sage: hom = category.Mor(submodule, submodule)
+        sage: hom is category.HomCategory().Of(submodule, submodule)
+        True
+        sage: identity = hom.identity()
+        sage: identity * identity == identity
+        True
+        sage: submodule.inclusion() is inclusion
+        True
     """
 
     _HomCategory = SubobjectHomCategoryConstruction
@@ -885,6 +907,12 @@ class SubobjectCategory(OwnedCategoryMixin, Category):
         return self.slice_category()(subobject.inclusion())
 
     def __contains__(self, candidate: Any) -> bool:
+        # The constructor/refinement already owns a declared placement.
+        # Rebuilding its inclusion here can ask for a Hom whose endpoint
+        # membership is this very question; the category graph needs no arrow
+        # construction to recognize an object already placed in it.
+        if Category.__contains__(self, candidate):
+            return True
         try:
             inclusion = candidate.inclusion()
         except AttributeError:

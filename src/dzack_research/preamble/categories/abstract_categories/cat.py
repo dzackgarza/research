@@ -149,10 +149,14 @@ class CategoryFunctorHomset(CategoricalHomset):
 class FunctorHomCategoryConstruction(HomCategoryConstruction):
     r"""The family ``(C,D) |-> [C,D]``, with its actual natural transformations."""
 
-    def fixed_category_class(self):
+    def fixed_category_class(self) -> type["FunctorCategory"]:
         return FunctorCategory
 
-    def Of(self, domain, codomain) -> "FunctorCategory":
+    def Of(
+        self,
+        domain: Category | CategoryObject,
+        codomain: Category | CategoryObject,
+    ) -> "FunctorCategory":
         category = self.base_category()
         source, target = category.object(domain), category.object(codomain)
         cached = self._cached_between(source, target)
@@ -546,9 +550,29 @@ class NaturalTransformationMorphism(Morphism):
     def naturality_square(self, morphism: Map) -> tuple[Morphism, Morphism]:
         return self.transformation().naturality_square(morphism)
 
+    def __eq__(self, other: Any) -> bool | UnknownClass:
+        if not isinstance(other, NaturalTransformationMorphism) or other.parent() is not self.parent():
+            return False
+        if self.transformation() is other.transformation():
+            return True
+        # Different component functions need not define different natural
+        # transformations, and the source category need not be finite.
+        return Unknown
+
+    def __ne__(self, other: Any) -> bool | UnknownClass:
+        equal = self == other
+        return Unknown if equal is Unknown else not equal
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
     def __mul__(self, other):
         if not isinstance(other, NaturalTransformationMorphism) or other.codomain() is not self.domain():
             return NotImplemented
+        if self.domain() is self.codomain() and self is self.parent().identity():
+            return other
+        if other.domain() is other.codomain() and other is other.parent().identity():
+            return self
         source = other.domain().arrow().functor()
         target = self.codomain().arrow().functor()
 
@@ -595,6 +619,7 @@ class NaturalTransformationHomset(CategoricalHomset):
             )
         return NaturalTransformationMorphism(self, transformation)
 
+    @cached_method
     def identity(self) -> NaturalTransformationMorphism:
         if self.domain() is not self.codomain():
             raise ValueError("identity belongs to an endomorphism natural-transformation Hom-set")
@@ -642,6 +667,10 @@ class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
         True
         sage: eta = transformations(lambda obj: category.Mor(obj, obj).identity())
         sage: (eta * eta).component(category("a")) == eta.component(category("a"))
+        True
+        sage: transformations.identity() * eta is eta
+        True
+        sage: eta * transformations.identity() is eta
         True
         sage: hom.identity_2(cat.arrow(identity)).parent() is transformations
         True
@@ -709,9 +738,14 @@ class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
 
     __call__ = object
 
-    def _hom_endpoint(self, obj: Parent | Functor | CategoryFunctorMorphism) -> Parent:
+    def _hom_endpoint(
+        self,
+        obj: Parent | Category | Functor | CategoryFunctorMorphism,
+    ) -> Parent:
         if isinstance(obj, (Functor, CategoryFunctorMorphism)):
             return self.object(obj)
+        if not isinstance(obj, Parent):
+            raise TypeError("a functor-category endpoint must represent a functor")
         return obj
 
     def __contains__(self, candidate: Any) -> bool:
@@ -727,7 +761,11 @@ class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
             and arrow.functor().codomain() == self.codomain_category()
         )
 
-    def Mor(self, domain: Parent, codomain: Parent) -> NaturalTransformationHomset:
+    def Mor(
+        self,
+        domain: Parent | Functor | CategoryFunctorMorphism,
+        codomain: Parent | Functor | CategoryFunctorMorphism,
+    ) -> NaturalTransformationHomset:
         domain = self._hom_endpoint(domain)
         codomain = self._hom_endpoint(codomain)
         if domain not in self or codomain not in self:
