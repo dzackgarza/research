@@ -422,6 +422,23 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 return group_module_homset(self, codomain)
             return super().Mor(codomain, category)
 
+        def End(self):
+            r"""``End_{R[G]}(M)``, the equivariant endomorphism object.
+
+            The underlying ``R``-linear endomorphisms remain available as
+            ``Modules(R).End(M)``.  A group module's default Hom is already the
+            equivariant Hom, so its default End has to use the same owner.
+            """
+            return Modules(self.group_algebra()).End(self)
+
+        def Aut(self):
+            r"""``Aut_{R[G]}(M)``, the equivariant module automorphisms.
+
+            Use ``Modules(R).Aut(M)`` explicitly when the action is to be
+            forgotten and all underlying ``R``-linear automorphisms are wanted.
+            """
+            return Modules(self.group_algebra()).Aut(self)
+
         def _Hom_(self, codomain, category=None):
             if codomain not in Modules(self.group_algebra()):
                 raise TypeError("an R[G]-module morphism requires the same acting group")
@@ -527,8 +544,67 @@ class ModulesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 return inclusion.lift(self.act(group_element, inclusion(vector)))
 
             acted = _equip_action(submodule, self.group(), restricted_action)
-            return group_module_homset(acted, self)(
+            equivariant_inclusion = group_module_homset(acted, self)(
                 lambda label: inclusion(submodule.module_generator(label))
+            )
+            # The original subobject inclusion owns the exact lift.  Preserve
+            # that lift on the equivariant reading so every later restriction
+            # uses the same represented subobject rather than solving a second
+            # coordinate problem.
+            equivariant_inclusion._preamble_lift = lambda element: acted.equip_action_morphism()(
+                inclusion.lift(element)
+            )
+            return equivariant_inclusion
+
+        def restrict_endomorphism_to(self, endomorphism, inclusion):
+            r"""Restrict an equivariant endomorphism of ``M`` to a stable subobject.
+
+            ``inclusion`` is the ordinary represented subobject inclusion
+            ``S -> M``.  The action is first restricted to ``S`` through
+            :meth:`restrict_action_to`; the endomorphism is then forced through
+            ``Mor_{R[G]}(M,M)``, which is exactly the condition that it commute
+            with the action.  Stability of ``S`` under the endomorphism is not
+            assumed: the exact lift through the inclusion decides it.
+            """
+            if inclusion.codomain() is not self:
+                raise ValueError("the stable subobject inclusion must land in this group module")
+            equivariant = group_module_homset(self, self)(endomorphism)
+            acted_inclusion = self.restrict_action_to(inclusion)
+            return equivariant.restrict_to(acted_inclusion)
+
+        def restrict_automorphism_to(self, automorphism, inclusion):
+            r"""Restrict an equivariant automorphism to a stable subobject.
+
+            The result is an actual element of ``Aut_{R[G]}(S)``.  Both the
+            forward and inverse ambient maps are checked in the equivariant Hom
+            before restriction, and the same acted subobject is used for both
+            directions; hence the returned pair is the restricted isomorphism,
+            not merely an invertible-looking ``R``-linear map.
+            """
+            if automorphism.domain() is not self or automorphism.codomain() is not self:
+                raise ValueError("the automorphism must be an endomorphism of this group module")
+            if inclusion.codomain() is not self:
+                raise ValueError("the stable subobject inclusion must land in this group module")
+
+            from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+                CategoricalIsomorphism,
+            )
+
+            acted_inclusion = self.restrict_action_to(inclusion)
+            forward = group_module_homset(self, self)(automorphism.forward()).restrict_to(
+                acted_inclusion
+            )
+            inverse = group_module_homset(self, self)(automorphism.inverse()).restrict_to(
+                acted_inclusion
+            )
+            piece = acted_inclusion.domain()
+            return Modules(self.group_algebra()).Aut(piece)(
+                CategoricalIsomorphism(
+                    forward.parent(),
+                    forward,
+                    inverse,
+                    verify=False,
+                )
             )
 
         def character(self):
@@ -681,6 +757,56 @@ class GroupModuleMorphism(ModuleMorphism):
         target = self.codomain().action_functor()
         component = self.parent().underlying_homset()(self)
         return NaturalTransformation(source, target, lambda _obj: component)
+
+    def restrict_to(self, inclusion):
+        r"""Restrict this equivariant endomorphism along an equivariant inclusion.
+
+        If ``i:S -> M`` is equivariant and ``f:M -> M`` preserves ``i(S)``, the
+        restriction is the unique ``f_S`` satisfying ``i f_S = f i``.  The
+        inclusion's represented lift constructs that unique map.
+        """
+        ambient = self.domain()
+        if self.codomain() is not ambient:
+            raise ValueError("restriction to a stable subobject is defined here for an endomorphism")
+        if inclusion.codomain() is not ambient:
+            raise ValueError("the equivariant inclusion must land in the endomorphism domain")
+        piece = inclusion.domain()
+        if piece not in Modules(ambient.group_algebra()):
+            raise TypeError("the restricted subobject must carry the same group-module structure")
+
+        return group_module_homset(piece, piece)._from_equivariant_images(
+            lambda element: inclusion.lift(self(inclusion(element))),
+            elementwise=True,
+            verify_linearity=False,
+        )
+
+    def inverse(self):
+        r"""The inverse of an equivariant isomorphism, still equivariant."""
+        ordinary_inverse = super().inverse()
+        return group_module_homset(self.codomain(), self.domain())._from_equivariant_images(
+            lambda element: ordinary_inverse(element),
+            elementwise=True,
+            verify_linearity=False,
+        )
+
+    def as_automorphism(self):
+        r"""Return this invertible equivariant endomorphism in ``Aut_{R[G]}(M)``."""
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            CategoricalIsomorphism,
+        )
+
+        module = self.domain()
+        if self.codomain() is not module:
+            raise ValueError("an automorphism is an endomorphism")
+        inverse = self.inverse()
+        return Modules(module.group_algebra()).Aut(module)(
+            CategoricalIsomorphism(
+                self.parent(),
+                self,
+                inverse,
+                verify=False,
+            )
+        )
 
 
 class GroupModuleHomset(_ModuleHomsetCommonMethods, GObjectHomset):
