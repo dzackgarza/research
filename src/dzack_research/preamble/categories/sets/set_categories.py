@@ -247,7 +247,11 @@ class _Aleph:
 class OwnedSetMorphism(SetMorphism):
     r"""A set map whose composition remains in the canonical owned Set Hom."""
 
-    def __init__(self, parent, function) -> None:
+    def __init__(
+        self,
+        parent: "SetMorCategory",
+        function: Callable[[object], object],
+    ) -> None:
         SetMorphism.__init__(self, parent, function)
         self._owned_function = function
 
@@ -336,7 +340,12 @@ class SetMorCategory(CategoricalHomset):
     the runtime parent its ``SetMorphism`` elements require.
     """
 
-    def __init__(self, mor_family, domain, codomain) -> None:
+    def __init__(
+        self,
+        mor_family: HomCategoryConstruction,
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         CategoricalHomset.__init__(self, mor_family, domain, codomain)
 
     def __call__(self, datum):
@@ -809,10 +818,10 @@ class SetInclusion(OwnedSetMorphism):
 
     def __init__(
         self,
-        domain,
-        codomain,
-        characteristic_morphism=None,
-        finite_members=None,
+        domain: Parent,
+        codomain: Parent,
+        characteristic_morphism: SetMorphism | None = None,
+        finite_members: Iterable[object] | None = None,
     ) -> None:
         parent = Sets().Mor(domain, codomain)
         SetMorphism.__init__(self, parent, lambda member: codomain(member))

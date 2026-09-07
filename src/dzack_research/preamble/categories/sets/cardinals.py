@@ -69,7 +69,7 @@ class CardinalComparison(Enum):
 
 
 class CardinalityMorphism(Morphism):
-    def __init__(self, parent) -> None:
+    def __init__(self, parent: "CardinalityHomset") -> None:
         Morphism.__init__(self, parent)
 
     def is_identity(self) -> bool:
@@ -87,7 +87,12 @@ class CardinalityMorphism(Morphism):
 class CardinalityHomset(CategoricalHomset):
     Element = CardinalityMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(
+        self,
+        hom_family: HomCategoryConstruction,
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def cardinality(self):
@@ -542,7 +547,11 @@ class _OrdinalPower:
 class OrdinalSemiringMorphism(Morphism):
     r"""A declared homomorphism between represented ordinal semirings."""
 
-    def __init__(self, parent, function) -> None:
+    def __init__(
+        self,
+        parent: "OrdinalSemiringHomset",
+        function: Callable[[object], object],
+    ) -> None:
         Morphism.__init__(self, parent)
         if not callable(function):
             raise TypeError("an ordinal-semiring morphism requires an exact map")
@@ -573,7 +582,12 @@ class OrdinalSemiringMorphism(Morphism):
 class OrdinalSemiringHomset(CategoricalHomset):
     Element = OrdinalSemiringMorphism
 
-    def __init__(self, hom_family, domain, codomain) -> None:
+    def __init__(
+        self,
+        hom_family: HomCategoryConstruction,
+        domain: Parent,
+        codomain: Parent,
+    ) -> None:
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def _element_constructor_(self, function):

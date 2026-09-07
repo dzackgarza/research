@@ -1,6 +1,9 @@
 """Owned indexed families of mathematical values."""
 
+from collections.abc import Callable
+
 from sage.misc.unknown import Unknown
+from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 
@@ -13,7 +16,13 @@ class IndexedFamily(SageObject):
     Consumers iterate values lazily or address them through ``value(index)``.
     """
 
-    def __init__(self, index_set, value, *, name=None) -> None:
+    def __init__(
+        self,
+        index_set: Parent,
+        value: Callable[[object], object],
+        *,
+        name: str | None = None,
+    ) -> None:
         if not callable(value):
             raise TypeError("an indexed family requires a value map")
         self._index_set = index_set
@@ -21,7 +30,7 @@ class IndexedFamily(SageObject):
         self._value_cache = {}
         self._name = name
 
-    def index_set(self):
+    def index_set(self) -> Parent:
         return self._index_set
 
     def cardinality(self):
@@ -111,7 +120,12 @@ class IndexedFamily(SageObject):
         return self._name or f"Family indexed by {self.index_set()}"
 
 
-def indexed_family(index_set, value, *, name=None):
+def indexed_family(
+    index_set: Parent,
+    value: Callable[[object], object],
+    *,
+    name: str | None = None,
+) -> IndexedFamily:
     r"""Return the family ``index |-> value(index)`` over ``index_set``."""
     return IndexedFamily(index_set, value, name=name)
 

@@ -57,7 +57,11 @@ def _merge_sorted(left, right):
 class FixedSizeSelectionElement(Element):
     r"""One fixed-size subset/multiset, encoded by its combinatorial rank."""
 
-    def __init__(self, parent, combinatorial_rank) -> None:
+    def __init__(
+        self,
+        parent: "FixedSizeSelections",
+        combinatorial_rank: int,
+    ) -> None:
         Element.__init__(self, parent)
         self._combinatorial_rank = int(combinatorial_rank)
 
@@ -202,7 +206,13 @@ class FixedSizeSelectionElement(Element):
 class FixedSizeSelections(Parent):
     Element = FixedSizeSelectionElement
 
-    def __init__(self, source, selection_size, *, repetition) -> None:
+    def __init__(
+        self,
+        source: Parent,
+        selection_size: int,
+        *,
+        repetition: bool,
+    ) -> None:
 
         self._source = source
         self._selection_size = int(selection_size)
