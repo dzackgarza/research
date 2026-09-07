@@ -6,14 +6,17 @@ from typing import TypeVar, overload
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
+    _category_homset,
 )
 from sage.categories.category import Category
 from sage.misc.abstract_method import abstract_method
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
+from sage.structure.dynamic_class import DynamicMetaclass
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
@@ -208,9 +211,18 @@ class DiscreteMorphism(Morphism):
             raise ValueError("a discrete category has no arrow between distinct objects")
 
     def __mul__(self, other):
-        if other.codomain() is not self.domain():
+        if not isinstance(other, DiscreteMorphism) or other.parent() is not self.parent():
             return NotImplemented
-        return self.parent().discrete_category().Mor(other.domain(), self.codomain()).identity()
+        return self.parent().identity()
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, DiscreteMorphism) and other.parent() is self.parent()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
 
 
 class DiscreteHomset(CategoricalHomset):
@@ -218,17 +230,16 @@ class DiscreteHomset(CategoricalHomset):
 
     def __init__(
         self,
-        discrete_category: "DiscreteCategory",
+        family: HomCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        self._discrete_category = discrete_category
         CategoricalHomset.__init__(
-            self, HomCategoryConstruction(discrete_category), domain, codomain
+            self, family, domain, codomain
         )
 
     def discrete_category(self) -> "DiscreteCategory":
-        return self._discrete_category
+        return self.base_category()
 
     def cardinality(self) -> Parent:
 
@@ -237,14 +248,54 @@ class DiscreteHomset(CategoricalHomset):
     def _element_constructor_(self, value=None):
         if self.domain() is not self.codomain():
             raise ValueError("there is no arrow between distinct discrete objects")
+        if value is not None:
+            if not isinstance(value, DiscreteMorphism) or value.parent() is not self:
+                raise ValueError("a discrete Hom contains only its identity")
+            return value
         return DiscreteMorphism(self)
 
+    @cached_method
     def identity(self) -> DiscreteMorphism:
         return self()
 
 
+class DiscreteHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = DiscreteHomset
+
+
 class DiscreteCategory(OwnedCategory):
-    r"""The discrete category on one set."""
+    r"""The discrete category on one set.
+
+    Unverified specimens retain unhashable labels and distinguish two equal
+    underlying sets supplied as different objects::
+
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: labels = finite_ordered_set(([0], [1]))
+        sage: category = DiscreteCategory(labels)
+        sage: category([0]) is category([0])
+        True
+        sage: category.objects().value([0]) is category([0])
+        True
+        sage: category.Mor(category([0]), category([1])).cardinality() == cardinal(0)
+        True
+        sage: identity = category.identity(category([0]))
+        sage: identity * identity == identity
+        True
+        sage: other_labels = finite_ordered_set(([0], [1]))
+        sage: DiscreteCategory(other_labels).object_set() is other_labels
+        True
+        sage: DiscreteCategory(other_labels) is not category
+        True
+    """
+
+    _HomCategory = DiscreteHomCategoryConstruction
+
+    @staticmethod
+    @cached_function(key=lambda cls, object_set: (cls, id(object_set)))
+    def __classcall__(cls, object_set: Parent):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(object_set)
+        return typecall(cls, object_set)
 
     def an_object(self) -> Parent:
         r"""The object at a point of the underlying set."""
@@ -270,10 +321,14 @@ class DiscreteCategory(OwnedCategory):
         if object_set not in Sets():
             raise TypeError("a discrete category is constructed from a set")
         self._object_set = object_set
+        self._objects = indexed_family(
+            object_set, lambda value: object_of(self, value=value),
+            name=f"Objects of the discrete category on {object_set}",
+        )
         super().__init__()
 
     def _make_named_class_key(self, name):
-        return self._object_set
+        return id(self._object_set)
 
     def object_set(self) -> Parent:
         return self._object_set
@@ -282,11 +337,7 @@ class DiscreteCategory(OwnedCategory):
         return [Objects()]
 
     def object(self, value: SourcePointT) -> Parent:
-        return self._object_on(self.object_set()(value))
-
-    @cached_method
-    def _object_on(self, normalized):
-        return object_of(self, value=normalized)
+        return self._objects(value)
 
     __call__ = object
 
@@ -298,17 +349,12 @@ class DiscreteCategory(OwnedCategory):
         )
 
     def objects(self) -> IndexedFamily:
-
-        return indexed_family(
-            self.object_set(),
-            self,
-            name=f"Objects of {self}",
-        )
+        return self._objects
 
     def Mor(self, domain: Parent, codomain: Parent) -> DiscreteHomset:
         if domain not in self or codomain not in self:
             raise TypeError("a discrete Hom requires two objects of the discrete category")
-        return DiscreteHomset(self, domain, codomain)
+        return self.HomCategory().Of(domain, codomain)
 
 
     def identity(self, obj: Parent) -> DiscreteMorphism:
@@ -345,10 +391,7 @@ class DiscreteFunctor(Functor):
         object_map: Morphism | Callable[[SourcePointT], TargetPointT],
     ) -> None:
         if not isinstance(object_map, Morphism):
-            object_map = SetMorphism(
-                Sets().Mor(domain.object_set(), codomain.object_set()),
-                object_map,
-            )
+            object_map = Sets().Mor(domain.object_set(), codomain.object_set())(object_map)
         if object_map.domain() is not domain.object_set() or object_map.codomain() is not codomain.object_set():
             raise ValueError("the object map has the wrong discrete-category endpoints")
         self._object_map = object_map
@@ -402,7 +445,7 @@ class DiscreteDiagram(Functor):
 
     def _apply_morphism(self, morphism: Map) -> Map:
         image = self(morphism.domain())
-        return self.codomain().Mor(image, image).identity()
+        return _category_homset(self.codomain(), image, image).identity()
 
 
 class ConstantDiagram(Functor):
@@ -422,7 +465,7 @@ class ConstantDiagram(Functor):
 
     def _apply_morphism(self, morphism: Map) -> Map:
         value = self.constant_value()
-        return self.codomain().Mor(value, value).identity()
+        return _category_homset(self.codomain(), value, value).identity()
 
 
 def compose_functors(second: Functor, first: Functor) -> Functor:
@@ -439,42 +482,14 @@ def compose_functors(second: Functor, first: Functor) -> Functor:
 ComposedFunctor = CompositeFunctor
 
 
-class NaturalTransformationSpaces(OwnedCategory):
-    r"""Hom-objects of natural transformations between parallel functors."""
-
-    def an_object(self) -> Parent:
-        r"""Transformations from the identity of ``Cat`` to itself."""
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
-
-        identity = IdentityFunctor(Cat())
-        return object_of(self, source=identity, target=identity)
-
-    def super_categories(self):
-        return [Objects()]
-
-    class ParentMethods:
-        r"""The represented Hom-object of natural transformations ``F => G``."""
-
-        def __init__(self, source: Functor, target: Functor, **rest) -> None:
-            self._source = source
-            self._target = target
-            super().__init__(**rest)
-
-        def source(self) -> Functor:
-            return self._source
-
-        def target(self) -> Functor:
-            return self._target
-
-        def _repr_(self) -> str:
-            return f"Natural transformations {self.source()} => {self.target()}"
-
-
 def NaturalTransformations(source: Functor, target: Functor) -> Parent:
-    r"""Return the represented type of natural transformations between parallel functors."""
+    r"""Return the actual Hom in the functor category."""
     if source.domain() != target.domain() or source.codomain() != target.codomain():
         raise ValueError("natural transformations require parallel functors")
-    return object_of(NaturalTransformationSpaces(), source=source, target=target)
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    category = Cat().Mor(source.domain(), source.codomain())
+    return category.Mor(category(source), category(target))
 
 
 
@@ -544,12 +559,12 @@ class ProductFunctor(Functor):
 
     def _apply_object(self, pair: Parent) -> Parent:
 
-        return Product(pair.first(), pair.second())
+        return self.codomain().product((pair.first(), pair.second()))
 
     def _apply_morphism(self, pair_morphism: Map) -> Map:
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
-        return _ProductMorphism(
+        return self.codomain()._categorical_product_morphism(
             pair_morphism.first(), pair_morphism.second(), source=source, target=target
         )
 
@@ -564,12 +579,12 @@ class CoproductFunctor(Functor):
 
     def _apply_object(self, pair: Parent) -> Parent:
 
-        return Coproduct(pair.first(), pair.second())
+        return self.codomain().coproduct((pair.first(), pair.second()))
 
     def _apply_morphism(self, pair_morphism: Map) -> Map:
         source = self(pair_morphism.domain())
         target = self(pair_morphism.codomain())
-        return _CoproductMorphism(
+        return self.codomain()._categorical_coproduct_morphism(
             pair_morphism.first(), pair_morphism.second(), source=source, target=target
         )
 

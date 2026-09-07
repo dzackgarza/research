@@ -115,8 +115,8 @@ def ordered_enumerated_set(
     r"""Return the ordered image of ``index_set`` under the stated enumeration."""
     return object_of(
         OrderedEnumeratedSets(),
-        index_set,
-        element_at,
+        index_set=index_set,
+        element_at=element_at,
         index_of=index_of,
         contains=contains,
         name=name,

@@ -33,7 +33,8 @@ class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
             raise TypeError("an indexed family requires a value map")
         self._index_set = index_set
         self._value_function = value
-        self._value_cache = {}
+        self._value_cache: dict[IndexT, ValueT] = {}
+        self._unhashable_value_cache: list[tuple[IndexT, ValueT]] = []
         self._name = name
 
     def index_set(self) -> Parent:
@@ -45,15 +46,32 @@ class IndexedFamily(SageObject, Generic[IndexT, ValueT]):
         return cardinal(self.index_set().cardinality())
 
     def value(self, index: IndexT) -> ValueT:
+        r"""Return the chosen value at this label, including unhashable labels.
+
+        Unverified specimen: a family chooses its value once, not each time
+        a Python list is used to address the same point of its index set::
+
+            sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            sage: labels = finite_ordered_set(([0], [1]))
+            sage: family = indexed_family(labels, lambda label: finite_ordered_set((label[0],)))
+            sage: family.value([0]) is family.value([0])
+            True
+        """
         normalized = self.index_set()(index)
         try:
             return self._value_cache[normalized]
-        except (KeyError, TypeError):
+        except TypeError:
+            # Hashing is an implementation property, not a hypothesis on an
+            # indexing set. Only labels actually requested are retained.
+            for known, value in self._unhashable_value_cache:
+                if normalized == known:
+                    return value
             value = self._value_function(normalized)
-            try:
-                self._value_cache[normalized] = value
-            except TypeError:
-                pass
+            self._unhashable_value_cache.append((normalized, value))
+            return value
+        except KeyError:
+            value = self._value_function(normalized)
+            self._value_cache[normalized] = value
             return value
 
     __call__ = value

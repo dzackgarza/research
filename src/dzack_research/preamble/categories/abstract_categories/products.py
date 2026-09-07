@@ -6,11 +6,16 @@ from typing import Any
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
+    _category_homset,
 )
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
+from sage.misc.unknown import Unknown, UnknownClass
+from sage.misc.cachefunc import cached_function
+from sage.misc.classcall_metaclass import typecall
 from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
+from sage.structure.dynamic_class import DynamicMetaclass
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
 from dzack_research.preamble.categories.abstract_categories.objects import Objects as OwnedObjects
@@ -30,6 +35,13 @@ from dzack_research.preamble.categories.functors.core import Functor, NaturalTra
 class DiagramCategory(FunctorCategory):
     r"""The functor category ``[J,C]`` of diagrams of one shape."""
 
+    @staticmethod
+    @cached_function(key=lambda cls, index_category, target_category: (cls, id(index_category), id(target_category)))
+    def __classcall__(cls, index_category: Category, target_category: Category):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(index_category, target_category)
+        return typecall(cls, index_category, target_category)
+
     def __init__(self, index_category: Category, target_category: Category) -> None:
         super().__init__(Cat(), index_category, target_category)
 
@@ -38,6 +50,9 @@ class DiagramCategory(FunctorCategory):
 
     def target_category(self) -> Category:
         return self.codomain_category()
+
+    def super_categories(self):
+        return [Cat().Mor(self.index_category(), self.target_category())]
 
 
 class DirectedSystem(DiagramCategory):
@@ -58,7 +73,7 @@ def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
         else:
             left = target.structure_morphism(index) * apex_map
             right = source.structure_morphism(index)
-        if left != right:
+        if (left == right) is not True:
             return False
     return True
 
@@ -66,37 +81,61 @@ def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
 class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
-    def __init__(self, parent: "ConeHomset", apex_map: Morphism) -> None:
+    def __init__(self, parent: "ConeHomset", apex_map: Morphism, *, verify: bool = True) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cone map has the wrong codomain apex")
-        if not _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
+        if apex_map not in _category_homset(
+            parent.cone_category().target_category(), self.domain().apex(), self.codomain().apex()
+        ):
+            raise ValueError("the apex map is not a morphism of the diagram's target category")
+        if verify and not _commutes_with_diagram(self.domain(), self.codomain(), apex_map):
             raise ValueError("the apex map does not commute with the cone legs")
         self._apex_map = apex_map
 
     def apex_map(self) -> Morphism:
         return self._apex_map
 
+    def __eq__(self, other: Any) -> bool | UnknownClass:
+        if self is other:
+            return True
+        if not isinstance(other, ConeMorphism) or other.parent() is not self.parent():
+            return False
+        return self.apex_map() == other.apex_map()
+
+    def __ne__(self, other: Any) -> bool | UnknownClass:
+        equal = self == other
+        return Unknown if equal is Unknown else not equal
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
     def __mul__(self, other):
-        if other.codomain() is not self.domain():
+        if not isinstance(other, ConeMorphism) or other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().cone_category().Mor(other.domain(), self.codomain())(
-            self.apex_map() * other.apex_map()
+        # Each leg satisfies r_i g = q_i and q_i f = p_i, hence r_i(gf)=p_i.
+        parent = self.parent().cone_category().Mor(other.domain(), self.codomain())
+        return ConeMorphism(
+            parent, self.apex_map() * other.apex_map(), verify=False
         )
 
 
 class CoconeMorphism(Morphism):
     r"""A morphism of cocones, determined by its apex map."""
 
-    def __init__(self, parent: "CoconeHomset", apex_map: Morphism) -> None:
+    def __init__(self, parent: "CoconeHomset", apex_map: Morphism, *, verify: bool = True) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cocone map has the wrong domain apex")
         if apex_map.codomain() is not self.codomain().apex():
             raise ValueError("the cocone map has the wrong codomain apex")
-        if not _commutes_with_diagram(
+        if apex_map not in _category_homset(
+            parent.cocone_category().target_category(), self.domain().apex(), self.codomain().apex()
+        ):
+            raise ValueError("the apex map is not a morphism of the diagram's target category")
+        if verify and not _commutes_with_diagram(
             self.domain(), self.codomain(), apex_map, cocone=True
         ):
             raise ValueError("the apex map does not commute with the cocone legs")
@@ -105,11 +144,27 @@ class CoconeMorphism(Morphism):
     def apex_map(self) -> Morphism:
         return self._apex_map
 
+    def __eq__(self, other: Any) -> bool | UnknownClass:
+        if self is other:
+            return True
+        if not isinstance(other, CoconeMorphism) or other.parent() is not self.parent():
+            return False
+        return self.apex_map() == other.apex_map()
+
+    def __ne__(self, other: Any) -> bool | UnknownClass:
+        equal = self == other
+        return Unknown if equal is Unknown else not equal
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
     def __mul__(self, other):
-        if other.codomain() is not self.domain():
+        if not isinstance(other, CoconeMorphism) or other.codomain() is not self.domain():
             return NotImplemented
-        return self.parent().cocone_category().Mor(other.domain(), self.codomain())(
-            self.apex_map() * other.apex_map()
+        # Dually, g q_i = r_i and f p_i = q_i imply (gf)p_i = r_i.
+        parent = self.parent().cocone_category().Mor(other.domain(), self.codomain())
+        return CoconeMorphism(
+            parent, self.apex_map() * other.apex_map(), verify=False
         )
 
 
@@ -118,20 +173,35 @@ class ConeHomset(CategoricalHomset):
 
     def __init__(
         self,
-        cone_category: "ConeCategory",
+        family: HomCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        self._cone_category = cone_category
         CategoricalHomset.__init__(
-            self, HomCategoryConstruction(cone_category), domain, codomain
+            self, family, domain, codomain
         )
 
     def cone_category(self) -> "ConeCategory":
-        return self._cone_category
+        return self.base_category()
 
     def _element_constructor_(self, apex_map):
+        if isinstance(apex_map, ConeMorphism):
+            if apex_map.parent() is self:
+                return apex_map
+            if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
+                raise ValueError("the cone morphism has the wrong endpoints")
+            apex_map = apex_map.apex_map()
         return ConeMorphism(self, apex_map)
+
+    def identity(self) -> ConeMorphism:
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one cone")
+        apex = self.domain().apex()
+        return ConeMorphism(
+            self,
+            _category_homset(self.cone_category().target_category(), apex, apex).identity(),
+            verify=False,
+        )
 
 
 class CoconeHomset(CategoricalHomset):
@@ -139,24 +209,80 @@ class CoconeHomset(CategoricalHomset):
 
     def __init__(
         self,
-        cocone_category: "CoconeCategory",
+        family: HomCategoryConstruction,
         domain: Parent,
         codomain: Parent,
     ) -> None:
-        self._cocone_category = cocone_category
         CategoricalHomset.__init__(
-            self, HomCategoryConstruction(cocone_category), domain, codomain
+            self, family, domain, codomain
         )
 
     def cocone_category(self) -> "CoconeCategory":
-        return self._cocone_category
+        return self.base_category()
 
     def _element_constructor_(self, apex_map):
+        if isinstance(apex_map, CoconeMorphism):
+            if apex_map.parent() is self:
+                return apex_map
+            if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
+                raise ValueError("the cocone morphism has the wrong endpoints")
+            apex_map = apex_map.apex_map()
         return CoconeMorphism(self, apex_map)
+
+    def identity(self) -> CoconeMorphism:
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one cocone")
+        apex = self.domain().apex()
+        return CoconeMorphism(
+            self,
+            _category_homset(self.cocone_category().target_category(), apex, apex).identity(),
+            verify=False,
+        )
+
+
+class ConeHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = ConeHomset
+
+
+class CoconeHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = CoconeHomset
 
 
 class ConeCategory(OwnedCategory):
-    r"""The category of cones over one represented diagram."""
+    r"""The category of cones over one represented diagram.
+
+    Unverified specimens test nonidentity maps of cones and cocones, including
+    the identity on an object with nontrivial legs::
+
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: labels = finite_ordered_set(("j",))
+        sage: index = DiscreteCategory(labels)
+        sage: points = finite_ordered_set(("a", "b"))
+        sage: one = finite_ordered_set(("*",))
+        sage: diagram = ConstantDiagram(index, Sets(), one)
+        sage: category = ConeCategory(diagram)
+        sage: leg = Sets().Mor(points, one)(lambda point: "*")
+        sage: cone = category.cone(points, lambda obj: leg)
+        sage: hom = category.Mor(cone, cone)
+        sage: hom is category.HomCategory().Of(cone, cone)
+        True
+        sage: swap = Sets().Mor(points, points)(lambda point: "b" if point == "a" else "a")
+        sage: hom(swap) * hom(swap) == hom.identity()
+        True
+        sage: cocones = CoconeCategory(diagram)
+        sage: leg = Sets().Mor(one, points)(lambda point: "a")
+        sage: cocone = cocones.cocone(points, lambda obj: leg)
+        sage: hom = cocones.Mor(cocone, cocone)
+        sage: hom is cocones.HomCategory().Of(cocone, cocone)
+        True
+        sage: collapse = hom(Sets().Mor(points, points)(lambda point: "a"))
+        sage: hom.identity() * collapse == collapse
+        True
+        sage: collapse * collapse == collapse
+        True
+    """
+
+    _HomCategory = ConeHomCategoryConstruction
 
     class ParentMethods:
         def __init__(
@@ -231,12 +357,14 @@ class ConeCategory(OwnedCategory):
     def Mor(self, domain: Parent, codomain: Parent) -> ConeHomset:
         if domain not in self or codomain not in self:
             raise TypeError("a cone Hom requires two cones over the same diagram")
-        return ConeHomset(self, domain, codomain)
+        return self.HomCategory().Of(domain, codomain)
 
 
 
 class CoconeCategory(OwnedCategory):
     r"""The category of cocones under one represented diagram."""
+
+    _HomCategory = CoconeHomCategoryConstruction
 
     class ParentMethods:
         def __init__(
@@ -311,7 +439,7 @@ class CoconeCategory(OwnedCategory):
     def Mor(self, domain: Parent, codomain: Parent) -> CoconeHomset:
         if domain not in self or codomain not in self:
             raise TypeError("a cocone Hom requires two cocones under the same diagram")
-        return CoconeHomset(self, domain, codomain)
+        return self.HomCategory().Of(domain, codomain)
 
 
 
@@ -328,6 +456,9 @@ class SpanCategory(ConeCategory):
     in the category the span lives in, which is where a pushout belongs and
     which is what lets a category with a construction of its own supply it.
     """
+
+    def super_categories(self):
+        return [ConeCategory(self.diagram())]
 
     class ParentMethods:
         def target_category(self) -> Category:
@@ -366,9 +497,15 @@ def Span(left_leg: Morphism, right_leg: Morphism) -> Parent:
 class ProductConeCategory(ConeCategory):
     r"""Selected product cones over one finite discrete diagram."""
 
+    def super_categories(self):
+        return [ConeCategory(self.diagram())]
+
 
 class CoproductCoconeCategory(CoconeCategory):
     r"""Selected coproduct cocones under one finite discrete diagram."""
+
+    def super_categories(self):
+        return [CoconeCategory(self.diagram())]
 
 
 class LimitsOfCategory(Category):

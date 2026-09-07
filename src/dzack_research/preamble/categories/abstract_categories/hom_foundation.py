@@ -74,6 +74,15 @@ class CategoryPacketMethods:
     refines.
     """
 
+    def _hom_endpoint(self, obj: Parent | Category) -> Parent | Category:
+        r"""Represent an endpoint in this category's Hom construction.
+
+        Ordinary categories already receive their objects. ``Cat`` overrides
+        this at its own boundary because Sage morphisms use parent objects
+        representing categories as their endpoints.
+        """
+        return obj
+
     def _category_packet(self):
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
             category_packet,

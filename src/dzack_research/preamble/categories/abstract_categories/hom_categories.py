@@ -13,6 +13,8 @@ latter may carry additional enrichment -- for example ``Hom_R(M,N)`` is an
 chosen category and endpoints.
 """
 
+from __future__ import annotations
+
 from typing import Any
 
 from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
@@ -34,6 +36,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
+from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.sage_object import SageObject
 from sage.structure.parent import Parent
 from dzack_research.preamble.refine import refine
@@ -44,9 +47,15 @@ def _category_homset(
     domain: Parent,
     codomain: Parent,
 ) -> Homset:
-    r"""Return the one represented Hom-set parent for ``category`` and endpoints."""
-    if isinstance(category, OwnedCategory):
-        return underlying_set_homset(domain, codomain)
+    r"""Return the declared Hom-set for an explicitly selected category.
+
+    This is the ingress used by ``X.Mor(Y, category=C)``.  Selecting ``C``
+    must not forget its structure: linear, algebra and equivariant maps are
+    constructed by ``C.Mor``, not by the private function-map substrate.
+    Native Sage categories retain their native Hom ingress.
+    """
+    if isinstance(category, CategoryPacketMethods):
+        return category.Mor(domain, codomain).arrow_set()
     return Hom(domain, codomain, category)
 
 
@@ -62,17 +71,15 @@ def _packet_supercategories(category):
     owned category, so transporting Hom/End/Aut packets through them creates
     cycles and, more importantly, the wrong semantic graph.
 
-    These are *declared supercategories*.  Once endpoints have been admitted
-    by ``category``, they are therefore already objects of every category
-    returned here.  Packet construction must not ask those memberships again:
-    doing so can re-enter construction of the very structure that made an
-    endpoint an object of ``category`` (a selected subobject inclusion is the
-    canonical example).
+    These are *declared supercategories*.  Each supplies its own Hom family;
+    an endpoint's default Hom does not choose that family.  In particular a
+    subobject's inherited Hom comes from the declared ambient category, not
+    from rediscovering the subobject category through its inclusion.
     """
     return tuple(
         supercategory
         for supercategory in category.super_categories()
-        if isinstance(supercategory, OwnedCategoryMixin)
+        if isinstance(supercategory, (OwnedCategoryMixin, CategoryPacketMethods))
     )
 
 
@@ -111,6 +118,20 @@ class HomArrowIdentity(Morphism):
 
     def _call_(self, value):
         return value
+
+    def __eq__(self, other: Any) -> bool:
+        return isinstance(other, HomArrowIdentity) and other.parent() is self.parent()
+
+    def __ne__(self, other: Any) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
+    def __mul__(self, other):
+        if not isinstance(other, HomArrowIdentity) or other.parent() is not self.parent():
+            return NotImplemented
+        return self.parent().identity()
 
 
 class CategoricalHomset(OwnedHomset, Category):
@@ -180,14 +201,21 @@ class CategoricalHomset(OwnedHomset, Category):
         return self.hom_family().base_category()
 
     def identity_at(self, obj: Parent) -> Morphism:
-        return self.hom_family().Of(obj, obj).identity()
+        return self.hom_family().Of(obj, obj).arrow_set().identity()
 
     def attach_end_family(self, family: "EndCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an endomorphism Hom category can carry an End-family role")
-        if self._end_family is not None and self._end_family is not family:
+        owner = category_packet(self.base_category()).Ends()
+        if family is not owner:
+            represented = category_packet(family.base_category()).Homs().Of(
+                self.domain_object(), self.codomain_object()
+            )
+            if represented is not self and represented.arrow_set() is not self:
+                raise ValueError("the End family selects a different fixed Hom object")
+        if self._end_family is not None and self._end_family is not owner:
             raise ValueError("one fixed Hom category cannot carry two End-family roles")
-        self._end_family = family
+        self._end_family = owner
 
     def end_family(self) -> "EndCategoryOf | None":
         return self._end_family
@@ -195,9 +223,16 @@ class CategoricalHomset(OwnedHomset, Category):
     def attach_aut_family(self, family: "AutCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
-        if self._aut_family is not None and self._aut_family is not family:
+        owner = category_packet(self.base_category()).Auts()
+        if family is not owner:
+            represented = category_packet(family.base_category()).Isos().Of(
+                self.domain_object(), self.codomain_object()
+            )
+            if represented is not self and represented.arrow_set() is not self:
+                raise ValueError("the Aut family selects a different fixed Iso object")
+        if self._aut_family is not None and self._aut_family is not owner:
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
-        self._aut_family = family
+        self._aut_family = owner
 
     def aut_family(self) -> "AutCategoryOf | None":
         return self._aut_family
@@ -273,7 +308,9 @@ class CategoricalHomset(OwnedHomset, Category):
             domain = self.object(domain)
         if not isinstance(codomain, HomArrowObject):
             codomain = self.object(codomain)
-        return HomArrowDiscreteHomset(self, domain, codomain)
+        if domain not in self or codomain not in self:
+            raise TypeError("a 2-Hom requires two arrow objects in this Hom category")
+        return _discrete_two_hom(self, domain, codomain)
 
     def identity_2(self, arrow: Morphism) -> "HomArrowIdentity":
         arrow_object = self.object(arrow)
@@ -307,10 +344,24 @@ class HomArrowDiscreteHomset(CategoricalHomset):
     def _element_constructor_(self, value=None):
         if self.domain() is not self.codomain():
             raise ValueError("distinct arrows have no represented 2-morphism")
+        if value is not None:
+            if not isinstance(value, HomArrowIdentity) or value.parent() is not self:
+                raise ValueError("the discrete 2-Hom contains only its identity")
+            return value
         return self.element_class(self)
 
+    @cached_method
     def identity(self) -> HomArrowIdentity:
         return self()
+
+
+@cached_function(key=lambda category, domain, codomain: (id(category), id(domain), id(codomain)))
+def _discrete_two_hom(
+    category: CategoricalHomset | "FixedHomCategory",
+    domain: HomArrowObject,
+    codomain: HomArrowObject,
+) -> HomArrowDiscreteHomset:
+    return HomArrowDiscreteHomset(category, domain, codomain)
 
 
 class FixedHomCategory(Category):
@@ -353,9 +404,16 @@ class FixedHomCategory(Category):
     def attach_end_family(self, family: "EndCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an endomorphism Hom category can carry an End-family role")
-        if self._end_family is not None and self._end_family is not family:
+        owner = category_packet(self.base_category()).Ends()
+        if family is not owner:
+            represented = category_packet(family.base_category()).Homs().Of(
+                self.domain_object(), self.codomain_object()
+            )
+            if represented is not self and represented.arrow_set() is not self:
+                raise ValueError("the End family selects a different fixed Hom object")
+        if self._end_family is not None and self._end_family is not owner:
             raise ValueError("one fixed Hom category cannot carry two End-family roles")
-        self._end_family = family
+        self._end_family = owner
 
     def end_family(self) -> "EndCategoryOf | None":
         return self._end_family
@@ -363,9 +421,16 @@ class FixedHomCategory(Category):
     def attach_aut_family(self, family: "AutCategoryOf") -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
-        if self._aut_family is not None and self._aut_family is not family:
+        owner = category_packet(self.base_category()).Auts()
+        if family is not owner:
+            represented = category_packet(family.base_category()).Isos().Of(
+                self.domain_object(), self.codomain_object()
+            )
+            if represented is not self and represented.arrow_set() is not self:
+                raise ValueError("the Aut family selects a different fixed Iso object")
+        if self._aut_family is not None and self._aut_family is not owner:
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
-        self._aut_family = family
+        self._aut_family = owner
 
     def aut_family(self) -> "AutCategoryOf | None":
         return self._aut_family
@@ -387,11 +452,15 @@ class FixedHomCategory(Category):
         return self._codomain_object
 
     def arrow_set(self) -> Parent:
-        return _category_homset(
-            self.base_category(),
-            self.domain_object(),
-            self.codomain_object(),
-        )
+        r"""The substrate of a Hom with no more specific declared constructor.
+
+        Only an unreduced root family constructs this class.  Re-entering the
+        public category Hom here would ask that same family to construct
+        itself.  Restrictions instead inherit the actual Hom-set below.
+        """
+        if isinstance(self.base_category(), (OwnedCategoryMixin, CategoryPacketMethods)):
+            return underlying_set_homset(self.domain_object(), self.codomain_object())
+        return Hom(self.domain_object(), self.codomain_object(), self.base_category())
 
     underlying_homset = arrow_set
 
@@ -447,7 +516,7 @@ class FixedHomCategory(Category):
             codomain = self(codomain)
         if domain not in self or codomain not in self:
             raise TypeError("a 2-Hom requires two arrow objects in this Hom category")
-        return HomArrowDiscreteHomset(self, domain, codomain)
+        return _discrete_two_hom(self, domain, codomain)
 
 
     def identity(self, arrow_object: HomArrowObject | Morphism) -> HomArrowIdentity:
@@ -497,10 +566,9 @@ class FixedRestrictedHomCategory(FixedHomCategory):
         category's already-existing Hom object.  It therefore reuses the
         endpoint Homset owned by the base category packet.
         """
-        morphisms = category_packet(self.base_category()).Homs().Of(
+        return category_packet(self.base_category()).Homs().Of(
             self.domain_object(), self.codomain_object()
-        )
-        return morphisms if isinstance(morphisms, Parent) else morphisms.arrow_set()
+        ).arrow_set()
 
     underlying_homset = arrow_set
 
@@ -583,10 +651,10 @@ class CategoricalIsomorphism(Morphism):
         if verify:
             left = inverse * forward
             right = forward * inverse
-            if left != left.parent().identity():
-                raise ValueError("the stated inverse is not a left inverse")
-            if right != right.parent().identity():
-                raise ValueError("the stated inverse is not a right inverse")
+            if (left == left.parent().identity()) is not True:
+                raise ValueError("the supplied maps do not establish a left inverse")
+            if (right == right.parent().identity()) is not True:
+                raise ValueError("the supplied maps do not establish a right inverse")
         self._forward = forward
         self._inverse = inverse
 
@@ -602,22 +670,39 @@ class CategoricalIsomorphism(Morphism):
     def _call_(self, element):
         return self.forward()(element)
 
+    def __eq__(self, other: Any) -> bool | UnknownClass:
+        if self is other:
+            return True
+        if not isinstance(other, CategoricalIsomorphism) or self.parent() is not other.parent():
+            return False
+        equalities = (self.forward() == other.forward(), self.inverse() == other.inverse())
+        if any(answer is False for answer in equalities):
+            return False
+        return True if all(answer is True for answer in equalities) else Unknown
+
+    def __ne__(self, other: Any) -> bool | UnknownClass:
+        equal = self == other
+        return Unknown if equal is Unknown else not equal
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
     def __mul__(self, other):
         if not isinstance(other, CategoricalIsomorphism):
-            return NotImplemented
+            return self.forward() * other
         if other.codomain() is not self.domain():
             return NotImplemented
         forward = self.forward() * other.forward()
         inverse = other.inverse() * self.inverse()
         return CategoricalIsomorphism(
-            forward.parent(),
+            _category_homset(self.parent().homset_category(), other.domain(), self.codomain()),
             forward,
             inverse,
             verify=False,
         )
 
 
-class FixedIsoCategory(FixedHomCategory):
+class FixedIsoCategory(FixedRestrictedHomCategory):
     def accepts(self, arrow: Morphism) -> bool:
         if not isinstance(arrow, CategoricalIsomorphism):
             return False
@@ -884,13 +969,9 @@ class HomCategoryOf(Category):
         cached = self._objects.get((id(domain), id(codomain)))
         if cached is None:
             return None
-        try:
-            cached_domain = cached.domain_object()
-            cached_codomain = cached.codomain_object()
-        except AttributeError:
-            cached_domain = cached.domain()
-            cached_codomain = cached.codomain()
-        return cached if cached_domain is domain and cached_codomain is codomain else None
+        return cached if (
+            cached.domain_object() is domain and cached.codomain_object() is codomain
+        ) else None
 
     def _remember_between(self, domain, codomain, value):
         self._objects[id(domain), id(codomain)] = value
@@ -904,6 +985,42 @@ class HomCategoryOf(Category):
         return supers + [HomCategories()]
 
     def Of(self, domain: Parent, codomain: Parent) -> FixedHomObject:
+        r"""Select the defining Hom object without losing inherited structure.
+
+        Unverified specimens: a property category shares its defining Hom;
+        a restricted category shares the underlying Hom-set, not its predicate::
+
+            sage: from dzack_research.preamble.categories.sets.set_categories import Sets, FiniteSets
+            sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+            sage: points = finite_ordered_set(("a", "b"))
+            sage: hom = HomCategoryOf(FiniteSets()).Of(points, points)
+            sage: hom is Sets().Mor(points, points)
+            True
+            sage: end = EndCategoryOf(FiniteSets()).Of(points)
+            sage: end is hom and end.end_family() is category_packet(Sets()).Ends()
+            True
+            sage: monos = MonoCategoryOf(Sets()).Of(points, points)
+            sage: epis = EpiCategoryOf(Sets()).Of(points, points)
+            sage: monos.arrow_set() is hom and epis.arrow_set() is hom
+            True
+            sage: constant = hom(lambda point: "a")
+            sage: constant in hom, constant in monos, constant in epis
+            (True, False, False)
+            sage: swap = hom(lambda point: "b" if point == "a" else "a")
+            sage: swap in monos and swap in epis
+            True
+            sage: aut = AutCategoryOf(FiniteSets()).Of(points)
+            sage: aut is IsoCategoryOf(Sets()).Of(points, points)
+            True
+            sage: aut.aut_family() is category_packet(Sets()).Auts()
+            True
+            sage: identity = hom.identity_2(swap)
+            sage: identity * identity == identity
+            True
+        """
+        if isinstance(self.base_category(), CategoryPacketMethods):
+            domain = self.base_category()._hom_endpoint(domain)
+            codomain = self.base_category()._hom_endpoint(codomain)
         if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError("Hom endpoints must lie in the base category")
         # Endpoint identity, not a hash: hashing a Hom endpoint re-enters Hom
@@ -912,13 +1029,6 @@ class HomCategoryOf(Category):
         # cached parent is reusable only if it still has the selected class.
         fixed_class = self.fixed_category_class_for(domain, codomain)
         cached = self._cached_between(domain, codomain)
-        if cached is not None:
-            if (
-                self.FixedCategoryClass is FixedHomCategory
-                and fixed_class is FixedHomCategory
-            ) or isinstance(cached, fixed_class):
-                return cached
-            self._objects.pop((id(domain), id(codomain)), None)
         # What decides whether this category needs a Hom parent of its own is
         # whether the Hom it would build differs from one it already inherits,
         # not whether a class was declared somewhere in its Python ancestry: a
@@ -948,17 +1058,23 @@ class HomCategoryOf(Category):
             # is that class, or several inherited ones disagree; either way it
             # is not, for morphism purposes, a subcategory of any single one,
             # and it builds what it declared.
-            result = fixed_class(self, domain, codomain)
+            result = (
+                cached
+                if isinstance(cached, fixed_class) and cached.hom_family() is self
+                else fixed_class(self, domain, codomain)
+            )
         elif inherited:
             raise TypeError(
                 f"{self.base_category()} inherits incompatible Hom constructions; "
                 "declare _HomCategory explicitly"
             )
         else:
-            represented = _category_homset(self.base_category(), domain, codomain)
+            # No declared or inherited implementation remains.  The root
+            # fixed category owns its private Hom-set; the public Hom ingress
+            # must not be called recursively while this object is constructed.
             result = (
-                represented
-                if isinstance(represented, Category)
+                cached
+                if isinstance(cached, fixed_class) and cached.hom_family() is self
                 else fixed_class(self, domain, codomain)
             )
         return self._remember_between(domain, codomain, result)
@@ -988,6 +1104,13 @@ def _carves_the_same_hom(self, supercategory, domain, codomain) -> bool:
     it agree on which linear maps are bijections and disagree on which maps
     are morphisms at all, so its automorphisms are its own.
     """
+    if _declared_construction(
+        self.base_category(), self._declaration_name
+    ) is not _declared_construction(supercategory, self._declaration_name):
+        # A declared restriction may change even when the underlying Hom
+        # does not.  Do not replace that predicate by an ancestor's predicate
+        # merely because both use FixedRestrictedHomCategory to represent it.
+        return False
     return (
         category_packet(self.base_category()).Homs().Of(domain, codomain)
         is category_packet(supercategory).Homs().Of(domain, codomain)
@@ -1008,26 +1131,25 @@ class EndCategoryOf(HomCategoryOf):
         obj: Parent,
         codomain: Parent | None = None,
     ) -> FixedHomObject:
+        if isinstance(self.base_category(), CategoryPacketMethods):
+            obj = self.base_category()._hom_endpoint(obj)
+            if codomain is not None:
+                codomain = self.base_category()._hom_endpoint(codomain)
         if codomain is not None and codomain is not obj:
             raise ValueError("an endomorphism category has equal endpoints")
         if obj not in self.base_category():
             raise TypeError("the endomorphism object must lie in the base category")
-        cached = self._cached_between(obj, obj)
-        if cached is not None:
-            return cached
         endomorphisms = category_packet(self.base_category()).Homs().Of(obj, obj)
         # A Hom shared with the category above is the same set of morphisms, so
         # its endomorphisms are the same too and the End object is that one.
-        # The role is carried by whichever family reached it first; a category
-        # that inherits the Hom reuses the object rather than claiming it.
+        # Its defining category owns the role regardless of which inherited
+        # family is queried first.
         if endomorphisms.end_family() is None:
-            endomorphisms.attach_end_family(self)
+            endomorphisms.attach_end_family(category_packet(endomorphisms.base_category()).Ends())
         return self._remember_between(obj, obj, endomorphisms)
 
     def Between(self, domain: Parent, codomain: Parent) -> FixedHomObject:
-        if domain is not codomain:
-            raise ValueError("an endomorphism category has equal endpoints")
-        return self.Of(domain)
+        return self.Of(domain, codomain)
 
     def _repr_(self) -> str:
         return f"End-category packet of {self.base_category()}"
@@ -1127,25 +1249,23 @@ class AutCategoryOf(IsoCategoryOf):
         obj: Parent,
         codomain: Parent | None = None,
     ) -> FixedHomObject:
+        if isinstance(self.base_category(), CategoryPacketMethods):
+            obj = self.base_category()._hom_endpoint(obj)
+            if codomain is not None:
+                codomain = self.base_category()._hom_endpoint(codomain)
         if codomain is not None and codomain is not obj:
             raise ValueError("an automorphism category has equal endpoints")
         if obj not in self.base_category():
             raise TypeError("the automorphism object must lie in the base category")
-        cached = self._cached_between(obj, obj)
-        if cached is not None:
-            return cached
         automorphisms = category_packet(self.base_category()).Isos().Of(obj, obj)
         # As for End above: a shared Iso object has the same isomorphisms, so
-        # the same automorphisms, and the role stays with the family that
-        # reached it first.
+        # the same automorphisms. Their defining category owns the role.
         if automorphisms.aut_family() is None:
-            automorphisms.attach_aut_family(self)
+            automorphisms.attach_aut_family(category_packet(automorphisms.base_category()).Auts())
         return self._remember_between(obj, obj, automorphisms)
 
     def Between(self, domain: Parent, codomain: Parent) -> FixedHomObject:
-        if domain is not codomain:
-            raise ValueError("an automorphism category has equal endpoints")
-        return self.Of(domain)
+        return self.Of(domain, codomain)
 
     def _repr_(self) -> str:
         return f"Aut-category packet of {self.base_category()}"

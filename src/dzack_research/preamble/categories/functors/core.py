@@ -13,6 +13,7 @@ from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
+from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
@@ -146,17 +147,27 @@ class Functor(SageObject):
     def morphism_image(self, morphism: Map) -> Map:
         if not isinstance(morphism, Map):
             raise TypeError("a functor acts on a morphism through its morphism action")
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            _category_homset,
+        )
+
+        if morphism not in _category_homset(self.domain(), morphism.domain(), morphism.codomain()):
+            raise TypeError("the supplied map is not a morphism of the functor's domain")
         cached = self._cached_morphism_image(morphism)
         if cached is not None:
             return cached
         domain = self.object_image(morphism.domain())
         codomain = self.object_image(morphism.codomain())
         image = self._apply_morphism(morphism)
+        if not isinstance(image, Map):
+            raise TypeError("the morphism action must return a morphism")
         if image.domain() is not domain or image.codomain() is not codomain:
             raise ValueError(
                 "a functor's morphism image must run between the cached images "
                 "of the original domain and codomain"
             )
+        if image not in _category_homset(self.codomain(), domain, codomain):
+            raise TypeError("the image is not a morphism of the functor's codomain")
         return self._record_morphism_image(morphism, image)
 
     def on_morphism(self, morphism: Map) -> Map:
@@ -247,7 +258,33 @@ def category_inclusion(
 
 
 class CompositeFunctor(Functor):
-    r"""The composite ``second ∘ first``."""
+    r"""The composite ``second ∘ first``.
+
+    Unverified specimen: a factor can have more recorded preimages than the
+    composite. That does not change the composite's already selected image::
+
+        sage: from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory, ConstantDiagram
+        sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+        sage: labels = finite_ordered_set(("a", "b"))
+        sage: source = DiscreteCategory(labels)
+        sage: points = finite_ordered_set((0, 1))
+        sage: first = IdentityFunctor(source)
+        sage: second = ConstantDiagram(source, Sets(), points)
+        sage: composite = first.then(second)
+        sage: composite(source("a")) is points
+        True
+        sage: second(source("b")) is points
+        True
+        sage: composite.chosen_preimage(points) is source("a")
+        True
+        sage: composite.adopt_object_image(source("a"), points) is points
+        True
+        sage: first(source("b")) is source("b")
+        True
+        sage: composite.adopt_object_image(source("b"), points) is points
+        True
+    """
 
     def __init__(self, first: Functor, second: Functor) -> None:
         if first.codomain() != second.domain():
@@ -263,11 +300,28 @@ class CompositeFunctor(Functor):
         return self._second(self._first(morphism))
 
     def chosen_preimage(self, image: Parent) -> Parent:
+        # The composite may have seen fewer inputs than either factor.  Its
+        # own chosen preimages are authoritative; a factor's independent
+        # provenance must not introduce ambiguity into a recorded choice.
+        if any(record.target_object is image for record in self._provenance.values()):
+            return super().chosen_preimage(image)
         middle = self._second.chosen_preimage(image)
         return self._first.chosen_preimage(middle)
 
     def adopt_object_image(self, preimage: Parent, image: Parent) -> Parent:
-        middle = self._second.chosen_preimage(image)
+        if preimage not in self.domain() or image not in self.codomain():
+            raise TypeError("an adopted composite image has endpoints outside the functor")
+        chosen = self._cached_object_image(preimage)
+        if chosen is not None:
+            if chosen is not image:
+                raise ValueError("the composite already selected a different image of this source")
+            return chosen
+        middle = self._first._cached_object_image(preimage)
+        if middle is None:
+            middle = self._second.chosen_preimage(image)
+        target = self._second._cached_object_image(middle)
+        if target is not None and target is not image:
+            raise ValueError("the second factor already selected a different image of the intermediate object")
         self._first.adopt_object_image(preimage, middle)
         self._second.adopt_object_image(middle, image)
         return super().adopt_object_image(preimage, image)
@@ -293,6 +347,8 @@ class NaturalTransformation(SageObject):
     ) -> None:
         if source.domain() != target.domain() or source.codomain() != target.codomain():
             raise ValueError("a natural transformation requires parallel functors")
+        if not callable(component):
+            raise TypeError("a natural transformation requires a component map")
         self._source = source
         self._target = target
         self._component = component
@@ -303,10 +359,20 @@ class NaturalTransformation(SageObject):
     def target(self) -> Functor:
         return self._target
 
+    @cached_method(key=lambda self, obj: id(obj))
     def component(self, obj: Parent) -> Morphism:
+        from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+            _category_homset,
+        )
+
+        domain, codomain = self.source()(obj), self.target()(obj)
         arrow = self._component(obj)
-        if arrow.domain() is not self.source()(obj) or arrow.codomain() is not self.target()(obj):
+        if not isinstance(arrow, Morphism):
+            raise TypeError("a natural-transformation component must be a morphism")
+        if arrow.domain() is not domain or arrow.codomain() is not codomain:
             raise ValueError("a natural-transformation component has the wrong source or target")
+        if arrow not in _category_homset(self.source().codomain(), domain, codomain):
+            raise TypeError("the component is not a morphism of the common codomain category")
         return arrow
 
     __call__ = component
