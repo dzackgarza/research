@@ -124,3 +124,46 @@ The fibered product $U \times_X U$ represents the pairwise intersections of char
 The two projections $\pi_1, \pi_2\colon U \times_X U \to U$ encode the transition functions.
 The coequalizer condition forces $X$ to be the colimit obtained from charts glued along their transitions: the classical manifold, recovered without point-set intersections.
 :::
+
+::: {#def-scheme-as-lrs}
+## Schemes as locally ringed spaces
+
+The smooth manifold definition of @def-smooth-manifold transfers to algebraic geometry by substituting the ambient category and local models.
+
+Let $\mathsf{LRS}$ denote the category of all locally ringed spaces.
+The local models are affine schemes: for a commutative ring $A$, write
+$$
+M_A := (\operatorname{Spec}(A),\, \mathcal{O}_{\operatorname{Spec}(A)}).
+$$
+A *Zariski atlas* for an object $X \in \mathsf{LRS}$ is a morphism $p\colon U \to X$ such that:
+
+1. $U$ is isomorphic to a coproduct of affine schemes: $U \cong \coprod_{i \in I} M_{A_i}$.
+2. For every component inclusion $\iota_i\colon M_{A_i} \hookrightarrow U$, the composite $p \circ \iota_i\colon M_{A_i} \to X$ is an open immersion.
+3. $p$ is an effective epimorphism: it is the coequalizer of its kernel pair
+$$
+U \times_X U \;\rightrightarrows\; U \;\xrightarrow{p}\; X.
+$$
+
+A *scheme* is an object $X \in \mathsf{LRS}$ that admits a Zariski atlas.
+
+The coequalizer is essential in algebraic geometry because the intersection of two affine open subschemes need not be affine.
+The fibered product $U \times_X U$ encodes the scheme-theoretic intersections of the affine covers without requiring the intersections themselves to be local models.
+:::
+
+::: {#def-grothendieck-topology-generalization}
+## Generalization by Grothendieck topology
+
+The formulation of @def-smooth-manifold and @def-scheme-as-lrs admits a uniform generalization.
+Fix a category $\mathcal{C}$ of locally ringed spaces, a class $\mathscr{L}$ of local models, and a class $\mathscr{A}$ of admissible morphisms.
+A *$\mathscr{A}$-atlas* for $X \in \mathcal{C}$ is an effective epimorphism $p\colon \coprod_{i \in I} L_i \to X$ with each $L_i \in \mathscr{L}$ and each component an $\mathscr{A}$-morphism.
+Different choices of $\mathscr{A}$ yield different Grothendieck topologies and geometric objects:
+
+| Admissible morphisms $\mathscr{A}$ | Topology | Geometric objects |
+|---|---|---|
+| Open immersions | Zariski | Schemes |
+| Étale morphisms | Étale | Algebraic spaces, Deligne–Mumford stacks |
+| Faithfully flat morphisms of finite presentation | fppf | Artin stacks |
+| Faithfully flat quasi-compact morphisms | fpqc | fpqc sheaves |
+
+The smooth manifold case uses $\mathscr{L} = \{M_n\}_{n \geq 0}$ and $\mathscr{A} =$ open immersions in $\mathsf{LRS}_{\mathbb{R}}$.
+:::
