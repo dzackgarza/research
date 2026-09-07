@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     GroupsWithChosenFinitePresentation,
@@ -213,48 +212,14 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             return True
         return super().__contains__(candidate)
 
-    def _call_(self, datum, action=None):
-        r"""Construct a ``G``-object from an actual functor ``BG -> C``.
-
-        ``GObjects(G,C)(F)`` is the generic constructor.  The two-argument
-        spelling remains only as the concrete affine-scheme compatibility
-        boundary while that specialization owns a carrier object in ``C``.
-        Finite G-sets and R[G]-modules construct through their own categories.
-        """
-        if action is None:
-            if not isinstance(datum, Functor):
-                raise TypeError("a generic G-object is constructed from a functor BG -> C")
-            if datum.domain() != self.acting_group().classifying_category():
-                raise ValueError("the action functor has the wrong classifying-category domain")
-            if datum.codomain() != self.underlying_category():
-                raise ValueError("the action functor has the wrong underlying-category codomain")
-            return self.functor_category()(datum)
-
-        obj = datum
-        # Compatibility boundary for the existing represented affine-scheme
-        # specialization, which retains its concrete carrier and quotient API.
-        category = self.underlying_category()
-        if obj not in category:
-            raise TypeError(f"{obj} is not an object of {category}")
-
-        from dzack_research.preamble.categories.schemes.schemes import (
-            AffineSchemes,
-            Schemes,
-            affine_g_scheme,
-        )
-
-        match category:
-            case Schemes():
-                base_ring = category.base_ring()
-                if obj not in AffineSchemes(base_ring):
-                    raise NotImplementedError(
-                        "the represented G-scheme constructor currently requires an affine scheme"
-                    )
-                return affine_g_scheme(obj, self.acting_group(), action)
-            case _:
-                raise NotImplementedError(
-                    f"no represented constructor equips an object of {category} with a group action"
-                )
+    def _call_(self, action_functor):
+        r"""Construct a ``G``-object from an actual functor ``BG -> C``."""
+        if action_functor not in self.functor_category():
+            raise TypeError(
+                f"a {self.acting_group()}-object in {self.underlying_category()} "
+                "is constructed from a functor BG -> C"
+            )
+        return self.functor_category()(action_functor)
 
     def Mor(self, source, target):
         r"""Equivariant morphisms, as natural transformations on generic actions."""
@@ -312,7 +277,10 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         from dzack_research.preamble.categories.schemes.quotients import (
             AffineQuotientFunctor,
         )
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
+        from dzack_research.preamble.categories.schemes.schemes import (
+            AffineGSchemes,
+            Schemes,
+        )
 
         category = self.underlying_category()
         match category:
@@ -336,8 +304,9 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             return trivial_g_set(sample, self.acting_group())
         match category:
             case Schemes():
-                identity = sample.categorical_identity_morphism()
-                return self(sample, lambda _group_element: identity)
+                return AffineGSchemes(
+                    self.acting_group(), category.base_ring()
+                ).an_object()
         assert category.is_subcategory(Modules(category.base_ring())), (
             f"no owned constructor equips an object of {category} with a group action"
         )

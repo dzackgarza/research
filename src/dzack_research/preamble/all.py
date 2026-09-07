@@ -687,6 +687,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     AffineSpecFunctor,
     SpecFunctor,
     affine_spec_functor,
+    AffineGSchemes,
     AffineSchemes,
     AffineSpace,
     AffineSpaces,

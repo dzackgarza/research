@@ -9,6 +9,7 @@ whole curve of them, which is why an empty ``X^G`` never implies freeness.
 """
 
 from dzack_research.preamble.all import (
+    AffineGSchemes,
     GF,
     GObjects,
     Groups,
@@ -28,7 +29,7 @@ def _translation_of_the_affine_line():
     scheme = Spec(algebra)
     translation = SpecFunctor(field)(algebra.Mor(algebra)({"x": x + algebra.one()}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(field))(
+    acted = AffineGSchemes(group, field)(
         scheme,
         lambda element: identity if element == group.one() else translation,
     )
@@ -74,7 +75,7 @@ def _klein_four_on_the_affine_plane():
         generators[1]: shear,
         generators[0] * generators[1]: translation * shear,
     }
-    acted = GObjects(group, Schemes(field))(scheme, lambda element: images[element])
+    acted = AffineGSchemes(group, field)(scheme, lambda element: images[element])
     return field, group, algebra, x, y, generators, acted
 
 

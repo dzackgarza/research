@@ -57,7 +57,6 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CYCLIC_COVER_VARIABLE,
     cyclic_cover_presentation,
 )
-from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
@@ -65,9 +64,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.affine_spec import SpecFunctor
 from dzack_research.preamble.categories.schemes.schemes import (
-    Schemes,
+    AffineGSchemes,
     Spec,
-    _AffineGSchemes,
 )
 from dzack_research.preamble.refine import refine
 
@@ -160,7 +158,7 @@ class CyclicCovers(OwnedCategory):
         )
 
     def super_categories(self):
-        return [_AffineGSchemes(self.deck_group(), self.base_algebra())]
+        return [AffineGSchemes(self.deck_group(), self.base_algebra())]
 
     def _repr_object_names(self):
         return (
@@ -198,7 +196,7 @@ class CyclicCovers(OwnedCategory):
                 )
             )
 
-        acted = GObjects(group, Schemes(algebra))(cover, deck_action)
+        acted = AffineGSchemes(group, algebra)(cover, deck_action)
         acted._preamble_cyclic_branch_section = section
         acted._preamble_cyclic_cover_degree = degree
         acted._preamble_cyclic_deck_root_of_unity = root_of_unity

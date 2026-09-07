@@ -3,6 +3,7 @@ r"""Affine group actions and their scheme-theoretic fixed loci."""
 import pytest
 
 from dzack_research.preamble.all import (
+    AffineGSchemes,
     AffineSchemes,
     GObjects,
     Groups,
@@ -22,7 +23,7 @@ def _coordinate_swap_action() -> tuple:
     scheme = Spec(algebra)
     swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else swap,
     )
@@ -50,6 +51,15 @@ def test_affine_scheme_action_is_a_fresh_g_object_with_represented_pullbacks() -
     )
 
 
+def test_generic_gobjects_constructor_does_not_construct_affine_actions() -> None:
+    group = Groups.C(2)
+    scheme = Spec(PolynomialRing(QQ, "x"))
+    identity = scheme.categorical_identity_morphism()
+
+    with pytest.raises(TypeError):
+        GObjects(group, Schemes(QQ))(scheme, lambda _element: identity)
+
+
 def test_coordinate_swap_fixed_subscheme_is_the_diagonal_equalizer() -> None:
     group, algebra, x, y, _scheme, acted = _coordinate_swap_action()
     generator = group.group_generators()[0]
@@ -74,7 +84,7 @@ def test_affine_scheme_action_rejects_generator_images_that_violate_relators() -
     scheme = Spec(algebra)
     dilation = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": x + x}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else dilation,
     )

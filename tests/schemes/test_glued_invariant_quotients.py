@@ -5,9 +5,9 @@ from sage.schemes.generic.scheme import Scheme
 from sage.structure.element import Element
 
 from dzack_research.preamble.all import (
+    AffineGSchemes,
     QQ,
     FiniteGluedInvariantQuotient,
-    GObjects,
     Groups,
     PolynomialRing,
     Schemes,
@@ -46,7 +46,7 @@ class _SwapChart:
         swap_pullback = self.algebra.Mor(self.algebra)({"x": self.y, "y": self.x})
         swap = SpecFunctor(QQ)(swap_pullback)
         identity = self.chart.categorical_identity_morphism()
-        self.acted = GObjects(self.group, Schemes(QQ))(
+        self.acted = AffineGSchemes(self.group, QQ)(
             self.chart,
             lambda element: identity if element == self.group.one() else swap,
         )

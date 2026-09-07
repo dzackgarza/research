@@ -8,6 +8,7 @@ that sends the first symmetric function ``x + y`` to ``x + y + 2``.
 """
 
 from dzack_research.preamble.all import (
+    AffineGSchemes,
     GObjects,
     Groups,
     PolynomialRing,
@@ -26,7 +27,7 @@ def _swapped_plane():
     scheme = Spec(algebra)
     swap = SpecFunctor(QQ)(algebra.Mor(algebra)({"x": y, "y": x}))
     identity = scheme.categorical_identity_morphism()
-    acted = GObjects(group, Schemes(QQ))(
+    acted = AffineGSchemes(group, QQ)(
         scheme,
         lambda element: identity if element == group.one() else swap,
     )

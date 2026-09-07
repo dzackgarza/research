@@ -1508,12 +1508,12 @@ class AffineSchemes(_SchemePropertyCategory):
             return self.scheme_category().SliceOver(self)(structure_morphism)
 
 
-class _AffineGSchemes(OwnedCategory):
+class AffineGSchemes(OwnedCategory):
     r"""Represented affine schemes with a chosen action of one group.
 
-    This is the affine specialization of ``GObjects(G, Schemes(R))``.  It is
-    private because the public category is the generic ``GObjects`` category;
-    this level only supplies the affine construction and fixed-locus methods.
+    This is the affine specialization of ``GObjects(G, Schemes(R))`` and the
+    construction owner for represented affine actions.  The generic
+    ``GObjects`` category remains the functor category ``[BG, C]``.
     """
 
     @staticmethod
@@ -1549,11 +1549,47 @@ class _AffineGSchemes(OwnedCategory):
     def an_object(self):
         scheme = AffineSpace(1, self.base_ring())
         identity = scheme.categorical_identity_morphism()
-        return affine_g_scheme(
-            scheme,
-            self.acting_group(),
-            lambda _group_element: identity,
+        return self(scheme, lambda _group_element: identity)
+
+    def _call_(self, scheme, action):
+        r"""Equip an affine scheme with the chosen left action of this group.
+
+        The result is a fresh affine scheme carrying the action.  The supplied
+        ``Spec(A)`` is not mutated; each action morphism is transported to the
+        fresh copy through its represented pullback on ``A``.
+        """
+        base = self.base_ring()
+        if scheme not in AffineSchemes(base):
+            raise TypeError(
+                f"an object of {self} is constructed from an affine scheme over {base}"
+            )
+        algebra = scheme.coordinate_algebra()
+        acted = typecall(
+            _SageAffineScheme,
+            _engine_ring(algebra),
+            _engine_ring(base),
         )
+        acted._preamble_acting_group = self.acting_group()
+        acted._preamble_underlying_category = Schemes(base)
+        acted._preamble_unacted_scheme = scheme
+        _initialize_owned_affine_spectrum(
+            acted,
+            algebra,
+            base,
+            extra_categories=(self,),
+        )
+
+        source_endomorphisms = Schemes(base).Mor(scheme, scheme)
+
+        def acted_action(group_element):
+            source_morphism = source_endomorphisms(action(group_element))
+            return _affine_endomorphism_from_pullback(
+                acted,
+                source_morphism.coordinate_algebra_morphism(),
+            )
+
+        acted._preamble_action_datum = acted_action
+        return acted
 
     class ParentMethods:
         def Mor(self, codomain, category=None):
@@ -2652,50 +2688,6 @@ def _affine_linear_invariant_algebra_data(
         }
     )
     return invariant_algebra, inclusion, engine_invariants
-
-
-def affine_g_scheme(scheme, group, action):
-    r"""Equip a represented affine scheme with a chosen left ``group``-action.
-
-    The returned affine scheme is a fresh mathematical object carrying the
-    action; the selected unacted ``Spec(A)`` is never mutated.  ``action(g)``
-    is a represented scheme automorphism of the supplied scheme, and its
-    coordinate pullback is transported to the fresh copy.
-    """
-    from dzack_research.preamble.categories.group.groups import _owned_group
-
-    base = scheme.scheme_base_ring()
-    if scheme not in AffineSchemes(base):
-        raise TypeError("equipping a represented G-scheme currently requires an affine scheme")
-    group = _owned_group(group)
-    algebra = scheme.coordinate_algebra()
-
-    acted = typecall(
-        _SageAffineScheme,
-        _engine_ring(algebra),
-        _engine_ring(base),
-    )
-    acted._preamble_acting_group = group
-    acted._preamble_underlying_category = Schemes(base)
-    acted._preamble_unacted_scheme = scheme
-    _initialize_owned_affine_spectrum(
-        acted,
-        algebra,
-        base,
-        extra_categories=(_AffineGSchemes(group, base),),
-    )
-
-    source_endomorphisms = Schemes(base).Mor(scheme, scheme)
-
-    def acted_action(group_element):
-        source_morphism = source_endomorphisms(action(group_element))
-        return _affine_endomorphism_from_pullback(
-            acted,
-            source_morphism.coordinate_algebra_morphism(),
-        )
-
-    acted._preamble_action_datum = acted_action
-    return acted
 
 
 def affine_spec_morphism(algebra_morphism):
