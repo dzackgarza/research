@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
 )
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -139,11 +138,9 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
             self._preamble_localization_functor = localization_functor
             source_ring = localization_ring.localization_source()
             framed_source = source_module in FramedModules(source_ring)
-            super().__init__(base_ring=localization_ring, **rest)
             if framed_source:
-                # Localization chooses no new framing: after the generic framed
-                # initializer has run, carry the source generators to their
-                # images in S^{-1}M.
+                # Localization chooses no new framing: it carries the source
+                # generators to their images in S^{-1}M.
                 self._preamble_module_generating_set = (
                     source_module.module_generating_set()
                 )
@@ -151,7 +148,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                     source_module.module_generator(label)
                 )
                 self._preamble_module_coefficient_function = self._framing_coefficients
-            self._preamble_scalar_action_morphism = self._build_scalar_action_morphism()
+            super().__init__(base_ring=localization_ring, **rest)
 
         def _framing_coefficients(self, element):
             r"""Return coefficients of a localization fraction in the source framing."""
@@ -303,20 +300,9 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 _trusted_denominator=True,
             )
 
-        def _build_scalar_action_morphism(self):
-
-            endomorphisms = Modules(self.base_ring()).End(self)
-            return ring_morphism(
-                self.base_ring(),
-                endomorphisms,
-                lambda scalar: endomorphisms.elementwise(
-                    lambda element: self._raw_localized_scalar_multiple(scalar, element),
-                    verify_linearity=False,
-                ),
-            )
-
-        def _ring_morphism_defining_module_action(self):
-            return self._preamble_scalar_action_morphism
+        def _owned_scalar_multiple(self, scalar, element):
+            r"""Apply the fraction action that defines this localized module."""
+            return self._raw_localized_scalar_multiple(scalar, element)
 
         def is_finite(self):
             answer = self.localization_source_module().is_finite()
