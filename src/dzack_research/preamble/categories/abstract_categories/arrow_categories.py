@@ -12,7 +12,7 @@ from sage.categories.sets_cat import Sets as SageSets
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -607,7 +607,7 @@ class SubobjectHomset(CategoricalHomset):
         return self(self.domain().inclusion().factor_through(self.domain().inclusion()))
 
 
-class SubobjectCategory(Category):
+class SubobjectCategory(OwnedCategoryMixin, Category):
     r"""The category of represented subobjects of one fixed object.
 
     An object is an object ``A`` of the base category equipped with its chosen

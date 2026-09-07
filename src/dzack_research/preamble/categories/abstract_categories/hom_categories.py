@@ -63,6 +63,13 @@ def _packet_supercategories(category):
     native Hom dispatch is endpoint-driven and can jump back into a stronger
     owned category, so transporting Hom/End/Aut packets through them creates
     cycles and, more importantly, the wrong semantic graph.
+
+    These are *declared supercategories*.  Once endpoints have been admitted
+    by ``category``, they are therefore already objects of every category
+    returned here.  Packet construction must not ask those memberships again:
+    doing so can re-enter construction of the very structure that made an
+    endpoint an object of ``category`` (a selected subobject inclusion is the
+    canonical example).
     """
     return tuple(
         supercategory
@@ -239,21 +246,17 @@ class CategoricalHomset(OwnedHomset, Category):
     def super_categories(self):
         supers = []
         for supercategory in _packet_supercategories(self.base_category()):
-            if (
-                self.domain_object() in supercategory
-                and self.codomain_object() in supercategory
-            ):
+            supers.append(
+                self.hom_family().family_over(supercategory).Of(
+                    self.domain_object(), self.codomain_object()
+                )
+            )
+            if self.end_family() is not None:
                 supers.append(
-                    self.hom_family().family_over(supercategory).Of(
-                        self.domain_object(), self.codomain_object()
+                    self.end_family().family_over(supercategory).Of(
+                        self.domain_object()
                     )
                 )
-                if self.end_family() is not None:
-                    supers.append(
-                        self.end_family().family_over(supercategory).Of(
-                            self.domain_object()
-                        )
-                    )
         return supers or [Objects()]
 
     def two_hom(self, domain, codomain):
@@ -430,22 +433,18 @@ class FixedHomCategory(Category):
     def super_categories(self):
         supers = []
         for supercategory in _packet_supercategories(self.base_category()):
-            if (
-                self.domain_object() in supercategory
-                and self.codomain_object() in supercategory
-            ):
+            supers.append(
+                self.hom_family().family_over(supercategory).Of(
+                    self.domain_object(),
+                    self.codomain_object(),
+                )
+            )
+            if self.end_family() is not None:
                 supers.append(
-                    self.hom_family().family_over(supercategory).Of(
-                        self.domain_object(),
-                        self.codomain_object(),
+                    self.end_family().family_over(supercategory).Of(
+                        self.domain_object()
                     )
                 )
-                if self.end_family() is not None:
-                    supers.append(
-                        self.end_family().family_over(supercategory).Of(
-                            self.domain_object()
-                        )
-                    )
         return supers or [Objects()]
 
     def _repr_(self) -> str:
@@ -494,8 +493,6 @@ class FixedRestrictedHomCategory(FixedHomCategory):
                 self.domain_object(), self.codomain_object()
             )
             for supercategory in _packet_supercategories(self.base_category())
-            if self.domain_object() in supercategory
-            and self.codomain_object() in supercategory
         ]
         return [base, *inherited]
 
@@ -607,7 +604,6 @@ class FixedIsoCategory(FixedHomCategory):
         inherited = [
             self.hom_family().family_over(supercategory).Of(domain, codomain)
             for supercategory in _packet_supercategories(self.base_category())
-            if domain in supercategory and codomain in supercategory
         ]
         supers = [
             packet.Homs().Of(domain, codomain),
@@ -620,7 +616,6 @@ class FixedIsoCategory(FixedHomCategory):
             supers.extend(
                 self.aut_family().family_over(supercategory).Of(domain)
                 for supercategory in _packet_supercategories(self.base_category())
-                if domain in supercategory
             )
         return supers
 
@@ -664,7 +659,6 @@ class FixedAutCategory(FixedIsoCategory):
         inherited = [
             self.hom_family().family_over(supercategory).Of(obj)
             for supercategory in _packet_supercategories(self.base_category())
-            if obj in supercategory
         ]
         return [
             packet.Ends().Of(obj),
@@ -889,8 +883,6 @@ class HomCategoryOf(Category):
         # this category states nothing stronger than the class it already is.
         inherited = []
         for supercategory in _packet_supercategories(self.base_category()):
-            if domain not in supercategory or codomain not in supercategory:
-                continue
             if not self._inherits_morphisms_from(supercategory, domain, codomain):
                 continue
             candidate = self.family_over(supercategory).Of(domain, codomain)
