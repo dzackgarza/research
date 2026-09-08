@@ -6,6 +6,11 @@ Each policy has a unique alphanumeric identifier.
 
 Use the [task complexity guide](COMPLEXITY.md) to score work and select a model and reasoning effort.
 
+For current work selection and corrections, apply `DEV-50` through `DEV-58`:
+[future-only TODOs](#dev-50-todos-contain-only-unfinished-work),
+[mathematical representation](#dev-51-a-computational-image-is-not-the-object),
+and [verification phases](#dev-58-observe-the-current-verification-phase).
+
 * * *
 
 ## Preamble design philosophy
@@ -4456,7 +4461,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
-- **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its priorities, remediation, mathematical requirements, organization findings, and work coordination.
+- **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its unfinished constructions, input contracts, priorities, dependencies, acceptance criteria, and active file reservations.
   Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; if the generated document may be stale, run `just preamble-megadoc` and then read the generated output.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
@@ -4942,7 +4947,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: When an assessment enumerates defects and an execution order is written from it, every catalogued defect appears in that order -- as a step, as an explicitly deferred item with the reason, or as a decision that it is not a defect.  A defect that survives the assessment but not the ordering is unowned, and unowned defects grow.
 
-- **Rationale**: Producing the assessment is the visible work and feels like the hard part, so the ordering is written from the severe rows and the rest fall out silently.  Nothing then measures the dropped ones, and every new file adds to them.  The observed instance: of seventeen defects catalogued in [the organization findings](TODO.md#organization-findings), three reached no priority.  One of them was the duck-typed capability probing that grew from 52 recorded sites to 78 in a single day of work on the very subsystem the assessment had examined.
+- **Rationale**: Producing the assessment is the visible work and feels like the hard part, so the ordering is written from the severe rows and the rest fall out silently.  Nothing then measures the dropped ones, and every new file adds to them.  The observed instance: of seventeen defects catalogued in [the historical organization assessment](https://github.com/dzackgarza/research/blob/b5ff721fb94b030a637a527d449e628003c2b842/TODO.md#earlier-assessment), three reached no priority.  One of them was the duck-typed capability probing that grew from 52 recorded sites to 78 in a single day of work on the very subsystem the assessment had examined.
 
 - **Violation Example**: an execution order derived only from the items marked severe; a defect whose absence from the plan is discovered by re-reading the assessment months later.
 
@@ -5007,6 +5012,116 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: choosing a return type because it silences a type error; deciding a Hom belongs in one place because a checker complains about another; letting a failing test dictate the shape of the operation it tests; treating a finding count as the definition of done.
 
 - **Correct Example**: deciding that a rank is a cardinal because ranks can be infinite and the repository owns cardinals, then applying that and using the type checker to find the sites; settling the design in discussion, then measuring.
+
+#### `DEV-50`: TODOs Contain Only Unfinished Work
+
+- **Rule**: Write each TODO from the current implementation and the desired mathematical behavior. Remove delivered work; do not retain checked boxes, completion claims, release histories, or retrospective audits in the queue. The implementation commit records the evidence and reasoning. For a partial delivery, remove only the delivered obligations and retain every required unfinished object, map, hypothesis, and generalization. A newly observed defect gets a new task describing the current source and the required repair, not a reopened historical claim.
+
+  Read the current owner before scheduling it. A stale unchecked row does not establish missing implementation, and an old checked row does not establish correctness. Preserve already supplied constructions as inputs to the remaining work. Under deferred verification, delivery of implementation and written specimens does not discharge the separate terminal execution obligation. Keep that obligation open without retaining a history of implemented tasks.
+
+- **Rationale**: A TODO directs the next action. Mixing it with past work makes future contributors either repeat finished constructions or inherit unsupported assumptions from status labels. Removing completed work must not remove broader requirements that one example did not satisfy.
+
+- **Violation Example**: restoring an old release row to unchecked after discovering a new defect; leaving a completed toric algorithm as work to implement again; deleting the general non-toric requirement because its toric specialization exists.
+
+- **Correct Example**: name the present completion constructor, the finite quotient it currently uses, and the new exact completion behavior required. Keep completed implementation history in git and pending execution in terminal T.
+
+#### `DEV-51`: A Computational Image Is Not the Object
+
+- **Rule**: Before substituting an engine representation or a derived object, identify the mathematical map into that representation and what information it loses. A consumer may infer a property back at the source only with the theorem that makes that inference valid under its actual hypotheses. Implement the object at its mathematical owner and expose projections, localization, scalar extension, or other comparison maps explicitly. A convenient computation cannot silently change the parent, category, or codomain promised to the user.
+
+  Apply this to new instances, not only familiar names: a finite quotient is not a completion; a fraction field is not a prime-local ring; a finite group image is not the group; and cohomology dimensions are not cohomology modules or their induced maps. More methods on the substitute do not recover information it discarded.
+
+- **Rationale**: The same wrong representation can produce many individually plausible downstream operations. Each new consumer then compounds one foundational error instead of extending the intended construction.
+
+- **Violation Example**: computing in an exact quotient by a power of an ideal and advertising its arithmetic as completed-ring arithmetic; deciding a local-ring unit question after moving to the fraction field.
+
+- **Correct Example**: construct the completion and its separate finite quotients, with source and projection maps. A polynomial image can be nonzero in the completion while its projection to one finite quotient is zero. Use the definition in [Stacks 00M9](https://stacks.math.columbia.edu/tag/00M9).
+
+#### `DEV-52`: Exact Decisions Require Sufficient Information
+
+- **Rule**: State what makes each implemented equality, zero, unit, membership, or isomorphism decision decidable on its represented input. Finite agreement proves agreement at that finite level; it does not prove exact equality. A detected difference may prove inequality, but exhausting a bounded search does not prove nonexistence. Keep computational precision separate from exact defining relations. When a supported exact answer cannot be obtained, use the established assertion-gated computational frontier, never a guessed boolean, fabricated witness, or silent change of output type.
+
+  Propagate the same semantics through element arithmetic, projections, refinement, comparisons, and hashing where defined. Increasing available precision must not change an exact mathematical object or invalidate its identity in a cache. Do not infer unseen coefficients from one finite residue.
+
+- **Rationale**: Relabeling a parent leaves its element decisions unchanged. An interface is still wrong if a low-precision zero becomes an exact zero through truthiness, membership, or inherited quotient arithmetic.
+
+- **Violation Example**: treating a series as exactly zero because its available coefficients vanish; treating a failed search for an isometry as proof that the lattices are not isometric.
+
+- **Correct Example**: distinguish an actual zero, an element that first differs from zero beyond the initial precision, and a genuinely nilpotent element in a ring with nilpotents. State exact equality only when the represented data or a valid decision algorithm establishes it.
+
+#### `DEV-53`: A Correction Must Survive Other Construction Routes
+
+- **Rule**: Translate a correction into the invariant it establishes, then follow that invariant through the affected public constructor, alternative constructors, elements, morphisms, and structural functors. Repair the common mathematical owner where the invariant belongs. Preserve both the new behavior and the already required behavior at that boundary; a fix to one route must not silently leave a second route with the same defect.
+
+  Write separating mathematical specimens at the existing proof surface, subject to `DEV-58`. Include a nontrivial positive case and a nearby case that would expose overgeneralization. Migrate implementation consumers, not the mathematician's expectations. The protected expectation subtrees and their catalogue remain unchanged except for a justified mathematical correction recorded in its commit, as required by `AGENTS.md`.
+
+- **Rationale**: A local spelling or constructor repair can leave the generating error intact. Another coefficient regime, direct Hom constructor, or dependent functor then recreates the violation without copying its original code.
+
+- **Violation Example**: repairing transported local-module kernels while direct local-module Homs still use the wrong scalar ring; making only the principal completion route distinguish truncation from completion.
+
+- **Correct Example**: preserve the local ring and its structural maps in both directly constructed and transported module morphisms, and express their compatibility through the actual comparison maps. Add the corresponding multivariable completion specimen when changing the shared completion contract.
+
+#### `DEV-54`: Repair a Required Input Before Extending Its Consumers
+
+- **Rule**: Before extending a dependent construction, read the particular upstream path it will consume and establish its required objects, maps, and hypotheses by source analysis. A method name, category label, completed TODO row, or upstream specification is not that input. If the required path constructs the wrong mathematical object, repair it and adapt the first dependent construction before expanding the dependent API.
+
+  Dependencies attach to specific mathematical outputs. Do not wait for an unrelated upstream workstream to finish, and do not let one broken input freeze consumers that do not use it. A computational specialization is acceptable only when its stated regime actually supplies the required input; it is not permission for a fallback object.
+
+- **Rationale**: Adding module completion, formal fibers, and flatness decisions on top of finite-quotient arithmetic multiplies the repair surface. Fixing the shared input first removes the cause rather than requiring a separate correction in every consumer.
+
+- **Violation Example**: extending formal-family operations because a completion class and truncation accessors exist, without inspecting its element arithmetic; declaring all geometry blocked by a completion defect.
+
+- **Correct Example**: establish the corrected ring completion before finite-module completion, and use the Noetherian finite-module comparison with its actual hypotheses ([Stacks 00MA](https://stacks.math.columbia.edu/tag/00MA)). Independent scheme gluing proceeds on its own established inputs.
+
+#### `DEV-55`: Review the Complete Affected Control Flow
+
+- **Rule**: After editing a shared source file, read the complete affected methods and enclosing class boundaries, not only added diff lines. Follow conditionals, indentation, early returns, and the paths that equip returned objects with inherited structure. Review neighboring operations whose control flow or shared helpers changed. Compare with the relevant pre-edit contract and retain its mathematical obligations.
+
+  Write preservation specimens for exposed regressions at their existing mathematical owner. During deferred verification, perform the source review and leave those specimens explicitly unverified; do not claim that reading source proves runtime correctness.
+
+- **Rationale**: An operation can retain its name, most of its body, and its tests while an indentation or return-path edit makes its essential construction unreachable. A diff limited to the intended new operation can miss that loss.
+
+- **Violation Example**: adding an ideal quotient beside an algebra center and reviewing only the quotient lines, while a changed return path prevents the center from receiving algebra structure.
+
+- **Correct Example**: read the full center and quotient methods, including all branches that produce the central submodule or subalgebra; retain specimens for the inclusion, multiplication, and the unit when required, alongside the new quotient specimen.
+
+#### `DEV-56`: Decide the Next Construction in the TODO
+
+- **Rule**: A substantive TODO names its current owner, the remaining mathematical delta, required input maps and hypotheses, the chosen representation boundary, and an acceptance statement that a mathematician could falsify. Name the first concrete specimen and the neighboring case that distinguishes the intended construction from its tempting substitute. Settle consequential mathematical forks before delegating the item; when source research is genuinely necessary, name the exact unresolved question and the construction it blocks.
+
+  Preserve the full requested regime. State what an existing specialization supplies and what remains to generalize. Derive dependency order from the maps the consumer actually needs. Keep these details with the work item; do not create a parallel readiness ledger, checklist system, or new gate to certify the prose.
+
+- **Rationale**: A heading such as "add completion" leaves the next worker to choose between an exact object and the easiest finite approximation. Explicit mathematical decisions prevent that choice from being made implicitly inside an adapter.
+
+- **Violation Example**: "finish local geometry" with no next object or input; "verify the new API" without a proposition; treating a toric dimension formula as completion of general geometric cohomology.
+
+- **Correct Example**: require the image of a specific polynomial to remain nonzero in its adic completion while its projections at two stated orders differ, then require the completed module maps that consume that ring. This defines both the first repair and its downstream obligation.
+
+#### `DEV-57`: Judge Progress by Mathematical Change Over Time
+
+- **Rule**: Select work and assess trajectory against the user's substantive objective and the time-ordered mathematical changes. Distinguish newly supplied behavior, preserved behavior, regressions, their repairs, and dependencies that remain unresolved. Commit counts, checkbox counts, document volume, and the fraction of administrative commits do not measure that trajectory. A short repair interval does not erase productive work elsewhere; a long unobserved interval is not evidence of inactivity.
+
+  A blocker names the exact unavailable input or authority, its owner, the affected construction, and the next action that can change it. Read the current scope and verification rules before treating a tool or hook failure as a blocker. Continue independent required work when its inputs exist. Assess a repeated failure as a recurrence of its mathematical or operational cause, not as a new spelling-specific exception.
+
+- **Rationale**: Local activity can move a proxy while leaving the intended construction wrong. Conversely, counting administrative artifacts can hide genuine mathematical progress between them. Time-ordered evidence is needed to distinguish those cases.
+
+- **Violation Example**: inferring stagnation from many documentation commits; inferring correctness from a shrinking TODO; stopping all work because one engine operation or an inapplicable hook is unavailable.
+
+- **Correct Example**: identify which constructions became available during the observed interval, whether later edits preserved them, and whether dependent work consumed the repaired contract. State unobserved intervals and runtime verification gaps without converting them into conclusions about effort.
+
+#### `DEV-58`: Observe the Current Verification Phase
+
+- **Rule**: Terminal T is the final verification phase of the preamble programme, after the required architecture, mathematical implementation, integration, and transfer work in `TODO.md`. While that work remains open, run no preamble tests, QC gates, Sage executions, or notebooks. Write and commit the construction and the mathematical specimens that would falsify it, explicitly unverified. References in other contribution policies to testing a work unit do not override this phase rule.
+
+  Retain the two narrow operational exceptions: one short import check of a merged tree, and provisioning a tool required by a selected task. Neither is mathematical verification or permission to run a suite. Source review and checking a prose diff remain applicable. At T, execute the required mathematical evidence on the integrated architecture, diagnose actual failures, and establish the failed propositions at their owners. Do not restart repeated verification cycles against intermediate architectures.
+
+  Classify hook applicability by the staged paths, not unrelated dirty files or a remembered failure. Under `AGENTS.md`'s QC integration rule, a prose-only commit uses `--no-verify`; the explicit notebook/preamble scope exemption also remains binding. Do not change shared QC configuration to obtain that authorized path, and do not extend an exemption to unrelated executable changes.
+
+- **Rationale**: Runtime checks during the unsettled rewrite can redirect work into repairing a temporary architecture. Forgetting a declared exemption can also make an irrelevant hook result stop work that is expressly authorized. Neither error is repaired by adding another tracking artifact.
+
+- **Violation Example**: running Sage to obtain a green completion specimen while required architecture remains open; repeatedly invoking whole-repo hooks for a TODO-only commit; describing a written but unexecuted assertion as a passing regression test.
+
+- **Correct Example**: review the source and new mathematical assertions, commit them as unverified under the current scope rule, retain terminal T as unfinished work, and execute the required evidence only at that phase. For a TODO and policy edit, inspect the intended diff and commit only those prose paths with the prescribed hook exemption.
 
 
 * * *

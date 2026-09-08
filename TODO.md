@@ -263,6 +263,31 @@ restart of the module/algebra/action constructions.
   Hom behavior without enumerating a growing list of startup examples.
   Source integration comes before the terminal-T construction-order executions.
 
+- [ ] Complete the remaining owned category, Hom, and constructor boundaries.
+  **Owners:** the common owned-category runtime, parameterized category bases,
+  `rings/ring_foundation.py`, and each surviving mathematical category.
+  **Current starting points:** `AdicCompletions`, `RingedSpaces`, and
+  `LocallyRingedSpaces` directly use Sage's runtime `Category` base; inspect
+  their complete method-packet and ordering paths when integrating them.
+  Runtime inheritance alone does not establish a forbidden mathematical edge.
+  **Deliver:** owned semantic supercategories, owned parameter normalization,
+  and owned `Hom`, `End`, `Aut`, joins and property refinements throughout
+  the surviving graph. Keep Sage mathematical membership tests private to
+  engine recognition; public membership and theorem hypotheses use the owned
+  graph. Constructor inputs go through the responsible owned construction,
+  without asking Sage coercion discovery to invent a mathematical map.
+  **Decision:** one object may have several private computational realizations;
+  selecting an engine must not change its mathematical identity or interface.
+  Preserve zero, one, actions, identity morphisms, and inherited operations
+  when removing a semantic engine dependency. Reuse existing realization and
+  functor-image owners instead of introducing another registry.
+  **Acceptance:** the full surviving graph has the required ownership, and
+  representative quotient, localization, module, group and lattice objects
+  expose their promised operations and maps. The terminal graph inspection
+  is paired with positive public constructions, never accepted on edge
+  removal alone. Include comparisons across available realizations where
+  the same mathematical construction has more than one engine.
+
 - [ ] Complete constructor-contract discovery and close the remaining
   variadic/opaque defining-data boundaries.
   **Owners:** the common `object_of` construction path, generated category
@@ -407,6 +432,11 @@ restart of the module/algebra/action constructions.
   a point-set image.
   **Acceptance:** a repeated `P^1` product, a non-affine base change, and
   successive equations over `ZZ` retain their maps and scalar bases.
+  Extend exact property placement with these constructors: separated,
+  finite-type, integral, normal, smooth, quasi-affine and quasi-projective
+  hypotheses must survive the relevant construction before its consumer uses
+  them. Preserve the existing variety, curve and surface categories; a chosen
+  dimension or an affine chart alone does not establish their other hypotheses.
 
 - [ ] Extend divisor and class-group computations from toric presentations to
   the required general and relative schemes.
