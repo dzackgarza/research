@@ -503,6 +503,70 @@ class Cusp:
         return f"Cusp of rank {self.module_rank()} in {self.lattice()}"
 
 
+class CuspIncidence(SageObject):
+    r"""One rank-``(1,2)`` isotropic flag orbit in the quotient Tits building.
+
+    The edge is not reduced to two vertex labels: it retains an actual flag
+    ``I_1 < I_2`` in the lattice, the line and plane cusp orbits containing
+    its two terms, transporters from those terms to the chosen cusp
+    representatives, and generators of the stabilizer of the whole flag.
+    Distinct flag orbits with the same pair of cusp vertices therefore remain
+    distinct incidence records.
+    """
+
+    def __init__(
+        self,
+        flag,
+        line_cusp,
+        plane_cusp,
+        line_transporter,
+        plane_transporter,
+        stabilizer_generators,
+    ) -> None:
+        terms = tuple(flag.terms())
+        if len(terms) != 2:
+            raise ValueError("a cusp incidence is represented by a two-step isotropic flag")
+        if int(terms[0].module_rank()) != 1 or int(terms[1].module_rank()) != 2:
+            raise ValueError("a cusp incidence has ranks one and two")
+        terms[0].inclusion().factor_through(terms[1].inclusion())
+        self._flag = flag
+        self._line_cusp = line_cusp
+        self._plane_cusp = plane_cusp
+        self._line_transporter = line_transporter
+        self._plane_transporter = plane_transporter
+        self._stabilizer_generators = stabilizer_generators
+
+    def lattice(self):
+        return self._flag.lattice()
+
+    def flag(self):
+        return self._flag
+
+    def line(self):
+        return self.flag().terms()[0]
+
+    def plane(self):
+        return self.flag().terms()[1]
+
+    def line_cusp(self):
+        return self._line_cusp
+
+    def plane_cusp(self):
+        return self._plane_cusp
+
+    def line_transporter(self):
+        return self._line_transporter
+
+    def plane_transporter(self):
+        return self._plane_transporter
+
+    def stabilizer_generators(self):
+        return self._stabilizer_generators
+
+    def __repr__(self) -> str:
+        return f"Tits-building incidence {self.line_cusp()} < {self.plane_cusp()}"
+
+
 def cusps(lattice, rank=1):
     r"""Return the cusps of ``lattice``: its ``O(L)``-orbits of rank-``k`` subobjects.
 
@@ -518,6 +582,46 @@ def cusps(lattice, rank=1):
             for representative in lattice.Aut().isotropic_orbit_representatives(rank)
         )
     )
+
+
+def tits_building_incidence(lattice):
+    r"""Return the finite line/plane incidence in the ``O(L)`` quotient building.
+
+    Rank-two flag representatives come from the exact indefinite backend with
+    ``choice='flag'``.  Their first and second terms determine unique line and
+    plane cusp orbits.  The returned records retain the actual nested
+    embeddings and the transporters to the selected representatives of those
+    cusp vertices.
+    """
+    line_cusps = cusps(lattice, 1)
+    plane_cusps = cusps(lattice, 2)
+    orthogonal_group = lattice.Aut()
+    incidences = []
+    for flag in orthogonal_group.isotropic_orbit_representatives(2, flag=True):
+        line, plane = flag.terms()
+        line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
+        plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
+        if len(line_vertices) != 1 or len(plane_vertices) != 1:
+            raise ArithmeticError(
+                "an isotropic flag term does not determine a unique cusp orbit"
+            )
+        line_cusp = line_vertices[0]
+        plane_cusp = plane_vertices[0]
+        line_transporter = line_cusp.transporter_witness(line)
+        plane_transporter = plane_cusp.transporter_witness(plane)
+        if line_transporter is None or plane_transporter is None:
+            raise ArithmeticError("a flag term lies in a cusp with no transporter witness")
+        incidences.append(
+            CuspIncidence(
+                flag,
+                line_cusp,
+                plane_cusp,
+                line_transporter,
+                plane_transporter,
+                orthogonal_group.isotropic_stabilizer_generators(flag, flag=True),
+            )
+        )
+    return finite_ordered_set(tuple(incidences))
 
 
 def _embedded_basis(subobject):
@@ -671,6 +775,7 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 
 __all__ = [
     "Cusp",
+    "CuspIncidence",
     "IsotropicFlagLocus",
     "IsotropicSublatticeLocus",
     "IsotropicFlag",
@@ -689,6 +794,7 @@ __all__ = [
     "primitive_isotropic_subobject",
     "primitive_isotropic_sublattices",
     "primitive_isotropic_vectors",
+    "tits_building_incidence",
     "transport_isotropic_object",
     "vector_locus",
 ]
