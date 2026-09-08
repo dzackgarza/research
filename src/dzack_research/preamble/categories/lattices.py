@@ -79,9 +79,12 @@ from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
+    isotropic_flag_locus,
+    isotropic_sublattice_locus,
     primitive_isotropic_sublattices,
     primitive_isotropic_vectors,
     primitive_isotropic_subobject,
+    vector_locus,
 )
 from dzack_research.preamble.categories import lattice_engines
 from dzack_research.preamble.categories.lattice_morphisms import (
@@ -2534,6 +2537,18 @@ class Lattices(OwnedCategoryOverBaseRing):
         def primitive_isotropic_sublattices(self, rank=1):
             r"""Return primitive totally isotropic rank-``rank`` subobjects of this lattice."""
             return primitive_isotropic_sublattices(self, rank)
+
+        def vector_locus(self, norm, primitive=False):
+            r"""Return vectors of square ``norm``, optionally restricted to primitive vectors."""
+            return vector_locus(self, norm, primitive=primitive)
+
+        def isotropic_sublattice_locus(self, rank):
+            r"""Return represented totally isotropic rank-``rank`` sublattices."""
+            return isotropic_sublattice_locus(self, rank)
+
+        def isotropic_flag_locus(self, ranks):
+            r"""Return nested represented isotropic sublattices with the stated ranks."""
+            return isotropic_flag_locus(self, ranks)
 
         def isotropic_flag(self, *basis):
 

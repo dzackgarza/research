@@ -268,6 +268,130 @@ class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
         return self.group().isotropic_equivalence_witness(source, target)
 
 
+class VectorLocus(SageObject):
+    r"""Vectors of one lattice cut out by square and optional primitivity."""
+
+    def __init__(self, lattice, norm, *, primitive=False) -> None:
+        self._lattice = lattice
+        self._norm = lattice.base_ring()(norm)
+        self._primitive = bool(primitive)
+
+    def lattice(self):
+        return self._lattice
+
+    def norm(self):
+        return self._norm
+
+    def requires_primitive(self) -> bool:
+        return self._primitive
+
+    def __contains__(self, vector) -> bool:
+        if getattr(vector, "parent", lambda: None)() is not self.lattice():
+            return False
+        if vector.q() != self.norm():
+            return False
+        return not self.requires_primitive() or vector.is_primitive()
+
+    def __repr__(self) -> str:
+        primitive = ""
+        if self.requires_primitive():
+            primitive = "primitive "
+        return f"{primitive}vectors of norm {self.norm()} in {self.lattice()}"
+
+
+def vector_locus(lattice, norm, *, primitive=False):
+    r"""Return the exact vector locus ``{v in L : q(v)=norm}``, optionally primitive."""
+    return VectorLocus(lattice, norm, primitive=primitive)
+
+
+class IsotropicSublatticeLocus(SageObject):
+    r"""Represented totally isotropic rank-``k`` sublattices of one lattice."""
+
+    def __init__(self, lattice, rank) -> None:
+        rank = int(rank)
+        if rank <= 0:
+            raise ValueError("an isotropic sublattice rank must be positive")
+        self._lattice = lattice
+        self._rank = rank
+
+    def lattice(self):
+        return self._lattice
+
+    def rank(self):
+        return self._rank
+
+    def __contains__(self, sublattice) -> bool:
+        if not callable(getattr(sublattice, "inclusion", None)):
+            return False
+        try:
+            return (
+                sublattice.ambient_lattice() is self.lattice()
+                and int(sublattice.module_rank()) == self.rank()
+                and sublattice.is_totally_isotropic()
+            )
+        except (AttributeError, TypeError):
+            return False
+
+    def __repr__(self) -> str:
+        return f"Totally isotropic rank-{self.rank()} sublattices of {self.lattice()}"
+
+
+def isotropic_sublattice_locus(lattice, rank):
+    r"""Return the locus of represented totally isotropic rank-``rank`` sublattices."""
+    return IsotropicSublatticeLocus(lattice, rank)
+
+
+class IsotropicFlagLocus(SageObject):
+    r"""Nested represented isotropic sublattices with prescribed ranks."""
+
+    def __init__(self, lattice, ranks) -> None:
+        ranks = tuple(int(rank) for rank in ranks)
+        if not ranks or any(rank <= 0 for rank in ranks):
+            raise ValueError("an isotropic flag requires positive term ranks")
+        if any(left >= right for left, right in zip(ranks, ranks[1:])):
+            raise ValueError("isotropic flag ranks must be strictly increasing")
+        self._lattice = lattice
+        self._ranks = ranks
+
+    def lattice(self):
+        return self._lattice
+
+    def ranks(self):
+        return self._ranks
+
+    def _terms_of(self, flag):
+        if isinstance(flag, IsotropicFlag):
+            return tuple(flag.terms())
+        if isinstance(flag, (tuple, list)):
+            return tuple(flag)
+        terms = getattr(flag, "terms", None)
+        return tuple(terms()) if callable(terms) else ()
+
+    def __contains__(self, flag) -> bool:
+        terms = self._terms_of(flag)
+        if len(terms) != len(self.ranks()):
+            return False
+        if any(
+            term not in IsotropicSublatticeLocus(self.lattice(), rank)
+            for term, rank in zip(terms, self.ranks(), strict=True)
+        ):
+            return False
+        for smaller, larger in zip(terms, terms[1:]):
+            try:
+                smaller.inclusion().factor_through(larger.inclusion())
+            except (AttributeError, TypeError, ValueError):
+                return False
+        return True
+
+    def __repr__(self) -> str:
+        return f"Totally isotropic flags of ranks {self.ranks()} in {self.lattice()}"
+
+
+def isotropic_flag_locus(lattice, ranks):
+    r"""Return the locus of nested represented isotropic sublattices of the stated ranks."""
+    return IsotropicFlagLocus(lattice, ranks)
+
+
 class IsotropicFlag:
     r"""A primitive totally isotropic flag, recorded by its nested lattice subobjects."""
 
@@ -547,18 +671,24 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 
 __all__ = [
     "Cusp",
+    "IsotropicFlagLocus",
+    "IsotropicSublatticeLocus",
     "IsotropicFlag",
     "PrimitiveIsotropicSublatticeLocus",
     "PrimitiveIsotropicSublatticeOrbitDecomposition",
     "PrimitiveIsotropicVectorLocus",
     "PrimitiveIsotropicVectorOrbit",
     "PrimitiveIsotropicVectorOrbitDecomposition",
+    "VectorLocus",
     "cusps",
+    "isotropic_flag_locus",
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
+    "isotropic_sublattice_locus",
     "isotropic_stabilizer_generators",
     "primitive_isotropic_subobject",
     "primitive_isotropic_sublattices",
     "primitive_isotropic_vectors",
     "transport_isotropic_object",
+    "vector_locus",
 ]
