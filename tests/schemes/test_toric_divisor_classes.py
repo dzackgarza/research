@@ -21,6 +21,7 @@ from dzack_research.preamble.all import (
     FiniteAtlasInvertibleSheaf,
     PicardGroups,
     RationalPolyhedralFans,
+    SectionRings,
     WeilDivisorGroups,
     module_homset,
 )
@@ -318,6 +319,33 @@ def test_hirzebruch_surface_cox_ring_retains_multidegrees() -> None:
 
     assert cox.grading_monoid() is surface.class_group()
     assert any(degree != degrees[0] for degree in degrees[1:])
+
+
+def test_projective_plane_hyperplane_section_ring_has_the_expected_graded_pieces() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    ring = plane.section_ring(line)
+    labels = tuple(ring.algebra_generating_set())
+
+    assert ring in SectionRings(QQ)
+    assert ring.section_scheme() is plane
+    assert ring.section_divisor() == line
+    assert all(ring.generator_degree(label) == 1 for label in labels)
+    assert ring.graded_piece(1).module_rank() == 3
+    assert ring.graded_piece(2).module_rank() == 6
+    assert ring.homogeneous_degree(
+        ring.algebra_generator(labels[0]) * ring.algebra_generator(labels[1])
+    ) == 2
+
+
+def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
+    plane = _projective_plane()
+    conic = ZZ(2) * plane.hyperplane_divisor()
+    ring = plane.section_ring(conic)
+
+    assert ring.graded_piece(1).module_rank() == 6
+    assert ring.algebra_generating_set().cardinality() == 6
+    assert ring.relations().cardinality() > 0
 
 
 def test_a_principal_divisor_is_basepoint_free_and_never_ample() -> None:

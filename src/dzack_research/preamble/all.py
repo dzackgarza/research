@@ -220,6 +220,8 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     InvertibleSheaf,
     PicardGroup,
     PicardGroups,
+    SectionRing,
+    SectionRings,
     TrivialInvertibleSheaf,
     WeilDivisorGroup,
     WeilDivisorGroups,
