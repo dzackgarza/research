@@ -1910,8 +1910,8 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [ ] Integrate closed-subscheme inclusions with the generic `SubobjectCategory`; native equation-defined closed embeddings already land as live scheme morphisms.
 - [ ] Extend the existing distinguished-open immersions to general represented open subschemes and their gluing.
 - [ ] Complete function and module restriction maps on principal opens, reusing their existing localization maps.
-- [ ] Scheme-theoretic intersections.
-- [ ] Intersection multiplicity from correct local/stalk/Tor definitions with hypotheses visible.
+- [x] Scheme-theoretic intersections. Source: `02c69350`; affine closed subschemes intersect by ideal sum/fibre product.
+- [x] Intersection multiplicity from correct local/stalk/Tor definitions with hypotheses visible. Source: `02c69350`; proper hypersurface intersections in smooth affine surfaces use the isolated primary-component local colength, corrected by the residue degree. Improper intersections remain outside this supported formula and require Serre Tor lengths.
 
 #### 9.3 Varieties, curves, surfaces
 
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `S-local-intersection-multiplicity-20260908-0538` | S / local intersection multiplicity of proper affine hypersurfaces | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/schemes.py; tests/schemes/test_scheme_theoretic_intersections.py` (write) | `8c0ee4c3` | 2026-09-08T05:38:00Z |
 | `Y-ci-normality-gorenstein-20260908-0606` | Y / complete-intersection normality and Gorenstein predicates | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/complete_intersections.py; tests/schemes/test_complete_intersections.py` (write) | `a8aea645` | 2026-09-08T06:06:00Z |
 
 #### Existing work awaiting adoption
