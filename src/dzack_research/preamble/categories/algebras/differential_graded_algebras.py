@@ -1,6 +1,7 @@
 r"""Differential graded algebra categories and their morphisms."""
 
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
@@ -18,8 +19,12 @@ from dzack_research.preamble.categories.algebras.graded_commutative_algebras imp
     StrictlyGradedCommutativeAlgebras,
 )
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 class DegreewiseLinearMorphism(Morphism):
@@ -134,10 +139,24 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
         def d(self, element):
             return self.differential()(element)
 
+        @cached_method
+        def _negative_cochain_zero_module(self):
+            r"""The represented zero module used by the inherited cochain complex."""
+            return BasedFreeModule(self.base_ring(), finite_ordered_set(()))
+
         def differential_component(self, degree):
             degree = int(degree)
             if degree < 0:
-                raise ValueError("a nonnegative DGA has no negative differential component")
+                source = self._negative_cochain_zero_module()
+                if degree == -1:
+                    target = self.graded_piece(0)
+                else:
+                    target = source
+                return DifferentialComponentMorphism(
+                    source,
+                    target,
+                    lambda _element: target.zero(),
+                )
             source = self.graded_piece(degree)
             target = self.graded_piece(degree + 1)
 
@@ -250,7 +269,13 @@ class DGAMorphism(Morphism):
         r"""Return the degree-``degree`` linear component of this DGA map."""
         degree = int(degree)
         if degree < 0:
-            raise ValueError("the represented DGA is nonnegative")
+            source = self.domain()._negative_cochain_zero_module()
+            target = self.codomain()._negative_cochain_zero_module()
+            return DegreewiseLinearMorphism(
+                source,
+                target,
+                lambda _element: target.zero(),
+            )
         source = self.domain().graded_piece(degree)
         target = self.codomain().graded_piece(degree)
 

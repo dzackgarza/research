@@ -29,8 +29,6 @@ class CohomologyFunctor(Functor):
     def __init__(self, base_ring, degree) -> None:
         self._base_ring = _owned_ring(base_ring)
         self._degree = int(degree)
-        if self._degree < 0:
-            raise ValueError("cohomology degree is nonnegative")
         super().__init__(
             CochainComplexes(self._base_ring),
             FinitelyPresentedModules(self._base_ring),

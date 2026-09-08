@@ -1,6 +1,7 @@
 r"""Cochain complexes of owned modules and their cohomology."""
 
 from sage.categories.morphism import Morphism
+from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
@@ -19,6 +20,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -139,8 +141,9 @@ class CohomologyModules(OwnedCategoryOverBaseRing):
             current = self._preamble_cohomology_current_module
             if cycle.parent() is not current:
                 cycle = current(cycle)
-            target = complex_.graded_piece(degree + 1)
-            if complex_.differential_component(degree)(cycle) != target.zero():
+            outgoing = complex_.differential_component(degree)
+            target = outgoing.codomain()
+            if outgoing(cycle) != target.zero():
                 raise ValueError("a cohomology class can only be formed from a cycle")
 
             cycles = self._preamble_cohomology_cycles
@@ -180,7 +183,7 @@ class CochainComplexElement(GradedDirectSumElement):
 
 
 class CochainComplexObject(GradedDirectSumModule):
-    r"""A nonnegative represented cochain complex with selected finite pieces."""
+    r"""A represented integer-graded cochain complex with selected finite pieces."""
 
     Element = CochainComplexElement
 
@@ -189,12 +192,6 @@ class CochainComplexObject(GradedDirectSumModule):
         self._selected_differentials = {
             int(degree): morphism for degree, morphism in differentials.items()
         }
-        if any(degree < 0 for degree in self._selected_pieces):
-            raise NotImplementedError(
-                "the live finite-support model currently materializes nonnegative cochain complexes"
-            )
-
-
         zero_module = BasedFreeModule(base_ring, finite_ordered_set(()))
 
         def piece(degree):
@@ -205,6 +202,7 @@ class CochainComplexObject(GradedDirectSumModule):
             base_ring,
             piece,
             name=name or "Cochain complex",
+            degree_index_set=_own_ring(SageZZ),
             extra_categories=(CochainComplexes(base_ring),),
         )
         self._zero_module = zero_module
@@ -216,9 +214,6 @@ class CochainComplexObject(GradedDirectSumModule):
 
     def differential_component(self, degree):
         degree = int(degree)
-        if degree < 0:
-            target = self.graded_piece(0)
-            return module_homset(self._zero_module, target)({})
         selected = self._selected_differentials.get(degree)
         source = self.graded_piece(degree)
         target = self.graded_piece(degree + 1)
@@ -432,8 +427,6 @@ _COHOMOLOGY_CACHE = {}
 def Cohomology(complex_, degree):
     r"""Return ``H^degree = ker(d^degree) / im(d^(degree-1))``."""
     degree = int(degree)
-    if degree < 0:
-        raise ValueError("cohomology degree is nonnegative")
     cache_key = (id(complex_), degree)
     cached = _COHOMOLOGY_CACHE.get(cache_key)
     if (
@@ -454,7 +447,7 @@ def Cohomology(complex_, degree):
         _extra_construction_data={
             "cohomology_complex": complex_,
             "cohomology_degree": degree,
-            "cohomology_current_module": complex_.graded_piece(degree),
+            "cohomology_current_module": cycles.inclusion().codomain(),
             "cohomology_cycles": cycles,
             "cohomology_boundaries": boundaries,
             "cohomology_boundary_in_cycles": boundary_in_cycles,

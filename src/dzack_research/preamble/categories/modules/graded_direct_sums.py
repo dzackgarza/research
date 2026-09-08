@@ -108,7 +108,13 @@ class GradedDirectSumElement(ModuleElement):
 
 
 class GradedDirectSumModule(Parent):
-    r"""The module \(\bigoplus_{d\geq0} M_d\) with finite-support elements."""
+    r"""A represented graded direct sum with finite-support elements.
+
+    The degree set is part of the defining data.  It defaults to ``NN`` for
+    the ordinary nonnegative graded constructions, but callers such as
+    cochain complexes may supply another owned indexing set, for example the
+    owned integers.
+    """
 
     Element = GradedDirectSumElement
 
@@ -149,9 +155,13 @@ class GradedDirectSumModule(Parent):
         return self._base_ring
 
     def graded_piece(self, degree):
-        degree = int(degree)
-        if degree < 0:
-            raise ValueError("a graded degree is nonnegative")
+        try:
+            normalized_degree = self.degree_index_set()(degree)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                f"{degree} is not a degree of {self}"
+            ) from error
+        degree = int(normalized_degree)
         cached = self._pieces.get(degree)
         if cached is not None:
             return cached
