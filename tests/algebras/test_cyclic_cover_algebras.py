@@ -161,3 +161,20 @@ def test_cyclic_cover_degree_three_uses_rank_three_scalar_extensions() -> None:
         * transition.codomain().algebra_generator("z")
     )
     assert int(cyclic.restricted_algebra(0, 0, 1).module_rank()) == 3
+
+
+def test_nontrivial_cyclic_algebra_has_its_glued_relative_spectrum_over_the_base() -> None:
+    from dzack_research.preamble.all import CyclicCoverAlgebra
+
+    line, x, _overlap_x = _line_bundle_with_x_transition()
+    branch = _branch_section(line, x, 2)
+    cyclic = CyclicCoverAlgebra(line, branch, 2)
+
+    relative = cyclic.relative_spectrum()
+    cover = relative.arrow().domain()
+
+    assert relative.arrow().codomain() is line.scheme()
+    assert cover._preamble_cyclic_cover_algebra is cyclic
+    assert cover._preamble_cyclic_cover_morphism is relative.arrow()
+    assert cover.gluing_datum().number_of_charts() == 2
+    assert tuple(cover.gluing_datum().chart_indices()) == tuple(line.cover().atlas())

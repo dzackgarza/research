@@ -265,6 +265,14 @@ class CyclicCoverAlgebra(SageObject):
 
     sections = global_sections
 
+    def relative_spectrum(self):
+        r"""Return the finite cover as the relative spectrum of this descended algebra."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            relative_cyclic_cover,
+        )
+
+        return relative_cyclic_cover(self)
+
     def restricted_algebra(
         self,
         chart_index: Integer,
