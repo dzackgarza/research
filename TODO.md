@@ -2337,13 +2337,13 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [ ] Boundary divisor `D=pi^*C`.
 - [ ] ADE base/cover surfaces as equipped geometric objects, not duplicate records.
 - [ ] Polarizing-polytope invariants from the general polytope layer.
-- [ ] Dynkin/ADE diagrams through the Coxeter/root-system layer.
+- [x] Dynkin/ADE diagrams through the Coxeter/root-system layer.
 - [ ] Alexeev--Thompson regression examples.
 
 ### 20. Archived framework specifications without complete source implementations
 
 - [ ] Relative-Spec primitive and affine parameter spaces of sections.
-- [ ] Jets and imposed-singularity linear systems.
+- [x] Jets and imposed-singularity linear systems.
 - [ ] Bertini-family machinery.
 - [ ] Linearizations of line bundles/group actions.
 - [ ] Equivariant evaluation at fixed points.
