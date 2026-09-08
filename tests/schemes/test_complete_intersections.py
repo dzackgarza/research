@@ -31,3 +31,30 @@ def test_redundant_homogeneous_equations_are_not_misclassified_as_a_complete_int
 
     with pytest.raises(ValueError):
         ProjectiveCompleteIntersection(redundant)
+
+
+def test_smooth_complete_intersection_surface_uses_adjunction_for_del_pezzo_degree() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    cubic = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0**3 + x1**3 + x2**3 + x3**3)
+    )
+
+    assert cubic.expected_dimension() == 2
+    assert cubic.anticanonical_twist_degree() == 1
+    assert cubic.projective_degree() == 3
+    assert cubic.is_del_pezzo()
+    assert cubic.del_pezzo_degree() == 3
+
+
+def test_quartic_k3_boundary_is_not_misclassified_as_del_pezzo() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    quartic = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
+    )
+
+    assert quartic.expected_dimension() == 2
+    assert quartic.adjunction_twist_degree() == 0
+    assert quartic.anticanonical_twist_degree() == 0
+    assert not quartic.is_del_pezzo()

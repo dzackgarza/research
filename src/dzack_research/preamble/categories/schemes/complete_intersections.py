@@ -76,6 +76,38 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         def is_gorenstein(self) -> bool:
             return True
 
+        def projective_degree(self):
+            r"""Return the complete-intersection degree ``prod d_i``."""
+            degree = 1
+            for value in self._preamble_complete_intersection_degrees:
+                degree *= int(value)
+            return degree
+
+        def anticanonical_twist_degree(self):
+            r"""Return ``n + 1 - sum(d_i)`` for ``-K_X``."""
+            return -self.adjunction_twist_degree()
+
+        def is_del_pezzo(self) -> bool:
+            r"""Decide the del Pezzo condition for a smooth complete-intersection surface.
+
+            In this represented regime ``-K_X = O_X(c)`` with
+            ``c = n+1-sum(d_i)``.  The restriction of ``O(1)`` is ample, so
+            ``-K_X`` is ample exactly when ``c > 0``.  Smoothness is decided
+            by Sage's exact projective-subscheme Jacobian calculation.
+            """
+            if int(self.expected_dimension()) != 2:
+                return False
+            if not bool(self.is_smooth()):
+                return False
+            return self.anticanonical_twist_degree() > 0
+
+        def del_pezzo_degree(self):
+            r"""Return ``(-K_X)^2`` for a represented del Pezzo complete intersection."""
+            if not self.is_del_pezzo():
+                raise ValueError("the represented complete intersection is not a del Pezzo surface")
+            coefficient = self.anticanonical_twist_degree()
+            return coefficient**2 * self.projective_degree()
+
 
 def ProjectiveCompleteIntersection(subscheme):
     r"""Place a projective closed subscheme at its selected complete-intersection owner."""
