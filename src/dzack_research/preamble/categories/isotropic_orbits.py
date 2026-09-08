@@ -702,7 +702,7 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
             if flag
             else primitive_isotropic_subobject(lattice, basis)
         )
-    return tuple(result)
+    return finite_ordered_set(tuple(result))
 
 
 def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):

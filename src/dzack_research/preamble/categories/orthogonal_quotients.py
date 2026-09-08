@@ -2,6 +2,7 @@ r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."
 from sage.libs.gap.libgap import libgap
 
 from dzack_research.preamble.categories.isotropic_orbits import transport_isotropic_object
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 class OrthogonalCharacterQuotient:
@@ -311,7 +312,7 @@ def _finite_subgroup_vector_orbit_representatives(subgroup, square):
         representatives.append(representative)
         for automorphism in elements:
             remaining.pop(tuple(automorphism(representative).to_tuple()), None)
-    return tuple(representatives)
+    return finite_ordered_set(tuple(representatives))
 
 
 def subgroup_vector_orbit_representatives(subgroup, square):
@@ -329,7 +330,7 @@ def subgroup_vector_orbit_representatives(subgroup, square):
             if key not in seen:
                 seen.add(key)
                 representatives.append(image)
-    return tuple(representatives)
+    return finite_ordered_set(tuple(representatives))
 
 
 def subgroup_vector_equivalence_witness(subgroup, left, right):
@@ -392,7 +393,7 @@ def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
             transport_isotropic_object(splitting, representative)
             for splitting in quotient.splitting_isometries(stabilizer)
         )
-    return tuple(representatives)
+    return finite_ordered_set(tuple(representatives))
 
 
 def subgroup_isotropic_equivalence_witness(subgroup, left, right, *, flag=False):
