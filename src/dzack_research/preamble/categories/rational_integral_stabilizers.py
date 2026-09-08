@@ -55,11 +55,15 @@ and none is needed.
 
 What each row needs now.  ``integral_stabilizer`` needs nothing further: it is
 definitional, decided on the finite module generators of ``L`` as described at
-its own site.  The transporter, the right cosets and the double cosets each
-wait on two pieces that are not built: the finite quotient ``F_M = M / dM``
-with the morphism ``rho`` and its image, and the integralization algorithm
-itself, which ``polyhedral_common`` carries as ``01_RatIntAutomorphy`` and
-``sage-indefinite-port`` will supply through the capability layer.
+its own site.  :class:`FiniteCommensurabilityQuotient` now owns the structural
+finite quotient ``F_M=M/dM``, its quotient map, the action ``rho`` for a
+represented reference lattice through its actual stabilizer ``G_M``, and every
+intermediate subgroup ``S_L=L/dM``.  The transporter, right cosets and double cosets still need the
+finite image together with the integralization/lifting algorithm that turns a
+finite-quotient representative into an actual element of the specified
+rational group.  ``polyhedral_common`` carries that arithmetic as
+``01_RatIntAutomorphy`` and ``sage-indefinite-port`` is the planned native
+provider.
 
 One further gap bounds the argument these operations take.  The preamble names
 no general linear group of a module: ``module_homset(V, V)`` is the
@@ -80,19 +84,163 @@ What *is* owned, so a caller does not come here for it:
   commensurability class.
 """
 
+from sage.misc.cachefunc import cached_method
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import Modules
+
 _ABSENCE = (
-    "the objects exist: Res(V), the rational space read over ZZ through the "
-    "restriction functor, holds L and M as two subobjects, d M <= L <= M is a "
-    "comparison between them, and Res(g) is g.  Membership in a lattice is "
-    "decided, so integral_stabilizer is stated.  This row is not: it needs the "
-    "finite quotient F_M = M/dM with the morphism rho : G -> Aut(F_M) and its "
-    "finite image, and then the integralization algorithm, which "
+    "the structural objects exist: Res(V) holds L and M as two subobjects, "
+    "d M <= L <= M is verified by factorization, and a reference M has the "
+    "represented finite quotient F_M=M/dM with its G_M-action functor and "
+    "intermediate subgroup S_L.  This row is not complete: it still needs the "
+    "finite action image together with the integralization algorithm that lifts "
+    "the required quotient representative to an actual element of G, which "
     "polyhedral_common carries as 01_RatIntAutomorphy and sage-indefinite-port "
     "will supply through the capability layer.  For a stabilizer inside one "
     "lattice use the predicate subgroups of O(L); for the orbit splitting of a "
     "finite-index subgroup of O(L) use the finite character quotient of "
     "orthogonal_quotients"
 )
+
+
+class FiniteCommensurabilityQuotient(SageObject):
+    r"""The finite module ``F_M=M/dM`` controlling a commensurability class.
+
+    The selected reference lattice is a monomorphism ``M -> Res(V)``.  Its
+    actual stabilizer ``G_M={g in G:g(M)=M}`` acts on ``M`` and hence on
+    ``M/dM``; no hypothesis that all of ``G`` preserves ``M`` is smuggled into
+    the construction.  The action is retained as an actual functor
+    ``B G_M -> ZZ-Mod``; no finite image is guessed or enumerated here.
+
+    For an intermediate lattice ``dM <= L <= M``, :meth:`intermediate_image`
+    returns the actual subobject ``S_L=L/dM <= F_M``.  This supplies the finite
+    quotient and action needed by the external integralization theorem while
+    keeping the later lift back into ``G`` as a separate obligation.
+    """
+
+    def __init__(self, rational_group, reference_inclusion, modulus) -> None:
+        self._rational_group = rational_group
+        self._reference_inclusion = reference_inclusion
+        lattice = reference_inclusion.domain()
+        ring = lattice.base_ring()
+        self._modulus = ring(modulus)
+        if self._modulus <= ring.zero():
+            raise ValueError("a commensurability modulus is positive")
+
+    def rational_group(self):
+        return self._rational_group
+
+    @cached_method
+    def reference_stabilizer(self):
+        r"""Return ``G_M={g in G:g(M)=M}``, the group acting on ``M/dM``."""
+        return integral_stabilizer(
+            self.rational_group(),
+            self.reference_inclusion(),
+        )
+
+    def reference_inclusion(self):
+        return self._reference_inclusion
+
+    def reference_lattice(self):
+        return self.reference_inclusion().domain()
+
+    def ambient_restricted_space(self):
+        return self.reference_inclusion().codomain()
+
+    def modulus(self):
+        return self._modulus
+
+    @cached_method
+    def scaling_morphism(self):
+        r"""Return multiplication by ``d`` on ``M``."""
+        lattice = self.reference_lattice()
+        modulus = self.modulus()
+        return module_homset(lattice, lattice)(
+            {
+                label: lattice.scalar_multiple(
+                    modulus,
+                    lattice.module_generator(label),
+                )
+                for label in lattice.module_generating_set()
+            }
+        )
+
+    @cached_method
+    def quotient_module(self):
+        r"""Return ``F_M=M/dM`` as the actual cokernel of multiplication by ``d``."""
+        return self.scaling_morphism().cokernel()
+
+    @cached_method
+    def quotient_projection(self):
+        r"""Return the quotient morphism ``M -> M/dM``."""
+        return self.scaling_morphism().cokernel_projection()
+
+    def restricted_automorphism(self, automorphism):
+        r"""Restrict one ``g in G`` to the stable reference lattice ``M``."""
+        if automorphism not in self.reference_stabilizer():
+            raise ValueError("the selected automorphism does not stabilize the reference lattice")
+        lattice = self.reference_lattice()
+        inclusion = self.reference_inclusion()
+        space = self.ambient_restricted_space()
+
+        def image(label):
+            embedded = inclusion(lattice.module_generator(label)).underlying_element()
+            moved = space.wrap(automorphism(embedded))
+            return inclusion.lift(moved)
+
+        return lattice.Aut()({label: image(label) for label in lattice.module_generating_set()})
+
+    def quotient_automorphism(self, automorphism):
+        r"""Return the induced automorphism of ``F_M``."""
+        quotient = self.quotient_module()
+        projection = self.quotient_projection()
+        restricted = self.restricted_automorphism(automorphism)
+        lattice = self.reference_lattice()
+        return quotient.Aut()(
+            {
+                label: projection(restricted(lattice.module_generator(label)))
+                for label in lattice.module_generating_set()
+            }
+        )
+
+    @cached_method
+    def action_functor(self):
+        r"""Return the genuine action functor ``B G_M -> ZZ-Mod`` on ``F_M``."""
+        quotient = self.quotient_module()
+        return GroupActionFunctor(
+            self.reference_stabilizer(),
+            Modules(self.reference_lattice().base_ring()),
+            quotient,
+            self.quotient_automorphism,
+        )
+
+    def intermediate_image(self, lattice_inclusion):
+        r"""Return ``S_L=L/dM`` inside ``F_M`` for ``dM <= L <= M``.
+
+        Both containments are verified through the actual inclusions in
+        ``Res(V)``.  The returned object is the image of the composite
+        ``L -> M -> M/dM`` and therefore retains its inclusion in ``F_M``.
+        """
+        if lattice_inclusion.codomain() is not self.ambient_restricted_space():
+            raise ValueError("an intermediate lattice lies in the same restricted rational space")
+        into_reference = lattice_inclusion.factor_through(self.reference_inclusion())
+        scaled_reference = self.reference_inclusion() * self.scaling_morphism()
+        scaled_reference.factor_through(lattice_inclusion)
+        return (self.quotient_projection() * into_reference).image()
+
+
+def finite_commensurability_quotient(rational_group, reference_inclusion, modulus):
+    r"""Return ``M/dM`` with the action of the actual reference stabilizer ``G_M``."""
+    return FiniteCommensurabilityQuotient(
+        rational_group,
+        reference_inclusion,
+        modulus,
+    )
 
 
 def integral_stabilizer(rational_group, lattice_inclusion):
@@ -175,6 +323,8 @@ def integral_double_cosets(subgroup, rational_group, lattice_inclusion):
 
 
 __all__ = [
+    "FiniteCommensurabilityQuotient",
+    "finite_commensurability_quotient",
     "integral_double_cosets",
     "integral_right_cosets",
     "integral_stabilizer",
