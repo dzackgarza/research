@@ -120,6 +120,20 @@ def test_a_face_of_a_cone_localizes_the_chart_at_one_monomial() -> None:
     assert localized in AffineSchemes(QQ)
 
 
+def test_a_general_hypersurface_of_a_toric_chart_is_only_an_ordinary_closed_subscheme() -> None:
+    variety = _plane_fans().projective_space_fan().toric_variety(QQ)
+    cone = variety.fan().maximal_cones()[0]
+    chart = variety.affine_chart(cone)
+    algebra = chart.coordinate_algebra()
+    first, second = tuple(algebra.algebra_generating_set())
+    hypersurface = chart.closed_subscheme(
+        algebra.algebra_generator(first) + algebra.algebra_generator(second)
+    )
+
+    assert hypersurface in Schemes(QQ)
+    assert hypersurface not in ToricSchemes(QQ)
+
+
 def test_the_standard_identifications_are_decided_by_fan_isomorphism() -> None:
     fans = _plane_fans()
     plane = fans.projective_space_fan().toric_variety(QQ)
