@@ -114,8 +114,12 @@ def test_restriction_of_scalars_exposes_the_composed_action() -> None:
     restricted = restrict_scalars(extension, inclusion)
     element = restricted.wrap(extension.module_generator("e"))
 
-    assert restricted.scalar_action()(ZZ(7))(element) == restricted.scalar_multiple(
-        ZZ(7), element
+    assert restricted.underlying_additive_group() is extension.underlying_additive_group()
+    assert restricted.scalar_action().domain() is ZZ
+    assert restricted.scalar_action().codomain() is extension.scalar_action().codomain()
+    underlying = restricted._underlying_additive_element(element)
+    assert restricted.scalar_action()(ZZ(7))(underlying) == (
+        restricted.scalar_multiple(ZZ(7), element).underlying_element()
     )
     assert restricted.scalar_multiple(ZZ(7), element).underlying_element() == (
         extension.scalar_multiple(QQ(7), extension.module_generator("e"))

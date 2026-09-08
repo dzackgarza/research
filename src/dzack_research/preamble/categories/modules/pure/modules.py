@@ -1666,16 +1666,25 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         def extension_ring(self):
             return _owned_ring(self.module_over_extension().base_ring())
 
+        def underlying_additive_group(self):
+            r"""Return the unchanged additive group of the extension-ring module."""
+            return self.module_over_extension().underlying_additive_group()
+
+        def _underlying_additive_element(self, element):
+            element = self(element)
+            extension = self.module_over_extension()
+            return extension._underlying_additive_element(element.underlying_element())
+
+        @cached_method
+        def _ring_morphism_defining_module_action(self):
+            r"""Return ``rho_M compose f`` for restriction along ``f : R -> S``."""
+            return self.module_over_extension().scalar_action() * self.ring_map()
+
         def scalar_multiple(self, scalar, element):
-            if element.parent() is not self:
-                element = self(element)
-            extension_module = self.module_over_extension()
-            return self.element_class(
-                self,
-                extension_module.scalar_multiple(
-                    self.ring_map()(scalar),
-                    element.underlying_element(),
-                ),
+            element = self(element)
+            underlying = self._underlying_additive_element(element)
+            return self.wrap(
+                self.scalar_action()(self.base_ring()(scalar))(underlying)
             )
 
 
