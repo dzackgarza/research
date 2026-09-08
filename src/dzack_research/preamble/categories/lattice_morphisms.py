@@ -132,20 +132,97 @@ def _proper_reduced_binary_equivalence_matrix(source, target):
     return transformation
 
 
+def _rho_step_matrix(current, following):
+    r"""Return the exact ``SL_2(ZZ)`` matrix carrying ``current`` to ``following=current._Rho()``."""
+    denominator = SageZZ(2) * SageZZ(current[2])
+    if denominator == 0:
+        raise ArithmeticError("a Rho step from c=0 is undefined")
+    numerator = SageZZ(following[1]) + SageZZ(current[1])
+    step_parameter = numerator // denominator
+    if denominator * step_parameter != numerator:
+        raise ArithmeticError("the Rho step parameter is not integral")
+    step = engine_matrix(
+        SageZZ,
+        ((0, -1), (1, step_parameter)),
+    )
+    if current.matrix_action_right(step) != following:
+        raise ArithmeticError("the reconstructed Rho matrix gives the wrong reduced form")
+    return step
+
+
+def _split_binary_reduction_to_zero_c(form):
+    r"""Reduce a split indefinite binary form to ``c=0`` and retain the change of variables."""
+    reduced, transformation = form.reduced_form(
+        transformation=True,
+        algorithm="sage",
+    )
+    current = reduced
+    while current[2] != 0:
+        following = current._Rho()
+        transformation = transformation * _rho_step_matrix(current, following)
+        current = following
+    if form.matrix_action_right(transformation) != current:
+        raise ArithmeticError("the split binary reduction matrix gives the wrong form")
+    return current, transformation
+
+
+def _proper_split_binary_equivalence_matrix(source, target):
+    r"""Return ``M in SL_2(ZZ)`` with ``source * M = target`` for split indefinite forms."""
+    source_reduced, source_reduction = _split_binary_reduction_to_zero_c(source)
+    target_reduced, target_reduction = _split_binary_reduction_to_zero_c(target)
+    if source_reduced[1] != target_reduced[1]:
+        return None
+    b = SageZZ(source_reduced[1])
+    if b == 0:
+        raise ArithmeticError("a split indefinite reduced form with c=0 has nonzero b")
+    difference = SageZZ(target_reduced[0]) - SageZZ(source_reduced[0])
+    shear_parameter = difference // b
+    if b * shear_parameter != difference:
+        return None
+    shear = engine_matrix(
+        SageZZ,
+        ((1, 0), (shear_parameter, 1)),
+    )
+    if source_reduced.matrix_action_right(shear) != target_reduced:
+        raise ArithmeticError("the split binary shear gives the wrong reduced form")
+    transformation = source_reduction * shear * target_reduction.inverse()
+    if source.matrix_action_right(transformation) != target:
+        raise ArithmeticError("the split binary proper equivalence matrix is incorrect")
+    return transformation
+
+
 def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
     r"""Return a binary indefinite isometry matrix, ``False``, or ``Unknown``.
 
     A returned matrix ``P`` satisfies ``P^T codomain_gram P = domain_gram``.
     The non-square-discriminant classification is complete by binary reduction
-    cycles.  Square discriminants use a different reduction theory and are
-    deliberately left to the existing external witness provider.
+    cycles.  For square discriminant, Sage's split reduction terminates at a
+    form ``a*x^2+b*x*y``; Conway--Sloane's criterion is then constructive via
+    an integral shear, with one fixed determinant-minus-one twist handling the
+    improper-equivalence case.
     """
     domain_form = _binary_form_from_gram(domain_gram)
     codomain_form = _binary_form_from_gram(codomain_gram)
     if domain_form.discriminant() != codomain_form.discriminant():
         return False
     if domain_form.discriminant().is_square():
-        return Unknown
+        transformation = _proper_split_binary_equivalence_matrix(
+            codomain_form,
+            domain_form,
+        )
+        if transformation is None:
+            improper_twist = engine_matrix(SageZZ, ((-1, 0), (0, 1)))
+            twisted_codomain = codomain_form.matrix_action_right(improper_twist)
+            proper_after_twist = _proper_split_binary_equivalence_matrix(
+                twisted_codomain,
+                domain_form,
+            )
+            if proper_after_twist is None:
+                return False
+            transformation = improper_twist * proper_after_twist
+        if codomain_form.matrix_action_right(transformation) != domain_form:
+            raise ArithmeticError("the split binary equivalence matrix does not preserve the lattice form")
+        return transformation
     domain_reduced, domain_reduction = domain_form.reduced_form(
         transformation=True,
         algorithm="sage",
