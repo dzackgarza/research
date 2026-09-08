@@ -359,6 +359,27 @@ def test_projective_plane_hyperplane_section_ring_has_the_expected_graded_pieces
     ) == 2
 
 
+def test_projective_plane_sections_are_actual_homogeneous_cox_polynomials() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    source = plane.divisor_section_space(line)
+    polynomial_space = plane.homogeneous_polynomial_section_space(line)
+    identification = plane.section_homogeneous_polynomial_isomorphism(line)
+    cox = plane.cox_ring()
+
+    assert source.dimension() == 3
+    assert polynomial_space.dimension() == 3
+    assert identification.domain() is source
+    assert identification.codomain() is polynomial_space
+    for character in source.module_generating_set():
+        monomial = plane.cox_monomial_of_section(line, character)
+        assert monomial.parent() is cox
+        assert cox.homogeneous_degree(monomial) == plane.divisor_class(line)
+        assert identification.forward()(source.module_generator(character)) == (
+            polynomial_space.module_generator(monomial)
+        )
+
+
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
     plane = _projective_plane()
     conic = ZZ(2) * plane.hyperplane_divisor()

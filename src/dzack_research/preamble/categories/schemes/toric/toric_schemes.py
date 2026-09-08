@@ -1010,6 +1010,69 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.divisor_section_characters(divisor),
             )
 
+        def cox_monomial_of_section(self, divisor, character):
+            r"""Return the Cox monomial representing ``chi^m`` as a section of ``O(D)``.
+
+            For ``D=sum a_rho D_rho`` and ``m in P_D cap M``, the homogeneous
+            Cox monomial is ``prod x_rho^(<m,u_rho>+a_rho)``.  Membership in
+            ``P_D`` is exactly the nonnegativity of these exponents.
+            """
+            divisor = self.weil_divisor_group()(divisor)
+            character = self.character_lattice()(character)
+            sections = self.divisor_section_characters(divisor)
+            if character not in sections:
+                raise ValueError("the character is not a global section of the stated divisor")
+            cox = self.cox_ring()
+            coefficients = module_coefficients(divisor, self.weil_divisor_group())
+            zero = _integers().zero()
+            monomial = cox.one()
+            for label in cox.algebra_generating_set():
+                ray = cox.cox_rays()[label]
+                exponent = self.order_of_character_along_prime_divisor(character, ray)
+                exponent += coefficients.get(ray, zero)
+                if exponent < zero:
+                    raise ArithmeticError("a divisor-polytope section produced a negative Cox exponent")
+                monomial *= cox.algebra_generator(label) ** int(exponent)
+            return monomial
+
+        @cached_method
+        def homogeneous_polynomial_section_space(self, divisor):
+            r"""Return ``H^0(X,O(D))`` with its actual Cox monomials as basis labels."""
+            divisor = self.weil_divisor_group()(divisor)
+            characters = self.divisor_section_characters(divisor)
+            monomials = finite_ordered_image(
+                characters,
+                lambda character: self.cox_monomial_of_section(divisor, character),
+                name="Homogeneous Cox monomial sections",
+            )
+            return BasedFreeModule(self.scheme_base_ring(), monomials)
+
+        @cached_method
+        def section_homogeneous_polynomial_isomorphism(self, divisor):
+            r"""Identify character sections with homogeneous Cox polynomials linearly."""
+            divisor = self.weil_divisor_group()(divisor)
+            source = self.divisor_section_space(divisor)
+            target = self.homogeneous_polynomial_section_space(divisor)
+            forward = module_homset(source, target)(
+                {
+                    character: target.module_generator(
+                        self.cox_monomial_of_section(divisor, character)
+                    )
+                    for character in source.module_generating_set()
+                }
+            )
+            inverse = module_homset(target, source)(
+                {
+                    monomial: source.module_generator(character)
+                    for character, monomial in zip(
+                        source.module_generating_set(),
+                        target.module_generating_set(),
+                        strict=True,
+                    )
+                }
+            )
+            return Isomorphism(forward, inverse)
+
         def complete_linear_system(self, divisor):
             r"""Return ``|D|`` as the projectivization of the represented section space."""
             from dzack_research.preamble.categories.divisors.linear_systems import (
