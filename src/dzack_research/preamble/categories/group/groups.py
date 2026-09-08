@@ -1831,7 +1831,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             @cached_method
             def irreducible_characters(self):
-                r"""The complex irreducible characters, as class functions.
+                r"""The complex irreducible characters, as elements of ``Char(G)``.
 
                 Values lie in the cyclotomic field of the group's exponent
                 and are read on the chosen conjugacy-class representatives,
@@ -1839,6 +1839,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 """
                 from dzack_research.preamble.categories.group.class_functions import (
                     finite_group_class_function,
+                )
+                from dzack_research.preamble.categories.group.characters import (
+                    character_from_class_function,
                 )
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,
@@ -1853,11 +1856,16 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 # index of isotypic components and is compared by identity.
                 return finite_ordered_set(
                     tuple(
-                        finite_group_class_function(
-                            self,
-                            field,
-                            tuple(field._from_engine_element(engine_field(value.sage())) for value in character.List()),
-                            representatives=representatives,
+                        character_from_class_function(
+                            finite_group_class_function(
+                                self,
+                                field,
+                                tuple(
+                                    field._from_engine_element(engine_field(value.sage()))
+                                    for value in character.List()
+                                ),
+                                representatives=representatives,
+                            )
                         )
                         for character in gap_group.Irr()
                     )
