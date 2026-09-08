@@ -166,10 +166,14 @@ def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_for
     for divisor in _prime_divisors(plane):
         assert plane.divisor_polytope(divisor).n_integral_points() == 3
         assert plane.divisor_section_characters(divisor).cardinality() == 3
+        sections = plane.divisor_section_space(divisor)
+        assert sections.dimension() == 3
+        assert sections.module_generating_set() == plane.divisor_section_characters(divisor)
 
     boundary = plane.toric_boundary_divisor()
     assert plane.divisor_polytope(boundary).n_integral_points() == 10
     assert characters.zero() in plane.divisor_section_characters(boundary)
+    assert plane.divisor_section_space(boundary).dimension() == 10
 
 
 def test_the_polytope_of_an_ample_divisor_has_the_fan_as_its_normal_fan() -> None:

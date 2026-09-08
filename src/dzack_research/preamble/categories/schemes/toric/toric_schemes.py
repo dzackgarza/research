@@ -55,6 +55,7 @@ from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroup
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -961,6 +962,23 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.divisor_polytope(divisor).integral_points(),
                 lambda point: _owned_vector(characters, point),
                 name="Section characters",
+            )
+
+        @cached_method
+        def divisor_section_space(self, divisor):
+            r"""Return ``H^0(X,O_X(D))`` with the character basis of ``P_D cap M``.
+
+            For a torus-invariant Cartier divisor on a complete toric variety,
+            the characters ``chi^m`` with ``m`` a lattice point of ``P_D`` form
+            a basis of global sections (CLS Prop. 4.3.3).  The represented
+            vector space therefore uses those actual character-lattice elements
+            as its basis labels rather than replacing them by positions.
+            """
+            if not self.is_cartier(divisor):
+                raise ValueError("the represented section space requires a Cartier divisor")
+            return BasedFreeModule(
+                self.scheme_base_ring(),
+                self.divisor_section_characters(divisor),
             )
 
         def log_pair(self):
