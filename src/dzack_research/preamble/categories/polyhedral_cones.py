@@ -237,6 +237,57 @@ class RationalPolyhedralCones(OwnedCategory):
                 complete=self.is_complete_wall_set(),
             )
 
+        def _covector_from_engine_hrepresentation(self, inequality):
+            r"""Cross one private homogeneous H-row back to the owned dual lattice."""
+            if inequality.b() != 0:
+                raise ArithmeticError(
+                    "a face of a cone must be defined by homogeneous H-representation rows"
+                )
+            dual = self.ambient_lattice().dual_module()
+            coordinates = _primitive_integral_coordinates(inequality.A())
+            return _owned_vector(dual, coordinates)
+
+        def _face_from_engine_face(self, face):
+            r"""Cross one nonempty engine face using its ambient active inequalities."""
+            active = tuple(
+                self._covector_from_engine_hrepresentation(relation)
+                for relation in face.ambient_Hrepresentation()
+            )
+            return rational_polyhedral_cone(
+                self.ambient_lattice(),
+                tuple(self._halfspace_covectors),
+                equation_covectors=tuple(self._equation_covectors) + active,
+                complete=self.is_complete_wall_set(),
+            )
+
+        def faces(self, dimension):
+            r"""Return all nonempty faces of the stated dimension as owned cones.
+
+            Sage's exact polyhedron engine computes the face incidence and
+            reports the ambient H-representations active on each face.  Those
+            active rows are crossed back as owned equality covectors, so the
+            public face remains an exact cone rather than an engine face.
+            """
+            dimension = int(dimension)
+            if dimension < 0 or dimension > int(self.dimension()):
+                return finite_ordered_set(())
+            return finite_ordered_set(
+                tuple(
+                    self._face_from_engine_face(face)
+                    for face in self._engine.faces(dimension)
+                )
+            )
+
+        def nonempty_faces(self):
+            r"""Return every geometric face, from the zero face through this cone."""
+            return finite_ordered_set(
+                tuple(
+                    face
+                    for dimension in range(int(self.dimension()) + 1)
+                    for face in self.faces(dimension)
+                )
+            )
+
         def facet_covectors(self):
             if self._engine.dim() <= 0:
                 return finite_ordered_set(())

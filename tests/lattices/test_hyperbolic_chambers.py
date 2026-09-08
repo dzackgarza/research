@@ -36,6 +36,22 @@ def test_unbounded_cone_retains_rays_facets_and_lineality() -> None:
     assert cone.lineality_generators().cardinality() == 0
 
 
+def test_exact_engine_faces_cross_back_as_owned_cones() -> None:
+    integers = _own_ring(SageZZ)
+    lattice = Lattices(integers)([[1, 0], [0, 1]])
+    dual = lattice.dual_module()
+    first, second = tuple(dual.module_generators())
+    from dzack_research.preamble.categories.polyhedral_cones import rational_polyhedral_cone
+
+    cone = rational_polyhedral_cone(lattice, (first, second))
+    assert cone.faces(0).cardinality() == 1
+    assert cone.faces(1).cardinality() == 2
+    assert cone.faces(2).cardinality() == 1
+    assert cone.nonempty_faces().cardinality() == 4
+    assert cone.faces(0)[0].primitive_rays().cardinality() == 0
+    assert all(face.primitive_rays().cardinality() == 1 for face in cone.faces(1))
+
+
 def test_hyperbolic_containment_uses_rays_and_lineality_not_the_origin() -> None:
     integers = _own_ring(SageZZ)
     lattice = HyperbolicLattices(integers)(Lattices(integers)([[2, 0], [0, -2]]))
