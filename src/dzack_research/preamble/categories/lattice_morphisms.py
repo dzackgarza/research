@@ -962,6 +962,72 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         r"""Return the finite even-overlattice sweep used by Nikulin existence."""
         return self.domain().even_overlattice_inclusions()
 
+    @cached_method
+    def _target_primitive_embedding_data(self):
+        source = self.domain()
+        target = self.codomain()
+        if (
+            _engine_ring(source.base_ring()) is not SageZZ
+            or _engine_ring(target.base_ring()) is not SageZZ
+            or not source.module_rank().is_finite()
+            or not target.module_rank().is_finite()
+            or not source.is_nondegenerate()
+            or not target.is_nondegenerate()
+            or source.module_rank() >= target.module_rank()
+            or target.is_definite()
+        ):
+            return None
+        if not engine_capabilities.is_available("lattice.target_primitive_embedding"):
+            return None
+        return lattice_engines.target_primitive_embedding(
+            source.gram_tensor(),
+            target.gram_tensor(),
+        )
+
+    def _target_primitive_embedding(self):
+        data = self._target_primitive_embedding_data()
+        if data is None:
+            raise NotImplementedError(
+                "target-specific primitive embeddings require an integral nondegenerate target unique in its genus and the OSCAR embedding provider"
+            )
+        if data is False:
+            raise ValueError("the primitive embedding homset is empty")
+        target_prime_gram, source_prime_gram, embedding_matrix = data
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        source = self.domain()
+        target = self.codomain()
+        lattices = Lattices(source.base_ring())
+        source_prime = lattices(source_prime_gram)
+        target_prime = lattices(target_prime_gram)
+        source_to_prime = source.Isom(source_prime).an_element()
+        target_prime_to_target = target_prime.Isom(target).an_element()
+        target_prime_generators = tuple(target_prime.module_generators())
+        source_prime_generators = tuple(source_prime.module_generators())
+        inclusion = source_prime.Emb(target_prime)(
+            tuple(
+                sum(
+                    (
+                        target_prime.scalar_multiple(
+                            embedding_matrix[row, column],
+                            target_prime_generators[row],
+                        )
+                        for row in range(int(target_prime.module_rank()))
+                        if embedding_matrix[row, column]
+                    ),
+                    target_prime.zero(),
+                )
+                for column, _generator in enumerate(source_prime_generators)
+            )
+        )
+        composed = target_prime_to_target * inclusion * source_to_prime
+        return self(
+            tuple(
+                composed(source.module_generator(label))
+                for label in source.module_generating_set()
+            )
+        )
+
     def __iter__(self):
         r"""Enumerate all embeddings when the target lattice is definite.
 
@@ -1018,6 +1084,11 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             and source.module_rank() == target.module_rank()
         ):
             return source.Isom(target).is_empty()
+        target_embedding_data = self._target_primitive_embedding_data()
+        if target_embedding_data is False:
+            return True
+        if target_embedding_data is not None:
+            return False
         if self._codomain_is_even_unimodular_indefinite():
             if not source.is_even():
                 return True
@@ -1050,6 +1121,9 @@ class LatticeEmbeddingHomset(CategoricalHomset):
                     for label in source.module_generating_set()
                 )
             )
+        target_embedding_data = self._target_primitive_embedding_data()
+        if target_embedding_data is not None:
+            return self._target_primitive_embedding()
         if self._codomain_is_even_unimodular_indefinite():
             if self.is_empty():
                 raise ValueError("the embedding homset is empty")
