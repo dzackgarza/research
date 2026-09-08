@@ -7,9 +7,11 @@ morphism ``R -> End_Ab(U(M))``.
 """
 
 from dzack_research.preamble.all import (
+    AdditiveGroups,
     BasedFreeModule,
     FreeModuleOn,
     GeneralModule,
+    MatrixSpace,
     ModulesWithChosenFinitePresentation,
     NN,
     QQ,
@@ -146,3 +148,26 @@ def test_selected_presentations_are_arrow_objects_and_contractible_summands_rema
     assert normalization.forward() in category.Mor(
         stabilized.presentation_object(), normalization.codomain()
     )
+
+
+def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
+    ring = MatrixSpace(QQ, 2)
+    additive = AdditiveGroups().AdditiveCommutative()
+    endomorphisms = additive.End(ring)
+    action = ring_morphism(
+        ring,
+        endomorphisms,
+        lambda scalar: endomorphisms.elementwise(
+            lambda element: scalar * element,
+        ),
+    )
+    regular = Modules(ring)(action)
+    linear_endomorphisms = Modules(ring).End(regular)
+    center = ring.ring_center()
+
+    assert linear_endomorphisms.base_ring() is center
+    identity = linear_endomorphisms.identity()
+    central_scalar = center(ring.one())
+    scaled = linear_endomorphisms.scalar_multiple(central_scalar, identity)
+    element = regular(ring.one())
+    assert scaled(element) == regular.scalar_multiple(central_scalar, element)

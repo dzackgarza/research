@@ -1036,7 +1036,9 @@ def _initialize_module_hom_parent(
     """
     ring = _owned_ring(domain.base_ring())
     assert codomain in domain.module_category(), f"{codomain} is not placed as a module over {ring}"
-    parent._preamble_base_ring = ring if ring in OwnedRings().Commutative() else _own_ring(SageZZ)
+    parent._preamble_base_ring = (
+        ring if ring in OwnedRings().Commutative() else ring.ring_center()
+    )
     parent._preamble_algebra_base_ring = parent._preamble_base_ring
     placement = domain.module_category()._hom_parent_placement(
         domain,

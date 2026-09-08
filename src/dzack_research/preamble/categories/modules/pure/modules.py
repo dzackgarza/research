@@ -516,7 +516,11 @@ class Modules(OwnedCategoryOverBaseRing):
 
         ring = self.base_ring()
         if ring not in OwnedRings().Commutative():
-            return AdditiveEndomorphismRings(_own_ring(SageZZ)) if domain is codomain else AdditiveHomGroups()
+            center = ring.ring_center()
+            placement = [LinearHomModules(center)]
+            if domain is codomain:
+                placement.append(AdditiveEndomorphismRings(center))
+            return Category.join(tuple(placement))
         placement = [InternalHomModules(ring) if full_internal_hom else LinearHomModules(ring)]
         free = FinitelyGeneratedFreeModules(ring)
         matrix = (
