@@ -23,6 +23,21 @@ from dzack_research.preamble.all import (
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    Biproduct,
+    TensorProduct,
+)
+from dzack_research.preamble.categories.modules.internal_hom import InternalHom
+from dzack_research.preamble.categories.modules.powers import (
+    AlternatingPower,
+    AlternatingPowerModules,
+    DividedPower,
+    DividedPowerModules,
+    SymmetricPower,
+    SymmetricPowerModules,
+    TensorPower,
+    TensorPowerModules,
+)
 from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 from dzack_research.preamble.categories.sets import finite_ordered_set
@@ -216,6 +231,58 @@ def test_module_morphism_lifts_to_the_selected_presentation_diagrams() -> None:
     for label in source.module_generating_set():
         lifted = square.right()(source.presentation().codomain().module_generator(label))
         assert target_projection(lifted) == morphism(source.module_generator(label))
+
+
+def test_derived_module_constructors_retain_selected_data_and_scalar_actions() -> None:
+    cyclic = _cyclic_six_from_presentation()
+    free = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    constructions = (
+        Biproduct(cyclic, free),
+        TensorProduct(cyclic, free),
+        InternalHom(cyclic, cyclic),
+        TensorPower(cyclic, 2),
+        SymmetricPower(cyclic, 2),
+        AlternatingPower(cyclic, 2),
+        DividedPower(cyclic, 2),
+    )
+
+    for module in constructions:
+        assert module in ModulesWithChosenFinitePresentation(ZZ)
+        assert module.presentation_object().arrow() is module.presentation()
+        assert module.framing_object().arrow().codomain() is module
+        labels = module.module_generating_set()
+        element = (
+            module.zero()
+            if labels.cardinality() == 0
+            else module.module_generator(next(iter(labels)))
+        )
+        assert module.scalar_action()(ZZ(4))(element) == module.scalar_multiple(
+            ZZ(4), element
+        )
+
+    powers = (
+        (TensorPower(cyclic, 2), TensorPowerModules(ZZ)),
+        (SymmetricPower(cyclic, 2), SymmetricPowerModules(ZZ)),
+        (AlternatingPower(cyclic, 2), AlternatingPowerModules(ZZ)),
+        (DividedPower(cyclic, 2), DividedPowerModules(ZZ)),
+    )
+    for power, category in powers:
+        assert power in category
+        assert power.power_source() is cyclic
+        assert power.power_degree() == 2
+
+
+def test_free_duality_retains_the_selected_framing_and_action() -> None:
+    module = FreeModuleOn(ZZ, NN)
+    dual = module.dual_module()
+
+    assert dual.module_generating_set() is module.module_generating_set()
+    assert dual.framing_object().arrow().codomain() is dual
+    label = NN(3)
+    element = dual.module_generator(label)
+    assert dual.scalar_action()(ZZ(-2))(element) == dual.scalar_multiple(
+        ZZ(-2), element
+    )
 
 
 def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:

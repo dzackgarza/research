@@ -28,6 +28,9 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
 )
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.abstract_categories.products import (
+    _finite_factor_family,
+)
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
     _presentation_from_relation_rows,
@@ -44,6 +47,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModulesWithChosenFinitePresentation,
+    _module_tensor_product_with_data,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -65,6 +69,19 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 
 
+class _PowerModuleParentMethods:
+    def __init__(self, power_source, power_degree, **rest) -> None:
+        self._preamble_power_source = power_source
+        self._preamble_power_degree = int(power_degree)
+        super().__init__(**rest)
+
+    def power_source(self):
+        return self._preamble_power_source
+
+    def power_degree(self):
+        return self._preamble_power_degree
+
+
 class TensorPowerModules(OwnedCategoryOverBaseRing):
     @classmethod
     def _repr_object_names(cls):
@@ -73,6 +90,9 @@ class TensorPowerModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
 
         return [Modules(self.base_ring())]
+
+    class ParentMethods(_PowerModuleParentMethods):
+        pass
 
 
 class SymmetricPowerModules(OwnedCategoryOverBaseRing):
@@ -84,6 +104,9 @@ class SymmetricPowerModules(OwnedCategoryOverBaseRing):
 
         return [Modules(self.base_ring())]
 
+    class ParentMethods(_PowerModuleParentMethods):
+        pass
+
 
 class AlternatingPowerModules(OwnedCategoryOverBaseRing):
     @classmethod
@@ -94,6 +117,9 @@ class AlternatingPowerModules(OwnedCategoryOverBaseRing):
 
         return [Modules(self.base_ring())]
 
+    class ParentMethods(_PowerModuleParentMethods):
+        pass
+
 
 class DividedPowerModules(OwnedCategoryOverBaseRing):
     @classmethod
@@ -103,6 +129,9 @@ class DividedPowerModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
 
         return [Modules(self.base_ring())]
+
+    class ParentMethods(_PowerModuleParentMethods):
+        pass
 
 
 class QuadraticModuleMorphism(ModuleMorphism):
@@ -624,8 +653,15 @@ def DividedSquare(module):
         module,
         2,
         "divided",
-        extra_categories=(DividedSquareModules(module.base_ring()),),
-        extra_construction_data={"divided_square_source": module},
+        extra_categories=(
+            DividedPowerModules(module.base_ring()),
+            DividedSquareModules(module.base_ring()),
+        ),
+        extra_construction_data={
+            "divided_square_source": module,
+            "power_source": module,
+            "power_degree": 2,
+        },
     )
 
 
@@ -661,8 +697,16 @@ def TensorPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _tensor_power_nontrivial(module, degree):
-
-    return TensorProduct(TensorPower(module, degree - 1), module)
+    left = TensorPower(module, degree - 1)
+    family = _finite_factor_family((left, module), name="Tensor-power factors")
+    return _module_tensor_product_with_data(
+        family,
+        extra_categories=(TensorPowerModules(module.base_ring()),),
+        extra_construction_data={
+            "power_source": module,
+            "power_degree": degree,
+        },
+    )
 
 
 def SymmetricPower(module, degree):
@@ -675,7 +719,16 @@ def SymmetricPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _symmetric_power_nontrivial(module, degree):
-    return _presented_degree_power(module, degree, "symmetric")
+    return _presented_degree_power(
+        module,
+        degree,
+        "symmetric",
+        extra_categories=(SymmetricPowerModules(module.base_ring()),),
+        extra_construction_data={
+            "power_source": module,
+            "power_degree": degree,
+        },
+    )
 
 
 def AlternatingPower(module, degree):
@@ -688,7 +741,16 @@ def AlternatingPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _alternating_power_nontrivial(module, degree):
-    return _presented_degree_power(module, degree, "alternating")
+    return _presented_degree_power(
+        module,
+        degree,
+        "alternating",
+        extra_categories=(AlternatingPowerModules(module.base_ring()),),
+        extra_construction_data={
+            "power_source": module,
+            "power_degree": degree,
+        },
+    )
 
 
 def DividedPower(module, degree):
@@ -707,7 +769,16 @@ def DividedPower(module, degree):
 
 @cached_function(key=lambda module, degree: (id(module), int(degree)))
 def _divided_power_nontrivial(module, degree):
-    return _presented_degree_power(module, degree, "divided")
+    return _presented_degree_power(
+        module,
+        degree,
+        "divided",
+        extra_categories=(DividedPowerModules(module.base_ring()),),
+        extra_construction_data={
+            "power_source": module,
+            "power_degree": degree,
+        },
+    )
 
 
 from dzack_research.preamble.categories.modules.tensor_products import (

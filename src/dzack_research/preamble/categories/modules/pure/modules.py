@@ -2206,6 +2206,16 @@ def _module_tensor_product(left, right):
 @cached_function(key=lambda factors: (factors.index_set(), tuple(map(id, factors))))
 def _module_tensor_product(factors):
     r"""Return $\bigotimes_{i \in I} M_i$ over the family's own index set."""
+    return _module_tensor_product_with_data(factors)
+
+
+def _module_tensor_product_with_data(
+    factors,
+    *,
+    extra_categories=(),
+    extra_construction_data=None,
+):
+    r"""Construct a represented tensor product with additional owned structure."""
     values = tuple(factors)
     assert values, "a tensor product is taken over a nonempty family of factors"
     ring = _owned_ring(values[0].base_ring())
@@ -2223,10 +2233,13 @@ def _module_tensor_product(factors):
     tensor_labels = _tensor_label_set(factors)
 
     if represented_free:
+        construction_data = {"tensor_factors": factors}
+        if extra_construction_data is not None:
+            construction_data.update(extra_construction_data)
         return values[0]._fresh_free_module_on(
             tensor_labels,
-            _extra_categories=(TensorProductModules(ring),),
-            _extra_construction_data={"tensor_factors": factors},
+            _extra_categories=(TensorProductModules(ring), *tuple(extra_categories)),
+            _extra_construction_data=construction_data,
         )
 
     label_sets = tuple(factor.module_generating_set() for factor in values)
@@ -2261,12 +2274,15 @@ def _module_tensor_product(factors):
                 rows.append(row)
 
     result = NotImplemented
+    construction_data = {"tensor_factors": factors}
+    if extra_construction_data is not None:
+        construction_data.update(extra_construction_data)
     for presentation_owner in values:
         result = presentation_owner._presented_module_from_relation_rows(
             tensor_labels,
             rows,
-            extra_categories=(TensorProductModules(ring),),
-            extra_construction_data={"tensor_factors": factors},
+            extra_categories=(TensorProductModules(ring), *tuple(extra_categories)),
+            extra_construction_data=construction_data,
         )
         if result is not NotImplemented:
             break
