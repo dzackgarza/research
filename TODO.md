@@ -2146,18 +2146,18 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 3.1 Lattices (`L`)
 
-- [ ] `B = L.gram_tensor()`: actual symmetric $(0,2)$-tensor.
-- [ ] `M = L.gram_matrix(basis=None)`: coordinate presentation of $B$.
-- [ ] `L.b(v, w)`: bilinear pairing $b_L(v,w)$.
-- [ ] `L.q(v)`: quadratic evaluation $b_L(v,v)$ without $1/2$ factor.
+- [x] `B = L.gram_tensor()`: actual symmetric $(0,2)$-tensor.
+- [x] `M = L.gram_matrix(basis=None)`: coordinate presentation of $B$.
+- [x] `L.b(v, w)`: bilinear pairing $b_L(v,w)$.
+- [x] `L.q(v)`: quadratic evaluation $b_L(v,v)$ without $1/2$ factor.
 - [ ] `L.metric_map()`: canonical map $L \to L.\operatorname{linear\_dual}()$.
-- [ ] `L.linear_dual()`: exact module dual $\operatorname{Hom}_{\mathbb{Z}}(L, \mathbb{Z})$.
-- [ ] `L.dual_lattice()`: dual lattice $L^\vee$ inside $L \otimes \mathbb{Q}$.
-- [ ] `L.discriminant_module()`: finite formed module $A_L = L^\vee/L$ with quadratic form $q(x + L) \in \mathbb{Q}/2\mathbb{Z}$ (even) or bilinear form (odd).
-- [ ] Invariant predicates: `L.signature()`, `L.radical()`, `L.is_even()`, `L.is_nondegenerate()`.
-- [ ] `L.sublattice_from(vectors, saturate=False)`: returns a subobject pair $(S, \iota: S \hookrightarrow L)$ with inclusion morphism, never an unattached Gram matrix.
-- [ ] `L.primitive_sublattice_from(vectors)`: saturated subobject via Smith normal form of the quotient.
-- [ ] `L.orthogonal_complement(I)` / `L.perp(I)`: orthogonal subobject pair $(I^\perp, \iota: I^\perp \hookrightarrow L)$.
+- [x] `L.linear_dual()`: exact module dual $\operatorname{Hom}_{\mathbb{Z}}(L, \mathbb{Z})$.
+- [x] `L.dual_lattice()`: dual lattice $L^\vee$ inside $L \otimes \mathbb{Q}$.
+- [x] `L.discriminant_module()`: finite formed module $A_L = L^\vee/L$ with quadratic form $q(x + L) \in \mathbb{Q}/2\mathbb{Z}$ (even) or bilinear form (odd).
+- [x] Invariant predicates: `L.signature()`, `L.radical()`, `L.is_even()`, `L.is_nondegenerate()`.
+- [x] `L.sublattice_from(vectors, saturate=False)`: returns a subobject pair $(S, \iota: S \hookrightarrow L)$ with inclusion morphism, never an unattached Gram matrix.
+- [x] `L.primitive_sublattice_from(vectors)`: saturated subobject via Smith normal form of the quotient.
+- [x] `L.orthogonal_complement(I)` / `L.perp(I)`: orthogonal subobject pair $(I^\perp, \iota: I^\perp \hookrightarrow L)$.
 - [ ] `L.O()`: full finitely generated arithmetic group $O(L)$.
 - [ ] `L.O_plus()`: stable orthogonal group $\widetilde{O}(L) = \ker(O(L) \to O(A_L))$.
 - [ ] `L.O_component()`: positive cone component group $O^\Omega(L)$, when a component is specified.
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `O-lattice-semantic-api-20260908-0614` | O / lattice duality, signature, and sublattice semantic API | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_lattice_semantic_api.py` (write) | `3e91f264` | 2026-09-08T06:14:00Z |
 
 #### Existing work awaiting adoption
 
