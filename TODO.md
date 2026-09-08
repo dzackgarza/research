@@ -2315,7 +2315,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] Reflectivity testing when the algorithm actually proves the result.
 - [x] Cocompactness from chamber/diagram data.
 - [x] Weyl/reflection groups as actual subgroups of `O(L)`.
-- [ ] Isotropic vectors below a Vinberg height bound.
+- [x] Isotropic vectors below a Vinberg height bound.
 - [ ] Chamber-complex data.
 - [x] Lorentz/Allcock edge-walk fundamental-domain backend.
 - [x] Bogachev--Kolpakov exact regression examples.
