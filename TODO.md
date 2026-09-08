@@ -1272,13 +1272,17 @@ apply `ENG-06` before implementation. Bridge repairs and codec additions belong
 at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`).
 
 - [ ] **`lattice-embeddings`**. **Needs:** none.
-  Extend indefinite lattice embeddings and resolve the remaining exact
-  isometry algorithm regimes.
+  Extend indefinite lattice embeddings beyond the exact regimes now represented.
   **Owners:** `categories/lattice_morphisms.py`,
   `categories/lattices.py`, and private lattice engines.
-  **Deliver:** existence and enumeration for the required indefinite
-  codomains, including those not even unimodular, and the remaining
-  higher-rank genus/spinor-genus separation cases.
+  **Current maintained boundary:** higher-rank finite nondegenerate `ZZ`-lattice
+  isometry now uses OSCAR `is_isometric_with_isometry` and returns an actual
+  integral witness or an exact negative decision; target-specific primitive
+  embeddings and `sub`/`emb` class representatives use OSCAR/Nikulin when the
+  chosen target is unique in its genus.
+  **Remaining deliverable:** chosen-target primitive embedding existence/orbit
+  completeness outside that target-genus regime, without replacing the chosen
+  target by an arbitrary lattice in the same genus.
   **Decision:** existence, an explicit embedding/isometry, and a complete
   orbit classification are different outputs. Missing backend support is
   not a negative mathematical answer.
