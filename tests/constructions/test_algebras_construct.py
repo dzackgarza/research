@@ -111,14 +111,20 @@ def test_matrix_algebra_is_a_lie_algebra_under_the_commutator(commutative_ring) 
     matrices = MatrixSpace(ring, 2)
     e01 = matrices.matrix_unit(0, 1)
     e10 = matrices.matrix_unit(1, 0)
+    commutator = AssociativeAlgebras(ring).commutator_lie_algebra()(matrices)
+    module = commutator.underlying_module()
+    left = module(e01)
+    right = module(e10)
 
-    assert matrices in CommutatorLieAlgebras(ring)
-    assert matrices in LieAlgebras(ring)
-    assert matrices.bracket(e01, e10) == e01 * e10 - e10 * e01
-    assert matrices.bracket(e01, e01) == matrices.zero()
-    h = matrices.bracket(e01, e10)
-    assert matrices.bracket(h, e01) == 2 * e01
-    assert matrices.bracket(h, e10) == -2 * e10
+    assert commutator is not matrices
+    assert commutator in CommutatorLieAlgebras(ring)
+    assert commutator in LieAlgebras(ring)
+    assert commutator in Algebras(ring).Lie()
+    assert commutator.bracket(left, right) == module(e01 * e10 - e10 * e01)
+    assert commutator.bracket(left, left) == module.zero()
+    h = commutator.bracket(left, right)
+    assert commutator.bracket(h, left) == module.scalar_multiple(ring(2), left)
+    assert commutator.bracket(h, right) == module.scalar_multiple(ring(-2), right)
 
 
 # ---------------------------------------------------------------------------

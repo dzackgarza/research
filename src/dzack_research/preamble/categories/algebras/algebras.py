@@ -627,6 +627,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             r"""Return the refinement equipped with a two-sided unit."""
             return self._with_axiom("Unital")
 
+        def Lie(self):
+            r"""Return the refinement whose selected multiplication is a Lie bracket."""
+            return self._with_axiom("Lie")
+
     def Mor(self, domain, codomain):
         r"""Return the unique Hom-set ``Hom_{R-Alg}(domain,codomain)``."""
         if domain not in self or codomain not in self:
@@ -900,6 +904,14 @@ class Algebras(OwnedCategoryOverBaseRing):
                 r"""Return the associative refinement with a two-sided unit."""
                 return self._with_axiom("Unital")
 
+            def commutator_lie_algebra(self):
+                r"""Return the functor sending ``m`` to the Lie product ``m-m tau``."""
+                from dzack_research.preamble.categories.functors.commutator_lie_algebras import (
+                    commutator_lie_algebra_functor,
+                )
+
+                return commutator_lie_algebra_functor(self.base_ring())
+
         @classmethod
         def _repr_object_names(cls):
             return "associative algebras"
@@ -1039,6 +1051,33 @@ class Algebras(OwnedCategoryOverBaseRing):
                         source_unit = source.one()
                     _forget, equip = self._multiplication_transport_maps()
                     return self(equip(source_unit))
+
+    class Lie(CategoryWithAxiom):
+        r"""Algebras whose selected bilinear multiplication satisfies the Lie identities.
+
+        No associativity or unit is implied: the multiplication at this node
+        is the bracket itself.  Consequently the ordinary algebra Hom already
+        has the correct morphisms, namely the linear maps preserving that
+        multiplication.
+        """
+
+        _HomCategory = GeneralAlgebraHomCategoryConstruction
+
+        @classmethod
+        def _repr_object_names(cls):
+            return "Lie algebras"
+
+        def _call_(self, module, multiplication=None):
+            if module in Algebras(self.base_ring()):
+                algebra = module
+            else:
+                algebra = Algebras(self.base_ring())(module, multiplication)
+            refine(algebra, self)
+            return algebra
+
+        class ParentMethods:
+            def bracket(self, left, right):
+                return self.product(left, right)
 
     class Unital(CategoryWithAxiom):
         r"""Algebras equipped with a selected two-sided unit, without associativity."""

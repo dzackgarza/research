@@ -8,14 +8,14 @@ functor names the passage rather than building a second model.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.algebras.algebras import AssociativeAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras, AssociativeAlgebras
 from dzack_research.preamble.categories.algebras.lie_algebras import (
     CommutatorLieAlgebras,
-    LieAlgebraMorphism,
-    lie_algebra_homset,
 )
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.refine import refine
 
 
 class CommutatorLieAlgebraFunctor(Functor):
@@ -32,21 +32,36 @@ class CommutatorLieAlgebraFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, algebra):
-        r"""Return the algebra, which already is its own commutator Lie algebra.
-
-        The commutator is determined by the product, so the passage adds no
-        structure and takes none away: an associative algebra over a
-        commutative ring is placed in
-        :class:`~dzack_research.preamble.categories.algebras.lie_algebras.CommutatorLieAlgebras`
-        by its own category, and this functor is the identity on objects.
-        It is therefore not what makes an algebra a Lie algebra -- the
-        category graph says that -- and asking it is how a caller says which
-        of the two structures it means to use next.
-        """
-        return algebra
+        r"""Equip the same underlying module with the changed product ``xy-yx``."""
+        module = algebra.underlying_module()
+        multiplication = algebra.multiplication_morphism()
+        tensor = multiplication.domain()
+        commutator = tensor.from_bilinear(
+            BilinearMap(
+                module,
+                module,
+                module,
+                lambda left, right: multiplication(
+                    tensor.pure_tensor(
+                        module.module_generator(left),
+                        module.module_generator(right),
+                    )
+                )
+                - multiplication(
+                    tensor.pure_tensor(
+                        module.module_generator(right),
+                        module.module_generator(left),
+                    )
+                ),
+            )
+        )
+        result = Algebras(self.base_ring()).Lie()(module, commutator)
+        refine(result, CommutatorLieAlgebras(self.base_ring()))
+        result._preamble_commutator_source_algebra = algebra
+        return result
 
     def _apply_morphism(self, morphism):
-        r"""Return the same map, read in the Lie Hom of its endpoints.
+        r"""Return the underlying linear map between the changed multiplications.
 
         A morphism of associative algebras preserves the commutator, since
         \(f(xy-yx)=f(x)f(y)-f(y)f(x)\) follows from multiplicativity, and it
@@ -61,16 +76,15 @@ class CommutatorLieAlgebraFunctor(Functor):
         :func:`~dzack_research.preamble.categories.functors.algebra_modules.algebra_underlying_module_functor`
         is where that map is asked for.
         """
-        return LieAlgebraMorphism(
-            lie_algebra_homset(
-                self(morphism.domain()),
-                self(morphism.codomain()),
-            ),
-            morphism,
-            elementwise=True,
-            verify_linearity=False,
-            verify_bracket=False,
-        )
+        underlying = getattr(morphism, "underlying_morphism", None)
+        if callable(underlying):
+            underlying = underlying()
+        else:
+            underlying = morphism
+        return Algebras(self.base_ring()).Lie().Mor(
+            self(morphism.domain()),
+            self(morphism.codomain()),
+        )(underlying)
 
     def _repr_(self):
         return f"Commutator Lie-algebra functor on associative {self.base_ring()}-algebras"
