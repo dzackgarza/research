@@ -13,8 +13,10 @@ from dzack_research.preamble.all import (
     FramedModules,
     GeneralModule,
     MatrixSpace,
+    Modules,
     ModulesWithChosenFinitePresentation,
     NN,
+    PolynomialRing,
     QQ,
     Set,
     ZZ,
@@ -320,3 +322,24 @@ def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
     scaled = linear_endomorphisms.scalar_multiple(central_scalar, identity)
     element = regular(ring.one())
     assert scaled(element) == regular.scalar_multiple(central_scalar, element)
+
+
+def test_localization_is_scalar_extension_of_the_selected_presentation_and_action() -> None:
+    ring = PolynomialRing(QQ, "x")
+    x = ring.algebra_generator("x")
+    target = BasedFreeModule(ring, finite_ordered_set(("g",)))
+    relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    module = module_homset(relations, target)(
+        {"r": target.scalar_multiple(x, target.module_generator("g"))}
+    ).cokernel()
+    localized = module.localize(x - ring.one())
+
+    localization_ring = localized.base_ring()
+    assert localized.localization_functor().ring_map() is localization_ring.localization_map()
+    assert localized in ModulesWithChosenFinitePresentation(localization_ring)
+    assert localized.presentation_object().arrow() is localized.presentation()
+    generator = localized.module_generator("g")
+    scalar = localization_ring.localization_map()(x)
+    assert localized.scalar_action()(scalar)(generator) == localized.scalar_multiple(
+        scalar, generator
+    )
