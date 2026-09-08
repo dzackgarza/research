@@ -1,6 +1,10 @@
 r"""Modules equipped with exact bilinear or quadratic forms."""
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from sage.categories.homset import Homset
 from sage.categories.modules import Modules as SageModules
 from sage.categories.morphism import Morphism
@@ -80,6 +84,26 @@ def _normalize_value_module(value_module):
         return _owned_ring(value_module)
     except TypeError:
         return value_module
+
+
+class FormValueObjects(OwnedCategory):
+    r"""Represented scalar rings and modules allowed as values of a pairing."""
+
+    def an_object(self):
+        return _owned_ring(SageZZ)
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        candidate = _normalize_value_module(candidate)
+        if candidate in OwnedRings():
+            return True
+        try:
+            ring = candidate.base_ring()
+        except (AttributeError, TypeError):
+            return False
+        return candidate in Modules(ring)
 
 
 
@@ -663,6 +687,9 @@ class PairedModules(OwnedParameterizedCategory):
     def _repr_object_names(cls):
         return "paired modules"
 
+    def parameter_category(self):
+        return FormValueObjects()
+
     def super_categories(self):
         return [OwnedSets()]
 
@@ -713,6 +740,9 @@ class FormedModules(OwnedParameterizedCategory):
     @classmethod
     def _repr_object_names(cls):
         return "formed modules"
+
+    def parameter_category(self):
+        return FormValueObjects()
 
     def super_categories(self):
         return [PairedModules(self.base())]
