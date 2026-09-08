@@ -74,7 +74,30 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             return sum(self._preamble_complete_intersection_degrees) - ambient_dimension - 1
 
         def is_gorenstein(self) -> bool:
+            r"""Return ``True``: a quotient of a regular ring by a regular sequence is Gorenstein."""
             return True
+
+        def is_normal(self) -> bool:
+            r"""Decide normality by Serre's criterion in characteristic zero.
+
+            A complete intersection is Cohen--Macaulay, hence satisfies ``S_2``.
+            Thus normality is equivalent to ``R_1``.  Sage's projective
+            Jacobian ideal is computed on the affine cone: if ``X`` has
+            dimension ``d >= 1``, ``R_1`` says its projective singular locus
+            has dimension at most ``d-2``, equivalently the affine-cone
+            Jacobian locus has dimension at most ``d-1``.  In dimension zero,
+            characteristic zero makes normality equivalent to smoothness.
+            """
+            base = self.scheme_base_ring()
+            if int(_engine_ring(base).characteristic()) != 0:
+                raise NotImplementedError(
+                    "the represented complete-intersection normality criterion currently requires characteristic zero"
+                )
+            dimension = int(self.expected_dimension())
+            if dimension == 0:
+                return bool(self.is_smooth())
+            singular_cone_dimension = int(self.Jacobian().dimension())
+            return singular_cone_dimension <= dimension - 1
 
         def projective_degree(self):
             r"""Return the complete-intersection degree ``prod d_i``."""

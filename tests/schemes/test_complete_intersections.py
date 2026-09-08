@@ -58,3 +58,25 @@ def test_quartic_k3_boundary_is_not_misclassified_as_del_pezzo() -> None:
     assert quartic.adjunction_twist_degree() == 0
     assert quartic.anticanonical_twist_degree() == 0
     assert not quartic.is_del_pezzo()
+
+
+def test_normality_of_complete_intersections_uses_r1_not_smoothness() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, _x3 = space.gens()
+    quadric_cone = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0 * x1 - x2**2)
+    )
+
+    assert not quadric_cone.is_smooth()
+    assert quadric_cone.is_normal()
+    assert quadric_cone.is_gorenstein()
+
+
+def test_a_singular_complete_intersection_curve_is_not_normal() -> None:
+    plane = ProjectiveSpace(2, QQ)
+    x, y, z = plane.gens()
+    cusp = ProjectiveCompleteIntersection(plane.closed_subscheme(y**2 * z - x**3))
+
+    assert not cusp.is_smooth()
+    assert not cusp.is_normal()
+    assert cusp.is_gorenstein()
