@@ -639,22 +639,6 @@ restart of the module/algebra/action constructions.
   supplied module. Generic owners do not import their new descendants.
   Keep general class/functor compilation at `sage-categories`, not here.
 
-- [ ] **`algebra-preservation`**. **Needs:** none.
-  Add preservation specimens around shared algebra edits at the existing
-  mathematical proof surfaces.
-  **Owner:** `categories/algebras/algebras.py` and its tests.
-  **Decision:** a shared-file edit is accepted against both the newly added
-  operation and the neighboring mathematical contracts it can disturb.
-  **Specimens:** the center of a finite-dimensional associative algebra as a
-  subalgebra with its inclusion and multiplication; non-associative central
-  submodule behavior; the unital center's unit when the category requires it;
-  and the Lie cokernel of the Cartan inclusion in `sl_2(QQ)`.
-  Contrast that Lie cokernel with the underlying-module cokernel.
-  **Acceptance:** all assertions exercise the public mathematical operations;
-  source review covers entire affected methods and class blocks, including
-  return paths and indentation. Do not schedule reconstruction of the already
-  present center or Lie ideal-quotient algorithms merely to add these controls.
-
 - [ ] **`general-modules`**. **Needs:** none.
   Extend general module contracts outside the current finite presentation
   algorithms without weakening their mathematical domains.
@@ -1479,7 +1463,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `constructor-convergence`, `category-boundaries`, `algebra-preservation`, `general-modules`, `grading-witnesses`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `constructor-convergence`, `category-boundaries`, `general-modules`, `grading-witnesses`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature
@@ -1666,6 +1650,5 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `ALGEBRA-preservation-20260908-1019` | algebra-preservation / center and Lie quotient proof surfaces | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/algebras.py; tests/algebras/test_algebra_preservation.py` (write) | `3fcdf27e` | 2026-09-08T10:19:00Z |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
 | `LATTICE-parabolic-gluing-20260908-0832` | arithmetic / exact parabolic Levi image | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_parabolic_gluing.py` (write) | `9f36bcb0` | 2026-09-08T08:32:00Z |
