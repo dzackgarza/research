@@ -1291,9 +1291,10 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   external arithmetic operations.
   **Owners:** rational matrix groups, lattice stabilizers,
   `categories/orthogonal_quotients.py`, and `sage-indefinite-port`.
-  **Deliver:** integral transporter between commensurable lattices,
-  right-coset transversals, and double cosets with the precise group actions
-  on the finite quotient module.
+  **Deliver:** integral transporter between commensurable lattices and the
+  remaining external arithmetic lifting theorem. Finite-character right-coset
+  transversals and stabilizer double cosets now return live orthogonal-group
+  lifts with explicit coset orientation.
   **Decision:** finite reduction computes the stated arithmetic object only
   after proving the invariant-lattice/denominator and lifting hypotheses.
   An arbitrary rational matrix group need not admit the required finite
@@ -1658,6 +1659,5 @@ behavior.
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `LATTICE-character-right-cosets-20260908-1318` | transporters / finite-character right-coset transversal with live lifts | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/orthogonal_quotients.py; tests/lattices/test_orthogonal_character_cosets.py` (write) | `c56f8406` | 2026-09-08T13:18:00Z |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
 | `LATTICE-parabolic-gluing-20260908-0832` | arithmetic / exact parabolic Levi image | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_parabolic_gluing.py` (write) | `9f36bcb0` | 2026-09-08T08:32:00Z |
