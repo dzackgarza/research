@@ -203,6 +203,10 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
 
 - **When selecting work:** reread the live queue, its dependencies and active
   claims, then inspect the selected item's current source and consumers.
+  Use the [TODO DAG](TODO.md#remaining-workstreams-as-a-dependency-graph): each
+  unchecked item has one stable ID and one `Needs` list. Select a ready required
+  node, then apply the work priorities and reservations. Section order, shared
+  files and optional research suggestions are not prerequisite edges.
   Implement only the remaining delta. An unchecked item is not evidence that
   the construction is absent; a remembered completion is not evidence that its
   current implementation satisfies the requirement.
@@ -227,6 +231,12 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
   reread the live file, and apply only the intended delta. Preserve concurrent
   edits and other workers' active reservations. Remove your reservation on
   release; an old timestamp alone never authorizes removing someone else's.
+  Check unique node IDs, resolved dependencies, acyclicity, required-work reachability
+  into the terminal chain, and separation of optional work. Keep dependencies
+  only in the items' `Needs` lists. Remove a delivered node's edge references
+  with the node; a missing ID is not evidence of completion. A split transfers
+  all unfinished obligations and redirects the affected edges. Follow the DAG's
+  maintenance rules rather than keeping a second graph or completed-node ledger.
 
 This is required maintenance of the work being delivered, not a separate audit
 project. Do not accumulate progress tables, handoff histories, completed rows,
