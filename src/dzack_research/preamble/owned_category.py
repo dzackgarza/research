@@ -547,6 +547,7 @@ class ConstructionContract:
     parameters: tuple[ConstructionParameter, ...]
     variadic_providers: tuple[type, ...]
     opaque_providers: tuple[type, ...]
+    hook_providers: tuple[type, ...]
 
     def named(self, name: str) -> tuple[ConstructionParameter, ...]:
         return tuple(parameter for parameter in self.parameters if parameter.name == name)
@@ -559,6 +560,9 @@ class ConstructionContract:
 
     def is_open(self) -> bool:
         return bool(self.variadic_providers or self.opaque_providers)
+
+    def has_refinement_hooks(self) -> bool:
+        return bool(self.hook_providers)
 
 
 def construction_contract(category: Category) -> ConstructionContract:
@@ -573,9 +577,12 @@ def construction_contract(category: Category) -> ConstructionContract:
     parameters: list[ConstructionParameter] = []
     variadic: list[type] = []
     opaque: list[type] = []
+    hooks: list[type] = []
     for provider in category.ObjectType.__mro__:
         if not provider.__module__.startswith("dzack_research.preamble"):
             continue
+        if "__init_extra__" in provider.__dict__:
+            hooks.append(provider)
         initializer = provider.__dict__.get("__init__")
         if initializer is None:
             continue
@@ -613,6 +620,7 @@ def construction_contract(category: Category) -> ConstructionContract:
         parameters=tuple(parameters),
         variadic_providers=tuple(dict.fromkeys(variadic)),
         opaque_providers=tuple(dict.fromkeys(opaque)),
+        hook_providers=tuple(dict.fromkeys(hooks)),
     )
 
 

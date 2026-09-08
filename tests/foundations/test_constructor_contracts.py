@@ -17,6 +17,11 @@ def test_module_constructor_contract_discovers_its_base_ring() -> None:
         for parameter in base_parameters
     )
     assert contract.is_open()
+    assert contract.has_refinement_hooks()
+    assert any(
+        provider.__qualname__.endswith("Modules.ParentMethods")
+        for provider in contract.hook_providers
+    )
 
 
 def test_algebra_constructor_contract_separates_multiplication_from_module_data() -> None:
@@ -40,3 +45,11 @@ def test_constructor_contract_retains_the_open_cooperative_boundary() -> None:
     assert any(name.endswith("Algebras.ParentMethods") for name in providers)
     assert any(name.endswith("Modules.ParentMethods") for name in providers)
     assert contract.opaque_providers == ()
+
+
+def test_constructor_contract_retains_adoption_and_refinement_hooks() -> None:
+    integers = _own_ring(SageZZ)
+    contract = construction_contract(Algebras(integers))
+
+    hook_names = {provider.__qualname__ for provider in contract.hook_providers}
+    assert any(name.endswith("Modules.ParentMethods") for name in hook_names)
