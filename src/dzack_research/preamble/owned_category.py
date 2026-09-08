@@ -564,6 +564,32 @@ class ConstructionContract:
     def has_refinement_hooks(self) -> bool:
         return bool(self.hook_providers)
 
+    def validate(self, data) -> None:
+        r"""Validate one supplied construction datum against this contract.
+
+        Every named required parameter discovered from an owned constructor
+        level must be supplied before the host runtime is entered.  Unknown
+        names are rejected only when the contract is closed: a provider with
+        ``**rest`` or an opaque signature deliberately keeps an open boundary
+        for data consumed by a higher runtime level.
+        """
+        supplied = frozenset(data)
+        missing = self.required_names() - supplied
+        if missing:
+            missing_names = ", ".join(sorted(missing))
+            raise TypeError(
+                f"{self.owner} construction is missing required data: {missing_names}"
+            )
+        if self.is_open():
+            return
+        declared = self.required_names() | self.optional_names()
+        unexpected = supplied - declared
+        if unexpected:
+            unexpected_names = ", ".join(sorted(unexpected))
+            raise TypeError(
+                f"{self.owner} construction received undeclared data: {unexpected_names}"
+            )
+
 
 def _construction_contract_from_type(owner, implementation_type: type) -> ConstructionContract:
     r"""Discover named constructor data contributed by one implementation MRO."""
@@ -588,6 +614,13 @@ def _construction_contract_from_type(owner, implementation_type: type) -> Constr
             if parameter.name == "self":
                 continue
             if parameter.kind is Parameter.VAR_KEYWORD:
+                if provider is OwnedParent:
+                    # ``OwnedParent`` is the terminal host-runtime sink of the
+                    # cooperative chain, not a mathematical constructor level.
+                    # Counting its ``**rest`` would make every owned contract
+                    # permanently open and would prevent object_of from ever
+                    # detecting undeclared public construction data.
+                    continue
                 variadic.append(provider)
                 continue
             if parameter.kind is Parameter.VAR_POSITIONAL:
@@ -664,6 +697,7 @@ def object_of(category: Category, **data: ConstructionData) -> Parent:
     homset does, because a level may name a base its category does not -- and
     injecting one here would arrive twice at the levels that already do.
     """
+    construction_contract(category).validate(data)
     return category.ObjectType(category=category, **data)
 
 
