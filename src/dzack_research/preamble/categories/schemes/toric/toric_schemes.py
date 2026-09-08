@@ -48,13 +48,15 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
-from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroup,
 )
 from dzack_research.preamble.categories.divisors.chow_groups import ChowGroup
+from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
-from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroup
+from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
+    WeilDivisorGroup,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FreshFreeModuleOn,
@@ -1138,9 +1140,18 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 cycle_dimension,
             )
 
+        @cached_method
+        def cox_ring(self):
+            r"""Return the Cox homogeneous coordinate ring graded by ``Cl(X)``."""
+            from dzack_research.preamble.categories.divisors.cox_rings import CoxRing
+
+            return CoxRing(self)
+
         def log_pair(self):
             r"""The toric log pair ``(X, sum_rho D_rho)``."""
-            from dzack_research.preamble.categories.schemes.log_pairs import ToricLogPair
+            from dzack_research.preamble.categories.schemes.log_pairs import (
+                ToricLogPair,
+            )
 
             return ToricLogPair(self, self.toric_boundary_divisor())
 

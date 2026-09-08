@@ -10,17 +10,18 @@ by Prop. 4.3.3.
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     BasedFreeModule,
     CartierDivisorGroups,
     ChowGroups,
     ClassGroups,
     CompleteLinearSystems,
+    CoxRings,
     FiniteAtlasInvertibleSheaf,
     PicardGroups,
-    QQ,
     RationalPolyhedralFans,
     WeilDivisorGroups,
-    ZZ,
     module_homset,
 )
 
@@ -290,6 +291,33 @@ def test_hirzebruch_surface_chow_group_has_rank_two_in_curve_degree() -> None:
     assert surface.chow_group(0).module_rank() == 1
     assert surface.chow_group(1).module_rank() == 2
     assert surface.chow_group(2).module_rank() == 1
+
+
+def test_projective_plane_cox_ring_is_class_group_graded() -> None:
+    plane = _projective_plane()
+    cox = plane.cox_ring()
+    labels = tuple(cox.algebra_generating_set())
+
+    assert cox in CoxRings(plane)
+    assert cox.grading_monoid() is plane.class_group()
+    first_degree = cox.generator_degree(labels[0])
+    assert first_degree == plane.divisor_class(_prime_divisors(plane)[0])
+    assert all(cox.generator_degree(label) == first_degree for label in labels)
+    assert cox.homogeneous_degree(cox.algebra_generator(labels[0]) ** 3) == ZZ(3) * first_degree
+    assert cox.homogeneous_degree(
+        cox.algebra_generator(labels[0]) * cox.algebra_generator(labels[1])
+    ) == ZZ(2) * first_degree
+
+
+def test_hirzebruch_surface_cox_ring_retains_multidegrees() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+    cox = surface.cox_ring()
+    degrees = tuple(
+        cox.generator_degree(label) for label in cox.algebra_generating_set()
+    )
+
+    assert cox.grading_monoid() is surface.class_group()
+    assert any(degree != degrees[0] for degree in degrees[1:])
 
 
 def test_a_principal_divisor_is_basepoint_free_and_never_ample() -> None:
