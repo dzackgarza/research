@@ -230,6 +230,27 @@ class RationalReductionCell(SageObject):
                 return isometry
         return None
 
+    def adjacency_to(self, other, group):
+        r"""Return the exact adjacent-cell record from this cell to ``other``.
+
+        The record exists only when the two cells share a codimension-one face
+        and the supplied represented group contains an isometry carrying the
+        source cell to the target cell.  It retains the common face and the
+        transporter as mathematical objects rather than recomputing either
+        from incidence labels later.
+        """
+        if not self.is_adjacent_to(other):
+            return None
+        transporter = self.transporter_witness_to(other, group)
+        if transporter is None:
+            return None
+        return ReductionCellAdjacency(
+            self,
+            other,
+            self.intersection(other),
+            transporter,
+        )
+
     def is_face_of(self, other) -> bool:
         if other.lattice() is not self.lattice():
             return False
@@ -283,6 +304,57 @@ class RationalReductionCell(SageObject):
         )
 
 
+class ReductionCellAdjacency(SageObject):
+    r"""An oriented adjacency of two rational reduction cells.
+
+    It consists of the source cell, target cell, their actual common facet,
+    and one lattice isometry carrying source to target.  Reversing the
+    adjacency inverts that same transporter and preserves the shared face.
+    """
+
+    def __init__(self, source, target, common_face, transporter) -> None:
+        if source.lattice() is not target.lattice():
+            raise ValueError("adjacent reduction cells lie in one lattice")
+        if common_face.lattice() is not source.lattice():
+            raise ValueError("an adjacency face lies in the cells' ambient lattice")
+        if not source.is_adjacent_to(target):
+            raise ValueError("a reduction-cell adjacency requires a common facet")
+        if not common_face.is_equal_to(source.intersection(target)):
+            raise ValueError("the retained adjacency face is not the cells' intersection")
+        if not source.transported_by(transporter).is_equal_to(target):
+            raise ValueError("the retained adjacency transporter moves the source to the wrong cell")
+        self._source = source
+        self._target = target
+        self._common_face = common_face
+        self._transporter = transporter
+
+    def source(self):
+        return self._source
+
+    def target(self):
+        return self._target
+
+    def lattice(self):
+        return self.source().lattice()
+
+    def common_face(self):
+        return self._common_face
+
+    def transporter(self):
+        return self._transporter
+
+    def reversed(self):
+        return ReductionCellAdjacency(
+            self.target(),
+            self.source(),
+            self.common_face(),
+            ~self.transporter(),
+        )
+
+    def _repr_(self):
+        return f"Reduction-cell adjacency {self.source()} -> {self.target()}"
+
+
 def rational_reduction_cell(lattice, inequalities, *, equations=()):
     r"""Return the homogeneous rational cell cut out by the selected walls."""
     return RationalReductionCell(lattice, inequalities, equations=equations)
@@ -304,6 +376,7 @@ def lorentzian_reduction_complex(lattice, marked_vectors=None):
 
 
 __all__ = [
+    "ReductionCellAdjacency",
     "RationalReductionCell",
     "lorentzian_reduction_complex",
     "rational_reduction_cell",
