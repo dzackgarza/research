@@ -209,6 +209,64 @@ class OrthogonalCharacterQuotient:
             )
         return keys, permutations, group
 
+    def right_coset_transversal(self):
+        r"""Return one live lift for every right coset ``H r`` in the image.
+
+        Here ``Q = rho(O(L))`` is the represented finite character image and
+        ``H = rho(Gamma)`` is the image of the selected arithmetic subgroup.
+        A right coset is therefore the subset ``H r = {h r : h in H}`` of
+        ``Q``.  GAP computes representatives in the private regular-action
+        model; before crossing them back, this method reconstructs those
+        subsets with :meth:`_multiply` and verifies that they are disjoint and
+        cover all of ``Q``.  The public result consists only of live lattice
+        isometries lifting the chosen quotient representatives.
+        """
+        subgroup = self.subgroup_image_keys()
+        keys, permutations, group = self._gap_regular_model()
+        gap_subgroup = libgap.Subgroup(
+            group,
+            [permutations[key] for key in subgroup],
+        )
+        quotient_representatives = []
+        for right_coset in libgap.RightCosets(group, gap_subgroup):
+            gap_representative = right_coset.Representative()
+            quotient_representative = next(
+                (
+                    key
+                    for key in keys
+                    if permutations[key] == gap_representative
+                ),
+                None,
+            )
+            if quotient_representative is None:
+                raise ArithmeticError(
+                    "a libGAP right-coset representative did not cross back to the character image"
+                )
+            quotient_representatives.append(quotient_representative)
+
+        owned_cosets = tuple(
+            frozenset(
+                self._multiply(subgroup_element, representative)
+                for subgroup_element in subgroup
+            )
+            for representative in quotient_representatives
+        )
+        if len(set(owned_cosets)) != len(owned_cosets):
+            raise ArithmeticError(
+                "the selected right-coset representatives repeat a character-image coset"
+            )
+        covered = frozenset().union(*owned_cosets) if owned_cosets else frozenset()
+        if covered != self.image_keys():
+            raise ArithmeticError(
+                "the selected right cosets do not cover the full character image"
+            )
+        return finite_ordered_set(
+            tuple(
+                self._witnesses[representative]
+                for representative in quotient_representatives
+            )
+        )
+
     def splitting_isometries(self, stabilizer_generators):
         r"""Return one lift per ``Stab\image(O(L))/Gamma`` double coset."""
         stabilizer = self.stabilizer_image_keys(stabilizer_generators)
