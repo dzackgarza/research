@@ -2706,8 +2706,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             return self.parent().div(self)
 
+        def divisor(self):
+            r"""Return the positive generator of ``b(v,L)`` over ``ZZ``."""
+            return self.div()
+
         def divided_discriminant_class(self):
             return self.parent().divided_discriminant_class(self)
+
+        def discriminant_class(self):
+            r"""Return ``[v/div(v)]`` in the discriminant module for primitive ``v``."""
+            if not self.is_primitive():
+                raise ValueError("the associated primitive discriminant class requires a primitive lattice vector")
+            return self.divided_discriminant_class()
 
         def to_covector(self):
             r"""Return \(b(v,-)\in\operatorname{Hom}_R(L,R)\), the image of \(v\) under the algebraic correlation.

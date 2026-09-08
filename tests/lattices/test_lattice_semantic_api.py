@@ -53,3 +53,19 @@ def test_perp_is_the_same_owned_orthogonal_subobject_from_both_endpoints() -> No
         line.inclusion()(line.module_generator(0)),
         from_ambient.inclusion()(from_ambient.module_generator(0)),
     ) == 0
+
+
+def test_lattice_vector_divisor_and_primitive_discriminant_class_use_live_form_data() -> None:
+    lattice = Lattices(ZZ)([[2, 0], [0, -6]])
+    e, f = lattice.module_generators()
+
+    assert e.divisor() == 2
+    assert f.divisor() == 6
+    assert e.discriminant_class() == e.divided_discriminant_class()
+
+    try:
+        (2 * e).discriminant_class()
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("the primitive discriminant class is not defined on a nonprimitive vector")
