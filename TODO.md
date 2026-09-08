@@ -2114,7 +2114,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] Mathematical complete-intersection datum/object rather than generic certificate records.
 - [x] Normality and Gorenstein predicates where exactly decidable.
 - [ ] Canonical/anticanonical bundles by adjunction.
-- [ ] Del Pezzo degree and predicate via ampleness of `-K`.
+- [x] Del Pezzo degree and predicate via ampleness of `-K`.
 - [x] Blowups of the projective plane and supported smooth surfaces.
 - [ ] Exceptional divisors and Picard/intersection changes.
 - [ ] Strict transforms of curves/divisors.
