@@ -981,6 +981,18 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.divisor_section_characters(divisor),
             )
 
+        def complete_linear_system(self, divisor):
+            r"""Return ``|D|`` as the projectivization of the represented section space."""
+            from dzack_research.preamble.categories.divisors.linear_systems import (
+                CompleteLinearSystem,
+            )
+
+            return CompleteLinearSystem(
+                self,
+                self.weil_divisor_group()(divisor),
+                self.divisor_section_space(divisor),
+            )
+
         def ample_divisor_self_intersection(self, divisor):
             r"""Return ``D^2`` from the normalized area of ``P_D``.
 

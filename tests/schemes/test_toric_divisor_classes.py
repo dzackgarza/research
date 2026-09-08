@@ -13,6 +13,7 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     CartierDivisorGroups,
     ClassGroups,
+    CompleteLinearSystems,
     PicardGroups,
     QQ,
     RationalPolyhedralFans,
@@ -187,6 +188,19 @@ def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_for
     assert plane.divisor_polytope(boundary).n_integral_points() == 10
     assert characters.zero() in plane.divisor_section_characters(boundary)
     assert plane.divisor_section_space(boundary).dimension() == 10
+
+
+def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> None:
+    plane = _projective_plane()
+    line = _prime_divisors(plane)[0]
+    sections = plane.divisor_section_space(line)
+    system = plane.complete_linear_system(line)
+
+    assert system in CompleteLinearSystems(QQ)
+    assert system.linear_system_scheme() is plane
+    assert system.linear_system_divisor() == line
+    assert system.section_space() is sections
+    assert system.projective_dimension() == 2
 
 
 def test_the_polytope_of_an_ample_divisor_has_the_fan_as_its_normal_fan() -> None:
