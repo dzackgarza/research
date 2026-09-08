@@ -61,7 +61,11 @@ represented reference lattice through its actual stabilizer ``G_M``, and every
 intermediate subgroup ``S_L=L/dM``.  The transporter, right cosets and double cosets still need the
 finite image together with the integralization/lifting algorithm that turns a
 finite-quotient representative into an actual element of the specified
-rational group.  ``polyhedral_common`` carries that arithmetic as
+rational group.  For ``G=O(V)`` and full-rank integral lattices, the existing
+OSCAR integral-isometry witness now supplies a transporter and is conjugated
+through the actual lattice embeddings into a live element of ``O(V)``.  A
+proper prescribed rational subgroup still requires the separate lifting
+theorem.  ``polyhedral_common`` carries that arithmetic as
 ``01_RatIntAutomorphy`` and ``sage-indefinite-port`` is the planned native
 provider.
 
@@ -85,13 +89,17 @@ What *is* owned, so a caller does not come here for it:
 """
 
 from sage.misc.cachefunc import cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
+from dzack_research.preamble.categories.lattice_engines import integral_isometry_witness
+from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 _ABSENCE = (
     "the structural objects exist: Res(V) holds L and M as two subobjects, "
@@ -99,7 +107,9 @@ _ABSENCE = (
     "represented finite quotient F_M=M/dM with its G_M-action functor and "
     "intermediate subgroup S_L.  This row is not complete: it still needs the "
     "finite action image together with the integralization algorithm that lifts "
-    "the required quotient representative to an actual element of G, which "
+    "the required quotient representative to an actual element of a prescribed "
+    "proper G.  The full O(V), full-rank case uses the OSCAR integral-isometry "
+    "witness directly.  The remaining general lifting operation is the one "
     "polyhedral_common carries as 01_RatIntAutomorphy and sage-indefinite-port "
     "will supply through the capability layer.  For a stabilizer inside one "
     "lattice use the predicate subgroups of O(L); for the orbit splitting of a "
@@ -243,6 +253,124 @@ def finite_commensurability_quotient(rational_group, reference_inclusion, modulu
     )
 
 
+def _full_orthogonal_integral_transporter(
+    rational_group,
+    source_inclusion,
+    target_inclusion,
+):
+    r"""Transport two full-rank integral lattices inside one rational quadratic space.
+
+    This is the supported case ``G=O(V)``.  OSCAR supplies an integral isometry
+    between the two pullback Gram lattices.  Rationalizing that map and
+    conjugating through the two actual embeddings gives an automorphism of
+    ``V``; the owned orthogonal-group constructor verifies form preservation.
+    """
+    if source_inclusion.codomain() is not target_inclusion.codomain():
+        raise ValueError("an integral transporter compares lattices in one rational space")
+    space = source_inclusion.codomain()
+    source = source_inclusion.domain()
+    target = target_inclusion.domain()
+    ring = source.base_ring()
+    if target.base_ring() is not ring or ring is not _own_ring(SageZZ):
+        raise NotImplementedError(
+            "the OSCAR integral-isometry transporter currently uses full-rank ZZ-lattices"
+        )
+    from dzack_research.preamble.categories.modules.pure.modules import (
+        RestrictedScalarsModules,
+    )
+
+    if space not in RestrictedScalarsModules(ring):
+        raise TypeError("the two lattices must lie in a restriction of a rational quadratic space")
+    ambient = space.module_over_extension()
+    if rational_group is not ambient.Aut():
+        raise NotImplementedError(
+            "the maintained OSCAR witness solves the full orthogonal-group transporter; "
+            "transport inside a prescribed proper rational subgroup still needs integralization"
+        )
+    if int(source.module_rank()) != int(ambient.module_rank()) or int(target.module_rank()) != int(
+        ambient.module_rank()
+    ):
+        raise NotImplementedError(
+            "the maintained OSCAR specialization currently transports full-rank lattices"
+        )
+
+    def embedded_basis(inclusion):
+        domain = inclusion.domain()
+        return tuple(
+            inclusion(domain.module_generator(label)).underlying_element()
+            for label in domain.module_generating_set()
+        )
+
+    source_basis = embedded_basis(source_inclusion)
+    target_basis = embedded_basis(target_inclusion)
+
+    def pullback_lattice(basis):
+        rows = tuple(
+            tuple(ring(ambient.b(left, right)) for right in basis)
+            for left in basis
+        )
+        return Lattices(ring)(rows)
+
+    source_lattice = pullback_lattice(source_basis)
+    target_lattice = pullback_lattice(target_basis)
+    witness_rows = integral_isometry_witness(
+        source_lattice.gram_tensor(),
+        target_lattice.gram_tensor(),
+    )
+    if witness_rows is None:
+        return None
+
+    extension_ring = ambient.base_ring()
+    scalar_map = ring.Mor(extension_ring)(lambda element: extension_ring(element))
+    source_rational = source.base_change(scalar_map)
+    target_rational = target.base_change(scalar_map)
+    source_labels = tuple(source_rational.module_generating_set())
+    target_labels = tuple(target_rational.module_generating_set())
+    if len(witness_rows) != len(source_labels):
+        raise ArithmeticError("the OSCAR transporter witness has the wrong source rank")
+
+    source_span = module_homset(source_rational, ambient)(
+        {
+            label: source_basis[position]
+            for position, label in enumerate(source_labels)
+        }
+    )
+    target_span = module_homset(target_rational, ambient)(
+        {
+            label: target_basis[position]
+            for position, label in enumerate(target_labels)
+        }
+    )
+    witness = module_homset(source_rational, target_rational)(
+        {
+            source_label: target_rational.linear_combination(
+                {
+                    target_labels[target_position]: extension_ring(coefficient)
+                    for target_position, coefficient in enumerate(witness_rows[source_position])
+                    if coefficient
+                }
+            )
+            for source_position, source_label in enumerate(source_labels)
+        }
+    )
+    ambient_map = target_span * witness * source_span.inverse()
+    candidate = ambient.Aut()(
+        {
+            label: ambient_map(ambient.module_generator(label))
+            for label in ambient.module_generating_set()
+        }
+    )
+
+    inverse = ~candidate
+    for vector in source_basis:
+        if not target_inclusion.is_in_image(space.wrap(candidate(vector))):
+            raise ArithmeticError("the OSCAR transporter does not carry the source lattice into the target")
+    for vector in target_basis:
+        if not source_inclusion.is_in_image(space.wrap(inverse(vector))):
+            raise ArithmeticError("the OSCAR transporter does not carry the target lattice back to the source")
+    return candidate
+
+
 def integral_stabilizer(rational_group, lattice_inclusion):
     r"""Return ``{g in G : g(L) = L}`` for ``L -> Res(V)`` and a rational group ``G``.
 
@@ -300,6 +428,18 @@ def integral_stabilizer(rational_group, lattice_inclusion):
 
 def integral_transporter(rational_group, source_inclusion, target_inclusion):
     r"""Return one ``g`` in ``G`` with ``g(L_1) = L_2``, or the empty transporter."""
+    if source_inclusion.codomain() is target_inclusion.codomain():
+        space = source_inclusion.codomain()
+        try:
+            ambient = space.module_over_extension()
+        except AttributeError:
+            ambient = None
+        if ambient is not None and rational_group is ambient.Aut():
+            return _full_orthogonal_integral_transporter(
+                rational_group,
+                source_inclusion,
+                target_inclusion,
+            )
     assert False, (
         f"an integral transporter in {rational_group} from {source_inclusion} "
         f"to {target_inclusion} is not computed: {_ABSENCE}"
