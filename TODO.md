@@ -889,52 +889,38 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 ### Shared complex and DGA integration
 
 - [ ] **`complexes`**. **Needs:** none.
-  Resolve the common complex/cohomology computation boundary and integrate
-  the highest suitable maintained operations without losing the cycle quotient.
-  **Owners:** `categories/modules/cochain_complexes.py`,
-  `categories/modules/graded_direct_sums.py`, module kernels/images/cokernels,
-  `categories/functors/cochain_complexes.py`, and
-  `categories/functors/cohomology.py`.
-  **Starting construction:** `Cycles`, `Boundaries`, and `Cohomology` already
-  compose module operations and retain the boundary-in-cycles morphism. Preserve
-  that semantic composition; its existence is not evidence of a bespoke homology
-  algorithm. Trace the underlying module computation before deciding what to
-  replace. `CochainComplexObject` currently materializes nonnegative finite
-  support; do not silently make that representation the domain of all complexes.
-  **First computational case:** bounded finite free complexes over integers and
-  fields. Inspect Sage's
-  [chain-complex homology and cycle-output contract](https://doc.sagemath.org/html/en/reference/homology/sage/homology/chain_complex.html)
-  and its chain-map/homology-map interfaces against the owned quotient and map
-  requirements. Select that maintained operation where its output discharges
-  them; retain only the required owned construction and correspondence code.
-  An abstract homology group alone does not supply a quotient projection.
-  **Broader capability question:** for complexes of finitely presented modules
-  over the coefficient rings required by Tor/Ext and sheaves, inspect the existing
-  Singular module adapters and CAP/homalg's ModulePresentationsForCAP,
-  FreydCategoriesForCAP, and ComplexesAndFilteredObjectsForCAP through the
-  [computation references](CONTRIBUTING.md#existing-computation-references).
-  Determine which operation returns presentations, cycle/boundary data, and
-  induced maps. Compose maintained module operations if that supplies the full
-  contract; do not insert a new local chain-reduction algorithm between them.
-  **Construction decisions:** retain the supplied component modules and chosen
-  maps. Distinguish homological/cohomological degree and augmentation explicitly.
-  Extend the shared grading/indexing contract for negative degrees and represented
-  infinite systems as required, with owned zero components where support is known
-  to vanish. Unknown/uncomputed degrees are not zero. A finite computational
-  window must include every incoming and outgoing differential needed by the
-  requested degree; it does not truncate the underlying mathematical object.
-  **First specimen:** `C^0=ZZ`, `C^1=ZZ`, differential multiplication by `3`,
-  and zero elsewhere. Its degree-one class represented by `1` has order three;
-  multiplication by `2` on both components induces multiplication by `2` on
-  that quotient. Retain the cycle inclusion and projection as owned maps.
-  Contrast scalar extension to `QQ`, where that cohomology vanishes; shift the
-  same complex into degrees `-1,0` so nonnegative-degree convenience cannot
-  define the generic contract. Use established mathematical proof surfaces.
-  **Acceptance:** module presentations, representatives, inclusions, quotient
-  maps, coefficients and functor images remain owned. Source review identifies
-  the actual maintained algorithm and local integration. Preserve the full
-  coefficient/general-complex obligations when delivering one supported case;
-  new algorithms require `ENG-06`, not a renamed generic helper.
+  Complete the remaining coefficient-ring computation boundary without replacing
+  the owned cycle/boundary quotient by an abstract homology group.
+  **Owners:** module kernels/images/cokernels and the common cochain/cohomology
+  owners. The represented complex itself now supports integer degrees, finite
+  support with known zero outside it, and lazy indexed families over all `ZZ`.
+  **Current maintained boundary:** finite free kernels use Sage matrix
+  `right_kernel`; PID presentation normalization uses the backend `smith_form`;
+  polynomial-presentation kernels over a field use Singular `modulo` and `lift`.
+  `Cycles`, `Boundaries`, and `Cohomology` compose those operations while retaining
+  the inclusion, boundary-in-cycles map, quotient projection, representatives,
+  coefficients and induced functor maps. Sage `ChainComplex.homology` was inspected:
+  it supplies abstract groups and optional cycle generators, but not those full
+  owned comparison maps, so a second whole-complex computation is not selected.
+  **Remaining capability:** complexes of finitely presented modules over rings
+  outside the existing PID and polynomial-over-a-field adapters. CAP/homalg's
+  ModulePresentationsForCAP, FreydCategoriesForCAP, and
+  ComplexesAndFilteredObjectsForCAP are listed only as computation references and
+  are not provisioned in this repository. Provision and inspect the maintained
+  operation before adding any local reduction (`ENG-06`).
+  **First remaining specimen:** over `R=ZZ[x]`, represent the two-term map
+  `R^2 -> R`, `(a,b) |-> 2a+xb`, and retain both the syzygy inclusion generated
+  by `(-x,2)` and the quotient projection onto `R/(2,x)`, together with a
+  nonidentity induced map. This ring deliberately lies outside the currently
+  represented PID/Singular-field regimes.
+  **Construction decisions:** homological resolutions keep their augmentation
+  and degree convention explicitly; cochain complexes use degree `+1`. A finite
+  computational window, if introduced by a provider, must contain both incoming
+  and outgoing maps required by a requested degree and must never declare the
+  uncomputed complement to be zero.
+  **Acceptance:** the remaining coefficient regime returns owned presentations,
+  cycle/boundary inclusions, quotient maps, representatives and induced maps via
+  a maintained provider; no new local chain-reduction algorithm is introduced.
 
 - [ ] **`dga-cohomology`**. **Needs:** `complexes`, `grading-witnesses`.
   Make the existing DGA/cohomology-algebra routes consume that same complex
@@ -942,11 +928,6 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   **Owners:** `categories/algebras/differential_graded_algebras.py`,
   `categories/algebras/cohomology_algebras.py`, graded algebras and derivations,
   and `categories/functors/cohomology.py`.
-  **Source question to settle first:** follow the
-  [boundary-degree complaint](COMPLAINTS.md#cohomology-needs-a-common-complex-contract-in-boundary-degrees)
-  and inspect the actual inherited dispatch. Reconcile the nonnegative-complex
-  boundary at its shared owner, rather than adding a cohomology-only exception
-  for `H^0`.
   **Preserve:** the existing descended multiplication through cycle
   representatives and `class_of_cycle`, and the induced map from a DGA morphism.
   Review `CohomologyAlgebras.super_categories`, which currently declares strict
@@ -1685,6 +1666,5 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `COMPLEXES-integer-grading-20260908-1001` | complexes / integer-graded common cochain boundary | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/graded_direct_sums.py; src/dzack_research/preamble/categories/modules/cochain_complexes.py; src/dzack_research/preamble/categories/modules/__init__.py; src/dzack_research/preamble/categories/functors/cohomology.py; src/dzack_research/preamble/categories/algebras/differential_graded_algebras.py; tests/modules/test_integer_graded_cochain_complexes.py` (write) | `fd408826` | 2026-09-08T10:01:00Z |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
 | `LATTICE-parabolic-gluing-20260908-0832` | arithmetic / exact parabolic Levi image | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_parabolic_gluing.py` (write) | `9f36bcb0` | 2026-09-08T08:32:00Z |
