@@ -10,6 +10,7 @@ from dzack_research.preamble.all import (
     AdditiveGroups,
     BasedFreeModule,
     FreeModuleOn,
+    FramedModules,
     GeneralModule,
     MatrixSpace,
     ModulesWithChosenFinitePresentation,
@@ -151,6 +152,38 @@ def test_selected_presentations_are_arrow_objects_and_contractible_summands_rema
     normalization = stabilized.invariant_factor_presentation()
     assert normalization.forward() in category.Mor(
         stabilized.presentation_object(), normalization.codomain()
+    )
+
+
+def test_selected_framings_are_arrow_objects_with_commuting_square_morphisms() -> None:
+    source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
+    category = FramedModules(ZZ).framing_category()
+
+    source_framing = source.framing_object()
+    target_framing = target.framing_object()
+    source_change = module_homset(
+        source_framing.arrow().domain(), target_framing.arrow().domain()
+    )(
+        {
+            "x": target_framing.arrow().domain().module_generator("u"),
+            "y": target_framing.arrow().domain().module_generator("v"),
+        }
+    )
+    target_change = module_homset(source, target)(
+        {
+            "x": target.module_generator("u"),
+            "y": target.module_generator("v"),
+        }
+    )
+    square = category.Mor(source_framing, target_framing)(
+        source_change, target_change
+    )
+
+    assert square.left() is source_change
+    assert square.right() is target_change
+    assert square.right() * source_framing.arrow() == (
+        target_framing.arrow() * square.left()
     )
 
 

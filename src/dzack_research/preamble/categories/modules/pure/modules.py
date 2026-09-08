@@ -1537,6 +1537,21 @@ class FramedModules(OwnedCategoryOverBaseRing):
     def super_categories(self):
         return [Modules(self.base_ring())]
 
+    @cached_method
+    def framing_category(self):
+        r"""Return the category whose objects are selected module framings.
+
+        A framing is the epimorphism ``F_R(S) -> M`` itself.  A morphism of
+        framed modules is therefore a commuting square between two such arrows;
+        the left edge is an arbitrary ``R``-linear map between the selected free
+        sources, not necessarily one induced by a function of label sets.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            ArrowCategory,
+        )
+
+        return ArrowCategory(Modules(self.base_ring()))
+
     class ParentMethods:
         def __init__(
             self,
@@ -1597,6 +1612,12 @@ class FramedModules(OwnedCategoryOverBaseRing):
 
             source = FreeModuleOn(self.base_ring(), self.module_generating_set())
             return framing_morphism(source, self, self.module_generator)
+
+        @cached_method
+        def framing_object(self):
+            r"""Return this selected framing as an object of ``Arr(R-Mod)``."""
+            category = FramedModules(self.base_ring()).framing_category()
+            return category(self.framing_morphism())
 
         def linear_combination(self, coefficients, factor_on_left=True):
             if not isinstance(coefficients, dict):
