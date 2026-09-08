@@ -1050,6 +1050,15 @@ class Lattices(OwnedCategoryOverBaseRing):
             trivial = target.subgroup_on(())
             return self.Aut().discriminant_preimage(trivial)
 
+        def O_plus(self):
+            r"""Return the stable orthogonal group ``ker(O(L) -> O(A_L))``.
+
+            The project vocabulary uses ``O_plus`` for the stable subgroup;
+            positive-cone preservation is exposed separately by
+            :meth:`O_component`.
+            """
+            return self.stable_orthogonal_group()
+
         @cached_method
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
@@ -1115,6 +1124,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 lambda automorphism: automorphism.preserves_positive_cone(),
                 "g preserves the positive cone",
             )
+
+        def O_component(self):
+            r"""Return the subgroup preserving the selected positive-cone component."""
+            return self.positive_cone_subgroup()
 
         @cached_method
         def biproduct_factors(self):

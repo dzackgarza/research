@@ -900,6 +900,49 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def one(self):
         return self.identity()
 
+    def ambient_lattice(self):
+        r"""Return the lattice acted on by this orthogonal group."""
+        return self.lattice()
+
+    def gens(self):
+        r"""Return the selected exact generating family of this orthogonal group."""
+        return self.group_generators()
+
+    def element(self, matrix):
+        r"""Construct the isometry having the stated coordinate matrix.
+
+        Matrix columns are generator images, matching the repository's
+        ``MatrixSpaces`` convention.  The ordinary isometry constructor then
+        verifies form preservation and invertibility; this method does not
+        trust a matrix merely because it has the right shape.
+        """
+        lattice = self.lattice()
+        if not lattice.module_rank().is_finite():
+            raise TypeError("a coordinate-matrix isometry requires a finite-rank lattice")
+        rank = int(lattice.module_rank())
+        if int(matrix.nrows()) != rank or int(matrix.ncols()) != rank:
+            raise ValueError("the isometry matrix has the wrong lattice rank")
+        labels = tuple(lattice.module_generating_set())
+        ring = lattice.base_ring()
+        images = tuple(
+            lattice.linear_combination(
+                {
+                    labels[row]: ring(matrix[row, column])
+                    for row in range(rank)
+                    if ring(matrix[row, column]) != ring.zero()
+                }
+            )
+            for column in range(rank)
+        )
+        return self(images)
+
+    def contains(self, element) -> bool:
+        r"""Return whether ``element`` is an isometry in this fixed orthogonal group."""
+        try:
+            return self(element).parent() is self
+        except (TypeError, ValueError):
+            return False
+
     identity_automorphism = identity
 
     def acting_group(self):
@@ -923,7 +966,19 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         )
 
     def transporter(self, source, target):
-        r"""Return the unique ``g in O(M)`` with ``g ∘ source = target``."""
+        r"""Return an orthogonal transporter.
+
+        For lattice vectors this is an exact orbit witness ``g(source)=target``.
+        For two isometries in ``Isom(L,M)`` it retains the torsor operation
+        ``g ∘ source = target``.
+        """
+        lattice = self.codomain()
+        if (
+            self.domain() is lattice
+            and getattr(source, "parent", lambda: None)() is lattice
+            and getattr(target, "parent", lambda: None)() is lattice
+        ):
+            return self.vector_equivalence_witness(source, target)
         for candidate in (source, target):
             if (
                 not isinstance(candidate, LatticeIsometry)
@@ -982,6 +1037,60 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             character_data={"discriminant_preimages": (subgroup,)},
         )
 
+    def discriminant_representation(self):
+        r"""Return ``rho_A: O(L) -> O(A_L)``."""
+        return self.lattice().discriminant_representation()
+
+    def component_character(self):
+        r"""Return the positive-cone component character when defined."""
+        return self.lattice().component_character()
+
+    def preimage(self, morphism, subgroup):
+        r"""Return the subgroup ``morphism^{-1}(subgroup)`` of this group."""
+        if morphism.domain() is not self:
+            raise ValueError("a group preimage requires a morphism whose domain is this group")
+        return predicate_subgroup(
+            self,
+            lambda element: morphism(element) in subgroup,
+            f"g maps into {subgroup}",
+        )
+
+    def kernel(self, morphism):
+        r"""Return the kernel subgroup of a represented group morphism."""
+        if morphism.domain() is not self:
+            raise ValueError("a group kernel requires a morphism whose domain is this group")
+        target = morphism.codomain()
+        identity = target.one()
+        return predicate_subgroup(
+            self,
+            lambda element: morphism(element) == identity,
+            f"{morphism}(g)=1",
+        )
+
+    def stable_subgroup(self):
+        r"""Return ``ker(O(L) -> O(A_L))``."""
+        return self.lattice().stable_orthogonal_group()
+
+    def component_subgroup(self):
+        r"""Return the positive-cone-preserving subgroup when defined."""
+        return self.lattice().positive_cone_subgroup()
+
+    def centralizer(self, isometry):
+        r"""Return ``Z_{O(L)}(isometry)`` as an exact predicate subgroup."""
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            centralizer,
+        )
+
+        return centralizer(self, isometry)
+
+    def intersection(self, *subgroups):
+        r"""Return the intersection of represented subgroups of this orthogonal group."""
+        return predicate_subgroup(
+            self,
+            lambda element: all(element in subgroup for subgroup in subgroups),
+            "g lies in every selected subgroup",
+        )
+
     def lattice(self):
         r"""Return \(L\), the lattice this orthogonal group acts on."""
         assert self.domain() is self.codomain(), (
@@ -989,22 +1098,36 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         )
         return self.domain()
 
-    def stabilizer(self, vector):
-        r"""Return \(\operatorname{Stab}_{O(L)}(v)=\{g\in O(L): g(v)=v\}\).
+    def stabilizer(self, target, action="setwise"):
+        r"""Return a vector or sublattice stabilizer in ``O(L)``.
 
-        The subgroup is cut out by its defining condition, so it is
-        constructed for indefinite \(L\) as well, where \(O(L)\) is infinite
-        and cannot be enumerated.  When the engine computes a generating set
-        of this subgroup, :meth:`vector_stabilizer_generators` supplies it.
+        A lattice vector is fixed pointwise.  A represented lattice subobject
+        accepts ``action='setwise'`` or ``action='pointwise'`` and delegates to
+        the existing inclusion-based subgroup constructions.
         """
         lattice = self.lattice()
-        assert vector.parent() is lattice, (
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModuleSubobjects,
+        )
+
+        if target in ModuleSubobjects(lattice.base_ring()):
+            embedding = target.inclusion()
+            if embedding.codomain() is not lattice:
+                raise ValueError("a sublattice stabilizer requires a subobject of the acted lattice")
+            if action == "setwise":
+                return self.setwise_stabilizer(embedding)
+            if action == "pointwise":
+                return self.pointwise_stabilizer(embedding)
+            raise ValueError("a sublattice stabilizer action is 'setwise' or 'pointwise'")
+        if action != "setwise":
+            raise ValueError("the action option applies only to represented sublattices")
+        assert target.parent() is lattice, (
             "a point stabilizer in O(L) fixes a vector of L"
         )
         return predicate_subgroup(
             self,
-            lambda automorphism: automorphism(vector) == vector,
-            f"g fixes {vector}",
+            lambda automorphism: automorphism(target) == target,
+            f"g fixes {target}",
         )
 
     def pointwise_stabilizer(self, embedding):
