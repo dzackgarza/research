@@ -2247,7 +2247,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 - [x] **Pairing configuration graphs**: Encoding vector/facet pairings into colored graphs with vertex/edge invariants.
 - [x] **Graph canonization interface**: Interface to Sage's Bliss/Nauty backend for canonical graph labeling and automorphism groups.
-- [ ] **Permutation lifting**: Lifting graph automorphism permutations to integral lattice isometries via `libgap`.
+- [x] **Permutation lifting**: Lifting graph automorphism permutations to integral lattice isometries via `libgap`.
 - [ ] **Exact rational polyhedral cones**: Facet enumeration, extreme rays, incidence, and face stabilizers delegating to Normaliz, cddlib, or PPL.
 
 #### 3.8 Reduction Complex, Transporters, and Lorentzian Base Case
