@@ -1929,6 +1929,22 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             self._indefinite_witness = witness
             return False
 
+        if engine_capabilities.is_available("lattice.oscar_isometry_witness"):
+            witness_rows = lattice_engines.integral_isometry_witness(
+                domain.gram_tensor(),
+                codomain.gram_tensor(),
+            )
+            if witness_rows is None:
+                return True
+            witness = self._from_backend_row_action(witness_rows)
+            if any(
+                witness(domain.module_generator(label)).parent() is not codomain
+                for label in domain.module_generating_set()
+            ):
+                raise ArithmeticError("the OSCAR isometry witness has the wrong codomain")
+            self._indefinite_witness = witness
+            return False
+
         if (
             domain.is_even()
             and domain.is_p_elementary(2)

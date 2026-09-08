@@ -207,6 +207,26 @@ function target_primitive_embedding_classes(
     end
     return [1, 1, result]
 end
+
+function integral_isometry_witness(source_gram_entries, target_gram_entries)
+    source_gram = _zz_matrix(source_gram_entries)
+    target_gram = _zz_matrix(target_gram_entries)
+    source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
+    target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
+    isometric, isometry = is_isometric_with_isometry(
+        source,
+        target;
+        ambient_representation = false,
+    )
+    if !isometric
+        return [0]
+    end
+    integral = change_base_ring(ZZ, isometry)
+    if integral * target_gram * transpose(integral) != source_gram
+        error("OSCAR returned an isometry with the wrong Gram identity")
+    end
+    return [1, integral]
+end
 end
 """
 
@@ -439,6 +459,30 @@ class _OscarLatticeAdapter:
             representatives.append((target_prime_gram, source_prime_gram, embedding))
         return tuple(representatives)
 
+    def integral_isometry_witness(self, source_gram, target_gram):
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.integral_isometry_witness",
+            _integer_engine_matrix(source_gram),
+            _integer_engine_matrix(target_gram),
+        )
+        if not isinstance(result, list) or not result:
+            raise RuntimeError("OSCAR returned malformed lattice-isometry data")
+        if int(result[0]) == 0:
+            return None
+        if len(result) != 2:
+            raise RuntimeError("OSCAR returned malformed lattice-isometry witness data")
+        witness = result[1]
+        if witness.nrows() != witness.ncols():
+            raise ArithmeticError("an OSCAR lattice isometry matrix is not square")
+        source_engine = _integer_engine_matrix(source_gram)
+        target_engine = _integer_engine_matrix(target_gram)
+        if witness * target_engine * witness.transpose() != source_engine:
+            raise ArithmeticError("an OSCAR lattice isometry does not preserve the Gram form")
+        return tuple(
+            tuple(SageZZ(entry) for entry in row)
+            for row in witness.rows()
+        )
+
 
 _oscar_lattices = _OscarLatticeAdapter()
 
@@ -474,6 +518,13 @@ engine_capabilities.register(
     "lattice.target_primitive_embedding_classes",
     _OSCAR_PROVIDER,
     _oscar_lattices.target_primitive_embedding_classes,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.oscar_isometry_witness",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.integral_isometry_witness,
     available=_oscar_lattices.available,
     provisioning=_OSCAR_PROVISIONING,
 )
@@ -518,6 +569,14 @@ def target_primitive_embedding_classes(source_gram, target_gram, classification)
         source_gram,
         target_gram,
         classification,
+    )
+
+
+def integral_isometry_witness(source_gram, target_gram):
+    return engine_capabilities.compute(
+        "lattice.oscar_isometry_witness",
+        source_gram,
+        target_gram,
     )
 
 
