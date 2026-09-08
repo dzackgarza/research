@@ -25,3 +25,20 @@ def test_a_two_node_has_one_dimensional_milnor_and_tjurina_algebras() -> None:
 
     assert node.milnor_number() == 1
     assert node.tjurina_number() == 1
+    assert node.zariski_tangent_space().module_rank() == 2
+    assert node.is_singular_at_origin()
+
+
+def test_a_smooth_hypersurface_origin_has_the_jacobian_tangent_hyperplane() -> None:
+    plane = PolynomialRing(QQ, ("x", "y"))
+    x, y = plane.algebra_generators()
+    smooth = IsolatedHypersurfaceSingularity(plane, x + y**2)
+
+    tangent = smooth.zariski_tangent_space()
+    embedding = smooth.zariski_tangent_embedding()
+
+    assert tangent.module_rank() == 1
+    assert smooth.is_regular_at_origin()
+    assert not smooth.is_singular_at_origin()
+    assert embedding.domain() is tangent
+    assert embedding.codomain() is smooth.ambient_tangent_space()
