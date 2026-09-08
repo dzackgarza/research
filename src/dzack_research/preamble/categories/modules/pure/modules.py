@@ -799,6 +799,30 @@ class Modules(OwnedCategoryOverBaseRing):
             underlying = self._underlying_additive_element(element)
             return self(self.scalar_action()(self.base_ring()(scalar))(underlying))
 
+        def dual_module(self):
+            r"""Return the linear dual ``Hom_R(M, R)`` over a commutative ring.
+
+            For left modules over a noncommutative ring, ``Hom_R(M,R)`` is
+            naturally a right module and therefore is not an object of this
+            left-module category without a separate bimodule/opposite-ring
+            construction.  The commutative case is the internal Hom into the
+            regular rank-one module and inherits its selected presentation
+            whenever the endpoint data represent one.
+            """
+            ring = self.base_ring()
+            if ring not in OwnedRings().Commutative():
+                raise TypeError(
+                    "the represented left-module dual requires a commutative base ring"
+                )
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                ring_as_module,
+            )
+            from dzack_research.preamble.categories.modules.internal_hom import (
+                InternalHom,
+            )
+
+            return InternalHom(self, ring_as_module(ring))
+
         def restrict_scalars(self, ring_map):
             r"""Read this module over the domain of ``ring_map``."""
             return restrict_scalars(self, ring_map)

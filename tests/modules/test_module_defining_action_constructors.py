@@ -28,6 +28,9 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
     TensorProduct,
 )
 from dzack_research.preamble.categories.modules.internal_hom import InternalHom
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    ring_as_module,
+)
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     AlternatingPowerModules,
@@ -283,6 +286,17 @@ def test_free_duality_retains_the_selected_framing_and_action() -> None:
     assert dual.scalar_action()(ZZ(-2))(element) == dual.scalar_multiple(
         ZZ(-2), element
     )
+
+
+def test_presented_duality_is_the_internal_hom_into_the_regular_module() -> None:
+    module = _cyclic_six_from_presentation()
+    dual = module.dual_module()
+
+    assert dual is InternalHom(module, ring_as_module(ZZ))
+    assert dual.source_module() is module
+    assert dual.target_module() is ring_as_module(ZZ)
+    assert dual in ModulesWithChosenFinitePresentation(ZZ)
+    assert dual.presentation_object().arrow() is dual.presentation()
 
 
 def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
