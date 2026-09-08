@@ -2219,7 +2219,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] `G.stabilizer(I, action="setwise")` and `G.stabilizer(I, action="pointwise")`: setwise and pointwise stabilizers of sublattice $I$.
 - [x] `G.intersection(H1, ..., Hr)`: intersection of subgroups.
 - [x] `G.transporter(x, y)`: element $g \in G$ mapping $x \mapsto y$.
-- [ ] `G.orbit_decomposition(X)`: orbit representatives, stabilizers, and transporters on locus $X$.
+- [x] `G.orbit_decomposition(X)`: orbit representatives, stabilizers, and transporters on locus $X$.
 - [ ] Structured subgroup parents retaining construction provenance:
   - `GeneratedSubgroup(generators)`
   - `KernelSubgroup(phi)`
@@ -2267,9 +2267,9 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 5.2 Primitive Isotropic Vectors & Cusp Orbits
 
-- [ ] Priority API: `L.primitive_isotropic_vectors()` returning the domain/enumeration of primitive isotropic vectors $v \in L$ ($b_L(v,v)=0$, $\operatorname{div}(v)=1$ in $\mathbb{Z}v$).
-- [ ] Priority API: `O.orbit_decomposition(X)` for primitive isotropic vectors returning exact cusp orbit representatives, stabilizers $\Gamma_v$, and transporter isometries.
-- [ ] Exact cusp invariants: divisibility $\operatorname{div}(v) = \gcd(b_L(v, L))$ and associated discriminant class $[v/\operatorname{div}(v)] \in A_L = L^\vee/L$.
+- [x] Priority API: `L.primitive_isotropic_vectors()` returning the domain/enumeration of primitive isotropic vectors $v \in L$ ($b_L(v,v)=0$, $\operatorname{div}(v)=1$ in $\mathbb{Z}v$).
+- [x] Priority API: `O.orbit_decomposition(X)` for primitive isotropic vectors returning exact cusp orbit representatives, stabilizers $\Gamma_v$, and transporter isometries.
+- [x] Exact cusp invariants: divisibility $\operatorname{div}(v) = \gcd(b_L(v, L))$ and associated discriminant class $[v/\operatorname{div}(v)] \in A_L = L^\vee/L$.
 
 #### 5.3 Primitive Isotropic Sublattices & Flags via Exact Gluing Parabolics
 
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `O-primitive-isotropic-vector-locus-20260908-0626` | O / primitive isotropic vector locus owner API | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/isotropic_orbits.py; src/dzack_research/preamble/categories/lattices.py; src/dzack_research/preamble/categories/lattice_morphisms.py; tests/lattices/test_primitive_isotropic_vector_locus.py` (write) | `3a2f1c6d` | 2026-09-08T06:26:00Z |
 
 #### Existing work awaiting adoption
 
