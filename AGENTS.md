@@ -41,7 +41,7 @@ agent-memory maintain move <key> --to global/advice
 
 ## Preamble coding prerequisites
 
-Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains the execution priorities, remediation queue, mathematical requirements, organization findings, and work coordination.
+Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
 
 Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasoning effort.
 The [TODO workstream table](TODO.md#workstreams) records the DAG task scores and their reasons.
@@ -52,6 +52,45 @@ Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` be
 `just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
+
+## Using and maintaining TODO.md (always-on)
+
+**TODO.md says what to do next, never what was done.** Apply
+[`DEV-50`](CONTRIBUTING.md#dev-50-todos-contain-only-unfinished-work)
+and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
+
+- **When selecting work:** reread the live queue, its dependencies and active
+  claims, then inspect the selected item's current source and consumers.
+  Implement only the remaining delta. An unchecked item is not evidence that
+  the construction is absent; a remembered completion is not evidence that its
+  current implementation satisfies the requirement.
+- **When delivering work:** reconcile the affected TODO items in the delivery
+  commit, or an immediate companion commit, before selecting another task or
+  handing off. Remove a completed item, including its task-specific explanation
+  and obsolete dependency references. Do not mark it `[x]`, append a completion
+  note, or move it to a completed section. Record evidence and reasoning in the
+  commit, not in the queue. Apply the same rule when inspected source establishes
+  that another worker already delivered a stale listed item.
+- **For partial delivery:** retain only the concrete unfinished obligations,
+  with their owners, input maps, hypotheses and acceptance criteria. Preserve
+  the original required generality; one implemented specialization does not
+  discharge the broader construction. Keep required execution work open when
+  implementation is delivered with unverified specimens under terminal T.
+- **When discovering new work:** add the missing construction or repair from
+  the current state, with its next specimen and actual dependencies. Do not
+  resurrect a past checkbox or append a retrospective audit. Incorporate a
+  related new obligation into the existing unfinished item rather than creating
+  duplicate authoritative lists.
+- **Before committing a queue update:** use its existing coordination mutex,
+  reread the live file, and apply only the intended delta. Preserve concurrent
+  edits and other workers' active reservations. Remove your reservation on
+  release; an old timestamp alone never authorizes removing someone else's.
+
+This is required maintenance of the work being delivered, not a separate audit
+project. Do not accumulate progress tables, handoff histories, completed rows,
+or chronological status notes in the TODO. Removing work whose delivery is
+established is the completion-recording exception to goal-source immutability;
+it does not authorize deferring, dropping, or weakening unfinished requirements.
 
 ## The expectation subtrees are never edited to match an implementation (always-on)
 
