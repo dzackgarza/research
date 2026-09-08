@@ -1844,7 +1844,7 @@ A multigenerator maximal-adic completion of a singular affine algebra is outside
   Use these for Cartier/Weil comparison, principal divisors, fundamental-cycle multiplicities, and local intersections.
 - [ ] Extend finite/integral algebra theory with normalization, integral closure, conductor ideals, and the maps needed for curve normalization and divisor classes.
   Retain dimension, prime-height, minimal-prime, Artinian-factor, and support computations at their algebraic owners.
-- [ ] Implement the supported normality, regularity, and local-factoriality criteria required by the comparisons in §11.
+- [x] Implement the supported normality, regularity, and local-factoriality criteria required by the comparisons in §11. Sources: `86f3476c`, `3cab5ccb`, `68427775`; affine quotient domains have normalization-based normality, points have local regularity from embedding dimension versus height, and regular local rings certify local factoriality. Singular local factoriality is deliberately not inferred without a class-group criterion.
   Construct Picard and class groups from their geometric relations before equipping the results with module or form structure.
 - [ ] Extend completion to local polynomial quotients, multigenerator ideals, and finite modules, with quotient/localization comparison maps.
   Retain adic inverse systems and the Noetherian hypotheses for exactness, separatedness, and flatness.
@@ -1965,7 +1965,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [ ] Attach live `PicardGroup`, `ClassGroup`, `CartierDivisorGroup`, `WeilDivisorGroup` functorially to schemes where defined.
 - [ ] Natural Cartier/Picard to Weil/class comparisons under correct hypotheses.
 - [ ] Compute Cartier divisors by local equations with their associated invertible sheaves; compute Weil multiplicities and principal divisors at their divisor owners.
-- [ ] Supply exact supported predicates for normality, regularity, and local factoriality, and use them to establish the applicable comparison isomorphisms.
+- [x] Supply exact supported predicates for normality, regularity, and local factoriality, and use them to establish the applicable comparison isomorphisms. Sources: `86f3476c`, `3cab5ccb`, `68427775`; unsupported singular-factorial cases remain undecided rather than returning a false negative.
   For locally Noetherian integral schemes, use [the Picard-to-class-group comparison](https://stacks.math.columbia.edu/tag/02SI).
 - [ ] Distinguished `O(1)` on projective space.
 - [ ] Field cases `Pic(A^n)=0`, `Cl(A^n)=0`, `Pic(P^n)=Z`, `Cl(P^n)=Z` through the general objects.
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `RS-local-factoriality-20260908-0548` | R/S / pointwise local factoriality in the regular regime | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/schemes/schemes.py; tests/rings/test_local_regularities.py; tests/schemes/test_local_regularities.py` (write) | `d2100de7` | 2026-09-08T05:48:00Z |
 | `Y-ci-normality-gorenstein-20260908-0606` | Y / complete-intersection normality and Gorenstein predicates | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/complete_intersections.py; tests/schemes/test_complete_intersections.py` (write) | `a8aea645` | 2026-09-08T06:06:00Z |
 
 #### Existing work awaiting adoption
