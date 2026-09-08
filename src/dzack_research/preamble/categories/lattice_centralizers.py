@@ -25,10 +25,103 @@ the cyclotomic summands ``ker Phi_d(f)`` of a finite-order isometry.
 """
 
 from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
+
+
+class EquivariantLattice(SageObject):
+    r"""A lattice equipped with a specified lattice automorphism.
+
+    This is the semantic object ``(L,f)``.  The underlying lattice and the
+    isometry remain live owned objects; equivariant constructions are defined
+    by literal commutation with the selected automorphisms.
+    """
+
+    def __init__(self, lattice, isometry) -> None:
+        if isometry.domain() is not lattice or isometry.codomain() is not lattice:
+            raise ValueError("an equivariant lattice is equipped by an automorphism of that lattice")
+        self._lattice = lattice
+        self._isometry = lattice.O()(isometry)
+
+    def lattice(self):
+        return self._lattice
+
+    def isometry(self):
+        return self._isometry
+
+    def centralizer_group(self):
+        r"""Return ``O(L,f)=Z_{O(L)}(f)``."""
+        return self.lattice().O().centralizer(self.isometry())
+
+    def primitive_extension(self):
+        r"""Return the invariant/coinvariant primitive extension cut out by ``f``."""
+        return self.isometry().primitive_extension()
+
+    def equivariant_sublattice(self, sublattice):
+        r"""Equip an ``f``-stable represented sublattice with the restricted isometry."""
+        if not callable(getattr(sublattice, "inclusion", None)):
+            raise TypeError("an equivariant sublattice is a represented lattice subobject")
+        if sublattice.ambient_lattice() is not self.lattice():
+            raise ValueError("the selected sublattice has the wrong ambient lattice")
+
+        inclusion = sublattice.inclusion()
+        images = {}
+        for label in sublattice.module_generating_set():
+            embedded = inclusion(sublattice.module_generator(label))
+            moved = self.isometry()(embedded)
+            if not inclusion.is_in_image(moved):
+                raise ValueError("the selected sublattice is not stable under the equipped isometry")
+            images[label] = inclusion.lift(moved)
+        restricted = sublattice.O()(images)
+        return EquivariantLattice(sublattice, restricted)
+
+    def equivariant_isometry_to(self, other):
+        r"""Return ``h:(L,f)->(M,g)`` with ``h f = g h`` when exactly decidable.
+
+        Definite target lattices have a finite enumerable isometry torsor, so
+        the search is exhaustive there.  In an indefinite regime one exact
+        underlying witness may be available without an exact conjugacy
+        classifier; a non-equivariant witness is therefore not evidence that
+        no equivariant isometry exists, and this method refuses in that case.
+        """
+        if not isinstance(other, EquivariantLattice):
+            raise TypeError("equivariant_isometry_to expects another equipped lattice")
+        source = self.lattice()
+        target = other.lattice()
+        if source is target and self.isometry() == other.isometry():
+            return source.O().one()
+
+        homset = source.Isom(target)
+        empty = homset.is_empty()
+        if empty is True:
+            return None
+        if target.module_rank().is_finite() and target.is_definite():
+            for candidate in homset:
+                if candidate * self.isometry() == other.isometry() * candidate:
+                    return candidate
+            return None
+        if empty is Unknown:
+            raise NotImplementedError(
+                "the underlying indefinite isometry homset is not decided exactly"
+            )
+
+        witness = homset.an_element()
+        if witness * self.isometry() == other.isometry() * witness:
+            return witness
+        raise NotImplementedError(
+            "the underlying lattices are isometric, but no exhaustive indefinite equivariant-isometry classifier is available"
+        )
+
+    def equivariant_vector_orbit_representatives(self, square):
+        r"""Return vector-orbit representatives under ``O(L,f)`` in the supported regime."""
+        return self.isometry().equivariant_vector_orbit_representatives(square)
+
+    def __repr__(self) -> str:
+        return f"{self.lattice()} equipped with {self.isometry()}"
 
 
 class IsometryPrimitiveExtension:
@@ -358,6 +451,7 @@ def isometry_primitive_extension(isometry) -> IsometryPrimitiveExtension:
 
 
 __all__ = [
+    "EquivariantLattice",
     "IsometryPrimitiveExtension",
     "cyclotomic_summand",
     "isometry_primitive_extension",

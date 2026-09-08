@@ -1234,6 +1234,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             return bool(decision)
 
+        def with_isometry(self, isometry):
+            r"""Return this lattice equipped with the specified automorphism ``isometry``."""
+            from dzack_research.preamble.categories.lattice_centralizers import (
+                EquivariantLattice,
+            )
+
+            return EquivariantLattice(self, isometry)
+
         def similarity_homset(self, other, scale):
             r"""Return similarities of scale ``scale`` as ``Isom(L(scale),other)``."""
             return self.twist(scale).Isom(other)
