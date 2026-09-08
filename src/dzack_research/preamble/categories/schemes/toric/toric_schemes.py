@@ -65,12 +65,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     NormalSchemes,
+    SchemeMorphism,
     Schemes,
     SmoothSchemes,
     Spec,
     _has_scheme_placement,
     refine_scheme,
-    refine_scheme_morphism,
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
     RationalPolyhedralFans,
@@ -317,6 +317,114 @@ def _face_transition(source_cone, target_cone, base_ring):
         _face_transition_morphism(face, source_cone, target_cone, base_ring),
         _face_transition_morphism(face, target_cone, source_cone, base_ring),
     )
+
+
+def _pullback_character(character, lattice_morphism, domain_fan, codomain_fan):
+    r"""Return ``phi^*(m)`` in the domain character lattice.
+
+    If ``phi:N->N'`` is the cocharacter map, its dual is characterized by
+    ``<phi^*m,n>=<m,phi(n)>``.  The chosen frames of the dual lattices make
+    these pairings exactly the coordinates of the pulled-back character.
+    """
+    source_cocharacters = domain_fan.cocharacter_lattice()
+    source_characters = domain_fan.character_lattice()
+    target_pairing = codomain_fan.character_cocharacter_pairing()
+    integers = _integers()
+    return source_characters.linear_combination(
+        {
+            label: integers(
+                target_pairing(
+                    character,
+                    lattice_morphism(source_cocharacters.module_generator(label)),
+                )
+            )
+            for label in source_cocharacters.module_generating_set()
+            if integers(
+                target_pairing(
+                    character,
+                    lattice_morphism(source_cocharacters.module_generator(label)),
+                )
+            )
+        }
+    )
+
+
+def _target_maximal_cone(engine_morphism, source_cone, codomain_fan):
+    r"""Choose a maximal codomain cone containing the image of ``source_cone``."""
+    image = codomain_fan._cone(
+        engine_morphism.image_cone(source_cone._engine_cone())
+    )
+    for candidate in codomain_fan.maximal_cones():
+        if image.is_face_of(candidate):
+            return candidate
+    raise ArithmeticError("a compatible fan morphism has no target cone for a source cone")
+
+
+def _toric_chart_pullback(lattice_morphism, source_cone, target_cone, base_ring):
+    r"""The affine pullback ``k[S_tau] -> k[S_sigma]`` induced by ``phi``.
+
+    For ``phi(sigma) subset tau``, every ``m in S_tau`` pulls back to
+    ``phi^*m in S_sigma``.  On the chosen semigroup generators this is the
+    character monomial of that pulled-back lattice point.
+    """
+    source_chart = _affine_chart(source_cone, base_ring)
+    target_chart = _affine_chart(target_cone, base_ring)
+    source_algebra = source_chart.coordinate_algebra()
+    target_algebra = target_chart.coordinate_algebra()
+    target_labels = tuple(target_algebra.algebra_generating_set())
+    target_generators = target_cone.semigroup_generators()
+    domain_fan = source_cone.parent()
+    codomain_fan = target_cone.parent()
+    return target_algebra.Mor(source_algebra)(
+        {
+            target_labels[position]: _character_monomial(
+                _pullback_character(
+                    character,
+                    lattice_morphism,
+                    domain_fan,
+                    codomain_fan,
+                ),
+                source_cone,
+                source_chart,
+            )
+            for position, character in enumerate(target_generators)
+        }
+    )
+
+
+class ToricSchemeMorphism(SchemeMorphism):
+    r"""A toric scheme morphism retaining its lattice and affine-chart pullbacks."""
+
+    def __init__(
+        self,
+        native_morphism,
+        *,
+        domain,
+        codomain,
+        lattice_morphism,
+        chart_targets,
+        chart_pullbacks,
+    ) -> None:
+        super().__init__(native_morphism, domain=domain, codomain=codomain)
+        self._preamble_toric_lattice_morphism = lattice_morphism
+        self._preamble_toric_chart_targets = dict(chart_targets)
+        self._preamble_toric_chart_pullbacks = dict(chart_pullbacks)
+
+    def lattice_morphism(self):
+        return self._preamble_toric_lattice_morphism
+
+    def chart_target(self, source_cone):
+        return self._preamble_toric_chart_targets[source_cone]
+
+    def chart_pullback(self, source_cone):
+        r"""Return the pullback on the affine chart indexed by ``source_cone``."""
+        return self._preamble_toric_chart_pullbacks[source_cone]
+
+    def chart_morphism(self, source_cone):
+        r"""Return the represented affine map into the selected target chart."""
+        source_chart = self.domain().affine_chart(source_cone)
+        target_chart = self.codomain().affine_chart(self.chart_target(source_cone))
+        return source_chart.Mor(target_chart)(self.chart_pullback(source_cone))
 
 
 def _glued_toric_scheme(fan, base_ring):
@@ -823,14 +931,34 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.fan(),
                 codomain.fan(),
             )
-            return refine_scheme_morphism(
-                self._toric_engine_variety().hom(
+            chart_targets = {
+                source_cone: _target_maximal_cone(
                     engine_morphism,
-                    codomain._toric_engine_variety(),
-                ),
-                self.scheme_base_ring(),
+                    source_cone,
+                    codomain.fan(),
+                )
+                for source_cone in self.fan().maximal_cones()
+            }
+            chart_pullbacks = {
+                source_cone: _toric_chart_pullback(
+                    lattice_morphism,
+                    source_cone,
+                    target_cone,
+                    self.scheme_base_ring(),
+                )
+                for source_cone, target_cone in chart_targets.items()
+            }
+            native = self._toric_engine_variety().hom(
+                engine_morphism,
+                codomain._toric_engine_variety(),
+            )
+            return ToricSchemeMorphism(
+                native,
                 domain=self,
                 codomain=codomain,
+                lattice_morphism=lattice_morphism,
+                chart_targets=chart_targets,
+                chart_pullbacks=chart_pullbacks,
             )
 
 
@@ -900,4 +1028,4 @@ def ToricVariety(fan, base_ring, polarizing_polytope=None):
     return refine_scheme(scheme, base, placements)
 
 
-__all__ = ["ToricSchemes", "ToricVariety"]
+__all__ = ["ToricSchemeMorphism", "ToricSchemes", "ToricVariety"]
