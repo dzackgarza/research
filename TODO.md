@@ -21,7 +21,13 @@ Uncertainty explicitly assigned to a source review is not a claim of a runtime
 failure. The pending terminal verification applies to the entire implementation,
 including constructions no longer listed as implementation work.
 
-Follow [CONTRIBUTING.md](CONTRIBUTING.md), especially `DEV-50` through `DEV-58`.
+Follow [CONTRIBUTING.md](CONTRIBUTING.md), especially `DEV-50` through `DEV-59`.
+Begin new additions with its
+[mathematical dependency trace](CONTRIBUTING.md#mathematical-dependency-tracing),
+before selecting an implementation. Record observed missing foundations and
+papercuts in [COMPLAINTS.md](COMPLAINTS.md), including independent discoveries.
+That file owns the observed need and evidence; this queue owns the selected
+remaining repair and its acceptance. Link them instead of copying status.
 The [design philosophy](CONTRIBUTING.md#preamble-design-philosophy) and
 [architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
 govern how every item is implemented, including already-existing dependencies.
@@ -52,10 +58,16 @@ running preamble tests, QC, Sage, or notebooks before terminal T.
 
 Apply these decisions inside the selected unfinished item, not in a separate
 audit, readiness registry, or new planning system. Their durable authority is
-`OWN-01` through `OWN-13` and `DEV-50` through `DEV-58` in CONTRIBUTING.
+`OWN-01` through `OWN-13` and `DEV-50` through `DEV-59` in CONTRIBUTING.
 
-1. **Select a remaining mathematical delta.** Read the live owner, its immediate
-   structure, the complete relevant methods, and its callers before changing it.
+1. **Select a remaining mathematical delta.** First express the requested
+   addition in standard mathematics and recursively unfold its dependencies
+   through the source-backed set-theoretic and categorical foundations. Separate
+   defining mathematics from computational choices and related extensions.
+   Then read the live owner, its immediate structure, the complete relevant
+   methods, and its callers before changing it. Record actual gaps under
+   `DEV-59`, linking the complaint to the relevant repair rather than using a
+   missing method name as the mathematical specification.
    Preserve supplied capabilities. A source-review task below is a question to
    settle, not an assertion that the whole subsystem is broken. If the current
    source already meets it, remove the stale task with source evidence in the
@@ -93,7 +105,8 @@ When work changes direction, use the relevant decision below immediately:
 
 | Observable choice in the current task | Decision already made; next action |
 | --- | --- |
-| A missing method looks like new mathematics | Search the owned category, structural functors, and maintained implementations first. Separate missing exposure, missing transport, and missing computation; repair only the actual gap (`OWN-01`, `OWN-08`). |
+| A missing method looks like new mathematics | Unfold the requested mathematics first; then search the owned category, structural functors, and maintained implementations. Separate missing exposure, missing transport, and missing computation; record the observed gap and repair its mathematical owner (`OWN-01`, `OWN-08`, `DEV-59`). |
+| A foundational gap or papercut appears outside the selected item | Record the observed need and dependency path in COMPLAINTS, with inspected scope and existing partial capability. Link any existing repair item; do not suppress the finding or silently expand the current task (`DEV-59`). |
 | A package does not implement the Python class model | Evaluate its concrete computation separately. Generic compilation belongs to `sage-categories`; inability to compile classes does not reject CAP, Sage, or Julia mathematics (`OWN-01`). |
 | An engine supplies invariants but the task needs maps | Inspect its representative/presentation operations and established compositions. Keep the map obligation open; do not replace it with a freely chosen space of the same dimension (`OWN-07`). |
 | Lowering and raising call each other recursively | Separate computed defining data from the request to compute it at the common owner. Preserve one constructor contract; do not introduce a trusted or unchecked route (`OWN-02`, `OWN-07`). |
@@ -175,9 +188,10 @@ Paths in this section are relative to
   `OwnedIntegralDomains.ParentMethods.fraction_field_map`,
   `rings/commutative_algebra.py::_localization_at_submonoid`, and the existing
   submonoid, ring Hom, and module-localization owners.
-  **Current boundary:** the general fraction-field method returns
-  `_own_ring(engine.fraction_field())`. Element inversion and prime localization
-  already converge on `_localization_at_submonoid`; preserve that construction.
+  **Observed gap:** see the
+  [localization complaint](COMPLAINTS.md#localization-must-define-its-fraction-field-specialization)
+  for the inspected specialization bypass and mathematical dependency trace.
+  Preserve the existing general localization and element/prime routes.
   **Decision:** the domain's nonzero-element submonoid defines this specialization.
   The private Sage fraction-field operation remains a computational realization,
   but raising must establish that localization datum, its source map, and its
@@ -213,9 +227,10 @@ Paths in this section are relative to
   completion with a realization of the actual completion.
   **Owner:** `rings/commutative_algebra.py::AdicCompletion` and its parent/
   element implementation; private exact-algebra adapters supply computations.
-  **Boundary:** the current polynomial-presentation branch forms the quotient
-  by the defining relations plus `I^precision`. Its inherited exact quotient
-  arithmetic must not define arithmetic in the completion.
+  **Observed gap:** see the
+  [completion complaint](COMPLAINTS.md#completion-must-be-a-limit-rather-than-one-quotient)
+  for the finite-quotient realization and mathematical dependency trace.
+  Exact finite-quotient arithmetic must not define arithmetic in the completion.
   **Decision:** the completion and its finite quotients are distinct owned
   objects. A computational precision selects available information, not a new
   exact defining relation. Keep `A -> A_hat`, `A_hat -> A/I^n`, and
@@ -795,10 +810,11 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   **Owners:** `categories/algebras/differential_graded_algebras.py`,
   `categories/algebras/cohomology_algebras.py`, graded algebras and derivations,
   and `categories/functors/cohomology.py`.
-  **Source question to settle first:** `Boundaries` requests the differential in
-  degree `n-1`, while the DGA differential-component method rejects negative
-  degree. Reconcile the inherited nonnegative-complex boundary at its shared
-  owner, rather than adding a cohomology-only exception for `H^0`.
+  **Source question to settle first:** follow the
+  [boundary-degree complaint](COMPLAINTS.md#cohomology-needs-a-common-complex-contract-in-boundary-degrees)
+  and inspect the actual inherited dispatch. Reconcile the nonnegative-complex
+  boundary at its shared owner, rather than adding a cohomology-only exception
+  for `H^0`.
   **Preserve:** the existing descended multiplication through cycle
   representatives and `class_of_cycle`, and the induced map from a DGA morphism.
   Review `CohomologyAlgebras.super_categories`, which currently declares strict

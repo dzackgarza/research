@@ -44,6 +44,9 @@ agent-memory maintain move <key> --to global/advice
 Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
 before changing preamble construction, representation, or engine integration.
 It owns the intended architecture; the TODO owns only the unfinished work.
+Read [COMPLAINTS.md](COMPLAINTS.md) for observed foundational gaps and papercuts
+relevant to the construction. It records unmet needs, not completed work or a
+substitute architecture.
 
 Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
 
@@ -56,6 +59,39 @@ Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` be
 `just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
+
+## Mathematical tracing and complaints (always-on)
+
+**Before designing any new mathematical addition, unfold its mathematics before
+choosing its implementation.** Apply
+[mathematical dependency tracing](CONTRIBUTING.md#mathematical-dependency-tracing)
+and `OWN-01`. State the leaf request using standard mathematical objects, maps,
+categories and hypotheses, as it should be expressed in an ideal API. Recursively
+trace what those notions require down to the named set-theoretic and categorical
+foundations, reusing source-backed accounts of established dependencies. Do not
+start with the classes, engine objects, or methods that happen to be available.
+
+Trace defining data, morphisms, universal constructions, and preservation
+hypotheses, not merely a list of related subjects. Separate the definition from
+an algorithm's representation and from an optional generalization. This rule
+applies in every mathematical domain; no particular geometric or cohomological
+example defines its scope. A trace is reasoning needed for the construction,
+not permission to rewrite foundations or create another tracking framework.
+
+**Record actual issues whenever they are discovered.** Apply
+[`DEV-59`](CONTRIBUTING.md#dev-59-record-observed-foundational-gaps-and-papercuts)
+in [COMPLAINTS.md](COMPLAINTS.md), including findings outside the selected task.
+Give the missing general mathematics, the dependency path, observed evidence,
+existing partial capability, affected consumers, and an honest coverage boundary.
+Also record concrete workflow papercuts. A guessed absence or hypothetical future
+friction is not an observed defect; unresolved capability questions stay labeled.
+
+Link an existing complaint for the same foundation rather than duplicating it
+under each leaf. Link remediation to its TODO item; recording it does not repair
+it or authorize unrelated implementation. Keep only unresolved complaints, remove
+delivered ones with evidence in the commit, and preserve remaining proof work
+under terminal T. Use the TODO's coordination mutex for complaint edits too.
+The detailed capture and maintenance contract lives in `DEV-59`.
 
 ## Construction and engine boundaries (always-on)
 

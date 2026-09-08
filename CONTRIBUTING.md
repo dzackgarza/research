@@ -4,9 +4,13 @@ This document defines the contribution policies for the repository.
 All contributions must follow the categorized policy index below.
 Each policy has a unique alphanumeric identifier.
 
-For construction, representation, or engine work, begin with the normative
+For a new addition, begin with
+[mathematical dependency tracing](#mathematical-dependency-tracing).
+For construction, representation, or engine work, then apply the normative
 [preamble architecture specification](#preamble-architecture-specification).
 Its `OWN-*` policies specify the intended architecture, not implementation status.
+Record observed foundational gaps and papercuts in [COMPLAINTS.md](COMPLAINTS.md)
+under [DEV-59](#dev-59-record-observed-foundational-gaps-and-papercuts).
 
 Use the [task complexity guide](COMPLEXITY.md) to score work and select a model and reasoning effort.
 
@@ -42,6 +46,155 @@ its [repository-role instructions](https://github.com/dzackgarza/sage-categories
 make stitching and engine delegation the engineering purpose. The
 [architecture specification](#preamble-architecture-specification) below turns
 that purpose into construction, dependency, and encapsulation contracts.
+
+### Mathematical dependency tracing
+
+**First formulate the addition in mathematics, independently of the current
+implementation. Then unfold the mathematics it needs. Only afterwards select
+its implementation.** This applies to a new operation, category, object,
+morphism, specialization, research example, or repair that introduces new
+mathematical behavior. It is not a preliminary search for a convenient class
+whose existing methods can be made to resemble the requested answer.
+
+Start with the mathematical question a researcher is asking. State the input
+objects and their categories, the desired object or morphism, its defining
+datum or universal property, and the hypotheses under which it exists. Include
+the maps that make the result useful in subsequent mathematics. Establish these
+facts from the project's mathematical specifications and actual mathematical
+sources, not from recalled definitions or the current backend's capabilities.
+
+Express the request in the vocabulary an ideal mathematical API should support:
+sets, indexed families, maps, categories, functors, groups, actions, rings,
+modules, subobjects, quotients, tensor products, schemes, sheaves, complexes,
+and the other standard notions the question actually uses. Pseudocode may
+express this account, but it is mathematical notation, not a claim that the
+displayed Python names exist. Name the mathematical operation before discussing
+classes, storage, registration, adapters, callbacks, or dispatch.
+
+For each notion in that account, recursively ask what makes it meaningful:
+
+- What are its defining objects, operations and laws? What additional datum is
+  supplied, rather than inferred from a property or chosen silently?
+- In which category do its morphisms live? What are their source and target,
+  their composition, and the maps retained by the construction?
+- Which subobjects, quotients, limits, colimits, or other standard constructions
+  does it use? What diagram, indexing object, or equivalence relation defines
+  them, and which existence or preservation hypotheses are needed?
+- Which structure is forgotten, transported, or added? If a construction on
+  underlying objects is used, what theorem supplies the desired structured
+  object and its maps? Faithfulness alone does not supply that theorem.
+- Which properties refer to which mathematical object? Specify, for example,
+  the notion of integrality or reflexivity in use rather than transferring a
+  familiar property name between unrelated theories.
+- What do these prerequisites themselves require, down to the chosen
+  set-theoretic and categorical foundations: sets and families, functions,
+  relations, objects and morphisms, identities and composition, and the
+  relevant universal constructions? Retain size and finiteness hypotheses;
+  a category is not assumed to have a finite enumerable set of objects.
+
+The result is a mathematical dependency account, not a flat list of associated
+subjects or a list of files to create. Each dependency must explain what datum,
+map, theorem, or construction it supplies to its dependent notion. A phrase
+such as "needs category theory" does not explain the dependency. Neither does
+adding a class named after the missing notion.
+
+#### Unfold through established foundations, not repeated reconstruction
+
+The trace must reach the foundations, but it need not rewrite their definitions
+for every leaf. Follow and cite an existing source-backed mathematical account
+when it already unfolds a prerequisite. Make the path to that account explicit;
+do not stop at an unexplained term such as module, action, or sheaf because a
+similarly named class exists. Expand precisely the uncertain or new part of the
+dependency account, and retain consequential choices at the existing mathematical
+declaration or specification. No separate trace registry is required.
+
+Distinguish three sorts of dependency without weakening any of them:
+
+- **Defining mathematics:** what the requested object and maps mean, and the
+  general theory needed to express them. These requirements do not shrink to
+  match the current implementation.
+- **A computational realization:** the additional hypotheses, presentation,
+  coordinates, resolution, cover, or finiteness that a selected algorithm uses.
+  Its comparison with the defined object is part of the obligation.
+- **A related extension:** a broader theory or further research question not
+  required by this request. Record a concrete discovered need when appropriate,
+  but do not make every mathematically related generalization a prerequisite.
+
+Different presentations of the same mathematics may yield different computation
+routes. Establish their comparison rather than treating the easiest one as the
+definition. Conversely, do not demand every possible computational route before
+using one justified route. For example, a particular sheaf-cohomology computation
+may use an acyclic cover while another uses a resolution. The underlying sheaf
+and complex categories and the comparison remain mathematical requirements;
+this does not force every calculation to construct a spectral sequence. An
+unimplemented required general interface remains owed even when one computation
+can already be performed.
+
+#### An example of the reasoning, not a prescribed workstream
+
+Consider a request involving an equivariant morphism of modules. The existing
+[action-functor account](src/dzack_research/preamble/categories/functors/group_actions.py)
+describes actions as functors and forgetting the action as evaluation. A
+mathematical trace can therefore begin as follows:
+
+```text
+Requested: a morphism between two R-modules with G-actions.
+Needed: the two R-modules, their G-actions, and an equivariant linear map.
+Actions: functors from the one-object category BG to R-modules.
+Maps: natural transformations between those functors.
+Unfold BG: the group, its elements, multiplication, identity, and inverses.
+Unfold R-modules: the ring, underlying additive groups, and scalar actions.
+Unfold both: underlying sets, functions, products, and their defining laws.
+Unfold the categorical language: objects, Homs, identities, composition,
+functors, and naturality, with the actual source and target of each map.
+```
+
+If the request also asks for a kernel, scalar change, or invariant submodule,
+continue the trace through that construction and its hypotheses. Do not append
+an unrelated collection of matrix routines. The point is to identify which
+general mathematics supplies the requested result, so that a module action,
+a geometric action, and another structured action can share the appropriate
+theory without pretending their computations are identical.
+
+The same reasoning applies in geometry, homological algebra, arithmetic,
+polyhedral geometry, and every other preamble domain. A sheaf operation unfolds
+through its site or space, covering and restriction data, category of values,
+and relevant functors. A metric or convex construction must specify its space
+and geometric hypotheses before importing a Euclidean computation into another
+geometry. These are examples of how to ask the questions, not a fixed list of
+foundations to implement on every task, and not a toric-cohomology checklist.
+
+#### Compare the mathematical account with the available language
+
+After the mathematical trace, inspect the owned declarations, generated
+reference, live source and consumers, and then the relevant maintained packages.
+For each required notion, establish whether the available path supplies its
+defining data, maps, hypotheses, inherited structure, and computational case.
+The name of a method, a numerical answer, a category label, or a foreign engine
+object is not sufficient evidence that the mathematical prerequisite exists.
+
+Distinguish a missing general notion from a missing operation on an existing
+notion, a missing comparison or inherited datum, a specialization that bypasses
+its foundation, and an unavailable computational case. These require different
+repairs. In particular, an operation can exist in Sage while remaining absent
+from the owned mathematical language; that calls for integration, not reinvention.
+An API may also express the correct object while a requested decision procedure
+is unavailable or undecidable. Do not confuse that with nonexistence of the object.
+
+When this comparison exposes an actual gap, record it in
+[COMPLAINTS.md](COMPLAINTS.md) under `DEV-59`. Explain the missing general
+mathematics and the dependency path that exposed it, not only the failing leaf
+method. Search broadly enough to distinguish absent machinery from undiscovered
+machinery; record the inspected boundary and unresolved questions honestly.
+The complaint should let another mathematician understand the required theory
+without first understanding this repository's implementation.
+
+Then select the remaining implementation delta under `OWN-01` and `DEV-56`.
+Repair the required foundation through its owner and connect the real consumer.
+Record newly discovered independent needs without silently expanding the active
+task. Do not turn the trace or complaint into a substitute for a repair already
+required by that task. Equally, do not suppress a foundational finding merely
+because it is outside the file, workstream, or session currently being edited.
 
 ### What the preamble contributes
 
@@ -309,12 +462,18 @@ former.
 
 ### `OWN-01`: Name the semantic owner before selecting an implementation
 
-- **Rule:** Before changing a construction, read its defining category, immediate
+- **Rule:** First perform the
+  [mathematical dependency trace](#mathematical-dependency-tracing), independent
+  of the implementation's current shape. Then read its defining category, immediate
   structure owners, current entrypoints, and consumers. Identify the owned input,
   output, structural maps, and exact operation needed. Search the megadoc and live
   source beyond the selected subtree for that operation, then inspect relevant
   upstream implementations. Reuse both the owned mathematical construction and
   the maintained computation; satisfying only one half is insufficient.
+  Record actual missing foundations, missing structural relationships, and
+  observed workflow friction in `COMPLAINTS.md` under `DEV-59`, even when found
+  outside the selected implementation task. The complaint states the mathematical
+  need; it does not authorize a bespoke replacement or a change of scope.
 - **Rationale:** A private Sage call can bypass an owned localization just as a
   correctly named owned kernel can conceal a redundant local elimination algorithm.
 - **Violation Example:** Start a geometry-specific matrix kernel because the
@@ -5745,6 +5904,79 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example**: running Sage to obtain a green completion specimen while required architecture remains open; repeatedly invoking whole-repo hooks for a TODO-only commit; describing a written but unexecuted assertion as a passing regression test.
 
 - **Correct Example**: review the source and new mathematical assertions, commit them as unverified under the current scope rule, retain terminal T as unfinished work, and execute the required evidence only at that phase. For a TODO and policy edit, inspect the intended diff and commit only those prose paths with the prescribed hook exemption.
+
+#### `DEV-59`: Record Observed Foundational Gaps and Papercuts
+
+- **Rule**: [COMPLAINTS.md](COMPLAINTS.md) is the repository's canonical local
+  record of unresolved observed problems, primarily missing foundational
+  mathematics and missing structural relationships, and also actual papercuts
+  in research use or contribution workflows. Record a finding when it arises
+  during mathematical tracing, source reading, implementation, review, notebook
+  use, or permitted execution. Discovery is not restricted to the selected TODO
+  item. Capture before leaving the relevant work, not at a future audit.
+
+  For a foundational complaint, begin with the desired mathematics in standard
+  terminology. State the input/output objects and maps, hypotheses, and the
+  recursive dependency path exposing the gap. Identify the earliest missing
+  general construction or relationship, with the mathematical sources that
+  justify it. Include a small ideal-API mathematical expression or specimen
+  where useful, explicitly distinguishing illustrative pseudocode from an
+  existing callable API. Do not title the complaint after a proposed manager,
+  registry, helper, adapter, or feature-specific programming class.
+
+  Then give the observed evidence: inspected source and symbols or the actual
+  workflow and output, the existing partial construction, the precise unmet
+  contract, affected consumers, confidence, and uninspected scope. Distinguish
+  source evidence from executed failures. For an absence claim, use the
+  epistemic-integrity fields Searched, Found, Conclusion, Confidence, and Gaps;
+  a failed name search alone does not establish absent mathematics. An unresolved
+  availability question may be recorded as such, but not as a confirmed defect.
+  Name relevant maintained implementations and the exact capability question
+  where known; their presence is not permission to leak foreign objects.
+
+  A papercut entry names the real user action, expected behavior, actual friction,
+  owning boundary, and observed example. Record it even when it is small. Do not
+  invent a defect from a possible future inconvenience, and do not inflate a
+  local ergonomic issue into a missing theory without a mathematical trace.
+
+  Search existing complaint headings and the related TODO before adding an
+  entry. Extend the existing mathematical complaint when a new consumer exposes
+  the same missing foundation; retain genuinely different hypotheses or gaps.
+  One general complaint can link several consumers. Its title and links should
+  remain useful when those consumers move between files.
+
+  **Division of responsibility:** CONTRIBUTING and mathematical declarations
+  specify the enduring design; COMPLAINTS explains the observed unmet need and
+  its evidence; TODO supplies selected execution work, dependencies and acceptance.
+  Link the existing TODO item when it already owns remediation. If the current
+  task requires the fix, update that item with the actual remaining delta and
+  continue it. An independent finding can remain recorded without starting a new
+  workstream. External issues own upstream repair; link them from the local
+  complaint without copying their live status or surrendering the owned API's
+  obligation. Filing or recording a complaint never completes its repair.
+
+  **Maintenance:** use the shared-checkout transaction mutex for edits and commits
+  of COMPLAINTS, as for TODO. Preserve concurrent entries. On delivery, compare
+  the fix with the complaint's full mathematical requirement and its affected
+  paths, then remove the resolved entry in that commit or an immediate companion.
+  For partial delivery, retain only the unresolved need, evidence and links.
+  Keep diagnosis and resolution history in git, not in resolved sections or
+  completion rows. Preserve enduring mathematical decisions at their declaration
+  before removing the entry. Source-based remediation does not certify runtime
+  behavior; required execution remains in terminal T under `DEV-58`. An observed
+  runtime failure is not resolved merely because a speculative source fix exists.
+
+- **Rationale**: A leaf-level workaround can hide a reusable mathematical
+  prerequisite from every later contributor. Recording the underlying theory
+  makes that prerequisite visible without confusing discovery with implementation
+  or turning an isolated symptom into another bespoke subsystem.
+- **Violation Example**: discover that a specialization bypasses localization,
+  add another fraction constructor, and mention the missing relationship only
+  in chat; record "needs a backend manager" instead of the missing morphism.
+- **Correct Example**: record the missing localization factorization with its
+  submonoid and universal map, link the existing repair item, and complete the
+  shared construction with its consumer. Remove the complaint only when that
+  requirement is delivered, retaining any still-unverified execution obligation.
 
 
 * * *
