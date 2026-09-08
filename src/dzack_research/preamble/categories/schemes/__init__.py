@@ -251,6 +251,8 @@ __all__ = [
     'Surfaces',
     'ToricLogPair',
     'ToricLogPairs',
+    'ToricFixedPointBlowup',
+    'ToricFixedPointBlowups',
     'ToricSchemes',
     'ToricVariety',
     'ToricGeometricLineBundleCohomologySpaces',

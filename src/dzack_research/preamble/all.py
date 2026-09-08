@@ -764,6 +764,8 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     Surfaces,
     ToricLogPair,
     ToricLogPairs,
+    ToricFixedPointBlowup,
+    ToricFixedPointBlowups,
     ToricSchemes,
     ToricVariety,
     ToricGeometricLineBundleCohomologySpaces,
