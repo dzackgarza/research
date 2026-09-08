@@ -824,7 +824,7 @@ class Algebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def center(self):
-            r"""The centre \(Z(A)=\{z : za = az \text{ for all } a\}\) as a submodule of \(A\).
+            r"""Return the central submodule, promoted to an algebra when associativity guarantees closure.
 
             An element commutes with all of \(A\) exactly when it commutes
             with a module generating set, so \(Z(A)\) is the wide equalizer
@@ -866,7 +866,34 @@ class Algebras(OwnedCategoryOverBaseRing):
             center = commutation_equalizer(next(equalizers))
             for label in equalizers:
                 center = center.intersection(commutation_equalizer(label))
-            return center
+            if self not in Algebras(self.base_ring()).Associative():
+                return center
+
+            inclusion = center.inclusion()
+            center_tensor = TensorProduct(center, center)
+            ambient_tensor = multiplication.domain()
+            center_multiplication = center_tensor.from_bilinear(
+                BilinearMap(
+                    center,
+                    center,
+                    center,
+                    lambda left, right: inclusion.lift(
+                        multiplication(
+                            ambient_tensor.pure_tensor(
+                                inclusion(center.module_generator(left)),
+                                inclusion(center.module_generator(right)),
+                            )
+                        )
+                    ),
+                )
+            )
+            result = Algebras(self.base_ring()).Associative()(
+                center,
+                center_multiplication,
+            )
+            refine(result, Algebras(self.base_ring()).Commutative())
+            result._preamble_center_inclusion = inclusion
+            return result
 
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(Algebras(self.base_ring())):
