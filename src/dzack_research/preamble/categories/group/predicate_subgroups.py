@@ -50,12 +50,18 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             predicate,
             description,
             character_data=None,
+            character_data_complete=None,
             **rest,
         ) -> None:
             self._containing_group = containing_group
             self._predicate = predicate
             self._description = description
             self._character_data = dict(character_data or {})
+            self._character_data_complete = (
+                bool(character_data)
+                if character_data_complete is None
+                else bool(character_data_complete)
+            )
             super().__init__(supergroup=containing_group, **rest)
 
         def supergroup(self):
@@ -67,9 +73,13 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def character_data(self):
             return dict(self._character_data)
 
+        def character_data_is_complete(self) -> bool:
+            r"""Whether the retained finite characters define this whole subgroup."""
+            return self._character_data_complete
+
         def contains_character_kernel(self) -> bool:
             data = self.character_data()
-            return bool(
+            return self.character_data_is_complete() and bool(
                 data.get("determinant_kernel", False)
                 or data.get("spinor_kernel", False)
                 or data.get("discriminant_preimages", ())
@@ -136,6 +146,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 self.supergroup(),
                 (self, other),
                 character_data=data,
+                character_data_complete=(
+                    self.character_data_is_complete()
+                    and other.character_data_is_complete()
+                ),
             )
 
         def finite_character_quotient(self):
@@ -150,6 +164,13 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
             return subgroup_vectors_are_equivalent(self, left, right)
 
+        def vector_equivalence_witness(self, left, right):
+            from dzack_research.preamble.categories.orthogonal_quotients import (
+                subgroup_vector_equivalence_witness,
+            )
+
+            return subgroup_vector_equivalence_witness(self, left, right)
+
         def isotropic_orbit_representatives(self, rank, *, flag=False):
 
             return subgroup_isotropic_orbit_representatives(
@@ -159,6 +180,15 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         def isotropic_are_equivalent(self, left, right, *, flag=False) -> bool:
 
             return subgroup_isotropic_are_equivalent(
+                self, left, right, flag=flag
+            )
+
+        def isotropic_equivalence_witness(self, left, right, *, flag=False):
+            from dzack_research.preamble.categories.orthogonal_quotients import (
+                subgroup_isotropic_equivalence_witness,
+            )
+
+            return subgroup_isotropic_equivalence_witness(
                 self, left, right, flag=flag
             )
 
@@ -297,6 +327,7 @@ def predicate_subgroup(
     description,
     *,
     character_data=None,
+    character_data_complete=None,
 ):
     containing_group = _owned_group(containing_group)
     if containing_group not in OwnedGroups():
@@ -307,6 +338,7 @@ def predicate_subgroup(
         predicate=predicate,
         description=description,
         character_data=character_data,
+        character_data_complete=character_data_complete,
     )
 
 
@@ -329,6 +361,7 @@ def preimage_subgroup(
     predicate=None,
     description=None,
     character_data=None,
+    character_data_complete=None,
 ):
     group = _owned_group(morphism.domain())
     if predicate is None:
@@ -341,6 +374,7 @@ def preimage_subgroup(
         predicate=predicate,
         description=description,
         character_data=character_data,
+        character_data_complete=character_data_complete,
         preimage_morphism=morphism,
         target_subgroup=subgroup,
     )
@@ -372,6 +406,7 @@ def intersection_subgroup(
     subgroups,
     *,
     character_data=None,
+    character_data_complete=None,
 ):
     group = _owned_group(containing_group)
     subgroups = tuple(subgroups)
@@ -383,6 +418,7 @@ def intersection_subgroup(
         predicate=lambda element: all(element in subgroup for subgroup in subgroups),
         description="g lies in every selected subgroup",
         character_data=character_data,
+        character_data_complete=character_data_complete,
         intersected_subgroups=subgroups,
     )
 

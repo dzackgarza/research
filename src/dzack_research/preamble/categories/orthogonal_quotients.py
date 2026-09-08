@@ -16,6 +16,10 @@ class OrthogonalCharacterQuotient:
 
     def __init__(self, subgroup) -> None:
         self.subgroup = subgroup
+        if not subgroup.character_data_is_complete():
+            raise ValueError(
+                "the retained finite characters do not define this whole subgroup"
+            )
         self.supergroup = subgroup.supergroup()
         self.lattice = self.supergroup.domain()
         data = subgroup.character_data()
@@ -158,6 +162,28 @@ class OrthogonalCharacterQuotient:
             tuple(self.image(generator) for generator in stabilizer_generators)
         )
 
+    def stabilizer_image_witnesses(self, stabilizer_generators):
+        r"""Return one live stabilizer element above every generated character image."""
+        identity = self.supergroup.one()
+        identity_key = self.image(identity)
+        witnesses = {identity_key: identity}
+        steps = []
+        for generator in stabilizer_generators:
+            steps.append((self.image(generator), generator))
+            inverse = ~generator
+            steps.append((self.image(inverse), inverse))
+        frontier = [identity_key]
+        while frontier:
+            current_key = frontier.pop()
+            current_witness = witnesses[current_key]
+            for step_key, step_witness in steps:
+                candidate_key = self._multiply(step_key, current_key)
+                if candidate_key in witnesses:
+                    continue
+                witnesses[candidate_key] = step_witness * current_witness
+                frontier.append(candidate_key)
+        return witnesses
+
     def _gap_regular_model(self):
         r"""Return the right-regular libGAP model of the finite character image.
 
@@ -214,16 +240,33 @@ class OrthogonalCharacterQuotient:
         return tuple(representatives)
 
     def witness_meets_subgroup(self, witness, stabilizer_generators) -> bool:
+        return self.adjust_witness_into_subgroup(witness, stabilizer_generators) is not None
+
+    def adjust_witness_into_subgroup(self, witness, target_stabilizer_generators):
+        r"""Left-adjust ``witness`` by the target stabilizer until it lies in the subgroup.
+
+        If ``witness(x)=y`` and ``t`` stabilizes ``y``, then ``t*witness`` still
+        carries ``x`` to ``y``.  Thus the relevant finite-character condition
+        is ``rho(t) rho(witness) in rho(Gamma)``.  Right multiplication by a
+        target stabilizer would instead act on the source and is not the same
+        transporter problem.
+        """
         if witness in self.subgroup:
-            return True
-        target = self.image(witness)
-        stabilizer = self.stabilizer_image_keys(stabilizer_generators)
-        subgroup = self.subgroup_image_keys()
-        return any(
-            self._multiply(left, right) == target
-            for left in subgroup
-            for right in stabilizer
-        )
+            return witness
+        subgroup_keys = self.subgroup_image_keys()
+        for stabilizer_key, stabilizer_witness in self.stabilizer_image_witnesses(
+            target_stabilizer_generators
+        ).items():
+            candidate_key = self._multiply(stabilizer_key, self.image(witness))
+            if candidate_key not in subgroup_keys:
+                continue
+            candidate = stabilizer_witness * witness
+            if candidate not in self.subgroup:
+                raise ArithmeticError(
+                    "complete finite-character data accepted a transporter excluded by its subgroup predicate"
+                )
+            return candidate
+        return None
 
 
 _MISSING_ARITHMETIC_GENERATING_SET = (
@@ -289,22 +332,30 @@ def subgroup_vector_orbit_representatives(subgroup, square):
     return tuple(representatives)
 
 
-def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
+def subgroup_vector_equivalence_witness(subgroup, left, right):
     orthogonal_group = subgroup.supergroup()
     if not subgroup.contains_character_kernel():
         lattice = orthogonal_group.domain()
         source, target = lattice(left), lattice(right)
-        return any(
-            automorphism(source) == target
-            for automorphism in _finite_supergroup_elements(subgroup)
+        return next(
+            (
+                automorphism
+                for automorphism in _finite_supergroup_elements(subgroup)
+                if automorphism(source) == target
+            ),
+            None,
         )
     witness = orthogonal_group.vector_equivalence_witness(left, right)
     if witness is None:
-        return False
+        return None
     stabilizer = orthogonal_group.vector_stabilizer_generators(right)
-    return OrthogonalCharacterQuotient(subgroup).witness_meets_subgroup(
+    return OrthogonalCharacterQuotient(subgroup).adjust_witness_into_subgroup(
         witness, stabilizer
     )
+
+
+def subgroup_vectors_are_equivalent(subgroup, left, right) -> bool:
+    return subgroup_vector_equivalence_witness(subgroup, left, right) is not None
 
 
 def _assert_isotropic_splitting_has_character_data(subgroup) -> None:
@@ -344,26 +395,34 @@ def subgroup_isotropic_orbit_representatives(subgroup, rank, *, flag=False):
     return tuple(representatives)
 
 
-def subgroup_isotropic_are_equivalent(subgroup, left, right, *, flag=False) -> bool:
+def subgroup_isotropic_equivalence_witness(subgroup, left, right, *, flag=False):
     _assert_isotropic_splitting_has_character_data(subgroup)
     orthogonal_group = subgroup.supergroup()
     witness = orthogonal_group.isotropic_equivalence_witness(
         left, right, flag=flag
     )
     if witness is None:
-        return False
+        return None
     stabilizer = orthogonal_group.isotropic_stabilizer_generators(
         right, flag=flag
     )
-    return OrthogonalCharacterQuotient(subgroup).witness_meets_subgroup(
+    return OrthogonalCharacterQuotient(subgroup).adjust_witness_into_subgroup(
         witness, stabilizer
     )
+
+
+def subgroup_isotropic_are_equivalent(subgroup, left, right, *, flag=False) -> bool:
+    return subgroup_isotropic_equivalence_witness(
+        subgroup, left, right, flag=flag
+    ) is not None
 
 
 __all__ = [
     "OrthogonalCharacterQuotient",
     "subgroup_isotropic_are_equivalent",
+    "subgroup_isotropic_equivalence_witness",
     "subgroup_isotropic_orbit_representatives",
+    "subgroup_vector_equivalence_witness",
     "subgroup_vector_orbit_representatives",
     "subgroup_vectors_are_equivalent",
 ]
