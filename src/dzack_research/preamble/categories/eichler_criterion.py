@@ -234,6 +234,67 @@ class TwoUEichlerModel(SageObject):
             name=f"K-direction Eichler transvections in {lattice}",
         )
 
+    def covering_vector_representatives(self, square):
+        r"""Return one explicit primitive vector for every covering class in ``A_K``.
+
+        Since ``2U`` is unimodular, ``A_{2U+K} = A_K``.  For a covering
+        class ``x`` of order ``d``, choose its selected lift ``y in K^#`` and
+        put ``k=d*y in K``.  The defining discriminant-form equality says
+
+        ``square-k^2 = 2 d^2 m``
+
+        for an integer ``m``.  Then ``v=d e+d m f+k`` has square ``square``,
+        divisibility exactly ``d``, is primitive, and has divided class ``x``
+        under the canonical discriminant identification.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        lattice = self.lattice()
+        ring = lattice.base_ring()
+        square = ring(square)
+        complement = self.orthogonal_complement()
+        discriminant = complement.discriminant_group()
+        covering = covering_discriminant_classes(complement, square)
+        correlation = complement.correlation_morphism()
+        complement_inclusion = lattice.injection(2)
+        e, f, _e_prime, _f_prime = self.hyperbolic_basis()
+
+        def representative(discriminant_class):
+            discriminant_class = discriminant(discriminant_class)
+            order = ring(int(discriminant_class.additive_order()))
+            dual_lift = discriminant.dual_lattice_lift(discriminant_class)
+            scaled_dual = dual_lift.parent().scalar_multiple(order, dual_lift)
+            complement_vector = correlation.lift(scaled_dual)
+            denominator = ring(2) * order * order
+            numerator = square - complement.q(complement_vector)
+            coefficient = numerator // denominator
+            if denominator * coefficient != numerator:
+                raise ArithmeticError(
+                    "a covering discriminant class did not produce the required integral hyperbolic coefficient"
+                )
+            vector = (
+                lattice.scalar_multiple(order, e)
+                + lattice.scalar_multiple(order * coefficient, f)
+                + complement_inclusion(complement_vector)
+            )
+            if vector.q() != square:
+                raise ArithmeticError("the constructed covering vector has the wrong square")
+            if vector.div() != order:
+                raise ArithmeticError("the constructed covering vector has the wrong divisibility")
+            if not vector.is_primitive():
+                raise ArithmeticError("the constructed covering vector is not primitive")
+            if complement.discriminant_class(dual_lift) != discriminant_class:
+                raise ArithmeticError("the selected dual lift represents the wrong discriminant class")
+            return vector
+
+        return finite_indexed_family(
+            covering,
+            representative,
+            name=f"Eichler covering representatives of square {square} in {lattice}",
+        )
+
 
 def two_u_eichler_model(orthogonal_complement):
     r"""Return the represented ``U + U + K`` determinant model for ``K``."""

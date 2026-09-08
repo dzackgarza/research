@@ -105,3 +105,32 @@ def test_actual_K_isometries_extend_canonically_and_need_no_discriminant_guess()
     point = complement.O().classifying_category().an_object()
     arrow = complement.O().classifying_category().Mor(point, point)(minus_one)
     assert action(arrow) == lifted
+
+
+def test_covering_discriminant_classes_have_explicit_primitive_vectors() -> None:
+    integers = _own_ring(SageZZ)
+    complement = Lattices(integers)("A2")
+    model = two_u_eichler_model(complement)
+    square = integers(-2)
+    representatives = model.covering_vector_representatives(square)
+
+    assert representatives.cardinality() > 0
+    for discriminant_class in representatives.index_set():
+        vector = representatives[discriminant_class]
+        assert vector.q() == square
+        assert vector.is_primitive()
+        assert vector.div() == discriminant_class.additive_order()
+        assert discriminant_class in covering_discriminant_classes(complement, square)
+
+
+def test_unimodular_complement_covering_representative_is_the_hyperbolic_one() -> None:
+    integers = _own_ring(SageZZ)
+    complement = Lattices(integers)("E8")
+    model = two_u_eichler_model(complement)
+    representatives = model.covering_vector_representatives(integers(2))
+
+    assert representatives.cardinality() == 1
+    vector = next(iter(representatives))
+    assert vector.q() == 2
+    assert vector.div() == 1
+    assert vector.is_primitive()
