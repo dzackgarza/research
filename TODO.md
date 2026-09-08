@@ -2033,7 +2033,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 ### 12. Singularities of curves and schemes
 
-- [ ] Local regularity/singularity testing through `O_{X,x}`, its maximal ideal, residue field, and completion.
+- [x] Local regularity/singularity testing through `O_{X,x}`, its maximal ideal, residue field, and completion. Source: `3cab5ccb`; the point owner compares `dim_kappa(m/m^2)` from Nakayama with the local dimension/prime height, and affine schemes delegate their pointwise predicate to that local ring.
   Retain the localization, residue, and completion maps and their supported computational presentations.
 - [ ] Construct the smooth locus of a morphism as an open subscheme in supported finite-presentation settings.
   Construct the singular or nonsmooth closed subscheme using a stated ideal-sheaf convention and hypotheses.
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `RS-local-regularity-20260908-0544` | R/S / local dimension, embedding dimension, and regularity | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/schemes/schemes.py; tests/rings/test_local_regularities.py; tests/schemes/test_local_regularities.py` (write) | `4e1bfccc` | 2026-09-08T05:44:00Z |
 | `Y-ci-normality-gorenstein-20260908-0606` | Y / complete-intersection normality and Gorenstein predicates | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/complete_intersections.py; tests/schemes/test_complete_intersections.py` (write) | `a8aea645` | 2026-09-08T06:06:00Z |
 
 #### Existing work awaiting adoption
