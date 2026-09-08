@@ -11,6 +11,7 @@ def test_affine_plane_origin_has_dimension_and_embedding_dimension_two() -> None
     assert origin.height() == 2
     assert origin.embedding_dimension() == 2
     assert origin.is_regular()
+    assert origin.is_locally_factorial()
 
 
 def test_cusp_origin_has_embedding_dimension_two_but_local_dimension_one() -> None:
@@ -23,3 +24,10 @@ def test_cusp_origin_has_embedding_dimension_two_but_local_dimension_one() -> No
     assert origin.height() == 1
     assert origin.embedding_dimension() == 2
     assert not origin.is_regular()
+
+    try:
+        origin.is_locally_factorial()
+    except NotImplementedError:
+        pass
+    else:
+        raise AssertionError("singularity alone does not decide local factoriality")

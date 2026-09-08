@@ -1267,6 +1267,13 @@ class AffineSchemes(_SchemePropertyCategory):
             r"""Return the negation of local regularity at ``p``."""
             return not self.is_regular_at(point)
 
+        def is_locally_factorial_at(self, point) -> bool:
+            r"""Return local factoriality at ``p`` in the supported regular regime."""
+            spectrum = self.underlying_space()
+            if point.parent() is not spectrum:
+                point = spectrum(point)
+            return bool(point.is_locally_factorial())
+
     def super_categories(self):
         # Quasi-affine as well: a scheme is an open subscheme of itself.
         return [

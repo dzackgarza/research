@@ -175,6 +175,22 @@ class PrimeSpectra(OwnedCategory):
             """
             return self.embedding_dimension() == int(self.height())
 
+        @cached_method
+        def is_locally_factorial(self) -> bool:
+            r"""Return local factoriality where it follows from represented regularity.
+
+            Every regular local ring is a unique-factorization domain.  This
+            gives an exact positive criterion from the local-ring data already
+            represented here.  A singular local ring can still be factorial,
+            so failure of regularity is not a negative criterion and is left
+            undecided until a divisor-class computation supplies one.
+            """
+            if self.is_regular():
+                return True
+            raise NotImplementedError(
+                "local factoriality of a singular local ring requires a divisor-class criterion"
+            )
+
         def order_of_vanishing(self, function):
             r"""Return ``ord_p(f)`` at this height-one point.
 

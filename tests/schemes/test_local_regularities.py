@@ -12,6 +12,7 @@ def test_affine_plane_and_cusp_use_the_same_pointwise_regularity_owner() -> None
 
     assert plane.is_regular_at(origin)
     assert not plane.is_singular_at(origin)
+    assert plane.is_locally_factorial_at(origin)
 
     cusp = plane.closed_subscheme(y**2 - x**3)
     cusp_ring = cusp.coordinate_algebra()
