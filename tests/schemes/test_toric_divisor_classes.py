@@ -110,6 +110,25 @@ def test_projective_plane_canonical_and_anticanonical_bundles_retain_their_divis
     assert anticanonical.associated_divisor() == -plane.canonical_divisor()
 
 
+def test_squaring_on_projective_line_pulls_back_a_boundary_point_with_multiplicity_two() -> None:
+    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 1))
+    fan = fans.projective_space_fan()
+    cocharacters = fans.cocharacter_lattice()
+    label = next(iter(cocharacters.module_generating_set()))
+    doubling = module_homset(cocharacters, cocharacters)(
+        {label: ZZ(2) * cocharacters.module_generator(label)}
+    )
+    line = fan.toric_variety(QQ)
+    morphism = line.toric_morphism(doubling, line)
+    ray = next(iter(fan.cones(1)))
+    point = line.torus_invariant_prime_divisor(ray)
+    pulled = morphism.pullback_divisor(point)
+    bundle = line.invertible_sheaf_of_divisor(point)
+
+    assert pulled == ZZ(2) * point
+    assert morphism.pullback_line_bundle(bundle).associated_divisor() == pulled
+
+
 def test_only_a_fan_whose_rays_span_the_lattice_is_free_of_a_torus_factor() -> None:
     r"""``A^1 x k^*`` is the toric variety of the single ray ``e_1`` in ``ZZ^2``."""
     plane = _projective_plane()

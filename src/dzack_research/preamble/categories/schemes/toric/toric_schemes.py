@@ -465,6 +465,39 @@ class ToricSchemeMorphism(SchemeMorphism):
         target_chart = self.codomain().affine_chart(self.chart_target(source_cone))
         return source_chart.Mor(target_chart)(self.chart_pullback(source_cone))
 
+    def pullback_divisor(self, divisor):
+        r"""Pull back one represented torus-invariant Cartier divisor."""
+        codomain = self.codomain()
+        target_group = codomain.weil_divisor_group()
+        divisor = target_group(divisor)
+        if not codomain.is_cartier(divisor):
+            raise ValueError("toric divisor pullback is represented for Cartier divisors")
+        target_rays = codomain.fan().cones(1)
+        target_coefficients = module_coefficients(divisor, target_group)
+        zero = _integers().zero()
+        engine_divisor = codomain._toric_engine_variety().divisor(
+            [int(target_coefficients.get(ray, zero)) for ray in target_rays]
+        )
+        pulled = self.native_morphism().pullback_divisor(engine_divisor)
+        source = self.domain()
+        source_group = source.weil_divisor_group()
+        source_rays = source.fan().cones(1)
+        return source_group.linear_combination(
+            {
+                ray: _integers()(pulled.coefficient(position))
+                for position, ray in enumerate(source_rays)
+                if pulled.coefficient(position)
+            }
+        )
+
+    def pullback_line_bundle(self, bundle):
+        r"""Return ``f^* O_Y(D) = O_X(f^*D)`` for a selected toric divisor bundle."""
+        if bundle.scheme() is not self.codomain():
+            raise ValueError("line-bundle pullback requires a bundle on the morphism codomain")
+        return self.domain().invertible_sheaf_of_divisor(
+            self.pullback_divisor(bundle.associated_divisor())
+        )
+
 
 def _glued_toric_scheme(fan, base_ring):
     r"""``X_Sigma`` glued from the charts of the maximal cones (CLS Thm. 3.1.5).
