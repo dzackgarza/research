@@ -19,6 +19,214 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 ## Preamble design philosophy
 
+**The preamble primarily stitches together, organizes, and composes existing
+mathematics and existing implementations behind one fully owned mathematical
+interface. It is not a mandate to build another computer algebra system from
+first principles.** A feature request ordinarily asks the contributor to make
+an established construction available in the right category, with the right
+objects, maps, hypotheses, and relationships. It does not ordinarily ask the
+contributor to invent or reimplement the algorithm that computes it.
+
+The public language is owned throughout. Sage, GAP, Julia, OSCAR, Singular,
+Macaulay2, PARI/GP, and other suitable maintained systems provide private
+computation. The preamble supplies the mathematical organization and the
+necessary integration between their results and its own objects. A uniform
+interface must make these capabilities compose without requiring the researcher
+to know which engine was called, speak its vocabulary, or handle its objects.
+
+This is the integration philosophy of `sage-categories`, applied to the
+preamble's stricter recursively owned public boundary. Its
+[README](https://github.com/dzackgarza/sage-categories/blob/main/README.md)
+names categories, functors, and universal constructions as the reuse model;
+its [repository-role instructions](https://github.com/dzackgarza/sage-categories/blob/main/AGENTS.md#repository-role-integration-framework-and-engine-delegation)
+make stitching and engine delegation the engineering purpose. The
+[architecture specification](#preamble-architecture-specification) below turns
+that purpose into construction, dependency, and encapsulation contracts.
+
+### What the preamble contributes
+
+The distinctive work is making separate capabilities form one usable mathematical
+language. That includes identifying the correct owner of an operation, retaining
+the data that defines an object, transporting additional structure, constructing
+the maps that relate results, and reconciling engine representations with those
+requirements. This is substantive mathematical design even when the final
+implementation consists mostly of declarations and short compositions.
+
+For a typical feature, the intended contribution consists of:
+
+- An owned mathematical declaration with its defining data and hypotheses.
+- Construction through existing categories and sanctioned constructors.
+- Reuse of inherited operations, structural functors, and universal maps.
+- A private integration of a suitable maintained computational operation.
+- Complete raising of results, including elements and constituent maps.
+- Mathematical specimens that distinguish the requested construction from a
+  plausible substitute, executed only in the authorized verification phase.
+
+These responsibilities do not imply a new file, class, or adapter for every
+feature. An existing owner may already supply several of them, and an existing
+adapter may already contain the needed computation. The contribution is the
+actual missing integration, not a restatement of everything the dependencies do.
+
+### Two kinds of reuse are required together
+
+**Mathematical reuse** means deriving behavior from structure already represented
+in the category framework. A differential graded algebra uses the common graded
+algebra and complex structures. A special localization uses the general
+localization construction. A new structured category uses the existing object,
+element, morphism, and functor machinery rather than reimplementing them under
+new names. The hypotheses that justify inheritance or transport remain part of
+the mathematics; a forgetful functor does not preserve every construction merely
+because it forgets structure.
+
+**Computational reuse** means leaving established algorithms with systems that
+already maintain them. A generic owned cohomology interface does not justify a
+new local homology algorithm. A common owned category does not justify rebuilding
+finite-diagram or path-reduction computations. The same prior-art requirement
+applies at the framework level as at a specialized mathematical level.
+
+Neither kind substitutes for the other. Calling Sage directly from a specialized
+constructor can reuse an algorithm while bypassing the owned mathematical
+construction. Conversely, expressing the right mathematical definition in a
+generic module can still duplicate an entire maintained computational system.
+The intended architecture combines a shared semantic construction with suitable
+maintained computations behind its private boundaries.
+
+**Owning an API does not mean owning the algorithm; delegating the algorithm does
+not mean surrendering the API.** All publicly reachable constituents remain
+preamble objects. A private engine can compute a presentation or representative,
+but its result must become the owned object with the structural maps the public
+contract requires. Neither a thin facade over foreign objects nor a fresh
+implementation of all their arithmetic satisfies this division of responsibility.
+
+### Shared foundations should make later work smaller
+
+The framework exists so that a new mathematical specialization supplies its new
+data and immediate structural relationships, then receives the consequences from
+the existing construction machinery. The author of a formed module should not
+also implement general set behavior. A geometric cohomology consumer should not
+also implement general module kernels. A new action should not bring another
+implementation of identity, composition, or scalar change.
+
+When several apparent methods require the same missing foundation, treat that
+foundation as the common dependency. Supply it at its owner, connect the first
+real consumer, and let other consumers use it. Do not preserve a method-by-method
+backlog that assumes every consequence needs an independent implementation.
+Equally, do not use the word foundation to justify constructing an entire new
+framework before the selected mathematical operation can begin. Reuse the
+available framework and repair the exact prerequisite that the consumer needs.
+
+A claim of reusable foundations must be visible in a real consumer. The new
+construction should obtain its data, maps, and inherited operations through the
+shared route. Merely placing duplicate algorithms in one file, adding an abstract
+base, or declaring a category does not establish that later work has become
+simpler. If each new specialization still needs to understand transitive runtime
+initialization or reconstruct structural maps, repair the framework contract.
+
+### Select dependencies by the responsibility they can discharge
+
+A computation package need not implement the preamble's class compiler, public
+ontology, or whole research workflow to be useful. Ask whether it supplies the
+specific computation with the required inputs, hypotheses, and outputs. A
+different object model or method spelling normally calls for an adapter, not
+rejection of the computation. A result missing necessary maps calls for further
+capability research or a precise integration decision, not an unsupported claim
+that an invariant is the full construction.
+
+The [sage-categories complaints](https://github.com/dzackgarza/sage-categories/blob/main/COMPLAINTS.md)
+illustrate why this separation matters: inability to use CAP as an abstract
+Python class compiler was treated as a reason to discard its concrete category
+computations too. The relevant principle is responsibility-specific evaluation.
+Inspect the shared framework, Sage, and the appropriate specialized packages for
+their respective jobs; no single dependency has to replace the whole project.
+
+The preamble can coordinate more than one engine through the existing private
+bridges. Requiring an unnecessary direct connection between every pair of
+engines creates work that the mathematical task did not require. Conversely,
+inventing a new bridge when a suitable one exists transfers another maintained
+responsibility into this repository. Integration follows the established
+transport owners and raises owned values before returning to mathematical code.
+
+Search for the full semantic operation, not just its easiest primitive. A
+homology package can discharge more responsibility than a matrix routine used
+inside a home-written homology implementation. A module-presentation operation
+can discharge more than a long local sequence of intermediate syzygy operations.
+Use the highest suitable maintained operation that supplies the actual contract;
+compose established operations when no single call does. The
+[computation references](#existing-computation-references) are starting points,
+not a reason to restrict discovery to the first familiar engine.
+
+### Integration code has a specific job
+
+Local code is justified by the semantic difference between an existing capability
+and the owned operation. Typical differences include expressing the source and
+target as owned objects, reconciling grading or variance conventions, preserving
+chosen presentation data, constructing the required comparison maps, and
+converting complete results into their owned parents. State that difference at
+the construction or adapter that owns it.
+
+An adapter is not a place where arbitrary new algorithms become acceptable by
+being hidden. Renaming a computation, moving it to a private helper, translating
+it into Julia, or putting it inside the generic category layer does not transfer
+its maintenance to an upstream project. A dependency import also proves no such
+transfer if the repository still implements most of the dependency's job itself.
+Review which system actually performs the semantic operation.
+
+Some integration is necessarily substantial. Engine presentations can differ,
+maps may need transport, and exactness or coefficient hypotheses may differ.
+Investigate that difficulty rather than assuming every operation is a one-line
+call. But the difficulty must be an identified semantic or integration gap, not
+an unexamined presumption that locally implementing familiar mathematics is the
+normal route. Fix defective packaging or bridges at their established owner;
+they are not mathematical evidence that a replacement algorithm is necessary.
+
+### Invention is an explicit research responsibility
+
+The repository supports mathematical research; this philosophy does not prohibit
+new mathematics. It distinguishes a research contribution from the ordinary
+engineering work of exposing established mathematics. A request to make an
+existing construction available does not silently authorize a new algorithm,
+new correctness argument, or new long-term maintenance obligation.
+
+When the relevant mature systems and standard compositions do not supply the
+required computation, state the precise remaining gap. Preserve the original
+mathematical domain while distinguishing the representations and cases for which
+an algorithm exists. General undecidability does not invalidate an available
+specialized algorithm, and a useful special case does not justify claiming a
+general decision procedure.
+
+Owning a genuinely new nontrivial algorithm requires the deliberate decision in
+`ENG-06`, its source-grounded mathematical contract, and its own correctness
+burden. The decision concerns that algorithm, not permission to rebuild adjacent
+infrastructure. Discovery can establish that the operation needs further research;
+it cannot turn an unmet interface into a guessed answer, a weaker substitute, or
+an assertion that the requested mathematics does not exist.
+
+### Progress means useful composition with controlled ownership
+
+Assess a feature by what mathematical work a researcher can perform through the
+owned interface, whether the result retains its required structure, and which
+system maintains each necessary computation. This includes the cost imposed on
+future changes: a shared correction should reach its consumers through their
+existing contracts rather than require the same repair in every theory.
+
+More locally implemented mathematics is not inherently more progress. A feature
+that duplicates a mature algorithm adds a correctness and maintenance burden
+even when its examples give the right answers. Fewer lines are not inherently
+better either: deleting structural maps or exposing raw engine results makes
+the implementation shorter by abandoning the contract. The objective is full
+mathematical capability through principled composition, not a source-line quota,
+dependency count, passing-test count, or administrative completion signal.
+
+Evaluate work over time against that objective. Identify the new usable
+construction, the existing capability reused, the necessary local integration,
+and whether later work preserves those boundaries. An unexpectedly prolonged
+implementation warrants revisiting missing reuse and structural dependencies;
+elapsed time alone does not prove reinvention. Returning repeatedly to local
+repairs while retaining the same bypass is not a forward trajectory merely
+because each repair is individually substantive.
+
+### Interactive discovery is the user-facing consequence
+
 The preamble is an **interactive discovery language for mathematics**, not a flat library of globally named functions.  A user should be able to start from the mathematical object already in hand and discover the language locally with tab completion.  If `C` is a category, `C.<TAB>` should expose the constructions and structure that `C` knows; if `M` is a module, `M.<TAB>` should expose module-level operations; if `x` is an element, `x.<TAB>` should expose element operations; if `f` is a morphism, `f.<TAB>` should expose morphism operations; and Homsets, functors, subobjects, and other mathematical objects should likewise expose the operations they own.  The receiver is part of the mathematical documentation: it tells the user what kind of thing an operation acts on and sharply narrows the admissible language before any manual or source file is opened.
 
 This is a deliberate contrast with a GAP/Julia-style global operation catalogue.  A global name such as `Product`, `Kernel`, or `Orbit` gives almost no local information about its domain: the user must already know whether it acts on categories, parents, morphisms, elements, families, or some combination.  As the system grows, that design requires memorizing an ever larger language or repeatedly consulting documentation.  The preamble instead scales by **navigating from mathematical objects to their methods**.  The public global namespace therefore exists primarily for canonical mathematical objects, category/object constructors, notation entry points, and genuinely language-level forms—not as a convenience catalogue of operations on objects that already exist.

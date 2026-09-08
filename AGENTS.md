@@ -59,6 +59,19 @@ These are implementation prerequisites: use them to identify already-planned rem
 
 ## Construction and engine boundaries (always-on)
 
+**The preamble's primary engineering purpose is stitching and organizing existing
+mathematics and implementations, not inventing another CAS.** Read the
+[design philosophy](CONTRIBUTING.md#preamble-design-philosophy) together with the
+architecture specification. Interpret an ordinary feature request as integrating
+existing capabilities through shared owned constructions. Local code supplies
+the actual missing semantic integration; a genuinely new algorithm requires the
+demonstrated gap and explicit ownership decision in `ENG-06`.
+
+This applies to shared categorical computation as well as specialized theories.
+Moving bespoke logic into the framework or an adapter does not make it reuse.
+Conversely, using an upstream algorithm never authorizes exposing its objects:
+the public mathematical interface and every constituent remain fully owned.
+
 **Own all public mathematics; reuse maintained computation privately.** Apply
 `OWN-01` through `OWN-13` in the
 [architecture specification](CONTRIBUTING.md#preamble-architecture-specification).
