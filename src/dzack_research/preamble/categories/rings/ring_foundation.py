@@ -1656,6 +1656,10 @@ class RingCenterFunctor(Functor):
 class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""A category over a ring, normalized to the session's owned ring."""
 
+    def parameter_category(self):
+        r"""Return the mathematical domain of the base-ring parameter."""
+        return OwnedRings()
+
     @staticmethod
     def __classcall__(cls, base_ring, *args, **kwargs):
         # During construction of an engine-backed owned ring, ``self`` already
