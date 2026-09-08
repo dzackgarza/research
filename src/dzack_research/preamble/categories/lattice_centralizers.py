@@ -24,6 +24,7 @@ isomorphism -- the restriction morphisms ``O(L,f) -> O(L^f)`` and
 the cyclotomic summands ``ker Phi_d(f)`` of a finite-order isometry.
 """
 
+from sage.arith.misc import divisors
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.structure.sage_object import SageObject
@@ -35,6 +36,7 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
     _finite_supergroup_elements,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
 
 class EquivariantVectorOrbit(SageObject):
@@ -162,6 +164,221 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         raise ArithmeticError("one centralizer orbit has no transporter between two of its members")
 
 
+def _isometry_power(isometry, exponent):
+    r"""Return an exact nonnegative power of one lattice automorphism."""
+    exponent = int(exponent)
+    if exponent < 0:
+        raise ValueError("an isometry power exponent is nonnegative here")
+    result = isometry.domain().O().one()
+    for _step in range(exponent):
+        result = isometry * result
+    return result
+
+
+class CyclotomicDecomposition(SageObject):
+    r"""The integral cyclotomic decomposition of a finite-order isometry.
+
+    For an automorphism ``f`` of exact order ``n`` this owns the primitive
+    sublattices ``L_d = ker(Phi_d(f))`` for ``d | n`` and the finite-index
+    inclusion ``direct_sum_d L_d -> L``.  The finite quotient of that
+    inclusion is the integral gluing datum.  Component isometries are allowed
+    to act on the summands independently only when they extend across that
+    quotient to an actual isometry of ``L`` commuting with ``f``.
+    """
+
+    def __init__(self, decorated_lattice, order) -> None:
+        self._decorated_lattice = decorated_lattice
+        self._order = int(order)
+        if self._order <= 0:
+            raise ValueError("the order of a finite-order isometry is positive")
+        isometry = decorated_lattice.isometry()
+        identity = decorated_lattice.lattice().O().one()
+        if _isometry_power(isometry, self._order) != identity:
+            raise ValueError("the supplied integer does not annihilate the equipped isometry")
+        for proper_divisor in divisors(self._order):
+            if proper_divisor == self._order:
+                continue
+            if _isometry_power(isometry, proper_divisor) == identity:
+                raise ValueError("the supplied integer is not the exact order of the equipped isometry")
+
+        self._divisors = finite_ordered_set(tuple(divisors(self._order)))
+        self._summands = finite_indexed_family(
+            self._divisors,
+            lambda divisor: isometry.cyclotomic_summand(int(divisor)),
+            name=f"Cyclotomic summands of {isometry}",
+        )
+        nonzero = tuple(
+            divisor
+            for divisor in self._divisors
+            if int(self._summands[divisor].module_rank()) != 0
+        )
+        if not nonzero:
+            raise ArithmeticError("a finite-order isometry has no nonzero cyclotomic summand")
+        self._nonzero_divisors = finite_ordered_set(nonzero)
+
+        lattice = self.lattice()
+        total_rank = sum(
+            int(self._summands[divisor].module_rank())
+            for divisor in self._nonzero_divisors
+        )
+        if total_rank != int(lattice.module_rank()):
+            raise ArithmeticError("the cyclotomic summands do not span the ambient rational lattice")
+        ring = lattice.base_ring()
+        zero = ring.zero()
+        for left_position, left_divisor in enumerate(self._nonzero_divisors):
+            left = self._summands[left_divisor]
+            for right_divisor in tuple(self._nonzero_divisors)[left_position + 1 :]:
+                right = self._summands[right_divisor]
+                if any(
+                    lattice.b(left_vector, right_vector) != zero
+                    for left_vector in left.embedded_module_generators()
+                    for right_vector in right.embedded_module_generators()
+                ):
+                    raise ArithmeticError("distinct cyclotomic summands are not orthogonal")
+
+    def decorated_lattice(self):
+        return self._decorated_lattice
+
+    def lattice(self):
+        return self.decorated_lattice().lattice()
+
+    def isometry(self):
+        return self.decorated_lattice().isometry()
+
+    def order(self):
+        return self._order
+
+    def divisor_set(self):
+        return self._divisors
+
+    def summands(self):
+        return self._summands
+
+    def summand(self, divisor):
+        divisor = self.divisor_set()(divisor)
+        return self.summands()[divisor]
+
+    def nonzero_divisors(self):
+        return self._nonzero_divisors
+
+    @cached_method
+    def orthogonal_sum(self):
+        summands = tuple(self.summand(divisor) for divisor in self.nonzero_divisors())
+        result = summands[0]
+        for summand in summands[1:]:
+            result = result + summand
+        return result
+
+    @cached_method
+    def orthogonal_sum_inclusion(self):
+        r"""Return ``direct_sum_d L_d -> L`` with finite-index image."""
+        images = []
+        for divisor in self.nonzero_divisors():
+            summand = self.summand(divisor)
+            inclusion = summand.inclusion()
+            images.extend(
+                inclusion(generator) for generator in summand.module_generators()
+            )
+        return self.orthogonal_sum().Emb(self.lattice())(tuple(images))
+
+    def index(self):
+        return self.orthogonal_sum_inclusion().index()
+
+    @cached_method
+    def gluing_quotient(self):
+        r"""Return ``L / direct_sum_d L_d``, the finite integral glue quotient."""
+        return self.orthogonal_sum_inclusion().cokernel()
+
+    @cached_method
+    def component_isometries(self):
+        r"""Return the restrictions ``f_d`` on every nonzero cyclotomic summand."""
+        equipped = self.decorated_lattice()
+        return finite_indexed_family(
+            self.nonzero_divisors(),
+            lambda divisor: equipped.equivariant_sublattice(
+                self.summand(divisor)
+            ).isometry(),
+            name=f"Cyclotomic restrictions of {self.isometry()}",
+        )
+
+    @cached_method
+    def component_centralizers(self):
+        r"""Return ``Z_{O(L_d)}(f_d)`` for every nonzero cyclotomic component."""
+        restrictions = self.component_isometries()
+        return finite_indexed_family(
+            self.nonzero_divisors(),
+            lambda divisor: self.summand(divisor).O().centralizer(
+                restrictions[divisor]
+            ),
+            name=f"Cyclotomic component centralizers of {self.isometry()}",
+        )
+
+    def centralizer_group(self):
+        r"""Return the actual ambient arithmetic centralizer ``Z_{O(L)}(f)``."""
+        return self.decorated_lattice().centralizer_group()
+
+    def lift_component_isometries(self, component_isometries):
+        r"""Lift a compatible tuple of component isometries to ``O(L,f)``.
+
+        Compatibility is tested by extension, not by comparing only finite
+        discriminant images.  If ``m`` is the index of the cyclotomic sum,
+        every ``m*x`` lies in that sum.  Apply the component tuple there and
+        divide by ``m`` again.  The division succeeds in ``L`` exactly when
+        the tuple preserves the integral glue; the ambient ``O(L)`` constructor
+        then verifies the form and bijectivity, and commutation with ``f`` is
+        checked separately.
+        """
+        components = {}
+        restrictions = self.component_isometries()
+        for divisor in self.nonzero_divisors():
+            summand = self.summand(divisor)
+            try:
+                component = component_isometries[divisor]
+            except (KeyError, TypeError):
+                component = component_isometries[int(divisor)]
+            component = summand.O()(component)
+            if component * restrictions[divisor] != restrictions[divisor] * component:
+                raise ValueError("a component isometry does not commute with the cyclotomic action")
+            components[divisor] = component
+
+        lattice = self.lattice()
+        moved_images = []
+        for divisor in self.nonzero_divisors():
+            summand = self.summand(divisor)
+            inclusion = summand.inclusion()
+            component = components[divisor]
+            moved_images.extend(
+                inclusion(component(generator))
+                for generator in summand.module_generators()
+            )
+        moved = module_homset(self.orthogonal_sum(), lattice)(tuple(moved_images))
+
+        scalar = lattice.base_ring()(int(self.index().finite_value()))
+        scaling = module_homset(lattice, lattice)(
+            tuple(
+                lattice.scalar_multiple(scalar, generator)
+                for generator in lattice.module_generators()
+            )
+        )
+        inclusion = self.orthogonal_sum_inclusion()
+
+        def image(label):
+            scaled = lattice.scalar_multiple(scalar, lattice.module_generator(label))
+            return scaling.lift(moved(inclusion.lift(scaled)))
+
+        lifted = lattice.O()(image)
+        if lifted * self.isometry() != self.isometry() * lifted:
+            raise ArithmeticError("the lifted component tuple does not centralize the equipped isometry")
+        return lifted
+
+    def component_isometries_extend(self, component_isometries) -> bool:
+        try:
+            self.lift_component_isometries(component_isometries)
+        except (ArithmeticError, AssertionError, ValueError):
+            return False
+        return True
+
+
 class EquivariantLattice(SageObject):
     r"""A lattice equipped with a specified lattice automorphism.
 
@@ -190,6 +407,11 @@ class EquivariantLattice(SageObject):
     def primitive_extension(self):
         r"""Return the invariant/coinvariant primitive extension cut out by ``f``."""
         return self.isometry().primitive_extension()
+
+    @cached_method
+    def cyclotomic_decomposition(self, order):
+        r"""Return the integral cyclotomic decomposition for the exact stated order."""
+        return CyclotomicDecomposition(self, order)
 
     def equivariant_sublattice(self, sublattice):
         r"""Equip an ``f``-stable represented sublattice with the restricted isometry."""
@@ -595,6 +817,7 @@ def isometry_primitive_extension(isometry) -> IsometryPrimitiveExtension:
 
 
 __all__ = [
+    "CyclotomicDecomposition",
     "EquivariantLattice",
     "EquivariantVectorOrbit",
     "EquivariantVectorOrbitDecomposition",
