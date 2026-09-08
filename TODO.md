@@ -2309,16 +2309,16 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 #### 6.3 Hyperbolic reflection algorithms
 
 - [ ] Dominant cone/fundamental chamber.
-- [ ] Vinberg's algorithm over integral hyperbolic lattices.
+- [x] Vinberg's algorithm over integral hyperbolic lattices.
 - [ ] Number-field-root-row backend where mathematically valid.
-- [ ] Root-length bounds and local-obstruction cases from archived tests.
-- [ ] Reflectivity testing when the algorithm actually proves the result.
-- [ ] Cocompactness from chamber/diagram data.
-- [ ] Weyl/reflection groups as actual subgroups of `O(L)`.
+- [x] Root-length bounds and local-obstruction cases from archived tests.
+- [x] Reflectivity testing when the algorithm actually proves the result.
+- [x] Cocompactness from chamber/diagram data.
+- [x] Weyl/reflection groups as actual subgroups of `O(L)`.
 - [ ] Isotropic vectors below a Vinberg height bound.
 - [ ] Chamber-complex data.
-- [ ] Lorentz/Allcock edge-walk fundamental-domain backend.
-- [ ] Bogachev--Kolpakov exact regression examples.
+- [x] Lorentz/Allcock edge-walk fundamental-domain backend.
+- [x] Bogachev--Kolpakov exact regression examples.
 
 ### 17. ADE and toric log-pair geometry
 
