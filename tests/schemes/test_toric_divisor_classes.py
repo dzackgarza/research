@@ -29,6 +29,7 @@ from dzack_research.preamble.all import (
     ProjectiveJetSpaces,
     RationalPolyhedralFans,
     SectionsVanishingToOrder,
+    TorusInvariantCycleGroups,
     SectionRings,
     WeilDivisorGroups,
     module_homset,
@@ -350,6 +351,21 @@ def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> No
         assert group.module_rank() == 1
         assert group.invariant_factors().cardinality() == 1
         assert group.invariant_factors()[0] == ZZ.zero()
+
+
+def test_projective_plane_invariant_curves_surject_onto_the_chow_group() -> None:
+    plane = _projective_plane()
+    cycles = plane.torus_invariant_cycle_group(1)
+    projection = plane.torus_invariant_cycle_class_map(1)
+    rays = tuple(cycles.module_generating_set())
+
+    assert cycles in TorusInvariantCycleGroups(ZZ)
+    assert cycles.cycle_scheme() is plane
+    assert cycles.cycle_dimension() == 1
+    assert cycles.module_rank() == 3
+    assert projection.is_surjective()
+    images = tuple(projection(cycles.module_generator(ray)) for ray in rays)
+    assert images[0] == images[1] == images[2]
 
 
 def test_hirzebruch_surface_chow_group_has_rank_two_in_curve_degree() -> None:

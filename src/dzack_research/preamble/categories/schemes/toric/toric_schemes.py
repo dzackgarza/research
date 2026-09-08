@@ -51,7 +51,10 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroup,
 )
-from dzack_research.preamble.categories.divisors.chow_groups import ChowGroup
+from dzack_research.preamble.categories.divisors.chow_groups import (
+    ChowGroup,
+    TorusInvariantCycleGroups,
+)
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
@@ -1365,6 +1368,49 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self,
                 cycle_dimension,
             )
+
+        @cached_method
+        def torus_invariant_cycle_group(self, cycle_dimension):
+            r"""Return the free group on orbit closures of dimension ``cycle_dimension``."""
+            cycle_dimension = int(cycle_dimension)
+            dimension = int(self.dimension())
+            if cycle_dimension < 0 or cycle_dimension > dimension:
+                raise ValueError("a cycle degree lies between zero and the scheme dimension")
+            cone_dimension = dimension - cycle_dimension
+            return FreshFreeModuleOn(
+                _integers(),
+                self.fan().cones(cone_dimension),
+                _extra_categories=(TorusInvariantCycleGroups(_integers()),),
+                _extra_construction_data=(
+                    ("_preamble_cycle_scheme", self),
+                    ("_preamble_cycle_dimension", cycle_dimension),
+                ),
+            )
+
+        @cached_method
+        def torus_invariant_cycle_class_map(self, cycle_dimension):
+            r"""Return the rational-equivalence quotient from invariant cycles to ``CH_k(X)``."""
+            cycle_dimension = int(cycle_dimension)
+            source = self.torus_invariant_cycle_group(cycle_dimension)
+            target = self.chow_group(cycle_dimension)
+            engine_chow = self._toric_engine_variety().Chow_group()
+            engine_degree = engine_chow.degree(cycle_dimension).module()
+            target_labels = tuple(target.module_generating_set())
+            integers = _integers()
+
+            def image(cone):
+                coordinates = tuple(engine_degree(engine_chow(cone._engine_cone())).vector())
+                if len(coordinates) != len(target_labels):
+                    raise ArithmeticError("the Chow backend changed its invariant-factor coordinate rank")
+                return target.linear_combination(
+                    {
+                        label: integers(coefficient)
+                        for label, coefficient in zip(target_labels, coordinates, strict=True)
+                        if coefficient
+                    }
+                )
+
+            return module_homset(source, target)(image)
 
         @cached_method
         def cox_ring(self):

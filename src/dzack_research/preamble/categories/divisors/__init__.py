@@ -14,6 +14,8 @@ _EXPORTS = {'CartierDivisorGroup': ('dzack_research.preamble.categories.divisors
                                 'LineBundleCohomologySpaces'),
  'ChowGroup': ('dzack_research.preamble.categories.divisors.chow_groups', 'ChowGroup'),
  'ChowGroups': ('dzack_research.preamble.categories.divisors.chow_groups', 'ChowGroups'),
+ 'TorusInvariantCycleGroups': ('dzack_research.preamble.categories.divisors.chow_groups',
+                               'TorusInvariantCycleGroups'),
  'CompleteLinearSystem': ('dzack_research.preamble.categories.divisors.linear_systems',
                           'CompleteLinearSystem'),
  'CompleteLinearSystems': ('dzack_research.preamble.categories.divisors.linear_systems',
@@ -91,6 +93,7 @@ __all__ = [
     'SectionRings',
     'SectionsVanishingToOrder',
     'TrivialInvertibleSheaf',
+    'TorusInvariantCycleGroups',
     'WeilDivisorGroup',
     'WeilDivisorGroups',
 ]
