@@ -1215,6 +1215,24 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
             return ToricMiddleCohomologyForm(self)
 
+        @cached_method
+        def fundamental_group(self, base_point_cone=None):
+            r"""Return the pointed fundamental group of the supported complex realization."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricFundamentalGroup,
+            )
+
+            return ToricFundamentalGroup(self, base_point_cone)
+
+        @cached_method
+        def hodge_structure(self):
+            r"""Return the pure Hodge-number data tied to the integral cohomology objects."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricHodgeStructure,
+            )
+
+            return ToricHodgeStructure(self)
+
         def invertible_sheaf_of_divisor(self, divisor):
             r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.
 

@@ -7,6 +7,7 @@ from dzack_research.preamble.all import (
     RationalPolyhedralFans,
     ToricGeometricLineBundleCohomologySpaces,
     ToricIntegralSingularCohomologyGroups,
+    ToricFundamentalGroups,
     ToricLineBundleCohomology,
     ToricWeightCohomology,
     ToricWeightCohomologyComplex,
@@ -106,3 +107,33 @@ def test_hirzebruch_zero_middle_cohomology_form_is_unimodular_hyperbolic() -> No
     assert formed.module_rank() == 2
     assert formed.is_unimodular()
     assert formed.determinant() == ZZ(-1)
+
+
+def test_projective_plane_has_a_pointed_trivial_fundamental_group() -> None:
+    plane = _projective_plane()
+    cone = next(iter(plane.fan().maximal_cones()))
+    fundamental = plane.fundamental_group(cone)
+
+    assert fundamental in ToricFundamentalGroups()
+    assert fundamental.topological_scheme() is plane
+    assert fundamental.base_point_cone() is cone
+    assert fundamental.group_generators().cardinality() == 0
+
+
+def test_projective_plane_hodge_numbers_are_diagonal_and_connected_to_integral_cohomology() -> None:
+    plane = _projective_plane()
+    hodge = plane.hodge_structure()
+
+    assert hodge.is_pure()
+    assert hodge.hodge_number(0, 0) == 1
+    assert hodge.hodge_number(1, 1) == 1
+    assert hodge.hodge_number(2, 2) == 1
+    assert hodge.hodge_number(2, 0) == 0
+    assert hodge.integral_cohomology(2) is plane.integral_singular_cohomology(2)
+
+
+def test_hirzebruch_zero_has_hodge_number_h11_two() -> None:
+    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
+
+    assert surface.hodge_structure().hodge_number(1, 1) == 2
