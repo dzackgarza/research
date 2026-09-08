@@ -1945,16 +1945,16 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [ ] Extend the now-live products of projective spaces and finitely presented affine schemes to the remaining general affine/projective cases while preserving actual categorical projections.
 - [ ] Mixed affine/projective/base-change products without backend strings as API.
 - [ ] Extend the now-live affine fiber products/pullback squares `Spec(B tensor_A C)` to non-affine/mixed cases and verify gluing/base-change compatibility.
-- [ ] Inverse images of closed subschemes.
-- [ ] Diagonals as morphisms/subobjects.
-- [ ] Graph morphisms/subschemes.
-- [ ] Equalizers and fixed subschemes.
+- [x] Inverse images of closed subschemes. Source: `55c202bc`; affine inverse images pull back defining equations and return the corresponding closed subscheme/fibre product.
+- [x] Diagonals as morphisms/subobjects. Source: `55c202bc`; every represented scheme has its diagonal morphism, and affine schemes retain the diagonal as a closed subscheme.
+- [x] Graph morphisms/subschemes. Source: `55c202bc`; scheme morphisms retain `(id,f)` and affine-target graphs as closed subschemes.
+- [x] Equalizers and fixed subschemes. Sources: `55c202bc`, `28b23405`; affine equalizers are closed subschemes and endomorphism fixed loci use that equalizer owner.
 - [ ] Scheme-theoretic image.
-- [ ] Base change of schemes with identity/composition laws.
-- [ ] Slice and coslice categories using the shared categorical constructions, with their objects and commuting morphisms.
+- [x] Base change of schemes with identity/composition laws. Source: `55c202bc`; `SchemeBaseChangeFunctor` acts on objects/morphisms and records identity/composition laws.
+- [x] Slice and coslice categories using the shared categorical constructions, with their objects and commuting morphisms. Source: `55c202bc`.
   Schemes over `S` and families `X -> S` use `Sch/S`; pointed constructions use the appropriate coslice.
-- [ ] Base change on objects, morphisms, and automorphisms over a base, with the induced commuting squares.
-- [ ] Composition along a base morphism and its relation to pullback in slice categories.
+- [x] Base change on objects, morphisms, and automorphisms over a base, with the induced commuting squares. Source: `55c202bc`.
+- [x] Composition along a base morphism and its relation to pullback in slice categories. Source: `55c202bc`; slice composition and pullback are an adjoint pair.
   Lift or descend automorphisms only with the required compatibility and descent data.
 - [ ] Parameter spaces of sections and relative `Spec` through the sheaf constructions in §9.4 and families in §15.
 
