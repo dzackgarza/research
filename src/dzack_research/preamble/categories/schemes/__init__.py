@@ -175,6 +175,10 @@ _EXPORTS = {
      'ToricWeightCohomologyComplex'),
     'ToricWeightCohomologyComplexes': ('dzack_research.preamble.categories.schemes.geometric_cohomology',
      'ToricWeightCohomologyComplexes'),
+    'RelativeAffineFamily': ('dzack_research.preamble.categories.schemes.families',
+     'RelativeAffineFamily'),
+    'affine_equation_family': ('dzack_research.preamble.categories.schemes.families',
+     'affine_equation_family'),
 }
 
 __all__ = [
@@ -254,6 +258,8 @@ __all__ = [
     'ToricWeightCohomology',
     'ToricWeightCohomologyComplex',
     'ToricWeightCohomologyComplexes',
+    'RelativeAffineFamily',
+    'affine_equation_family',
     'Varieties',
     'refine_closed_subscheme',
     'refine_scheme',

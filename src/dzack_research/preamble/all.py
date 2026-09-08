@@ -777,6 +777,8 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     ToricWeightCohomology,
     ToricWeightCohomologyComplex,
     ToricWeightCohomologyComplexes,
+    RelativeAffineFamily,
+    affine_equation_family,
     Varieties,
     SchemeBaseChangeFunctor,
     SliceBaseChangeAdjunction,
