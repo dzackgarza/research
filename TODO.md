@@ -2161,8 +2161,8 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] `L.O()`: full finitely generated arithmetic group $O(L)$.
 - [x] `L.O_plus()`: stable orthogonal group $\widetilde{O}(L) = \ker(O(L) \to O(A_L))$.
 - [x] `L.O_component()`: positive cone component group $O^\Omega(L)$, when a component is specified.
-- [ ] `L.isometry_to(M)`: returns an actual `LatticeIsometry` morphism $f: L \to M$ or `None`.
-- [ ] `L.is_isometric_to(M)`: verified boolean predicate.
+- [x] `L.isometry_to(M)`: returns an actual `LatticeIsometry` morphism $f: L \to M$ or `None`.
+- [x] `L.is_isometric_to(M)`: verified boolean predicate.
 - [ ] Locus objects: `L.vector_locus(norm=m, primitive=False)`, `L.isotropic_sublattice_locus(rank=k)`, `L.isotropic_flag_locus(ranks=(d1, ..., dr))`.
 
 #### Archive-derived lattice and finite-form requirements
