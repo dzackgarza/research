@@ -17,8 +17,10 @@ from dzack_research.preamble.all import (
     ChowGroups,
     ClassGroups,
     CompleteLinearSystems,
+    CoordinateHyperplaneSectionRestriction,
     CoxRings,
     FiniteAtlasInvertibleSheaf,
+    HomogeneousPolynomialSectionSpaces,
     LineBundleCohomologySpaces,
     PicardGroups,
     RationalPolyhedralFans,
@@ -398,6 +400,20 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
     assert h1_line.dimension() == 0
     assert h2_canonical.dimension() == 1
     assert plane.line_bundle_cohomology_dimensions(line) == (3, 0, 0)
+
+
+def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    restriction = CoordinateHyperplaneSectionRestriction(projective_plane, 2, 0)
+
+    assert restriction.domain() in HomogeneousPolynomialSectionSpaces(QQ)
+    assert restriction.codomain() in HomogeneousPolynomialSectionSpaces(QQ)
+    assert restriction.domain().dimension() == 6
+    assert restriction.codomain().dimension() == 3
+    assert restriction.kernel().dimension() == 3
+    assert restriction.cokernel().is_zero()
+    assert restriction._preamble_closed_subscheme.inclusion().codomain() is projective_plane
 
 
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
