@@ -47,6 +47,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family,
+)
 from dzack_research.preamble.tensors import tensor
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
@@ -355,9 +359,92 @@ class ReductionCellAdjacency(SageObject):
         return f"Reduction-cell adjacency {self.source()} -> {self.target()}"
 
 
+class MarkedReductionCell(SageObject):
+    r"""A rational reduction cell with a labelled finite family of marked vectors.
+
+    The marks are part of the object, not a set of vectors: labels and repeated
+    values are retained.  Every mark is a nonzero-norm vector of the ambient
+    lattice, which is the marked reduction problem used for nonisotropic vector
+    orbit traversal.
+    """
+
+    def __init__(self, cell, marked_vectors) -> None:
+        if not isinstance(cell, RationalReductionCell):
+            raise TypeError("a marked reduction cell requires a rational reduction cell")
+        if not isinstance(marked_vectors, IndexedFamily):
+            raise TypeError("marked vectors are supplied as an owned indexed family")
+        if marked_vectors.cardinality().is_finite() is not True:
+            raise ValueError("a marked reduction cell has finitely many marks")
+        lattice = cell.lattice()
+        for vector in marked_vectors:
+            if vector.parent() is not lattice:
+                raise ValueError("every marked vector belongs to the cell's ambient lattice")
+            if lattice.q(vector) == lattice.base_ring().zero():
+                raise ValueError("a marked reduction vector has nonzero norm")
+        self._cell = cell
+        self._marked_vectors = marked_vectors
+
+    def lattice(self):
+        return self.cell().lattice()
+
+    def cell(self):
+        return self._cell
+
+    def marked_vectors(self):
+        return self._marked_vectors
+
+    def transported_by(self, isometry):
+        r"""Transport the cell and every labelled mark by the same isometry."""
+        marks = self.marked_vectors()
+        transported_marks = finite_indexed_family(
+            marks.index_set(),
+            lambda label: isometry(marks[label]),
+            name=f"Transported marks of {self}",
+        )
+        return MarkedReductionCell(
+            self.cell().transported_by(isometry),
+            transported_marks,
+        )
+
+    def is_equal_to(self, other) -> bool:
+        if not isinstance(other, MarkedReductionCell):
+            return False
+        if not self.cell().is_equal_to(other.cell()):
+            return False
+        same_marks = self.marked_vectors() == other.marked_vectors()
+        return same_marks is True
+
+    def transporter_witness_to(self, other, group):
+        r"""Return a finite-group element transporting both cell and labelled marks."""
+        if not isinstance(other, MarkedReductionCell):
+            return None
+        if other.lattice() is not self.lattice():
+            return None
+        group_cardinality = group.cardinality()
+        if not group_cardinality.is_finite():
+            raise NotImplementedError(
+                "marked-cell transport through an infinite arithmetic group belongs to the reduction-complex traversal provider"
+            )
+        for isometry in group:
+            if self.transported_by(isometry).is_equal_to(other):
+                return isometry
+        return None
+
+    def _repr_(self):
+        return (
+            f"Marked {self.cell()} with {self.marked_vectors().cardinality()} "
+            "labelled vectors"
+        )
+
+
 def rational_reduction_cell(lattice, inequalities, *, equations=()):
     r"""Return the homogeneous rational cell cut out by the selected walls."""
     return RationalReductionCell(lattice, inequalities, equations=equations)
+
+
+def marked_reduction_cell(cell, marked_vectors):
+    r"""Return ``cell`` equipped with the selected finite indexed family of marks."""
+    return MarkedReductionCell(cell, marked_vectors)
 
 
 def lorentzian_reduction_complex(lattice, marked_vectors=None):
@@ -376,8 +463,10 @@ def lorentzian_reduction_complex(lattice, marked_vectors=None):
 
 
 __all__ = [
+    "MarkedReductionCell",
     "ReductionCellAdjacency",
     "RationalReductionCell",
     "lorentzian_reduction_complex",
+    "marked_reduction_cell",
     "rational_reduction_cell",
 ]
