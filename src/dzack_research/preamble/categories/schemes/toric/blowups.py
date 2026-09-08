@@ -122,6 +122,19 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
         def exceptional_picard_class(self):
             return self.picard_group().module_generator(self.exceptional_ray())
 
+        def is_del_pezzo(self) -> bool:
+            r"""Decide the del Pezzo condition in the complete toric-surface regime."""
+            if not self.fan().is_complete():
+                return False
+            return self.is_ample(-self.canonical_divisor())
+
+        def del_pezzo_degree(self):
+            r"""Return ``(-K)^2`` for a represented toric del Pezzo blowup."""
+            if not self.is_del_pezzo():
+                raise ValueError("the represented toric blowup is not a del Pezzo surface")
+            anticanonical = -self.canonical_divisor()
+            return self.divisor_intersection(anticanonical, anticanonical)
+
 
 def _same_ray_vector(left, right) -> bool:
     return bool(left == right)
