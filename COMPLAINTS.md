@@ -72,8 +72,12 @@ and induced maps on completions belong to the construction. See
 powers, quotient rings/modules and quotient morphisms -> ring/module structure,
 subobjects and the relevant categories -> sets, functions and algebraic laws.
 The index category, functor describing the system, cones, and projections use
-the common categorical foundations. A computational series realization needs a
-comparison with this object; it does not replace the definition by one stage.
+the common categorical foundations. The required product/equalizer realization
+and restrictions of systems belong to that general theory, as specified in the
+[limit/colimit contract](CONTRIBUTING.md#limits-colimits-and-structured-specialization).
+A computational series realization specializes the same owned construction by
+inheritance or composition (`OWN-14`); a comparison of answers from parallel
+implementations is not sufficient. It does not replace the definition by one stage.
 
 - **Searched:** the complete `AdicCompletion` factory in
   [commutative_algebra.py](src/dzack_research/preamble/categories/rings/commutative_algebra.py),
@@ -97,7 +101,14 @@ comparison with this object; it does not replace the definition by one stage.
 formal neighborhoods and completed families need the same completed object,
 not independent truncation conventions. Use the existing quotient and diagram
 owners and maintained completion/series implementations, preserving the actual
-scope of exactness and comparison theorems. The
+scope of exactness and comparison theorems. General diagram restriction must
+remain usable through the specialized completion, with the actual source and
+projection maps. Retain the full system and finite restrictions separately;
+the ideal-power indexing gives stage access its precision interpretation.
+The [shared construction work](TODO.md#shared-diagrams-and-universal-constructions)
+owns this integration with the general mathematical foundation. This requirement
+does not assert that every general diagram operation is currently absent: the
+source coverage and unresolved questions above remain the evidence boundary. The
 [completion work items](TODO.md#completion-objects-and-finite-approximations)
 own realization selection, precision semantics and integration; their downstream
 module and family work must consume that construction.

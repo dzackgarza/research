@@ -58,7 +58,7 @@ running preamble tests, QC, Sage, or notebooks before terminal T.
 
 Apply these decisions inside the selected unfinished item, not in a separate
 audit, readiness registry, or new planning system. Their durable authority is
-`OWN-01` through `OWN-13` and `DEV-50` through `DEV-59` in CONTRIBUTING.
+`OWN-01` through `OWN-14` and `DEV-50` through `DEV-59` in CONTRIBUTING.
 
 1. **Select a remaining mathematical delta.** First express the requested
    addition in standard mathematics and recursively unfold its dependencies
@@ -77,6 +77,9 @@ audit, readiness registry, or new planning system. Their durable authority is
    owner in the selected item's contract. Use the existing declaration for the
    durable result (`OWN-02`, `OWN-13`). An owner path in this queue is a place to
    inspect, not permission to call every importable factory or private method.
+   For a specialization, name the actual general construction it inherits or
+   contains and the operations delegated to it (`OWN-14`). A shared name or an
+   isomorphic result does not establish that implementation relationship.
 3. **Resolve the actual upstream capability question.** Read the applicable
    maintained operation's input and result contract, including representatives,
    maps, hypotheses, and precision. Record the selected operation and remaining
@@ -113,6 +116,7 @@ When work changes direction, use the relevant decision below immediately:
 | A bridge or dependency is unavailable | Identify the existing bridge or package owner and exact missing capability. Repair that boundary within scope or report it. No new direct engine-to-engine connection or local replacement algorithm is implied (`OWN-08`, `OWN-11`). |
 | A generic helper still contains the old bespoke algorithm | Compare the semantic operation with maintained upstream operations. Moving code between files, languages, or repositories is not computational delegation (`OWN-08`). |
 | A finite window or a specialized theorem gives the expected answer | Preserve the original object, range, coefficient domain, and comparison hypotheses. Completion is not a quotient; a resolution prefix is not a resolution; a rational answer does not contain integral torsion (`OWN-09`, `OWN-10`). |
+| A specialized object has its own general maps or diagram operations | Locate its inherited or composed general construction and delegate those operations. Remove duplicated authority as part of the affected repair; attaching metadata or comparing answers does not establish threading (`OWN-14`). |
 | Equality, zero, or membership is not decidable by the selected representation | Preserve the mathematical object and use the declared computational frontier. No guessed boolean, infinite equality loop, or weakened codomain (`DEV-51`, `DEV-52`, `OWN-10`). |
 | A review finds the same bypass in another consumer | Repair the shared owner and all consumers depending on that changed contract in the unit; add only independently remaining repairs to their existing items. Renaming the bypass is not resolution (`OWN-11`). |
 | An item appears finished because code, a report, or a passing invariant exists | Compare its full construction, maps, recursive ownership, and maintained computation against the source. Remove only delivered obligations; preserve unexecuted proof work under T (`DEV-50`, `OWN-12`). |
@@ -150,6 +154,10 @@ being declared complete.
 
 - Repair completion before module-completion consumers, completion base change,
   formal neighborhoods, or arguments using completion flatness.
+- Deliver the [shared diagram and universal-construction contract](#shared-diagrams-and-universal-constructions)
+  with the completion repair. General restrictions and universal maps belong
+  there; completion contributes its ideal-power system and series realization.
+  Independent geometry does not wait for unrelated homotopical implementations.
 - Repair the fraction-field specialization of localization before consumers
   requiring its localization datum or universal factorization. Reuse the
   element/prime routes already present; do not delay independent geometry.
@@ -239,11 +247,15 @@ Paths in this section are relative to
   [Stacks 00M9](https://stacks.math.columbia.edu/tag/00M9).
   **Shared route:** reuse `abstract_categories/products.py`'s diagram,
   inverse-system, and cone contracts and the existing quotient/Hom operations.
-  The indexing system and transitions are owned defining data. Supply the exact
-  missing limit-realization contract there with this completion as its first
-  consumer; do not create a second completion-only diagram calculus. An infinite
-  system cannot be evaluated by enumerating all stages or by a finite-diagram
-  solver merely because its class is named limit.
+  Complete the [shared construction work](#shared-diagrams-and-universal-constructions)
+  with this consumer. Inherit its chosen inverse-limit construction or store
+  that actual owned construction and delegate to it (`OWN-14`). The ideal-power
+  system, universal cone, restrictions, and induced maps have one owner. A second
+  completion-only diagram calculus or post-hoc system accessor is not integration.
+  A supported series engine realizes this same construction, without evaluating
+  an infinite product first or computing a second generic completion. The general
+  theorem-backed product/equalizer route remains a specialization of the same
+  contract, not a rival exact object or a finite approximation masquerading as it.
   **Selected computation for the first specimen:** use Sage's documented
   [multivariable polynomial completion](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_ring_base.html#sage.rings.polynomial.multi_polynomial_ring_base.MPolynomialRing_base.completion)
   at the selected variables, with its series/lazy-series realization. Retain the
@@ -414,6 +426,72 @@ Paths in this section are relative to
 These are targeted remaining contracts and preservation obligations, not a
 restart of the module/algebra/action constructions.
 
+### Shared diagrams and universal constructions
+
+- [ ] Integrate the general diagram and universal-construction contract with
+  retained systems, theorem-backed realizations, and the completion consumer.
+  **Owners:** `categories/abstract_categories/products.py`'s `DiagramCategory`,
+  `DirectedSystem`, `InverseSystem`, cone/cocone and selected-construction
+  declarations; existing functor, natural-transformation, indexed-family,
+  product/coproduct, kernel/quotient and `Mor` owners. Coordinate these shared
+  files with their live reservations before editing.
+  **Starting point:** diagram and system declarations, selected finite product
+  cones and coproduct cocones already exist. Inspect the complete live paths
+  before deciding the remaining delta; their names alone establish neither the
+  full contract nor its absence. The observed completion gap is recorded in
+  [COMPLAINTS](COMPLAINTS.md#completion-must-be-a-limit-rather-than-one-quotient).
+  **Mathematical contract:** apply the normative
+  [limit/colimit specification](CONTRIBUTING.md#limits-colimits-and-structured-specialization)
+  and `OWN-14`. Keep general shape separate from the specialized realization.
+  Preserve parallel arrows, owned indexing maps, composition, and infinite
+  represented families without eager traversal. An inverse system uses the
+  correct opposite indexing category; directed does not mean sequential.
+  **Threading decision:** at each declaration, choose inheritance from the
+  actual general construction or composition with its stored owned instance.
+  Diagram access, cone/cocone legs, restriction, universal factorization and
+  induced morphisms must reuse that authority. Preserve distinct presentations
+  of a shared result without mutating the result with caller-specific state.
+  **General realizations:** supply the product/equalizer and coproduct/coequalizer
+  reductions where their component constructions exist. Keep indexed products
+  and coproducts in the declared category. Use its actual kernel, quotient,
+  tensor or other maintained operations where appropriate; do not copy module
+  coproducts into ring code. A primitive product/equalizer realization establishes
+  general universal data without calling the same general solver recursively.
+  **Restriction and maps:** precompose by an owned indexing functor, retaining
+  it with the restricted diagram. Supply comparisons in the specification's
+  directions and maps induced by nonidentity natural transformations. Preserve
+  composition of restrictions and induced maps. A chosen finite diagram, its
+  (co)limit, a stage and finite element information remain distinct outputs.
+  **Computational frontier:** an exact represented infinite construction need
+  not decide all equality or enumerate its elements. Retain existence hypotheses
+  and the actual target category; a stored diagram alone cannot impersonate an
+  existing limit. Do not add a local infinite-system solver or a theorem registry.
+  Existing private adapters own supported concrete computations (`OWN-08`).
+  **First consumer:** the multivariable completion repair uses this contract
+  with its ideal-power diagram and maintained series realization. The generic
+  datum must be operational through the leaf, not attached only for inspection.
+  This unit includes that integration, not merely new abstract declarations.
+  **Separating specimens:** a parallel pair of module maps distinguishes the
+  equalizer from the product and the coequalizer from the coproduct; use zero
+  and multiplication by `2` on `ZZ` to distinguish the zero equalizer and
+  `ZZ/2ZZ` coequalizer. An empty diagram distinguishes terminal from initial
+  construction in a category where they differ. A system on `N x N` exercises
+  incomparable indices and explicit finite rectangles. An inverse tower with
+  maps multiplication by `2` on `ZZ` must not infer that every stage element
+  lifts to its limit; a direct sequence `ZZ -> 0 -> 0 -> ...` must not treat
+  its first coprojection as injective. Reuse completion's existing precision
+  specimens and add a nonidentity compatible map of quotient systems.
+  **Acceptance:** public mathematical operations follow the same general
+  construction through each delivered specialization, with owned constituents,
+  compatible universal maps and source-backed realization selection. Source
+  review establishes delegation, not just agreement of answers; behavioral
+  specimens establish the mathematical distinctions under terminal T. Preserve
+  unfinished general cases when a bounded realization lands. The specification's
+  homotopical boundary binds future consumers but does not add a spectra engine
+  or an unrelated stable-homotopy workstream to this completion unit.
+
+### Constructor and ownership convergence
+
 - [ ] Close the surviving alternate-constructor and private-access paths, one
   mathematical construction family with its consumers per release.
   **Owners:** declaration-side contracts at `owned_category.py::object_of`,
@@ -426,8 +504,10 @@ restart of the module/algebra/action constructions.
   every family currently violates the contract.
   **Decision:** the constructor's defining datum and maps are authoritative.
   Document its allowed mathematical input forms at the existing declaration
-  (`OWN-13`). Direct construction, notation, a catalogue example, a functor image,
-  element reconstruction, and an engine result must establish that same datum.
+  (`OWN-13`), including the actual inherited or composed general construction
+  for each specialization (`OWN-14`). Direct construction, notation, a catalogue
+  example, a functor image, element reconstruction, and an engine result must
+  establish that same datum.
   Concrete runtime classes, global implementation factories, raw adoption and
   conversion helpers are private; importability does not grant calling authority.
   **Deliver:** inspect all routes in the selected family, repair established
@@ -1398,7 +1478,7 @@ review until every downstream consumer has copied the same bypass.
   **Acceptance:** documentation describes that source and exposes the
   mathematical contracts. Generation success alone is not a correctness claim.
   Compare the integrated constructor, adapter, export and consumer contracts
-  with `OWN-01` through `OWN-13`, including source-reviewed work no longer in
+  with `OWN-01` through `OWN-14`, including source-reviewed work no longer in
   this queue. Use the completed units' commits to locate evidence, then inspect
   the affected live routes after integration. Missing mandatory architecture is
   new concrete repair work at its owner, not a documentation rewrite declaring

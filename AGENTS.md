@@ -109,7 +109,7 @@ Conversely, using an upstream algorithm never authorizes exposing its objects:
 the public mathematical interface and every constituent remain fully owned.
 
 **Own all public mathematics; reuse maintained computation privately.** Apply
-`OWN-01` through `OWN-13` in the
+`OWN-01` through `OWN-14` in the
 [architecture specification](CONTRIBUTING.md#preamble-architecture-specification).
 Neither correct numerical output nor private naming excuses a different path.
 
@@ -151,6 +151,49 @@ and upstream discovery references. Update that contract when the user decides an
 architectural change; do not make a TODO, comment, or local example a competing
 specification. These rules bind existing consumers as well as new code. Earlier
 source or archive examples are not permission to reproduce an ownership violation.
+
+## Threaded specialization and universal constructions (always-on)
+
+**A specialization inherits or composes the general construction; it never
+maintains a parallel implementation.** Apply
+[`OWN-14`](CONTRIBUTING.md#own-14-specializations-inherit-or-compose-their-general-construction).
+Honest inheritance establishes the general defining data and keeps inherited
+operations usable. Composition stores an actual owned instance of the general
+construction and delegates to it. Category labels, copied methods, equivalent
+answers, or a diagram attached after independent construction do not qualify.
+The general datum, maps and operations have one authority; the specialization
+adds its own structure and theorem-backed realization, not another general API.
+
+For limits, colimits, systems, completions, and related constructions, first read
+the normative
+[limits and colimits contract](CONTRIBUTING.md#limits-colimits-and-structured-specialization).
+It fixes the general diagram language, universal maps, construction theorems,
+restriction directions, and mathematical distinctions required below.
+
+- Place arbitrary represented indexing categories, functors, cones/cocones,
+  restrictions and induced maps at the common categorical owner. Directed and
+  inverse systems specialize that language; they do not define it by sequences.
+- Use products/equalizers and coproducts/coequalizers under their existence
+  hypotheses. Category-specific operations specialize that same construction;
+  do not compute a second generic result or recurse through the same constructor
+  merely to demonstrate threading.
+- Retain each construction's diagram and universal cone/cocone even when a
+  maintained engine realizes its result. Preserve every constituent as owned
+  mathematics, including lazy stages. Do not store caller-specific presentation
+  data on a shared result object or duplicate it in a leaf implementation.
+- Expose finite restrictions of the represented system with their indexing
+  maps. Keep the full object, restricted diagram, stage and element precision
+  distinct. No finite prefix substitutes for an infinite object; no arbitrary
+  directed index is silently replaced by the natural numbers.
+- Distinguish existence, representation and effective computation. Preserve the
+  correct category and universal property even when a particular computation
+  is unsupported. Ordinary, homotopy and higher-categorical constructions must
+  retain their own maps and coherence; a strict formula is not a universal
+  homotopical shortcut.
+
+These are mathematical threading requirements for the selected consumer, not
+authorization to build every conceivable foundation first. Record actual gaps
+under `DEV-59`, and implement the remaining shared requirement with its consumer.
 
 ## Using and maintaining TODO.md (always-on)
 
