@@ -1277,8 +1277,8 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   **Owners:** `categories/lattice_morphisms.py`,
   `categories/lattices.py`, and private lattice engines.
   **Deliver:** existence and enumeration for the required indefinite
-  codomains, including those not even unimodular; supported indefinite binary
-  isometries and the genus/spinor-genus separation cases.
+  codomains, including those not even unimodular, and the remaining
+  higher-rank genus/spinor-genus separation cases.
   **Decision:** existence, an explicit embedding/isometry, and a complete
   orbit classification are different outputs. Missing backend support is
   not a negative mathematical answer.
@@ -1332,10 +1332,11 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
 - [ ] **`witt-recursion`**. **Needs:** `lattice-embeddings`, `parabolic-gluing`.
   Implement higher-Witt-index recursion and the `2U` Eichler construction
   through the existing isometry, discriminant and transporter owners.
-  **Deliver:** the source-defined subgroup from the two `SL_2(ZZ)`
-  actions, Eichler transformations and the required discriminant action;
-  finite covering representatives; recursive stabilizers; transporter
-  completion to the full orthogonal group; and recursive lattice equivalence.
+  **Deliver:** complete the source-defined subgroup beyond the represented
+  two `SL_2(ZZ)` actions, Eichler transformations, canonical `O(K)` lifts and
+  finite covering representatives: supply the remaining discriminant lifts,
+  recursive stabilizers, transporter completion to the full orthogonal group,
+  and recursive lattice equivalence.
   **Decision:** state evenness/integrality conditions for every transformation.
   A subgroup generated so far is not the full orthogonal group until the
   generation theorem applies. A covering family is not automatically a set
@@ -1380,9 +1381,9 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   Assemble the three arithmetic research constructions with their maps.
   **Lorentzian:** `U + E8(-1)`, its orthogonal/component groups, cusp orbit,
   cusp stabilizer, unipotent radical and map onto the definite reduction group.
-  **Higher Witt index:** `U + U(2) + E8(-2)`, line and plane orbits,
-  stabilizers, Tits-building incidence and subgroup splitting under the
-  discriminant representation.
+  **Higher Witt index:** `U + U(2) + E8(-2)`, with its represented line/plane
+  orbits, stabilizers and full-orthogonal Tits-building incidence; complete the
+  remaining subgroup splitting under the discriminant representation.
   **Equivariant:** the K3 lattice with an Enriques involution, its integral
   invariant/anti-invariant decomposition and gluing, full centralizer,
   polarization stabilizer intersection, and anti-invariant isotropic orbits.
