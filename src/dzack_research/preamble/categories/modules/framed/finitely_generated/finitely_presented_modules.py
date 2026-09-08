@@ -600,7 +600,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 raise ValueError("the module is not free at the supplied point")
 
             localized = self.localize_at_prime(point)
-            labels = localized.residue_module().basis_generator_labels()
+            selected_labels = localized.residue_module().basis_generator_labels()
+            labels = finite_ordered_image(
+                selected_labels,
+                lambda label: label,
+                name="Local free basis labels",
+            )
             free = localized.presentation().codomain()._fresh_free_module_on(labels)
             forward = module_homset(free, localized)(
                 lambda label: localized.module_generator(label)
