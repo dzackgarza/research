@@ -152,6 +152,49 @@ class RationalPolyhedralCones(OwnedCategory):
             cone = SageCone(rows)
             return finite_ordered_set(tuple(_owned_vector(lattice, row) for row in cone.Hilbert_basis()))
 
+        def ideal_rays(self):
+            r"""Return the isotropic extremal rays when the ambient module is a lattice."""
+            lattice = self.ambient_lattice()
+            from dzack_research.preamble.categories.lattices import Lattices
+
+            if lattice not in Lattices(lattice.base_ring()):
+                raise TypeError("ideal rays require a formed lattice ambient")
+            return finite_ordered_set(tuple(ray for ray in self.primitive_rays() if lattice.q(ray) == 0))
+
+        def timelike_rays(self):
+            r"""Return the positive-square extremal rays in the repository's hyperbolic convention."""
+            lattice = self.ambient_lattice()
+            from dzack_research.preamble.categories.lattices import Lattices
+
+            if lattice not in Lattices(lattice.base_ring()):
+                raise TypeError("timelike rays require a formed lattice ambient")
+            return finite_ordered_set(tuple(ray for ray in self.primitive_rays() if lattice.q(ray) > 0))
+
+        def lies_in_closed_positive_cone(self, timelike) -> bool:
+            r"""Whether this cone lies in one closed sheet of a signature ``(1,n)`` light cone.
+
+            The exact criterion is ray/lineality based: the cone is pointed,
+            every extremal ray has nonnegative square, and all nonzero rays
+            pair with the selected timelike vector with one weak sign.  This
+            distinguishes ideal isotropic rays from ordinary timelike rays and
+            never inspects the cone's vertex at the origin.
+            """
+            lattice = self.ambient_lattice()
+            from dzack_research.preamble.categories.lattices import Lattices
+
+            if lattice not in Lattices(lattice.base_ring()):
+                raise TypeError("the positive-cone test requires a formed lattice ambient")
+            timelike = lattice(timelike)
+            if lattice.q(timelike) <= 0 or not self.is_pointed():
+                return False
+            rays = tuple(self.primitive_rays())
+            if any(lattice.q(ray) < 0 for ray in rays):
+                return False
+            pairings = tuple(lattice.b(ray, timelike) for ray in rays)
+            nonnegative = all(value >= 0 for value in pairings)
+            nonpositive = all(value <= 0 for value in pairings)
+            return nonnegative or nonpositive
+
         def _repr_(self):
             return f"Rational polyhedral cone in {self.ambient_lattice()} cut out by {self.halfspace_covectors().cardinality()} half-spaces"
 

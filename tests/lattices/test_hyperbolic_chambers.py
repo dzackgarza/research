@@ -34,3 +34,18 @@ def test_unbounded_cone_retains_rays_facets_and_lineality() -> None:
     assert cone.facet_covectors().cardinality() == 2
     assert cone.hilbert_basis().cardinality() == 2
     assert cone.lineality_generators().cardinality() == 0
+
+
+def test_hyperbolic_containment_uses_rays_and_lineality_not_the_origin() -> None:
+    integers = _own_ring(SageZZ)
+    lattice = HyperbolicLattices(integers)(Lattices(integers)([[2, 0], [0, -2]]))
+    dual = lattice.dual_module()
+    first, second = tuple(dual.module_generators())
+    from dzack_research.preamble.categories.polyhedral_cones import rational_polyhedral_cone
+
+    future = rational_polyhedral_cone(lattice, (first - second, first + second))
+    timelike = lattice.module_generator(0)
+    assert future.is_pointed()
+    assert future.lies_in_closed_positive_cone(timelike)
+    assert future.ideal_rays().cardinality() == 2
+    assert future.timelike_rays().cardinality() == 0
