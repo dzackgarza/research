@@ -19,6 +19,7 @@ from dzack_research.preamble.all import (
     CompleteLinearSystems,
     CoxRings,
     FiniteAtlasInvertibleSheaf,
+    LineBundleCohomologySpaces,
     PicardGroups,
     RationalPolyhedralFans,
     SectionRings,
@@ -378,6 +379,25 @@ def test_projective_plane_sections_are_actual_homogeneous_cox_polynomials() -> N
         assert identification.forward()(source.module_generator(character)) == (
             polynomial_space.module_generator(monomial)
         )
+
+
+def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    canonical = plane.canonical_divisor()
+
+    h0_line = plane.line_bundle_cohomology(line, 0)
+    h1_line = plane.line_bundle_cohomology(line, 1)
+    h2_canonical = plane.line_bundle_cohomology(canonical, 2)
+
+    assert h0_line in LineBundleCohomologySpaces(QQ)
+    assert h0_line.cohomology_scheme() is plane
+    assert h0_line.cohomology_divisor() == line
+    assert h0_line.cohomological_degree() == 0
+    assert h0_line.dimension() == 3
+    assert h1_line.dimension() == 0
+    assert h2_canonical.dimension() == 1
+    assert plane.line_bundle_cohomology_dimensions(line) == (3, 0, 0)
 
 
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:

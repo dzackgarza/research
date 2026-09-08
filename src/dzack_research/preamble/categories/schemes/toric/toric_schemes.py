@@ -1120,6 +1120,41 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             result._preamble_linear_system_divisor = divisor
             return result
 
+        @cached_method
+        def line_bundle_cohomology(self, divisor, degree):
+            r"""Return ``H^degree(X,O_X(D))`` as an owned vector space in characteristic zero.
+
+            Sage's toric divisor backend computes the finite-dimensional
+            cohomology by the character-graded Cech/simplicial-complex
+            algorithm of CLS §9.1.  That implementation computes simplicial
+            cohomology over ``QQ``; hence this public crossing is restricted to
+            characteristic-zero coefficient fields rather than silently
+            claiming characteristic-independent dimensions.
+            """
+            from dzack_research.preamble.categories.divisors.cohomology import (
+                LineBundleCohomologySpace,
+            )
+
+            degree = int(degree)
+            if degree < 0 or degree > int(self.dimension()):
+                raise ValueError("cohomological degree lies outside the scheme dimension")
+            base = self.scheme_base_ring()
+            if _engine_ring(base).characteristic() != 0:
+                raise NotImplementedError(
+                    "the selected toric line-bundle cohomology backend is justified in characteristic zero"
+                )
+            divisor = self.weil_divisor_group()(divisor)
+            engine_divisor = self._engine_toric_divisor(divisor)
+            dimension = int(engine_divisor.cohomology(deg=degree, dim=True))
+            return LineBundleCohomologySpace(self, divisor, degree, dimension)
+
+        def line_bundle_cohomology_dimensions(self, divisor):
+            r"""Return the dimensions of all represented ``H^i(X,O_X(D))``."""
+            return tuple(
+                int(self.line_bundle_cohomology(divisor, degree).dimension())
+                for degree in range(int(self.dimension()) + 1)
+            )
+
         def invertible_sheaf_of_divisor(self, divisor):
             r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.
 

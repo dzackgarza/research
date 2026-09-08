@@ -218,6 +218,8 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     FormalDivisorGroup,
     FormalDivisorGroups,
     InvertibleSheaf,
+    LineBundleCohomologySpace,
+    LineBundleCohomologySpaces,
     PicardGroup,
     PicardGroups,
     SectionRing,
