@@ -73,6 +73,30 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             return self._preamble_homogeneous_coordinate_ring
 
 
+class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
+    r"""Finite jet spaces of ``O(d)`` at supported coordinate points."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "projective jet spaces"
+
+    def super_categories(self):
+        return [VectorSpaces(self.base_ring())]
+
+    class ParentMethods:
+        def jet_projective_space(self):
+            return self._preamble_jet_projective_space
+
+        def jet_homogeneous_degree(self):
+            return self._preamble_jet_homogeneous_degree
+
+        def jet_order(self):
+            return self._preamble_jet_order
+
+        def jet_coordinate_index(self):
+            return self._preamble_jet_coordinate_index
+
+
 def _weak_compositions(total, length):
     if length == 1:
         yield (total,)
@@ -178,6 +202,87 @@ def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_
     return restriction
 
 
+def CoordinatePointJetEvaluation(projective_space, degree, coordinate_index, jet_order):
+    r"""Return the order-``r`` jet evaluation at one coordinate point of ``P^n``.
+
+    On the chart ``x_i != 0`` around the coordinate point ``[0:...:1:...:0]``
+    we set ``x_i=1``.  The target is ``O_{P^n,p}/m_p^r`` with basis the local
+    monomials of total degree strictly below ``r``.  A homogeneous monomial is
+    sent to its dehomogenization when that local degree is below ``r`` and to
+    zero otherwise.
+    """
+    degree = int(degree)
+    coordinate_index = int(coordinate_index)
+    jet_order = int(jet_order)
+    dimension = int(projective_space.relative_dimension())
+    if degree < 0:
+        raise ValueError("a homogeneous polynomial degree is nonnegative")
+    if coordinate_index < 0 or coordinate_index > dimension:
+        raise ValueError("the coordinate index is outside the projective coordinate range")
+    if jet_order < 1:
+        raise ValueError("a jet order is positive")
+
+    source_names = tuple(f"x{index}" for index in range(dimension + 1))
+    source = HomogeneousPolynomialSectionSpace(
+        projective_space,
+        degree,
+        coordinate_names=source_names,
+    )
+    local_names = tuple(
+        f"u{index}" for index in range(dimension + 1) if index != coordinate_index
+    )
+    local_ring = PolynomialRing(projective_space.scheme_base_ring(), local_names)
+    local_labels = tuple(local_ring.algebra_generating_set())
+    local_monomials = []
+    local_exponents = {}
+    for total in range(jet_order):
+        for exponents in _weak_compositions(total, dimension):
+            monomial = local_ring.one()
+            for position, exponent in enumerate(exponents):
+                if exponent:
+                    monomial *= local_ring.algebra_generator(local_labels[position]) ** exponent
+            local_monomials.append(monomial)
+            local_exponents[exponents] = monomial
+    target = FreshFreeModuleOn(
+        projective_space.scheme_base_ring(),
+        finite_ordered_set(tuple(local_monomials)),
+        _extra_categories=(ProjectiveJetSpaces(projective_space.scheme_base_ring()),),
+        _extra_construction_data=(
+            ("_preamble_jet_projective_space", projective_space),
+            ("_preamble_jet_homogeneous_degree", degree),
+            ("_preamble_jet_order", jet_order),
+            ("_preamble_jet_coordinate_index", coordinate_index),
+        ),
+    )
+    source_exponents = source._preamble_homogeneous_exponents
+
+    def image(monomial):
+        exponents = source_exponents[monomial]
+        local = exponents[:coordinate_index] + exponents[coordinate_index + 1 :]
+        if sum(local) >= jet_order:
+            return target.zero()
+        return target.module_generator(local_exponents[local])
+
+    evaluation = module_homset(source, target)(
+        {
+            monomial: image(monomial)
+            for monomial in source.module_generating_set()
+        }
+    )
+    evaluation._preamble_projective_point_coordinate_index = coordinate_index
+    return evaluation
+
+
+def SectionsVanishingToOrder(projective_space, degree, coordinate_index, vanishing_order):
+    r"""Return degree-``d`` sections vanishing to order at least ``r`` at a coordinate point."""
+    return CoordinatePointJetEvaluation(
+        projective_space,
+        degree,
+        coordinate_index,
+        vanishing_order,
+    ).kernel()
+
+
 def CompleteLinearSystem(scheme, divisor, section_space):
     r"""Return the complete linear system of ``divisor`` on ``scheme``.
 
@@ -204,6 +309,9 @@ __all__ = [
     "CompleteLinearSystem",
     "CompleteLinearSystems",
     "CoordinateHyperplaneSectionRestriction",
+    "CoordinatePointJetEvaluation",
     "HomogeneousPolynomialSectionSpace",
     "HomogeneousPolynomialSectionSpaces",
+    "ProjectiveJetSpaces",
+    "SectionsVanishingToOrder",
 ]

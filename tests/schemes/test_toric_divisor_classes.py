@@ -18,12 +18,15 @@ from dzack_research.preamble.all import (
     ClassGroups,
     CompleteLinearSystems,
     CoordinateHyperplaneSectionRestriction,
+    CoordinatePointJetEvaluation,
     CoxRings,
     FiniteAtlasInvertibleSheaf,
     HomogeneousPolynomialSectionSpaces,
     LineBundleCohomologySpaces,
     PicardGroups,
+    ProjectiveJetSpaces,
     RationalPolyhedralFans,
+    SectionsVanishingToOrder,
     SectionRings,
     WeilDivisorGroups,
     module_homset,
@@ -414,6 +417,30 @@ def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel(
     assert restriction.kernel().dimension() == 3
     assert restriction.cokernel().is_zero()
     assert restriction._preamble_closed_subscheme.inclusion().codomain() is projective_plane
+
+
+def test_coordinate_point_jets_cut_out_imposed_multiplicity_conditions() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    jets = CoordinatePointJetEvaluation(projective_plane, 3, 0, 2)
+    singular_at_point = SectionsVanishingToOrder(projective_plane, 3, 0, 2)
+
+    assert jets.codomain() in ProjectiveJetSpaces(QQ)
+    assert jets.domain().dimension() == 10
+    assert jets.codomain().dimension() == 3
+    assert jets.is_surjective()
+    assert singular_at_point.dimension() == 7
+    assert singular_at_point.inclusion().codomain().dimension() == 10
+
+
+def test_higher_jets_record_the_expected_truncated_local_monomials() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    jets = CoordinatePointJetEvaluation(projective_plane, 3, 0, 3)
+
+    assert jets.codomain().dimension() == 6
+    assert jets.kernel().dimension() == 4
+    assert jets.cokernel().is_zero()
 
 
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
