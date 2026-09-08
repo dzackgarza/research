@@ -77,3 +77,31 @@ def test_K_direction_eichler_transvections_are_stable_isometries() -> None:
         assert transvection in lattice.O()
         assert transvection(isotropic) == isotropic
         assert transvection.discriminant_morphism() == identity_discriminant_action
+
+
+def test_actual_K_isometries_extend_canonically_and_need_no_discriminant_guess() -> None:
+    integers = _own_ring(SageZZ)
+    complement = Lattices(integers)("A2")
+    model = two_u_eichler_model(complement)
+    lattice = model.lattice()
+    minus_one = complement.O()(
+        tuple(-generator for generator in complement.module_generators())
+    )
+    lifted = model.complement_action(minus_one)
+
+    for hyperbolic_generator in model.hyperbolic_basis():
+        assert lifted(hyperbolic_generator) == hyperbolic_generator
+    inclusion = lattice.injection(2)
+    for generator in complement.module_generators():
+        assert lifted(inclusion(generator)) == inclusion(minus_one(generator))
+
+    assert model.complement_action(complement.O().one()) == lattice.O().one()
+    assert model.complement_action(minus_one * minus_one) == (
+        model.complement_action(minus_one) * model.complement_action(minus_one)
+    )
+    assert lifted.discriminant_morphism() != lattice.O().one().discriminant_morphism()
+
+    action = model.complement_action_functor()
+    point = complement.O().classifying_category().an_object()
+    arrow = complement.O().classifying_category().Mor(point, point)(minus_one)
+    assert action(arrow) == lifted

@@ -136,6 +136,23 @@ class TwoUEichlerModel(SageObject):
         element = self.special_linear_group()(element)
         return self._right_isometry(element)
 
+    def complement_action(self, isometry):
+        r"""Extend ``h in O(K)`` by the identity on the selected ``2U`` summand.
+
+        Since ``2U`` is unimodular, ``A_{2U+K}`` identifies with ``A_K`` and
+        these extensions induce exactly the subgroup ``tau O(K)`` of
+        discriminant automorphisms coming from actual isometries of ``K``.
+        This does not assert that every element of ``O(A_K)`` lifts.
+        """
+        complement = self.orthogonal_complement()
+        isometry = complement.O()(isometry)
+        lattice = self.lattice()
+        inclusion = lattice.injection(2)
+        images = self.hyperbolic_basis() + tuple(
+            inclusion(isometry(generator)) for generator in complement.module_generators()
+        )
+        return lattice.O()(images)
+
     @cached_method
     def special_linear_group(self):
         from dzack_research.preamble.categories.group.groups import Groups
@@ -170,6 +187,22 @@ class TwoUEichlerModel(SageObject):
             Lattices(self.lattice().base_ring()),
             self.lattice(),
             self._right_isometry,
+        )
+
+    @cached_method
+    def complement_action_functor(self):
+        r"""Return ``B O(K) -> Lattices(ZZ)`` by identity extension on ``2U``."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            GroupActionFunctor,
+        )
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        complement = self.orthogonal_complement()
+        return GroupActionFunctor(
+            complement.O(),
+            Lattices(self.lattice().base_ring()),
+            self.lattice(),
+            self.complement_action,
         )
 
     def eichler_transvection(self, isotropic, orthogonal):
