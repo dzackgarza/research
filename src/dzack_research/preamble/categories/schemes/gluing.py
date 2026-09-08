@@ -937,6 +937,432 @@ def _maps_agree_on_framing(left, right) -> bool:
     )
 
 
+class SemilinearModuleMorphism(SageObject):
+    r"""A semilinear map represented by its scalar map and linearization.
+
+    For ``sigma : R -> S``, a ``sigma``-semilinear map ``M -> N`` is stored as
+    the equivalent ``S``-linear map ``S tensor_R M -> N``.  Composition is
+    formed from the action on the original source generators and the composed
+    scalar map, so it never relies on literal identity between iterated
+    scalar-extension parents.
+    """
+
+    def __init__(self, source, target, scalar_map, images) -> None:
+        if scalar_map.domain() is not source.base_ring():
+            raise ValueError("a semilinear scalar map starts at the source module base ring")
+        if scalar_map.codomain() is not target.base_ring():
+            raise ValueError("a semilinear scalar map ends at the target module base ring")
+        _finite_framing(source)
+        _finite_framing(target)
+        self._source = source
+        self._target = target
+        self._scalar_map = scalar_map
+        self._extended_source = source.base_change(scalar_map)
+        if callable(images):
+            linear_images = {
+                label: images(label)
+                for label in source.module_generating_set()
+            }
+        else:
+            linear_images = dict(images)
+        self._linearization = module_homset(self._extended_source, target)(
+            linear_images
+        )
+
+    def source(self):
+        return self._source
+
+    domain = source
+
+    def target(self):
+        return self._target
+
+    codomain = target
+
+    def scalar_map(self):
+        return self._scalar_map
+
+    def linearization(self):
+        return self._linearization
+
+    def extended_source(self):
+        return self._extended_source
+
+    def _extended_element(self, element):
+        return _change_coefficients(
+            self.source()(element),
+            self.source(),
+            self.extended_source(),
+            self.scalar_map(),
+        )
+
+    def __call__(self, element):
+        return self.linearization()(self._extended_element(element))
+
+    def __mul__(self, other):
+        if not isinstance(other, SemilinearModuleMorphism):
+            return NotImplemented
+        if other.target() is not self.source():
+            return NotImplemented
+        scalar_map = self.scalar_map() * other.scalar_map()
+        return SemilinearModuleMorphism(
+            other.source(),
+            self.target(),
+            scalar_map,
+            {
+                label: self(other(other.source().module_generator(label)))
+                for label in other.source().module_generating_set()
+            },
+        )
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, SemilinearModuleMorphism)
+            and other.source() is self.source()
+            and other.target() is self.target()
+            and other.scalar_map() == self.scalar_map()
+            and all(
+                other(self.source().module_generator(label))
+                == self(self.source().module_generator(label))
+                for label in self.source().module_generating_set()
+            )
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    @classmethod
+    def identity(cls, module):
+        scalar_map = module.base_ring().Mor(module.base_ring()).identity()
+        return cls(
+            module,
+            module,
+            scalar_map,
+            {
+                label: module.module_generator(label)
+                for label in module.module_generating_set()
+            },
+        )
+
+
+class FiniteAtlasModuleTransition(SageObject):
+    r"""One semilinear module-descent isomorphism across two affine overlaps.
+
+    If ``phi : U_i -> U_j`` is the represented overlap isomorphism then
+    ``phi^# : B_j -> B_i`` acts contravariantly on modules: the stored
+    ``pullback`` is therefore a ``phi^#``-semilinear map ``M_j -> M_i``.
+    The inverse scheme arrow supplies the reverse semilinear map.
+    """
+
+    def __init__(
+        self,
+        scheme_transition,
+        source_module,
+        target_module,
+        pullback,
+        inverse_pullback,
+    ) -> None:
+        if not isinstance(scheme_transition, CategoricalIsomorphism):
+            raise TypeError("a module overlap transition lies over a represented scheme isomorphism")
+        self._scheme_transition = scheme_transition
+        self._source_module = source_module
+        self._target_module = target_module
+        self._pullback = pullback
+        self._inverse_pullback = inverse_pullback
+        forward_scalar = scheme_transition.forward().coordinate_algebra_morphism()
+        reverse_scalar = scheme_transition.inverse().coordinate_algebra_morphism()
+        if (
+            pullback.source() is not target_module
+            or pullback.target() is not source_module
+            or pullback.scalar_map() != forward_scalar
+        ):
+            raise ValueError("the module pullback has the wrong semilinear endpoints")
+        if (
+            inverse_pullback.source() is not source_module
+            or inverse_pullback.target() is not target_module
+            or inverse_pullback.scalar_map() != reverse_scalar
+        ):
+            raise ValueError("the inverse module pullback has the wrong semilinear endpoints")
+        if pullback * inverse_pullback != SemilinearModuleMorphism.identity(source_module):
+            raise ValueError("the finite-atlas module transition is not left-invertible")
+        if inverse_pullback * pullback != SemilinearModuleMorphism.identity(target_module):
+            raise ValueError("the finite-atlas module transition is not right-invertible")
+
+    def scheme_transition(self):
+        return self._scheme_transition
+
+    def source_module(self):
+        return self._source_module
+
+    def target_module(self):
+        return self._target_module
+
+    def pullback(self):
+        return self._pullback
+
+    def inverse_pullback(self):
+        return self._inverse_pullback
+
+
+class FiniteAtlasModuleGluingDatum(SageObject):
+    r"""Module descent on a finite affine atlas with distinct overlap rings.
+
+    Pair ``(i,j)`` transition data are supplied as two generator-image
+    families: the pullback ``M_j|U_ji -> M_i|U_ij`` over ``phi_ij^#`` and its
+    inverse over ``phi_ji^#``.  The two overlap modules are not identified.
+    Triple restrictions are rebuilt directly from each chart module and the
+    represented triple open, so the cocycle is an equality of semilinear maps
+    on canonical source/target parents rather than on iterated base changes.
+    """
+
+    def __init__(self, gluing_datum, local_modules, transitions) -> None:
+        if not isinstance(gluing_datum, _FiniteSchemeGluingDatum):
+            raise TypeError("finite-atlas module descent requires a represented finite scheme gluing")
+        self._gluing_datum = gluing_datum
+        indices = gluing_datum.chart_index_set()
+        self._local_modules = _family_on_finite_ordered_set(
+            indices,
+            local_modules,
+            name="Local modules of finite-atlas descent",
+            noun="finite-atlas local module data",
+        )
+        for index in indices:
+            module = self._local_modules[index]
+            if module.base_ring() is not gluing_datum.chart(index).coordinate_algebra():
+                raise ValueError("each finite-atlas local module is defined over its chart ring")
+            _finite_framing(module)
+        self._transition_data = _family_on_finite_ordered_set(
+            gluing_datum.transition_index_set(),
+            transitions,
+            name="Semilinear transition data of a finite atlas",
+            noun="finite-atlas module transition data",
+        )
+        self._pair_modules = []
+        self._triple_modules = []
+        self._transitions = []
+        self._triple_transitions = []
+        for pair in gluing_datum.transition_index_set():
+            self.transition(*pair)
+        self._verify_cocycle()
+
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def scheme(self):
+        return self.gluing_datum().scheme()
+
+    def chart_indices(self):
+        return self.gluing_datum().chart_indices()
+
+    def local_modules(self):
+        return self._local_modules
+
+    def local_module(self, index):
+        index = self.gluing_datum().normalize_chart_index(index)
+        return self.local_modules()[index]
+
+    def pair_module(self, chart_index, other_index):
+        datum = self.gluing_datum()
+        chart_index = datum.normalize_chart_index(chart_index)
+        other_index = datum.normalize_chart_index(other_index)
+        key = (chart_index, other_index)
+        for cached_key, cached in self._pair_modules:
+            if cached_key == key:
+                return cached
+        overlap = datum.overlap(chart_index, other_index)
+        ring_map = overlap.inclusion().coordinate_algebra_morphism()
+        module = self.local_module(chart_index).base_change(ring_map)
+        self._pair_modules.append((key, module))
+        return module
+
+    def triple_module(self, chart_index, first_other, second_other):
+        datum = self.gluing_datum()
+        chart_index = datum.normalize_chart_index(chart_index)
+        ranking = datum.chart_index_set().ranking_map()
+        others = tuple(
+            sorted(
+                (
+                    datum.normalize_chart_index(first_other),
+                    datum.normalize_chart_index(second_other),
+                ),
+                key=ranking,
+            )
+        )
+        key = (chart_index, *others)
+        for cached_key, cached in self._triple_modules:
+            if cached_key == key:
+                return cached
+        triple = datum.triple_overlap(chart_index, *others)
+        ring_map = triple.inclusion().coordinate_algebra_morphism()
+        module = self.local_module(chart_index).base_change(ring_map)
+        self._triple_modules.append((key, module))
+        return module
+
+    def _transition_images(self, source_index, target_index):
+        datum = self.gluing_datum()
+        pair = datum._ordered_pair(source_index, target_index)
+        supplied = self._transition_data[pair]
+        if not isinstance(supplied, (tuple, list)) or len(supplied) != 2:
+            raise TypeError(
+                "finite-atlas module transition data are (pullback images, inverse-pullback images)"
+            )
+        if pair == (
+            datum.normalize_chart_index(source_index),
+            datum.normalize_chart_index(target_index),
+        ):
+            return supplied[0], supplied[1]
+        return supplied[1], supplied[0]
+
+    @staticmethod
+    def _images_from_coordinates(domain, codomain, specification):
+        r"""Turn generator-coordinate data into elements of ``codomain``.
+
+        A mapping value may already be a codomain element or may itself be a
+        mapping from codomain framing labels to scalar coefficients.  The
+        latter is the public finite-atlas ingress: callers need not construct
+        elements of the internally cached overlap modules.
+        """
+        if callable(specification):
+            return {
+                label: specification(label, domain, codomain)
+                for label in domain.module_generating_set()
+            }
+        supplied = dict(specification)
+        if set(supplied) != set(domain.module_generating_set()):
+            raise ValueError("module transition coordinates require one image per source generator")
+        images = {}
+        for label in domain.module_generating_set():
+            value = supplied[label]
+            if isinstance(value, Mapping):
+                images[label] = codomain.linear_combination(
+                    {
+                        target_label: codomain.base_ring()(coefficient)
+                        for target_label, coefficient in value.items()
+                        if codomain.base_ring()(coefficient) != codomain.base_ring().zero()
+                    }
+                )
+            else:
+                images[label] = codomain(value)
+        return images
+
+    def transition(self, source_index, target_index):
+        datum = self.gluing_datum()
+        source_index = datum.normalize_chart_index(source_index)
+        target_index = datum.normalize_chart_index(target_index)
+        key = (source_index, target_index)
+        for cached_key, cached in self._transitions:
+            if cached_key == key:
+                return cached
+        scheme_transition = datum.transition_between(source_index, target_index)
+        source = self.pair_module(source_index, target_index)
+        target = self.pair_module(target_index, source_index)
+        pullback_images, inverse_images = self._transition_images(
+            source_index, target_index
+        )
+        pullback = SemilinearModuleMorphism(
+            target,
+            source,
+            scheme_transition.forward().coordinate_algebra_morphism(),
+            self._images_from_coordinates(target, source, pullback_images),
+        )
+        inverse_pullback = SemilinearModuleMorphism(
+            source,
+            target,
+            scheme_transition.inverse().coordinate_algebra_morphism(),
+            self._images_from_coordinates(source, target, inverse_images),
+        )
+        transition = FiniteAtlasModuleTransition(
+            scheme_transition,
+            source,
+            target,
+            pullback,
+            inverse_pullback,
+        )
+        self._transitions.append((key, transition))
+        return transition
+
+    def transition_on_triple(self, source_index, target_index, third_index):
+        datum = self.gluing_datum()
+        source_index = datum.normalize_chart_index(source_index)
+        target_index = datum.normalize_chart_index(target_index)
+        third_index = datum.normalize_chart_index(third_index)
+        key = (source_index, target_index, third_index)
+        for cached_key, cached in self._triple_transitions:
+            if cached_key == key:
+                return cached
+        pair_transition = self.transition(source_index, target_index)
+        source_pair = pair_transition.source_module()
+        target_pair = pair_transition.target_module()
+        source_triple = self.triple_module(source_index, target_index, third_index)
+        target_triple = self.triple_module(target_index, source_index, third_index)
+        source_pair_open = datum.overlap(source_index, target_index)
+        target_pair_open = datum.overlap(target_index, source_index)
+        source_triple_open = datum.triple_overlap(
+            source_index, target_index, third_index
+        )
+        target_triple_open = datum.triple_overlap(
+            target_index, source_index, third_index
+        )
+        source_restriction = source_pair_open.corestriction(
+            source_triple_open.inclusion()
+        ).coordinate_algebra_morphism()
+        target_restriction = target_pair_open.corestriction(
+            target_triple_open.inclusion()
+        ).coordinate_algebra_morphism()
+        triple_scheme_transition = datum.transition_on_triple(
+            source_index, target_index, third_index
+        )
+        pullback = SemilinearModuleMorphism(
+            target_triple,
+            source_triple,
+            triple_scheme_transition.coordinate_algebra_morphism(),
+            {
+                label: _change_coefficients(
+                    pair_transition.pullback()(target_pair.module_generator(label)),
+                    source_pair,
+                    source_triple,
+                    source_restriction,
+                )
+                for label in target_pair.module_generating_set()
+            },
+        )
+        inverse_scheme_transition = datum.transition_on_triple(
+            target_index, source_index, third_index
+        )
+        inverse_pullback = SemilinearModuleMorphism(
+            source_triple,
+            target_triple,
+            inverse_scheme_transition.coordinate_algebra_morphism(),
+            {
+                label: _change_coefficients(
+                    pair_transition.inverse_pullback()(source_pair.module_generator(label)),
+                    target_pair,
+                    target_triple,
+                    target_restriction,
+                )
+                for label in source_pair.module_generating_set()
+            },
+        )
+        transition = FiniteAtlasModuleTransition(
+            Isomorphism(triple_scheme_transition, inverse_scheme_transition),
+            source_triple,
+            target_triple,
+            pullback,
+            inverse_pullback,
+        )
+        self._triple_transitions.append((key, transition))
+        return transition
+
+    def _verify_cocycle(self) -> None:
+        labels = tuple(self.chart_indices())
+        for left, middle, right in combinations(labels, 3):
+            left_middle = self.transition_on_triple(left, middle, right).pullback()
+            middle_right = self.transition_on_triple(middle, right, left).pullback()
+            left_right = self.transition_on_triple(left, right, middle).pullback()
+            if left_middle * middle_right != left_right:
+                raise ValueError("finite-atlas module transitions fail the triple cocycle")
+
+
 _MODULE_GLUING_DATA_CATEGORIES = {}
 
 
@@ -2186,10 +2612,13 @@ __all__ = [
     "AlgebraGluingMorphism",
     "CompatibleLocalAlgebraSections",
     "CompatibleLocalSectionsModule",
+    "FiniteAtlasModuleGluingDatum",
+    "FiniteAtlasModuleTransition",
     "GluedAlgebraSheaf",
     "GluedModuleSheaf",
     "ModuleGluingData",
     "ModuleGluingDatum",
     "ModuleGluingHomset",
     "ModuleGluingMorphism",
+    "SemilinearModuleMorphism",
 ]
