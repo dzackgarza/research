@@ -2116,7 +2116,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [ ] Canonical/anticanonical bundles by adjunction.
 - [x] Del Pezzo degree and predicate via ampleness of `-K`.
 - [x] Blowups of the projective plane and supported smooth surfaces.
-- [ ] Exceptional divisors and Picard/intersection changes.
+- [x] Exceptional divisors and Picard/intersection changes.
 - [ ] Strict transforms of curves/divisors.
 - [x] Archived del Pezzo blowup benchmarks.
 
