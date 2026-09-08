@@ -2227,7 +2227,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
   - `StabilizerSubgroup(G, object, action)`
   - `CentralizerSubgroup(G, f)`
   - `IntersectionSubgroup(G1, ..., Gr)`
-- [ ] Finite-quotient double coset splitting for $\Gamma = \rho^{-1}(H) \leq O(L)$: $P_x \backslash G / \Gamma \cong \rho(P_x) \backslash \rho(G) / H$ computed via libGAP.
+- [x] Finite-quotient double coset splitting for $\Gamma = \rho^{-1}(H) \leq O(L)$: $P_x \backslash G / \Gamma \cong \rho(P_x) \backslash \rho(G) / H$ computed via libGAP.
 
 #### 3.5 Rational Matrix Groups and Integral Lattice Stabilizers
 
