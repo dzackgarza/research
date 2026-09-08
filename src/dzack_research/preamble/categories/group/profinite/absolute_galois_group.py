@@ -450,6 +450,17 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
 
     geometric_point = base_embedding
 
+    def has_canonical_realization(self) -> bool:
+        r"""Return whether this realized absolute Galois group is canonical.
+
+        For a finite field the selected profinite group is canonically
+        procyclic, with the arithmetic Frobenius as its distinguished
+        topological generator.  For a general field the concrete closure and
+        base embedding are chosen realization data rather than canonical
+        mathematical objects.
+        """
+        return self._is_finite_field()
+
     def slice_category(self):
         return self._slice_category
 
