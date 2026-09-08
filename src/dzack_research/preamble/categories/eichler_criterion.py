@@ -24,6 +24,188 @@ of named summands answers it; a lattice given only by a Gram matrix does not,
 and that is a statement about the presentation rather than about the lattice.
 """
 
+from sage.misc.cachefunc import cached_method
+from sage.structure.sage_object import SageObject
+
+
+class TwoUEichlerModel(SageObject):
+    r"""The represented determinant model ``U + U + K`` used by Eichler's theorem.
+
+    The first four basis vectors are not selected by coordinate position.  They
+    are the images of the chosen bases of two explicit hyperbolic-plane
+    summands under the biproduct injections.  Under
+
+    ``a e + d f + b e' + c f' |-> [[a,b],[-c,d]]``
+
+    the two copies of ``SL_2(ZZ)`` act by ``X |-> A X`` and
+    ``X |-> X B^-1`` respectively.  Those formulas extend by the identity on
+    ``K`` and therefore give actual functors ``B SL_2(ZZ) -> Lattices(ZZ)``.
+    """
+
+    def __init__(self, orthogonal_complement) -> None:
+        from dzack_research.preamble.categories.lattices import Lattices
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        ZZ = _own_ring(SageZZ)
+        if orthogonal_complement.base_ring() is not ZZ:
+            raise ValueError("the 2U Eichler model is currently integral over ZZ")
+        if not orthogonal_complement.is_even():
+            raise ValueError("the Eichler model requires an even orthogonal complement")
+        category = Lattices(ZZ)
+        plane = category("U")
+        self._orthogonal_complement = orthogonal_complement
+        self._lattice = category.biproduct((plane, plane, orthogonal_complement))
+
+    def lattice(self):
+        return self._lattice
+
+    def orthogonal_complement(self):
+        return self._orthogonal_complement
+
+    def first_hyperbolic_plane(self):
+        return self.lattice().biproduct_factor(0)
+
+    def second_hyperbolic_plane(self):
+        return self.lattice().biproduct_factor(1)
+
+    def _embedded_hyperbolic_basis(self):
+        lattice = self.lattice()
+        first = self.first_hyperbolic_plane()
+        second = self.second_hyperbolic_plane()
+        first_inclusion = lattice.injection(0)
+        second_inclusion = lattice.injection(1)
+        first_basis = tuple(first.module_generators())
+        second_basis = tuple(second.module_generators())
+        return (
+            first_inclusion(first_basis[0]),
+            first_inclusion(first_basis[1]),
+            second_inclusion(second_basis[0]),
+            second_inclusion(second_basis[1]),
+        )
+
+    def hyperbolic_basis(self):
+        r"""Return the selected embedded basis ``(e,f,e',f')`` of ``U + U``."""
+        return self._embedded_hyperbolic_basis()
+
+    def _embedded_complement_basis(self):
+        lattice = self.lattice()
+        complement = self.orthogonal_complement()
+        inclusion = lattice.injection(2)
+        return tuple(inclusion(generator) for generator in complement.module_generators())
+
+    def _sl2_entries(self, element):
+        r"""Return the exact entries of an owned ``SL_2(ZZ)`` element."""
+        matrix = element._backend().matrix()
+        ring = self.lattice().base_ring()
+        return tuple(ring(matrix[row, column]) for row in range(2) for column in range(2))
+
+    def _left_isometry(self, element):
+        r"""Return the isometry induced by ``X |-> A X`` on the determinant model."""
+        p, q, r, s = self._sl2_entries(element)
+        lattice = self.lattice()
+        e, f, e_prime, f_prime = self._embedded_hyperbolic_basis()
+        images = (
+            lattice.scalar_multiple(p, e) - lattice.scalar_multiple(r, f_prime),
+            lattice.scalar_multiple(s, f) + lattice.scalar_multiple(q, e_prime),
+            lattice.scalar_multiple(p, e_prime) + lattice.scalar_multiple(r, f),
+            lattice.scalar_multiple(s, f_prime) - lattice.scalar_multiple(q, e),
+        ) + self._embedded_complement_basis()
+        return lattice.O()(images)
+
+    def _right_isometry(self, element):
+        r"""Return the isometry induced by ``X |-> X B^-1`` on the determinant model."""
+        p, q, r, s = self._sl2_entries(element)
+        lattice = self.lattice()
+        e, f, e_prime, f_prime = self._embedded_hyperbolic_basis()
+        images = (
+            lattice.scalar_multiple(s, e) - lattice.scalar_multiple(q, e_prime),
+            lattice.scalar_multiple(p, f) + lattice.scalar_multiple(r, f_prime),
+            lattice.scalar_multiple(p, e_prime) - lattice.scalar_multiple(r, e),
+            lattice.scalar_multiple(s, f_prime) + lattice.scalar_multiple(q, f),
+        ) + self._embedded_complement_basis()
+        return lattice.O()(images)
+
+    def left_action(self, element):
+        r"""Return the left ``SL_2(ZZ)`` action isometry attached to ``element``."""
+        element = self.special_linear_group()(element)
+        return self._left_isometry(element)
+
+    def right_action(self, element):
+        r"""Return the right ``SL_2(ZZ)`` action isometry attached to ``element``."""
+        element = self.special_linear_group()(element)
+        return self._right_isometry(element)
+
+    @cached_method
+    def special_linear_group(self):
+        from dzack_research.preamble.categories.group.groups import Groups
+
+        return Groups.SL(2, self.lattice().base_ring())
+
+    @cached_method
+    def left_action_functor(self):
+        r"""Return ``B SL_2(ZZ) -> Lattices(ZZ)`` for left multiplication."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            GroupActionFunctor,
+        )
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return GroupActionFunctor(
+            self.special_linear_group(),
+            Lattices(self.lattice().base_ring()),
+            self.lattice(),
+            self._left_isometry,
+        )
+
+    @cached_method
+    def right_action_functor(self):
+        r"""Return ``B SL_2(ZZ) -> Lattices(ZZ)`` for right multiplication."""
+        from dzack_research.preamble.categories.functors.group_actions import (
+            GroupActionFunctor,
+        )
+        from dzack_research.preamble.categories.lattices import Lattices
+
+        return GroupActionFunctor(
+            self.special_linear_group(),
+            Lattices(self.lattice().base_ring()),
+            self.lattice(),
+            self._right_isometry,
+        )
+
+    def eichler_transvection(self, isotropic, orthogonal):
+        r"""Return the existing exact Eichler transvection in this ``2U`` lattice."""
+        return self.lattice().eichler_transvection(isotropic, orthogonal)
+
+    def complement_eichler_transvections(self):
+        r"""Return ``E_{e,x}`` for the selected ``K`` framing and first isotropic ``e``.
+
+        This is the represented ``K``-direction part of the source-defined
+        Eichler generating family.  It is not named as the full approximate
+        subgroup ``A(L)``: that subgroup also requires the separately specified
+        lifts of the relevant automorphisms of the discriminant data of ``K``.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        lattice = self.lattice()
+        complement = self.orthogonal_complement()
+        complement_inclusion = lattice.injection(2)
+        isotropic = self.hyperbolic_basis()[0]
+        return finite_indexed_family(
+            complement.module_generating_set(),
+            lambda label: self.eichler_transvection(
+                isotropic,
+                complement_inclusion(complement.module_generator(label)),
+            ),
+            name=f"K-direction Eichler transvections in {lattice}",
+        )
+
+
+def two_u_eichler_model(orthogonal_complement):
+    r"""Return the represented ``U + U + K`` determinant model for ``K``."""
+    return TwoUEichlerModel(orthogonal_complement)
+
 
 def covering_discriminant_classes(lattice, square):
     r"""Return the discriminant classes covering the primitive vectors of ``square``.
@@ -125,9 +307,11 @@ def are_in_one_stable_orbit(left, right) -> bool:
 
 
 __all__ = [
+    "TwoUEichlerModel",
     "are_in_one_stable_orbit",
     "covering_discriminant_classes",
     "eichler_criterion_applies",
     "hyperbolic_plane_summand_count",
     "splits_two_hyperbolic_planes",
+    "two_u_eichler_model",
 ]
