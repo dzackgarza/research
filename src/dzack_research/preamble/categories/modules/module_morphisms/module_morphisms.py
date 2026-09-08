@@ -600,6 +600,20 @@ class ModuleMorphism(Morphism):
                 raise ArithmeticError("localized kernel inclusion is not the inclusion carried by the transported subobject")
             return localized_kernel
 
+        # A map may be constructed *after* scalar localization rather than be
+        # the recorded image of a source-ring map.  Its endpoints still carry
+        # transported finite presentations, so the ordinary presented-module
+        # kernel backend is the exact local calculation.  Keep this branch
+        # explicit: provenance is an optimization/witness for transported
+        # kernels, not a hypothesis for kernels over a localized coefficient
+        # ring.
+        ring = self.domain().base_ring()
+        if ring in LocalRings():
+            for owner in (self.domain(), self.codomain()):
+                represented = owner._represented_kernel_of_morphism(self)
+                if represented is not NotImplemented:
+                    return represented
+
         for owner in (self.domain(), self.codomain()):
             represented = owner._represented_kernel_of_morphism(self)
             if represented is not NotImplemented:
