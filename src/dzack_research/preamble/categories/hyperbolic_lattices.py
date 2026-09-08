@@ -422,26 +422,63 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
         def isotropic_elements_below_height(self, timelike, height):
             r"""Return the isotropic \(v\in L\) with \(\lvert b(v,t)\rvert\leq h\).
 
-            The category's stated contract, and the enumeration a walk along
-            the light cone needs.  On a hyperbolic lattice \(\{v : q(v)=0\}\)
-            is infinite and a bound on the square bounds nothing, so the
-            chosen timelike element is what makes the set finite and is a
-            required argument.
+            Put \(d=q(t)\) and \(a=b(v,t)\).  Then
 
-            What is missing is the orthogonal complement of ``timelike`` as a
-            subobject of \(L\): the complement is definite, the two bounds
-            confine \(v\) to a finite region of it, and the definite
-            short-vector enumeration then answers.  The live lattice surface
-            has that enumeration and no operation producing the complement of a
-            vector as a lattice with its inclusion.
+            \[
+              w=dv-at\in t^\perp, \qquad q(w)=-a^2d,
+            \]
+
+            and conversely \(v=(w+at)/d\) whenever that quotient is integral.
+            Thus the height bound leaves only the finitely many integers
+            \(-h\leq a\leq h\); for each one the possible \(w\)'s form one
+            finite shell in the definite lattice \(t^\perp\).  The final
+            divisibility check is exactly the condition that the rational
+            reconstruction lies back in \(L\).
             """
-            assert False, (
-                "the height-bounded isotropic enumeration needs the orthogonal "
-                "complement of the timelike vector as a definite sublattice "
-                "with its inclusion, which the live lattice surface does not "
-                "produce; the definite short-vector enumeration cannot be "
-                "applied to a hyperbolic lattice directly"
+            integers = _own_ring(SageZZ)
+            assert self.base_ring() is integers, (
+                "the exact height enumeration currently uses integral shells over ZZ"
             )
+            if timelike.parent() is not self:
+                timelike = self(timelike)
+            height = integers(height)
+            assert height >= integers.zero(), "a height bound is nonnegative"
+
+            square = timelike.q()
+            assert square != integers.zero(), "a timelike vector has nonzero square"
+            complement = timelike.orthogonal_complement()
+            assert complement.is_definite(), (
+                "the chosen vector is timelike exactly when its orthogonal complement is definite"
+            )
+            inclusion = complement.inclusion()
+
+            isotropic = []
+            for height_value in range(-int(height), int(height) + 1):
+                pairing = integers(height_value)
+                target_square = -(pairing * pairing * square)
+                match pairing == integers.zero():
+                    case True:
+                        shell = (complement.zero(),)
+                    case False:
+                        shell = complement.vectors_of_square(target_square)
+                for perpendicular in shell:
+                    numerator = inclusion(perpendicular) + pairing * timelike
+                    coordinates = numerator.to_tuple()
+                    if not all(square.divides(coordinate) for coordinate in coordinates):
+                        continue
+                    candidate = self(
+                        tuple(coordinate // square for coordinate in coordinates)
+                    )
+                    if candidate.q() != integers.zero():
+                        raise ArithmeticError(
+                            "the height-shell reconstruction produced a non-isotropic vector"
+                        )
+                    if self.b(candidate, timelike) != pairing:
+                        raise ArithmeticError(
+                            "the height-shell reconstruction produced the wrong pairing"
+                        )
+                    isotropic.append(candidate)
+            return finite_ordered_set(tuple(isotropic))
 
         @cached_method
         def _edgewalk(self):
