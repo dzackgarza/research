@@ -88,3 +88,21 @@ def test_projective_plane_cycle_class_is_an_explicit_integral_isomorphism() -> N
     assert cycle_class.forward().domain() is chow
     assert cycle_class.forward().codomain() is cohomology
     assert cycle_class.inverse()(cycle_class.forward()(generator)) == generator
+
+
+def test_projective_plane_middle_cohomology_form_has_square_one() -> None:
+    plane = _projective_plane()
+    formed = plane.middle_cohomology_form()
+    generator = formed.module_generator(next(iter(formed.module_generating_set())))
+
+    assert formed.b(generator, generator) == ZZ.one()
+
+
+def test_hirzebruch_zero_middle_cohomology_form_is_unimodular_hyperbolic() -> None:
+    fans = RationalPolyhedralFans(BasedFreeModule(ZZ, 2))
+    surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
+    formed = surface.middle_cohomology_form()
+
+    assert formed.module_rank() == 2
+    assert formed.is_unimodular()
+    assert formed.determinant() == ZZ(-1)

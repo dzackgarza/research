@@ -15,6 +15,9 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     BasedFreeModule,
     FreshFreeModuleOn,
 )
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    BilinearForm,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
@@ -321,12 +324,53 @@ def ToricCycleClassIsomorphism(scheme, codimension):
     return Isomorphism(forward, inverse)
 
 
+def ToricPicardToChowIsomorphism(scheme):
+    r"""Return ``Pic(X) -> CH^1(X)`` for a smooth complete toric surface."""
+    _require_smooth_complete_rational_toric_realization(scheme)
+    if int(scheme.dimension()) != 2:
+        raise ValueError("the represented Picard-to-Chow comparison is currently used on surfaces")
+    picard = scheme.picard_group()
+    chow = scheme.chow_group(1)
+    cycles = scheme.torus_invariant_cycle_group(1)
+    cycle_projection = scheme.torus_invariant_cycle_class_map(1)
+    forward = module_homset(picard, chow)(
+        {
+            label: cycle_projection(cycles.module_generator(label))
+            for label in picard.module_generating_set()
+        }
+    )
+    return Isomorphism(forward, forward.inverse())
+
+
+def ToricMiddleCohomologyForm(scheme):
+    r"""Return ``H^2(X(CC),ZZ)`` with its cup-product intersection form."""
+    _require_smooth_complete_rational_toric_realization(scheme)
+    if int(scheme.dimension()) != 2:
+        raise ValueError("the represented middle-cohomology form is for surfaces")
+    cohomology = ToricIntegralSingularCohomology(scheme, 2)
+    cycle_class = ToricCycleClassIsomorphism(scheme, 1)
+    picard_to_chow = ToricPicardToChowIsomorphism(scheme)
+    cohomology_to_picard = picard_to_chow.inverse() * cycle_class.inverse()
+    intersection = scheme.picard_intersection_pairing()
+    integers = _own_ring(SageZZ)
+    return BilinearForm(
+        cohomology,
+        integers,
+        lambda left, right: intersection(
+            cohomology_to_picard(left),
+            cohomology_to_picard(right),
+        ),
+    )
+
+
 __all__ = [
     "ToricCycleClassIsomorphism",
     "ToricGeometricLineBundleCohomologySpaces",
     "ToricIntegralSingularCohomology",
     "ToricIntegralSingularCohomologyGroups",
     "ToricLineBundleCohomology",
+    "ToricMiddleCohomologyForm",
+    "ToricPicardToChowIsomorphism",
     "ToricWeightCohomology",
     "ToricWeightCohomologyComplex",
     "ToricWeightCohomologyComplexes",

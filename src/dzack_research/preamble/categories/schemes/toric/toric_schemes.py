@@ -1204,6 +1204,14 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
             return ToricCycleClassIsomorphism(self, codimension)
 
+        def middle_cohomology_form(self):
+            r"""Return the cup-product form on ``H^2(X(CC),ZZ)`` for a smooth complete toric surface."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricMiddleCohomologyForm,
+            )
+
+            return ToricMiddleCohomologyForm(self)
+
         def invertible_sheaf_of_divisor(self, divisor):
             r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.
 

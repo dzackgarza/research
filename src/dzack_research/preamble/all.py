@@ -768,6 +768,8 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     ToricIntegralSingularCohomology,
     ToricIntegralSingularCohomologyGroups,
     ToricLineBundleCohomology,
+    ToricMiddleCohomologyForm,
+    ToricPicardToChowIsomorphism,
     ToricWeightCohomology,
     ToricWeightCohomologyComplex,
     ToricWeightCohomologyComplexes,
