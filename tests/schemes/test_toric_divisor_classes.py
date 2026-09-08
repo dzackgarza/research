@@ -222,6 +222,17 @@ def test_a_cartier_divisor_constructs_its_line_bundle_on_the_toric_atlas() -> No
         assert bundle.tensor_power(2).transition_unit(*pair) == square.transition_unit(*pair)
 
 
+def test_toric_projective_space_has_the_distinguished_hyperplane_bundle() -> None:
+    plane = _projective_plane()
+    hyperplane = plane.hyperplane_divisor()
+    line_bundle = plane.O1()
+
+    assert plane.divisor_class(hyperplane) != plane.class_group().zero()
+    assert line_bundle.associated_divisor() == hyperplane
+    assert line_bundle.global_sections().dimension() == 3
+    assert plane.complete_linear_system(hyperplane).projective_dimension() == 2
+
+
 def test_the_polytope_of_an_ample_divisor_has_the_fan_as_its_normal_fan() -> None:
     r"""``O(1)`` on ``P^2`` is ample, and by CLS Thm. 6.2.1 the normal fan of the
     polytope of an ample divisor on a complete toric variety is the fan itself.

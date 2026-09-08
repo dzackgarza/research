@@ -1036,6 +1036,28 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 associated_divisor=divisor,
             )
 
+        @cached_method
+        def hyperplane_divisor(self):
+            r"""Return a torus-invariant hyperplane divisor on toric ``P^n``.
+
+            Every ray divisor on the standard projective-space fan represents
+            the positive generator of ``Pic(P^n)``.  Thus after the exact fan
+            identification performed by ``is_projective_space``, selecting the
+            first ray gives one distinguished representative of that class.
+            """
+            assert self.is_projective_space(), (
+                "the hyperplane divisor constructor is supported on a toric projective space"
+            )
+            ray = next(iter(self.fan().cones(1)))
+            return self.torus_invariant_prime_divisor(ray)
+
+        @cached_method
+        def hyperplane_line_bundle(self):
+            r"""Return ``O_{P^n}(1)`` from the selected hyperplane divisor."""
+            return self.invertible_sheaf_of_divisor(self.hyperplane_divisor())
+
+        O1 = hyperplane_line_bundle
+
         def ample_divisor_self_intersection(self, divisor):
             r"""Return ``D^2`` from the normalized area of ``P_D``.
 
