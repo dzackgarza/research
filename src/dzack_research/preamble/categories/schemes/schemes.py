@@ -46,6 +46,7 @@ from dzack_research.preamble.categories.rings.commutative_algebra import (
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedPrincipalIdealDomains,
     RingMorphism,
     _engine_element,
@@ -3337,31 +3338,78 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         def intersection_multiplicity(self, other, point):
             r"""``i(p; Z . W)``, the multiplicity of the intersection at ``p``.
 
-            The definition is the length of the stalk at ``p`` of the
-            structure sheaf of ``Z cap W``, taken over ``O_{X,p}``, and it
-            is the intersection multiplicity exactly when the intersection is
-            proper at ``p``; for an improper intersection the number is
-            Serre's alternating sum of the lengths of
-            ``Tor_i^{O_{X,p}}(O_{Z,p}, O_{W,p})``.
+            For two effective hypersurfaces meeting properly in a smooth
+            affine surface over a field, this is
 
-            Both readings need one operation the preamble does not own: the
-            composition length of a finitely generated module over a local
-            ring.  Every other part is here -- ``intersection`` builds the
-            subscheme, ``direct_image`` reads its structure sheaf as an
-            ``O_X``-module, the stalk localizes it at ``p``, and ``Tor`` is
-            already a functor on modules -- so this body is the composite
+            ``length_{O_{X,p}} O_{X,p}/(f,g)``.
 
-                ``self.intersection(other).structure_sheaf_pushforward()``
-                ``.stalk(point).length()``
+            The private polynomial backend computes a primary decomposition of
+            ``(f,g)``.  The component whose radical is the maximal ideal of
+            ``p`` is exactly the local Artinian factor.  If ``Q_p`` is that
+            component, then
 
-            once that length answers.
+            ``dim_k(P/Q_p) = length(P_p/Q_p P_p) * [kappa(p):k]``;
+
+            dividing by the residue degree therefore returns the composition
+            length even at a non-rational closed point.  These hypotheses are
+            stated explicitly: outside the proper hypersurface case the
+            intersection product is Serre's alternating Tor length and is not
+            replaced by this simpler colength formula.
             """
-            assert False, (
-                "the intersection multiplicity is the length of O_{Z cap W, p} over O_{X,p}, "
-                "and no composition length of a finitely generated module over a local ring is "
-                "owned; the scheme-theoretic intersection itself is `intersection`, and its "
-                "stalk at p is available through the direct image of its structure sheaf"
+            ambient = self.inclusion().codomain()
+            assert other.inclusion().codomain() is ambient, (
+                "an intersection multiplicity is taken inside one ambient scheme"
             )
+            base = ambient.scheme_base_ring()
+            assert base in OwnedFields(), (
+                "the represented colength formula requires an affine surface over a field"
+            )
+            assert ambient in AffineSpaces(base) and int(ambient.relative_dimension()) == 2, (
+                "the represented intersection multiplicity requires a smooth affine surface"
+            )
+            assert self.codimension() == other.codimension() == 1, (
+                "the represented local colength formula requires two hypersurfaces"
+            )
+            assert len(tuple(self.defining_equations())) == 1 and len(
+                tuple(other.defining_equations())
+            ) == 1, "each represented hypersurface must have one defining equation"
+
+            spectrum = ambient.underlying_space()
+            if point.parent() is not spectrum:
+                point = spectrum(point)
+            point_ideal = point.ideal()
+            assert point_ideal.is_maximal(), (
+                "intersection multiplicity here is represented at a closed point"
+            )
+
+            meeting_ideal = self.intersection(other).defining_ideal_owned()
+            backend_meeting = meeting_ideal._engine_ideal()
+            backend_point = point_ideal._engine_ideal()
+            components = tuple(backend_meeting.primary_decomposition())
+            local_components = tuple(
+                component
+                for component in components
+                if component.radical() == backend_point
+            )
+            if not local_components:
+                return _own_ring(SageZZ).zero()
+            if len(local_components) != 1:
+                raise ArithmeticError(
+                    "a zero-dimensional primary decomposition has more than one component at the selected point"
+                )
+            component = local_components[0]
+            if int(component.dimension()) != 0:
+                raise ValueError(
+                    "the two hypersurfaces do not meet properly at the selected point"
+                )
+
+            colength = SageZZ(component.vector_space_dimension())
+            residue_degree = SageZZ(backend_point.vector_space_dimension())
+            if residue_degree <= 0 or colength % residue_degree != 0:
+                raise ArithmeticError(
+                    "the local primary colength is incompatible with the selected residue field"
+                )
+            return _own_ring(SageZZ)(colength // residue_degree)
 
         def ideal_sheaf(self):
             r"""``I_Z = I~``, the quasi-coherent ideal sheaf of ``Z = V(I)`` on affine ``X``."""
