@@ -74,7 +74,7 @@ def _free_cover_owner(module):
     if presentation is not None:
         try:
             return presentation().codomain()
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             pass
     return module
 
@@ -119,7 +119,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             try:
                 same_ring = other.base_ring() is self.base_ring()
                 same_presentation = other.presentation() == self.presentation()
-            except AttributeError, TypeError, ValueError:
+            except (AttributeError, TypeError, ValueError):
                 return False
             return bool(same_ring and same_presentation)
 
@@ -151,7 +151,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     index: _presentation_rows(factors.value(index))
                     for index in factors.index_set()
                 }
-            except AttributeError, NotImplementedError, TypeError, ValueError:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 return NotImplemented
             size = labels.cardinality()
             if not size.is_finite():
@@ -1071,7 +1071,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 f"Finitely presented module on {self.number_of_module_generators()} module generators over {self.base_ring()} with invariant factors {self.invariant_factors()}"
             )
 
-        def base_change(self, ring_map):
+        def base_change(self, ring_map, *, _extra_construction_data=None):
             r"""Transport the selected finite presentation along ``R -> S``."""
 
             presentation = self.presentation()
@@ -1096,7 +1096,69 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     strict=True,
                 )
             }
-            return FinitelyPresentedModule(module_homset(source, target)(images))
+            return FinitelyPresentedModule(
+                module_homset(source, target)(images),
+                _extra_construction_data=_extra_construction_data,
+            )
+
+        def adic_completion(self, ideal, *, precision=20):
+            r"""Return ``M tensor_R R_hat`` along the represented ``I``-adic completion.
+
+            The selected presentation is transported by the ordinary scalar-
+            extension constructor.  The result retains the source module,
+            defining ideal, and completion ring so the canonical map and every
+            finite truncation are reconstructed from the same ring maps.
+            """
+            ring = self.base_ring()
+            if ideal.ring() is not ring:
+                raise ValueError("module completion requires an ideal of the module base ring")
+            completion = ring.adic_completion(ideal, precision=precision)
+            completed = self.base_change(
+                completion.completion_map(),
+                _extra_construction_data={
+                    "completion_source_module": self,
+                    "completion_defining_ideal": ideal,
+                    "completion_ring": completion,
+                },
+            )
+            return completed
+
+        def is_adically_completed_module(self) -> bool:
+            return getattr(self, "_preamble_completion_source_module", None) is not None
+
+        def completion_source_module(self):
+            source = getattr(self, "_preamble_completion_source_module", None)
+            if source is None:
+                raise ValueError("this module was not constructed by adic completion")
+            return source
+
+        def completion_defining_ideal(self):
+            ideal = getattr(self, "_preamble_completion_defining_ideal", None)
+            if ideal is None:
+                raise ValueError("this module was not constructed by adic completion")
+            return ideal
+
+        def completion_ring(self):
+            completion = getattr(self, "_preamble_completion_ring", None)
+            if completion is None:
+                raise ValueError("this module was not constructed by adic completion")
+            return completion
+
+        @cached_method
+        def completion_unit(self):
+            r"""Return the canonical ``R``-linear map ``M -> Res_R(M_hat)``."""
+            source = self.completion_source_module()
+            ring_map = self.completion_ring().completion_map()
+            adjunction = Modules(source.base_ring()).base_change_adjunction(ring_map)
+            adjunction.left_adjoint().adopt_object_image(source, self)
+            return adjunction.unit(source)
+
+        @cached_method
+        def adic_module_truncation(self, exponent):
+            r"""Return ``M tensor_R R/I^exponent`` from the same selected presentation."""
+            source = self.completion_source_module()
+            quotient = self.completion_ring().adic_truncation(exponent)
+            return source.base_change(quotient.quotient_map())
 
 
 def _module_invariant_factor_form(module):
@@ -1821,7 +1883,7 @@ def _singular_presentation_kernel(morphism):
     try:
         coefficient_field = presentation_ring.base_ring()
         field_coefficients = bool(coefficient_field.is_field())
-    except AttributeError, NotImplementedError:
+    except (AttributeError, NotImplementedError):
         field_coefficients = False
     if not field_coefficients:
         raise NotImplementedError("the general presented-kernel backend currently uses Singular over a polynomial ring over a field")
