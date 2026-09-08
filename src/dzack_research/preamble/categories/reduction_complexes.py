@@ -178,6 +178,58 @@ class RationalReductionCell(SageObject):
             self.lattice(), self._engine.intersection(other._engine)
         )
 
+    def is_equal_to(self, other) -> bool:
+        r"""Return whether two cells are the same exact rational polyhedral cone."""
+        return (
+            isinstance(other, RationalReductionCell)
+            and other.lattice() is self.lattice()
+            and self._engine == other._engine
+        )
+
+    def transported_by(self, isometry):
+        r"""Return the image of this cell under a lattice isometry.
+
+        If ``C`` is cut out by row covectors ``a`` with ``a(x) >= 0`` and
+        ``g`` has coordinate matrix ``M`` (column-image convention), then
+        ``g(C)`` is cut out by ``a M^{-1}``, since ``a(M^{-1}y) >= 0`` is the
+        transported inequality.  Equations transform by the same rule.
+        """
+        lattice = self.lattice()
+        if isometry.domain() is not lattice or isometry.codomain() is not lattice:
+            raise ValueError("a reduction cell is transported by an automorphism of its lattice")
+        inverse = _engine_component_matrix(isometry.matrix()).change_ring(SageQQ).inverse()
+
+        def transported(covector):
+            return _owned_rational_vector(_engine_rational_vector(covector) * inverse)
+
+        return RationalReductionCell(
+            lattice,
+            tuple(transported(wall) for wall in self.inequalities()),
+            equations=tuple(transported(wall) for wall in self.equations()),
+        )
+
+    def transporter_witness_to(self, other, group):
+        r"""Return one element of a finite represented group carrying this cell to ``other``.
+
+        This is the exact local transporter operation used by a reduction
+        complex once a finite cell-stabilizer/quotient group is represented.
+        Infinite arithmetic traversal remains the separate provider obligation
+        of :func:`lorentzian_reduction_complex`.
+        """
+        if other.lattice() is not self.lattice():
+            return None
+        if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
+            raise ValueError("a cell transporter group acts on the ambient lattice")
+        group_cardinality = group.cardinality()
+        if not group_cardinality.is_finite():
+            raise NotImplementedError(
+                "cell transporter search through an infinite arithmetic group belongs to the reduction-complex traversal provider"
+            )
+        for isometry in group:
+            if self.transported_by(isometry).is_equal_to(other):
+                return isometry
+        return None
+
     def is_face_of(self, other) -> bool:
         if other.lattice() is not self.lattice():
             return False
