@@ -8,10 +8,12 @@ from dzack_research.preamble.categories.functors.cohomology import cohomology_fu
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
     CochainComplex,
+    CochainComplexFromFamily,
     cochain_homset,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 def _rank_one(label):
@@ -77,3 +79,59 @@ def test_nonnegative_dga_has_the_same_zero_incoming_complex_boundary() -> None:
     assert incoming.codomain() is dga.graded_piece(0)
     assert dga.cohomology(-1).is_zero()
     assert dga.cohomology(0).cochain_complex() is dga
+
+
+def test_lazy_integer_complex_does_not_turn_unrequested_degrees_into_zero() -> None:
+    degree_set = ZZ
+    calls = []
+
+    def piece(degree):
+        degree = int(degree)
+        calls.append(degree)
+        return _rank_one(f"e{degree}")
+
+    pieces = indexed_family(degree_set, piece, name="A rank-one module in every degree")
+
+    def differential(degree):
+        degree = int(degree)
+        source = pieces(degree)
+        target = pieces(degree + 1)
+        return module_homset(source, target)(
+            {source.module_generating_set()[0]: target.zero()}
+        )
+
+    differentials = indexed_family(
+        degree_set,
+        differential,
+        name="Zero differential in every degree",
+    )
+    complex_ = CochainComplexFromFamily(ZZ, pieces, differentials)
+
+    assert not complex_.has_finite_support()
+    assert complex_.degree_convention() == "cohomological"
+    assert complex_.graded_piece(-7) is pieces(-7)
+    assert -7 in calls
+    assert complex_.differential_component(11).domain() is pieces(11)
+    assert complex_.differential_component(11).codomain() is pieces(12)
+
+
+def test_lazy_complex_identity_is_a_degree_indexed_cochain_map() -> None:
+    degree_set = ZZ
+    pieces = indexed_family(
+        degree_set,
+        lambda degree: _rank_one(f"e{int(degree)}"),
+        name="A rank-one module in every degree",
+    )
+    differentials = indexed_family(
+        degree_set,
+        lambda degree: module_homset(pieces(degree), pieces(int(degree) + 1))(
+            {pieces(degree).module_generating_set()[0]: pieces(int(degree) + 1).zero()}
+        ),
+        name="Zero differential in every degree",
+    )
+    complex_ = CochainComplexFromFamily(ZZ, pieces, differentials)
+    identity = cochain_homset(complex_, complex_).identity()
+
+    source = pieces(-4)
+    generator = source.module_generator(source.module_generating_set()[0])
+    assert identity.component(-4)(generator) == generator
