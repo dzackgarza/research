@@ -6,7 +6,11 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.structure.element import Element
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -41,6 +45,27 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
 
 
+class CommutativeAlgebraParameters(OwnedCategory):
+    r"""The parameter domain of module categories with algebraic connection."""
+
+    def an_object(self):
+        from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+        return CommutativeAlgebras(_own_ring(SageZZ)).an_object()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        try:
+            ring = candidate.base_ring()
+        except (AttributeError, TypeError):
+            return False
+        return candidate in CommutativeAlgebras(ring)
+
+
 class ModulesWithConnection(OwnedParameterizedCategory):
     r"""Modules over ``A`` equipped with an ``A/R``-connection."""
 
@@ -65,6 +90,9 @@ class ModulesWithConnection(OwnedParameterizedCategory):
 
     def algebra(self):
         return self.base()
+
+    def parameter_category(self):
+        return CommutativeAlgebraParameters()
 
     def super_categories(self):
 
@@ -126,6 +154,9 @@ class ModulesWithFlatConnection(OwnedParameterizedCategory):
 
     def algebra(self):
         return self.base()
+
+    def parameter_category(self):
+        return CommutativeAlgebraParameters()
 
     def super_categories(self):
         return [ModulesWithConnection(self.algebra())]
@@ -807,6 +838,7 @@ class ConnectionDeRhamModule:
 
 
 __all__ = [
+    "CommutativeAlgebraParameters",
     "Connection",
     "ConnectionDeRhamDifferential",
     "ConnectionDeRhamModule",
