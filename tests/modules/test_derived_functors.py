@@ -9,10 +9,12 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     Ext,
+    ExtMap,
     FinitelyPresentedModule,
     FreeModule,
     PolynomialRing,
     Tor,
+    TorMap,
     ring_as_module,
 )
 
@@ -67,3 +69,27 @@ def test_tor_and_ext_of_cyclic_modules_over_a_polynomial_ring() -> None:
     assert tuple(Ext(1, square, ring_as_module(ring)).invariant_factors()) == (x**2,)
     assert Ext(0, square, ring_as_module(ring)).invariant_factors().cardinality() == 0
     assert Ext(0, square, ring_as_module(ring)).module_rank() == 0
+
+
+def test_tor_and_ext_are_functorial_in_the_resolved_argument() -> None:
+    six = _cyclic(ZZ, 6)
+    three = _cyclic(ZZ, 3)
+    two = _cyclic(ZZ, 2)
+    quotient = six.Mor(three)({0: three.module_generator(0)})
+
+    tor_source = Tor(1, six, two)
+    tor_target = Tor(1, three, two)
+    tor_map = TorMap(1, quotient, two)
+    cycle_module = tor_source.cochain_complex().graded_piece(tor_source.degree())
+    cycle_label = next(iter(cycle_module.module_generating_set()))
+    tor_class = tor_source.class_of_cycle(cycle_module.module_generator(cycle_label))
+    assert tor_map.domain() is tor_source
+    assert tor_map.codomain() is tor_target
+    assert tor_map(tor_class).parent() is tor_target
+
+    integers = ring_as_module(ZZ)
+    ext_source = Ext(1, three, integers)
+    ext_target = Ext(1, six, integers)
+    ext_map = ExtMap(1, quotient, integers)
+    assert ext_map.domain() is ext_source
+    assert ext_map.codomain() is ext_target

@@ -98,4 +98,58 @@ def Ext(degree, module, other):
     return Cohomology(dualized, degree)
 
 
-__all__ = ["Ext", "Tor"]
+def TorMap(degree, morphism, other):
+    r"""Return the map on ``Tor_degree(-, other)`` induced by ``morphism``.
+
+    The selected free-resolution lift gives a chain map ``F(M) -> F(N)``.
+    Tensor its degree-``n`` component with ``other`` and pass a represented
+    homology class through its selected cycle representative.  This avoids
+    depending on the bookkeeping shift used to store the chain complex as a
+    cochain complex.
+    """
+    degree = int(degree)
+    if degree < 0:
+        raise ValueError("a Tor degree is nonnegative")
+    steps = degree + 1
+    source_resolution = free_resolution(morphism.domain(), steps)
+    target_resolution = free_resolution(morphism.codomain(), steps)
+    lifted = source_resolution.lift_morphism(morphism, target_resolution)
+    tensor = TensorByFunctor(other)
+    component = tensor(lifted.component(degree))
+    source = Tor(degree, morphism.domain(), other)
+    target = Tor(degree, morphism.codomain(), other)
+    return module_homset(source, target).elementwise(
+        lambda class_: target.class_of_cycle(
+            component(source.cycle_representative(class_))
+        )
+    )
+
+
+def ExtMap(degree, morphism, other):
+    r"""Return the contravariant map on ``Ext^degree(-, other)`` induced by ``morphism``."""
+    degree = int(degree)
+    if degree < 0:
+        raise ValueError("an Ext degree is nonnegative")
+    steps = degree + 1
+    source_resolution = free_resolution(morphism.domain(), steps)
+    target_resolution = free_resolution(morphism.codomain(), steps)
+    lifted = source_resolution.lift_morphism(morphism, target_resolution)
+    identity = module_homset(other, other).identity()
+    source_internal = InternalHom(target_resolution.term(degree), other)
+    target_internal = InternalHom(source_resolution.term(degree), other)
+    component = internal_hom_morphism(
+        source_internal,
+        target_internal,
+        lifted.component(degree),
+        identity,
+    )
+    source = Ext(degree, morphism.codomain(), other)
+    target = Ext(degree, morphism.domain(), other)
+    return module_homset(source, target).elementwise(
+        lambda class_: target.class_of_cycle(
+            component(source.cycle_representative(class_))
+        )
+    )
+
+
+__all__ = ["Ext", "ExtMap", "Tor", "TorMap"]
