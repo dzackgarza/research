@@ -1044,6 +1044,24 @@ class SemilinearModuleMorphism(SageObject):
             },
         )
 
+    @classmethod
+    def from_linear(cls, morphism):
+        r"""Regard one linear map as semilinear over the identity scalar map."""
+        source = morphism.domain()
+        target = morphism.codomain()
+        if source.base_ring() is not target.base_ring():
+            raise ValueError("a linear map has one scalar ring")
+        scalar_map = source.base_ring().Mor(source.base_ring()).identity()
+        return cls(
+            source,
+            target,
+            scalar_map,
+            {
+                label: morphism(source.module_generator(label))
+                for label in source.module_generating_set()
+            },
+        )
+
 
 class FiniteAtlasModuleTransition(SageObject):
     r"""One semilinear module-descent isomorphism across two affine overlaps.
@@ -1361,6 +1379,111 @@ class FiniteAtlasModuleGluingDatum(SageObject):
             left_right = self.transition_on_triple(left, right, middle).pullback()
             if left_middle * middle_right != left_right:
                 raise ValueError("finite-atlas module transitions fail the triple cocycle")
+
+    def restricted_local_map(self, target_datum, chart_index, other_index, local_map):
+        r"""Restrict one chart-linear map to the source-side pair overlap."""
+        if target_datum.gluing_datum() is not self.gluing_datum():
+            raise ValueError("finite-atlas module maps require one underlying affine atlas")
+        chart_index = self.gluing_datum().normalize_chart_index(chart_index)
+        other_index = self.gluing_datum().normalize_chart_index(other_index)
+        if (
+            local_map.domain() is not self.local_module(chart_index)
+            or local_map.codomain() is not target_datum.local_module(chart_index)
+        ):
+            raise ValueError("a local descent map has the wrong chart-module endpoints")
+        source_pair = self.pair_module(chart_index, other_index)
+        target_pair = target_datum.pair_module(chart_index, other_index)
+        overlap = self.gluing_datum().overlap(chart_index, other_index)
+        ring_map = overlap.inclusion().coordinate_algebra_morphism()
+        return module_homset(source_pair, target_pair)(
+            {
+                label: _change_coefficients(
+                    local_map(self.local_module(chart_index).module_generator(label)),
+                    target_datum.local_module(chart_index),
+                    target_pair,
+                    ring_map,
+                )
+                for label in self.local_module(chart_index).module_generating_set()
+            }
+        )
+
+    def morphism_to(self, target, local_maps):
+        return FiniteAtlasModuleGluingMorphism(self, target, local_maps)
+
+
+class FiniteAtlasModuleGluingMorphism(SageObject):
+    r"""A morphism of finite-atlas module descent data.
+
+    One linear map is supplied on every affine chart.  On each pair overlap
+    the target pullback after the target-chart map must equal the source-chart
+    map after the source pullback as semilinear maps ``M_j -> N_i``.
+    """
+
+    def __init__(self, source, target, local_maps) -> None:
+        if not isinstance(source, FiniteAtlasModuleGluingDatum) or not isinstance(
+            target, FiniteAtlasModuleGluingDatum
+        ):
+            raise TypeError("finite-atlas module morphisms connect finite-atlas descent data")
+        if source.gluing_datum() is not target.gluing_datum():
+            raise ValueError("finite-atlas module morphisms require one underlying affine atlas")
+        self._source = source
+        self._target = target
+        self._local_maps = _family_on_finite_ordered_set(
+            source.gluing_datum().chart_index_set(),
+            local_maps,
+            name="Local maps of a finite-atlas module morphism",
+            noun="finite-atlas local map data",
+        )
+        for index in source.chart_indices():
+            local_map = self._local_maps[index]
+            if (
+                local_map.domain() is not source.local_module(index)
+                or local_map.codomain() is not target.local_module(index)
+            ):
+                raise ValueError("a finite-atlas local map has the wrong chart-module endpoints")
+        self._verify_overlap_compatibility()
+
+    def source(self):
+        return self._source
+
+    domain = source
+
+    def target(self):
+        return self._target
+
+    codomain = target
+
+    def local_maps(self):
+        return self._local_maps
+
+    def local_map(self, index):
+        index = self.source().gluing_datum().normalize_chart_index(index)
+        return self.local_maps()[index]
+
+    def _verify_overlap_compatibility(self) -> None:
+        for source_index, target_index in self.source().gluing_datum().transition_index_set():
+            source_transition = self.source().transition(source_index, target_index)
+            target_transition = self.target().transition(source_index, target_index)
+            source_side = self.source().restricted_local_map(
+                self.target(),
+                source_index,
+                target_index,
+                self.local_map(source_index),
+            )
+            target_side = self.source().restricted_local_map(
+                self.target(),
+                target_index,
+                source_index,
+                self.local_map(target_index),
+            )
+            left = target_transition.pullback() * SemilinearModuleMorphism.from_linear(
+                target_side
+            )
+            right = SemilinearModuleMorphism.from_linear(source_side) * source_transition.pullback()
+            if left != right:
+                raise ValueError(
+                    "finite-atlas local module maps are incompatible with an overlap transition"
+                )
 
 
 _MODULE_GLUING_DATA_CATEGORIES = {}
@@ -2613,6 +2736,7 @@ __all__ = [
     "CompatibleLocalAlgebraSections",
     "CompatibleLocalSectionsModule",
     "FiniteAtlasModuleGluingDatum",
+    "FiniteAtlasModuleGluingMorphism",
     "FiniteAtlasModuleTransition",
     "GluedAlgebraSheaf",
     "GluedModuleSheaf",

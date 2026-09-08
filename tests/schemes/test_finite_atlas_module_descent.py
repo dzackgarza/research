@@ -4,9 +4,13 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModule,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_homset,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
+    FiniteAtlasModuleGluingMorphism,
     FiniteAtlasModuleTransition,
     SemilinearModuleMorphism,
 )
@@ -193,3 +197,53 @@ def test_three_chart_module_descent_composes_after_overlap_transport() -> None:
         descent.pair_module("left", "middle").base_ring()
         is not descent.pair_module("middle", "left").base_ring()
     )
+
+
+def test_nonidentity_local_maps_glue_semilinearly_on_three_distinct_charts() -> None:
+    left, x, _left_overlap = _punctured_line("x")
+    middle, y, _middle_overlap = _punctured_line("y")
+    right, z, _right_overlap = _punctured_line("z")
+    labels = finite_ordered_set(("left", "middle", "right"))
+    charts_by_label = {"left": left, "middle": middle, "right": right}
+    charts = finite_indexed_family(
+        labels,
+        lambda label: charts_by_label[label],
+        name="Three affine charts for a module morphism",
+    )
+    scheme_transitions = {
+        ("left", "middle"): _renaming_overlap_isomorphism(left, x, middle, y),
+        ("left", "right"): _renaming_overlap_isomorphism(left, x, right, z),
+        ("middle", "right"): _renaming_overlap_isomorphism(middle, y, right, z),
+    }
+    datum = Schemes(QQ).glue_affine_atlas(charts, scheme_transitions).gluing_datum()
+    local_modules = {
+        label: FreeModule(datum.chart(label).coordinate_algebra(), 1)
+        for label in labels
+    }
+    transition_data = {}
+    for source_label, target_label in datum.transition_index_set():
+        source_generator = next(iter(local_modules[source_label].module_generating_set()))
+        target_generator = next(iter(local_modules[target_label].module_generating_set()))
+        transition_data[source_label, target_label] = (
+            {target_generator: {source_generator: 1}},
+            {source_generator: {target_generator: 1}},
+        )
+    source = FiniteAtlasModuleGluingDatum(datum, local_modules, transition_data)
+    target = FiniteAtlasModuleGluingDatum(datum, local_modules, transition_data)
+    local_maps = {}
+    for label in labels:
+        module = local_modules[label]
+        generator = next(iter(module.module_generating_set()))
+        local_maps[label] = module_homset(module, module)(
+            {generator: module.scalar_multiple(2, module.module_generator(generator))}
+        )
+
+    morphism = source.morphism_to(target, local_maps)
+
+    assert isinstance(morphism, FiniteAtlasModuleGluingMorphism)
+    for label in labels:
+        module = local_modules[label]
+        generator = next(iter(module.module_generating_set()))
+        assert morphism.local_map(label)(module.module_generator(generator)) == module.scalar_multiple(
+            2, module.module_generator(generator)
+        )
