@@ -2361,7 +2361,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 ### 19. Visualization and display helpers (non-blocking)
 
-- [ ] 2D polygon SVG generation if still useful.
+- [x] 2D polygon SVG generation if still useful. `ConvexPolygons` now renders the live exact vertex object through `_repr_svg_()`; floating-point conversion is confined to the display boundary.
 - [ ] 3D polytope HTML/Three.js generation if still useful.
 - [ ] Coxeter/ADE TikZ only after diagram objects exist live.
 - [ ] Custom rich representations only as views of live mathematical objects.
@@ -3026,6 +3026,7 @@ A numbered release retains its parent stream's edit locations.
 | H | H0 is released through `de434c23`. H1 adds `455cf0f9`, which crosses the finite toric weight simplicial complex into an owned cochain complex; `4fca185d` assembles total line-bundle cohomology as the direct sum of its live weight cohomologies; `baf52e7b` and `83f3837e` construct canonical integral singular-cohomology parents and explicit integral cycle-class isomorphisms with stable endpoint identity; `80d29e4c` transports the Picard intersection pairing to a formed middle cohomology object; `cdc36f6d` supplies a pointed trivial fundamental group and pure diagonal Hodge data for the supported smooth complete toric QQ-to-CC realization. Assertions remain unverified under terminal-T policy. | H1 meets its supported geometric-construction acceptance condition. Broader unchecked higher-direct-image, local-system/monodromy, and general-space comparison requirements remain open for later Y/H consumers and were not marked complete. | Released: `cdc36f6d`; H0/H1 complete |
 | Y | `09594502` constructs an owned relative affine family from a selected equation presentation over its parameter algebra. The family retains the actual morphism `X -> S`, its slice object, arbitrary represented pullback fibres and quotient-point fibres, and delegates flatness and relative nonsmoothness to the released S/D owners. The `xy=t` specimen therefore has its `t=0` fibre `xy=0` and nonsmooth node through the same base-change and Fitting constructions. Assertions remain unverified under terminal-T policy. | Y meets its selected-relative-construction acceptance condition. Complete-intersection/blowup, DVR-completion families, analytic comparison, higher direct images/monodromy, and combined Enriques applications remain broader downstream requirements. | Released: `09594502`; Y selected family complete |
 | N | Exact files in `computations/notebooks/`; the live kernel is a separate shared resource. |
+| N | `e62b7f14` adds a notebook SVG view directly on live `ConvexPolygons`; the view derives cyclic screen coordinates from the exact owned vertices and stores no display state back into the mathematical object. Assertions remain unverified under terminal-T policy. | 2D polygon display is complete. 3D polytope views, Coxeter/ADE TikZ and display-hook policy remain optional N work. | Released: `e62b7f14`; N polygon view complete |
 | F | Upstream development stays in `~/gitclones/sage-categories`. A transfer claims common runtime and every affected preamble leaf/consumer. |
 | O | Exact lattice, arithmetic-group, Coxeter, or engine files selected for the construction. |
 | E | Existing ring/engine adapters, `lattice_engines.py`, and the owning external bridge repositories when a shared conversion requires repair. |
@@ -3127,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `N-polygon-svg-20260908-0425` | N / live polygon SVG view | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/polytopes.py; tests/schemes/test_polytopes.py` (write) | `260d6b49` | 2026-09-08T04:25:00Z |
 
 #### Existing work awaiting adoption
 
