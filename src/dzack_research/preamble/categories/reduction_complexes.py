@@ -35,6 +35,206 @@ What *is* owned, so that a caller does not reach here for it:
   because ``-1`` exchanges the two components of the positive cone.
 """
 
+from sage.geometry.polyhedron.constructor import Polyhedron
+from sage.modules.free_module_element import vector as sage_vector
+from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.group.predicate_subgroups import (
+    predicate_subgroup,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
+from dzack_research.preamble.tensors import tensor
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+
+
+def _coordinates(vector):
+    components = getattr(vector, "components", None)
+    if callable(components):
+        return tuple(components())
+    return tuple(vector)
+
+
+def _owned_rational_vector(entries):
+    rationals = _own_ring(SageQQ)
+    return tensor.vector(
+        rationals,
+        [rationals._from_engine_element(SageQQ(entry)) for entry in entries],
+    )
+
+
+def _engine_rational_vector(vector):
+    return sage_vector(SageQQ, [SageQQ(entry) for entry in _coordinates(vector)])
+
+
+def _ray_key(entries):
+    entries = tuple(SageQQ(entry) for entry in entries)
+    first = next((entry for entry in entries if entry != 0), None)
+    if first is None:
+        raise ValueError("the zero vector does not define a ray")
+    scale = abs(first)
+    return tuple(entry / scale for entry in entries)
+
+
+def _line_key(entries):
+    entries = tuple(SageQQ(entry) for entry in entries)
+    first = next((entry for entry in entries if entry != 0), None)
+    if first is None:
+        raise ValueError("the zero vector does not define a line")
+    return tuple(entry / first for entry in entries)
+
+
+class RationalReductionCell(SageObject):
+    r"""An exact homogeneous rational polyhedral cell in lattice coordinates.
+
+    The public definition is its finite family of rational wall covectors and
+    linear equations.  Sage's exact polyhedral engine is private and supplies
+    irredundant facets, extreme rays, intersections, and dimensions.  All
+    inequalities use the convention ``a(x) >= 0``.
+    """
+
+    def __init__(self, lattice, inequalities, *, equations=()) -> None:
+        self._lattice = lattice
+        rank = int(lattice.module_rank())
+        self._inequalities = finite_ordered_set(
+            tuple(_owned_rational_vector(_coordinates(wall)) for wall in inequalities)
+        )
+        self._equations = finite_ordered_set(
+            tuple(_owned_rational_vector(_coordinates(wall)) for wall in equations)
+        )
+        for wall in tuple(self._inequalities) + tuple(self._equations):
+            if len(_coordinates(wall)) != rank:
+                raise ValueError("a reduction-cell wall has the lattice rank")
+        self._engine = Polyhedron(
+            ieqs=[[0, *map(SageQQ, _coordinates(wall))] for wall in self._inequalities],
+            eqns=[[0, *map(SageQQ, _coordinates(wall))] for wall in self._equations],
+            base_ring=SageQQ,
+        )
+        if not self._engine.contains(sage_vector(SageQQ, [0] * rank)):
+            raise ArithmeticError("a homogeneous reduction cell must contain the origin")
+
+    @classmethod
+    def _from_engine(cls, lattice, polyhedron):
+        if any(inequality.b() != 0 for inequality in polyhedron.inequalities()):
+            raise ArithmeticError("a reduction-cell intersection acquired an affine inequality")
+        if any(equation.b() != 0 for equation in polyhedron.equations()):
+            raise ArithmeticError("a reduction-cell intersection acquired an affine equation")
+        inequalities = tuple(
+            _owned_rational_vector(inequality.A())
+            for inequality in polyhedron.inequalities()
+        )
+        equations = tuple(
+            _owned_rational_vector(equation.A())
+            for equation in polyhedron.equations()
+        )
+        return cls(lattice, inequalities, equations=equations)
+
+    def lattice(self):
+        return self._lattice
+
+    def inequalities(self):
+        return self._inequalities
+
+    def equations(self):
+        return self._equations
+
+    def dimension(self):
+        return int(self._engine.dim())
+
+    def ambient_dimension(self):
+        return int(self.lattice().module_rank())
+
+    def facets(self):
+        r"""Return the irredundant facet-defining covectors."""
+        return finite_ordered_set(
+            tuple(
+                _owned_rational_vector(inequality.A())
+                for inequality in self._engine.inequalities()
+            )
+        )
+
+    def extreme_rays(self):
+        r"""Return the exact extreme rays in the chosen lattice coordinates."""
+        return finite_ordered_set(
+            tuple(_owned_rational_vector(ray) for ray in self._engine.rays())
+        )
+
+    def lineality_generators(self):
+        r"""Return exact generators of the cell's linear lineality space."""
+        return finite_ordered_set(
+            tuple(_owned_rational_vector(line) for line in self._engine.lines())
+        )
+
+    def contains(self, vector) -> bool:
+        return bool(self._engine.contains(_engine_rational_vector(vector)))
+
+    def intersection(self, other):
+        if other.lattice() is not self.lattice():
+            raise ValueError("reduction cells are intersected in one ambient lattice")
+        return RationalReductionCell._from_engine(
+            self.lattice(), self._engine.intersection(other._engine)
+        )
+
+    def is_face_of(self, other) -> bool:
+        if other.lattice() is not self.lattice():
+            return False
+        return any(
+            face.as_polyhedron() == self._engine
+            for face in other._engine.faces(self.dimension())
+        )
+
+    def is_adjacent_to(self, other) -> bool:
+        if other.lattice() is not self.lattice():
+            return False
+        common = self.intersection(other)
+        return (
+            common.dimension() == self.dimension() - 1
+            and common.dimension() == other.dimension() - 1
+            and common.is_face_of(self)
+            and common.is_face_of(other)
+        )
+
+    def stabilizer(self, group):
+        r"""Return the subgroup preserving this cone setwise."""
+        if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
+            raise ValueError("a reduction-cell stabilizer acts on the ambient lattice")
+        ray_keys = frozenset(_ray_key(ray) for ray in self.extreme_rays())
+        line_keys = frozenset(
+            _line_key(line) for line in self.lineality_generators()
+        )
+
+        def preserves_cell(isometry):
+            matrix = _engine_component_matrix(isometry.matrix()).change_ring(SageQQ)
+            transformed_rays = frozenset(
+                _ray_key(matrix * _engine_rational_vector(ray))
+                for ray in self.extreme_rays()
+            )
+            transformed_lines = frozenset(
+                _line_key(matrix * _engine_rational_vector(line))
+                for line in self.lineality_generators()
+            )
+            return transformed_rays == ray_keys and transformed_lines == line_keys
+
+        return predicate_subgroup(
+            group,
+            preserves_cell,
+            f"g preserves the rational reduction cell {self}",
+        )
+
+    def _repr_(self):
+        return (
+            f"{self.dimension()}-dimensional rational reduction cell in "
+            f"{self.lattice()}"
+        )
+
+
+def rational_reduction_cell(lattice, inequalities, *, equations=()):
+    r"""Return the homogeneous rational cell cut out by the selected walls."""
+    return RationalReductionCell(lattice, inequalities, equations=equations)
+
 
 def lorentzian_reduction_complex(lattice, marked_vectors=None):
     r"""Return the reduction complex of ``lattice``, optionally with marked vectors."""
@@ -51,4 +251,8 @@ def lorentzian_reduction_complex(lattice, marked_vectors=None):
     )
 
 
-__all__ = ["lorentzian_reduction_complex"]
+__all__ = [
+    "RationalReductionCell",
+    "lorentzian_reduction_complex",
+    "rational_reduction_cell",
+]
