@@ -22,12 +22,18 @@ failure. The pending terminal verification applies to the entire implementation,
 including constructions no longer listed as implementation work.
 
 Follow [CONTRIBUTING.md](CONTRIBUTING.md), especially `DEV-50` through `DEV-58`.
+The [design philosophy](CONTRIBUTING.md#preamble-design-philosophy) and
+[architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
+govern how every item is implemented, including already-existing dependencies.
+The intended result is one recursively owned mathematical language composed
+from shared constructions and maintained computations, not a larger local CAS.
 Read the generated `docs/preamble-megadoc.md` before preamble implementation
 under the governing `AGENTS.md` prerequisites. This queue does not authorize
 running preamble tests, QC, Sage, or notebooks before terminal T.
 
 ### Contents
 
+- [Execution decisions](#execution-decisions-for-every-item)
 - [Workstreams](#workstreams) and [dependencies](#remaining-workstreams-as-a-dependency-graph)
 - [Completion and local algebra](#completion-and-local-algebra)
 - [Construction contracts](#architecture-before-dependent-implementation)
@@ -42,6 +48,68 @@ running preamble tests, QC, Sage, or notebooks before terminal T.
 - [Optional research consumers](#optional-research-consumers)
 - [Work coordination](#work-coordination)
 
+### Execution decisions for every item
+
+Apply these decisions inside the selected unfinished item, not in a separate
+audit, readiness registry, or new planning system. Their durable authority is
+`OWN-01` through `OWN-13` and `DEV-50` through `DEV-58` in CONTRIBUTING.
+
+1. **Select a remaining mathematical delta.** Read the live owner, its immediate
+   structure, the complete relevant methods, and its callers before changing it.
+   Preserve supplied capabilities. A source-review task below is a question to
+   settle, not an assertion that the whole subsystem is broken. If the current
+   source already meets it, remove the stale task with source evidence in the
+   commit; retain terminal-T execution where still owed (`DEV-50`, `OWN-12`).
+2. **Decide the route before adding computation.** Name the sanctioned entrypoint,
+   defining objects and maps, reusable owned operations, and private computation
+   owner in the selected item's contract. Use the existing declaration for the
+   durable result (`OWN-02`, `OWN-13`). An owner path in this queue is a place to
+   inspect, not permission to call every importable factory or private method.
+3. **Resolve the actual upstream capability question.** Read the applicable
+   maintained operation's input and result contract, including representatives,
+   maps, hypotheses, and precision. Record the selected operation and remaining
+   integration in the item while it is open, then at the adapter declaration.
+   Where this queue names candidates, selection is unresolved work, not license
+   to implement the computation from scratch (`OWN-08`, `ENG-06`).
+4. **Repair one prerequisite with its real consumer.** Missing inherited data,
+   constructor recursion, inaccessible maps, or awkward engine output belong at
+   the owner that should provide them. Complete that repair and route the selected
+   consumer through it; do not create a consumer-specific substitute or prebuild
+   unrelated foundations. The first release includes an actual mathematical
+   construction, not just an abstract interface (`OWN-03`, `OWN-07`, `OWN-11`).
+5. **Preserve the full public object.** Retain coefficients, component modules,
+   indexing objects, actions, maps, representatives, and results of subsequent
+   arithmetic as owned mathematics. Transport through the existing functors with
+   their preservation hypotheses. A new wrapper, accessor, category label, or
+   private helper does not discharge these obligations (`OWN-04` through `OWN-09`).
+6. **Close against construction and computation together.** Read the complete
+   selected route and affected alternative routes, including inherited methods,
+   notation, catalogue construction, and raising. Deliver distinguishing
+   mathematical specimens and the required consumer changes. Commit specimens
+   unexecuted until T. Neither matching dimensions nor replacing a local loop
+   with a lower-level library call establishes architectural completion (`OWN-12`).
+
+When work changes direction, use the relevant decision below immediately:
+
+| Observable choice in the current task | Decision already made; next action |
+| --- | --- |
+| A missing method looks like new mathematics | Search the owned category, structural functors, and maintained implementations first. Separate missing exposure, missing transport, and missing computation; repair only the actual gap (`OWN-01`, `OWN-08`). |
+| A package does not implement the Python class model | Evaluate its concrete computation separately. Generic compilation belongs to `sage-categories`; inability to compile classes does not reject CAP, Sage, or Julia mathematics (`OWN-01`). |
+| An engine supplies invariants but the task needs maps | Inspect its representative/presentation operations and established compositions. Keep the map obligation open; do not replace it with a freely chosen space of the same dimension (`OWN-07`). |
+| Lowering and raising call each other recursively | Separate computed defining data from the request to compute it at the common owner. Preserve one constructor contract; do not introduce a trusted or unchecked route (`OWN-02`, `OWN-07`). |
+| A bridge or dependency is unavailable | Identify the existing bridge or package owner and exact missing capability. Repair that boundary within scope or report it. No new direct engine-to-engine connection or local replacement algorithm is implied (`OWN-08`, `OWN-11`). |
+| A generic helper still contains the old bespoke algorithm | Compare the semantic operation with maintained upstream operations. Moving code between files, languages, or repositories is not computational delegation (`OWN-08`). |
+| A finite window or a specialized theorem gives the expected answer | Preserve the original object, range, coefficient domain, and comparison hypotheses. Completion is not a quotient; a resolution prefix is not a resolution; a rational answer does not contain integral torsion (`OWN-09`, `OWN-10`). |
+| Equality, zero, or membership is not decidable by the selected representation | Preserve the mathematical object and use the declared computational frontier. No guessed boolean, infinite equality loop, or weakened codomain (`DEV-51`, `DEV-52`, `OWN-10`). |
+| A review finds the same bypass in another consumer | Repair the shared owner and all consumers depending on that changed contract in the unit; add only independently remaining repairs to their existing items. Renaming the bypass is not resolution (`OWN-11`). |
+| An item appears finished because code, a report, or a passing invariant exists | Compare its full construction, maps, recursive ownership, and maintained computation against the source. Remove only delivered obligations; preserve unexecuted proof work under T (`DEV-50`, `OWN-12`). |
+
+These routes address the integration errors discussed in the
+[sage-categories complaints](https://github.com/dzackgarza/sage-categories/blob/main/COMPLAINTS.md)
+without importing their historical findings as current preamble defects. Read
+the relevant upstream contract at selection; a package catalogue is a discovery
+lead, not evidence that every coefficient regime or map is implemented.
+
 ### Workstreams
 
 Select a concrete unchecked construction below, not an entire row. Scores follow
@@ -51,11 +119,11 @@ its input contracts are settled.
 
 | Work | Required input | Next mathematical output | Complexity and reason |
 | --- | --- | --- | --- |
-| Completion and local algebra | Existing ring, ideal, localization, presentation, and scalar-change owners | Completion distinguished from every finite quotient, then module and local comparison maps | 90: exactness and representation decisions propagate into formal geometry |
-| Construction contracts | Existing category/Hom/construction framework | Construction-order independence and preservation of supplied structure across affected constructors | 90: shared runtime and mathematical identity |
+| Completion and local algebra | Existing ring, ideal, localization, presentation, diagram, and scalar-change owners | One localization construction for its special cases; completion with maintained series realization and distinct finite stages | 90: exactness and representation decisions propagate into formal geometry |
+| Construction contracts | Existing category/Hom/construction framework | Sanctioned entrypoints, recursive ownership, and construction-order independence across affected constructors | 90: shared runtime and mathematical identity |
 | Covering families and sheaves | Existing affine charts, localization maps, and finite scheme gluing | Descent across distinct chart rings, refinement comparisons, and sheaf operations | 85: common descent contract for all non-affine consumers |
 | Divisors and relative geometry | Sheaf descent and supported local algebra | Non-toric and relative divisor/section/intersection constructions | 65: several geometric theories share maps and hypotheses |
-| Cohomology and equivariance | Existing complexes, derived module operations, geometry and actions | Geometric functors, integral comparisons, and linearized actions | 75: topology, variance, and comparison hypotheses |
+| Cohomology and equivariance | Existing complexes, derived module operations, geometry and actions | Shared complex/DGA computation routes and toric boundary repair, then geometric functors and equivariant comparisons | 75: topology, variance, and comparison hypotheses |
 | Families and singularities | Completion for formal tasks; sheaves and local criteria for other tasks | DVR families, formal models, relative invariants, and local systems | 75: compatibility and distinct algebraic/formal/analytic meanings |
 | Geometric research applications | Specific cover, divisor, cohomology, and lattice inputs | ADE log pairs and the K3/Enriques workflows below | 65: source-defined applications of shared constructions |
 | Arithmetic and reflection geometry | Existing lattice, group-action, discriminant, and exact engine owners | Remaining transporters, higher-order centralizers, parabolics and reduction complexes | 85: completeness and witness construction in infinite groups |
@@ -69,6 +137,9 @@ being declared complete.
 
 - Repair completion before module-completion consumers, completion base change,
   formal neighborhoods, or arguments using completion flatness.
+- Repair the fraction-field specialization of localization before consumers
+  requiring its localization datum or universal factorization. Reuse the
+  element/prime routes already present; do not delay independent geometry.
 - Repair the construction contract used by the selected consumer before adding
   another constructor around its missing inherited state.
 - Extend covering-family descent before non-affine sheaf operations and the
@@ -76,6 +147,10 @@ being declared complete.
 - Supply actual section-space functors before transporting actions to sections;
   supply geometric complexes and comparison maps before topological or Hodge
   claims.
+- Settle the common complex and DGA construction/computation contracts before
+  extending consumers that depend on them. Integrate the toric adapter and
+  inherited-data repairs before treating its implementation as an example for
+  non-toric geometry. These are bounded dependencies, not a whole-CAS rewrite.
 - Supply the particular branch, linearization, fixed-locus, and cohomological
   inputs before the K3/Enriques application.
 - Supply exact gluing and the required external arithmetic operation before its
@@ -92,6 +167,46 @@ being declared complete.
 Paths in this section are relative to
 `src/dzack_research/preamble/categories/`.
 
+### Localization specializations through one construction
+
+- [ ] Route fraction fields and their maps through the existing localization
+  owner, and close the affected specialization paths.
+  **Owners:** `rings/ring_foundation.py::OwnedRings.ParentMethods.fraction_field`,
+  `OwnedIntegralDomains.ParentMethods.fraction_field_map`,
+  `rings/commutative_algebra.py::_localization_at_submonoid`, and the existing
+  submonoid, ring Hom, and module-localization owners.
+  **Current boundary:** the general fraction-field method returns
+  `_own_ring(engine.fraction_field())`. Element inversion and prime localization
+  already converge on `_localization_at_submonoid`; preserve that construction.
+  **Decision:** the domain's nonzero-element submonoid defines this specialization.
+  The private Sage fraction-field operation remains a computational realization,
+  but raising must establish that localization datum, its source map, and its
+  universal factorization. Selecting the fraction-field realization must not
+  call the public fraction-field method again during construction.
+  **Integration:** extend the existing submonoid dispatch with this represented
+  case, not a second localization class or a finite enumeration of nonzero
+  elements. Review field inputs, prime complements, element-generated submonoids,
+  and the number-field specialization against the same declaration. Preserve
+  canonical field identities while retaining the map from each original source;
+  do not attach source-dependent state to a shared field singleton.
+  **Required consumer:** module scalar extension along the resulting fraction
+  map uses the existing module-localization/scalar-change functor. Inspect every
+  caller of the changed fraction-field and localization-map contracts and adjust
+  dependent callers in this unit, without rebuilding unaffected local algebra.
+  **First specimen:** the fraction field of `ZZ` and its source morphism, with
+  numerator/denominator interpretation and the induced map of a module.
+  **Separating specimens:** `ZZ[1/2]` and `ZZ_(3)` retain different unit behavior
+  from `QQ`; a ring with zero divisors requires its total quotient-ring operation,
+  not the fraction-field operation. Locality is justified for prime localization,
+  not for all submonoids.
+  **Acceptance:** direct owned construction, the fraction-field method, and
+  scalar-change consumption establish the same semantic contract and comparison
+  maps. Source review confirms the retained maintained arithmetic and absence of
+  a bypass; specimens exercise owned elements, submonoids, and morphism endpoints.
+  Follow the [construction factorizations](CONTRIBUTING.md#required-construction-factorizations),
+  `OWN-02`, `OWN-07`, and `OWN-10`; do not infer constructor convergence from
+  equality of printed rings or impose a general submonoid-equality algorithm.
+
 ### Completion objects and finite approximations
 
 - [ ] Replace the finite-quotient implementation of multigenerator adic
@@ -107,6 +222,30 @@ Paths in this section are relative to
   `A/I^m -> A/I^n` for `m >= n` as actual maps with their own endpoints.
   Use the inverse-limit definition in
   [Stacks 00M9](https://stacks.math.columbia.edu/tag/00M9).
+  **Shared route:** reuse `abstract_categories/products.py`'s diagram,
+  inverse-system, and cone contracts and the existing quotient/Hom operations.
+  The indexing system and transitions are owned defining data. Supply the exact
+  missing limit-realization contract there with this completion as its first
+  consumer; do not create a second completion-only diagram calculus. An infinite
+  system cannot be evaluated by enumerating all stages or by a finite-diagram
+  solver merely because its class is named limit.
+  **Selected computation for the first specimen:** use Sage's documented
+  [multivariable polynomial completion](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_ring_base.html#sage.rings.polynomial.multi_polynomial_ring_base.MPolynomialRing_base.completion)
+  at the selected variables, with its series/lazy-series realization. Retain the
+  current maintained principal and p-adic computation routes under the same owned
+  completion contract. Their engine types and precision options remain private.
+  **Exact unresolved question for the broader branch:** which maintained
+  operation realizes completion of the selected presented algebra at a general
+  ideal, with quotient relations, source images, and continuous maps? Inspect the
+  current Sage/Singular and OSCAR/Macaulay2 adapters and their documented formal
+  or local standard-basis operations for that precise contract. A local monomial
+  order is not by itself a completed ring. Deliver the supported polynomial case
+  without removing this broader obligation or inventing a new series engine.
+  **Route convergence:** `AdicCompletion`, `PowerSeriesRing`, and `Zp` currently
+  enter different parent initializers in this file. Make each supported input
+  form establish the common completion data before exposure. Retain chosen
+  coefficients and variable labels; the shared constructor accepts already
+  computed defining data without requesting the same engine computation again.
   **First specimen:** for `A=QQ[x,y]`, `I=(x,y)`, the image of `x^4`
   is nonzero in `A_hat`; its projection to `A/I^4` is zero and to
   `A/I^5` is nonzero. Write this at the ring-completion proof surface.
@@ -130,6 +269,12 @@ Paths in this section are relative to
   refinement where the underlying data permits it, and exact zero/unit/
   inversion behavior in the supported cases. A finite residue alone cannot
   manufacture higher-precision coefficients.
+  **Computation decision:** inspect the selected upstream series/p-adic element
+  contracts for exact inputs, precision propagation, inversion, and refinement.
+  Adapt those operations; do not build coefficient recurrences, a local expression
+  evaluator, or a new equality procedure merely to pass these specimens. Lazy
+  representation does not imply decidable exact equality. Keep unsupported exact
+  questions at the declared frontier, including hashing and membership.
   **Specimens:** a series agreeing with zero to the initial precision but
   having a later nonzero coefficient; an actual zero; a polynomial image;
   an inverse of `1-x` whose product is exactly one; and a genuine nilpotent
@@ -161,6 +306,10 @@ Paths in this section are relative to
   construct its functorial maps.
   **Owner:** `modules/framed/finitely_generated/finitely_presented_modules.py`,
   module scalar change, and the existing ring completion owner.
+  **Reuse:** use the existing scalar-change functor on the supplied module
+  presentation and its morphisms. Resolve any missing coefficient transport at
+  that owner. Module completion must not implement another tensor product,
+  relation reducer, or precision convention independent of the ring completion.
   **Decision:** use `M tensor_R R_hat` as completion for finite modules over
   a Noetherian ring, with the canonical comparison to the inverse limit and
   exactness justified by [Stacks 00MA](https://stacks.math.columbia.edu/tag/00MA).
@@ -223,6 +372,12 @@ Paths in this section are relative to
   **Acceptance:** a reducible reduced curve, a singular integral curve, and
   a nonrational closed point exercise the required maps and local lengths.
   Reuse the existing integral normalization and local `deltaLoc` operations.
+  **Capability question:** which operation in the existing Singular normalization
+  adapter supplies the reduced/componentwise case, conductor, and comparison
+  maps? Inspect the corresponding OSCAR/Macaulay2 operations only for obligations
+  the current adapter cannot discharge. Retain that choice at the adapter; extend
+  its raising of ideals, components, and maps rather than implementing local
+  normalization, factorization, or length algorithms in the scheme consumer.
 
 - [ ] Extend local homomorphisms and local-module operations only at their shared
   owners when these consumers require a new supported coefficient regime.
@@ -243,6 +398,43 @@ Paths in this section are relative to
 
 These are targeted remaining contracts and preservation obligations, not a
 restart of the module/algebra/action constructions.
+
+- [ ] Close the surviving alternate-constructor and private-access paths, one
+  mathematical construction family with its consumers per release.
+  **Owners:** declaration-side contracts at `owned_category.py::object_of`,
+  the responsible category/object methods, `Mor`, and existing private adapters;
+  session exports in `all.py`, notation in `lexicon/`, and catalogue entrypoints.
+  **Scope:** every surviving public construction family, including those whose
+  feature implementation no longer appears in this queue. Start with localization,
+  completion, complexes and DGA cohomology, then their scheme, group, lattice,
+  and collection consumers. This is a source-conformance task, not a claim that
+  every family currently violates the contract.
+  **Decision:** the constructor's defining datum and maps are authoritative.
+  Document its allowed mathematical input forms at the existing declaration
+  (`OWN-13`). Direct construction, notation, a catalogue example, a functor image,
+  element reconstruction, and an engine result must establish that same datum.
+  Concrete runtime classes, global implementation factories, raw adoption and
+  conversion helpers are private; importability does not grant calling authority.
+  **Deliver:** inspect all routes in the selected family, repair established
+  bypasses, and update their ordinary consumers to the owned operation. Preserve
+  deliberate user notation through its sanctioned construction, not through a
+  retained compatibility factory. Respect the fixed expectation subtrees.
+  **Private-access disposition:** for each cross-owner engine/storage access
+  encountered, either replace it with the responsible owned operation or establish
+  that it implements the already-declared protected framework contract in
+  `OWN-05`. A call-site comment, same-file placement, new public raw accessor, or
+  helper extraction cannot create an exception. Move raw computation only into
+  its designated adapter and keep its raising inside that boundary.
+  **First specimen:** the selected localization or cohomology construction through
+  its object method and functor image, with a nonidentity induced map and the
+  owned source/target elements it acts on. Reuse specimens in those items rather
+  than commissioning another suite of implementation-shaped checks.
+  **Acceptance:** the family's source routes converge and its public objects
+  retain the required data before inherited operations run. The accompanying
+  source review covers the actual computation and raising, not only exports or
+  underscores. Remove only the covered family from this remaining scope; keep
+  others named until inspected and repaired where needed. Record completed
+  dispositions in commits, never in a second status table in this queue.
 
 - [ ] Integrate a construction-order-independent owned category ordering across
   the actual session graph.
@@ -281,6 +473,12 @@ restart of the module/algebra/action constructions.
   Preserve zero, one, actions, identity morphisms, and inherited operations
   when removing a semantic engine dependency. Reuse existing realization and
   functor-image owners instead of introducing another registry.
+  **Reuse decision:** compare the current shared runtime with the actual released
+  `sage-categories` constructor and inheritance interfaces. Keep general compiler
+  fixes at that owner; carry only the necessary current integration here. Sage
+  host primitives are not a reason to adopt Sage mathematical parents or expose
+  their inherited API. Conversely, a different runtime class model is not a
+  reason to replace Sage's maintained arithmetic (`OWN-01`, `OWN-04`, `OWN-06`).
   **Acceptance:** the full surviving graph has the required ownership, and
   representative quotient, localization, module, group and lattice objects
   expose their promised operations and maps. The terminal graph inspection
@@ -296,6 +494,11 @@ restart of the module/algebra/action constructions.
   ordinary construction, adopted runtime realizations, Hom construction and
   property refinement. Specializations fulfill inherited accessors before
   returning their objects.
+  **Boundary decision:** a private runtime realization still receives complete
+  owned defining data through the common constructor; adoption is not a public
+  raw-engine input form. Inspect inherited zero/one, empty families, component
+  access, and scalar actions as well as the newly declared accessor. Keep
+  presentation changes explicit through maps, not mutations of retained data.
   **Decision:** retain the exact supplied module when equipping distinct algebra
   structures; chosen multiplication/action/presentation is new structure, not
   a property mutation. Refinement cannot overwrite another structure.
@@ -340,8 +543,11 @@ restart of the module/algebra/action constructions.
   **Deliver:** meaningful parameter types and owned `an_object()` examples;
   general graded-commutativity from a specified parity homomorphism rather
   than an identity check against `ZZ`; inherited self-module structures for
-  graded and differential graded algebras; correct formed-module/vector-space
+  graded algebras; correct formed-module/vector-space
   placements and readable names for the form functors.
+  The DGA-specific inherited complex, action, and cohomology obligations are
+  assigned to [shared complex and DGA integration](#shared-complex-and-dga-integration)
+  below; implement them there rather than opening a duplicate construction.
   **Decision:** inspect each current implementation before changing it.
   Existing membership and constructor repairs are inputs, not new work.
   **Acceptance:** examples use the stated category's constructors and inherited
@@ -350,6 +556,17 @@ restart of the module/algebra/action constructions.
   codomain.
 
 ## Covering families and sheaves
+
+**Integration route for this workstream:** the covering-family owner constructs
+the geometric descent datum; local kernels, cokernels, tensor products,
+restriction, and scalar change use the existing module/algebra owners. At the
+first unsupported local computation, determine whether its established
+Sage/Singular module operation or the applicable CAP module-presentation
+operation supplies the needed maps. Repair that adapter once. Research a
+sheaf-level package for the specified geometric category when it can supply a
+larger operation; do not assume a finite-category presheaf package computes
+arbitrary scheme sheaves. Keep the exact missing comparison or descent datum
+with the item that requires it (`OWN-08`, `OWN-09`, `DEV-56`).
 
 - [ ] Extend module and algebra descent from one distinguished affine cover to
   covering families with distinct overlap rings.
@@ -417,6 +634,18 @@ restart of the module/algebra/action constructions.
   comparison use the same owner as cyclic covers.
 
 ## Divisors and relative geometry
+
+**Integration decisions:** products and intersections enter the existing
+diagram, algebra pushout, quotient, and gluing constructions. Divisor and
+line-bundle operations enter their owned groups and sheaf functors, not a
+scheme-specific matrix layer. For each selected non-toric regime, inspect the
+applicable maintained Singular/Macaulay2/OSCAR operation for class relations,
+sections, Rees algebras, saturation, or intersection data, with its hypotheses
+and returned maps. The unanswered question is which full operation supplies
+the chosen specimen, not whether these theories should be reimplemented here.
+Retain existing fan/subdivision and toric-divisor engines for the toric cases.
+Do not make an engine's affine or toric specialization the public definition
+of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 
 - [ ] Extend scheme products, fiber products and closed/open subobjects beyond
   the represented affine and projective-product cases.
@@ -512,10 +741,151 @@ restart of the module/algebra/action constructions.
 
 ## Cohomology and equivariance
 
+### Shared complex and DGA integration
+
+- [ ] Resolve the common complex/cohomology computation boundary and integrate
+  the highest suitable maintained operations without losing the cycle quotient.
+  **Owners:** `categories/modules/cochain_complexes.py`,
+  `categories/modules/graded_direct_sums.py`, module kernels/images/cokernels,
+  `categories/functors/cochain_complexes.py`, and
+  `categories/functors/cohomology.py`.
+  **Starting construction:** `Cycles`, `Boundaries`, and `Cohomology` already
+  compose module operations and retain the boundary-in-cycles morphism. Preserve
+  that semantic composition; its existence is not evidence of a bespoke homology
+  algorithm. Trace the underlying module computation before deciding what to
+  replace. `CochainComplexObject` currently materializes nonnegative finite
+  support; do not silently make that representation the domain of all complexes.
+  **First computational case:** bounded finite free complexes over integers and
+  fields. Inspect Sage's
+  [chain-complex homology and cycle-output contract](https://doc.sagemath.org/html/en/reference/homology/sage/homology/chain_complex.html)
+  and its chain-map/homology-map interfaces against the owned quotient and map
+  requirements. Select that maintained operation where its output discharges
+  them; retain only the required owned construction and correspondence code.
+  An abstract homology group alone does not supply a quotient projection.
+  **Broader capability question:** for complexes of finitely presented modules
+  over the coefficient rings required by Tor/Ext and sheaves, inspect the existing
+  Singular module adapters and CAP/homalg's ModulePresentationsForCAP,
+  FreydCategoriesForCAP, and ComplexesAndFilteredObjectsForCAP through the
+  [computation references](CONTRIBUTING.md#existing-computation-references).
+  Determine which operation returns presentations, cycle/boundary data, and
+  induced maps. Compose maintained module operations if that supplies the full
+  contract; do not insert a new local chain-reduction algorithm between them.
+  **Construction decisions:** retain the supplied component modules and chosen
+  maps. Distinguish homological/cohomological degree and augmentation explicitly.
+  Extend the shared grading/indexing contract for negative degrees and represented
+  infinite systems as required, with owned zero components where support is known
+  to vanish. Unknown/uncomputed degrees are not zero. A finite computational
+  window must include every incoming and outgoing differential needed by the
+  requested degree; it does not truncate the underlying mathematical object.
+  **First specimen:** `C^0=ZZ`, `C^1=ZZ`, differential multiplication by `3`,
+  and zero elsewhere. Its degree-one class represented by `1` has order three;
+  multiplication by `2` on both components induces multiplication by `2` on
+  that quotient. Retain the cycle inclusion and projection as owned maps.
+  Contrast scalar extension to `QQ`, where that cohomology vanishes; shift the
+  same complex into degrees `-1,0` so nonnegative-degree convenience cannot
+  define the generic contract. Use established mathematical proof surfaces.
+  **Acceptance:** module presentations, representatives, inclusions, quotient
+  maps, coefficients and functor images remain owned. Source review identifies
+  the actual maintained algorithm and local integration. Preserve the full
+  coefficient/general-complex obligations when delivering one supported case;
+  new algorithms require `ENG-06`, not a renamed generic helper.
+
+- [ ] Make the existing DGA/cohomology-algebra routes consume that same complex
+  contract and preserve only the algebraic refinements the source justifies.
+  **Owners:** `categories/algebras/differential_graded_algebras.py`,
+  `categories/algebras/cohomology_algebras.py`, graded algebras and derivations,
+  and `categories/functors/cohomology.py`.
+  **Source question to settle first:** `Boundaries` requests the differential in
+  degree `n-1`, while the DGA differential-component method rejects negative
+  degree. Reconcile the inherited nonnegative-complex boundary at its shared
+  owner, rather than adding a cohomology-only exception for `H^0`.
+  **Preserve:** the existing descended multiplication through cycle
+  representatives and `class_of_cycle`, and the induced map from a DGA morphism.
+  Review `CohomologyAlgebras.super_categories`, which currently declares strict
+  graded commutativity, against every admitted source DGA. Place the result in
+  the general graded algebra category and add only justified refinements;
+  characteristic and parity hypotheses must not disappear during raising.
+  **Computation selection:** inspect Sage's
+  [commutative DGA operations](https://doc.sagemath.org/html/en/reference/algebras/sage/algebras/commutative_dga.html)
+  for cocycles, coboundaries, cohomology, representatives, and products in the
+  represented degree range. Use them for the supported commutative case; inspect
+  the applicable maintained algebra/module operations for other DGAs rather than
+  relabeling them commutative. Decide the exact basis/presentation correspondence
+  at the adapter. Do not build a second cohomology solver or multiply chosen
+  normal forms without the quotient comparison.
+  **Deliver:** inherited underlying module, grading, differential, self-module
+  action, unit when required, multiplication, and nonidentity DGA morphisms
+  through their immediate owners. Zero boundary degrees and lazy homogeneous
+  pieces follow the same component contract as ordinary complexes.
+  **Specimens:** degree-zero cohomology of a nonnegative unital DGA; a nonzero
+  boundary representing the zero class; multiplication after changing a cycle
+  representative by a boundary; and a source-backed noncommutative DGA that
+  must not acquire graded commutativity. Retain the applicable characteristic-two
+  distinction between sign conventions and additional square-zero relations.
+  **Acceptance:** forgetting multiplication gives the same complex construction
+  and cohomology modules, with comparison maps if a representation changed.
+  Products and induced maps compose through those owned modules. Source review
+  establishes inherited data and computational reuse; numerical agreement alone
+  cannot remove this item (`OWN-03`, `OWN-07`, `OWN-09`, `OWN-12`).
+
+### Toric integration before geometric extensions
+
+- [ ] Consolidate toric cohomology's existing maintained computations inside
+  declared private adapters and complete raising through the shared constructors.
+  **Owners:** `categories/schemes/geometric_cohomology.py`'s
+  `ToricWeightCohomologyComplex` and `ToricLineBundleCohomology`, the existing
+  toric-divisor/fan adapters, and the common complex/module owners above.
+  **Starting point:** these functions already use Sage's `_sheaf_complex`,
+  `_sheaf_cohomology_support`, and simplicial chain-complex construction. Keep
+  that algorithmic reuse. They also call another object's engine accessor and
+  attach geometric data after constructing a complex/module; those paths must
+  satisfy `OWN-03`, `OWN-05`, `OWN-06`, and `OWN-07`.
+  **Capability decision:** first compare the documented public
+  [toric-divisor cohomology operation](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/divisor.html)
+  with the required weight complex, cycle quotient and induced maps. Its returned
+  vector spaces are not sufficient evidence of these correspondences. Use the
+  public computation where adequate; any necessary upstream private helper is
+  confined to the declared toric adapter with its source-backed contract. Check
+  [Klyachko bundle/sheaf complexes](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/sheaf/klyachko.html)
+  for the equivariant generalization's actual inputs and outputs, not by name.
+  **Deliver:** owned weight/index objects, augmented and shifted differential
+  data, cycle and boundary maps, and the total cohomology construction with its
+  summand inclusions/projections. Construct the scheme/divisor/weight datum through
+  the category initializer before exposure. An empty support and a zero group
+  retain the same defining data and scalar action as a nonzero result.
+  **Missing-map question:** which upstream geometric maps or established
+  complexes supply the requested nonidentity sheaf/restriction/refinement map?
+  Obtain and raise that map, then let the shared cohomology functor act. Equal
+  weights or dimensions do not define it. Preserve explicit completeness,
+  coefficient, and Cartier/Weil hypotheses at their relevant operations.
+  **First specimen:** take a divisor with nonzero higher cohomology from the
+  cited Sage toric-divisor examples, retaining the stated fan, coefficients and
+  weight. Construct an owned weight class with its representative, inclusion and
+  quotient image, then its inclusion into total cohomology. The first induced
+  map is multiplication by `2` on that line bundle over `QQ`, transported through
+  its complex; it must act as multiplication by `2` on the nonzero class.
+  Add zero-support and boundary-degree cases. Non-scalar geometric and refinement
+  comparisons remain with the extension items; this scalar specimen does not
+  discharge them. Acceptance compares actual maps, not only a Betti-number list.
+  **Acceptance:** geometry consumes owned complexes and cohomology; the adapter
+  retains existing maintained toric computations; all returned constituents and
+  later arithmetic remain owned. Source review covers every affected constructor
+  and private call, with the missing integration recorded at its owner. Do not
+  recreate toric cohomology or declare its whole implementation absent.
+
+### Geometric and equivariant extensions
+
 - [ ] Extend geometric cohomology from the current toric weight complexes to the
   required non-toric schemes and sheaves.
   **Owners:** `categories/schemes/geometric_cohomology.py`, sheaf descent,
   and existing cochain complexes.
+  **Dependency and reuse:** consume the common complex/cohomology route above.
+  The new geometric work is the justified complex, augmentation and functorial
+  comparison. Inspect the appropriate maintained sheaf-cohomology operation for
+  the chosen non-toric presentation before assembling a complex locally; retain
+  an existing resolution or Cech construction when it supplies the full datum.
+  The unresolved capability is the non-toric complex and maps, not another
+  kernel, syzygy, chain-reduction, or cohomology implementation.
   **Deliver:** a geometrically justified complex with its augmentation/
   comparison, induced nonidentity maps, and actual cohomology modules.
   State which cover computes the theory and why it is acyclic or otherwise
@@ -530,6 +900,12 @@ restart of the module/algebra/action constructions.
   resolutions needed by geometric consumers.
   **Owners:** module resolutions, chain maps, derived functors, and DGA
   multiplication at the algebra owner.
+  **Computation decision:** inspect the current resolution/derived-module adapter
+  and the applicable Singular, Macaulay2, OSCAR or homalg operations for lifts
+  and resolution comparisons as well as modules. The owned functor provides
+  variance and composition; the private adapter supplies maintained resolution
+  computations. Repair missing lift transport at that owner, not in each Ext,
+  Tor, intersection, and geometric consumer independently.
   **Deliver:** the unresolved argument's induced maps, correct covariance/
   contravariance, comparisons between chosen resolutions, and cohomology
   independence through the appropriate chain-homotopy argument.
@@ -592,6 +968,17 @@ restart of the module/algebra/action constructions.
   actions have been established.
 
 ## Families and singularities
+
+**Integration route:** construct a family through the scheme slice; its fibers
+and coefficient changes use the existing pullback and scalar-change functors.
+Formal consumers use the completed object and its inverse system, never their
+own precision parameter as a defining equation. Local classification uses the
+existing singularity/normalization adapters. Before implementing a new local
+recognition rule, identify the maintained algorithm for the specified equivalence
+relation and whether it returns coordinate maps. For analytic comparisons,
+monodromy and nearby/vanishing cycles, identify the precise source construction
+and available implementation first; names shared with algebraic operations do
+not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
 
 - [ ] Extend `categories/schemes/families.py` to DVR bases through the existing
   scheme slice and scalar-change constructions.
@@ -672,6 +1059,15 @@ restart of the module/algebra/action constructions.
 
 ## Geometric research applications
 
+**Release boundary:** these are research consumers of the preceding shared
+constructions. Their local contribution is the source-specified geometric data
+and composition of existing functors/maps. Any missing section, quotient,
+cohomology, or lattice operation returns to its named dependency owner; the
+application must not introduce a private copy. Before each application release,
+trace its nonidentity maps back through those owners. An expected lattice,
+signature, dimension, or classification label is a comparison specimen, not the
+definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
+
 - [ ] Construct the `(4,4)` double-cover K3 family over `P^1 x P^1` and
   the two lifts of the diagonal sign involution.
   **Inputs:** branch sections, a selected linearization, the existing cyclic
@@ -729,6 +1125,18 @@ Arithmetic work follows geometry except for an explicitly named geometric
 dependency. Reuse the current orthogonal groups, subgroup constructions,
 finite-quotient splitting, involution centralizers, lattice loci, configuration
 lifting, and height-bounded enumeration; extend only the missing regimes specified below.
+
+**Computation decision for each selected arithmetic item:** inspect the current
+private lattice/group adapters and the relevant `sage-indefinite-port`,
+OSCAR/Hecke, GAP, or polyhedral operation for the exact requested witnesses and
+completeness regime. State whether it supplies existence, a transporter, an
+orbit representative, or a complete classification; keep those outputs distinct.
+Assemble subgroup, action, quotient and gluing data through their existing owned
+constructors. Do not rebuild a lattice/group algorithm because its output needs
+an owned morphism, and do not move a bespoke algorithm to an external-language
+script and call it delegated. If an actual algorithmic gap remains, name it and
+apply `ENG-06` before implementation. Bridge repairs and codec additions belong
+at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`).
 
 - [ ] Extend indefinite lattice embeddings and resolve the remaining exact
   isometry algorithm regimes.
@@ -850,10 +1258,29 @@ lifting, and height-bounded enumeration; extend only the missing regimes specifi
   **Decision:** arbitrary abelian-group/bimodule realization and the remaining
   generic monoidal/class/static-projection work belong upstream. A matching
   category name or a specification is not an implemented dependency.
+  **Computational decision:** distinguish the upstream class compiler from its
+  mathematical computation owners. For finite diagrams, presented categories,
+  module categories, and structural operations, inspect the applicable CAP and
+  Catlab/GATlab implementations through upstream's existing bridges. Identify
+  the exact output, maps, and supported regime at the consuming declaration.
+  A finite-diagram engine is not an algorithm for arbitrary infinite limits;
+  an equational engine does not decide every presented morphism equality.
+  **Remaining source review:** inspect the complete transferred dependency path
+  for local algorithms duplicating those maintained operations. Replace an
+  established duplication at its computation owner and connect the preamble
+  consumer to the released interface. Copying the same algorithm into
+  `sage-categories` does not satisfy this obligation. Use its README, COMPLAINTS,
+  and specs as requirements and discovery leads, then inspect the implementation.
+  Do not repair all unrelated upstream findings as a precondition for this unit.
   Explicit functor reuse may keep a preamble consumer coherent before full
   automatic inheritance; it must not duplicate the underlying algorithm.
   **Acceptance:** a nonidentity morphism and inherited operation work through
   the transferred construction without a second mathematical object system.
+  The downstream dependency is declared through the repository's supported
+  release route, not a sibling-checkout import. The old local implementation
+  remains a removal obligation until all its required callers use the surviving
+  owner; changing imports or shipping an unused upstream implementation is not
+  completion. Coordinate the interface revision before consumers change.
 
 - [ ] Finish collection ownership and typing on the surviving interfaces.
   **Targets:** group and coset/orbit collections, discriminant objects,
@@ -866,9 +1293,32 @@ lifting, and height-bounded enumeration; extend only the missing regimes specifi
   **Deliver:** mathematical parameter/result types and readable forms of
   functors, with unknown static expressibility localized according to the
   typing policy rather than broad annotations at each consumer.
+  **Recursive boundary:** inspect each targeted public operation's constituents,
+  not merely the outer collection type. Include lazy evaluation, iteration,
+  indexing, coefficients, base rings, framing data, representatives, inclusions,
+  projections, morphism endpoints, scalar arithmetic, equality and reconstruction.
+  Extend this inspection to every surviving public family under the constructor
+  scope above; the target list supplies traversal starting points, not exceptions
+  for unlisted mathematics (`OWN-04`).
+  **First concrete repair boundary:** inspect the geometric cohomology outputs
+  and `ToricHodgeData.degree_hodge_numbers` alongside the toric item. That method
+  currently constructs tuple-valued degree data with Python integer values.
+  Express the mathematical indexing and values through the existing owned
+  family/scalar owners; preserve its actual grading and source cohomology.
+  Also follow a cohomology representative through inclusion and arithmetic, and
+  a localized module element through its scalar action. Correctness of an outer
+  module or family does not establish ownership of these evaluated results.
+  **Integration decision:** raising belongs inside the selected adapter and
+  passes through the same semantic constructor as ordinary input. Add the
+  missing owned scalar/family/map operation at its owner rather than publishing
+  raw storage or copying a conversion loop into each theory. Fix the actual type
+  contract; `Any`, `object`, casts, and suppressed diagnostics do not supply it.
   **Acceptance:** infinite/repeated-label specimens and nontrivial consumers
   retain their mathematics. A list/tuple count or annotation count alone
   cannot remove this item.
+  Retain only uninspected or unrepaired families after a delivery; evidence for
+  completed families belongs in their commits. Source inspection establishes
+  recursive ownership, and public specimens remain unexecuted until T.
 
 - [ ] Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
@@ -884,6 +1334,11 @@ lifting, and height-bounded enumeration; extend only the missing regimes specifi
   **Acceptance:** trace a public constructor, nonidentity functor image and
   downstream operation through the surviving owners; remove only superseded
   implementations whose required behavior has been transferred.
+  Include their old construction routes, imports, session bindings, and ordinary
+  consumers in that transfer. Preserve mathematical expectations and public
+  vocabulary at the sanctioned entrypoint. A new private module containing the
+  same duplicated mathematics, an unused replacement adapter, or a compatibility
+  route left for an inconvenient caller leaves this item open (`OWN-08`, `OWN-13`).
 
 - [ ] Complete the archive-to-live reconciliation without recreating supplied
   mathematics.
@@ -896,6 +1351,12 @@ lifting, and height-bounded enumeration; extend only the missing regimes specifi
   directories. Every required unresolved operation remains concrete work;
   omission, renaming, or a rejected implementation does not remove its
   mathematical burden. Preserve the author's expectation subtrees.
+  **Reuse decision:** archive code supplies mathematical requirements and
+  specimens, not sanctioned constructor or engine-access precedents. For each
+  missing operation, first compare the live shared owner and maintained upstream
+  operation, then add only its missing integration. Carry the original required
+  maps and hypotheses into that task; do not port a historical bespoke algorithm
+  merely because it is already written (`OWN-01`, `OWN-08`, `DEV-56`).
   **Acceptance:** source-backed reconciliation for every required notion.
   Record completed dispositions in commits, not a historical table here.
 
@@ -908,11 +1369,25 @@ The terminal-T rule is defined by `DEV-58` in
 with implementation and commit them unverified. Do not execute them during
 the preceding workstreams. Optional research consumers below do not delay T.
 
+The source-conformance and integration obligations above are required work, not
+optional engine improvements. A feature's numerical implementation can already
+exist while its construction or encapsulation still needs repair. Deliver and
+review those source changes before T; T executes the mathematical evidence and
+repairs what it exposes. It is not a reason to postpone source-level ownership
+review until every downstream consumer has copied the same bypass.
+
 - [ ] After required implementation and transfer are finished, generate the
   preamble reference and category/functor graph from the integrated source,
   then read them against the intended objects, maps and inherited operations.
   **Acceptance:** documentation describes that source and exposes the
   mathematical contracts. Generation success alone is not a correctness claim.
+  Compare the integrated constructor, adapter, export and consumer contracts
+  with `OWN-01` through `OWN-13`, including source-reviewed work no longer in
+  this queue. Use the completed units' commits to locate evidence, then inspect
+  the affected live routes after integration. Missing mandatory architecture is
+  new concrete repair work at its owner, not a documentation rewrite declaring
+  the weaker implementation acceptable. Do not turn this comparison into a
+  source-policing test or a count of engine imports.
 
 - [ ] Execute the prescribed public-construction and mathematical suites in the
   terminal verification phase through the existing project recipes.
@@ -924,6 +1399,13 @@ the preceding workstreams. Optional research consumers below do not delay T.
   **Acceptance:** each claimed behavior is exercised through the actual
   public path. An unverified assertion, suite count, or backend-only test is
   not proof of the corresponding construction.
+  Include the new localization/fraction-field route, genuine completion and its
+  projections, shared complex and DGA boundary degrees, integral torsion,
+  representative-independent products, toric weight-to-total maps, lazy owned
+  constituents, and the nonidentity maps recorded with each integration unit.
+  Reuse existing proof surfaces and preserve independent mathematical expected
+  results. Engine call counts, mocked delegation, and checks of private helper
+  spellings do not prove these obligations.
 
 - [ ] Repair the mathematical owners exposed by terminal verification and
   establish the originally required behavior.
@@ -963,6 +1445,10 @@ These are not prerequisites for the required mathematics or terminal T.
   **Decision:** search existing interfaces first; provision only the needed
   dependency; put reusable codecs and bridge defects at their actual owner.
   Mathematical outputs always return as owned objects and maps.
+  An integration required by an item above is part of that required item, not
+  this optional list. Only additional research capabilities with no required
+  consumer belong here; moving a dependency here does not unblock or complete
+  its consumer.
 
 ## Work coordination
 
