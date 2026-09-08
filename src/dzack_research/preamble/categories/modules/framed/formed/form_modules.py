@@ -1009,6 +1009,47 @@ class SymmetricBilinearFormModules(OwnedCategoryOverBaseRing):
     _HomCategory = FormedModuleHomCategoryConstruction
 
     class ParentMethods:
+        def to_quadratic_module(self):
+            r"""Return ``q(v)=b(v,v)/2`` when this symmetric form is even.
+
+            Over rings where ``2`` is not a unit this is genuinely extra
+            structure: the quotient must lie back in the coefficient ring.
+            The represented construction is checked on a finite framing; the
+            cross terms need no further divisibility test because symmetry
+            contributes them with the factor ``2`` in ``b(v,v)``.
+            """
+            if not self.module_rank().is_finite():
+                raise NotImplementedError(
+                    "conversion of an even bilinear form to a quadratic form "
+                    "currently requires a finite framing"
+                )
+            ring = self.base_ring()
+            two = ring(2)
+            zero = ring.zero()
+            unformed = self.unformed_module()
+            equip = self.equip_form_morphism()
+
+            def half(value):
+                value = ring(value)
+                quotient, remainder = value.quo_rem(two)
+                if remainder != zero:
+                    raise ValueError(
+                        "the symmetric bilinear form is not even over its coefficient ring"
+                    )
+                return quotient
+
+            for generator in unformed.module_generators():
+                equipped = equip(generator)
+                half(self.b(equipped, equipped))
+
+            return QuadraticForm(
+                unformed,
+                ring,
+                lambda element: half(
+                    self.b(equip(element), equip(element))
+                ),
+            )
+
         def algebraic_correlation_morphism(self):
 
             return AlgebraicCorrelationMorphism(self)
@@ -1056,6 +1097,35 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
             if element not in self:
                 raise TypeError("the quadratic form is defined on this module")
             return self.form()(element)
+
+        def associated_bilinear_module(self):
+            r"""Return the bilinear module polarized from this quadratic form.
+
+            The result is a distinct formed object on the same unformed
+            module.  Its form is
+
+            ``b_q(x,y)=q(x+y)-q(x)-q(y)``.
+
+            This generic construction keeps the same scalar value ring.  A
+            discriminant quadratic form valued in ``K/2R`` polarizes into a
+            different quotient ``K/R`` and is handled by its specialized
+            discriminant-form owner instead.
+            """
+            if self.value_module() is not self.base_ring():
+                raise NotImplementedError(
+                    "polarization with a changed value quotient belongs to the "
+                    "specialized quadratic-form owner"
+                )
+            unformed = self.unformed_module()
+            equip = self.equip_form_morphism()
+            form = self.form()
+            return BilinearForm(
+                unformed,
+                self.value_module(),
+                lambda left, right: form(equip(left) + equip(right))
+                - form(equip(left))
+                - form(equip(right)),
+            )
 
 
 class FinitelyPresentedFormModules(OwnedCategoryOverBaseRing):
