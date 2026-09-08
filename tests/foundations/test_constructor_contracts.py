@@ -1,7 +1,10 @@
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from dzack_research.preamble.owned_category import construction_contract
+from dzack_research.preamble.owned_category import (
+    construction_contract,
+    hom_construction_contract,
+)
 from sage.rings.integer_ring import ZZ as SageZZ
 
 
@@ -53,3 +56,17 @@ def test_constructor_contract_retains_adoption_and_refinement_hooks() -> None:
 
     hook_names = {provider.__qualname__ for provider in contract.hook_providers}
     assert any(name.endswith("Modules.ParentMethods") for name in hook_names)
+
+
+def test_hom_constructor_contract_retains_family_and_endpoints() -> None:
+    integers = _own_ring(SageZZ)
+    modules = Modules(integers)
+    module = modules.an_object()
+    contract = hom_construction_contract(modules, module, module)
+
+    required = contract.required_names()
+    assert "domain" in required
+    assert "codomain" in required
+    assert any(name in required for name in ("hom_family", "family"))
+    assert contract.owner.domain_object() is module
+    assert contract.owner.codomain_object() is module

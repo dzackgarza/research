@@ -543,7 +543,7 @@ class ConstructionContract:
     mathematical levels independently consume the same spelling.
     """
 
-    category: Category
+    owner: object
     parameters: tuple[ConstructionParameter, ...]
     variadic_providers: tuple[type, ...]
     opaque_providers: tuple[type, ...]
@@ -565,20 +565,13 @@ class ConstructionContract:
         return bool(self.hook_providers)
 
 
-def construction_contract(category: Category) -> ConstructionContract:
-    r"""Discover the defining data contributed by ``category.ObjectType``'s MRO.
-
-    Only constructors declared in the preamble are part of this mathematical
-    contract.  Sage runtime bases remain implementation substrate.  A provider
-    whose signature cannot be inspected is retained explicitly as opaque; a
-    provider with ``**rest`` is retained as variadic.  Discovery never changes
-    construction behavior and never interprets an omitted name as optional.
-    """
+def _construction_contract_from_type(owner, implementation_type: type) -> ConstructionContract:
+    r"""Discover named constructor data contributed by one implementation MRO."""
     parameters: list[ConstructionParameter] = []
     variadic: list[type] = []
     opaque: list[type] = []
     hooks: list[type] = []
-    for provider in category.ObjectType.__mro__:
+    for provider in implementation_type.__mro__:
         if not provider.__module__.startswith("dzack_research.preamble"):
             continue
         if "__init_extra__" in provider.__dict__:
@@ -616,12 +609,40 @@ def construction_contract(category: Category) -> ConstructionContract:
                 )
             )
     return ConstructionContract(
-        category=category,
+        owner=owner,
         parameters=tuple(parameters),
         variadic_providers=tuple(dict.fromkeys(variadic)),
         opaque_providers=tuple(dict.fromkeys(opaque)),
         hook_providers=tuple(dict.fromkeys(hooks)),
     )
+
+
+def construction_contract(category: Category) -> ConstructionContract:
+    r"""Discover the defining data contributed by ``category.ObjectType``'s MRO.
+
+    Only constructors declared in the preamble are part of this mathematical
+    contract.  Sage runtime bases remain implementation substrate.  A provider
+    whose signature cannot be inspected is retained explicitly as opaque; a
+    provider with ``**rest`` is retained as variadic.  Discovery never changes
+    construction behavior and never interprets an omitted name as optional.
+    """
+    return _construction_contract_from_type(category, category.ObjectType)
+
+
+def hom_construction_contract(
+    category: Category,
+    domain: Parent,
+    codomain: Parent,
+) -> ConstructionContract:
+    r"""Discover how the fixed Hom parent ``Hom_category(domain,codomain)`` is built.
+
+    This is the contract of the selected Hom object itself: its Hom family and
+    endpoints.  It is deliberately distinct from :func:`construction_contract`
+    on the fixed Hom category, which describes construction of an arrow *in*
+    that Hom.
+    """
+    hom = category.Mor(domain, codomain)
+    return _construction_contract_from_type(hom, type(hom))
 
 
 def object_of(category: Category, **data: ConstructionData) -> Parent:
