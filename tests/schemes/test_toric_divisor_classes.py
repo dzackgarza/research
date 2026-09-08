@@ -311,6 +311,34 @@ def test_projective_plane_intersections_are_the_normalized_areas_of_divisor_poly
     assert plane.ample_divisor_self_intersection(cubic) == 9
 
 
+def test_hirzebruch_zero_picard_pairing_is_the_hyperbolic_plane() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+    divisors = tuple(
+        surface.torus_invariant_prime_divisor(ray)
+        for ray in surface.fan().cones(1)
+    )
+    pairing = surface.picard_intersection_pairing()
+    projection = surface.cartier_class_projection()
+    classes = tuple(projection(divisor) for divisor in divisors)
+
+    isotropic_pair = None
+    for left in classes:
+        for right in classes:
+            if (
+                pairing(left, left) == 0
+                and pairing(right, right) == 0
+                and pairing(left, right) == 1
+            ):
+                isotropic_pair = (left, right)
+                break
+        if isotropic_pair is not None:
+            break
+
+    assert isotropic_pair is not None
+    left, right = isotropic_pair
+    assert pairing(right, left) == 1
+
+
 def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> None:
     plane = _projective_plane()
 

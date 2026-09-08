@@ -60,11 +60,13 @@ from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FreshFreeModuleOn,
+    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
@@ -1270,6 +1272,57 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             if remainder != _integers().zero():
                 raise ArithmeticError("polarization of an integral intersection form was not even")
             return quotient
+
+        def divisor_intersection(self, left, right):
+            r"""Return ``left . right`` on a smooth complete toric surface.
+
+            The private Sage toric cohomology ring computes the exact divisor
+            classes and integration.  The public result is crossed back to the
+            owned integer ring; smoothness guarantees integrality.
+            """
+            if int(self.dimension()) != 2:
+                raise ValueError("the represented divisor intersection pairing is for surfaces")
+            if not self.fan().is_smooth() or not self.fan().is_complete():
+                raise ValueError("the represented divisor intersection requires a smooth complete toric surface")
+            group = self.weil_divisor_group()
+            left = group(left)
+            right = group(right)
+            rays = self.fan().cones(1)
+            zero = _integers().zero()
+
+            def engine_divisor(divisor):
+                coefficients = module_coefficients(divisor, group)
+                return self._toric_engine_variety().divisor(
+                    [int(coefficients.get(ray, zero)) for ray in rays]
+                )
+
+            engine = self._toric_engine_variety()
+            cohomology = engine.cohomology_ring()
+            value = engine.integrate(
+                cohomology(engine_divisor(left)) * cohomology(engine_divisor(right))
+            )
+            return _integers()(value)
+
+        @cached_method
+        def picard_intersection_pairing(self):
+            r"""Return the integral intersection pairing on ``Pic(X)`` for a smooth complete toric surface."""
+            if int(self.dimension()) != 2:
+                raise ValueError("the Picard intersection pairing is represented for surfaces")
+            if not self.fan().is_smooth() or not self.fan().is_complete():
+                raise ValueError("the Picard intersection pairing requires a smooth complete toric surface")
+            picard = self.picard_group()
+            weil = self.weil_divisor_group()
+            integers = _integers()
+            values = ring_as_module(integers)
+            return BilinearMap(
+                picard,
+                picard,
+                values,
+                lambda left_label, right_label: self.divisor_intersection(
+                    weil.module_generator(left_label),
+                    weil.module_generator(right_label),
+                ),
+            )
 
         @cached_method
         def chow_group(self, cycle_dimension):
