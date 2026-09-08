@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
+    ModuleSubobjects,
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import PowerSeriesRing
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -103,8 +104,6 @@ def _reduction_from_transformation(lattice, basis_map):
 
     if basis_map.parent() not in MatrixSpaces(lattice.base_ring()):
         raise TypeError("a lattice reframing is an owned matrix-Hom morphism")
-    reduced_gram = lattice.gram_tensor().pullback(basis_map)
-    reduced = lattice.lattice_category()(reduced_gram)
     original_generators = tuple(lattice.module_generators())
     images = tuple(
         sum(
@@ -119,6 +118,27 @@ def _reduction_from_transformation(lattice, basis_map):
         )
         for column in range(len(original_generators))
     )
+    reduced_gram = lattice.gram_tensor().pullback(basis_map)
+    if lattice in ModuleSubobjects(lattice.base_ring()):
+        from dzack_research.preamble.categories.lattices import (
+            _lattice_subobject_spanning,
+        )
+
+        ambient = lattice.ambient_lattice()
+        old_inclusion = lattice.inclusion()
+        embedded_reduced_basis = finite_ordered_set(
+            tuple(old_inclusion(image) for image in images)
+        )
+        reduced = _lattice_subobject_spanning(
+            ambient,
+            embedded_reduced_basis,
+        )
+        if reduced.gram_tensor() != reduced_gram:
+            raise ArithmeticError(
+                "the reduced subobject framing does not have the pulled-back Gram form"
+            )
+    else:
+        reduced = lattice.lattice_category()(reduced_gram)
     isometry = reduced.Isom(lattice)(images)
     reduced._preamble_lll_isometry = isometry
     reduced._preamble_lll_change_of_basis = basis_map
