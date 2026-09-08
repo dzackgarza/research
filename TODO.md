@@ -1640,7 +1640,6 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
-| `RUNTIME-constructor-contract-validation-20260908-1720` | constructor-data / enforce discovered object_of contracts | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/owned_category.py; tests/categories/test_construction_contract_validation.py` (write) | `572d4826` | 2026-09-08T17:20:00Z |
 
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
