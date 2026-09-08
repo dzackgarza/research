@@ -14,6 +14,7 @@ from dzack_research.preamble.all import (
     CartierDivisorGroups,
     ClassGroups,
     CompleteLinearSystems,
+    FiniteAtlasInvertibleSheaf,
     PicardGroups,
     QQ,
     RationalPolyhedralFans,
@@ -201,6 +202,24 @@ def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> N
     assert system.linear_system_divisor() == line
     assert system.section_space() is sections
     assert system.projective_dimension() == 2
+
+
+def test_a_cartier_divisor_constructs_its_line_bundle_on_the_toric_atlas() -> None:
+    plane = _projective_plane()
+    line = _prime_divisors(plane)[0]
+    bundle = plane.invertible_sheaf_of_divisor(line)
+    square = plane.invertible_sheaf_of_divisor(ZZ(2) * line)
+
+    assert isinstance(bundle, FiniteAtlasInvertibleSheaf)
+    assert bundle.scheme() is plane
+    assert bundle.associated_divisor() == line
+    assert bundle.global_sections() is plane.divisor_section_space(line)
+    assert bundle.global_sections().dimension() == 3
+    for cone in plane.fan().maximal_cones():
+        assert bundle.local_module(cone).module_rank() == 1
+    for pair in plane.gluing_datum().transition_index_set():
+        assert bundle.transition_unit(*pair).is_unit()
+        assert bundle.tensor_power(2).transition_unit(*pair) == square.transition_unit(*pair)
 
 
 def test_the_polytope_of_an_ample_divisor_has_the_fan_as_its_normal_fan() -> None:

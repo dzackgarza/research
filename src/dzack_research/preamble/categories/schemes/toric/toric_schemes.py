@@ -993,6 +993,49 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.divisor_section_space(divisor),
             )
 
+        def invertible_sheaf_of_divisor(self, divisor):
+            r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.
+
+            If ``m_sigma`` is the selected Cartier datum on ``U_sigma``, then
+            ``chi^{m_sigma}`` is the local generator of ``O_X(D)``.  Hence on
+            ``U_sigma cap U_tau`` the transition is
+            ``chi^(m_sigma-m_tau)``.  These differences vanish on the common
+            face, so the characters are units on the overlap and satisfy the
+            cocycle additively.
+            """
+            from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                FiniteAtlasInvertibleSheaf,
+            )
+
+            divisor = self.weil_divisor_group()(divisor)
+            if not self.is_cartier(divisor):
+                raise ValueError("an associated invertible sheaf requires a Cartier divisor")
+            datum = self.gluing_datum()
+            units = {}
+            for source_cone, target_cone in datum.transition_index_set():
+                face = source_cone.intersection(target_cone)
+                difference = self.cartier_datum(divisor, source_cone) - self.cartier_datum(
+                    divisor,
+                    target_cone,
+                )
+                units[source_cone, target_cone] = _character_on_overlap(
+                    difference,
+                    face,
+                    source_cone,
+                    self.scheme_base_ring(),
+                )
+            section_space = (
+                self.divisor_section_space(divisor)
+                if self.fan().is_complete()
+                else None
+            )
+            return FiniteAtlasInvertibleSheaf(
+                datum,
+                units,
+                section_space=section_space,
+                associated_divisor=divisor,
+            )
+
         def ample_divisor_self_intersection(self, divisor):
             r"""Return ``D^2`` from the normalized area of ``P_D``.
 

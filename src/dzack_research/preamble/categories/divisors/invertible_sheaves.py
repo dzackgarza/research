@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
 from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum
+from dzack_research.preamble.categories.schemes.gluing import _FiniteSchemeGluingDatum
 
 
 def _rank_one_generator(module):
@@ -198,8 +199,216 @@ class InvertibleSheaf(SageObject):
         return f"Invertible sheaf on {self.scheme()} trivialized by {self.cover()}"
 
 
+class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
+    r"""A line bundle on a finite glued affine atlas via transition functions.
+
+    Unlike :class:`InvertibleSheaf`, whose descent datum lives on one affine
+    scheme's distinguished-open cover and hence has a literal common overlap
+    ring, a finite glued atlas has two isomorphic presentations of every
+    overlap.  A transition unit ``u_ij`` therefore lives on the source-side
+    overlap, and the triple cocycle is
+
+    ``u_ik = u_ij * phi_ij^*(u_jk)``
+
+    after restriction to the source-side triple overlap.  The scheme gluing
+    datum already owns ``phi_ij`` and its restrictions, so this class only
+    adds the rank-one descent data rather than duplicating scheme descent.
+    """
+
+    def __init__(
+        self,
+        gluing_datum,
+        transition_units,
+        *,
+        section_space=None,
+        associated_divisor=None,
+    ) -> None:
+        if not isinstance(gluing_datum, _FiniteSchemeGluingDatum):
+            raise TypeError("finite-atlas line-bundle descent requires a represented finite scheme gluing")
+        self._finite_gluing_datum = gluing_datum
+        self._section_space = section_space
+        self._associated_divisor = associated_divisor
+        self._local_modules = {
+            index: FreeModule(gluing_datum.chart(index).coordinate_algebra(), 1)
+            for index in gluing_datum.chart_indices()
+        }
+        expected = set(gluing_datum.transition_index_set())
+        supplied = dict(transition_units)
+        if set(supplied) != expected:
+            raise ValueError("finite-atlas line-bundle descent requires one unit for each ordered atlas pair")
+        self._transition_units = {}
+        for source_index, target_index in expected:
+            ring = gluing_datum.overlap(source_index, target_index).coordinate_algebra()
+            unit = ring(supplied[source_index, target_index])
+            if not unit.is_unit():
+                raise ValueError("a finite-atlas line-bundle transition must be a unit on the overlap")
+            self._transition_units[source_index, target_index] = unit
+        self._verify_finite_atlas_cocycle()
+
+    def gluing_datum(self):
+        return self._finite_gluing_datum
+
+    def cover(self):
+        return self.gluing_datum()
+
+    def scheme(self):
+        return self.gluing_datum().scheme()
+
+    ringed_space = scheme
+
+    def chart_indices(self):
+        return self.gluing_datum().chart_indices()
+
+    def local_module(self, index):
+        index = self.gluing_datum().normalize_chart_index(index)
+        return self._local_modules[index]
+
+    def local_trivialization(self, index):
+        module = self.local_module(index)
+        identity = module_homset(module, module).identity()
+        return Isomorphism(identity, identity)
+
+    def associated_divisor(self):
+        if self._associated_divisor is None:
+            raise TypeError("this line bundle was not constructed from a selected divisor")
+        return self._associated_divisor
+
+    def _stored_pair(self, source_index, target_index):
+        datum = self.gluing_datum()
+        source_index = datum.normalize_chart_index(source_index)
+        target_index = datum.normalize_chart_index(target_index)
+        if source_index == target_index:
+            raise ValueError("a transition function belongs to two distinct charts")
+        ranking = datum.chart_index_set().ranking_map()
+        return (
+            (source_index, target_index)
+            if ranking(source_index) < ranking(target_index)
+            else (target_index, source_index)
+        )
+
+    def transition_unit(self, source_index, target_index):
+        datum = self.gluing_datum()
+        source_index = datum.normalize_chart_index(source_index)
+        target_index = datum.normalize_chart_index(target_index)
+        pair = self._stored_pair(source_index, target_index)
+        unit = self._transition_units[pair]
+        if pair == (source_index, target_index):
+            return unit
+        reverse_transition = datum.transition_between(source_index, target_index).forward()
+        return reverse_transition.coordinate_algebra_morphism()(
+            unit.inverse_of_unit()
+        )
+
+    def _restrict_pair_unit_to_triple(
+        self,
+        source_index,
+        target_index,
+        third_index,
+        unit,
+    ):
+        datum = self.gluing_datum()
+        pair_overlap = datum.overlap(source_index, target_index)
+        triple = datum.triple_overlap(source_index, target_index, third_index)
+        into_pair = pair_overlap.corestriction(triple.inclusion())
+        return into_pair.coordinate_algebra_morphism()(unit)
+
+    def _verify_finite_atlas_cocycle(self) -> None:
+        from itertools import combinations
+
+        datum = self.gluing_datum()
+        for left, middle, right in combinations(tuple(datum.chart_indices()), 3):
+            left_middle = self._restrict_pair_unit_to_triple(
+                left,
+                middle,
+                right,
+                self.transition_unit(left, middle),
+            )
+            middle_right = self._restrict_pair_unit_to_triple(
+                middle,
+                right,
+                left,
+                self.transition_unit(middle, right),
+            )
+            pullback = datum.transition_on_triple(
+                left,
+                middle,
+                right,
+            ).coordinate_algebra_morphism()
+            left_right = self._restrict_pair_unit_to_triple(
+                left,
+                right,
+                middle,
+                self.transition_unit(left, right),
+            )
+            if left_middle * pullback(middle_right) != left_right:
+                raise ValueError("finite-atlas line-bundle transition functions fail the triple cocycle")
+
+    @classmethod
+    def _from_transition_units(cls, cover, transition_units):
+        return cls(cover, transition_units)
+
+    @classmethod
+    def trivial(cls, gluing_datum):
+        units = {
+            pair: gluing_datum.overlap(*pair).coordinate_algebra().one()
+            for pair in gluing_datum.transition_index_set()
+        }
+        return cls(gluing_datum, units)
+
+    def tensor_product(self, other):
+        if not isinstance(other, FiniteAtlasInvertibleSheaf):
+            raise TypeError("finite-atlas tensor product requires two finite-atlas invertible sheaves")
+        if other.gluing_datum() is not self.gluing_datum():
+            raise ValueError("line-bundle tensor product requires one finite atlas")
+        units = {
+            pair: self.transition_unit(*pair) * other.transition_unit(*pair)
+            for pair in self.gluing_datum().transition_index_set()
+        }
+        return type(self)(self.gluing_datum(), units)
+
+    def tensor_power(self, exponent):
+        exponent = int(exponent)
+        units = {}
+        for pair in self.gluing_datum().transition_index_set():
+            unit = self.transition_unit(*pair)
+            units[pair] = (
+                unit**exponent
+                if exponent >= 0
+                else unit.inverse_of_unit() ** (-exponent)
+            )
+        return type(self)(self.gluing_datum(), units)
+
+    def dual(self):
+        return self.tensor_power(-1)
+
+    def global_sections(self):
+        if self._section_space is None:
+            raise NotImplementedError(
+                "this finite-atlas line bundle has no selected global-section computation"
+            )
+        return self._section_space
+
+    sections = global_sections
+
+    def sheaf(self):
+        return self
+
+    def morphism_to(self, target, local_maps):
+        _ = target, local_maps
+        raise NotImplementedError(
+            "finite-atlas line-bundle morphisms require the common semilinear module-descent Hom"
+        )
+
+    def _repr_(self):
+        return f"Invertible sheaf on finite affine atlas of {self.scheme()}"
+
+
 def TrivialInvertibleSheaf(cover):
     return InvertibleSheaf.trivial(cover)
 
 
-__all__ = ["InvertibleSheaf", "TrivialInvertibleSheaf"]
+__all__ = [
+    "FiniteAtlasInvertibleSheaf",
+    "InvertibleSheaf",
+    "TrivialInvertibleSheaf",
+]
