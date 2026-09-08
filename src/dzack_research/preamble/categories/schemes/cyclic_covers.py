@@ -222,6 +222,66 @@ def relative_cyclic_cover(cyclic_algebra):
     return glued.scheme_category().SliceOver(base_scheme)(cover_morphism)
 
 
+def local_relative_cyclic_deck_action(cyclic_algebra, chart_index):
+    r"""Return the canonical ``mu_n`` action on one affine chart of a relative cyclic cover."""
+    if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
+        raise TypeError("a local cyclic deck action requires cyclic-cover algebra data")
+    cover = cyclic_algebra.cover()
+    chart_index = cover.chart_label(chart_index)
+    local_base = cover.open(chart_index).coordinate_algebra()
+    local_algebra = cyclic_algebra.local_algebra(chart_index)
+    local_scheme = Spec(local_algebra)
+    group_scheme = roots_of_unity_group_scheme(local_base, int(cyclic_algebra.degree()))
+    product = scheme_product(group_scheme.scheme(), local_scheme)
+    product_algebra = product.coordinate_algebra()
+    group_pullback = product.projection(0).coordinate_algebra_morphism()
+    cover_pullback = product.projection(1).coordinate_algebra_morphism()
+    group_coordinate = group_scheme.scheme().coordinate_algebra().algebra_generator("u")
+    local_z = local_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
+    action_pullback = local_algebra.Mor(product_algebra)(
+        {
+            CYCLIC_COVER_VARIABLE: (
+                group_pullback(group_coordinate) * cover_pullback(local_z)
+            )
+        }
+    )
+    action_morphism = _affine_morphism_from_pullback(
+        product,
+        local_scheme,
+        action_pullback,
+    )
+    return AffineGroupSchemeActions(group_scheme)(local_scheme, action_morphism)
+
+
+def relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
+    r"""Glue the chart automorphisms ``z_i -> zeta z_i`` on the relative cover."""
+    if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
+        raise TypeError("a relative deck transformation requires cyclic-cover algebra data")
+    scalar_ring = cyclic_algebra.scheme().scheme_base_ring()
+    root = scalar_ring(root_of_unity)
+    if root ** int(cyclic_algebra.degree()) != scalar_ring.one():
+        raise ValueError("a deck scalar must be an n-th root of unity")
+
+    relative = cyclic_algebra.relative_spectrum()
+    glued = relative.arrow().domain()
+    local_maps = {}
+    for index in cyclic_algebra.cover().atlas():
+        local_algebra = cyclic_algebra.local_algebra(index)
+        local_scheme = glued.chart(index)
+        local_base = cyclic_algebra.cover().open(index).coordinate_algebra()
+        scalar = local_algebra.algebra_structure_morphism()(local_base(root))
+        z = local_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
+        pullback = local_algebra.Mor(local_algebra)(
+            {CYCLIC_COVER_VARIABLE: scalar * z}
+        )
+        local_automorphism = affine_spec_morphism(pullback)
+        local_maps[index] = glued.chart_embedding(index) * local_automorphism
+    automorphism = glued.Mor(glued)(local_maps)
+    if relative.arrow() * automorphism != relative.arrow():
+        raise ArithmeticError("the deck transformation does not lie over the cyclic-cover base")
+    return automorphism
+
+
 def _primitive_root_of_unity(scalars, degree):
     r"""Return a primitive ``degree``-th root of unity in ``scalars``.
 

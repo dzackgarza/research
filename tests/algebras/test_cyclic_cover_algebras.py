@@ -178,3 +178,23 @@ def test_nontrivial_cyclic_algebra_has_its_glued_relative_spectrum_over_the_base
     assert cover._preamble_cyclic_cover_morphism is relative.arrow()
     assert cover.gluing_datum().number_of_charts() == 2
     assert tuple(cover.gluing_datum().chart_indices()) == tuple(line.cover().atlas())
+
+
+def test_nontrivial_double_cover_keeps_local_mu_two_actions_and_global_involution() -> None:
+    from dzack_research.preamble.all import CyclicCoverAlgebra
+
+    line, x, _overlap_x = _line_bundle_with_x_transition()
+    cyclic = CyclicCoverAlgebra(line, _branch_section(line, x, 2), 2)
+    relative = cyclic.relative_spectrum()
+    cover = relative.arrow().domain()
+
+    for index in line.cover().atlas():
+        local_action = cyclic.local_deck_group_scheme_action(index)
+        assert local_action.scheme() is cover.chart(index)
+        assert local_action.group_scheme().base_ring() is line.cover().open(index).coordinate_algebra()
+
+    involution = cyclic.constant_deck_transformation()
+    assert involution.domain() is cover
+    assert involution.codomain() is cover
+    assert involution * involution == cover.categorical_identity_morphism()
+    assert relative.arrow() * involution == relative.arrow()

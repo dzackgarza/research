@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from sage.rings.integer import Integer
+from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -265,6 +266,7 @@ class CyclicCoverAlgebra(SageObject):
 
     sections = global_sections
 
+    @cached_method
     def relative_spectrum(self):
         r"""Return the finite cover as the relative spectrum of this descended algebra."""
         from dzack_research.preamble.categories.schemes.cyclic_covers import (
@@ -272,6 +274,34 @@ class CyclicCoverAlgebra(SageObject):
         )
 
         return relative_cyclic_cover(self)
+
+    def local_deck_group_scheme_action(self, chart_index):
+        r"""Return the canonical ``mu_n`` action on one affine cover chart."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            local_relative_cyclic_deck_action,
+        )
+
+        return local_relative_cyclic_deck_action(self, chart_index)
+
+    def deck_transformation(self, root_of_unity):
+        r"""Return the global deck automorphism ``z_i -> root*z_i`` when ``root^n=1``."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            relative_cyclic_deck_transformation,
+        )
+
+        return relative_cyclic_deck_transformation(self, root_of_unity)
+
+    def constant_deck_transformation(self):
+        r"""Return the deck generator when the scalar base contains a primitive ``n``-th root."""
+        from dzack_research.preamble.categories.schemes.cyclic_covers import (
+            _primitive_root_of_unity,
+        )
+
+        root = _primitive_root_of_unity(
+            self.scheme().scheme_base_ring(),
+            self.degree(),
+        )
+        return self.deck_transformation(root)
 
     def restricted_algebra(
         self,
