@@ -1249,6 +1249,35 @@ class FinitelyPresentedModules(OwnedCategoryOverBaseRing):
         def is_finitely_presented(self) -> bool:
             return True
 
+        def tor(self, other, degree=0):
+            r"""Return ``Tor_degree(self, other)`` from the selected free resolution."""
+            from dzack_research.preamble.categories.modules.derived_functors import Tor
+
+            return Tor(degree, self, other)
+
+        def ext(self, other, degree=0):
+            r"""Return ``Ext^degree(self, other)`` from the selected free resolution."""
+            from dzack_research.preamble.categories.modules.derived_functors import Ext
+
+            return Ext(degree, self, other)
+
+        def projective_dimension(self):
+            r"""Return the projective dimension in the regimes where it is decided exactly.
+
+            A projective module has dimension zero.  Over a principal ideal
+            domain every submodule of a free module is free, so every finitely
+            presented module has projective dimension at most one; a
+            nonprojective one therefore has dimension exactly one.  No finite
+            bound is inferred over a more general ring.
+            """
+            if self.is_projective():
+                return 0
+            if self.base_ring() in PrincipalIdealDomains():
+                return 1
+            raise NotImplementedError(
+                "projective dimension beyond the projective/PID regimes requires a represented finite resolution bound"
+            )
+
 
 class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
     r"""Finitely presented modules carrying one selected finite presentation."""
