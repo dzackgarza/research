@@ -16,6 +16,7 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -666,8 +667,166 @@ class QuotientRings(OwnedCategory):
                     "characteristic of this quotient requires contraction of the defining ideal to the prime subring"
                 ) from error
 
+        @cached_method
+        def _affine_normalization_data(self):
+            r"""Return the selected exact normalization data for this affine domain.
+
+            The public object remains an owned quotient ring.  Singular's
+            ``normal.lib`` is only the private engine computing an affine
+            presentation of the integral closure, its normalization map,
+            conductor, and delta invariant.  No Singular ring, ideal, or map
+            crosses this boundary.
+            """
+            return _affine_integral_quotient_normalization_data(self)
+
+        @cached_method
+        def normalization(self):
+            r"""Return the integral closure of this affine domain in its fraction field."""
+            return self._affine_normalization_data().normalization
+
+        @cached_method
+        def normalization_map(self):
+            r"""Return the canonical finite birational map ``A -> A^nu``."""
+            return self._affine_normalization_data().normalization_map
+
+        @cached_method
+        def conductor_ideal(self):
+            r"""Return ``(A :_A A^nu)``, the conductor of the normalization."""
+            return self._affine_normalization_data().conductor
+
+        @cached_method
+        def delta_invariant(self):
+            r"""Return ``dim_k(A^nu/A)`` when finite, and infinity otherwise."""
+            delta = self._affine_normalization_data().delta
+            return Infinity if delta < 0 else delta
+
+        @cached_method
+        def is_normal(self) -> bool:
+            r"""Return whether this affine domain equals its integral closure."""
+            return bool(self._affine_normalization_data().is_normal)
+
     def super_categories(self):
         return [OwnedRings().Commutative()]
+
+
+class _AffineIntegralQuotientNormalizationData(SageObject):
+    r"""Owned-boundary data returned by the private affine-normalization engine."""
+
+    def __init__(
+        self,
+        normalization,
+        normalization_map,
+        conductor,
+        delta,
+        is_normal,
+    ) -> None:
+        self.normalization = normalization
+        self.normalization_map = normalization_map
+        self.conductor = conductor
+        self.delta = int(delta)
+        self.is_normal = bool(is_normal)
+
+
+def _affine_integral_quotient_normalization_data(quotient):
+    r"""Cross Singular ``normal.lib`` output back into owned affine algebra data.
+
+    This adapter intentionally uses Sage's persistent Singular interface rather
+    than an ad-hoc process or textual file protocol.  ``normal.lib`` computes
+    the normalization of a prime affine quotient, the generator images of the
+    normalization map, the conductor, and ``delta`` in one exact computation.
+    The returned Singular ring is converted by Sage's own ``sage()`` crossing,
+    then reconstructed through :func:`QuotientRing` and :func:`ring_morphism`.
+    """
+    source = quotient.quotient_source()
+    source_engine = _engine_ring(source)
+    quotient_engine = _engine_ring(quotient)
+    if not bool(quotient_engine.is_integral_domain()):
+        raise ValueError("normalization here requires an integral affine quotient")
+    if not hasattr(source_engine, "_singular_"):
+        raise NotImplementedError(
+            "affine normalization currently requires a polynomial presentation supported by Singular"
+        )
+
+    defining_engine = _engine_ideal(source, quotient.defining_ideal())
+    from sage.interfaces.singular import singular
+
+    previous_ring = singular.current_ring()
+    try:
+        source_engine._singular_(singular).set_ring()
+        singular.lib("normal.lib")
+        defining_singular = defining_engine._singular_(singular)
+        normal_data = defining_singular.normal("withRing", "withDelta", "isPrim")
+
+        normal_rings = normal_data[1]
+        if len(normal_rings) != 1:
+            raise ArithmeticError(
+                "the normalization of an integral affine domain must have one component"
+            )
+
+        # The conductor is an ideal in the original polynomial presentation.
+        source_engine._singular_(singular).set_ring()
+        conductor_singular = defining_singular.normalConductor(normal_data)
+        conductor_engine = conductor_singular.sage(source_engine)
+        conductor = source.ideal(
+            *(
+                source._from_engine_element(source_engine(generator))
+                for generator in conductor_engine.gens()
+            )
+        )
+
+        total_delta = int(normal_data[3][2].sage())
+
+        # ``Ri`` contains named ``norid`` and ``normap``.  After selecting it,
+        # Sage can convert the ring and both ideals without any custom parser.
+        normal_ring_singular = normal_rings[1]
+        normal_ring_singular.set_ring()
+        normal_cover_engine = normal_ring_singular.sage()
+        normal_ideal_engine = singular("norid").sage(normal_cover_engine)
+        normal_map_images_engine = singular("normap").sage(normal_cover_engine)
+
+        normal_cover = _own_ring(normal_cover_engine)
+        normal_ideal = normal_cover.ideal(
+            *(
+                normal_cover._from_engine_element(normal_cover_engine(generator))
+                for generator in normal_ideal_engine.gens()
+            )
+        )
+        normalization = QuotientRing(normal_cover, normal_ideal)
+        target_engine = _engine_ring(normalization)
+        source_quotient_engine = _engine_ring(quotient)
+        target_images = tuple(
+            target_engine(normal_cover_engine(generator))
+            for generator in normal_map_images_engine.gens()
+        )
+        if len(target_images) != source_engine.ngens():
+            raise ArithmeticError(
+                "Singular's normalization map did not return one image per source generator"
+            )
+        engine_normalization_map = source_quotient_engine.hom(
+            target_images,
+            target_engine,
+        )
+        normalization_map = ring_morphism(
+            quotient,
+            normalization,
+            lambda element: normalization._from_engine_element(
+                engine_normalization_map(_engine_element(quotient, element))
+            ),
+            engine_morphism=engine_normalization_map,
+        )
+
+        return _AffineIntegralQuotientNormalizationData(
+            normalization,
+            normalization_map,
+            quotient.ideal(*(quotient(generator) for generator in conductor.ideal_generators())),
+            total_delta,
+            total_delta == 0,
+        )
+    finally:
+        try:
+            previous_ring.set_ring()
+        except (AttributeError, TypeError, ValueError):
+            pass
 
 
 
