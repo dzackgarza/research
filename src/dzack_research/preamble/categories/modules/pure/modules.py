@@ -1381,6 +1381,101 @@ class FreeResolution:
             if int(degree) != length
         )
 
+    def lift_morphism(self, morphism, target_resolution=None):
+        r"""Lift ``morphism : M -> N`` to a chain map of selected free resolutions.
+
+        The lift is constructed degree by degree by projectivity of the free
+        terms.  In degree zero, lift ``f epsilon_F`` through the target
+        augmentation.  In degree ``i>0``, exactness puts the already-defined
+        composite ``f_{i-1} d_i`` in the image of the target differential, so
+        lift each selected free generator through that differential.  No
+        coordinate chain-map formula is introduced here; the common module
+        image/preimage operations supply the lifts.
+        """
+        if morphism.domain() is not self.module():
+            raise ValueError("a resolution morphism must start at the resolved source module")
+        if target_resolution is None:
+            target_resolution = free_resolution(morphism.codomain(), self.length() + 1)
+        if target_resolution.module() is not morphism.codomain():
+            raise ValueError("the target resolution resolves the wrong module")
+
+        components = {}
+        source_zero = self.term(0)
+        target_augmentation = target_resolution.augmentation()
+        components[0] = module_homset(source_zero, target_resolution.term(0))(
+            {
+                label: target_augmentation.preimage(
+                    morphism(self.augmentation()(source_zero.module_generator(label)))
+                )
+                for label in source_zero.module_generating_set()
+            }
+        )
+
+        for degree in range(1, self.length() + 1):
+            source_term = self.term(degree)
+            target_differential = target_resolution.differential(degree)
+            previous = components[degree - 1]
+            source_differential = self.differential(degree)
+            components[degree] = module_homset(
+                source_term,
+                target_resolution.term(degree),
+            )(
+                {
+                    label: target_differential.preimage(
+                        previous(source_differential(source_term.module_generator(label)))
+                    )
+                    for label in source_term.module_generating_set()
+                }
+            )
+        return FreeResolutionMorphism(self, target_resolution, morphism, components)
+
+
+@dataclass(frozen=True)
+class FreeResolutionMorphism:
+    r"""A chain map between free resolutions lying over one module morphism."""
+
+    _domain: FreeResolution
+    _codomain: FreeResolution
+    _module_morphism: ModuleMorphism
+    _components: dict
+
+    def __post_init__(self):
+        degree_zero = self.component(0)
+        source_zero = self.domain().term(0)
+        for label in source_zero.module_generating_set():
+            generator = source_zero.module_generator(label)
+            if self.codomain().augmentation()(degree_zero(generator)) != self.module_morphism()(
+                self.domain().augmentation()(generator)
+            ):
+                raise ValueError("the lifted degree-zero map does not commute with augmentation")
+        for degree in range(1, self.domain().length() + 1):
+            component = self.component(degree)
+            previous = self.component(degree - 1)
+            source_differential = self.domain().differential(degree)
+            target_differential = self.codomain().differential(degree)
+            for label in component.domain().module_generating_set():
+                generator = component.domain().module_generator(label)
+                if target_differential(component(generator)) != previous(
+                    source_differential(generator)
+                ):
+                    raise ValueError(f"the lifted resolution square fails in degree {degree}")
+
+    def domain(self):
+        return self._domain
+
+    def codomain(self):
+        return self._codomain
+
+    def module_morphism(self):
+        return self._module_morphism
+
+    def component(self, degree):
+        degree = int(degree)
+        selected = self._components.get(degree)
+        if selected is not None:
+            return selected
+        return module_homset(self.domain().term(degree), self.codomain().term(degree)).zero()
+
 
 def free_resolution(module, steps=None):
     return module.free_resolution(steps)
