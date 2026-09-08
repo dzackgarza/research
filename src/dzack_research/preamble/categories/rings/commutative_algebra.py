@@ -21,6 +21,7 @@ from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebras,
     OwnedAlgebras,
     _OwnedAlgebraParent,
@@ -54,6 +55,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     PartiallyOrderedSets,
     SetInclusion,
 )
+from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
 from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeal
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -890,7 +892,16 @@ class AdicCompletions(Category):
 class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
     r"""An engine-backed adic completion with its defining data fixed at construction."""
 
-    def __init__(self, engine, source, defining_ideal, precision) -> None:
+    def __init__(
+        self,
+        engine,
+        source,
+        defining_ideal,
+        precision,
+        *,
+        engine_map=None,
+        completed_ideal_generators=None,
+    ) -> None:
         self._preamble_completion_source = source
         self._preamble_ideal_of_definition = defining_ideal
         self._preamble_computation_precision = int(precision)
@@ -907,12 +918,17 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             None,
             categories=tuple(placements),
         )
-        self._preamble_completion_map = _canonical_map(source, self)
+        self._preamble_completion_map = _canonical_map(source, self, engine_map)
+        self._preamble_structure_map = self._preamble_completion_map
         if is_maximal:
-            uniformizer = self._from_engine_element(engine.uniformizer())
+            if completed_ideal_generators is None:
+                completed_ideal_generators = (engine.uniformizer(),)
             self._preamble_maximal_ideal = GeneratedIdealView(
                 self,
-                (uniformizer,),
+                tuple(
+                    self._from_engine_element(engine(generator))
+                    for generator in completed_ideal_generators
+                ),
                 source_ideal=defining_ideal,
             )
             self._preamble_residue_field = ResidueField(source, defining_ideal)
@@ -1425,24 +1441,73 @@ def AdicCompletion(ring, ideal, *, precision=20):
     source = _own_ring(ring)
     defining = _engine_ideal(source, ideal)
     generators = tuple(defining.gens())
-    if len(generators) != 1:
-        raise NotImplementedError(
-            "the active completion seam currently constructs principal adic completions"
-        )
-    generator = generators[0]
     engine = _engine_ring(source)
-    if engine is SageZZ:
+    if len(generators) == 1 and engine is SageZZ:
+        generator = generators[0]
         prime = abs(SageZZ(generator))
         if not prime.is_prime():
             raise ValueError("the represented ZZ-adic completion is at a prime ideal (p)")
         completion_engine = engine.completion(prime, int(precision))
-    else:
+        return _AdicCompletionAlgebraParent(
+            completion_engine,
+            source,
+            defining,
+            precision,
+        )
+    if len(generators) == 1 and source in SymmetricAlgebras(source.base_ring()):
+        generator = generators[0]
         completion_engine = engine.completion(generator, prec=precision)
+        return _AdicCompletionAlgebraParent(
+            completion_engine,
+            source,
+            defining,
+            precision,
+        )
+
+    base = source.base_ring()
+    if source in AlgebrasWithChosenFinitePresentation(base):
+        presentation = source.presentation_ring()
+        relations = tuple(source.relations())
+    elif source in SymmetricAlgebras(base):
+        presentation = source
+        relations = ()
+    else:
+        raise NotImplementedError(
+            "multigenerator adic completion requires a selected polynomial presentation"
+        )
+
+    presentation_engine = _engine_ring(presentation)
+    lifted_generators = tuple(
+        source.lift_to_presentation(source(generator))
+        if source in AlgebrasWithChosenFinitePresentation(base)
+        else presentation._from_engine_element(presentation_engine(generator))
+        for generator in ideal.ideal_generators()
+    )
+    lifted_engine_generators = tuple(
+        _engine_element(presentation, generator) for generator in lifted_generators
+    )
+    precision_ideal = presentation_engine.ideal(lifted_engine_generators) ** int(precision)
+    defining_relations = tuple(_engine_element(presentation, relation) for relation in relations)
+    truncated_ideal = presentation_engine.ideal(
+        (*defining_relations, *tuple(precision_ideal.gens()))
+    )
+    completion_engine = presentation_engine.quotient(truncated_ideal)
+    source_engine = _engine_ring(source)
+
+    def engine_map(element):
+        representative = element.lift() if hasattr(element, "lift") else element
+        return completion_engine(representative)
+
+    completed_ideal_generators = tuple(
+        completion_engine(generator) for generator in lifted_engine_generators
+    )
     return _AdicCompletionAlgebraParent(
         completion_engine,
         source,
         defining,
         precision,
+        engine_map=engine_map if source_engine is not presentation_engine else completion_engine,
+        completed_ideal_generators=completed_ideal_generators,
     )
 
 
