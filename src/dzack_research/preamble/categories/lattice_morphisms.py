@@ -22,6 +22,8 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
+    PrimitiveIsotropicSublatticeLocus,
+    PrimitiveIsotropicSublatticeOrbitDecomposition,
     PrimitiveIsotropicVectorLocus,
     PrimitiveIsotropicVectorOrbitDecomposition,
     isotropic_equivalence_witness,
@@ -1434,8 +1436,10 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         """
         if isinstance(locus, PrimitiveIsotropicVectorLocus):
             return PrimitiveIsotropicVectorOrbitDecomposition(self, locus)
+        if isinstance(locus, PrimitiveIsotropicSublatticeLocus):
+            return PrimitiveIsotropicSublatticeOrbitDecomposition(self, locus)
         raise NotImplementedError(
-            "orbit_decomposition currently owns the primitive isotropic vector locus; other loci require their exact orbit owner"
+            "orbit_decomposition currently owns primitive isotropic vector and sublattice loci; other loci require their exact orbit owner"
         )
 
     def isotropic_equivalence_witness(self, left, right, *, flag=False):

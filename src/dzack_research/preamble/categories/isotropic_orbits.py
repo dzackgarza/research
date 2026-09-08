@@ -177,6 +177,97 @@ class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
         return self.group().vector_equivalence_witness(source, target)
 
 
+class PrimitiveIsotropicSublatticeLocus(SageObject):
+    r"""Primitive totally isotropic rank-``k`` lattice subobjects of ``L``."""
+
+    def __init__(self, lattice, rank) -> None:
+        rank = int(rank)
+        if rank <= 0:
+            raise ValueError("a primitive isotropic sublattice rank must be positive")
+        self._lattice = lattice
+        self._rank = rank
+
+    def lattice(self):
+        return self._lattice
+
+    def rank(self):
+        return self._rank
+
+    def __contains__(self, sublattice) -> bool:
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModuleSubobjects,
+        )
+
+        if not callable(getattr(sublattice, "inclusion", None)):
+            return False
+        if sublattice not in ModuleSubobjects(self.lattice().base_ring()):
+            return False
+        try:
+            if sublattice.ambient_lattice() is not self.lattice():
+                return False
+        except (AttributeError, TypeError):
+            return False
+        return (
+            int(sublattice.module_rank()) == self.rank()
+            and sublattice.is_primitive()
+            and sublattice.is_totally_isotropic()
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"Primitive totally isotropic rank-{self.rank()} sublattices "
+            f"of {self.lattice()}"
+        )
+
+
+def primitive_isotropic_sublattices(lattice, rank=1):
+    r"""Return the exact rank-``rank`` primitive isotropic sublattice locus."""
+    return PrimitiveIsotropicSublatticeLocus(lattice, rank)
+
+
+class PrimitiveIsotropicSublatticeOrbitDecomposition(SageObject):
+    r"""The finite cusp decomposition of one primitive isotropic sublattice locus."""
+
+    def __init__(self, group, locus) -> None:
+        if not isinstance(locus, PrimitiveIsotropicSublatticeLocus):
+            raise TypeError("this decomposition requires a primitive isotropic sublattice locus")
+        if group.lattice() is not locus.lattice():
+            raise ValueError("the orbit group and isotropic-sublattice locus require one lattice")
+        self._group = group
+        self._locus = locus
+        self._orbits = cusps(locus.lattice(), rank=locus.rank())
+
+    def group(self):
+        return self._group
+
+    def locus(self):
+        return self._locus
+
+    def orbits(self):
+        return self._orbits
+
+    def representatives(self):
+        return finite_ordered_set(
+            tuple(cusp.representative() for cusp in self.orbits())
+        )
+
+    def orbit_of(self, sublattice):
+        if sublattice not in self.locus():
+            raise ValueError("orbit_of expects a primitive isotropic sublattice in this locus")
+        for cusp in self.orbits():
+            if sublattice in cusp:
+                return cusp
+        raise ArithmeticError("the exact cusp list did not cover the isotropic-sublattice locus")
+
+    def stabilizer(self, sublattice):
+        return self.group().stabilizer(sublattice, action="setwise")
+
+    def transporter(self, source, target):
+        if source not in self.locus() or target not in self.locus():
+            raise ValueError("an isotropic-sublattice transporter requires two locus members")
+        return self.group().isotropic_equivalence_witness(source, target)
+
+
 class IsotropicFlag:
     r"""A primitive totally isotropic flag, recorded by its nested lattice subobjects."""
 
@@ -389,6 +480,18 @@ def isotropic_orbit_representatives(orthogonal_group, rank, *, flag=False):
 def isotropic_equivalence_witness(orthogonal_group, left, right, *, flag=False):
     r"""Return an isometry carrying one primitive isotropic subobject/flag to another."""
     lattice = orthogonal_group.domain()
+    if flag:
+        left_terms = _terms(left)
+        right_terms = _terms(right)
+        if len(left_terms) != len(right_terms):
+            return None
+        if all(
+            _same_subobject(source, target)
+            for source, target in zip(left_terms, right_terms, strict=True)
+        ):
+            return orthogonal_group.one()
+    elif _same_subobject(left, right):
+        return orthogonal_group.one()
     left_rows = _basis_rows(left)
     right_rows = _basis_rows(right)
     if len(left_rows) != len(right_rows):
@@ -445,11 +548,17 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 __all__ = [
     "Cusp",
     "IsotropicFlag",
+    "PrimitiveIsotropicSublatticeLocus",
+    "PrimitiveIsotropicSublatticeOrbitDecomposition",
+    "PrimitiveIsotropicVectorLocus",
+    "PrimitiveIsotropicVectorOrbit",
+    "PrimitiveIsotropicVectorOrbitDecomposition",
     "cusps",
     "isotropic_equivalence_witness",
     "isotropic_orbit_representatives",
     "isotropic_stabilizer_generators",
     "primitive_isotropic_subobject",
+    "primitive_isotropic_sublattices",
     "primitive_isotropic_vectors",
     "transport_isotropic_object",
 ]
