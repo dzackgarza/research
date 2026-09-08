@@ -732,6 +732,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     FiniteGluedInvariantQuotient,
     FiniteTypeSchemes,
     IntegralSchemes,
+    IsolatedHypersurfaceSingularity,
     LatticePolygon,
     LatticePolygons,
     LatticePolytope,

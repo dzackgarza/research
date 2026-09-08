@@ -58,3 +58,19 @@ def test_cusp_delta_branch_and_conductor_are_local_normalization_invariants() ->
     localization = local_ring.localization_map()
     assert localization(x) in conductor
     assert localization(y) in conductor
+
+
+def test_selected_ade_plane_curve_normal_forms_retain_their_exact_type() -> None:
+    for label, milnor in (("A4", 4), ("D5", 5), ("E6", 6), ("E7", 7), ("E8", 8)):
+        singularity = IsolatedHypersurfaceSingularity.from_ade_type(QQ, label)
+        assert singularity.ade_normal_form_type() == (label[0], int(label[1:]))
+        assert singularity.milnor_number() == milnor
+
+
+def test_ade_recognizer_does_not_claim_coordinate_equivalence() -> None:
+    plane = PolynomialRing(QQ, ("x", "y"))
+    x, y = plane.algebra_generators()
+    rescaled_a2 = IsolatedHypersurfaceSingularity(plane, 2 * x**2 + y**3)
+
+    assert rescaled_a2.milnor_number() == 2
+    assert rescaled_a2.ade_normal_form_type() is None

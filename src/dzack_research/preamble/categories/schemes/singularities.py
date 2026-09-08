@@ -7,6 +7,7 @@ from sage.libs.singular.function import lib as singular_lib, singular_function
 
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
+    PolynomialRing,
     SymmetricAlgebras,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -22,6 +23,44 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+
+
+def _parse_ade_type(ade_type):
+    r"""Return ``(letter, index)`` for a supported ADE label."""
+    if isinstance(ade_type, str):
+        label = ade_type.strip().upper()
+        if len(label) < 2:
+            raise ValueError("an ADE label has a letter and a positive index")
+        return label[0], int(label[1:])
+    letter, index = ade_type
+    return str(letter).upper(), int(index)
+
+
+def _ade_normal_form_equation(polynomial_ring, ade_type):
+    r"""Return the selected plane-curve ADE normal form in ``k[x,y]``."""
+    x, y = tuple(polynomial_ring.algebra_generators())
+    letter, index = _parse_ade_type(ade_type)
+    match letter:
+        case "A":
+            if index < 1:
+                raise ValueError("A_n requires n >= 1")
+            return x**2 + y ** (index + 1)
+        case "D":
+            if index < 4:
+                raise ValueError("D_n requires n >= 4")
+            return x**2 * y + y ** (index - 1)
+        case "E":
+            match index:
+                case 6:
+                    return x**3 + y**4
+                case 7:
+                    return x**3 + x * y**3
+                case 8:
+                    return x**3 + y**5
+                case _:
+                    raise ValueError("the exceptional simple plane curves are E6, E7 and E8")
+        case _:
+            raise ValueError("a supported simple plane curve has type A, D or E")
 
 
 class IsolatedHypersurfaceSingularity:
@@ -44,11 +83,52 @@ class IsolatedHypersurfaceSingularity:
         self._engine_derivatives = derivatives
         self._milnor_number = int(dimension)
 
+    @classmethod
+    def from_ade_type(cls, base_ring, ade_type, *, names=("x", "y")):
+        r"""Construct the selected-coordinate ADE plane-curve normal form.
+
+        The supported classification table is the characteristic-zero simple
+        plane-curve list ``A_n``, ``D_n``, ``E_6``, ``E_7``, ``E_8``.  This
+        constructor selects a normal form; it does not assert that an arbitrary
+        analytically equivalent equation has already been transformed to it.
+        """
+        if int(_engine_ring(base_ring).characteristic()) != 0:
+            raise NotImplementedError(
+                "the represented ADE plane-curve normal forms currently require characteristic zero"
+            )
+        ring = PolynomialRing(base_ring, tuple(names))
+        return cls(ring, _ade_normal_form_equation(ring, ade_type))
+
     def polynomial_ring(self):
         return self._polynomial_ring
 
     def equation(self):
         return self._equation
+
+    def ade_normal_form_type(self):
+        r"""Return the selected ADE label when this equation is exactly a supported normal form.
+
+        Equality is tested in the chosen polynomial coordinates.  No analytic,
+        formal, contact, or right-equivalence algorithm is invoked here.
+        """
+        ring = self.polynomial_ring()
+        if int(_engine_ring(ring.base_ring()).characteristic()) != 0:
+            raise NotImplementedError(
+                "ADE normal-form recognition is currently represented in characteristic zero"
+            )
+        if len(tuple(ring.algebra_generators())) != 2:
+            return None
+        milnor = int(self.milnor_number())
+        candidates = [("A", milnor)]
+        if milnor >= 4:
+            candidates.append(("D", milnor))
+        for exceptional in (6, 7, 8):
+            if milnor == exceptional:
+                candidates.append(("E", exceptional))
+        for candidate in candidates:
+            if self.equation() == _ade_normal_form_equation(ring, candidate):
+                return candidate
+        return None
 
     def jacobian_generators(self):
         ring = self.polynomial_ring()
