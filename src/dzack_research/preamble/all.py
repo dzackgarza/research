@@ -742,6 +742,8 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     LogPairs,
     NormalSchemes,
     OpenImmersions,
+    ProjectiveCompleteIntersection,
+    ProjectiveCompleteIntersections,
     ProjectiveSchemes,
     ProjectiveSpace,
     ProjectiveSpaces,
