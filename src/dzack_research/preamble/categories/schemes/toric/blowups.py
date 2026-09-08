@@ -1,6 +1,9 @@
 r"""Toric blowups of smooth surfaces at torus-fixed points."""
 
+from sage.misc.cachefunc import cached_method
+
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
     module_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
@@ -61,6 +64,63 @@ class ToricFixedPointBlowups(OwnedCategoryOverBaseRing):
         def exceptional_self_intersection(self):
             exceptional = self.exceptional_divisor()
             return self.divisor_intersection(exceptional, exceptional)
+
+        def _refined_ray_for_source_ray(self, source_ray):
+            (source_vector,) = tuple(source_ray.rays())
+            for target_ray in self.fan().cones(1):
+                if target_ray == self.exceptional_ray():
+                    continue
+                (target_vector,) = tuple(target_ray.rays())
+                if _same_ray_vector(source_vector, target_vector):
+                    return target_ray
+            raise ArithmeticError("a source ray disappeared from the star subdivision")
+
+        def strict_transform_divisor(self, divisor):
+            r"""Return the strict transform of a torus-invariant divisor.
+
+            Star subdivision preserves every old ray.  The strict transform
+            keeps the coefficient on each preserved prime divisor and has
+            coefficient zero on the exceptional prime.  This is independent
+            of the total transform supplied by :meth:`blowup_morphism`.
+            """
+            source = self.blowup_source()
+            source_group = source.weil_divisor_group()
+            target_group = self.weil_divisor_group()
+            divisor = source_group(divisor)
+            coefficients = module_coefficients(divisor, source_group)
+            return target_group.linear_combination(
+                {
+                    self._refined_ray_for_source_ray(ray): coefficient
+                    for ray, coefficient in coefficients.items()
+                    if coefficient != source_group.base_ring().zero()
+                }
+            )
+
+        @cached_method
+        def picard_pullback_morphism(self):
+            r"""Return ``f^*: Pic(X) -> Pic(Bl_p X)`` for the toric blowdown.
+
+            The map is induced from the existing Cartier-divisor pullback.  Its
+            construction through the quotient presentations verifies that
+            principal-divisor relations vanish after pullback.
+            """
+            source = self.blowup_source()
+            source_picard = source.picard_group()
+            target_picard = self.picard_group()
+            source_weil = source.weil_divisor_group()
+            target_weil = self.weil_divisor_group()
+
+            def image(label):
+                pulled = self.blowup_morphism().pullback_divisor(
+                    source_weil.module_generator(label)
+                )
+                coefficients = module_coefficients(pulled, target_weil)
+                return target_picard.linear_combination(coefficients)
+
+            return module_homset(source_picard, target_picard)(image)
+
+        def exceptional_picard_class(self):
+            return self.picard_group().module_generator(self.exceptional_ray())
 
 
 def _same_ray_vector(left, right) -> bool:
