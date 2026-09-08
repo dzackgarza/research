@@ -62,6 +62,8 @@ from __future__ import annotations
 import copyreg
 from abc import ABCMeta
 from collections.abc import Hashable
+from dataclasses import dataclass
+from inspect import Parameter, signature
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters
@@ -516,6 +518,102 @@ class OwnedCategoryMixin(CatConstructionsMixin):
             if arrow_type is not None:
                 result.ObjectType = arrow_type
         return result
+
+
+@dataclass(frozen=True)
+class ConstructionParameter:
+    r"""One named datum consumed by one level of an owned constructor chain."""
+
+    name: str
+    provider: type
+    kind: str
+    required: bool
+    default: object | None
+    annotation: object | None
+
+
+@dataclass(frozen=True)
+class ConstructionContract:
+    r"""The discoverable constructor contract of one owned category.
+
+    Cooperative constructors intentionally pass unknown data onward through
+    ``**rest``.  The contract therefore records both the named parameters each
+    preamble provider consumes and the providers that still leave an open
+    variadic boundary.  Duplicate parameter names are retained when two
+    mathematical levels independently consume the same spelling.
+    """
+
+    category: Category
+    parameters: tuple[ConstructionParameter, ...]
+    variadic_providers: tuple[type, ...]
+    opaque_providers: tuple[type, ...]
+
+    def named(self, name: str) -> tuple[ConstructionParameter, ...]:
+        return tuple(parameter for parameter in self.parameters if parameter.name == name)
+
+    def required_names(self) -> frozenset[str]:
+        return frozenset(parameter.name for parameter in self.parameters if parameter.required)
+
+    def optional_names(self) -> frozenset[str]:
+        return frozenset(parameter.name for parameter in self.parameters if not parameter.required)
+
+    def is_open(self) -> bool:
+        return bool(self.variadic_providers or self.opaque_providers)
+
+
+def construction_contract(category: Category) -> ConstructionContract:
+    r"""Discover the defining data contributed by ``category.ObjectType``'s MRO.
+
+    Only constructors declared in the preamble are part of this mathematical
+    contract.  Sage runtime bases remain implementation substrate.  A provider
+    whose signature cannot be inspected is retained explicitly as opaque; a
+    provider with ``**rest`` is retained as variadic.  Discovery never changes
+    construction behavior and never interprets an omitted name as optional.
+    """
+    parameters: list[ConstructionParameter] = []
+    variadic: list[type] = []
+    opaque: list[type] = []
+    for provider in category.ObjectType.__mro__:
+        if not provider.__module__.startswith("dzack_research.preamble"):
+            continue
+        initializer = provider.__dict__.get("__init__")
+        if initializer is None:
+            continue
+        try:
+            provider_signature = signature(initializer)
+        except (TypeError, ValueError):
+            opaque.append(provider)
+            continue
+        for parameter in provider_signature.parameters.values():
+            if parameter.name == "self":
+                continue
+            if parameter.kind is Parameter.VAR_KEYWORD:
+                variadic.append(provider)
+                continue
+            if parameter.kind is Parameter.VAR_POSITIONAL:
+                opaque.append(provider)
+                continue
+            if parameter.name == "category":
+                continue
+            has_default = parameter.default is not Parameter.empty
+            annotation = None if parameter.annotation is Parameter.empty else parameter.annotation
+            default = parameter.default if has_default else None
+            parameters.append(
+                ConstructionParameter(
+                    name=parameter.name,
+                    provider=provider,
+                    kind=parameter.kind.name,
+                    required=not has_default,
+                    default=default,
+                    annotation=annotation,
+                )
+            )
+    return ConstructionContract(
+        category=category,
+        parameters=tuple(parameters),
+        variadic_providers=tuple(dict.fromkeys(variadic)),
+        opaque_providers=tuple(dict.fromkeys(opaque)),
+    )
 
 
 def object_of(category: Category, **data: ConstructionData) -> Parent:
