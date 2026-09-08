@@ -1256,18 +1256,17 @@ class TensorModule(UniqueRepresentation, Parent):
         return modules_for(self._upper_ranks), modules_for(self._lower_ranks)
 
     def tensor_indices(self):
-        r"""Return the standard generating set of each finite index module."""
+        r"""Return the owned generating set of each index module, slot by slot."""
+        upper_modules, lower_modules = self.index_modules()
 
-        def keys(rank):
-            assert rank != Infinity, (
-                "an infinite index set is the generating set of its index module"
+        def generating_sets(modules):
+            return finite_ordered_image(
+                modules.index_set(),
+                lambda slot: modules[slot].module_generating_set(),
+                name="Tensor-index generating sets",
             )
-            return finite_ordered_set(range(int(rank)))
 
-        return (
-            tuple(keys(rank) for rank in self._upper_ranks),
-            tuple(keys(rank) for rank in self._lower_ranks),
-        )
+        return generating_sets(upper_modules), generating_sets(lower_modules)
 
     def _element_constructor_(self, entries: tuple) -> _CoordinateTensor:
         shape = self._index_ranks()

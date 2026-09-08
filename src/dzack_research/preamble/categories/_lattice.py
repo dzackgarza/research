@@ -490,7 +490,13 @@ class _PairingGram(ModuleElement, Tensor):
 
     def tensor_indices(self):
         keys = _basis_keys(self._module)
-        return ((), (keys, keys))
+        upper = finite_ordered_set(())
+        lower = finite_ordered_image(
+            finite_ordered_set((0, 1)),
+            lambda _slot: keys,
+            name="Gram-tensor index generating sets",
+        )
+        return upper, lower
 
     def _pairing_name(self) -> str:
         return "pairing"
