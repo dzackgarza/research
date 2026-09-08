@@ -308,7 +308,7 @@ def ToricCycleClassIsomorphism(scheme, codimension):
     if codimension < 0 or codimension > dimension:
         raise ValueError("cycle codimension lies between zero and the scheme dimension")
     chow = scheme.chow_group(dimension - codimension)
-    cohomology = ToricIntegralSingularCohomology(scheme, 2 * codimension)
+    cohomology = scheme.integral_singular_cohomology(2 * codimension)
     forward = module_homset(chow, cohomology)(
         {
             label: cohomology.module_generator(label)
@@ -347,8 +347,8 @@ def ToricMiddleCohomologyForm(scheme):
     _require_smooth_complete_rational_toric_realization(scheme)
     if int(scheme.dimension()) != 2:
         raise ValueError("the represented middle-cohomology form is for surfaces")
-    cohomology = ToricIntegralSingularCohomology(scheme, 2)
-    cycle_class = ToricCycleClassIsomorphism(scheme, 1)
+    cohomology = scheme.integral_singular_cohomology(2)
+    cycle_class = scheme.cycle_class_isomorphism(1)
     picard_to_chow = ToricPicardToChowIsomorphism(scheme)
     cohomology_to_picard = picard_to_chow.inverse() * cycle_class.inverse()
     intersection = scheme.picard_intersection_pairing()
