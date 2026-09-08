@@ -207,6 +207,27 @@ def test_the_complete_linear_system_retains_its_divisor_and_section_space() -> N
     assert system.projective_dimension() == 2
 
 
+def test_hyperplane_linear_system_defines_the_projective_plane_identity_coordinates() -> None:
+    plane = _projective_plane()
+    line = plane.hyperplane_divisor()
+    system = plane.complete_linear_system(line)
+    morphism = system.associated_morphism()
+
+    assert morphism.domain() is plane
+    assert morphism.codomain() is system
+    assert morphism._preamble_linear_system_divisor == line
+    assert len(morphism.native_morphism().defining_polynomials()) == 3
+
+
+def test_non_basepoint_free_divisor_has_no_everywhere_defined_associated_morphism() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(1).toric_variety(QQ)
+    divisor = _prime_divisors(surface)[0]
+
+    if not surface.is_basepoint_free(divisor):
+        with pytest.raises(ValueError, match="basepoint-free"):
+            surface.associated_projective_morphism(divisor)
+
+
 def test_a_cartier_divisor_constructs_its_line_bundle_on_the_toric_atlas() -> None:
     plane = _projective_plane()
     line = _prime_divisors(plane)[0]

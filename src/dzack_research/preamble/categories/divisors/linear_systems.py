@@ -34,6 +34,12 @@ class CompleteLinearSystems(OwnedCategoryOverBaseRing):
         def projective_dimension(self):
             return self.relative_dimension()
 
+        def associated_morphism(self):
+            r"""Return the map defined by this complete linear system when basepoint-free."""
+            return self.linear_system_scheme().associated_projective_morphism(
+                self.linear_system_divisor()
+            )
+
 
 def CompleteLinearSystem(scheme, divisor, section_space):
     r"""Return the complete linear system of ``divisor`` on ``scheme``.

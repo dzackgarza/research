@@ -78,6 +78,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     SmoothSchemes,
     Spec,
     _has_scheme_placement,
+    categorical_scheme_morphism,
     refine_scheme,
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
@@ -1020,6 +1021,41 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.weil_divisor_group()(divisor),
                 self.divisor_section_space(divisor),
             )
+
+        def _engine_toric_divisor(self, divisor):
+            r"""Return Sage's private toric divisor with the same ray coefficients."""
+            divisor = self.weil_divisor_group()(divisor)
+            coefficients = [
+                int(self.weil_multiplicity(divisor, ray))
+                for ray in self.fan().cones(1)
+            ]
+            return self._toric_engine_variety().divisor(coefficients)
+
+        def associated_projective_morphism(self, divisor):
+            r"""Return the morphism ``phi_|D|: X -> |D|`` for a basepoint-free divisor.
+
+            The monomial basis of ``H^0(X,O_X(D))`` indexed by ``P_D cap M``
+            is the same basis used by Sage's toric divisor engine.  Evaluating
+            those sections in homogeneous Cox coordinates gives the Kodaira
+            map to the ambient projective space of the complete linear system.
+            Basepoint-freeness is the exact condition ensuring this rational
+            map is everywhere defined.
+            """
+            divisor = self.weil_divisor_group()(divisor)
+            if not self.is_basepoint_free(divisor):
+                raise ValueError(
+                    "the associated projective map is a morphism only for a basepoint-free divisor"
+                )
+            system = self.complete_linear_system(divisor)
+            sections = self._engine_toric_divisor(divisor).sections_monomials()
+            native = self._toric_engine_variety().Hom(system)(list(sections))
+            result = categorical_scheme_morphism(
+                native,
+                domain=self,
+                codomain=system,
+            )
+            result._preamble_linear_system_divisor = divisor
+            return result
 
         def invertible_sheaf_of_divisor(self, divisor):
             r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.
