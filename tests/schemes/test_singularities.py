@@ -42,3 +42,19 @@ def test_a_smooth_hypersurface_origin_has_the_jacobian_tangent_hyperplane() -> N
     assert not smooth.is_singular_at_origin()
     assert embedding.domain() is tangent
     assert embedding.codomain() is smooth.ambient_tangent_space()
+
+
+def test_cusp_delta_branch_and_conductor_are_local_normalization_invariants() -> None:
+    plane = PolynomialRing(QQ, ("x", "y"))
+    x, y = plane.algebra_generators()
+    cusp = IsolatedHypersurfaceSingularity(plane, y**2 - x**3)
+
+    assert cusp.delta_invariant() == 1
+    assert cusp.local_tjurina_number() == 2
+    assert cusp.number_of_branches_at_origin() == 1
+
+    conductor = cusp.conductor_ideal_at_origin()
+    local_ring = conductor.ring()
+    localization = local_ring.localization_map()
+    assert localization(x) in conductor
+    assert localization(y) in conductor
