@@ -2245,7 +2245,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 3.7 Finite Configuration, Graph Labeling, and Polyhedral Primitives
 
-- [ ] **Pairing configuration graphs**: Encoding vector/facet pairings into colored graphs with vertex/edge invariants.
+- [x] **Pairing configuration graphs**: Encoding vector/facet pairings into colored graphs with vertex/edge invariants.
 - [ ] **Graph canonization interface**: Interface to Sage's Bliss/Nauty backend for canonical graph labeling and automorphism groups.
 - [ ] **Permutation lifting**: Lifting graph automorphism permutations to integral lattice isometries via `libgap`.
 - [ ] **Exact rational polyhedral cones**: Facet enumeration, extreme rays, incidence, and face stabilizers delegating to Normaliz, cddlib, or PPL.
