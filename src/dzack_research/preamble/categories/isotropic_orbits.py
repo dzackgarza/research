@@ -503,6 +503,74 @@ class Cusp:
         return f"Cusp of rank {self.module_rank()} in {self.lattice()}"
 
 
+class ArithmeticCusp(SageObject):
+    r"""One orbit of primitive isotropic subobjects under an arithmetic subgroup.
+
+    The subgroup is part of the object.  Its stabilizer is therefore the
+    actual intersection ``Gamma cap P_I``, not the full parabolic in
+    ``O(L)``.  Membership retains an explicit transporter lying in ``Gamma``.
+    """
+
+    def __init__(self, subgroup, representative) -> None:
+        if subgroup.supergroup().domain() is not representative.ambient_lattice():
+            raise ValueError(
+                "an arithmetic cusp subgroup and representative must belong to the same lattice"
+            )
+        self._subgroup = subgroup
+        self._representative = representative
+
+    def subgroup(self):
+        return self._subgroup
+
+    def lattice(self):
+        return self.subgroup().supergroup().domain()
+
+    def module_rank(self):
+        return self.representative().module_rank()
+
+    def representative(self):
+        return self._representative
+
+    def stabilizer(self):
+        r"""Return ``Gamma cap P_I`` for the chosen representative ``I``."""
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            stabilizer_subgroup,
+        )
+
+        parabolic = self.representative().parabolic_subgroup()
+        return stabilizer_subgroup(
+            self.subgroup(),
+            self.representative(),
+            "setwise on the represented isotropic sublattice",
+            lambda element: element in parabolic,
+        )
+
+    parabolic_subgroup = stabilizer
+
+    def reduction_lattice(self):
+        return self.representative().isotropic_reduction()
+
+    def transporter_witness(self, subobject):
+        r"""Return one ``g in Gamma`` carrying ``subobject`` to the representative."""
+        return self.subgroup().isotropic_equivalence_witness(
+            subobject,
+            self.representative(),
+        )
+
+    def __contains__(self, subobject) -> bool:
+        if subobject.ambient_lattice() is not self.lattice():
+            return False
+        if subobject.module_rank() != self.module_rank():
+            return False
+        return self.transporter_witness(subobject) is not None
+
+    def __repr__(self) -> str:
+        return (
+            f"Rank-{self.module_rank()} cusp of {self.subgroup()} "
+            f"in {self.lattice()}"
+        )
+
+
 class CuspIncidence(SageObject):
     r"""One rank-``(1,2)`` isotropic flag orbit in the quotient Tits building.
 
@@ -567,6 +635,97 @@ class CuspIncidence(SageObject):
         return f"Tits-building incidence {self.line_cusp()} < {self.plane_cusp()}"
 
 
+class ArithmeticCuspIncidence(SageObject):
+    r"""One rank-``(1,2)`` flag orbit in an arithmetic-subgroup quotient building."""
+
+    def __init__(
+        self,
+        subgroup,
+        flag,
+        line_cusp,
+        plane_cusp,
+        line_transporter,
+        plane_transporter,
+    ) -> None:
+        terms = tuple(flag.terms())
+        if len(terms) != 2:
+            raise ValueError(
+                "an arithmetic cusp incidence is represented by a two-step isotropic flag"
+            )
+        line, plane = terms
+        if int(line.module_rank()) != 1 or int(plane.module_rank()) != 2:
+            raise ValueError("an arithmetic cusp incidence has ranks one and two")
+        line.inclusion().factor_through(plane.inclusion())
+        if line_cusp.subgroup() is not subgroup or plane_cusp.subgroup() is not subgroup:
+            raise ValueError("both cusp vertices must belong to the selected subgroup quotient")
+        if line_transporter not in subgroup or plane_transporter not in subgroup:
+            raise ValueError("cusp transporters must lie in the selected arithmetic subgroup")
+        if not _same_subobject(
+            _image_subobject(line_transporter, line),
+            line_cusp.representative(),
+        ):
+            raise ValueError("the retained line transporter has the wrong target cusp")
+        if not _same_subobject(
+            _image_subobject(plane_transporter, plane),
+            plane_cusp.representative(),
+        ):
+            raise ValueError("the retained plane transporter has the wrong target cusp")
+        self._subgroup = subgroup
+        self._flag = flag
+        self._line_cusp = line_cusp
+        self._plane_cusp = plane_cusp
+        self._line_transporter = line_transporter
+        self._plane_transporter = plane_transporter
+
+    def subgroup(self):
+        return self._subgroup
+
+    def lattice(self):
+        return self.subgroup().supergroup().domain()
+
+    def flag(self):
+        return self._flag
+
+    def line(self):
+        return self.flag().terms()[0]
+
+    def plane(self):
+        return self.flag().terms()[1]
+
+    def line_cusp(self):
+        return self._line_cusp
+
+    def plane_cusp(self):
+        return self._plane_cusp
+
+    def line_transporter(self):
+        return self._line_transporter
+
+    def plane_transporter(self):
+        return self._plane_transporter
+
+    def stabilizer(self):
+        r"""Return the subgroup of ``Gamma`` preserving both terms of the flag."""
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            stabilizer_subgroup,
+        )
+
+        line_stabilizer = self.line().parabolic_subgroup()
+        plane_stabilizer = self.plane().parabolic_subgroup()
+        return stabilizer_subgroup(
+            self.subgroup(),
+            self.flag(),
+            "setwise on both terms of the isotropic flag",
+            lambda element: element in line_stabilizer and element in plane_stabilizer,
+        )
+
+    def __repr__(self) -> str:
+        return (
+            f"Arithmetic Tits-building incidence "
+            f"{self.line_cusp()} < {self.plane_cusp()}"
+        )
+
+
 def cusps(lattice, rank=1):
     r"""Return the cusps of ``lattice``: its ``O(L)``-orbits of rank-``k`` subobjects.
 
@@ -580,6 +739,21 @@ def cusps(lattice, rank=1):
         tuple(
             Cusp(representative)
             for representative in lattice.Aut().isotropic_orbit_representatives(rank)
+        )
+    )
+
+
+def arithmetic_cusps(subgroup, rank=1):
+    r"""Return the primitive-isotropic cusp orbits of ``subgroup`` of rank ``rank``.
+
+    The subgroup's own isotropic orbit splitter performs the finite-character
+    double-coset calculation.  Each returned cusp then retains exact subgroup
+    membership and a transporter in that subgroup.
+    """
+    return finite_ordered_set(
+        tuple(
+            ArithmeticCusp(subgroup, representative)
+            for representative in subgroup.isotropic_orbit_representatives(rank)
         )
     )
 
@@ -621,6 +795,49 @@ def tits_building_incidence(lattice):
                 orthogonal_group.isotropic_stabilizer_generators(flag, flag=True),
             )
         )
+    return finite_ordered_set(tuple(incidences))
+
+
+def arithmetic_tits_building_incidence(subgroup):
+    r"""Return the line/plane incidence in the arithmetic quotient by ``subgroup``.
+
+    Rank-two flag representatives are split under the same finite-character
+    quotient as the line and plane orbits.  The resulting edge therefore
+    retains actual ``Gamma``-transporters to its two cusp vertices instead of
+    inheriting transporters from the full orthogonal group.
+    """
+    lattice = subgroup.supergroup().domain()
+    line_cusps = arithmetic_cusps(subgroup, 1)
+    plane_cusps = arithmetic_cusps(subgroup, 2)
+    incidences = []
+    for flag in subgroup.isotropic_orbit_representatives(2, flag=True):
+        line, plane = flag.terms()
+        line_vertices = tuple(cusp for cusp in line_cusps if line in cusp)
+        plane_vertices = tuple(cusp for cusp in plane_cusps if plane in cusp)
+        if len(line_vertices) != 1 or len(plane_vertices) != 1:
+            raise ArithmeticError(
+                "an arithmetic flag term does not determine a unique subgroup cusp orbit"
+            )
+        line_cusp = line_vertices[0]
+        plane_cusp = plane_vertices[0]
+        line_transporter = line_cusp.transporter_witness(line)
+        plane_transporter = plane_cusp.transporter_witness(plane)
+        if line_transporter is None or plane_transporter is None:
+            raise ArithmeticError(
+                "an arithmetic flag term lies in a cusp with no subgroup transporter"
+            )
+        incidences.append(
+            ArithmeticCuspIncidence(
+                subgroup,
+                flag,
+                line_cusp,
+                plane_cusp,
+                line_transporter,
+                plane_transporter,
+            )
+        )
+    if any(incidence.lattice() is not lattice for incidence in incidences):
+        raise ArithmeticError("an arithmetic cusp incidence changed its ambient lattice")
     return finite_ordered_set(tuple(incidences))
 
 
@@ -774,6 +991,8 @@ def isotropic_stabilizer_generators(orthogonal_group, obj, *, flag=False):
 
 
 __all__ = [
+    "ArithmeticCusp",
+    "ArithmeticCuspIncidence",
     "Cusp",
     "CuspIncidence",
     "IsotropicFlagLocus",
@@ -785,6 +1004,8 @@ __all__ = [
     "PrimitiveIsotropicVectorOrbit",
     "PrimitiveIsotropicVectorOrbitDecomposition",
     "VectorLocus",
+    "arithmetic_cusps",
+    "arithmetic_tits_building_incidence",
     "cusps",
     "isotropic_flag_locus",
     "isotropic_equivalence_witness",

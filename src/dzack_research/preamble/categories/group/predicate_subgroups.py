@@ -192,6 +192,22 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 self, left, right, flag=flag
             )
 
+        def cusps(self, rank=1):
+            r"""Return this arithmetic subgroup's primitive-isotropic cusp orbits."""
+            from dzack_research.preamble.categories.isotropic_orbits import (
+                arithmetic_cusps,
+            )
+
+            return arithmetic_cusps(self, rank)
+
+        def tits_building_incidence(self):
+            r"""Return this subgroup's rank-one/rank-two quotient-building incidence."""
+            from dzack_research.preamble.categories.isotropic_orbits import (
+                arithmetic_tits_building_incidence,
+            )
+
+            return arithmetic_tits_building_incidence(self)
+
         def _repr_(self):
             return f"{{g in {self._containing_group} : {self._description}}}"
 
