@@ -2288,11 +2288,11 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 6.1 Coxeter diagrams
 
-- [ ] Preserve root realizations/root-to-diagram morphisms, not only graphs.
-- [ ] Associated Coxeter/finitely-presented Coxeter groups.
-- [ ] Elliptic and parabolic subdiagram orbit posets.
+- [x] Preserve root realizations/root-to-diagram morphisms, not only graphs.
+- [x] Associated Coxeter/finitely-presented Coxeter groups.
+- [x] Elliptic and parabolic subdiagram orbit posets.
 - [ ] Maximal elliptic and parabolic subdiagram posets.
-- [ ] Root-intersection graphs.
+- [x] Root-intersection graphs.
 - [ ] Restore mathematically valid finite/affine/noncrystallographic literature regressions from `coxeter_tdd_specs`.
 
 #### 6.2 Vinberg invariant matrices and weighted graphs
