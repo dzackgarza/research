@@ -295,6 +295,75 @@ class TwoUEichlerModel(SageObject):
             name=f"Eichler covering representatives of square {square} in {lattice}",
         )
 
+    def isometry_to(self, other):
+        r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
+
+        The selected two hyperbolic planes are carried identically to the
+        selected two hyperbolic planes of ``other``.  The only recursive
+        problem is therefore the complement isometry ``K -> K'``; when that
+        owner returns a witness, the orthogonal direct sum of the three maps
+        is an actual lattice isometry.  This decreases rank by four and does
+        not assert the separate generation theorem for ``O(2U+K)``.
+        """
+        if not isinstance(other, TwoUEichlerModel):
+            raise TypeError("a represented 2U recursion compares two TwoUEichlerModel objects")
+        source = self.lattice()
+        target = other.lattice()
+        if source.base_ring() is not target.base_ring():
+            return None
+        complement_isometry = self.orthogonal_complement().isometry_to(
+            other.orthogonal_complement()
+        )
+        if complement_isometry is None:
+            return None
+        target_first = other.first_hyperbolic_plane()
+        target_second = other.second_hyperbolic_plane()
+        first_inclusion = target.injection(0)
+        second_inclusion = target.injection(1)
+        complement_inclusion = target.injection(2)
+        first_labels = target_first.module_generating_set()
+        second_labels = target_second.module_generating_set()
+        images = (
+            tuple(first_inclusion(target_first.module_generator(label)) for label in first_labels)
+            + tuple(second_inclusion(target_second.module_generator(label)) for label in second_labels)
+            + tuple(
+                complement_inclusion(
+                    complement_isometry(
+                        self.orthogonal_complement().module_generator(label)
+                    )
+                )
+                for label in self.orthogonal_complement().module_generating_set()
+            )
+        )
+        if len(images) != int(source.module_rank()):
+            raise ArithmeticError("the recursive 2U isometry does not specify one image per source generator")
+        result = source.Isom(target)(images)
+        if any(
+            result(left) != right
+            for left, right in zip(
+                self.hyperbolic_basis(), other.hyperbolic_basis(), strict=True
+            )
+        ):
+            raise ArithmeticError("the recursive 2U isometry moves a selected hyperbolic basis")
+        source_complement_inclusion = source.injection(2)
+        if any(
+            result(source_complement_inclusion(generator))
+            != complement_inclusion(complement_isometry(generator))
+            for generator in self.orthogonal_complement().module_generators()
+        ):
+            raise ArithmeticError("the recursive 2U isometry disagrees with its complement witness")
+        return result
+
+    def is_isometric_to(self, other) -> bool:
+        r"""Return the exact represented ``2U`` isometry decision when known."""
+        if not isinstance(other, TwoUEichlerModel):
+            return False
+        if self.lattice().base_ring() is not other.lattice().base_ring():
+            return False
+        return self.orthogonal_complement().is_isometric_to(
+            other.orthogonal_complement()
+        )
+
 
 def two_u_eichler_model(orthogonal_complement):
     r"""Return the represented ``U + U + K`` determinant model for ``K``."""
