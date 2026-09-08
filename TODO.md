@@ -1271,25 +1271,6 @@ script and call it delegated. If an actual algorithmic gap remains, name it and
 apply `ENG-06` before implementation. Bridge repairs and codec additions belong
 at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`).
 
-- [ ] **`lattice-embeddings`**. **Needs:** none.
-  Extend indefinite lattice embeddings beyond the exact regimes now represented.
-  **Owners:** `categories/lattice_morphisms.py`,
-  `categories/lattices.py`, and private lattice engines.
-  **Current maintained boundary:** higher-rank finite nondegenerate `ZZ`-lattice
-  isometry now uses OSCAR `is_isometric_with_isometry` and returns an actual
-  integral witness or an exact negative decision; target-specific primitive
-  embeddings and `sub`/`emb` class representatives use OSCAR/Nikulin when the
-  chosen target is unique in its genus.
-  **Remaining deliverable:** chosen-target primitive embedding existence/orbit
-  completeness outside that target-genus regime, without replacing the chosen
-  target by an arbitrary lattice in the same genus.
-  **Decision:** existence, an explicit embedding/isometry, and a complete
-  orbit classification are different outputs. Missing backend support is
-  not a negative mathematical answer.
-  **Acceptance:** an actual integral form-preserving map, its inverse when
-  appropriate, primitivity through its cokernel, and orbit completeness under
-  a stated theorem. Equal discriminants or genera alone do not supply a map.
-
 - [ ] **`transporters`**. **Needs:** none.
   Finish rational-integral transporters and cosets through the required
   external arithmetic operations.
@@ -1663,6 +1644,5 @@ behavior.
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `LATTICE-chosen-target-embeddings-20260908-1637` | arithmetic / chosen-target primitive embeddings beyond one-class genus | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattice_engines.py; src/dzack_research/preamble/categories/lattice_morphisms.py; tests/lattices/test_chosen_target_primitive_embeddings.py` (write) | `aa3531c7` | 2026-09-08T16:37:00Z |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
 | `LATTICE-parabolic-gluing-20260908-0832` | arithmetic / exact parabolic Levi image | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_parabolic_gluing.py` (write) | `9f36bcb0` | 2026-09-08T08:32:00Z |
