@@ -27,6 +27,7 @@ of order six, and ``E8`` gives the trivial group.
 """
 
 from sage.graphs.graph import Graph
+from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
@@ -94,6 +95,7 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                         graph.add_edge(left + 1, right + 1, pairing)
             return graph
 
+        @cached_method
         def configuration_automorphism_group(self, algorithm=None):
             r"""Return framing permutations preserving every pairing.
 
@@ -213,28 +215,60 @@ class VectorConfigurations(OwnedCategoryOverBaseRing):
                 }
             )
 
-        def _position_maps(self):
-            r"""Yield each graph automorphism as a map on the framing positions."""
-            positions = self.configuration_positions()
+        def configuration_isometry_from_automorphism(self, automorphism):
+            r"""Lift one owned pairing-graph automorphism through libGAP.
 
-            def as_position_map(permutation):
-                return lambda label: positions[
-                    int(permutation(int(positions.ranking_map()(label)) + 1)) - 1
-                ]
-
-            return tuple(
-                as_position_map(permutation)
-                for permutation in self._pairing_graph().automorphism_group(
-                    edge_labels=True
+            The graph automorphism group is an owned permutation group.  Its
+            backend permutation crosses into GAP only long enough to evaluate
+            the action on the canonical point set ``1..m``; the resulting map
+            on the configuration's own framing positions is then lifted by
+            :meth:`configuration_isometry`, which verifies every pairing.
+            """
+            automorphisms = self.configuration_automorphism_group()
+            if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
+                raise ValueError(
+                    "the permutation to lift must lie in this configuration's automorphism group"
                 )
-            )
+            positions = self.configuration_positions()
+            backend = automorphisms._to_engine(automorphism)
+            gap_permutation = libgap(backend)
+
+            def position_map(label):
+                source = int(positions.ranking_map()(label)) + 1
+                target = int(
+                    libgap.OnPoints(libgap(source), gap_permutation).sage()
+                )
+                return positions[target - 1]
+
+            return self.configuration_isometry(position_map)
+
+        def ambient_isometry_from_automorphism(self, automorphism):
+            r"""Lift a graph automorphism to ``O(L)`` when the configuration frames ``L``."""
+            automorphisms = self.configuration_automorphism_group()
+            if getattr(automorphism, "parent", lambda: None)() is not automorphisms:
+                raise ValueError(
+                    "the permutation to lift must lie in this configuration's automorphism group"
+                )
+            positions = self.configuration_positions()
+            backend = automorphisms._to_engine(automorphism)
+            gap_permutation = libgap(backend)
+
+            def position_map(label):
+                source = int(positions.ranking_map()(label)) + 1
+                target = int(
+                    libgap.OnPoints(libgap(source), gap_permutation).sage()
+                )
+                return positions[target - 1]
+
+            return self.ambient_isometry(position_map)
 
         def diagram_automorphism_isometries(self):
             r"""Return the sublattice isometries lifted from every graph automorphism."""
+            automorphisms = self.configuration_automorphism_group()
             return finite_ordered_set(
                 tuple(
-                    self.configuration_isometry(position_map)
-                    for position_map in self._position_maps()
+                    self.configuration_isometry_from_automorphism(automorphism)
+                    for automorphism in automorphisms
                 )
             )
 
