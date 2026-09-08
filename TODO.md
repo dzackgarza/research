@@ -2158,9 +2158,9 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] `L.sublattice_from(vectors, saturate=False)`: returns a subobject pair $(S, \iota: S \hookrightarrow L)$ with inclusion morphism, never an unattached Gram matrix.
 - [x] `L.primitive_sublattice_from(vectors)`: saturated subobject via Smith normal form of the quotient.
 - [x] `L.orthogonal_complement(I)` / `L.perp(I)`: orthogonal subobject pair $(I^\perp, \iota: I^\perp \hookrightarrow L)$.
-- [ ] `L.O()`: full finitely generated arithmetic group $O(L)$.
-- [ ] `L.O_plus()`: stable orthogonal group $\widetilde{O}(L) = \ker(O(L) \to O(A_L))$.
-- [ ] `L.O_component()`: positive cone component group $O^\Omega(L)$, when a component is specified.
+- [x] `L.O()`: full finitely generated arithmetic group $O(L)$.
+- [x] `L.O_plus()`: stable orthogonal group $\widetilde{O}(L) = \ker(O(L) \to O(A_L))$.
+- [x] `L.O_component()`: positive cone component group $O^\Omega(L)$, when a component is specified.
 - [ ] `L.isometry_to(M)`: returns an actual `LatticeIsometry` morphism $f: L \to M$ or `None`.
 - [ ] `L.is_isometric_to(M)`: verified boolean predicate.
 - [ ] Locus objects: `L.vector_locus(norm=m, primitive=False)`, `L.isotropic_sublattice_locus(rank=k)`, `L.isotropic_flag_locus(ranks=(d1, ..., dr))`.
@@ -2206,19 +2206,19 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 3.4 Orthogonal and Arithmetic Groups (`G = L.O()`) and Subgroup Constructors
 
-- [ ] `G.ambient_lattice()`: underlying lattice $L$.
-- [ ] `G.gens()`, `G.one()`, `G.element(matrix)`, `G.contains(g)`.
-- [ ] `G.discriminant_representation()`: reduction homomorphism $\rho_A: G \to O(A_L)$.
-- [ ] `G.component_character()`: character $\chi_\Omega$, when defined.
-- [ ] `G.kernel(phi)`: kernel subgroup for homomorphisms $\phi$.
-- [ ] `G.preimage(phi, H)`: preimage subgroup.
-- [ ] `G.stable_subgroup()`: kernel of $\rho_A$ on discriminant form.
-- [ ] `G.component_subgroup()`.
-- [ ] `G.centralizer(f)`: centralizer $Z_G(f)$.
-- [ ] `G.stabilizer(v)`: point stabilizer of vector $v$.
-- [ ] `G.stabilizer(I, action="setwise")` and `G.stabilizer(I, action="pointwise")`: setwise and pointwise stabilizers of sublattice $I$.
-- [ ] `G.intersection(H1, ..., Hr)`: intersection of subgroups.
-- [ ] `G.transporter(x, y)`: element $g \in G$ mapping $x \mapsto y$.
+- [x] `G.ambient_lattice()`: underlying lattice $L$.
+- [x] `G.gens()`, `G.one()`, `G.element(matrix)`, `G.contains(g)`.
+- [x] `G.discriminant_representation()`: reduction homomorphism $\rho_A: G \to O(A_L)$.
+- [x] `G.component_character()`: character $\chi_\Omega$, when defined.
+- [x] `G.kernel(phi)`: kernel subgroup for homomorphisms $\phi$.
+- [x] `G.preimage(phi, H)`: preimage subgroup.
+- [x] `G.stable_subgroup()`: kernel of $\rho_A$ on discriminant form.
+- [x] `G.component_subgroup()`.
+- [x] `G.centralizer(f)`: centralizer $Z_G(f)$.
+- [x] `G.stabilizer(v)`: point stabilizer of vector $v$.
+- [x] `G.stabilizer(I, action="setwise")` and `G.stabilizer(I, action="pointwise")`: setwise and pointwise stabilizers of sublattice $I$.
+- [x] `G.intersection(H1, ..., Hr)`: intersection of subgroups.
+- [x] `G.transporter(x, y)`: element $g \in G$ mapping $x \mapsto y$.
 - [ ] `G.orbit_decomposition(X)`: orbit representatives, stabilizers, and transporters on locus $X$.
 - [ ] Structured subgroup parents retaining construction provenance:
   - `GeneratedSubgroup(generators)`
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `O-orthogonal-group-semantic-api-20260908-0623` | O / orthogonal-group semantic API over existing exact algorithms | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; src/dzack_research/preamble/categories/lattice_morphisms.py; tests/lattices/test_orthogonal_group_semantic_api.py` (write) | `db83759c` | 2026-09-08T06:23:00Z |
 
 #### Existing work awaiting adoption
 
