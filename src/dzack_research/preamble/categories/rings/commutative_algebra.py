@@ -135,9 +135,14 @@ class PrimeSpectra(OwnedCategory):
                 f"the dimension formula that computes height here needs {ring} to be "
                 "an integral domain"
             )
+            finite_type_source = (
+                ring.quotient_source()
+                if ring in QuotientRings()
+                else ring
+            )
             assert (
                 ring in PrincipalIdealDomains()
-                or ring.base_ring() in OwnedFields()
+                or finite_type_source.base_ring() in OwnedFields()
             ), (
                 f"the dimension formula that computes height here needs {ring} to be "
                 "a principal ideal domain or finitely generated over a field, which is "
@@ -145,6 +150,30 @@ class PrimeSpectra(OwnedCategory):
             )
             quotient = QuotientRing(ring, self.ideal())
             return int(ring.krull_dimension()) - int(quotient.krull_dimension())
+
+        @cached_method
+        def embedding_dimension(self):
+            r"""Return ``dim_kappa(p) pR_p/(pR_p)^2``.
+
+            Nakayama identifies this dimension with the minimal number of
+            generators of the maximal ideal of ``R_p``.  The local ideal is an
+            actual represented module, so the value is obtained from its
+            existing residue-module construction rather than from a separate
+            Jacobian formula.
+            """
+            local = self.local_ring()
+            return int(local.maximal_ideal().minimal_number_of_generators())
+
+        @cached_method
+        def is_regular(self) -> bool:
+            r"""Return whether the local ring ``R_p`` is regular.
+
+            For a Noetherian local ring, regularity is exactly
+            ``edim(R_p) = dim(R_p)``.  Here the first side is the residue
+            dimension of the represented maximal ideal and the second is the
+            height of ``p`` in the supported catenary affine-domain regime.
+            """
+            return self.embedding_dimension() == int(self.height())
 
         def order_of_vanishing(self, function):
             r"""Return ``ord_p(f)`` at this height-one point.

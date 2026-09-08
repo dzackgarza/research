@@ -1255,6 +1255,18 @@ class AffineSchemes(_SchemePropertyCategory):
         ring = self.base_ring()
         return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
 
+    class ParentMethods:
+        def is_regular_at(self, point) -> bool:
+            r"""Return whether ``O_{X,p}`` is a regular local ring."""
+            spectrum = self.underlying_space()
+            if point.parent() is not spectrum:
+                point = spectrum(point)
+            return bool(point.is_regular())
+
+        def is_singular_at(self, point) -> bool:
+            r"""Return the negation of local regularity at ``p``."""
+            return not self.is_regular_at(point)
+
     def super_categories(self):
         # Quasi-affine as well: a scheme is an open subscheme of itself.
         return [
