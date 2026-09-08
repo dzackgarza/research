@@ -103,7 +103,7 @@ class FiniteGaloisExtension(SageObject):
             raise ValueError(
                 "a represented finite extension must be separable over its base field"
             )
-        self._automorphisms: tuple[ExactFieldMorphism, ...] | None = None
+        self._automorphisms = None
 
     def base_field(self):
         return self._base_field
@@ -123,7 +123,7 @@ class FiniteGaloisExtension(SageObject):
     def degree(self):
         return _relative_degree(self.base_field(), self.field())
 
-    def automorphisms(self) -> tuple[ExactFieldMorphism, ...]:
+    def automorphisms(self):
         if self._automorphisms is None:
             automorphisms = []
             base_generators = field_generators(self.base_field())
@@ -139,7 +139,7 @@ class FiniteGaloisExtension(SageObject):
                     f"{self.field()} is not represented as a finite Galois extension "
                     f"of {self.base_field()}"
                 )
-            self._automorphisms = tuple(automorphisms)
+            self._automorphisms = finite_ordered_set(tuple(automorphisms))
         return self._automorphisms
 
     def is_galois(self) -> bool:
@@ -263,7 +263,7 @@ class FiniteGaloisQuotient(Parent):
     def base_field(self):
         return self._extension.base_field()
 
-    def automorphisms(self) -> tuple[ExactFieldMorphism, ...]:
+    def automorphisms(self):
         return self._automorphisms
 
     def __call__(self, datum):

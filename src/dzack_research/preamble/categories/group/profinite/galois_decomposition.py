@@ -9,6 +9,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.set_categories import Set
 
 
 class PrimeProlongation(SageObject):
@@ -170,8 +171,8 @@ class FiniteElementConjugacyClass(SageObject):
     def __contains__(self, element) -> bool:
         return element in self._elements
 
-    def elements(self) -> tuple:
-        return tuple(self._elements)
+    def elements(self):
+        return Set(self._elements)
 
     def __eq__(self, other) -> bool:
         return (

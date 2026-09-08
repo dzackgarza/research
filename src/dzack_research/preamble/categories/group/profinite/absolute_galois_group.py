@@ -58,6 +58,7 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     InertiaGroupConjugacyClass,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import _relative_degree
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 class AbsoluteGaloisGroupElement(Element):
@@ -111,8 +112,10 @@ class AbsoluteGaloisGroupElement(Element):
     def exact_action(self):
         return self._exact_action
 
-    def realized_stages(self) -> tuple:
-        return tuple(stage for stage, _coordinate in self._coordinates)
+    def realized_stages(self):
+        return finite_ordered_set(
+            tuple(stage for stage, _coordinate in self._coordinates)
+        )
 
     def restriction_coordinate(self, stage):
         for known_stage, coordinate in self._coordinates:
