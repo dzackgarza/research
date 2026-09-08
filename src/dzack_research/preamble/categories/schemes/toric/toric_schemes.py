@@ -49,7 +49,11 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     PolynomialRing,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
+    CartierDivisorGroup,
+)
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroup
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
@@ -589,11 +593,46 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             orbit-cone correspondence restricted to codimension one: ``D_rho``
             is the closure of the orbit of ``rho``.
             """
-            from dzack_research.preamble.categories.divisors.divisor_groups import (
-                FormalDivisorGroup,
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FreshFreeModuleOn,
             )
 
-            return FormalDivisorGroup(_integers(), tuple(self.fan().cones(1)))
+            module = FreshFreeModuleOn(
+                _integers(),
+                finite_ordered_set(tuple(self.fan().cones(1))),
+            )
+            return WeilDivisorGroup(module)
+
+        weil_divisor_group = torus_invariant_divisor_group
+
+        @cached_method
+        def cartier_divisor_group(self):
+            r"""Return the represented Cartier divisor group in the smooth toric regime.
+
+            On a smooth fan every torus-invariant Weil divisor is Cartier
+            (CLS Prop. 4.2.6), hence the selected toric Cartier group has the
+            same free presentation as ``Div_T(X)`` but remains a distinct
+            divisor-role object.  For singular fans the proper Cartier
+            subgroup is not yet represented as one common kernel, so individual
+            divisors continue to use ``is_cartier``.
+            """
+            assert self.fan().is_smooth(), (
+                "the represented Cartier divisor group is currently constructed "
+                "for a smooth fan, where every invariant Weil divisor is Cartier"
+            )
+            return CartierDivisorGroup(self.weil_divisor_group())
+
+        @cached_method
+        def cartier_to_weil_morphism(self):
+            r"""The inclusion ``CDiv_T(X) -> Div_T(X)`` on a smooth toric variety."""
+            cartier = self.cartier_divisor_group()
+            weil = self.weil_divisor_group()
+            return module_homset(cartier, weil)(
+                {
+                    label: weil.module_generator(label)
+                    for label in cartier.module_generating_set()
+                }
+            )
 
         def torus_invariant_prime_divisor(self, ray):
             r"""The prime divisor ``D_rho`` of one ray of the fan."""
@@ -817,6 +856,43 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "Cartier divisors has no represented construction"
             )
             return PicardGroup(self.character_divisor_morphism().cokernel())
+
+        @cached_method
+        def cartier_class_projection(self):
+            r"""The quotient ``CDiv_T(X) ->> Pic(X)`` in the smooth toric regime."""
+            cartier = self.cartier_divisor_group()
+            picard = self.picard_group()
+            return module_homset(cartier, picard)(
+                {
+                    label: picard.module_generator(label)
+                    for label in cartier.module_generating_set()
+                }
+            )
+
+        @cached_method
+        def picard_to_class_group_morphism(self):
+            r"""The natural comparison ``Pic(X) -> Cl(X)`` for a smooth toric variety.
+
+            Since every invariant Weil divisor is Cartier on a smooth fan, the
+            comparison is an isomorphism.  The two quotient-role objects retain
+            the same presentation; this map records the comparison rather than
+            identifying them by object identity.
+            """
+            picard = self.picard_group()
+            classes = self.class_group()
+            forward = module_homset(picard, classes)(
+                {
+                    label: classes.module_generator(label)
+                    for label in picard.module_generating_set()
+                }
+            )
+            inverse = module_homset(classes, picard)(
+                {
+                    label: picard.module_generator(label)
+                    for label in classes.module_generating_set()
+                }
+            )
+            return Isomorphism(forward, inverse)
 
         def divisor_polytope(self, divisor):
             r"""``P_D = {m in M_R : <m,u_rho> >= -a_rho for all rho}`` (CLS (4.3.2)).

@@ -11,11 +11,14 @@ import pytest
 
 from dzack_research.preamble.all import (
     BasedFreeModule,
+    CartierDivisorGroups,
     ClassGroups,
     PicardGroups,
     QQ,
     RationalPolyhedralFans,
+    WeilDivisorGroups,
     ZZ,
+    module_homset,
 )
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
@@ -105,6 +108,39 @@ def test_the_picard_group_is_constructed_on_a_smooth_fan_and_refused_otherwise()
 
     with pytest.raises(AssertionError):
         _quadric_cone().picard_group()
+
+
+def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
+    plane = _projective_plane()
+    weil = plane.weil_divisor_group()
+    cartier = plane.cartier_divisor_group()
+    classes = plane.class_group()
+    picard = plane.picard_group()
+
+    assert weil in WeilDivisorGroups()
+    assert cartier in CartierDivisorGroups()
+    assert classes in ClassGroups()
+    assert picard in PicardGroups()
+    assert cartier is not weil
+    assert picard is not classes
+
+    cartier_to_weil = plane.cartier_to_weil_morphism()
+    to_picard = plane.cartier_class_projection()
+    to_class = plane.class_group_projection()
+    picard_to_class = plane.picard_to_class_group_morphism().forward()
+
+    assert cartier_to_weil.domain() is cartier
+    assert cartier_to_weil.codomain() is weil
+    assert to_picard.domain() is cartier
+    assert to_picard.codomain() is picard
+    assert picard_to_class.domain() is picard
+    assert picard_to_class.codomain() is classes
+    assert to_class * cartier_to_weil == picard_to_class * to_picard
+
+    comparison = plane.picard_to_class_group_morphism()
+    assert comparison.inverse() * comparison.forward() == module_homset(
+        picard, picard
+    ).identity()
 
 
 def test_the_sections_of_a_line_on_the_projective_plane_are_the_three_linear_forms() -> None:
