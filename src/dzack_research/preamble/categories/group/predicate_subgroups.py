@@ -5,6 +5,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Owned
 from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
+    Subgroups,
     _canonical_subgroup_inclusion,
     _owned_group,
 )
@@ -20,20 +21,27 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
 
 class PredicateSubgroups(OwnedParameterizedCategory):
 
+    @staticmethod
+    def __classcall__(cls, supergroup):
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(supergroup))
+
+    def parameter_category(self):
+        return OwnedGroups()
+
     def an_object(self):
-        r"""The centralizer of the identity in an object of the parameter category.
+        r"""The whole parameter group cut out by the tautological predicate.
 
         Every element commutes with the identity, so this is the whole group --
         cut out by a predicate, which is what membership here states.
         """
-        group = self.base().an_object()
+        group = self.base()
         return centralizer(group, group.one())
 
     def _repr_object_names(self):
         return "predicate subgroups"
 
     def super_categories(self):
-        return [self.base()]
+        return [Subgroups(self.base())]
 
     class ParentMethods:
         def __init__(
@@ -48,7 +56,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             self._predicate = predicate
             self._description = description
             self._character_data = dict(character_data or {})
-            super().__init__(facade=True, **rest)
+            super().__init__(supergroup=containing_group, **rest)
 
         def supergroup(self):
             return self._containing_group
@@ -124,10 +132,9 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 "discriminant_preimages": tuple(left.get("discriminant_preimages", ()))
                 + tuple(right.get("discriminant_preimages", ())),
             }
-            return predicate_subgroup(
+            return intersection_subgroup(
                 self.supergroup(),
-                lambda element: element in self and element in other,
-                f"({self._description}) and ({other._description})",
+                (self, other),
                 character_data=data,
             )
 
@@ -159,8 +166,129 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             return f"{{g in {self._containing_group} : {self._description}}}"
 
 
-def predicate_subgroup_category():
-    return PredicateSubgroups(OwnedGroups())
+class _PredicateSubgroupConstruction(OwnedParameterizedCategory):
+    @staticmethod
+    def __classcall__(cls, supergroup):
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(supergroup))
+
+    def parameter_category(self):
+        return OwnedGroups()
+
+    def super_categories(self):
+        return [PredicateSubgroups(self.base())]
+
+class KernelSubgroups(_PredicateSubgroupConstruction):
+    def an_object(self):
+        from dzack_research.preamble.categories.group.groups import group_homset
+
+        group = self.base()
+        return kernel_subgroup(group_homset(group, group).identity())
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "kernel subgroups"
+
+    class ParentMethods:
+        def __init__(self, kernel_morphism, **rest) -> None:
+            self._preamble_kernel_morphism = kernel_morphism
+            super().__init__(**rest)
+
+        def kernel_morphism(self):
+            return self._preamble_kernel_morphism
+
+
+class PreimageSubgroups(_PredicateSubgroupConstruction):
+    def an_object(self):
+        from dzack_research.preamble.categories.group.groups import group_homset
+
+        group = self.base()
+        whole = predicate_subgroup(group, lambda _element: True, "the whole group")
+        return preimage_subgroup(group_homset(group, group).identity(), whole)
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "preimage subgroups"
+
+    class ParentMethods:
+        def __init__(self, preimage_morphism, target_subgroup, **rest) -> None:
+            self._preamble_preimage_morphism = preimage_morphism
+            self._preamble_target_subgroup = target_subgroup
+            super().__init__(**rest)
+
+        def preimage_morphism(self):
+            return self._preamble_preimage_morphism
+
+        def target_subgroup(self):
+            return self._preamble_target_subgroup
+
+
+class StabilizerSubgroups(_PredicateSubgroupConstruction):
+    def an_object(self):
+        group = self.base()
+        identity = group.one()
+        return stabilizer_subgroup(
+            group,
+            identity,
+            "conjugation",
+            lambda element: element * identity * element.inverse() == identity,
+        )
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "stabilizer subgroups"
+
+    class ParentMethods:
+        def __init__(self, stabilized_object, stabilizer_action, **rest) -> None:
+            self._preamble_stabilized_object = stabilized_object
+            self._preamble_stabilizer_action = stabilizer_action
+            super().__init__(**rest)
+
+        def stabilized_object(self):
+            return self._preamble_stabilized_object
+
+        def stabilizer_action(self):
+            return self._preamble_stabilizer_action
+
+
+class CentralizerSubgroups(_PredicateSubgroupConstruction):
+    def an_object(self):
+        group = self.base()
+        return centralizer(group, group.one())
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "centralizer subgroups"
+
+    class ParentMethods:
+        def __init__(self, centralizing_element, **rest) -> None:
+            self._preamble_centralizing_element = centralizing_element
+            super().__init__(**rest)
+
+        def centralizing_element(self):
+            return self._preamble_centralizing_element
+
+
+class IntersectionSubgroups(_PredicateSubgroupConstruction):
+    def an_object(self):
+        group = self.base()
+        whole = predicate_subgroup(group, lambda _element: True, "the whole group")
+        return intersection_subgroup(group, (whole, whole))
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "intersection subgroups"
+
+    class ParentMethods:
+        def __init__(self, intersected_subgroups, **rest) -> None:
+            self._preamble_intersected_subgroups = tuple(intersected_subgroups)
+            super().__init__(**rest)
+
+        def intersected_subgroups(self):
+            return self._preamble_intersected_subgroups
+
+
+def predicate_subgroup_category(containing_group):
+    return PredicateSubgroups(containing_group)
 
 
 def predicate_subgroup(
@@ -174,11 +302,88 @@ def predicate_subgroup(
     if containing_group not in OwnedGroups():
         raise TypeError(f"{containing_group} is not a group")
     return object_of(
-        predicate_subgroup_category(),
+        predicate_subgroup_category(containing_group),
         containing_group=containing_group,
         predicate=predicate,
         description=description,
         character_data=character_data,
+    )
+
+
+def kernel_subgroup(morphism):
+    group = _owned_group(morphism.domain())
+    identity = morphism.codomain().one()
+    return object_of(
+        KernelSubgroups(group),
+        containing_group=group,
+        predicate=lambda element: morphism(element) == identity,
+        description=f"{morphism}(g)=1",
+        kernel_morphism=morphism,
+    )
+
+
+def preimage_subgroup(
+    morphism,
+    subgroup,
+    *,
+    predicate=None,
+    description=None,
+    character_data=None,
+):
+    group = _owned_group(morphism.domain())
+    if predicate is None:
+        predicate = lambda element: morphism(element) in subgroup
+    if description is None:
+        description = f"{morphism}(g) lies in {subgroup}"
+    return object_of(
+        PreimageSubgroups(group),
+        containing_group=group,
+        predicate=predicate,
+        description=description,
+        character_data=character_data,
+        preimage_morphism=morphism,
+        target_subgroup=subgroup,
+    )
+
+
+def stabilizer_subgroup(
+    containing_group,
+    stabilized_object,
+    action,
+    predicate,
+    *,
+    description=None,
+):
+    group = _owned_group(containing_group)
+    if description is None:
+        description = f"g stabilizes {stabilized_object} {action}"
+    return object_of(
+        StabilizerSubgroups(group),
+        containing_group=group,
+        predicate=predicate,
+        description=description,
+        stabilized_object=stabilized_object,
+        stabilizer_action=action,
+    )
+
+
+def intersection_subgroup(
+    containing_group,
+    subgroups,
+    *,
+    character_data=None,
+):
+    group = _owned_group(containing_group)
+    subgroups = tuple(subgroups)
+    if any(subgroup.supergroup() is not group for subgroup in subgroups):
+        raise ValueError("an intersection requires subgroups of one ambient group")
+    return object_of(
+        IntersectionSubgroups(group),
+        containing_group=group,
+        predicate=lambda element: all(element in subgroup for subgroup in subgroups),
+        description="g lies in every selected subgroup",
+        character_data=character_data,
+        intersected_subgroups=subgroups,
     )
 
 
@@ -192,8 +397,27 @@ def is_predicate_subgroup(group):
 def centralizer(containing_group, element):
     if element not in containing_group:
         raise ValueError(f"{element} is not in {containing_group}")
-    return predicate_subgroup(
-        containing_group,
-        lambda candidate: element * candidate == candidate * element,
-        f"g commutes with {element}",
+    return object_of(
+        CentralizerSubgroups(containing_group),
+        containing_group=containing_group,
+        predicate=lambda candidate: element * candidate == candidate * element,
+        description=f"g commutes with {element}",
+        centralizing_element=element,
     )
+
+
+__all__ = [
+    "CentralizerSubgroups",
+    "IntersectionSubgroups",
+    "KernelSubgroups",
+    "PredicateSubgroups",
+    "PreimageSubgroups",
+    "StabilizerSubgroups",
+    "centralizer",
+    "intersection_subgroup",
+    "is_predicate_subgroup",
+    "kernel_subgroup",
+    "predicate_subgroup",
+    "preimage_subgroup",
+    "stabilizer_subgroup",
+]

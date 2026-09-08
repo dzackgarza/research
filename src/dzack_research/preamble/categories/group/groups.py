@@ -94,7 +94,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.refine import realize_owned_category, refine
 
 # --------------------------------------------------------------------------
 # Engine crossings.  These are the only sites that read the Sage group behind
@@ -223,12 +223,18 @@ def _engine_supergroup(group):
 
 
 def _engine_subgroup(group, generators):
+    generators = tuple(group(generator) for generator in generators)
     engine = _engine_group(group)
     try:
         construct = engine.subgroup
     except AttributeError:
         raise NotImplementedError(f"{group} does not construct subgroups from generators in this engine") from None
-    return _transported_subgroup(group, construct([group._to_engine(group(generator)) for generator in generators]))
+    subgroup = _transported_subgroup(
+        group,
+        construct([group._to_engine(generator) for generator in generators]),
+    )
+    subgroup._preamble_selected_subgroup_generators = finite_ordered_set(generators)
+    return refine(subgroup, GeneratedSubgroups(group))
 
 
 def _engine_cosets(group, subgroup, side):
@@ -1147,8 +1153,11 @@ class GroupHomomorphism(GroupMorphism_libgap):
         return _element_from_engine(self.domain(), preimage)
 
     def kernel(self):
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            kernel_subgroup,
+        )
 
-        return _subgroup_from_gap(self.domain(), self.gap().Kernel())
+        return kernel_subgroup(self)
 
     def image(self):
 
@@ -2182,6 +2191,31 @@ class Subgroups(OwnedParameterizedCategory):
 
         def inclusion(self):
             return _canonical_subgroup_inclusion(self)
+
+
+class GeneratedSubgroups(OwnedParameterizedCategory):
+    r"""Subgroups equipped with the selected family used to generate them."""
+
+    @staticmethod
+    def __classcall__(cls, supergroup):
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(supergroup))
+
+    def parameter_category(self):
+        return OwnedGroups()
+
+    def an_object(self):
+        return self.base().subgroup(())
+
+    def super_categories(self):
+        return [Subgroups(self.base())]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "generated subgroups"
+
+    class ParentMethods:
+        def selected_subgroup_generators(self):
+            return self._preamble_selected_subgroup_generators
 
 
 def coxeter_presentation(coxeter_matrix, names=None):

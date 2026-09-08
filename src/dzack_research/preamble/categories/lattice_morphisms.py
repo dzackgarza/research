@@ -20,7 +20,13 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
 )
-from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
+from dzack_research.preamble.categories.group.predicate_subgroups import (
+    intersection_subgroup,
+    kernel_subgroup,
+    predicate_subgroup,
+    preimage_subgroup,
+    stabilizer_subgroup,
+)
 from dzack_research.preamble.categories.isotropic_orbits import (
     PrimitiveIsotropicSublatticeLocus,
     PrimitiveIsotropicSublatticeOrbitDecomposition,
@@ -1063,10 +1069,11 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             )
         else:
             predicate = lambda automorphism: automorphism.discriminant_morphism() in subgroup
-        return predicate_subgroup(
-            self,
-            predicate,
-            f"rho_L(g) lies in {subgroup}",
+        return preimage_subgroup(
+            self.discriminant_representation(),
+            subgroup,
+            predicate=predicate,
+            description=f"rho_L(g) lies in {subgroup}",
             character_data={"discriminant_preimages": (subgroup,)},
         )
 
@@ -1082,23 +1089,13 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         r"""Return the subgroup ``morphism^{-1}(subgroup)`` of this group."""
         if morphism.domain() is not self:
             raise ValueError("a group preimage requires a morphism whose domain is this group")
-        return predicate_subgroup(
-            self,
-            lambda element: morphism(element) in subgroup,
-            f"g maps into {subgroup}",
-        )
+        return preimage_subgroup(morphism, subgroup)
 
     def kernel(self, morphism):
         r"""Return the kernel subgroup of a represented group morphism."""
         if morphism.domain() is not self:
             raise ValueError("a group kernel requires a morphism whose domain is this group")
-        target = morphism.codomain()
-        identity = target.one()
-        return predicate_subgroup(
-            self,
-            lambda element: morphism(element) == identity,
-            f"{morphism}(g)=1",
-        )
+        return kernel_subgroup(morphism)
 
     def stable_subgroup(self):
         r"""Return ``ker(O(L) -> O(A_L))``."""
@@ -1118,11 +1115,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
 
     def intersection(self, *subgroups):
         r"""Return the intersection of represented subgroups of this orthogonal group."""
-        return predicate_subgroup(
-            self,
-            lambda element: all(element in subgroup for subgroup in subgroups),
-            "g lies in every selected subgroup",
-        )
+        return intersection_subgroup(self, subgroups)
 
     def lattice(self):
         r"""Return \(L\), the lattice this orthogonal group acts on."""
@@ -1157,10 +1150,12 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         assert target.parent() is lattice, (
             "a point stabilizer in O(L) fixes a vector of L"
         )
-        return predicate_subgroup(
+        return stabilizer_subgroup(
             self,
+            target,
+            "pointwise",
             lambda automorphism: automorphism(target) == target,
-            f"g fixes {target}",
+            description=f"g fixes {target}",
         )
 
     def pointwise_stabilizer(self, embedding):
@@ -1177,12 +1172,14 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         embedded = tuple(
             embedding(generator) for generator in source.module_generators()
         )
-        return predicate_subgroup(
+        return stabilizer_subgroup(
             self,
+            source,
+            "pointwise",
             lambda automorphism: all(
                 automorphism(vector) == vector for vector in embedded
             ),
-            f"g fixes {source} pointwise",
+            description=f"g fixes {source} pointwise",
         )
 
     def setwise_stabilizer(self, embedding):
@@ -1215,10 +1212,12 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 for vector in embedded
             )
 
-        return predicate_subgroup(
+        return stabilizer_subgroup(
             self,
+            source,
+            "setwise",
             preserves_image,
-            f"g(I)=I for I={source}",
+            description=f"g(I)=I for I={source}",
         )
 
     @cached_method
