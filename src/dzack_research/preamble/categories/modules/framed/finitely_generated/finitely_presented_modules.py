@@ -583,6 +583,30 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 spectrum,
             )
 
+        def local_free_trivialization_at(self, point):
+            r"""Return an explicit free trivialization of ``M_p`` when ``p`` lies in the free locus.
+
+            The residue fibre chooses a basis among the selected generators.
+            Nakayama makes the corresponding map from a free module onto
+            ``M_p``.  At a point of the Fitting-theoretic free locus the source
+            rank is exactly the local rank, so the resulting surjection between
+            free modules of that rank is an isomorphism; its inverse is the
+            common module-morphism inverse construction.
+            """
+            spectrum = self.base_ring().spectrum()
+            if point.parent() is not spectrum:
+                point = spectrum(point)
+            if not self._is_free_at_point(point):
+                raise ValueError("the module is not free at the supplied point")
+
+            localized = self.localize_at_prime(point)
+            labels = localized.residue_module().basis_generator_labels()
+            free = localized.presentation().codomain()._fresh_free_module_on(labels)
+            forward = module_homset(free, localized)(
+                lambda label: localized.module_generator(label)
+            )
+            return Isomorphism(forward, forward.inverse())
+
         def _is_free_at_point(self, point) -> bool:
             r"""Decide freeness of ``M_p`` from the Fitting ideals at ``point``."""
             ring = self.base_ring()
