@@ -1949,7 +1949,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] Diagonals as morphisms/subobjects. Source: `55c202bc`; every represented scheme has its diagonal morphism, and affine schemes retain the diagonal as a closed subscheme.
 - [x] Graph morphisms/subschemes. Source: `55c202bc`; scheme morphisms retain `(id,f)` and affine-target graphs as closed subschemes.
 - [x] Equalizers and fixed subschemes. Sources: `55c202bc`, `28b23405`; affine equalizers are closed subschemes and endomorphism fixed loci use that equalizer owner.
-- [ ] Scheme-theoretic image.
+- [x] Scheme-theoretic image. Source: `55c202bc`; affine morphisms return `V(ker f^#)` with the represented factorization through the smallest closed target.
 - [x] Base change of schemes with identity/composition laws. Source: `55c202bc`; `SchemeBaseChangeFunctor` acts on objects/morphisms and records identity/composition laws.
 - [x] Slice and coslice categories using the shared categorical constructions, with their objects and commuting morphisms. Source: `55c202bc`.
   Schemes over `S` and families `X -> S` use `Sch/S`; pointed constructions use the appropriate coslice.
