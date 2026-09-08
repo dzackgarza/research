@@ -12,9 +12,12 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSpace,
     FiniteTypeSchemes,
     IntegralSchemes,
+    ProjectiveSchemes,
     ProjectiveSpace,
+    ProjectiveSpaces,
     Schemes,
     SeparatedSchemes,
+    SmoothSchemes,
 )
 
 
@@ -77,6 +80,51 @@ class Curves(_DimensionSubcategoryOfVarieties):
 
     def _repr_object_names(self):
         return f"curves over {self.base_ring()}"
+
+    class ParentMethods:
+        def arithmetic_genus(self):
+            r"""Return the arithmetic genus ``p_a(C)=1-P_C(0)``.
+
+            For a projective curve the Hilbert polynomial is the defining
+            projective invariant whose constant term gives ``1-p_a``.  The
+            computation therefore belongs to the projective presentation and
+            remains distinct from normalization/geometric-genus algorithms.
+            """
+            base = self.scheme_base_ring()
+            if self not in ProjectiveSchemes(base):
+                raise NotImplementedError(
+                    "arithmetic genus here requires a represented projective curve"
+                )
+            if self in ProjectiveSpaces(base):
+                return 0
+            defining_ideal = self.defining_ideal_owned()
+            polynomial = defining_ideal._engine_ideal().hilbert_polynomial()
+            return int(1 - polynomial(0))
+
+        def geometric_genus(self):
+            r"""Return geometric genus where smoothness identifies it with ``p_a``.
+
+            A smooth projective integral curve has no normalization defect, so
+            its geometric and arithmetic genera agree.  For singular curves
+            they need not agree; this method deliberately refuses to route
+            those curves through Sage's unchecked generic ``genus()``.  Their
+            geometric genus must instead come from an explicitly represented
+            normalization/geometric-integrality construction.
+            """
+            base = self.scheme_base_ring()
+            if self not in ProjectiveSchemes(base):
+                raise NotImplementedError(
+                    "geometric genus here requires a represented projective curve"
+                )
+            if self not in SmoothSchemes(base):
+                raise NotImplementedError(
+                    "geometric genus of a singular curve requires its normalization, not the arithmetic genus"
+                )
+            return self.arithmetic_genus()
+
+        def genus(self):
+            r"""Return geometric genus, never arithmetic genus by convention."""
+            return self.geometric_genus()
 
 
 class Surfaces(_DimensionSubcategoryOfVarieties):
