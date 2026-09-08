@@ -2187,14 +2187,14 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 #### 3.3 Sublattices and Isotropic Reductions (`I`, `R`)
 
 - [ ] `I.ambient_lattice()`: derived codomain of inclusion morphism $\iota.\operatorname{codomain}()$.
-- [ ] `I.inclusion()`: embedding morphism $\iota: I \hookrightarrow L$.
-- [ ] `I.basis()`: basis elements of $I$.
-- [ ] `I.rank()`: rank of $I$.
-- [ ] `I.saturation()`: saturated closure $I_{\text{sat}} \hookrightarrow L$.
-- [ ] `I.is_primitive()`: saturation test via Smith invariants of $L/I$.
-- [ ] `I.is_totally_isotropic()`: test $b(x,y) = 0$ for all $x,y \in I$.
-- [ ] `I.perp()`: orthogonal complement $(I^\perp, I^\perp \hookrightarrow L)$.
-- [ ] `R = I.isotropic_reduction()`: structured reduction object for $K_I := I^\perp / I$ (torsion-free, non-degenerate of signature $(p-k, q-k)$ for $\operatorname{rk}(I)=k$ and $\operatorname{sig}(L)=(p,q)$):
+- [x] `I.inclusion()`: embedding morphism $\iota: I \hookrightarrow L$.
+- [x] `I.basis()`: basis elements of $I$.
+- [x] `I.rank()`: rank of $I$.
+- [x] `I.saturation()`: saturated closure $I_{\text{sat}} \hookrightarrow L$.
+- [x] `I.is_primitive()`: saturation test via Smith invariants of $L/I$.
+- [x] `I.is_totally_isotropic()`: test $b(x,y) = 0$ for all $x,y \in I$.
+- [x] `I.perp()`: orthogonal complement $(I^\perp, I^\perp \hookrightarrow L)$.
+- [x] `R = I.isotropic_reduction()`: structured reduction object for $K_I := I^\perp / I$ (torsion-free, non-degenerate of signature $(p-k, q-k)$ for $\operatorname{rk}(I)=k$ and $\operatorname{sig}(L)=(p,q)$):
   - `R.isotropic_sublattice()`: original subobject $I$.
   - `R.orthogonal_complement()`: $I^\perp$.
   - `R.quotient_lattice()`: non-degenerate formed quotient lattice $K_I = I^\perp / I$.
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `O-sublattice-reduction-semantic-api-20260908-0620` | O / sublattice and isotropic-reduction semantic API | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_lattice_semantic_api.py` (write) | `80baac14` | 2026-09-08T06:20:00Z |
 
 #### Existing work awaiting adoption
 
