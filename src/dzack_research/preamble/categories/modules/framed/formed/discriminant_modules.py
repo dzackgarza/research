@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
@@ -204,6 +205,23 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 for left in elements
                 for right in elements
             )
+
+        def associated_quadratic_form(self):
+            r"""Return the canonical quadratic refinement when the source lattice is even.
+
+            A bare bilinear torsion form does not determine a quadratic
+            refinement.  A discriminant bilinear form does retain its source
+            lattice, and for an even source lattice that lattice canonically
+            supplies ``q : A_L -> K/2R``.  The construction therefore goes
+            back through the lattice rather than reinterpreting entries of a
+            ``K/R``-valued Gram matrix.
+            """
+            lattice = self.source_lattice()
+            if not lattice.is_even():
+                raise ValueError(
+                    "the discriminant quadratic refinement exists only for an even source lattice"
+                )
+            return lattice.discriminant_quadratic_form()
 
         def orthogonal_quotient(self, subgroup):
             r"""Return ``H^perp/H`` with its descended bilinear form.
@@ -416,6 +434,7 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             zero = self.quadratic_value_module().zero()
             return all(self.q(element) == zero for element in elements)
 
+        @cached_method
         def associated_bilinear_form(self):
             r"""Return the ``QQ/ZZ``-valued polarization as a distinct object.
 
@@ -431,10 +450,19 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                 tuple(self.b(left, right) for right in generators)
                 for left in generators
             )
-            return TorsionBilinearFormModules(self.base_ring()).from_module(
-                self,
-                gram,
-                self.bilinear_value_module(),
+            unformed = self.unformed_module()
+            return FormModule(
+                BilinearForms(unformed, self.bilinear_value_module())(gram),
+                _extra_categories=(
+                    TorsionBilinearFormModules(self.base_ring()),
+                    DiscriminantModules(self.base_ring()),
+                    DiscriminantBilinearModules(self.base_ring()),
+                ),
+                _extra_construction_data={
+                    "source_lattice": self.source_lattice(),
+                    "dual_lattice": self.dual_lattice(),
+                    "bilinear_value_module": self.bilinear_value_module(),
+                },
             )
 
         def orthogonal_quotient(self, subgroup):

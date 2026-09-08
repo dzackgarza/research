@@ -1355,6 +1355,7 @@ def FormModule(
     form,
     *,
     _extra_categories=(),
+    _extra_construction_data=None,
     _subobject_ambient=None,
     _subobject_generator_images=None,
     _subobject_lift=None,
@@ -1404,10 +1405,11 @@ def FormModule(
             ]
         )
     categories.extend(tuple(_extra_categories))
-    construction_data = {
+    construction_data = dict(_extra_construction_data or {})
+    construction_data.update({
         "source_form": form,
         "unformed_module": module,
-    }
+    })
     common = {
         "_subobject_ambient": _subobject_ambient,
         "_subobject_generator_images": _subobject_generator_images,
