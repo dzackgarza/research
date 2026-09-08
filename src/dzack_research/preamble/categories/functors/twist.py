@@ -1,0 +1,67 @@
+r"""The lattice twist endofunctor ``L |-> L(a)``.
+
+For a nonzero integer ``a``, the twist keeps the underlying framed module and
+scales the symmetric bilinear form by ``a``.  A lattice morphism keeps the same
+coordinate matrix, because ``A^t G_M A = G_L`` implies
+``A^t (a G_M) A = a G_L``.  The object action delegates to the lattice owner's
+existing :meth:`twist` implementation; this module adds only the categorical
+morphism action required by the archived contract.
+"""
+
+from sage.misc.cachefunc import cached_function
+from sage.rings.integer_ring import ZZ as SageZZ
+
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.lattice_morphisms import lattice_homset
+from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+
+class TwistFunctor(Functor):
+    r"""The faithful endofunctor ``L |-> L(a)`` of integral lattices."""
+
+    _faithful = True
+
+    def __init__(self, scale) -> None:
+        integers = _own_ring(SageZZ)
+        self._scale = integers(scale)
+        if self._scale == integers.zero():
+            raise ValueError("a lattice twist uses a nonzero integer scale")
+        category = Lattices(integers)
+        super().__init__(category, category)
+
+    def scale(self):
+        return self._scale
+
+    def _apply_object(self, lattice):
+        return lattice.twist(self.scale())
+
+    def _apply_morphism(self, morphism):
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        original_target = morphism.codomain()
+
+        def image(label):
+            original_image = morphism(
+                morphism.domain().module_generator(label)
+            )
+            return target.linear_combination(
+                module_coefficients(original_image, original_target)
+            )
+
+        return lattice_homset(source, target)(image)
+
+    def _repr_(self):
+        return f"Twist by {self.scale()}"
+
+
+@cached_function
+def twist_functor(scale):
+    r"""Return the cached integral-lattice twist functor of scale ``scale``."""
+    return TwistFunctor(scale)
+
+
+__all__ = ["TwistFunctor", "twist_functor"]
