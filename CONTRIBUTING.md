@@ -4,6 +4,10 @@ This document defines the contribution policies for the repository.
 All contributions must follow the categorized policy index below.
 Each policy has a unique alphanumeric identifier.
 
+For construction, representation, or engine work, begin with the normative
+[preamble architecture specification](#preamble-architecture-specification).
+Its `OWN-*` policies specify the intended architecture, not implementation status.
+
 Use the [task complexity guide](COMPLEXITY.md) to score work and select a model and reasoning effort.
 
 For current work selection and corrections, apply `DEV-50` through `DEV-58`:
@@ -60,6 +64,397 @@ Write the example at the existing owning test surface, subject to the expectatio
 Keep the category declaration, constructor signature, and executable contract as the discoverable source; derive reports from them.
 
 These principles are more important than any current list of prohibited code shapes.  The policy codes below record concrete consequences and reviewable failure modes, but contributors should apply the discovery, ownership, locality, and dependency-direction model to new code even when no existing example names the exact violation.
+
+## Preamble architecture specification
+
+This section is the authoritative specification of construction ownership,
+entrypoints, encapsulation, and computational delegation in the preamble.
+It applies to new features, repairs, internal consumers, engine adapters,
+catalogues, and session integration. An importable implementation is not thereby
+a sanctioned entrypoint. A policy permitting private implementation machinery
+does not permit a second mathematical API.
+
+`AGENTS.md` routes contributors here. The category declaration, constructor,
+and their docstrings give each operation's concrete contract; this specification
+gives the architecture those declarations must realize. TODOs contain only the
+unfinished delta to that architecture. They do not own architectural decisions
+that would disappear when an item is completed. Historical proposals and examples
+are reference material, not exceptions to this contract.
+
+### Ownership and permitted dependencies
+
+| Layer | Owns | Permitted dependency | Forbidden responsibility |
+| --- | --- | --- | --- |
+| Session and notation | The selected preamble language | Owned mathematical entrypoints | Backend exports, adoption helpers, alternative constructor languages |
+| Mathematical categories and constructions | Defining objects and maps, hypotheses, elements, functorial behavior, public result types | Immediate mathematical owners and their sanctioned operations | Engine data inspection; reimplementation of inherited structure |
+| Shared categorical runtime | Construction dispatch, generated owned types, cooperative initialization | Its declared framework interfaces and private host primitives | Theory-specific branches, backend mathematical identity, a second category graph |
+| Private computation adapters | Lowering, established engine calls, representation correspondence, raising | Owned semantic inputs and the selected engines' supported interfaces | Public mathematical identity or taxonomy; raw results returned to mathematical consumers |
+| External engines | Their maintained computational algorithms and internal representations | Their own dependencies and supported bridges | Defining the preamble's public API or accepting owned objects as foreign parents |
+
+The shared framework boundary remains `sage-categories`: reuse its suitable
+released interfaces for generic categorical/runtime work. Repair an existing
+in-repo owner when that is the necessary current integration point; do not build
+a competing framework or import a sibling checkout by filesystem path.
+Suitability for class construction and suitability for mathematical computation
+are separate questions. A package can supply the latter without supplying the
+former.
+
+### `OWN-01`: Name the semantic owner before selecting an implementation
+
+- **Rule:** Before changing a construction, read its defining category, immediate
+  structure owners, current entrypoints, and consumers. Identify the owned input,
+  output, structural maps, and exact operation needed. Search the megadoc and live
+  source beyond the selected subtree for that operation, then inspect relevant
+  upstream implementations. Reuse both the owned mathematical construction and
+  the maintained computation; satisfying only one half is insufficient.
+- **Rationale:** A private Sage call can bypass an owned localization just as a
+  correctly named owned kernel can conceal a redundant local elimination algorithm.
+- **Violation Example:** Start a geometry-specific matrix kernel because the
+  selected geometry file does not implement kernels; reject CAP's computational
+  categories because CAP does not generate Python classes.
+- **Correct Example:** Geometry asks the owned complex for cohomology; the complex
+  and module owners supply the structure, and their private adapters reuse an
+  applicable established homology or module algorithm.
+
+### `OWN-02`: Every construction route converges on one semantic constructor
+
+- **Rule:** Each mathematical construction has one authoritative construction
+  contract at its owning category or object. Operator notation, literal ingress,
+  catalogue specimens, functor images, direct morphism construction, and raised
+  engine results establish that same contract. Specialized routes supply the
+  general constructor's defining datum; they do not allocate an alternative
+  parent and attach enough methods to resemble its output.
+
+  The public spelling follows `ARC-07` and `ARC-12`: morphisms are asked through
+  `Mor`; operations are asked of their owners. A private implementation function
+  is not a second public constructor. A named convenience route requires an
+  actual mathematical input form and factors through the owner. No `from_engine`,
+  `from_raw`, `trusted`, `unchecked`, or validation-disabling route admits weaker
+  data. Host allocation and `_element_constructor_` implement this contract;
+  they do not exempt a caller from it.
+- **Rationale:** One semantic funnel makes an invariant apply to every way an
+  object is obtained, instead of making correctness depend on caller diligence.
+- **Violation Example:** The direct module constructor establishes a scalar
+  action, but the backend-result constructor returns a parent without it.
+- **Correct Example:** The owner establishes the defining action once; each
+  supported representation supplies that action through the same construction.
+  Backend specialization changes computation, not the constructor obligations.
+
+### `OWN-03`: Construction establishes all inherited data before exposure
+
+- **Rule:** Each category level introduces only its own mathematical datum and
+  constructs through its immediate structure owners. The returned object has
+  every datum required by its actual placement, including its element and
+  morphism structures. Accessors recover that established datum; they do not
+  reconstruct it from descendants, probe for hidden state, or repair placement
+  when first called. Lazy realization is allowed only from complete defining
+  data with a fixed owned codomain, not as delayed provision of missing structure.
+
+  A property refinement retains the existing data. Adding a choice, action,
+  multiplication, framing, or presentation supplies that structure through its
+  constructor. Category membership alone never supplies missing data. The same
+  rules apply to zero objects, empty families, identity maps, and boundary degrees.
+- **Rationale:** Inherited method names without inherited construction data make
+  invalid objects available for subsequent features to build upon.
+- **Violation Example:** A DGA gets a cochain-complex category label but its
+  differential interface cannot supply the zero components its declared grading
+  requires; a formed object implements its own set operations.
+- **Correct Example:** The DGA construction supplies the graded module and
+  differential contract, then adds multiplication; generic complex operations
+  consume that same differential. Each lower level owns its own inherited data.
+
+### `OWN-04`: Public ownership is recursive and includes implicit operations
+
+- **Rule:** Every mathematical value reachable through a public preamble operation
+  is owned. This includes coefficients, base rings, indexing sets, family values,
+  iterated elements, morphism endpoints, structural maps, cycles, boundaries,
+  quotients, chosen representatives, and results of arithmetic and coercion.
+  A lazy family or callable must return owned values when evaluated; owning its
+  outer container is not enough. Public coordinate objects are themselves owned
+  mathematics tied to their chosen framing, never foreign arrays.
+
+  Public signatures, inherited methods, parser bindings, introspection-visible
+  conveniences, and serialization/reconstruction routes obey the same closure.
+  Python syntax/support values expressly allowed by the session contract are
+  not permission to return foreign mathematical values. There is no exception
+  for small integers, singleton rings, fast arithmetic, or a backend's
+  particularly convenient element type.
+
+  Encapsulation hides representation, not the mathematics: the defining action,
+  form, framing, inclusion, projection, and other required structure remain
+  available through their owned APIs. Returning opaque handles in place of
+  these objects is not stronger encapsulation.
+- **Rationale:** One reachable foreign constituent gives every downstream consumer
+  a second API even when the outer parent appears owned.
+- **Violation Example:** An owned cohomology module returns Sage cycle vectors;
+  an owned family yields GAP elements; inherited arithmetic returns Sage scalars.
+- **Correct Example:** A cycle representative is an element of the owned cycle
+  module, its inclusion lands in the owned complex component, and its quotient
+  image has the owned cohomology module as parent.
+
+### `OWN-05`: Private means confined to a named owner, not merely underscored
+
+- **Rule:** Store private representation fields only at their owning runtime or
+  adapter boundary. Mathematical consumers use owned public operations, including
+  when the consumer lives in the same repository or file. An underscore, a helper
+  module, a friend-like import, or omission from `preamble.all` is not permission
+  to access another owner's storage. Do not expose raw state through a newly
+  public accessor, a neutral name such as `data`, an iterator, or a closure.
+
+  A protected framework contract must be declared at its owner with its exact
+  purpose, permitted implementing/calling roles, input/output types, maintained
+  invariants, and reason ordinary public operations cannot implement that
+  framework responsibility. It is invoked through the designated dispatcher.
+  A comment at a consuming call site cannot create that authority. Protected
+  mathematical contracts exchange owned values. Raw handles may move only among
+  helpers of the same declared private computation/transport boundary; they do
+  not cross into another mathematical subsystem.
+- **Rationale:** Broad permission for a documented private call makes every
+  inconvenient public contract optional.
+- **Violation Example:** A lattice module imports a ring's private engine accessor
+  and documents the import as a protected extension so it can run its own algebra.
+- **Correct Example:** The ring or module owner exposes the missing mathematical
+  operation. Its private adapter may share transport helpers internally while
+  mathematical callers receive only the owned result.
+
+### `OWN-06`: Engine inspection is local to an already selected computation
+
+- **Rule:** Mathematical dispatch follows owned structure and hypotheses. Only
+  the designated adapter may inspect foreign representation types or invoke
+  engine-specific APIs after the owned operation is selected. Prefer supported
+  upstream APIs. If an upstream private function is genuinely required, first
+  check the public alternatives; document the exact upstream symbol, source,
+  assumptions, and consuming adapter at that adapter's declaration. This grants
+  no permission to inspect unrelated preamble internals or to export that function.
+
+  No dynamic attribute forwarding, blanket delegation of unknown methods,
+  runtime class mutation, public engine selector, backend option bag, or raw
+  adoption constructor belongs on an owned object. Private host initialization
+  and dispatch hooks are runtime implementation contracts, not escape routes.
+- **Rationale:** Foreign implementation details need one repair site when upstream
+  changes, and must not become the language used by mathematical consumers.
+- **Violation Example:** Ordinary toric code spreads calls to private Sage sheaf
+  helpers through several consumers; `__getattr__` forwards missing owned methods
+  to a Sage parent.
+- **Correct Example:** One toric adapter calls the source-grounded Sage helper
+  when no suitable public operation supplies the needed data; it raises the
+  result through the owned complex construction before returning.
+
+### `OWN-07`: Raise results through the same construction without losing maps
+
+- **Rule:** A private adapter lowers already-owned defining data, performs the
+  engine computation, and raises the result through the relevant owned
+  construction. Preserve the selected base ring, grading, action, presentation,
+  and structural arrows. Record actual comparison morphisms whenever a change
+  of representation requires them. An engine normal form cannot replace a
+  chosen presentation silently. Matching an invariant such as dimension does
+  not supply the required chosen isomorphism or presentation-comparison map.
+
+  The computation and construction steps must not recurse: raising computed
+  defining data enters the same semantic constructor without requesting the same
+  engine computation again. Make that dependency explicit at the owning methods;
+  do not solve recursion with a second unchecked constructor. If an engine
+  supplies only dimensions, it supplies a dimension computation, not class
+  representatives or induced maps. Obtain the missing data through an existing
+  suitable operation before claiming the richer construction.
+- **Rationale:** Correct numerical answers do not reconstruct the relationships
+  that subsequent mathematics needs.
+- **Violation Example:** Wrap the dimension of cohomology in a fresh vector space
+  and expose it as the cycle quotient; discard basis-change maps during lowering.
+- **Correct Example:** Raise the computed cycle and boundary data into the owned
+  modules and maps, retain their quotient map, and derive the induced map from
+  the supplied chain map through those structures.
+
+### `OWN-08`: Reuse the highest suitable maintained operation
+
+- **Rule:** Search by mathematical operation, equivalent standard formulations,
+  required maps, and coefficient hypotheses, not only by the desired Python
+  method name. Inspect existing dependencies first, then appropriate maintained
+  systems. Compare the full result contract: exactness, characteristic, torsion,
+  grading, presentations, representatives, and morphism action where required.
+  Compose established operations when that supplies the contract. Calling one
+  matrix routine inside a new local homology engine does not establish that
+  the existing homology implementations were considered.
+
+  Record the selected upstream operation and its actual uncovered semantic delta
+  at the private adapter or owning construction. For a planned task, record the
+  selection in the unfinished item and retain the durable contract at delivery.
+  A new nontrivial algorithm needs the demonstrated gap and explicit ownership
+  decision required by `ENG-06`. Moving a local algorithm to Julia, Singular,
+  or a generic helper does not make it upstream-maintained.
+- **Rationale:** Mature dependencies reduce the project's algorithmic correctness
+  burden only when they actually own the corresponding computation.
+- **Violation Example:** Rebuild syzygy or chain-reduction logic because a package
+  has an inconvenient return type, a different class model, or missing packaging.
+- **Correct Example:** Adapt an existing module-presentation or homology operation,
+  adding only the owned construction and map conversion that the engine does not
+  supply. Repair a bridge or packaging defect at its existing owner.
+
+### Existing computation references
+
+These are discovery starting points, not claims that one package computes every
+instance. Check the relevant current documentation and local adapter contract.
+
+| Required computation | Existing implementations to inspect |
+| --- | --- |
+| Chain-complex homology and cycle representatives | [Sage chain complexes](https://doc.sagemath.org/html/en/reference/homology/sage/homology/chain_complex.html); its documented implemented homology cases include integer coefficients and fields |
+| Commutative DGA cohomology and products | [Sage commutative DGAs](https://doc.sagemath.org/html/en/reference/algebras/sage/algebras/commutative_dga.html); inspect the grading and degree range of each operation |
+| Toric sheaf cohomology | [Sage toric divisors](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/divisor.html) and [equivariant bundle complexes](https://doc.sagemath.org/html/en/reference/schemes/sage/schemes/toric/sheaf/klyachko.html) |
+| Linear categories, presented modules, complexes | [CAP constructors](https://homalg-project.github.io/docs/CAP_project-based/constructors): LinearAlgebraForCAP, ModulePresentationsForCAP, FreydCategoriesForCAP, ComplexesAndFilteredObjectsForCAP |
+| Polynomial and module algorithms | Sage, Singular, Macaulay2, and OSCAR through the existing private bridges; inspect the needed presentation and map outputs, not only an invariant |
+| Standard polynomial-ring completions | [Sage multivariable polynomial completion](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_ring_base.html) and [lazy series](https://doc.sagemath.org/html/en/reference/power_series/sage/rings/lazy_series_ring.html) |
+
+The [sage-categories README](https://github.com/dzackgarza/sage-categories/blob/main/README.md),
+[complaints and reuse catalogue](https://github.com/dzackgarza/sage-categories/blob/main/COMPLAINTS.md),
+and [engine-boundary specification](https://github.com/dzackgarza/sage-categories/blob/main/specs/leaves.md#computation-engine-boundary)
+provide additional discovery context. Their historical findings are not a current
+capability audit, and their framework-specific exceptions do not relax the
+preamble's recursively owned public universe.
+
+### `OWN-09`: Transport through structure, with the actual preservation theorem
+
+- **Rule:** Construct functors on objects and morphisms, with their declared
+  domain, codomain, variance, and required comparison maps. Inherited operations
+  follow those structural functors only where the relevant preservation or
+  creation result applies. Reuse the framework's composition, identities, and
+  universal-construction interfaces; a leaf adds its new datum and genuinely
+  specialized computation, not another implementation of general map calculus.
+
+  Neither forgetfulness nor faithfulness implies preservation of every limit,
+  colimit, quotient, or cohomology operation. State the theorem and its hypotheses
+  at the owner; do not generate runtime boolean proofs of general categorical
+  identities or undecidable equality. Distinct mathematical choices remain
+  distinct even when an engine represents them by the same data.
+- **Rationale:** Generic reuse without its hypotheses can propagate incorrect
+  mathematics just as efficiently as correct mathematics.
+- **Violation Example:** Treat every algebraic cokernel as the cokernel of the
+  underlying linear map; implement scalar extension by changing stored ring
+  fields without transporting the module and its structure maps.
+- **Correct Example:** The relevant quotient owner constructs the required ideal
+  closure before the quotient; scalar extension acts on the module and the
+  defining action or multiplication through the same functorial construction.
+
+### Required construction factorizations
+
+These are semantic obligations, not additional global function names or a runtime
+registry. Each row names the general owner through which its special cases pass.
+
+| Family | Required construction and retained data | Specialization boundary |
+| --- | --- | --- |
+| Ring localization | The commutative ring's localization at an owned multiplicative submonoid, with its structure map and universal factorization | Element inversion uses the generated submonoid; prime localization uses the prime complement; a domain's fraction field uses its nonzero elements |
+| Scalar change | The existing scalar-change construction along an owned ring morphism, acting on objects and morphisms | Module localization uses the localization ring map; extra algebra/action/form structure is transported under the applicable hypotheses |
+| Completion | The owned inverse system of ideal-power quotients, its transition maps, limit, source map, and projections | Series and adic engines realize supported instances privately; no finite stage becomes the completed object |
+| Complexes and cohomology | The owned graded components and differentials; cycle inclusion, boundary inclusion, quotient, and induced maps | Chain/cochain conventions, coefficient hypotheses, and boundedness belong to the stated construction or computational case, never an implicit matrix convention |
+| Differential graded algebras | The common complex and graded algebra structures, with the differential and multiplication compatibility | Cohomology multiplication is induced through those structures; a commutative-DGA engine does not cover arbitrary DGAs by renaming |
+| Subobjects, quotients, and Homs | The existing inclusion/projection and fixed-endpoint `Mor` constructions | Coordinates enter only through the appropriate chosen framing/presentation and the same morphism constructor |
+
+For localization, use [Stacks 02C5](https://stacks.math.columbia.edu/tag/02C5).
+Locality is a consequence with hypotheses, not a property of every localization:
+prime localization is local, whereas `ZZ[1/2]` retains distinct maximal ideals
+generated by 3 and by 5. For completion use
+[Stacks 00M9](https://stacks.math.columbia.edu/tag/00M9): the objects are the inverse
+limits of `R/I^n` and `M/I^n M`. General completion is not assumed exact; comparison
+with scalar extension requires its stated hypotheses. The limit contract does
+not claim a general algorithm for computing arbitrary inverse limits.
+
+### `OWN-10`: Representation state cannot alter mathematical meaning
+
+- **Rule:** Defining owned data is authoritative. Backend workspaces, caches,
+  finite precision, normalization state, and transport handles are private
+  realizations of that data. Reuse existing cache/lifetime mechanisms with keys
+  respecting the owned construction's actual choices. Replacing an engine,
+  increasing precision, or populating a cache does not by itself change the
+  object's mathematical identity, defining maps, or category. A newly established
+  mathematical property may justify refinement; engine identity never does.
+
+  Exact equality, zero, membership, and hashing cannot be inferred from a lossy
+  projection or an engine's inconclusive boolean. Apply `DEV-51` and `DEV-52`.
+  Unsupported computation fails at its documented boundary; it never returns
+  a foreign object, an approximation under an exact name, or an invented answer.
+- **Rationale:** Private storage otherwise becomes a second source of mathematical
+  truth and can contradict the structure the constructor established.
+- **Violation Example:** Treat one truncated series residue as the exact element,
+  or cache two differently framed objects under the same engine normal form.
+- **Correct Example:** Retain the exact defining object and its projection maps;
+  precision describes available computational information about its elements.
+  A new presentation comes with the owned change-of-presentation map.
+
+### `OWN-11`: A missing shared operation is repaired at its owner
+
+- **Rule:** If the sanctioned path is absent, recursive, awkward, slow, or
+  insufficient, identify the exact missing datum or operation at its owner.
+  Repair that prerequisite and route the selected consumer through it. Source
+  locality, elapsed effort, a passing example, or a smaller diff cannot justify
+  a second constructor, a private-field read, or a copied algorithm. Existing
+  violations are repair sites, not precedents for new code.
+
+  Keep the repair bounded to the actual dependency and its affected consumers.
+  Do not prebuild all of category theory, add a new registry, or start a framework
+  rewrite to avoid the concrete construction. If the required owner cannot be
+  changed within the granted scope, report that owner and obstruction; continue
+  independent work, but leave the dependent capability unfinished. An exception
+  requires an explicit user architectural decision, recorded here and at the
+  affected contract, not a worker-authored justification for convenience.
+- **Rationale:** Otherwise the easiest local route becomes the rewarded route,
+  while each apparent feature increases future repair and maintenance work.
+- **Violation Example:** Add another direct fraction-field allocation because
+  routing through localization would require repairing localization.
+- **Correct Example:** Complete that localization case and its map, then obtain
+  the fraction field through it; other localization consumers share the repair.
+
+### `OWN-12`: Acceptance includes the path, not just the final invariant
+
+- **Rule:** Review the actual public entrypoint, defining-data construction,
+  inherited operation, private lowering/computation/raising boundary, and a
+  nonidentity induced map where the feature has one. Compare every alternative
+  route touched by the work against the same semantic contract. Reject a correct
+  invariant obtained through an unsanctioned path. A conforming specimen must
+  expose the owned constituents and their mathematical relationships, not merely
+  an outer type, engine call count, or dimension.
+
+  Establish architectural reuse by reading the implementation and upstream
+  contract. Mathematical specimens establish observable behavior; do not turn
+  them into source scanners or mock expectations that a particular helper was
+  called. Respect the protected expectation subtrees and `DEV-58`: written
+  specimens remain unverified until the authorized execution phase. A policy
+  edit specifies the architecture; it does not establish code conformance.
+- **Rationale:** Numerical agreement alone rewards a shortcut that leaves the
+  construction and its future consumers structurally wrong.
+- **Violation Example:** Close a cohomology task after matching Betti numbers
+  while representatives or induced maps still escape to Sage; call a moved
+  private algorithm delegated because its Python caller became shorter.
+- **Correct Example:** Source review follows the shared construction and real
+  maintained algorithm. The mathematical specimen composes the owned inclusion,
+  quotient map, and induced morphism and distinguishes the promised behavior
+  from a dimension-only substitute.
+
+### `OWN-13`: Declarations identify sanctioned entrypoints and private boundaries
+
+- **Rule:** At each construction's existing declaration, document its owning
+  category/object, canonical signature, defining datum and maps, admissible input
+  forms, required output structure, and how each specialization factors through
+  it. At each adapter declaration, document the semantic operation it implements,
+  its owning caller, the upstream operation, representation hypotheses, and
+  lowering/raising correspondence. Keep these contracts beside their source,
+  not in a second constructor registry or manually synchronized status table.
+
+  Public mathematical names describe mathematics. Private implementation classes,
+  allocation helpers, conversions, and adapter-only imported engine symbols use
+  leading underscores and are excluded from public exports. Engine names belong
+  in private adapter names where that makes their boundary clearer, never in
+  public operation names. Internal consumers import the defining owner rather
+  than a session aggregator, and invoke its sanctioned operation rather than an
+  implementation class. Access scope follows the declared role, not the physical
+  file: putting consumer and adapter code together does not authorize raw access.
+- **Rationale:** A constructor or helper whose allowed callers are unspecified
+  becomes an alternate API through ordinary imports and copied examples.
+- **Violation Example:** Export a concrete module implementation because one
+  sibling needs its unchecked initializer; call a raw conversion `normalize`
+  and omit its backend-specific input/output contract.
+- **Correct Example:** The module category documents its presentation constructor;
+  a private adapter documents its one computational responsibility. Their source
+  declarations and exports make the mathematical entrypoint distinguishable from
+  the backend conversion without requiring another policy registry.
 
 ## Corrective implementation style guide (`STY-*`)
 
@@ -3024,6 +3419,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 | Family | Governs |
 | --- | --- |
+| `OWN-*` | [normative architecture](#preamble-architecture-specification): sanctioned construction paths, recursive ownership, encapsulation, and reuse |
 | `ARC-*` | mathematical architecture and ownership |
 | `API-*` | the public mathematical surface of owned objects |
 | `CON-*` | constructors, witnesses, actions, and structural transport |
@@ -4277,6 +4673,9 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 #### `ENG-04`: Native Engine Implementation with Preamble Category Wrappers
 
 - **Rule**: When an algorithm requires multi-step engine computations, implement the engine logic directly in the target engine language (such as Julia/OSCAR or Singular) and wrap it with preamble category interfaces, whenever this reduces complexity or eliminates excessive cross-bridge data transport.
+  First apply `OWN-08`: use an existing suitable high-level engine operation.
+  Native engine glue composes maintained operations; writing a replacement
+  algorithm in the engine's language still requires the `ENG-06` ownership decision.
   The Python mathematical layer should prepare the owned mathematical input, cross once into the engine routine, and reconstruct the owned mathematical output; it should not become a line-by-line orchestration language for the engine's matrices, syzygies, lifts, or stabilizer workspaces.
 
 - **Rationale**: Executes compute-heavy algebra natively in the host engine while exposing a uniform categorical interface to Sage sessions.
@@ -4318,7 +4717,10 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: Durable backend state is private to the owned object or private adapter that owns that computational realization.
   A backend datum has one private accessor or boundary helper at its owning layer; do not create public accessors, aliases, or unrelated direct field reads.
-  A protected crossing used by another owned subsystem must be explicitly documented at its declaration and kept narrower than the public mathematical API.
+  Protected contracts satisfy `OWN-05`: name the owner, permitted roles, exact
+  types and invariants at the declaration. Mathematical subsystems exchange
+  owned values, not raw handles. A comment authorizing a convenient private
+  read is not a protected contract.
 
 - **Rationale**: Multiple ways to reach the same engine are multiple APIs.
   A single visible crossing makes the representation dependency auditable and prevents backend operations from spreading through ordinary mathematical consumers.
@@ -4378,15 +4780,28 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: the owned graph is fixed by mathematics; a private/versioned bridge records each meaningful backend realization and the operations it can supply.  Multiple backend realizations may inhabit the same capability fiber, and updating Sage versions changes only the bridge, not the mathematical ontology.
 
-#### `BND-07`: Choose Incumbent-Library Coupling Deliberately: Owned Semantics, Ephemeral Computation, or Audited Runtime Adoption
+#### `BND-07`: Reuse Engine Computation Without Adopting Its Public Objects
 
-- **Rule**: For each subsystem overlapping Sage/GAP/another incumbent, use exactly the coupling appropriate to the mathematics: (1) own/rewrite the semantic identity layer when the incumbent ontology is what the preamble replaces; (2) use an ephemeral backend realization for large standard algorithms returning owned mathematical data; or (3) adopt/extend an incumbent runtime type only for an adjacent structure whose ontology is mathematically sound and whose inherited surface has been audited for leaks.  Never drift accidentally between these modes.
+- **Rule**: The preamble owns mathematical identity and all public objects;
+  maintained engines own their computations. Private engine representations
+  may be ephemeral or privately cached under `OWN-10`. Reuse of host runtime
+  primitives for generated owned types does not authorize adopting, reclassing,
+  subclassing, or returning an engine's concrete mathematical parent or elements
+  as preamble objects. An audit does not waive `ARC-05`, `ARC-06`, or `OWN-04`.
 
-- **Rationale**: Rewriting large mature algorithms is waste; durably wrapping the very ontology being replaced imports its assumptions; indiscriminate subclassing leaks host vocabulary.  Separating the modes keeps the public mathematics owned while still exploiting mature computation and legitimate host runtime structures.
+- **Rationale**: Algorithm reuse and independent public ownership are simultaneous
+  requirements. Treating runtime adoption as another public ownership mode
+  makes an engine's inherited API an alternate mathematical language.
 
-- **Violation Example**: own a Python Smith-normal-form implementation (Mode 1 where Mode 2 is appropriate); store a Sage ambient-lattice object as the public/private identity of an owned lattice (Mode 3 on the replaced ontology); subclass a backend type without auditing inherited `ambient`/coordinate methods.
+- **Violation Example**: Replace a Sage algorithm with local Smith reduction to
+  obtain owned elements; alternatively, return Sage elements from an owned parent
+  because its concrete runtime type was declared audited.
 
-- **Correct Example**: the preamble owns lattice/subobject/Hom semantics; a private ephemeral Sage/Singular object computes SNF/genus/syzygies and is discarded; an adjacent backend group/matrix/runtime type may be adopted privately when its mathematical role is correct and its leakage is contained by the owned API/bridge.
+- **Correct Example**: The preamble owns the module and its selected presentation;
+  a private Sage/Singular computation returns data that the adapter raises into
+  owned elements and an owned normalization isomorphism through the sanctioned
+  constructor. Sage `Parent`/`Element` primitives may implement the owned runtime
+  without making Sage's concrete modules the public objects.
 
 #### `BND-04`: Never Repair an Ownership Violation with Compatibility Machinery
 
@@ -5089,7 +5504,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Rule**: A substantive TODO names its current owner, the remaining mathematical delta, required input maps and hypotheses, the chosen representation boundary, and an acceptance statement that a mathematician could falsify. Name the first concrete specimen and the neighboring case that distinguishes the intended construction from its tempting substitute. Settle consequential mathematical forks before delegating the item; when source research is genuinely necessary, name the exact unresolved question and the construction it blocks.
 
-  Preserve the full requested regime. State what an existing specialization supplies and what remains to generalize. Derive dependency order from the maps the consumer actually needs. Keep these details with the work item; do not create a parallel readiness ledger, checklist system, or new gate to certify the prose.
+  Preserve the full requested regime. State what an existing specialization supplies and what remains to generalize. Derive dependency order from the maps the consumer actually needs. Name the sanctioned constructor, reusable owned operations, selected upstream computation, and the actual missing integration; an unresolved backend search names the specific capability question, not a presumed mandate to implement an algorithm. Link the durable architecture contract in this document and the declaration-side contract required by `OWN-13`, so removing a delivered item does not erase its architectural decisions. Keep task details with the unfinished item; do not create a parallel readiness ledger, checklist system, or new gate to certify the prose.
 
 - **Rationale**: A heading such as "add completion" leaves the next worker to choose between an exact object and the easiest finite approximation. Explicit mathematical decisions prevent that choice from being made implicitly inside an adapter.
 

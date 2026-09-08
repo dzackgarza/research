@@ -41,6 +41,10 @@ agent-memory maintain move <key> --to global/advice
 
 ## Preamble coding prerequisites
 
+Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
+before changing preamble construction, representation, or engine integration.
+It owns the intended architecture; the TODO owns only the unfinished work.
+
 Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
 
 Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasoning effort.
@@ -52,6 +56,52 @@ Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` be
 `just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
+
+## Construction and engine boundaries (always-on)
+
+**Own all public mathematics; reuse maintained computation privately.** Apply
+`OWN-01` through `OWN-13` in the
+[architecture specification](CONTRIBUTING.md#preamble-architecture-specification).
+Neither correct numerical output nor private naming excuses a different path.
+
+- **Enter through the mathematical owner.** Locate the category/object method
+  and defining constructor before editing a consumer. Direct construction,
+  notation, functor images, catalogue examples, and raised engine results must
+  establish the same defining datum. Public morphisms use `Mor`. An importable
+  global factory or concrete implementation class is not a sanctioned alternative.
+- **Thread every structure.** Each level constructs through its immediate
+  mathematical owners and introduces only its own datum. Elements, endpoints,
+  actions, differentials, inclusions, projections, and inherited operations must
+  agree with that construction. A category label is not missing construction data.
+- **Raise every constituent.** Public results, lazy family values, coefficients,
+  base rings, representatives, maps, and arithmetic results are preamble-owned.
+  Returning an owned parent containing publicly reachable foreign mathematics
+  violates the boundary. No public raw-engine ingress or egress is authorized.
+- **Keep private access at its owner.** Ordinary mathematical code calls owned
+  operations, never another object's engine accessor or storage. A protected
+  protocol requires the declaration-side contract in `OWN-05`; an underscore,
+  import, helper extraction, or comment at the call site does not grant access.
+- **Reuse algorithms at the right level.** Search existing owned constructions
+  and maintained computational packages before adding logic. Inspect the result
+  and map contract, not just the method name. A low-level library call inside a
+  locally rebuilt standard algorithm does not satisfy reuse. Framework suitability
+  and computational suitability are separate decisions.
+- **Repair the prerequisite.** If the sanctioned route cannot express the needed
+  construction, repair that exact owner before extending its consumer. Do not add
+  an unchecked constructor, raw representation route, or local algorithm to keep
+  the diff small. Report a genuine scope/authority obstruction without supplying
+  the wrong object. Do not turn this into an unrelated framework rewrite.
+- **Review the route as well as the answer.** Read from the public entrypoint
+  through its defining data and private adapter to the fully owned result and
+  induced maps. Use mathematical specimens to distinguish the promised object
+  from its convenient substitute; source review establishes architectural reuse.
+  Follow `DEV-58` for the execution phase, not a new local checking workflow.
+
+The architecture specification also owns the required construction factorizations
+and upstream discovery references. Update that contract when the user decides an
+architectural change; do not make a TODO, comment, or local example a competing
+specification. These rules bind existing consumers as well as new code. Earlier
+source or archive examples are not permission to reproduce an ownership violation.
 
 ## Using and maintaining TODO.md (always-on)
 
@@ -803,7 +853,9 @@ The review should make it easy to finish the work, not easy to feel satisfied wi
 
 # The preamble is a universe over Sage (always-on)
 
-The live package is `src/dzack_research/preamble/`. The implementation this section describes is the archived third attempt at `archives/preamble/`.
+The live package is `src/dzack_research/preamble/`. This ownership contract governs
+the live package; `archives/preamble/` is prior implementation material, not an
+alternate API contract.
 
 The preamble is a layer over Sage, not a collection of helpers.
 Once a session loads it, the mathematician stops receiving raw Sage objects: everything reached from the preamble is an owned object, which may or may not use a Sage object underneath.
@@ -827,9 +879,10 @@ the drift is happening, when the category involved is not the one a past record
 named. The vault holds the episodes; this section is the contract.
 
 **The preamble owns its categories outright; it never monkey-patches Sage's.** When
-the preamble needs a category, it defines and owns that category itself, and Sage
-objects are re-exposed through the uniform APIs of the owned categories — by
-refinement, by init hooks, and by the other sanctioned admission routes. Installing
+the preamble needs a category, it defines and owns that category itself. Private
+adapters lower its owned data to Sage and raise results through the same owned
+construction contracts. Sage parents and elements are never reclassified or
+exposed as the owned objects. Installing
 an axiom or a method onto one of Sage's own category classes (`setattr` on
 `Groups`, `Modules`, `Category_module`, ...) is the legacy mechanism this project
 is migrating away from: it makes Sage's spelling the public surface, splits
@@ -863,8 +916,9 @@ module keyed on $(R,S)$. With construction threading there is no held module to 
 declaration, not as a delegation target. A lattice already is a module, so there is nothing
 to forget to, and the lower category's methods answer on the object directly because the
 object is in that category. The forgetful passage $\mathbf{Lat}\to\mathbf{Mod}_R$ is a
-**standalone functor**, sited with the other functors as an adjoint pair — never a method on
-an object. So there is no forwarding to write, to generate, or to delete.
+**functor obtained from its owning category**, with the adjunction where one is
+specified, never a `forget_*` object method or a second global operation.
+So there is no forwarding to write, to generate, or to delete.
 *The tell:* any method whose body is `return self.forget_<something>().<the same name>()`;
 any stored `_module`, `_underlying` or `_module_morphism` holding the level below.
 
@@ -1081,22 +1135,22 @@ A design that violates them is wrong even when it “works.”
 Public method placement is stated through the owned category protocol: `ObjectType`,
 `ElementType`, and the object/element types of Hom/End/Aut category constructions. Sage's
 `ParentMethods`, `ElementMethods`, `MorphismMethods`, dynamic MRO, and refinement hooks are
-private runtime mechanisms used to realize that owned declaration on Sage objects while the
-migration is incomplete; they never decide where mathematics belongs.
+private runtime mechanisms used to realize that declaration on independently owned
+objects; they never decide where mathematics belongs or admit foreign parents.
 
 If Sage's interface is wrong or incomplete, **own the mathematics in the preamble category
 and map it onto Sage privately**. Workarounds (`without_element_wrap`, ad-hoc
 `L.isometry(matrix)`, freestanding patch modules) mean ownership was refused.
 
-The private runtime mechanism should remain one general refinement/dynamic-class path, not a
-new installation strategy per capability. Native Cython element types are subclassed through
-Sage's own dynamic element-class mechanism; do **not** introduce an `ElementFacade`,
-`MorphismFacade`, wrap/unwrap layer, or a second element ontology merely to override dunders.
-The 2026-07-29 verification showed native Sage arithmetic/coercion remains intact through the
-dynamic subclass and made the façade cascade unnecessary.
+The private runtime mechanism remains one owned construction/dynamic-class path,
+not a new installation strategy per capability. Host `Parent`/`Element` primitives
+may implement that runtime; Sage's concrete mathematical parents and element types
+do not become the public objects. Do not introduce an `ElementFacade`,
+`MorphismFacade`, or generic attribute-forwarding layer to preserve a foreign API.
 
-See the addendum below only for the private Sage-adoption/refinement mechanism. It is not the
-public category vocabulary.
+See [private runtime realization](#addendum-private-sage-runtime-realization-of-owned-category-types)
+for the permitted host boundary and the architecture specification for the public
+construction and private computation contracts.
 
 ## 2. API shape is dictated by the mathematics
 
@@ -1166,7 +1220,8 @@ This is the same discipline as work-selection (above): an artifact that cannot f
 ## 6. Generality over local cleverness
 
 When blocked, do not add a special case for this object.
-Strengthen the general interface (element façade, Aut constructor, `+` / `sum`, override-refine) so the special case disappears.
+Strengthen the general owned interface (element construction, Aut construction,
+`+` / `sum`, and structural refinement) so the special case disappears.
 Ask “why does this freestanding file/function exist?” — if it has no mathematical referent, delete it and place the content in the category or catalogue.
 
 ## 7. Tests certify the intended contract
@@ -1301,9 +1356,10 @@ actually in place, never by attrition.
 Almost everything mathematical lives at the categorical level. The owned `ObjectType`,
 `ElementType`, and Hom-category types are the implementation protocol generated by that
 mathematical graph; a separate handwritten concrete hierarchy is the exception, not the
-rule. Host/runtime classes remain where Sage requires a concrete representation or where an
-owned construction is realized by an adopted Sage type. Historically this read the other
-way, and named classes such as `BasedFreeModule` or old framed-algebra/group intake classes
+rule. Host/runtime primitives remain where they implement the generated owned
+types; concrete engine representations remain inside private adapters.
+Historically this read the other way, and named classes such as `BasedFreeModule`
+or old framed-algebra/group intake classes
 are migration specimens, not patterns to copy.
 
 Constructions are uniformized as high as their mathematics allows: one free functor for the
@@ -1420,7 +1476,8 @@ If that cannot be done exactly, surface the nuance and defer the mathematical de
 
 - Treat a leading underscore as a non-public interface marker.
 - Call `self._f()` only inside the class that owns `_f` or inside a documented subclass contract.
-- Treat every unrelated call to `x._f()` as a defect unless `_f` is a documented extension protocol.
+- Treat every unrelated call to `x._f()` as a defect unless the declaration
+  supplies the exact protected framework contract required by `OWN-05`.
 - Treat `X._f(x)` as a defect when it bypasses instance dispatch.
 - Do not read or write another object's `_state` directly.
 - Ask another object through its public methods. Move missing behavior to the object that owns it.
@@ -1429,7 +1486,10 @@ If that cannot be done exactly, surface the nuance and defer the mathematical de
 - Invoke those hooks through their public syntax or public dispatcher.
 - Write `f(x)`, `parent(data)`, `iter(x)`, and `len(x)`. Do not call their protocol methods directly.
 - In Sage code, callers use morphisms, parents, and elements through their public operations.
-- A direct private access across modules or objects requires a documented protected contract at the declaration.
+- A protected contract names its owner, permitted roles, types, invariants, and
+  framework responsibility at the declaration. Invoke it through its designated
+  dispatcher. Mathematical subsystems exchange owned values, not raw engine state.
+- A call-site comment cannot authorize a private access or create an exception.
 - Review every cross-object underscore access before committing Python or Sage code.
 
 ## Types
@@ -1480,11 +1540,12 @@ is where a reader learns what the operation is about. A method that accepts a
 matrix where it means a morphism, or a tuple where it means a generating set,
 has already lost the mathematics before its body runs.
 
-**Private methods may use primitive types and signatures internally.** The
-concession is real, and it is bounded by one condition: no external consumer
-reaches into a private method. The moment `X._f()` is called from outside `X`,
-its primitive signature is a public interface and the concession is void. *Public
-interfaces and encapsulation* above owns that boundary.
+**Private computation methods may use primitive and engine types internally.**
+Those types remain inside the declared computation/transport owner. Its helpers
+may exchange them as implementation data; mathematical consumers may not. A
+protected mathematical contract still exchanges owned values. Naming a method
+private or placing it in another module cannot expand this permission.
+`OWN-05` and *Public interfaces and encapsulation* above own that boundary.
 
 **Minting a type that names actual mathematics is welcome.** It is what the
 preamble is for. A notion the work needs and the tree does not yet hold gets
@@ -1566,9 +1627,13 @@ The exceptions are narrow, and each must be nameable at the site:
 
 - `__contains__`, where the argument is genuinely arbitrary and deciding is the
   method's whole job.
-- `_element_constructor_`, the one boundary that admits foreign data.
-- A read that Sage's own documented protocol performs that way, with the reason
-  recorded in a comment at the site.
+- `_element_constructor_`, where the host invokes the owned element-construction
+  contract for permitted literal or owned mathematical data. This is not public
+  admission for raw CAS parents or elements; private raising remains in adapters.
+- A documented Sage runtime protocol inside its designated host boundary, or
+  foreign representation dispatch inside the selected private adapter under
+  `OWN-06`. Document the exact protocol and owner; a local comment alone grants
+  no right to inspect owned mathematical state.
 - Declarations under `if TYPE_CHECKING`, which have no runtime effect.
 
 Nothing else qualifies. A probe outside these sites is a defect, and it is
@@ -1700,154 +1765,46 @@ such a case is a criterion smuggled in without its theorem.
 
 # Addendum: private Sage-runtime realization of owned category types
 
-This addendum documents the **current private host-runtime mechanism**, not the mathematical
-API or category vocabulary. The owned graph and its `ObjectType` / `ElementType` /
-Hom-category types are authoritative. When an already-existing Sage parent/element must
-participate in that graph, the bridge may use Sage's dynamic category/refinement machinery to
-realize the owned methods without wrapping the Sage object.
+The [architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
+governs this boundary. Host runtime reuse and engine computation are different
+responsibilities. Neither permits a Sage mathematical parent or element to become
+the public preamble object by reclassification, subclassing, or facade parenting.
 
-Sage internally carries methods through dynamic classes built from category method containers
-such as `ParentMethods`, `ElementMethods`, and `SubcategoryMethods`. Those names are allowed
-in this addendum because they are literal Sage runtime API. New mathematical design must not
-use them as the public ownership model.
+The owned graph supplies `ObjectType`, `ElementType`, and Hom-category types.
+Its root runtime may use Sage `Parent`, `Element`, dynamic-class machinery, and
+method containers to realize those generated types. `ParentMethods`,
+`ElementMethods`, and `SubcategoryMethods` name private Sage mechanisms, not
+public mathematical owners. Keep the mapping in the shared runtime; descendants
+declare their immediate mathematical structure and do not assemble host bases.
 
-For an adopted Sage runtime object, the bridge normally:
+The shared construction path establishes required data before public return.
+Only the root owns non-cooperative host initialization. A host post-init or
+element-construction hook implements that path and cannot bypass it. Refinement
+acts on an independently owned object whose data justifies the added category;
+it neither constructs missing data by a label nor adopts a foreign instance.
 
-1. maps the owned category/type declaration to the required private Sage dynamic-method
-   realization; and
-2. routes the Sage instance through the one refinement/dynamic-class mechanism so the owned
-   methods precede conflicting native methods where required.
+Method-resolution details remain private. The runtime must make the selected
+owned operation authoritative, preserve existing justified placements, and
+propagate element and morphism behavior through the same graph. If private
+Sage category joining or dynamic-class ordering is required, implement it once
+at that owner under its declared protocol. Consumers do not call
+`_refine_category_`, rebuild `__class__`, install methods, or intercept engine
+constructors to change a result's public meaning.
 
-This is **not a second mathematical category graph**. The Sage category/refinement is an
-implementation capability chosen after owned mathematical placement has already been fixed.
+Concrete Sage rings, modules, groups, matrices, and their elements remain private
+computation representations. An adapter builds them from owned data, invokes
+established algorithms, then raises every result through the owned constructors.
+It does not reclass those Sage objects, patch their APIs, or teach Sage
+constructors to accept owned parents. Private computational workspace mutation
+does not alter owned defining data. Cache and lifetime choices respect `OWN-10`.
 
-## Canonical pattern
-
-```python
-from sage.categories.category_with_axiom import CategoryWithAxiom_singleton
-
-class _MyCustomCategory(CategoryWithAxiom):
-    """A custom category whose methods apply to refined objects."""
-
-    def super_categories(self):
-        return [SomeBaseCategory()]
-
-    class ParentMethods:
-        """Methods available on every parent refined into this category."""
-
-        def my_method(self):
-            return ...
-
-    class ElementMethods:
-        """Methods available on elements of parents refined into this category."""
-
-        def my_element_method(self):
-            return ...
-
-
-# Post-init: refine specific objects into the category
-def install():
-    cat = _MyCustomCategory()
-    for obj in target_objects:
-        obj._refine_category_(cat)
-```
-
-## Codebase examples
-
-| File | Category | Target objects | Entry point |
-| --- | --- | --- | --- |
-| `archives/lattice-research/src/sage_patches/ring_base_category.py` | `_ModuleBaseRings` (custom) | `ZZ`, `QQ`, `RR`, `CC`, `QQbar`, `Zp(p)`, `GF(p)` | `_install_module_base_rings()` — iterates well-known singletons |
-| `archives/lattice-research/src/sage_patches/ideal_submodule.py` | `Modules(ring)` (existing Sage category) | Ideals produced by `Ring.ideal()` | `_module_aware_ideal()` — intercepts the constructor and refines each result |
-| `archives/lattice-research/src/sage_patches/fraction_quotients.py` | `Modules(ZZ)` (existing) | `QQ / ZZ`, `QQ / (n*ZZ)` | `__truediv__` patch on `RationalField` + direct refinement of two specific instances |
-| `archives/lattice-research/src/sage_patches/module_enrichment.py` | `Modules(R)` (existing) | Direct sums, quotients of free modules | `_ensure_module_refinement()` — called inside patched `direct_sum` and `quotient` |
-
-## Variants
-
-### A. Define a custom category + batch post-init (preferred)
-
-Used in `ring_base_category.py`. Best when you know the target objects at import time:
-they are singletons (like `ZZ`) or produced by a small set of constructors.
-
-```python
-class _MyMethods(CategoryWithAxiom):
-    class ParentMethods:
-        def utility(self): ...
-
-def install():
-    for obj in [ring1, ring2, ...]:
-        obj._refine_category_(_MyMethods())
-```
-
-### B. Constructor interceptor (archive / last resort)
-
-Used historically in `ideal_submodule.py` and `fraction_quotients.py`.
-Prefer class post-init hooks (§1) for new work.
-Only intercept a constructor when objects cannot be caught after `__init__` and a class hook is impossible.
-
-```python
-def _intercept_constructor(self, *args):
-    result = _native_constructor(self, *args)
-    refine(result, MyCategory())  # override-refine when owned methods must win
-    return result
-```
-
-### C. Mid-construction refinement
-
-Used in `module_enrichment.py`. The refinement happens *inside* a method that already
-creates the object, so no interception is needed — just add `_refine_category_` before returning.
-
-## Rules of thumb
-
-- **Owned category type owns the mathematics.** Public ownership is on `ObjectType`,
-  `ElementType`, or the relevant Hom-category type. A private Sage `ParentMethods` /
-  `ElementMethods` container may realize that declaration for adopted Sage instances; the
-  post-init/refinement code only routes the runtime object.
-
-- **Override-refine when owning an interface.** Use `refine` from the preamble so the new
-  subcategory precedes the concrete class in the MRO; bare `_refine_category_` alone leaves
-  class methods ahead of category methods (Sage’s default), which is wrong for overrides.
-
-- **Hook classes, not constructors**, for new installations. Post-init on the Sage class is
-  the default; constructor interception is archive/last-resort (Variant B).
-
-- **Do not use Sage categories as the mathematical taxonomy.** Determine the owned category
-  first. The backend bridge may refine an adopted Sage object into whatever Sage category or
-  dynamic class provides the necessary runtime capability, but that choice neither creates nor
-  changes its owned mathematical placement.
-
-- **Do not monkey-patch class methods.** If you find yourself writing
-  `SomeSageClass.my_method = lambda ...`, stop and write a category instead.
-  Monkey-patching breaks for subclasses, is non-composable, and bypasses Sage's MRO.
-
-- **Do not store owned mathematical methods directly on an adopted Sage implementation
-  class.** The parent class (`IntegerRing_class`, `MatrixSpace`, etc.) is host runtime code;
-  the owned category type is the mathematical owner. The private bridge may install/map those
-  methods through Sage's dynamic category containers, but callers and design documents speak
-  only the owned category protocol.
-
-  For preamble-owned mathematics, ask of every operation: *which owned category/type can
-  answer this?* and put it there. Distinct concrete/runtime classes survive only where the
-  host runtime requires a representation type or for private engineering records that carry
-  no mathematics. Catalogue namespaces for named specimens and Sage's required
-  `_element_constructor_` hooks remain narrow implementation exceptions, not alternative
-  mathematical ownership mechanisms.
-
-- **`_refine_category_` joins.** It calls `self._init_category_(self.category().join(Cat))`, so
-  the object keeps all its existing category memberships and gains the new one.
-  Calling it multiple times is safe. Override-refine still performs that join, then rebuilds
-  `__class__` so owned methods win.
-
-- **Runtime override constraints remain private implementation details.** If the Sage bridge
-  needs `@final` or MRO ordering to realize an owned method safely, document that at the bridge;
-  do not promote it into a mathematical ownership rule.
-
-## What this is not
-
-This pattern is specifically for **retroactive method installation** — adding capabilities to
-objects that already exist at import time or are created by Sage's existing constructors.
-It is not a replacement for defining a proper category hierarchy from scratch;
-it is the bridge between Sage's compiled algebra and this repo's semantic needs during
-exploratory and spike work.
+Historical mechanisms remain inspectable at
+`archives/lattice-research/src/sage_patches/ring_base_category.py`,
+`archives/lattice-research/src/sage_patches/ideal_submodule.py`,
+`archives/lattice-research/src/sage_patches/fraction_quotients.py`, and
+`archives/lattice-research/src/sage_patches/module_enrichment.py`, or in their
+source history. These are references, not sanctioned public construction routes.
+The live construction contract above is what future code must satisfy.
 
 # Transcript-derived research directives (2026-08-21)
 
@@ -1967,7 +1924,8 @@ short synthesis did not capture.
 - An object in a structured category must carry the data required by that category.
 - Do not refine an existing object into a data-bearing category without constructing the required data.
 - Construct owned objects through the owned category hierarchy.
-- Use refinement only for adopted Sage objects when refinement adds no missing construction data.
+- Refine independently owned objects only when their defining data justifies the
+  added structure; keep Sage representations private to computation adapters.
 - Provide a `preamble.all` construction surface analogous to `sage.all`.
 - That surface constructs owned objects and populates the research namespace.
 - Never build a parallel toy hierarchy when the task concerns the live preamble hierarchy.
