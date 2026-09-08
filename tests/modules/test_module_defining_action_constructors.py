@@ -1,0 +1,148 @@
+r"""M0 constructor contracts for module actions and selected presentations.
+
+These examples are committed unverified under the standing preamble policy.
+They distinguish the chosen presentation from the underlying module while
+requiring every constructor route to expose and use the same scalar-action
+morphism ``R -> End_Ab(U(M))``.
+"""
+
+from dzack_research.preamble.all import (
+    BasedFreeModule,
+    FreeModuleOn,
+    GeneralModule,
+    ModulesWithChosenFinitePresentation,
+    NN,
+    QQ,
+    Set,
+    ZZ,
+    module_homset,
+)
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+)
+from dzack_research.preamble.categories.modules.pure.modules import restrict_scalars
+from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
+from dzack_research.preamble.categories.sets import finite_ordered_set
+
+
+def _cyclic_six_from_presentation():
+    target = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    presentation = module_homset(relations, target)(
+        {"r": target.scalar_multiple(ZZ(6), target.module_generator("x"))}
+    )
+    return presentation.cokernel()
+
+
+def _cyclic_six_from_action():
+    return GeneralModule(
+        ZZ,
+        Set(list(range(6))),
+        addition=lambda left, right: (left + right) % 6,
+        zero=0,
+        negation=lambda value: (-value) % 6,
+        scalar_action=lambda scalar, value: (int(scalar) * value) % 6,
+    )
+
+
+def test_presented_and_direct_action_zmod6_have_an_explicit_intertwining_isomorphism() -> None:
+    presented = _cyclic_six_from_presentation()
+    acted = _cyclic_six_from_action()
+    generator = presented.module_generator("x")
+
+    forward = module_homset(presented, acted)(
+        {"x": acted(1)}
+    )
+    inverse = module_homset(acted, presented).elementwise(
+        lambda element: presented.scalar_multiple(
+            ZZ(element.underlying_element()), generator
+        ),
+        verify_linearity=False,
+    )
+    comparison = Isomorphism(forward, inverse)
+
+    assert comparison.domain() is presented
+    assert comparison.codomain() is acted
+    for scalar in (ZZ(-2), ZZ(0), ZZ(5)):
+        assert comparison(
+            presented.scalar_multiple(scalar, generator)
+        ) == acted.scalar_multiple(scalar, comparison(generator))
+    assert presented.scalar_action()(ZZ(5))(generator) == presented.scalar_multiple(
+        ZZ(5), generator
+    )
+    assert acted.scalar_action()(ZZ(5))(acted(1)) == acted.scalar_multiple(
+        ZZ(5), acted(1)
+    )
+
+
+def test_free_plus_torsion_presentation_uses_its_exposed_scalar_action() -> None:
+    target = BasedFreeModule(ZZ, finite_ordered_set(("free", "torsion")))
+    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    module = module_homset(relations, target)(
+        {
+            "r": target.scalar_multiple(
+                ZZ(6), target.module_generator("torsion")
+            )
+        }
+    ).cokernel()
+
+    for label in module.module_generating_set():
+        element = module.module_generator(label)
+        assert module.scalar_action()(ZZ(3))(element) == module.scalar_multiple(
+            ZZ(3), element
+        )
+
+
+def test_infinite_free_module_keeps_finite_support_and_the_same_action_morphism() -> None:
+    module = FreeModuleOn(ZZ, NN)
+    element = module({NN(2): ZZ(3), NN(100): ZZ(-1)})
+
+    assert module.scalar_action()(ZZ(4))(element) == module.scalar_multiple(
+        ZZ(4), element
+    )
+    assert module.scalar_multiple(ZZ(4), element).monomial_coefficients() == {
+        NN(2): ZZ(12),
+        NN(100): ZZ(-4),
+    }
+
+
+def test_restriction_of_scalars_exposes_the_composed_action() -> None:
+    extension = BasedFreeModule(QQ, finite_ordered_set(("e",)))
+    inclusion = ring_morphism(ZZ, QQ, QQ)
+    restricted = restrict_scalars(extension, inclusion)
+    element = restricted.wrap(extension.module_generator("e"))
+
+    assert restricted.scalar_action()(ZZ(7))(element) == restricted.scalar_multiple(
+        ZZ(7), element
+    )
+    assert restricted.scalar_multiple(ZZ(7), element).underlying_element() == (
+        extension.scalar_multiple(QQ(7), extension.module_generator("e"))
+    )
+
+
+def test_selected_presentations_are_arrow_objects_and_contractible_summands_remain_distinct() -> None:
+    cyclic = _cyclic_six_from_presentation()
+    category = ModulesWithChosenFinitePresentation(ZZ).presentation_category()
+    selected = cyclic.presentation_object()
+
+    assert selected in category
+    assert selected.arrow() is cyclic.presentation()
+
+    target = BasedFreeModule(ZZ, finite_ordered_set(("x", "contractible")))
+    relations = BasedFreeModule(ZZ, finite_ordered_set(("r", "s")))
+    stabilized = module_homset(relations, target)(
+        {
+            "r": target.scalar_multiple(ZZ(6), target.module_generator("x")),
+            "s": target.module_generator("contractible"),
+        }
+    ).cokernel()
+
+    assert stabilized.presentation_object() in category
+    assert stabilized.presentation_object() is not selected
+    assert stabilized.presentation().domain().module_generating_set().cardinality() == 2
+    assert cyclic.presentation().domain().module_generating_set().cardinality() == 1
+
+    normalization = stabilized.invariant_factor_presentation()
+    assert normalization.forward() in category.Mor(
+        stabilized.presentation_object(), normalization.codomain()
+    )

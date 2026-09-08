@@ -1241,6 +1241,31 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             FramedModules(self.base_ring()),
         ]
 
+    @cached_method
+    def presentation_category(self):
+        r"""Return the category of selected presentation arrows in ``R-Mod``.
+
+        A chosen presentation is additional structure on a module, and its
+        morphisms are commuting squares between the selected free-module
+        arrows.  The common arrow-category owner already supplies exactly
+        those objects and morphisms, so this category exposes that owner
+        rather than inventing a second presentation-morphism implementation.
+        """
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            ArrowCategory,
+        )
+
+        return ArrowCategory(Modules(self.base_ring()))
+
+    class ParentMethods:
+        @cached_method
+        def presentation_object(self):
+            r"""Return this module's selected presentation as an arrow object."""
+            category = ModulesWithChosenFinitePresentation(
+                self.base_ring()
+            ).presentation_category()
+            return category(self.presentation())
+
 
 @dataclass(frozen=True)
 class FreeResolution:
