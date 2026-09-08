@@ -1,4 +1,6 @@
 r"""Finite character quotients controlling arithmetic-subgroup orbit splitting."""
+from sage.libs.gap.libgap import libgap
+
 from dzack_research.preamble.categories.isotropic_orbits import transport_isotropic_object
 
 
@@ -156,21 +158,59 @@ class OrthogonalCharacterQuotient:
             tuple(self.image(generator) for generator in stabilizer_generators)
         )
 
+    def _gap_regular_model(self):
+        r"""Return the right-regular libGAP model of the finite character image.
+
+        The quotient keys remain the owned public representation.  GAP sees
+        only their right-regular permutations, so its finite-group algorithms
+        can compute subgroup and double-coset combinatorics without becoming
+        part of the mathematical API.
+        """
+        keys = tuple(self.image_keys())
+        positions = {key: position + 1 for position, key in enumerate(keys)}
+        permutations = {}
+        for key in keys:
+            images = [
+                positions[self._multiply(source, key)]
+                for source in keys
+            ]
+            permutations[key] = libgap.PermList(images)
+        group = libgap.Group(list(permutations.values()))
+        if int(group.Size()) != len(keys):
+            raise ArithmeticError(
+                "the libGAP right-regular model does not have the character-image order"
+            )
+        return keys, permutations, group
+
     def splitting_isometries(self, stabilizer_generators):
         r"""Return one lift per ``Stab\image(O(L))/Gamma`` double coset."""
         stabilizer = self.stabilizer_image_keys(stabilizer_generators)
         subgroup = self.subgroup_image_keys()
-        remaining = set(self.image_keys())
+        keys, permutations, group = self._gap_regular_model()
+        left = libgap.Subgroup(
+            group,
+            [permutations[key] for key in stabilizer],
+        )
+        right = libgap.Subgroup(
+            group,
+            [permutations[key] for key in subgroup],
+        )
         representatives = []
-        while remaining:
-            representative = next(iter(remaining))
-            representatives.append(self._witnesses[representative])
-            double_coset = {
-                self._multiply(self._multiply(left, representative), right)
-                for left in stabilizer
-                for right in subgroup
-            }
-            remaining.difference_update(double_coset)
+        for double_coset in libgap.DoubleCosets(group, left, right):
+            gap_representative = double_coset.Representative()
+            quotient_representative = next(
+                (
+                    key
+                    for key in keys
+                    if permutations[key] == gap_representative
+                ),
+                None,
+            )
+            if quotient_representative is None:
+                raise ArithmeticError(
+                    "a libGAP double-coset representative did not cross back to the character image"
+                )
+            representatives.append(self._witnesses[quotient_representative])
         return tuple(representatives)
 
     def witness_meets_subgroup(self, witness, stabilizer_generators) -> bool:
