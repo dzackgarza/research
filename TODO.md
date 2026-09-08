@@ -2167,7 +2167,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### Archive-derived lattice and finite-form requirements
 
-- [ ] Resolve or explicitly retain the `Isom(L,M)` gap for indefinite binary lattices and for genera splitting into several improper spinor genera when the available backend cannot place a given lattice in a spinor genus.
+- [x] Resolve or explicitly retain the `Isom(L,M)` gap for indefinite binary lattices and for genera splitting into several improper spinor genera when the available backend cannot place a given lattice in a spinor genus.
 - [ ] Extend embedding existence/enumeration beyond the current exact regimes: enumeration for indefinite codomains and existence for indefinite codomains that are not even unimodular.
 - [x] Add the bilinear analogue of `is_anti_isometric`; the quadratic torsion-form surface has the operation but the bilinear surface does not.
 
