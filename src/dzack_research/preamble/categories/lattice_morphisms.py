@@ -992,6 +992,9 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             )
         if data is False:
             raise ValueError("the primitive embedding homset is empty")
+        return self._reconstruct_target_primitive_embedding(data)
+
+    def _reconstruct_target_primitive_embedding(self, data):
         target_prime_gram, source_prime_gram, embedding_matrix = data
         from dzack_research.preamble.categories.lattices import Lattices
 
@@ -1003,7 +1006,6 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         source_to_prime = source.Isom(source_prime).an_element()
         target_prime_to_target = target_prime.Isom(target).an_element()
         target_prime_generators = tuple(target_prime.module_generators())
-        source_prime_generators = tuple(source_prime.module_generators())
         inclusion = source_prime.Emb(target_prime)(
             tuple(
                 sum(
@@ -1017,15 +1019,60 @@ class LatticeEmbeddingHomset(CategoricalHomset):
                     ),
                     target_prime.zero(),
                 )
-                for column, _generator in enumerate(source_prime_generators)
+                for column in range(int(source_prime.module_rank()))
             )
         )
         composed = target_prime_to_target * inclusion * source_to_prime
-        return self(
+        embedding = self(
             tuple(
                 composed(source.module_generator(label))
                 for label in source.module_generating_set()
             )
+        )
+        if not embedding.is_primitive():
+            raise ArithmeticError("a reconstructed OSCAR primitive embedding is not primitive")
+        return embedding
+
+    def primitive_embedding_class_representatives(self, classification="emb"):
+        r"""Return OSCAR/Nikulin representatives of primitive-embedding classes.
+
+        ``classification='sub'`` classifies primitive sublattices up to the
+        actions of ``O(source)`` and the target discriminant group, whereas
+        ``classification='emb'`` retains the source marking and quotients only
+        by the target discriminant action.  These are finite class
+        representatives, not an enumeration of every embedding.
+        """
+        if classification not in ("sub", "emb"):
+            raise ValueError("primitive embedding classes are 'sub' or 'emb'")
+        source = self.domain()
+        target = self.codomain()
+        if (
+            _engine_ring(source.base_ring()) is not SageZZ
+            or _engine_ring(target.base_ring()) is not SageZZ
+            or not source.module_rank().is_finite()
+            or not target.module_rank().is_finite()
+            or not source.is_nondegenerate()
+            or not target.is_nondegenerate()
+            or source.module_rank() > target.module_rank()
+        ):
+            raise NotImplementedError(
+                "OSCAR primitive-embedding classes currently require finite nondegenerate integral lattices"
+            )
+        if not engine_capabilities.is_available("lattice.target_primitive_embedding_classes"):
+            raise NotImplementedError(
+                "primitive-embedding class representatives require the OSCAR lattice provider"
+            )
+        data = lattice_engines.target_primitive_embedding_classes(
+            source.gram_tensor(),
+            target.gram_tensor(),
+            classification,
+        )
+        if data is None:
+            raise NotImplementedError(
+                "OSCAR's target-specific primitive-embedding classification requires the target lattice to be unique in its genus"
+            )
+        return finite_ordered_set(
+            tuple(self._reconstruct_target_primitive_embedding(record) for record in data)
         )
 
     def __iter__(self):

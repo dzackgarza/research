@@ -165,6 +165,48 @@ function target_primitive_embedding(source_gram_entries, target_gram_entries)
         change_base_ring(ZZ, inclusion),
     ]
 end
+
+function target_primitive_embedding_classes(
+    source_gram_entries,
+    target_gram_entries,
+    classification_name,
+)
+    source_gram = _zz_matrix(source_gram_entries)
+    target_gram = _zz_matrix(target_gram_entries)
+    source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
+    target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
+    if length(genus_representatives(target)) != 1
+        return [0]
+    end
+    classification = Symbol(classification_name)
+    @req classification in [:sub, :emb] "primitive embedding classes are :sub or :emb"
+    exists, representatives = primitive_embeddings(
+        target,
+        source;
+        classification = classification,
+        check = false,
+    )
+    if !exists
+        return [1, 0, []]
+    end
+    result = []
+    for (target_prime, source_prime, _complement) in representatives
+        inclusion = solve(
+            basis_matrix(target_prime),
+            basis_matrix(source_prime);
+            side = :left,
+        )
+        push!(
+            result,
+            [
+                change_base_ring(ZZ, gram_matrix(target_prime)),
+                change_base_ring(ZZ, gram_matrix(source_prime)),
+                change_base_ring(ZZ, inclusion),
+            ],
+        )
+    end
+    return [1, 1, result]
+end
 end
 """
 
@@ -337,6 +379,66 @@ class _OscarLatticeAdapter:
             )
         return target_prime_gram, source_prime_gram, embedding
 
+    def target_primitive_embedding_classes(
+        self,
+        source_gram,
+        target_gram,
+        classification,
+    ):
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.target_primitive_embedding_classes",
+            _integer_engine_matrix(source_gram),
+            _integer_engine_matrix(target_gram),
+            str(classification),
+        )
+        if not isinstance(result, list) or not result:
+            raise RuntimeError("OSCAR returned malformed primitive-embedding class data")
+        if int(result[0]) == 0:
+            return None
+        if len(result) != 3:
+            raise RuntimeError("OSCAR returned malformed primitive-embedding class header")
+        if int(result[1]) == 0:
+            return ()
+        representatives = []
+        for record in result[2]:
+            if not isinstance(record, list) or len(record) != 3:
+                raise RuntimeError("OSCAR returned a malformed primitive-embedding class")
+            target_engine, source_engine, embedding_engine = record
+            ring = source_gram.base_ring()
+
+            def owned_gram(engine):
+                return tensor(
+                    ring,
+                    (),
+                    (engine.nrows(), engine.ncols()),
+                    tuple(
+                        tuple(ring._from_engine_element(entry) for entry in row)
+                        for row in engine.rows()
+                    ),
+                )
+
+            target_prime_gram = owned_gram(target_engine)
+            source_prime_gram = owned_gram(source_engine)
+            embedding = MatrixSpace(
+                ring,
+                embedding_engine.ncols(),
+                embedding_engine.nrows(),
+            ).from_rows(
+                tuple(
+                    tuple(
+                        ring._from_engine_element(embedding_engine[source, target])
+                        for source in range(embedding_engine.nrows())
+                    )
+                    for target in range(embedding_engine.ncols())
+                )
+            )
+            if not target_prime_gram.pullback(embedding).is_equal_tensor(source_prime_gram):
+                raise ArithmeticError(
+                    "an OSCAR primitive-embedding class does not preserve the source-prime form"
+                )
+            representatives.append((target_prime_gram, source_prime_gram, embedding))
+        return tuple(representatives)
+
 
 _oscar_lattices = _OscarLatticeAdapter()
 
@@ -365,6 +467,13 @@ engine_capabilities.register(
     "lattice.target_primitive_embedding",
     _OSCAR_PROVIDER,
     _oscar_lattices.target_primitive_embedding,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
+    "lattice.target_primitive_embedding_classes",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.target_primitive_embedding_classes,
     available=_oscar_lattices.available,
     provisioning=_OSCAR_PROVISIONING,
 )
@@ -400,6 +509,15 @@ def target_primitive_embedding(source_gram, target_gram):
         "lattice.target_primitive_embedding",
         source_gram,
         target_gram,
+    )
+
+
+def target_primitive_embedding_classes(source_gram, target_gram, classification):
+    return engine_capabilities.compute(
+        "lattice.target_primitive_embedding_classes",
+        source_gram,
+        target_gram,
+        classification,
     )
 
 
