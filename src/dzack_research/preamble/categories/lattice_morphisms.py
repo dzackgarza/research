@@ -3,6 +3,8 @@ r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
 from sage.categories.category import Category
+from sage.matrix.constructor import matrix as engine_matrix
+from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -64,6 +66,118 @@ def _engine_gram_rows(lattice):
     rank = int(lattice.module_rank())
     gram = lattice.gram_tensor()
     return [[int(gram[i, j]) for j in range(rank)] for i in range(rank)]
+
+
+def _binary_form_from_gram(gram):
+    r"""Return the integral binary quadratic form ``x^T gram x``."""
+    return BinaryQF(
+        SageZZ(gram[0, 0]),
+        SageZZ(2 * gram[0, 1]),
+        SageZZ(gram[1, 1]),
+    )
+
+
+def _proper_reduced_binary_equivalence_matrix(source, target):
+    r"""Return ``M in SL_2(ZZ)`` with ``source * M = target``, or ``None``.
+
+    Both forms are reduced indefinite forms of the same non-square
+    discriminant.  Sage supplies their proper reduced cycle.  Consecutive
+    forms differ alternately by a ``_Rho`` step and its conjugate by
+    ``diag(1,-1)``.  Their right-action matrices are respectively
+    ``[[0,-1],[1,s]]`` and ``[[0,1],[-1,s]]``.  Recovering ``s`` from the two
+    consecutive exact forms avoids reproducing the reduction algorithm.
+    """
+    identity = engine_matrix(SageZZ, ((1, 0), (0, 1)))
+    cycle = tuple(source.cycle(proper=True))
+    try:
+        target_position = cycle.index(target)
+    except ValueError:
+        return None
+    transformation = identity
+    for position in range(target_position):
+        current = cycle[position]
+        following = cycle[position + 1]
+        denominator = SageZZ(2) * SageZZ(current[2])
+        if denominator == 0:
+            raise ArithmeticError(
+                "a non-square reduced indefinite binary form has zero c-coefficient"
+            )
+        numerator = SageZZ(following[1]) + SageZZ(current[1])
+        candidates = []
+        for sign in (SageZZ.one(), -SageZZ.one()):
+            signed_numerator = sign * numerator
+            step_parameter = signed_numerator // denominator
+            if denominator * step_parameter != signed_numerator:
+                continue
+            if sign == SageZZ.one():
+                step = engine_matrix(
+                    SageZZ,
+                    ((0, -1), (1, step_parameter)),
+                )
+            else:
+                step = engine_matrix(
+                    SageZZ,
+                    ((0, 1), (-1, step_parameter)),
+                )
+            if current.matrix_action_right(step) == following:
+                candidates.append(step)
+        if not candidates:
+            raise ArithmeticError(
+                "the proper binary cycle step did not determine a unimodular transformation"
+            )
+        step = candidates[0]
+        transformation = transformation * step
+    if source.matrix_action_right(transformation) != target:
+        raise ArithmeticError("the reconstructed proper binary equivalence is incorrect")
+    return transformation
+
+
+def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
+    r"""Return a binary indefinite isometry matrix, ``False``, or ``Unknown``.
+
+    A returned matrix ``P`` satisfies ``P^T codomain_gram P = domain_gram``.
+    The non-square-discriminant classification is complete by binary reduction
+    cycles.  Square discriminants use a different reduction theory and are
+    deliberately left to the existing external witness provider.
+    """
+    domain_form = _binary_form_from_gram(domain_gram)
+    codomain_form = _binary_form_from_gram(codomain_gram)
+    if domain_form.discriminant() != codomain_form.discriminant():
+        return False
+    if domain_form.discriminant().is_square():
+        return Unknown
+    domain_reduced, domain_reduction = domain_form.reduced_form(
+        transformation=True,
+        algorithm="sage",
+    )
+    codomain_reduced, codomain_reduction = codomain_form.reduced_form(
+        transformation=True,
+        algorithm="sage",
+    )
+    reduced_transport = _proper_reduced_binary_equivalence_matrix(
+        codomain_reduced,
+        domain_reduced,
+    )
+    if reduced_transport is None:
+        swap = engine_matrix(SageZZ, ((0, 1), (1, 0)))
+        swapped = codomain_reduced.matrix_action_right(swap)
+        proper_after_swap = _proper_reduced_binary_equivalence_matrix(
+            swapped,
+            domain_reduced,
+        )
+        if proper_after_swap is None:
+            return False
+        reduced_transport = swap * proper_after_swap
+    transformation = (
+        codomain_reduction
+        * reduced_transport
+        * domain_reduction.inverse()
+    )
+    if transformation.base_ring() is not SageZZ:
+        transformation = transformation.change_ring(SageZZ)
+    if codomain_form.matrix_action_right(transformation) != domain_form:
+        raise ArithmeticError("the binary equivalence matrix does not preserve the lattice form")
+    return transformation
 
 
 def _tensor_view(morphism):
@@ -1590,6 +1704,17 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 raise RuntimeError("the definite-isometry backend returned an invalid witness")
             self._definite_witness_matrix = transformation
             return False
+
+        if int(domain.module_rank()) == 2:
+            binary_witness = _binary_indefinite_isometry_matrix(
+                domain_gram,
+                codomain_gram,
+            )
+            if binary_witness is False:
+                return True
+            if binary_witness is not Unknown:
+                self._definite_witness_matrix = binary_witness
+                return False
 
         # The absence of this program is not fatal here: the classification
         # theorems below still decide some pairs, so the capability is asked
