@@ -1198,6 +1198,39 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return Unknown
             return not empty
 
+        def isometry_to(self, other):
+            r"""Return an explicit isometry ``self -> other`` when one is constructible.
+
+            A proved empty isometry homset returns ``None``.  An undecided
+            homset, or a theorem-backed nonempty homset whose current exact
+            machinery does not exhibit a witness, retains that distinction by
+            raising from :meth:`Isom(...).an_element` rather than turning it
+            into a false negative.
+            """
+            homset = self.Isom(other)
+            empty = homset.is_empty()
+            if empty is True:
+                return None
+            if empty is Unknown:
+                raise NotImplementedError(
+                    "the isometry homset is not decided by the available exact classifiers"
+                )
+            return homset.an_element()
+
+        def is_isometric_to(self, other):
+            r"""Return the verified boolean isometry decision.
+
+            Unlike :meth:`is_isometric`, this semantic spelling is strictly
+            boolean: an unresolved exact-classification case raises instead of
+            exposing ``Unknown`` as though it were a truth value.
+            """
+            decision = self.is_isometric(other)
+            if decision is Unknown:
+                raise NotImplementedError(
+                    "the isometry question is not decided by the available exact classifiers"
+                )
+            return bool(decision)
+
         def similarity_homset(self, other, scale):
             r"""Return similarities of scale ``scale`` as ``Isom(L(scale),other)``."""
             return self.twist(scale).Isom(other)
