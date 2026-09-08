@@ -418,6 +418,35 @@ class LatticeIsometry(LatticeEmbedding):
         return self.invariant_lattice().orthogonal_complement()
 
     @cached_method
+    def primitive_extension(self):
+        r"""Return the invariant/coinvariant primitive extension cut out by this isometry."""
+        if self.domain() is not self.codomain():
+            raise ValueError("a primitive extension is cut out by a lattice automorphism")
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            isometry_primitive_extension,
+        )
+
+        return isometry_primitive_extension(self)
+
+    def centralizer_group(self):
+        r"""Return ``Z_{O(L)}(self)`` through the owned primitive-extension data."""
+        return self.primitive_extension().centralizer_group()
+
+    def cyclotomic_summand(self, order):
+        r"""Return ``ker(Phi_order(self))`` as a primitive lattice subobject."""
+        if self.domain() is not self.codomain():
+            raise ValueError("a cyclotomic summand is cut out by a lattice automorphism")
+        from dzack_research.preamble.categories.lattice_centralizers import (
+            cyclotomic_summand,
+        )
+
+        return cyclotomic_summand(self, order)
+
+    def equivariant_vector_orbit_representatives(self, square):
+        r"""Return vector-orbit representatives under ``Z_{O(L)}(self)`` in the supported regime."""
+        return self.primitive_extension().equivariant_vector_orbit_representatives(square)
+
+    @cached_method
     def _discriminant_forward_morphism(self):
         r"""Return the induced module map on discriminant groups."""
         source = self.domain().discriminant_group()
