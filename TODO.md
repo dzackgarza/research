@@ -639,7 +639,7 @@ restart of the module/algebra/action constructions.
   supplied module. Generic owners do not import their new descendants.
   Keep general class/functor compilation at `sage-categories`, not here.
 
-- [ ] **`general-modules`**. **Needs:** none.
+- [x] **`general-modules`**. **Needs:** none.
   Extend general module contracts outside the current finite presentation
   algorithms without weakening their mathematical domains.
   **Owners:** `categories/modules/general_modules.py`, module Homs,
@@ -1646,4 +1646,3 @@ behavior.
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
 | `LATTICE-parabolic-gluing-20260908-0832` | arithmetic / exact parabolic Levi image | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_parabolic_gluing.py` (write) | `9f36bcb0` | 2026-09-08T08:32:00Z |
-| `M0-general-module-callable-frontier-20260908-1832` | general-modules / unsupported callable equality frontier | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/modules/test_general_module_callable_frontier.py` (write) | `11cef5e6` | 2026-09-08T18:32:00Z |
