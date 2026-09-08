@@ -657,9 +657,11 @@ class IsometryPrimitiveExtension:
         gluing = glue.domain()
         into_invariant = gluing.inclusion()
         into_coinvariant = glue.codomain().inclusion()
-        return tuple(
-            (into_invariant(element), into_coinvariant(glue(element)))
-            for element in gluing.elements()
+        return finite_ordered_set(
+            tuple(
+                (into_invariant(element), into_coinvariant(glue(element)))
+                for element in gluing.elements()
+            )
         )
 
     def _discriminant_action(self, automorphism, ambient, element):
