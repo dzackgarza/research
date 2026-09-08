@@ -6,6 +6,7 @@ from dzack_research.preamble.all import (
     BasedFreeModule,
     RationalPolyhedralFans,
     ToricGeometricLineBundleCohomologySpaces,
+    ToricIntegralSingularCohomologyGroups,
     ToricLineBundleCohomology,
     ToricWeightCohomology,
     ToricWeightCohomologyComplex,
@@ -66,3 +67,24 @@ def test_toric_scheme_cohomology_uses_the_geometric_weight_complex_route() -> No
 
     assert cohomology in ToricGeometricLineBundleCohomologySpaces(QQ)
     assert cohomology.dimension() == 3
+
+
+def test_projective_plane_integral_singular_cohomology_is_even_and_cycle_generated() -> None:
+    plane = _projective_plane()
+    groups = tuple(plane.integral_singular_cohomology(degree) for degree in range(5))
+
+    assert all(group in ToricIntegralSingularCohomologyGroups(ZZ) for group in groups)
+    assert tuple(group.module_rank() for group in groups) == (1, 0, 1, 0, 1)
+    assert groups[2].cohomology_topology() == "singular cohomology of the complex analytic realization"
+
+
+def test_projective_plane_cycle_class_is_an_explicit_integral_isomorphism() -> None:
+    plane = _projective_plane()
+    cycle_class = plane.cycle_class_isomorphism(1)
+    chow = plane.chow_group(1)
+    cohomology = plane.integral_singular_cohomology(2)
+    generator = chow.module_generator(next(iter(chow.module_generating_set())))
+
+    assert cycle_class.forward().domain() is chow
+    assert cycle_class.forward().codomain() is cohomology
+    assert cycle_class.inverse()(cycle_class.forward()(generator)) == generator

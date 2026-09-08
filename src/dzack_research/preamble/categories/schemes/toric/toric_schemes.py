@@ -1188,6 +1188,22 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 for degree in range(int(self.dimension()) + 1)
             )
 
+        def integral_singular_cohomology(self, degree):
+            r"""Return ``H^degree(X(CC),ZZ)`` in the supported smooth complete toric ``QQ`` regime."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricIntegralSingularCohomology,
+            )
+
+            return ToricIntegralSingularCohomology(self, degree)
+
+        def cycle_class_isomorphism(self, codimension):
+            r"""Return the integral cycle-class isomorphism in the supported toric complex realization."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricCycleClassIsomorphism,
+            )
+
+            return ToricCycleClassIsomorphism(self, codimension)
+
         def invertible_sheaf_of_divisor(self, divisor):
             r"""Return ``O_X(D)`` from the Cartier characters on the toric atlas.
 

@@ -1,7 +1,11 @@
 r"""Geometric cochain complexes and comparison-owned cohomology constructions."""
 
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+)
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
     CochainComplexes,
@@ -9,12 +13,15 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
+    FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _engine_ring,
+    _own_ring,
 )
 from dzack_research.preamble.categories.schemes.toric.fans import (
     _engine_vector,
@@ -79,6 +86,34 @@ class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
             if weight not in self.cohomology_weight_support():
                 raise ValueError("this weight has zero cohomology in the selected degree")
             return self.injection(weight)
+
+
+class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
+    r"""Integral singular cohomology of a specified smooth complete toric complex realization."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "integral singular cohomology groups of smooth complete toric varieties"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            FinitelyPresentedModules,
+        )
+
+        return [FinitelyPresentedModules(self.base_ring())]
+
+    class ParentMethods:
+        def topological_scheme(self):
+            return self._preamble_topological_scheme
+
+        def cohomological_degree(self):
+            return self._preamble_topological_cohomological_degree
+
+        def cohomology_coefficients(self):
+            return self.base_ring()
+
+        def cohomology_topology(self):
+            return "singular cohomology of the complex analytic realization"
 
 
 def _matrix_morphism(base, source, target, matrix):
@@ -216,8 +251,81 @@ def ToricLineBundleCohomology(scheme, divisor, degree):
     return refine(total, ToricGeometricLineBundleCohomologySpaces(base))
 
 
+def _require_smooth_complete_rational_toric_realization(scheme):
+    if _engine_ring(scheme.scheme_base_ring()) is not SageQQ:
+        raise NotImplementedError(
+            "the selected integral singular-cohomology comparison currently uses the specified QQ-to-CC realization"
+        )
+    if not scheme.fan().is_smooth() or not scheme.fan().is_complete():
+        raise ValueError(
+            "the Jurkiewicz-Danilov integral comparison requires a smooth complete toric variety"
+        )
+
+
+def ToricIntegralSingularCohomology(scheme, degree):
+    r"""Return ``H^degree(X(CC),ZZ)`` through the integral toric cycle comparison.
+
+    For a smooth complete complex toric variety, Danilov--Jurkiewicz identifies
+    the integral Chow ring with integral singular cohomology, with invariant
+    divisor classes in Chow codimension ``k`` mapping to degree ``2k``.
+    Odd cohomology vanishes and the even groups are torsion-free.
+    """
+    _require_smooth_complete_rational_toric_realization(scheme)
+    degree = int(degree)
+    dimension = int(scheme.dimension())
+    if degree < 0 or degree > 2 * dimension:
+        raise ValueError("singular cohomological degree lies between zero and twice the complex dimension")
+    integers = _own_ring(SageZZ)
+    construction_data = (
+        ("_preamble_topological_scheme", scheme),
+        ("_preamble_topological_cohomological_degree", degree),
+    )
+    if degree % 2:
+        return FreshFreeModuleOn(
+            integers,
+            finite_ordered_set(()),
+            _extra_categories=(ToricIntegralSingularCohomologyGroups(integers),),
+            _extra_construction_data=construction_data,
+        )
+
+    codimension = degree // 2
+    chow = scheme.chow_group(dimension - codimension)
+    return chow._same_presentation_module(
+        chow.module_generating_set(),
+        _extra_categories=(ToricIntegralSingularCohomologyGroups(integers),),
+        _extra_construction_data=construction_data,
+    )
+
+
+def ToricCycleClassIsomorphism(scheme, codimension):
+    r"""Return ``CH^k(X) -> H^(2k)(X(CC),ZZ)`` for smooth complete toric ``X/QQ``."""
+    _require_smooth_complete_rational_toric_realization(scheme)
+    codimension = int(codimension)
+    dimension = int(scheme.dimension())
+    if codimension < 0 or codimension > dimension:
+        raise ValueError("cycle codimension lies between zero and the scheme dimension")
+    chow = scheme.chow_group(dimension - codimension)
+    cohomology = ToricIntegralSingularCohomology(scheme, 2 * codimension)
+    forward = module_homset(chow, cohomology)(
+        {
+            label: cohomology.module_generator(label)
+            for label in chow.module_generating_set()
+        }
+    )
+    inverse = module_homset(cohomology, chow)(
+        {
+            label: chow.module_generator(label)
+            for label in cohomology.module_generating_set()
+        }
+    )
+    return Isomorphism(forward, inverse)
+
+
 __all__ = [
+    "ToricCycleClassIsomorphism",
     "ToricGeometricLineBundleCohomologySpaces",
+    "ToricIntegralSingularCohomology",
+    "ToricIntegralSingularCohomologyGroups",
     "ToricLineBundleCohomology",
     "ToricWeightCohomology",
     "ToricWeightCohomologyComplex",
