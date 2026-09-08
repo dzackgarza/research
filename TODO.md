@@ -2122,9 +2122,9 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 ### 15. Families, local bases, and higher direct images
 
-- [ ] Represent families as morphisms `f: X -> S` in the slice category, with fibers and base changes through §10.
+- [x] Represent families as morphisms `f: X -> S` in the slice category, with fibers and base changes through §10.
   Record flatness, properness, and smoothness as additional properties of the morphism when established.
-- [ ] Construct a family from polynomial equations by specifying the parameter algebra and its map into the coordinate algebra.
+- [x] Construct a family from polynomial equations by specifying the parameter algebra and its map into the coordinate algebra.
   Selecting `z` as parameter in equations in `x,y,z` gives a morphism to the `z`-line.
   Compute fibers using the corresponding residue-field base change and determine flatness in supported regimes.
 - [ ] Support bases given by DVRs and their spectra, generic and special fibers, and base change to completions.
