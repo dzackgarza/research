@@ -39,3 +39,19 @@ def test_multivariable_origin_completion_uses_the_requested_artin_precision() ->
     assert xhat**4 == completion.zero()
     assert yhat**4 == completion.zero()
     assert xhat**3 != completion.zero()
+
+
+def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> None:
+    plane = PolynomialRing(QQ, ("x", "y"))
+    x = plane.algebra_generator("x")
+    y = plane.algebra_generator("y")
+    completion = plane.adic_completion(plane.ideal(x, y), precision=5)
+
+    fourth = completion.adic_truncation(4)
+    second = completion.adic_truncation(2)
+    transition = completion.adic_transition_map(4, 2)
+
+    assert transition.domain() is fourth
+    assert transition.codomain() is second
+    assert transition(fourth.quotient_map()(x)) == second.quotient_map()(x)
+    assert transition(fourth.quotient_map()(x**2)) == second.zero()

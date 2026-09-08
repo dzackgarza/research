@@ -888,6 +888,32 @@ class AdicCompletions(Category):
         def computation_precision(self):
             return self._preamble_computation_precision
 
+        @cached_method
+        def adic_truncation(self, exponent):
+            r"""Return the canonical Artin quotient ``A / I^exponent``."""
+            exponent = int(exponent)
+            if exponent <= 0:
+                raise ValueError("an adic truncation exponent is positive")
+            source = self.completion_source()
+            defining = self.ideal_of_definition()
+            return source.quotient_ring(defining.power(exponent))
+
+        @cached_method
+        def adic_transition_map(self, higher_exponent, lower_exponent):
+            r"""Return ``A/I^higher -> A/I^lower`` for ``higher >= lower``."""
+            higher_exponent = int(higher_exponent)
+            lower_exponent = int(lower_exponent)
+            if lower_exponent <= 0 or higher_exponent < lower_exponent:
+                raise ValueError("adic transition exponents satisfy higher >= lower > 0")
+            higher = self.adic_truncation(higher_exponent)
+            lower = self.adic_truncation(lower_exponent)
+            lower_projection = lower.quotient_map()
+            return ring_morphism(
+                higher,
+                lower,
+                lambda element: lower_projection(element.lift()),
+            )
+
 
 class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
     r"""An engine-backed adic completion with its defining data fixed at construction."""
