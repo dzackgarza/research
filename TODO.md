@@ -1640,6 +1640,7 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
+| `LATTICE-two-u-recursive-isometry-20260908-1718` | arithmetic / represented 2U recursive lattice isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/eichler_criterion.py; tests/lattices/test_two_u_recursive_isometry.py` (write) | `59bcb452` | 2026-09-08T17:18:00Z |
 
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
