@@ -79,6 +79,7 @@ from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
     IsotropicFlag,
+    primitive_isotropic_vectors,
     primitive_isotropic_subobject,
 )
 from dzack_research.preamble.categories import lattice_engines
@@ -2490,6 +2491,11 @@ class Lattices(OwnedCategoryOverBaseRing):
         def primitive_isotropic_subobject(self, *basis):
 
             return primitive_isotropic_subobject(self, basis)
+
+        @cached_method
+        def primitive_isotropic_vectors(self):
+            r"""Return the exact locus of nonzero primitive isotropic vectors of this lattice."""
+            return primitive_isotropic_vectors(self)
 
         def isotropic_flag(self, *basis):
 

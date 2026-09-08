@@ -22,6 +22,8 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import predicate_subgroup
 from dzack_research.preamble.categories.isotropic_orbits import (
+    PrimitiveIsotropicVectorLocus,
+    PrimitiveIsotropicVectorOrbitDecomposition,
     isotropic_equivalence_witness,
     isotropic_orbit_representatives,
     isotropic_stabilizer_generators,
@@ -1303,6 +1305,8 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             raise ValueError("vector equivalence is an orthogonal-group operation")
         left = left if getattr(left, "parent", lambda: None)() is lattice else lattice(left)
         right = right if getattr(right, "parent", lambda: None)() is lattice else lattice(right)
+        if left == right:
+            return self.one()
         if lattice.q(left) != lattice.q(right):
             return None
         if not lattice.is_definite():
@@ -1419,6 +1423,20 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def isotropic_orbit_representatives(self, rank, *, flag=False):
 
         return isotropic_orbit_representatives(self, rank, flag=flag)
+
+    def orbit_decomposition(self, locus):
+        r"""Return exact orbit data on a represented locus supported by this group.
+
+        The first supported infinite locus is the primitive isotropic vector
+        locus.  It uses the exact rank-one isotropic backend and returns a
+        structured finite list of orbits, each retaining its representative,
+        stabilizer and transporter operation.
+        """
+        if isinstance(locus, PrimitiveIsotropicVectorLocus):
+            return PrimitiveIsotropicVectorOrbitDecomposition(self, locus)
+        raise NotImplementedError(
+            "orbit_decomposition currently owns the primitive isotropic vector locus; other loci require their exact orbit owner"
+        )
 
     def isotropic_equivalence_witness(self, left, right, *, flag=False):
 

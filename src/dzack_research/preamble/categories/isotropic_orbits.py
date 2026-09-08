@@ -8,10 +8,13 @@ capability and what would provision it, which is the owned behaviour until a
 provider arrives.
 """
 
+from sage.structure.sage_object import SageObject
+
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import ConditionSet
 
 
 def _held(lattice, element):
@@ -39,8 +42,41 @@ def primitive_isotropic_subobject(lattice, basis):
     return subobject
 
 
+class PrimitiveIsotropicVectorLocus(SageObject):
+    r"""The exact locus of nonzero primitive isotropic vectors in one lattice."""
+
+    def __init__(self, lattice) -> None:
+        self._lattice = lattice
+        zero = lattice.zero()
+        value_zero = lattice.base_ring().zero()
+
+        def is_primitive_isotropic(vector) -> bool:
+            if vector == zero:
+                return False
+            if lattice.q(vector) != value_zero:
+                return False
+            return bool(lattice.subobject_on((vector,)).is_primitive())
+
+        self._condition_set = ConditionSet(lattice, is_primitive_isotropic)
+
+    def lattice(self):
+        return self._lattice
+
+    def universe(self):
+        return self.lattice()
+
+    def condition_set(self):
+        return self._condition_set
+
+    def __contains__(self, vector) -> bool:
+        return vector in self.condition_set()
+
+    def __repr__(self) -> str:
+        return f"Primitive isotropic vectors of {self.lattice()}"
+
+
 def primitive_isotropic_vectors(lattice):
-    r"""Return the set of primitive isotropic vectors of ``lattice``.
+    r"""Return the exact primitive-isotropic-vector locus of ``lattice``.
 
     Membership is ``q(v) = 0`` together with the saturation of ``Z v``, which
     is the statement ``div(v) = 1`` in ``Z v``: the vector is not a proper
@@ -52,19 +88,93 @@ def primitive_isotropic_vectors(lattice):
     orbits are the cusps, and they are finite in number; representatives come
     from ``L.O().isotropic_orbit_representatives(1)``.
     """
-    from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+    return PrimitiveIsotropicVectorLocus(lattice)
 
-    zero = lattice.zero()
-    value_zero = lattice.base_ring().zero()
 
-    def is_primitive_isotropic(vector) -> bool:
-        if vector == zero:
-            return False
-        if lattice.q(vector) != value_zero:
-            return False
-        return bool(lattice.subobject_on((vector,)).is_primitive())
+class PrimitiveIsotropicVectorOrbit(SageObject):
+    r"""One ``O(L)``-orbit inside the primitive isotropic vector locus."""
 
-    return ConditionSet(lattice, is_primitive_isotropic)
+    def __init__(self, group, representative) -> None:
+        self._group = group
+        self._representative = representative
+
+    def group(self):
+        return self._group
+
+    def representative(self):
+        return self._representative
+
+    def stabilizer(self):
+        return self.group().stabilizer(self.representative())
+
+    def transporter_from(self, vector):
+        return self.group().vector_equivalence_witness(
+            vector,
+            self.representative(),
+        )
+
+    def __contains__(self, vector) -> bool:
+        return self.transporter_from(vector) is not None
+
+
+class PrimitiveIsotropicVectorOrbitDecomposition(SageObject):
+    r"""The finite ``O(L)``-orbit decomposition of primitive isotropic vectors.
+
+    Rank-one primitive isotropic sublattice orbits and primitive isotropic
+    vector orbits coincide for the full orthogonal group: a line generator can
+    only be sent to either generator of the target primitive line, and ``-id``
+    belongs to ``O(L)``.  Thus the existing exact rank-one isotropic backend
+    supplies the representatives, while vector stabilizers and transporters
+    remain the already-owned group operations.
+    """
+
+    def __init__(self, group, locus) -> None:
+        if not isinstance(locus, PrimitiveIsotropicVectorLocus):
+            raise TypeError("this decomposition requires the primitive isotropic vector locus")
+        if group.lattice() is not locus.lattice():
+            raise ValueError("the orbit group and primitive-isotropic locus require one lattice")
+        self._group = group
+        self._locus = locus
+        representatives = []
+        for line in group.isotropic_orbit_representatives(1):
+            generator = line.module_generator(0)
+            representatives.append(line.inclusion()(generator))
+        self._orbits = finite_ordered_set(
+            tuple(
+                PrimitiveIsotropicVectorOrbit(group, representative)
+                for representative in representatives
+            )
+        )
+
+    def group(self):
+        return self._group
+
+    def locus(self):
+        return self._locus
+
+    def orbits(self):
+        return self._orbits
+
+    def representatives(self):
+        return finite_ordered_set(
+            tuple(orbit.representative() for orbit in self.orbits())
+        )
+
+    def orbit_of(self, vector):
+        if vector not in self.locus():
+            raise ValueError("orbit_of expects a primitive isotropic vector of this lattice")
+        for orbit in self.orbits():
+            if vector in orbit:
+                return orbit
+        raise ArithmeticError("the exact isotropic orbit list did not cover the primitive isotropic locus")
+
+    def stabilizer(self, representative):
+        return self.orbit_of(representative).stabilizer()
+
+    def transporter(self, source, target):
+        if source not in self.locus() or target not in self.locus():
+            raise ValueError("a primitive-isotropic transporter requires two vectors in the locus")
+        return self.group().vector_equivalence_witness(source, target)
 
 
 class IsotropicFlag:
