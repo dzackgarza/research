@@ -2045,6 +2045,78 @@ def FinitelyPresentedModule(
             relations,
         )
 
+    # A presentation written directly over a localization is still a finite
+    # presentation over the source ring after clearing one unit denominator
+    # per relation row.  Build that source presentation first and then apply
+    # exact module localization.  This avoids using a fraction-field engine as
+    # though it were the local ring itself (which would make nonunits in the
+    # maximal ideal invertible and corrupt cokernels/equality).
+    if base_ring in LocalizationRings():
+        from dzack_research.preamble.categories.functors.module_localization import (
+            module_localization_functor,
+        )
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            FreshFreeModuleOn,
+        )
+        from dzack_research.preamble.categories.modules.localizations import LocalizedModule
+
+        source_ring = base_ring.localization_source()
+        local_rows = tuple(_matrix_coordinate_rows(relations))
+        source_rows = []
+        for row in local_rows:
+            fractions = tuple(base_ring.localization_fraction_data(coefficient) for coefficient in row)
+            denominators = tuple(denominator for _numerator, denominator in fractions)
+            cleared = []
+            for position, (numerator, _denominator) in enumerate(fractions):
+                multiplier = source_ring.one()
+                for other_position, denominator in enumerate(denominators):
+                    if other_position != position:
+                        multiplier *= denominator
+                cleared.append(numerator * multiplier)
+            source_rows.append(tuple(cleared))
+
+        source_relation_labels = Sets.Δ[len(source_rows) - 1]
+        source_relations = FreshFreeModuleOn(source_ring, source_relation_labels)
+        source_generators = FreshFreeModuleOn(source_ring, labels)
+        source_presentation = module_homset(source_relations, source_generators)(
+            {
+                relation_label: source_generators.linear_combination(
+                    {
+                        label: coefficient
+                        for label, coefficient in zip(labels, row, strict=True)
+                        if coefficient != source_ring.zero()
+                    }
+                )
+                for relation_label, row in zip(source_relation_labels, source_rows, strict=True)
+            }
+        )
+        source_quotient = FinitelyPresentedModule(source_presentation)
+        localization = module_localization_functor(base_ring)
+        local_extra_categories = list(_extra_categories)
+        local_extra_data = dict(_extra_construction_data or {})
+        local_extra_data["cokernel_morphism"] = _cokernel_morphism
+        if _biproduct_factors is not None:
+            local_extra_categories.append(BiproductModules(base_ring))
+            local_extra_data["biproduct_factors"] = _biproduct_factors
+
+        localized = LocalizedModule(
+            source_quotient,
+            base_ring,
+            localization,
+            selected_presentation_data={
+                "relation_matrix": relations_matrix,
+                "presentation": selected_presentation,
+            },
+            subobject_ambient=_subobject_ambient,
+            subobject_generator_images=_subobject_generator_images,
+            subobject_lift=_subobject_lift,
+            subobject_inclusion_factory=_subobject_inclusion_factory,
+            subobject_verify_linearity=_subobject_verify_linearity,
+            extra_categories=tuple(local_extra_categories),
+            extra_construction_data=local_extra_data,
+        )
+        return localization.adopt_object_image(source_quotient, localized)
+
     from sage.categories.rings import Rings as SageRings
 
     pid_backend = False

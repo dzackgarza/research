@@ -2727,8 +2727,70 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         def _kernel_spanning_family(self):
             r"""Return a private owned finite family spanning ``ker(self)``."""
 
-            basis = _engine_matrix(self).right_kernel().basis_matrix()
             ring = self.parent().base_ring()
+            if ring in LocalizationRings():
+                from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                    FreshFreeModuleOn,
+                )
+
+                source_ring = ring.localization_source()
+                row_labels = self.parent().row_index_set()
+                column_labels = self.parent().column_index_set()
+                entries = tuple(
+                    tuple(self.matrix_entry(row_label, column_label) for column_label in column_labels)
+                    for row_label in row_labels
+                )
+                fractions = tuple(
+                    tuple(ring.localization_fraction_data(entry) for entry in row)
+                    for row in entries
+                )
+                denominators = tuple(
+                    denominator
+                    for row in fractions
+                    for _numerator, denominator in row
+                )
+
+                cleared_rows = []
+                for row in fractions:
+                    cleared_row = []
+                    for numerator, denominator in row:
+                        multiplier = source_ring.one()
+                        skipped = False
+                        for candidate in denominators:
+                            if not skipped and candidate == denominator:
+                                skipped = True
+                                continue
+                            multiplier *= candidate
+                        cleared_row.append(numerator * multiplier)
+                    cleared_rows.append(tuple(cleared_row))
+
+                source_domain = FreshFreeModuleOn(source_ring, column_labels)
+                source_codomain = FreshFreeModuleOn(source_ring, row_labels)
+                source_map = module_homset(source_domain, source_codomain).from_rows(
+                    tuple(cleared_rows)
+                )
+                source_kernel = source_map.kernel()
+                kernel_labels = source_kernel.module_generating_set()
+                inclusion = source_kernel.inclusion()
+                localized_domain = self.domain()
+                localization_map = ring.localization_map()
+
+                return finite_indexed_family(
+                    kernel_labels,
+                    lambda label: localized_domain.linear_combination(
+                        {
+                            column_label: localization_map(coefficient)
+                            for column_label, coefficient in module_coefficients(
+                                inclusion(source_kernel.module_generator(label)),
+                                source_domain,
+                            ).items()
+                            if coefficient
+                        }
+                    ),
+                    name=f"Localized kernel spanning family of {self}",
+                )
+
+            basis = _engine_matrix(self).right_kernel().basis_matrix()
             labels = self.parent().column_index_set()
             positions = Sets.Δ[int(basis.nrows()) - 1]
             return finite_indexed_family(

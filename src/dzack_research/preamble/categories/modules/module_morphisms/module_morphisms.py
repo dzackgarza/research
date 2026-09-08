@@ -600,19 +600,45 @@ class ModuleMorphism(Morphism):
                 raise ArithmeticError("localized kernel inclusion is not the inclusion carried by the transported subobject")
             return localized_kernel
 
-        # A map may be constructed *after* scalar localization rather than be
-        # the recorded image of a source-ring map.  Its endpoints still carry
-        # transported finite presentations, so the ordinary presented-module
-        # kernel backend is the exact local calculation.  Keep this branch
-        # explicit: provenance is an optimization/witness for transported
-        # kernels, not a hypothesis for kernels over a localized coefficient
-        # ring.
         ring = self.domain().base_ring()
         if ring in LocalRings():
-            for owner in (self.domain(), self.codomain()):
-                represented = owner._represented_kernel_of_morphism(self)
-                if represented is not NotImplemented:
-                    return represented
+            from dzack_research.preamble.categories.modules.localizations import (
+                LocalizedModules,
+            )
+
+            domain = self.domain()
+            codomain = self.codomain()
+            if domain in LocalizedModules(ring) and codomain in LocalizedModules(ring):
+                functor = domain.localization_functor()
+                if codomain.localization_functor() is functor:
+                    source_domain = domain.localization_source_module()
+                    source_codomain = codomain.localization_source_module()
+                    labels = tuple(source_domain.module_generating_set())
+                    images = tuple(self(domain.module_generator(label)) for label in labels)
+                    denominators = tuple(image.denominator() for image in images)
+
+                    source_images = {}
+                    for position, (label, image) in enumerate(zip(labels, images, strict=True)):
+                        multiplier = source_domain.base_ring().one()
+                        for other_position, denominator in enumerate(denominators):
+                            if other_position != position:
+                                multiplier *= denominator
+                        source_images[label] = source_codomain.scalar_multiple(
+                            multiplier,
+                            image.numerator(),
+                        )
+
+                    source_morphism = module_homset(source_domain, source_codomain)(
+                        source_images
+                    )
+                    source_kernel = source_morphism.kernel()
+                    localized_kernel = functor(source_kernel)
+                    localized_inclusion = functor(source_kernel.inclusion())
+                    if localized_inclusion.codomain() is not domain:
+                        raise ArithmeticError(
+                            "the descended local kernel inclusion does not return to the direct local domain"
+                        )
+                    return localized_kernel
 
         for owner in (self.domain(), self.codomain()):
             represented = owner._represented_kernel_of_morphism(self)

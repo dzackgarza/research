@@ -485,6 +485,7 @@ def LocalizedModule(
     subobject_verify_linearity=True,
     extra_categories=(),
     extra_construction_data=None,
+    selected_presentation_data=None,
 ):
     r"""Return ``S^{-1}M``, placed by what the source module already is.
 
@@ -523,6 +524,8 @@ def LocalizedModule(
             data.update(
                 _transported_presentation(source_module, localization_ring)
             )
+            if selected_presentation_data is not None:
+                data.update(selected_presentation_data)
             placement.extend(
                 [
                     FinitelyPresentedModules(localization_ring),
