@@ -187,6 +187,37 @@ def test_selected_framings_are_arrow_objects_with_commuting_square_morphisms() -
     )
 
 
+def test_module_morphism_lifts_to_the_selected_presentation_diagrams() -> None:
+    source_target = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    source_relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    source = module_homset(source_relations, source_target)(
+        {"r": source_target.scalar_multiple(ZZ(6), source_target.module_generator("y"))}
+    ).cokernel()
+
+    target_target = BasedFreeModule(ZZ, finite_ordered_set(("u", "v")))
+    target_relations = BasedFreeModule(ZZ, finite_ordered_set(("s",)))
+    target = module_homset(target_relations, target_target)(
+        {"s": target_target.scalar_multiple(ZZ(3), target_target.module_generator("v"))}
+    ).cokernel()
+
+    morphism = module_homset(source, target)(
+        {
+            "x": target.module_generator("u"),
+            "y": target.module_generator("v"),
+        }
+    )
+    square = morphism.selected_presentation_morphism()
+
+    assert square.domain() is source.presentation_object()
+    assert square.codomain() is target.presentation_object()
+    assert square.right() * source.presentation() == target.presentation() * square.left()
+    source_projection = source.presentation_projection()
+    target_projection = target.presentation_projection()
+    for label in source.module_generating_set():
+        lifted = square.right()(source.presentation().codomain().module_generator(label))
+        assert target_projection(lifted) == morphism(source.module_generator(label))
+
+
 def test_hom_over_a_noncommutative_ring_is_enriched_over_its_center() -> None:
     ring = MatrixSpace(QQ, 2)
     additive = AdditiveGroups().AdditiveCommutative()

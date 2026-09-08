@@ -697,6 +697,75 @@ class ModuleMorphism(Morphism):
         )
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
 
+    @cached_method
+    def selected_presentation_morphism(self):
+        r"""Lift this map to a commuting square of selected presentations.
+
+        For ``f : M -> N`` with selected presentations ``p : F_1 -> F_0``
+        and ``q : G_1 -> G_0``, first lift each image of a selected generator of
+        ``M`` to the chosen free cover ``G_0``.  This gives ``b : F_0 -> G_0``
+        with ``pi_N b = f pi_M``.  Consequently ``b p`` lands in ``ker(pi_N)``;
+        the selected presentation identifies that kernel with ``im(q)``, so
+        lifting the images of the relation generators through ``q`` gives
+        ``a : F_1 -> G_1`` and the commuting square ``q a = b p``.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import (
+            ModulesWithChosenFinitePresentation,
+        )
+
+        source = self.domain()
+        target = self.codomain()
+        ring = source.base_ring()
+        if (
+            source not in ModulesWithChosenFinitePresentation(ring)
+            or target not in ModulesWithChosenFinitePresentation(ring)
+        ):
+            raise TypeError(
+                "a selected-presentation morphism requires presented source and target"
+            )
+
+        source_presentation = source.presentation()
+        target_presentation = target.presentation()
+        source_cover = source_presentation.codomain()
+        target_cover = target_presentation.codomain()
+
+        def lift_target(element):
+            coordinates = target._framing_coordinates(element)
+            return target_cover.linear_combination(
+                {
+                    label: coordinates[label]
+                    for label in target.module_generating_set()
+                    if coordinates[label]
+                }
+            )
+
+        cover_map = module_homset(source_cover, target_cover)(
+            {
+                label: lift_target(self(source.module_generator(label)))
+                for label in source_cover.module_generating_set()
+            }
+        )
+        relation_map = module_homset(
+            source_presentation.domain(), target_presentation.domain()
+        )(
+            {
+                label: target_presentation.lift(
+                    cover_map(
+                        source_presentation(
+                            source_presentation.domain().module_generator(label)
+                        )
+                    )
+                )
+                for label in source_presentation.domain().module_generating_set()
+            }
+        )
+
+        category = ModulesWithChosenFinitePresentation(ring).presentation_category()
+        return category.Mor(source.presentation_object(), target.presentation_object())(
+            relation_map,
+            cover_map,
+        )
+
     def _lift_through_the_extension_framing(self, element):
         r"""Return the preimage of ``element`` in a restriction of scalars to ``R``.
 
