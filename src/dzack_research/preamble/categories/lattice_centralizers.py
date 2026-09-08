@@ -31,6 +31,135 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
+from dzack_research.preamble.categories.orthogonal_quotients import (
+    _finite_supergroup_elements,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+
+class EquivariantVectorOrbit(SageObject):
+    r"""One orbit of a vector under the centralizer of an equipped isometry."""
+
+    def __init__(self, decorated_lattice, representative, centralizer_elements) -> None:
+        self._decorated_lattice = decorated_lattice
+        self._representative = representative
+        self._centralizer_elements = tuple(centralizer_elements)
+
+    def decorated_lattice(self):
+        return self._decorated_lattice
+
+    def group(self):
+        return self.decorated_lattice().centralizer_group()
+
+    def representative(self):
+        return self._representative
+
+    def stabilizer(self):
+        r"""Return the exact point stabilizer inside ``O(L,f)``."""
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            stabilizer_subgroup,
+        )
+
+        representative = self.representative()
+        return stabilizer_subgroup(
+            self.group(),
+            representative,
+            "pointwise",
+            lambda automorphism: automorphism(representative) == representative,
+            description=f"g fixes {representative}",
+        )
+
+    def transporter_from(self, vector):
+        r"""Return ``g in O(L,f)`` carrying ``vector`` to the representative."""
+        lattice = self.decorated_lattice().lattice()
+        if vector.parent() is not lattice:
+            vector = lattice(vector)
+        for automorphism in self._centralizer_elements:
+            if automorphism(vector) == self.representative():
+                return automorphism
+        return None
+
+    def __contains__(self, vector) -> bool:
+        return self.transporter_from(vector) is not None
+
+
+class EquivariantVectorOrbitDecomposition(SageObject):
+    r"""The exact vector-orbit decomposition under ``O(L,f)`` when finite.
+
+    The centralizer of ``f`` is listed only when the full orthogonal group is
+    finite, equivalently in the definite regime supported by the existing
+    subgroup engine.  No finite approximation is used for an indefinite
+    arithmetic centralizer.
+    """
+
+    def __init__(self, decorated_lattice, square) -> None:
+        self._decorated_lattice = decorated_lattice
+        self._square = decorated_lattice.lattice().base_ring()(square)
+        centralizer = decorated_lattice.centralizer_group()
+        elements = _finite_supergroup_elements(centralizer)
+        self._centralizer_elements = tuple(elements)
+        remaining = {
+            tuple(vector.to_tuple()): vector
+            for vector in decorated_lattice.lattice().vectors_of_square(self._square)
+        }
+        orbits = []
+        while remaining:
+            _coordinates, representative = next(iter(remaining.items()))
+            orbit = EquivariantVectorOrbit(
+                decorated_lattice,
+                representative,
+                elements,
+            )
+            orbits.append(orbit)
+            for automorphism in elements:
+                remaining.pop(tuple(automorphism(representative).to_tuple()), None)
+        self._orbits = finite_ordered_set(tuple(orbits))
+
+    def decorated_lattice(self):
+        return self._decorated_lattice
+
+    def square(self):
+        return self._square
+
+    def group(self):
+        return self.decorated_lattice().centralizer_group()
+
+    def orbits(self):
+        return self._orbits
+
+    def representatives(self):
+        return finite_ordered_set(
+            tuple(orbit.representative() for orbit in self.orbits())
+        )
+
+    def orbit_of(self, vector):
+        lattice = self.decorated_lattice().lattice()
+        if vector.parent() is not lattice:
+            vector = lattice(vector)
+        if vector.q() != self.square():
+            raise ValueError("orbit_of requires a vector of the selected square")
+        for orbit in self.orbits():
+            if vector in orbit:
+                return orbit
+        raise ArithmeticError("the exact centralizer orbit list did not cover the square shell")
+
+    def stabilizer(self, representative):
+        return self.orbit_of(representative).stabilizer()
+
+    def transporter(self, source, target):
+        source_orbit = self.orbit_of(source)
+        target_orbit = self.orbit_of(target)
+        if source_orbit is not target_orbit:
+            return None
+        lattice = self.decorated_lattice().lattice()
+        if source.parent() is not lattice:
+            source = lattice(source)
+        if target.parent() is not lattice:
+            target = lattice(target)
+        for automorphism in self._centralizer_elements:
+            if automorphism(source) == target:
+                return automorphism
+        raise ArithmeticError("one centralizer orbit has no transporter between two of its members")
 
 
 class EquivariantLattice(SageObject):
@@ -53,6 +182,7 @@ class EquivariantLattice(SageObject):
     def isometry(self):
         return self._isometry
 
+    @cached_method
     def centralizer_group(self):
         r"""Return ``O(L,f)=Z_{O(L)}(f)``."""
         return self.lattice().O().centralizer(self.isometry())
@@ -118,7 +248,11 @@ class EquivariantLattice(SageObject):
 
     def equivariant_vector_orbit_representatives(self, square):
         r"""Return vector-orbit representatives under ``O(L,f)`` in the supported regime."""
-        return self.isometry().equivariant_vector_orbit_representatives(square)
+        return self.equivariant_vector_orbit_decomposition(square).representatives()
+
+    def equivariant_vector_orbit_decomposition(self, square):
+        r"""Return exact ``O(L,f)``-orbits on vectors of the selected square."""
+        return EquivariantVectorOrbitDecomposition(self, square)
 
     def __repr__(self) -> str:
         return f"{self.lattice()} equipped with {self.isometry()}"
@@ -406,7 +540,17 @@ class IsometryPrimitiveExtension:
         For the orbits under the full ``O(L)`` use
         ``L.O().vector_orbit_representatives(square)``.
         """
-        return self.centralizer_group().vector_orbit_representatives(square)
+        return EquivariantLattice(
+            self.lattice,
+            self.isometry,
+        ).equivariant_vector_orbit_representatives(square)
+
+    def equivariant_vector_orbit_decomposition(self, square):
+        r"""Return the exact decorated-vector orbit package for this isometry."""
+        return EquivariantLattice(
+            self.lattice,
+            self.isometry,
+        ).equivariant_vector_orbit_decomposition(square)
 
     def __repr__(self) -> str:
         return f"Primitive extension of {self.lattice} cut out by {self.isometry}"
@@ -452,6 +596,8 @@ def isometry_primitive_extension(isometry) -> IsometryPrimitiveExtension:
 
 __all__ = [
     "EquivariantLattice",
+    "EquivariantVectorOrbit",
+    "EquivariantVectorOrbitDecomposition",
     "IsometryPrimitiveExtension",
     "cyclotomic_summand",
     "isometry_primitive_extension",
