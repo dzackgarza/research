@@ -2297,14 +2297,14 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 6.2 Vinberg invariant matrices and weighted graphs
 
-- [ ] Exact reflection-cosine values.
-- [ ] Vinberg invariant matrix from Gram/root data.
-- [ ] Combinatorial Vinberg invariant matrices.
+- [x] Exact reflection-cosine values.
+- [x] Vinberg invariant matrix from Gram/root data.
+- [x] Combinatorial Vinberg invariant matrices.
 - [ ] Projective weighted graphs/digraphs and symmetric variants as mathematical objects.
-- [ ] Conversion to/from Coxeter matrices where valid.
+- [x] Conversion to/from Coxeter matrices where valid.
 - [ ] Exact edge/vertex weights and projectivization.
-- [ ] Crystallographic, simply-laced, compact-hyperbolic, and paracompact-hyperbolic predicates with exact hypotheses.
-- [ ] Schlaeflian/determinant invariants and literature examples.
+- [x] Crystallographic, simply-laced, compact-hyperbolic, and paracompact-hyperbolic predicates with exact hypotheses.
+- [x] Schlaeflian/determinant invariants and literature examples.
 
 #### 6.3 Hyperbolic reflection algorithms
 
