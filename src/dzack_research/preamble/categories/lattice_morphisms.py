@@ -988,7 +988,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         data = self._target_primitive_embedding_data()
         if data is None:
             raise NotImplementedError(
-                "target-specific primitive embeddings require an integral nondegenerate target unique in its genus and the OSCAR embedding provider"
+                "target-specific primitive embeddings require an integral nondegenerate target and the OSCAR embedding provider"
             )
         if data is False:
             raise ValueError("the primitive embedding homset is empty")
@@ -1069,7 +1069,7 @@ class LatticeEmbeddingHomset(CategoricalHomset):
         )
         if data is None:
             raise NotImplementedError(
-                "OSCAR's target-specific primitive-embedding classification requires the target lattice to be unique in its genus"
+                "OSCAR's target-specific primitive-embedding classification is unavailable"
             )
         return finite_ordered_set(
             tuple(self._reconstruct_target_primitive_embedding(record) for record in data)

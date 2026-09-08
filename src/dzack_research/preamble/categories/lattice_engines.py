@@ -139,19 +139,22 @@ function target_primitive_embedding(source_gram_entries, target_gram_entries)
     target_gram = _zz_matrix(target_gram_entries)
     source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
     target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
-    if length(genus_representatives(target)) != 1
-        return [0]
-    end
     exists, representatives = primitive_embeddings(
-        target,
+        genus(target),
         source;
-        classification = :first,
-        check = false,
+        classification = :sub,
     )
     if !exists
         return [1, 0]
     end
-    target_prime, source_prime, _complement = first(representatives)
+    target_specific = filter(
+        record -> is_isometric_with_isometry(record[1], target; ambient_representation = false)[1],
+        representatives,
+    )
+    if isempty(target_specific)
+        return [1, 0]
+    end
+    target_prime, source_prime, _complement = first(target_specific)
     inclusion = solve(
         basis_matrix(target_prime),
         basis_matrix(source_prime);
@@ -175,22 +178,26 @@ function target_primitive_embedding_classes(
     target_gram = _zz_matrix(target_gram_entries)
     source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
     target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
-    if length(genus_representatives(target)) != 1
-        return [0]
-    end
     classification = Symbol(classification_name)
     @req classification in [:sub, :emb] "primitive embedding classes are :sub or :emb"
     exists, representatives = primitive_embeddings(
-        target,
+        genus(target),
         source;
         classification = classification,
-        check = false,
     )
     if !exists
         return [1, 0, []]
     end
     result = []
     for (target_prime, source_prime, _complement) in representatives
+        is_target, _target_witness = is_isometric_with_isometry(
+            target_prime,
+            target;
+            ambient_representation = false,
+        )
+        if !is_target
+            continue
+        end
         inclusion = solve(
             basis_matrix(target_prime),
             basis_matrix(source_prime);
@@ -204,6 +211,9 @@ function target_primitive_embedding_classes(
                 change_base_ring(ZZ, inclusion),
             ],
         )
+    end
+    if isempty(result)
+        return [1, 0, []]
     end
     return [1, 1, result]
 end
