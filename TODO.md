@@ -1640,7 +1640,6 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
-| `ARCHIVE-isometry-torsor-20260908-1738` | archive reconciliation / isometry torsor transporter | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_isometry_torsor_archive.py` (write) | `70bb933c` | 2026-09-08T17:38:00Z |
 
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
