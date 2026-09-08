@@ -97,6 +97,30 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
             return self._preamble_jet_coordinate_index
 
 
+class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
+    r"""Projective parameter spaces of sections satisfying one jet condition."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "linear systems with imposed multiplicity"
+
+    def super_categories(self):
+        return [ProjectiveSchemes(self.base_ring())]
+
+    class ParentMethods:
+        def ambient_section_space(self):
+            return self._preamble_ambient_section_space
+
+        def constrained_section_space(self):
+            return self._preamble_constrained_section_space
+
+        def imposed_jet_evaluation(self):
+            return self._preamble_imposed_jet_evaluation
+
+        def imposed_vanishing_order(self):
+            return self.imposed_jet_evaluation().codomain().jet_order()
+
+
 def _weak_compositions(total, length):
     if length == 1:
         yield (total,)
@@ -283,6 +307,30 @@ def SectionsVanishingToOrder(projective_space, degree, coordinate_index, vanishi
     ).kernel()
 
 
+def ImposedMultiplicityLinearSystem(projective_space, degree, coordinate_index, vanishing_order):
+    r"""Projectivize sections vanishing to order at least ``r`` at a coordinate point."""
+    evaluation = CoordinatePointJetEvaluation(
+        projective_space,
+        degree,
+        coordinate_index,
+        vanishing_order,
+    )
+    constrained = evaluation.kernel()
+    dimension = int(constrained.dimension())
+    if dimension == 0:
+        raise ValueError("the imposed condition leaves no nonzero section to projectivize")
+    base = projective_space.scheme_base_ring()
+    parameter_space = ProjectiveSpace(dimension - 1, base)
+    parameter_space._preamble_ambient_section_space = evaluation.domain()
+    parameter_space._preamble_constrained_section_space = constrained
+    parameter_space._preamble_imposed_jet_evaluation = evaluation
+    return refine_scheme(
+        parameter_space,
+        base,
+        [ImposedMultiplicityLinearSystems(base)],
+    )
+
+
 def CompleteLinearSystem(scheme, divisor, section_space):
     r"""Return the complete linear system of ``divisor`` on ``scheme``.
 
@@ -312,6 +360,8 @@ __all__ = [
     "CoordinatePointJetEvaluation",
     "HomogeneousPolynomialSectionSpace",
     "HomogeneousPolynomialSectionSpaces",
+    "ImposedMultiplicityLinearSystem",
+    "ImposedMultiplicityLinearSystems",
     "ProjectiveJetSpaces",
     "SectionsVanishingToOrder",
 ]

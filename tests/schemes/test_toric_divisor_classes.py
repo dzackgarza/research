@@ -22,6 +22,8 @@ from dzack_research.preamble.all import (
     CoxRings,
     FiniteAtlasInvertibleSheaf,
     HomogeneousPolynomialSectionSpaces,
+    ImposedMultiplicityLinearSystem,
+    ImposedMultiplicityLinearSystems,
     LineBundleCohomologySpaces,
     PicardGroups,
     ProjectiveJetSpaces,
@@ -441,6 +443,18 @@ def test_higher_jets_record_the_expected_truncated_local_monomials() -> None:
     assert jets.codomain().dimension() == 6
     assert jets.kernel().dimension() == 4
     assert jets.cokernel().is_zero()
+
+
+def test_imposed_double_point_sections_form_the_expected_projective_parameter_space() -> None:
+    plane = _projective_plane()
+    projective_plane = plane.complete_linear_system(plane.hyperplane_divisor())
+    system = ImposedMultiplicityLinearSystem(projective_plane, 3, 0, 2)
+
+    assert system in ImposedMultiplicityLinearSystems(QQ)
+    assert system.relative_dimension() == 6
+    assert system.ambient_section_space().dimension() == 10
+    assert system.constrained_section_space().dimension() == 7
+    assert system.imposed_vanishing_order() == 2
 
 
 def test_projective_plane_quadratic_section_ring_uses_the_saturated_semigroup() -> None:
