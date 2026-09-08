@@ -2293,7 +2293,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] Elliptic and parabolic subdiagram orbit posets.
 - [ ] Maximal elliptic and parabolic subdiagram posets.
 - [x] Root-intersection graphs.
-- [ ] Restore mathematically valid finite/affine/noncrystallographic literature regressions from `coxeter_tdd_specs`.
+- [x] Restore mathematically valid finite/affine/noncrystallographic literature regressions from `coxeter_tdd_specs`.
 
 #### 6.2 Vinberg invariant matrices and weighted graphs
 
