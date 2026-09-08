@@ -47,7 +47,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+    indexed_family,
+)
 
 
 def _own_number_field(engine):
@@ -205,6 +208,7 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
 
             return finite_ordered_set(abs(self.discriminant()).prime_divisors())
 
+        @cached_method
         def embeddings(self, target):
             r"""Return the exact owned field embeddings ``K -> target``."""
 
@@ -287,6 +291,42 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
                 finite_free_generator=primitive,
                 finite_free_coordinates=finite_free_coordinates,
                 presentation_lift=presentation_lift,
+            )
+
+    class ElementMethods:
+        def characteristic_polynomial(self):
+            r"""Return the characteristic polynomial of multiplication by ``self`` over ``QQ``.
+
+            Its degree is ``[K:QQ]`` even when ``self`` lies in a proper
+            subfield.  This is therefore different from the minimal
+            polynomial exactly in the cases where the chosen element does not
+            generate the whole number field.
+            """
+            polynomial = self._backend().charpoly()
+            return _own_ring(polynomial.parent())._from_engine_element(polynomial)
+
+        def minimal_polynomial(self):
+            r"""Return the minimal polynomial of ``self`` over ``QQ``."""
+            return self.minpoly()
+
+        def is_integral(self) -> bool:
+            r"""Return whether ``self`` is an algebraic integer."""
+            return bool(self._backend().is_integral())
+
+        def conjugates(self, target):
+            r"""Return the images of ``self`` under all owned embeddings into ``target``.
+
+            The embeddings are the index set.  Two embeddings can have the
+            same value on a nonprimitive element, so the result is an indexed
+            family rather than a set of values; this retains multiplicity and
+            the embedding that produced each conjugate.
+            """
+            field = self.parent()
+            embeddings = field.embeddings(target)
+            return finite_indexed_family(
+                embeddings,
+                lambda embedding: embedding(self),
+                name=f"Conjugates of {self} in {target}",
             )
 
 
