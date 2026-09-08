@@ -71,6 +71,29 @@ def test_the_branch_subscheme_of_the_double_cover_is_four_points() -> None:
     assert branch.coordinate_algebra().module_generating_set().cardinality() == 4
 
 
+def test_double_cover_ramification_is_the_differential_fitting_scheme_over_the_branch() -> None:
+    _algebra, _x, _covers, cover = _hyperelliptic_double_cover()
+    ramification = cover.ramification_subscheme()
+    support = cover.ramification_support_subscheme()
+    z = cover.cover_variable()
+
+    assert ramification.defining_ideal_owned() == cover.coordinate_algebra().ideal(z)
+    assert support.defining_ideal_owned() == cover.coordinate_algebra().ideal(z)
+    ramification_to_branch = cover.ramification_to_branch_morphism()
+    assert ramification_to_branch.domain() is support
+    assert ramification_to_branch.codomain() is cover.branch_subscheme()
+
+
+def test_degree_three_ramification_retains_the_square_different() -> None:
+    finite_line = PolynomialRing(GF(7), "x")
+    cover = CyclicCovers(finite_line, 3)(finite_line.algebra_generator("x"))
+    z = cover.cover_variable()
+    ramification_ideal = cover.ramification_subscheme().defining_ideal_owned()
+
+    assert ramification_ideal.contains_ambient_element(z**2)
+    assert not ramification_ideal.contains_ambient_element(z)
+
+
 def test_the_quotient_by_the_deck_action_is_the_base_of_the_cover() -> None:
     algebra, _x, _covers, cover = _hyperelliptic_double_cover()
     quotient_morphism = cover.quotient_morphism()
@@ -121,6 +144,7 @@ def test_the_trivial_cover_is_the_unramified_torsor_with_a_free_deck_action() ->
     # z is a unit, so the deck fixed locus is empty and the action is free.
     assert acted.fixed_ideal().contains_ambient_element(cover.coordinate_algebra().one())
     assert acted.action_is_free() is True
+    assert cover.is_etale_cover()
 
 
 def test_a_scalar_change_of_the_base_carries_the_cover_presentation() -> None:
