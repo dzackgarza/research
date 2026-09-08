@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
@@ -969,6 +970,10 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         r"""``R |-> R^x : Ring -> Grp``."""
         return UnitGroupFunctor()
 
+    def center_functor(self):
+        r"""Return ``Z : Core(Ring) -> Core(Ring)``."""
+        return RingCenterFunctor()
+
     class Commutative(CategoryWithAxiom):
         r"""Commutative unital rings in the owned mathematical graph."""
 
@@ -1599,6 +1604,53 @@ class UnitGroupFunctor(Functor):
 
     def _repr_(self):
         return "Unit group functor"
+
+
+def _center_transport_of_ring_isomorphism(morphism):
+    r"""Restrict one ring isomorphism direction to represented centers."""
+    source = morphism.domain()
+    target = morphism.codomain()
+    source_center = source.ring_center()
+    target_center = target.ring_center()
+
+    def ambient_source(element):
+        if source_center is source:
+            return source(element)
+        return source_center.inclusion()(element)
+
+    return ring_morphism(
+        source_center,
+        target_center,
+        lambda element: target_center(morphism(ambient_source(element))),
+    )
+
+
+class RingCenterFunctor(Functor):
+    r"""The ring center functor on the maximal subgroupoid of owned rings.
+
+    A general ring morphism need not preserve centers.  An isomorphism does:
+    if ``f : R -> S`` is invertible, ``z`` commutes with every element of
+    ``R``, and ``s in S``, then writing ``s=f(r)`` gives
+    ``f(z)s=f(zr)=f(rz)=sf(z)``.  Thus the center construction is functorial
+    exactly on the core without a generator or surjectivity heuristic.
+    """
+
+    def __init__(self) -> None:
+        core = Core(OwnedRings())
+        super().__init__(core, core)
+
+    def _apply_object(self, ring):
+        return ring.ring_center()
+
+    def _apply_morphism(self, isomorphism):
+        source_center = self.object_image(isomorphism.domain())
+        target_center = self.object_image(isomorphism.codomain())
+        forward = _center_transport_of_ring_isomorphism(isomorphism.forward())
+        inverse = _center_transport_of_ring_isomorphism(isomorphism.inverse())
+        return self.codomain().Mor(source_center, target_center)(forward, inverse)
+
+    def _repr_(self):
+        return "Ring center functor on Core(Ring)"
 
 
 class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategory):
