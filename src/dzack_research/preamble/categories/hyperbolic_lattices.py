@@ -373,50 +373,51 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def fundamental_chamber(self):
-            r"""Return the fundamental polyhedron of \(W(L)\) in \(L\otimes\mathbb R\).
+        def fundamental_chamber(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the exact root-half-space cone cut out by Vinberg's walls.
 
-            The category's stated contract, and its open work.  The walls are
-            the mirrors of the roots :meth:`vinberg_simple_roots` enumerates,
-            so the polyhedron is given by half-spaces, and the owned polytope
-            surface (``categories/schemes/polytopes.py``) constructs a convex
-            polytope from its vertices only.  Building this needs a
-            half-space-presented polyhedron over \(L\otimes\mathbb R\), which
-            the preamble does not own; :meth:`is_cocompact` reads the one fact
-            that can be had without it.
+            The chamber is ``{x : b(r,x) >= 0 for every accepted wall r}``.
+            It retains those roots and their actual correlation covectors; the
+            completion flag records whether the Vinberg search established the
+            full wall set or only a bounded exploration prefix.
             """
-            assert False, (
-                "the fundamental polyhedron needs a half-space-presented "
-                "polyhedron over L tensor RR; the owned polytope surface "
-                "builds a polytope from its vertices and cannot state a "
-                "chamber by its walls"
+            from dzack_research.preamble.categories.polyhedral_cones import (
+                rational_polyhedral_cone,
             )
 
-        def dominant_cone(self):
-            r"""Return the dominant cone of \(W(L)\) inside \(L\otimes\mathbb R\).
+            complete, roots = self._vinberg_search(
+                controlling_vector, max_roots, max_decompositions
+            )
+            correlation = self.algebraic_correlation_morphism()
+            return rational_polyhedral_cone(
+                self,
+                tuple(correlation(root) for root in roots),
+                wall_roots=roots,
+                complete=complete,
+            )
 
-            The closed cone cut out by the walls of
-            :meth:`fundamental_chamber`.  The category's stated contract; it
-            waits on the same half-space-presented surface.  The object lives
-            in the base-changed parent \(L\otimes\mathbb R\) and not in \(L\),
-            a cone being closed under positive real scaling.
-            """
-            assert False, (
-                "the dominant cone lives in L tensor RR and needs the same "
-                "half-space-presented surface as fundamental_chamber"
+        def dominant_cone(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the closed dominant cone defined by the selected simple roots."""
+            return self.fundamental_chamber(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
             )
 
         def chamber_complex(self):
-            r"""Return the complex of \(W(L)\)-translates of the fundamental chamber.
+            r"""Return the complex of Weyl translates of the fundamental chamber.
 
-            The category's stated contract.  The union of the translates is the
-            Tits cone, on whose interior \(W(L)\) acts properly
-            discontinuously.  It needs :meth:`fundamental_chamber` and a
-            complex surface, and the preamble owns neither.
+            The fundamental chamber is now owned exactly.  The remaining
+            operation is a locally finite complex of its translates with face
+            incidences and stabilizers; no such complex owner exists yet.
             """
             assert False, (
-                "the chamber complex needs fundamental_chamber and a complex "
-                "surface, neither of which the preamble owns"
+                "the exact fundamental chamber exists, but the chamber complex "
+                "still needs an owned locally finite polyhedral-complex surface"
             )
 
         def isotropic_elements_below_height(self, timelike, height):
