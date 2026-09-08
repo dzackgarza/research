@@ -2364,14 +2364,14 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] 2D polygon SVG generation if still useful. `ConvexPolygons` now renders the live exact vertex object through `_repr_svg_()`; floating-point conversion is confined to the display boundary.
 - [x] 3D polytope HTML/Three.js generation if still useful. `ConvexPolytopes.threejs_html()` delegates the live exact Sage polyhedron to Sage's local `Graphics3d` Three.js serializer.
 - [x] Coxeter/ADE TikZ only after diagram objects exist live. `CoxeterDiagrams.tikz_picture()` renders the retained live bond matrix, names and positions, including explicit non-3 bond labels.
-- [ ] Custom rich representations only as views of live mathematical objects.
+- [x] Custom rich representations only as views of live mathematical objects.
 - [x] Reassess implicit display-hook installation separately from mathematical ports. Source audit finds no implicit formatter/monkey-patch installation under `src/dzack_research/preamble`; display remains object-owned (`_repr_svg_`) or explicit (`threejs_html()`, `tikz_picture()`).
 
 ### 24. Port-completion audit
 
 - [ ] Compare public mathematical nouns/operations in every archived `categories/**/*.sage`/`.py` file against live API.
 - [ ] Re-run every mathematically valid archived `test_known_mathematics.sage` assertion through live public constructions.
-- [ ] Re-run valid `coxeter_tdd_specs` literature examples through live Coxeter/Vinberg surface.
+- [x] Re-run valid `coxeter_tdd_specs` literature examples through live Coxeter/Vinberg surface.
 - [ ] Rebuild valid framework scenarios against live scheme/geometry surface.
 - [ ] Confirm every intentionally unported archived construction is recorded above as superseded, rejected, or spec-only.
 
