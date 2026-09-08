@@ -92,10 +92,73 @@ class BilinearFormHoms(OwnedCategoryOverBaseRing):
             )
             return BilinearForms(morphism.domain(), self.codomain())(self * induced)
 
+        def descends_along(self, morphism, value_projection) -> bool:
+            r"""Whether this form descends through ``coker(morphism)`` after projecting values."""
+            return _bilinear_form_descends_along(self, morphism, value_projection)
+
+        def descend_along(self, morphism, value_projection):
+            r"""Return the induced bilinear form on ``coker(morphism)``."""
+            return _descended_bilinear_form(self, morphism, value_projection)
+
 
 def _value_module_over(value_module, ring) -> bool:
 
     return value_module in Modules(ring)
+
+
+def _bilinear_form_descends_along(form, morphism, value_projection) -> bool:
+    r"""Test the radical condition for descent through a represented cokernel."""
+    module = form.module()
+    if morphism.codomain() is not module:
+        raise ValueError("the quotient relation map must land in the form's module")
+    if value_projection.domain() is not form.codomain():
+        raise ValueError("the value projection must start at the form's value module")
+
+    relation_labels = _finite_framing(morphism.domain())
+    module_labels = _finite_framing(module)
+    zero = value_projection.codomain().zero()
+    return all(
+        value_projection(
+            form(
+                morphism(morphism.domain().module_generator(relation_label)),
+                module.module_generator(module_label),
+            )
+        )
+        == zero
+        for relation_label in relation_labels
+        for module_label in module_labels
+    )
+
+
+def _descended_bilinear_form(form, morphism, value_projection):
+    r"""Construct the descended form on the actual represented cokernel."""
+    if not _bilinear_form_descends_along(form, morphism, value_projection):
+        raise ValueError("the form does not vanish on the quotient relations")
+
+    module = form.module()
+    quotient = morphism.cokernel()
+    quotient_labels = tuple(_finite_framing(quotient))
+    module_labels = tuple(_finite_framing(module))
+    if quotient_labels != module_labels:
+        raise ValueError(
+            "the represented cokernel does not retain the source module's selected generator labels"
+        )
+
+    def selected_lift(element):
+        coefficients = module_coefficients(element, quotient)
+        return module.linear_combination(
+            {
+                label: coefficient
+                for label, coefficient in coefficients.items()
+                if coefficient
+            }
+        )
+
+    return BilinearForms(quotient, value_projection.codomain())(
+        lambda left, right: value_projection(
+            form(selected_lift(left), selected_lift(right))
+        )
+    )
 
 
 class _CallableForm(Element):
@@ -288,6 +351,20 @@ class _CallableForm(Element):
         return BilinearForms(morphism.domain(), self.codomain())(
             lambda left, right: self(morphism(left), morphism(right))
         )
+
+    def descends_along(self, morphism, value_projection) -> bool:
+        if self.parent().kind() != "bilinear":
+            raise NotImplementedError(
+                "quadratic-form descent belongs to the divided-square form owner"
+            )
+        return _bilinear_form_descends_along(self, morphism, value_projection)
+
+    def descend_along(self, morphism, value_projection):
+        if self.parent().kind() != "bilinear":
+            raise NotImplementedError(
+                "quadratic-form descent belongs to the divided-square form owner"
+            )
+        return _descended_bilinear_form(self, morphism, value_projection)
 
     def __eq__(self, other):
         if self is other:
