@@ -981,6 +981,43 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 self.divisor_section_characters(divisor),
             )
 
+        def ample_divisor_self_intersection(self, divisor):
+            r"""Return ``D^2`` from the normalized area of ``P_D``.
+
+            On a smooth complete toric surface a nef divisor satisfies
+            ``D^2 = Vol(P_D)`` for lattice-normalized volume.  The supported
+            interface asks for ampleness, which implies nefness and is already
+            decided by the toric support-function criterion above.
+            """
+            assert int(self.dimension()) == 2, (
+                "this intersection-number specialization is for toric surfaces"
+            )
+            assert self.fan().is_smooth() and self.fan().is_complete(), (
+                "polytope self-intersection is represented here on a smooth complete toric surface"
+            )
+            assert self.is_ample(divisor), (
+                "the represented polytope intersection formula currently requires an ample divisor"
+            )
+            return self.divisor_polytope(divisor).normalized_volume()
+
+        def ample_divisor_intersection(self, left, right):
+            r"""Return ``left . right`` by polarization on a smooth complete toric surface."""
+            group = self.weil_divisor_group()
+            left = group(left)
+            right = group(right)
+            assert self.is_ample(left) and self.is_ample(right), (
+                "the represented mixed intersection currently requires two ample Cartier divisors"
+            )
+            numerator = (
+                self.ample_divisor_self_intersection(left + right)
+                - self.ample_divisor_self_intersection(left)
+                - self.ample_divisor_self_intersection(right)
+            )
+            quotient, remainder = numerator.quo_rem(_integers()(2))
+            if remainder != _integers().zero():
+                raise ArithmeticError("polarization of an integral intersection form was not even")
+            return quotient
+
         def log_pair(self):
             r"""The toric log pair ``(X, sum_rho D_rho)``."""
             from dzack_research.preamble.categories.schemes.log_pairs import ToricLogPair
