@@ -66,6 +66,19 @@ def test_the_principal_divisor_of_every_character_is_trivial_in_the_class_group(
         assert plane.divisor_class(principal(character)) == classes.zero()
 
 
+def test_character_valuations_are_the_coefficients_of_their_principal_divisor() -> None:
+    plane = _projective_plane()
+    character = plane.character_lattice().module_generator(
+        next(iter(plane.character_lattice().module_generating_set()))
+    )
+    divisor = plane.principal_divisor_of_character(character)
+
+    for ray in plane.fan().cones(1):
+        assert plane.weil_multiplicity(divisor, ray) == (
+            plane.order_of_character_along_prime_divisor(character, ray)
+        )
+
+
 def test_the_anticanonical_class_of_the_projective_plane_is_three_times_a_line() -> None:
     plane = _projective_plane()
     line = plane.divisor_class(_prime_divisors(plane)[0])

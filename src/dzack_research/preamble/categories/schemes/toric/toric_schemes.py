@@ -639,6 +639,25 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             assert ray in self.fan(), "a torus-invariant prime divisor is indexed by a ray"
             return self.torus_invariant_divisor_group().module_generator(ray)
 
+        def weil_multiplicity(self, divisor, ray):
+            r"""Return the coefficient of ``D_rho`` in a torus-invariant Weil divisor."""
+            if ray not in self.fan().cones(1):
+                raise ValueError("a toric Weil multiplicity is indexed by a ray of the fan")
+            group = self.weil_divisor_group()
+            coefficients = module_coefficients(group(divisor), group)
+            return coefficients.get(ray, _integers().zero())
+
+        def order_of_character_along_prime_divisor(self, character, ray):
+            r"""Return ``ord_{D_rho}(chi^m)=<m,u_rho>`` (CLS Prop. 4.1.2)."""
+            character = self.character_lattice()(character)
+            if ray not in self.fan().cones(1):
+                raise ValueError("a toric valuation is indexed by a ray of the fan")
+            return _pairing_on_ray(self.fan(), character, ray)
+
+        def principal_divisor_of_character(self, character):
+            r"""Return ``div(chi^m)`` as an element of the represented Weil group."""
+            return self.character_divisor_morphism()(self.character_lattice()(character))
+
         @cached_method
         def toric_boundary_divisor(self):
             r"""The toric boundary ``sum_rho D_rho``, the complement of the torus."""
@@ -667,7 +686,13 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             def image(label):
                 character = characters.module_generator(label)
                 return group.linear_combination(
-                    {ray: _pairing_on_ray(fan, character, ray) for ray in rays}
+                    {
+                        ray: self.order_of_character_along_prime_divisor(
+                            character,
+                            ray,
+                        )
+                        for ray in rays
+                    }
                 )
 
             return module_homset(characters, group)(image)
