@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroup,
 )
+from dzack_research.preamble.categories.divisors.chow_groups import ChowGroup
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroup
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -1094,6 +1095,48 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             if remainder != _integers().zero():
                 raise ArithmeticError("polarization of an integral intersection form was not even")
             return quotient
+
+        @cached_method
+        def chow_group(self, cycle_dimension):
+            r"""Return the integral Chow group ``A_k(X)`` in the selected degree.
+
+            Orbit closures generate the full Chow group of a toric variety,
+            and Sage's toric Chow implementation computes their exact rational-
+            equivalence quotient, including integral torsion.  The backend
+            returns a finitely generated ``ZZ``-module in invariant-factor
+            form; crossing those invariants back through a diagonal owned
+            presentation keeps the computation private while the public result
+            remains an owned module carrying ``X`` and ``k``.
+            """
+            cycle_dimension = int(cycle_dimension)
+            dimension = int(self.dimension())
+            if cycle_dimension < 0 or cycle_dimension > dimension:
+                raise ValueError("a Chow-group degree lies between zero and the scheme dimension")
+            engine = self._toric_engine_variety().Chow_group().degree(cycle_dimension).module()
+            invariants = tuple(int(value) for value in engine.invariants())
+            integers = _integers()
+            rank = len(invariants)
+            free = BasedFreeModule(integers, rank)
+            relations = BasedFreeModule(integers, rank)
+            relation = module_homset(relations, free)(
+                {
+                    position: (
+                        integers(invariant) * free.module_generator(position)
+                        if invariant != 0
+                        else free.zero()
+                    )
+                    for position, invariant in enumerate(invariants)
+                }
+            )
+            from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+                FinitelyPresentedModule,
+            )
+
+            return ChowGroup(
+                FinitelyPresentedModule(relation),
+                self,
+                cycle_dimension,
+            )
 
         def log_pair(self):
             r"""The toric log pair ``(X, sum_rho D_rho)``."""

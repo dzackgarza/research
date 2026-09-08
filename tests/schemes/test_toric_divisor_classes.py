@@ -12,6 +12,7 @@ import pytest
 from dzack_research.preamble.all import (
     BasedFreeModule,
     CartierDivisorGroups,
+    ChowGroups,
     ClassGroups,
     CompleteLinearSystems,
     FiniteAtlasInvertibleSheaf,
@@ -268,6 +269,27 @@ def test_projective_plane_intersections_are_the_normalized_areas_of_divisor_poly
     assert plane.ample_divisor_self_intersection(line) == 1
     assert plane.ample_divisor_intersection(line, cubic) == 3
     assert plane.ample_divisor_self_intersection(cubic) == 9
+
+
+def test_projective_plane_chow_groups_are_owned_integral_cycle_quotients() -> None:
+    plane = _projective_plane()
+
+    for degree in (0, 1, 2):
+        group = plane.chow_group(degree)
+        assert group in ChowGroups(ZZ)
+        assert group.chow_scheme() is plane
+        assert group.cycle_dimension() == degree
+        assert group.module_rank() == 1
+        assert group.invariant_factors().cardinality() == 1
+        assert group.invariant_factors()[0] == ZZ.zero()
+
+
+def test_hirzebruch_surface_chow_group_has_rank_two_in_curve_degree() -> None:
+    surface = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+
+    assert surface.chow_group(0).module_rank() == 1
+    assert surface.chow_group(1).module_rank() == 2
+    assert surface.chow_group(2).module_rank() == 1
 
 
 def test_a_principal_divisor_is_basepoint_free_and_never_ample() -> None:
