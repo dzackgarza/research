@@ -123,6 +123,19 @@ def test_the_picard_group_is_constructed_on_a_smooth_fan_and_refused_otherwise()
         _quadric_cone().picard_group()
 
 
+def test_standard_smooth_toric_picard_groups_come_from_the_character_divisor_quotient() -> None:
+    affine_plane = _PLANE_FANS((((1, 0), (0, 1)),)).toric_variety(QQ)
+    projective_plane = _projective_plane()
+    product_of_lines = _PLANE_FANS.hirzebruch_surface_fan(0).toric_variety(QQ)
+
+    assert affine_plane.picard_group().module_rank() == 0
+    assert affine_plane.class_group().module_rank() == 0
+    assert projective_plane.picard_group().module_rank() == 1
+    assert projective_plane.class_group().module_rank() == 1
+    assert product_of_lines.picard_group().module_rank() == 2
+    assert product_of_lines.class_group().module_rank() == 2
+
+
 def test_the_smooth_toric_divisor_comparison_square_is_explicit() -> None:
     plane = _projective_plane()
     weil = plane.weil_divisor_group()
