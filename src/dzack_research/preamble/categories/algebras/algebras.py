@@ -29,6 +29,10 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
     _two_factors_of,
 )
+from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
+    AssociativeAlgebraHomset,
+)
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
     module_coefficients,
@@ -41,8 +45,9 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     TensorProductModules,
 )
-from dzack_research.preamble.categories.modules.tensor_products import tensor_product_morphism
-from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.modules.tensor_products import (
+    tensor_product_morphism,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
@@ -57,7 +62,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
@@ -65,10 +72,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
-
-from dzack_research.preamble.categories.algebras.associative_algebra_morphisms import (
-    AssociativeAlgebraHomset,
-)
 
 
 class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
@@ -81,10 +84,18 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
         a chosen morphism rather than one inherited from a construction.
         """
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            TensorSquare,
+        )
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            BasedFreeModule,
+        )
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            module_homset,
+        )
+        from dzack_research.preamble.categories.sets.set_categories import (
+            finite_ordinal_set,
+        )
 
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
@@ -223,14 +234,8 @@ class MultiplicativeAlgebraMorphism(Morphism):
         selected = getattr(underlying_morphism, "underlying_morphism", None)
         if callable(selected):
             underlying_morphism = selected()
-        if not (
-            isinstance(underlying_morphism, ModuleMorphism)
-            and underlying_morphism.domain() is source_module
-            and underlying_morphism.codomain() is target_module
-        ):
-            underlying_morphism = module_homset(source_module, target_module)(
-                underlying_morphism
-            )
+        if not (isinstance(underlying_morphism, ModuleMorphism) and underlying_morphism.domain() is source_module and underlying_morphism.codomain() is target_module):
+            underlying_morphism = module_homset(source_module, target_module)(underlying_morphism)
         tensor_square = None
         source_exact = _has_exact_algebra_carrier(self.domain())
         target_exact = _has_exact_algebra_carrier(self.codomain())
@@ -243,21 +248,14 @@ class MultiplicativeAlgebraMorphism(Morphism):
                 source=source_multiplication.domain(),
                 target=target_multiplication.domain(),
             )
-            if (
-                underlying_morphism * source_multiplication
-                != target_multiplication * tensor_square
-            ):
+            if underlying_morphism * source_multiplication != target_multiplication * tensor_square:
                 raise ValueError("the stated map does not preserve multiplication")
         else:
             if not source_module.is_framed():
-                raise NotImplementedError(
-                    "multiplicativity at a mixed exact/legacy algebra Hom requires a finite framed source module"
-                )
+                raise NotImplementedError("multiplicativity at a mixed exact/legacy algebra Hom requires a finite framed source module")
             labels = source_module.module_generating_set()
             if not labels.cardinality().is_finite():
-                raise NotImplementedError(
-                    "multiplicativity at a mixed exact/legacy algebra Hom requires finitely many source generators"
-                )
+                raise NotImplementedError("multiplicativity at a mixed exact/legacy algebra Hom requires finitely many source generators")
             for left_label in labels:
                 left = source_module.module_generator(left_label)
                 for right_label in labels:
@@ -277,9 +275,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
                         right_image,
                     )
                     if underlying_morphism(source_product) != target_product:
-                        raise ValueError(
-                            "the stated map does not preserve multiplication"
-                        )
+                        raise ValueError("the stated map does not preserve multiplication")
         self._underlying_morphism = underlying_morphism
         self._tensor_square_morphism = tensor_square
 
@@ -290,9 +286,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
 
     def tensor_square_morphism(self):
         if self._tensor_square_morphism is None:
-            raise NotImplementedError(
-                "this mixed exact/legacy algebra map has no represented tensor-square map"
-            )
+            raise NotImplementedError("this mixed exact/legacy algebra map has no represented tensor-square map")
         return self._tensor_square_morphism
 
     left = tensor_square_morphism
@@ -313,15 +307,11 @@ class MultiplicativeAlgebraMorphism(Morphism):
         r"""Return the multiplication-preserving quotient map to ``coker(self)``."""
         quotient = self.cokernel()
         category = self.parent().hom_family().base_category()
-        return category.Mor(self.codomain(), quotient)(
-            quotient.algebra_quotient_projection()
-        )
+        return category.Mor(self.codomain(), quotient)(quotient.algebra_quotient_projection())
 
     def _call_(self, element):
         target_module = self.codomain().underlying_module()
-        image = self.underlying_morphism()(
-            self.domain()._carrier_element(element)
-        )
+        image = self.underlying_morphism()(self.domain()._carrier_element(element))
         return _module_element_in_algebra(
             self.codomain(),
             target_module,
@@ -331,10 +321,7 @@ class MultiplicativeAlgebraMorphism(Morphism):
     def __eq__(self, other) -> bool:
         if not isinstance(other, MultiplicativeAlgebraMorphism):
             return False
-        return (
-            self.parent() is other.parent()
-            and self.underlying_morphism() == other.underlying_morphism()
-        )
+        return self.parent() is other.parent() and self.underlying_morphism() == other.underlying_morphism()
 
     def __ne__(self, other) -> bool:
         return not self == other
@@ -393,11 +380,7 @@ class UnitalMultiplicativeAlgebraHomset(MultiplicativeAlgebraHomset):
 def _has_exact_algebra_carrier(algebra) -> bool:
     target_object = getattr(algebra, "target_object", None)
     underlying_module = getattr(algebra, "underlying_module", None)
-    return (
-        callable(target_object)
-        and callable(underlying_module)
-        and underlying_module() is target_object()
-    )
+    return callable(target_object) and callable(underlying_module) and underlying_module() is target_object()
 
 
 class GeneralAlgebraHomCategoryConstruction(HomCategoryConstruction):
@@ -449,9 +432,7 @@ class _UnitalAlgebraParentMethods:
     def unit_morphism(self):
         selected = self.__dict__.get("_preamble_algebra_unit_morphism")
         if selected is None:
-            raise NotImplementedError(
-                "this unital algebra has no retained R-to-A unit morphism"
-            )
+            raise NotImplementedError("this unital algebra has no retained R-to-A unit morphism")
         return selected
 
 
@@ -466,13 +447,8 @@ def _equip_unit(algebra, unit_morphism, category):
     scalar_module = algebra_underlying_module_functor(ring)(ring)
     if not isinstance(unit_morphism, Morphism):
         raise TypeError("a unit is supplied as a morphism R -> M")
-    if (
-        unit_morphism.domain() is not scalar_module
-        or unit_morphism.codomain() is not module
-    ):
-        raise ValueError(
-            "the unit morphism must have exact endpoints U_R(R) -> underlying_module(A)"
-        )
+    if unit_morphism.domain() is not scalar_module or unit_morphism.codomain() is not module:
+        raise ValueError("the unit morphism must have exact endpoints U_R(R) -> underlying_module(A)")
     unit = unit_morphism(scalar_module(ring.one()))
     multiplication = algebra.multiplication_morphism()
     tensor = multiplication.domain()
@@ -485,9 +461,7 @@ def _equip_unit(algebra, unit_morphism, category):
                 left = multiplication(tensor.pure_tensor(unit, element))
                 right = multiplication(tensor.pure_tensor(element, unit))
                 if left != element or right != element:
-                    raise ValueError(
-                        f"the stated unit fails a unit equation on module generator {label!r}"
-                    )
+                    raise ValueError(f"the stated unit fails a unit equation on module generator {label!r}")
     algebra._preamble_algebra_unit_morphism = unit_morphism
     algebra._preamble_algebra_unit = unit
     refine(algebra, category)
@@ -519,9 +493,7 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
         return self._categorical_product(left, right)
 
     def _categorical_product(self, left, right):
-        raise NotImplementedError(
-            "the represented categorical product of commutative algebras is not yet implemented"
-        )
+        raise NotImplementedError("the represented categorical product of commutative algebras is not yet implemented")
 
     def coproduct(self, factors):
         r"""Return the represented two-factor tensor-product coproduct."""
@@ -533,9 +505,7 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
         if operation is None:
             operation = getattr(right, "_commutative_algebra_coproduct", None)
         if operation is None:
-            raise NotImplementedError(
-                "neither factor carries a represented commutative-algebra coproduct backend"
-            )
+            raise NotImplementedError("neither factor carries a represented commutative-algebra coproduct backend")
         return operation(left, right)
 
     def _categorical_coproduct_morphism(
@@ -562,9 +532,7 @@ class _CommutativeUnitalAlgebraSubcategoryMethods:
         if operation is None:
             operation = getattr(right, "_commutative_algebra_pushout", None)
         if operation is None:
-            raise NotImplementedError(
-                "neither factor carries a represented commutative-algebra pushout backend"
-            )
+            raise NotImplementedError("neither factor carries a represented commutative-algebra pushout backend")
         return operation(left_morphism, right_morphism)
 
 
@@ -611,9 +579,7 @@ class _AlgebraTensorSquareFunctor(Functor):
 def _algebra_tensor_square_functor(base_ring):
     ring = _owned_ring(base_ring)
     if ring not in OwnedRings().Commutative():
-        raise NotImplementedError(
-            "constructing an algebra from M tensor_R M over a noncommutative base requires a represented bimodule tensor product"
-        )
+        raise NotImplementedError("constructing an algebra from M tensor_R M over a noncommutative base requires a represented bimodule tensor product")
     return _AlgebraTensorSquareFunctor(ring)
 
 
@@ -707,11 +673,7 @@ class Algebras(OwnedCategoryOverBaseRing):
             if not _has_exact_algebra_carrier(self):
                 realized = self(element)
                 from_realization = getattr(module, "from_realization", None)
-                return (
-                    from_realization(realized)
-                    if callable(from_realization)
-                    else realized
-                )
+                return from_realization(realized) if callable(from_realization) else realized
             if getattr(element, "parent", lambda: None)() is self:
                 underlying = getattr(element, "underlying_element", None)
                 if not callable(underlying):
@@ -728,21 +690,16 @@ class Algebras(OwnedCategoryOverBaseRing):
                 ordinary = Algebras(self.base_ring()).Associative().Unital()
                 if self in ordinary:
                     scalar = self.base_ring()(scalar)
-                    scalar_image = self(
-                        self.algebra_structure_morphism()(scalar)
-                    )
+                    scalar_image = self(self.algebra_structure_morphism()(scalar))
                     return scalar_image * self(element)
                 return super().scalar_multiple(scalar, element)
             module = self.underlying_module()
-            return self(
-                module.scalar_multiple(scalar, self._carrier_element(element))
-            )
+            return self(module.scalar_multiple(scalar, self._carrier_element(element)))
 
         def product(self, left, right):
             r"""Evaluate the selected multiplication on two carrier elements."""
             if not _has_exact_algebra_carrier(self):
                 return self(left) * self(right)
-            module = self.underlying_module()
             multiplication = self.multiplication_morphism()
             return self(
                 multiplication(
@@ -866,22 +823,8 @@ class Algebras(OwnedCategoryOverBaseRing):
 
             def commutation_equalizer(label):
                 element = module.module_generator(label)
-                left = endomorphisms(
-                    {
-                        other: multiplication(
-                            tensor.pure_tensor(module.module_generator(other), element)
-                        )
-                        for other in labels
-                    }
-                )
-                right = endomorphisms(
-                    {
-                        other: multiplication(
-                            tensor.pure_tensor(element, module.module_generator(other))
-                        )
-                        for other in labels
-                    }
-                )
+                left = endomorphisms({other: multiplication(tensor.pure_tensor(module.module_generator(other), element)) for other in labels})
+                right = endomorphisms({other: multiplication(tensor.pure_tensor(element, module.module_generator(other))) for other in labels})
                 return Equalizer(left, right)
 
             equalizers = iter(labels)
@@ -889,7 +832,33 @@ class Algebras(OwnedCategoryOverBaseRing):
             for label in equalizers:
                 center = center.intersection(commutation_equalizer(label))
             if self not in Algebras(self.base_ring()).Associative():
-            return center
+                return center
+
+            inclusion = center.inclusion()
+            center_tensor = TensorProduct(center, center)
+            ambient_tensor = multiplication.domain()
+            center_multiplication = center_tensor.from_bilinear(
+                BilinearMap(
+                    center,
+                    center,
+                    center,
+                    lambda left, right: inclusion.lift(
+                        multiplication(
+                            ambient_tensor.pure_tensor(
+                                inclusion(center.module_generator(left)),
+                                inclusion(center.module_generator(right)),
+                            )
+                        )
+                    ),
+                )
+            )
+            result = Algebras(self.base_ring()).Associative()(
+                center,
+                center_multiplication,
+            )
+            refine(result, Algebras(self.base_ring()).Commutative())
+            result._preamble_center_inclusion = inclusion
+            return result
 
         def algebra_ideal_generated_by(self, subobject):
             r"""Return the algebra ideal generated by one represented submodule.
@@ -905,16 +874,12 @@ class Algebras(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             module = self.underlying_module()
             if ring not in OwnedFields():
-                raise NotImplementedError(
-                    "algebra-ideal closure is currently decided for finite-dimensional algebras over fields"
-                )
+                raise NotImplementedError("algebra-ideal closure is currently decided for finite-dimensional algebras over fields")
             if subobject.inclusion().codomain() is not module:
                 raise ValueError("an algebra ideal generator must be a submodule of the algebra carrier")
             ambient_labels = module.module_generating_set()
             if not ambient_labels.cardinality().is_finite():
-                raise NotImplementedError(
-                    "algebra-ideal closure currently requires a finite module framing"
-                )
+                raise NotImplementedError("algebra-ideal closure currently requires a finite module framing")
 
             subobjects = Subobjects(module, Modules(ring))
             current = subobject
@@ -1013,32 +978,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                 raise TypeError("this algebra was not constructed as a represented algebra quotient")
             return selected
 
-            inclusion = center.inclusion()
-            center_tensor = TensorProduct(center, center)
-            ambient_tensor = multiplication.domain()
-            center_multiplication = center_tensor.from_bilinear(
-                BilinearMap(
-                    center,
-                    center,
-                    center,
-                    lambda left, right: inclusion.lift(
-                        multiplication(
-                            ambient_tensor.pure_tensor(
-                                inclusion(center.module_generator(left)),
-                                inclusion(center.module_generator(right)),
-                            )
-                        )
-                    ),
-                )
-            )
-            result = Algebras(self.base_ring()).Associative()(
-                center,
-                center_multiplication,
-            )
-            refine(result, Algebras(self.base_ring()).Commutative())
-            result._preamble_center_inclusion = inclusion
-            return result
-
         def _Hom_(self, codomain, category=None):
             if category is not None and not category.is_subcategory(Algebras(self.base_ring())):
                 raise TypeError("this is not an algebra homset category")
@@ -1119,9 +1058,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         refine(algebra, Algebras(self.base_ring()).Associative())
                 else:
                     if multiplication is None or unit is None:
-                        raise TypeError(
-                            "an associative unital algebra requires M, multiplication, and eta:R->M"
-                        )
+                        raise TypeError("an associative unital algebra requires M, multiplication, and eta:R->M")
                     algebra = Algebras(self.base_ring()).Associative()(
                         algebra_or_module,
                         multiplication,
@@ -1149,9 +1086,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         SymmetricAlgebraFunctor,
                     )
 
-                    return SymmetricAlgebraFunctor(self.base_ring())(
-                        Modules(self.base_ring()).an_object()
-                    )
+                    return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
 
             class ParentMethods(_UnitalAlgebraParentMethods):
                 def _algebra_homset_class(self):
@@ -1164,9 +1099,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                 def _ring_morphism_defining_algebra_structure(self):
                     base = self.algebra_base_ring()
                     center = self.ring_center()
-                    selected_unit = self.__dict__.get(
-                        "_preamble_algebra_unit_morphism"
-                    )
+                    selected_unit = self.__dict__.get("_preamble_algebra_unit_morphism")
                     if selected_unit is not None:
                         from dzack_research.preamble.categories.functors.algebra_modules import (
                             algebra_underlying_module_functor,
@@ -1176,13 +1109,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         return ring_morphism(
                             base,
                             center,
-                            lambda scalar: center(
-                                self(
-                                    selected_unit(
-                                        scalar_module(base(scalar))
-                                    )
-                                )
-                            ),
+                            lambda scalar: center(self(selected_unit(scalar_module(base(scalar))))),
                         )
                     return ring_morphism(
                         base,
@@ -1267,9 +1194,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     unit = multiplication
             else:
                 if multiplication is None or unit is None:
-                    raise TypeError(
-                        "a unital algebra requires M, multiplication, and eta:R->M"
-                    )
+                    raise TypeError("a unital algebra requires M, multiplication, and eta:R->M")
                 algebra = Algebras(self.base_ring())(
                     algebra_or_module,
                     multiplication,
@@ -1304,10 +1229,18 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
         \(e\otimes e\mapsto e\): the smallest object whose algebra structure is
         a chosen morphism rather than one inherited from a construction.
         """
-        from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
-        from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            TensorSquare,
+        )
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            BasedFreeModule,
+        )
+        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+            module_homset,
+        )
+        from dzack_research.preamble.categories.sets.set_categories import (
+            finite_ordinal_set,
+        )
 
         line = BasedFreeModule(self.base_ring(), finite_ordinal_set(1))
         label = next(iter(line.module_generating_set()))
@@ -1345,15 +1278,11 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
 
         def _add_(self, other):
             parent = self.parent()
-            return parent(
-                self.underlying_element() + parent._carrier_element(other)
-            )
+            return parent(self.underlying_element() + parent._carrier_element(other))
 
         def _sub_(self, other):
             parent = self.parent()
-            return parent(
-                self.underlying_element() - parent._carrier_element(other)
-            )
+            return parent(self.underlying_element() - parent._carrier_element(other))
 
         def _neg_(self):
             return self.parent()(-self.underlying_element())
@@ -1368,7 +1297,7 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             _ = self_on_left
             try:
                 scalar = self.parent().base_ring()(actor)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 return None
             return self.parent().scalar_multiple(scalar, self)
 
@@ -1393,7 +1322,9 @@ class FramedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The polynomial algebra on one generator, framed by it."""
-        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            SymmetricAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -1451,9 +1382,13 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``End_R(Free_R([2]))``, the two-by-two matrix algebra."""
-        from dzack_research.preamble.categories.functors.free_forgetful import FreeModuleFunctor
+        from dzack_research.preamble.categories.functors.free_forgetful import (
+            FreeModuleFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
+        from dzack_research.preamble.categories.sets.set_categories import (
+            finite_ordinal_set,
+        )
 
         ring = self.base_ring()
         plane = FreeModuleFunctor(ring)(finite_ordinal_set(2))
@@ -1617,10 +1552,13 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             try:
                 cover = algebra_engine.cover_ring()
                 defining_ideal = algebra_engine.defining_ideal()
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise NotImplementedError(
-                    "the selected algebra presentation has no quotient-cover elimination backend"
-                ) from error
+            except (
+                AttributeError,
+                NotImplementedError,
+                TypeError,
+                ValueError,
+            ) as error:
+                raise NotImplementedError("the selected algebra presentation has no quotient-cover elimination backend") from error
 
             if cover is presentation_engine:
                 algebra_variables = tuple(presentation_engine.gens())
@@ -1631,24 +1569,21 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
                     None,
                 )
                 if flattening_factory is None:
-                    raise NotImplementedError(
-                        "the selected relative presentation has no canonical polynomial flattening"
-                    )
+                    raise NotImplementedError("the selected relative presentation has no canonical polynomial flattening")
                 flattening = flattening_factory()
                 if flattening.codomain() is not cover:
-                    raise NotImplementedError(
-                        "the quotient cover is not the canonical flattening of the selected presentation"
-                    )
-                algebra_variables = tuple(
-                    flattening(generator) for generator in presentation_engine.gens()
-                )
+                    raise NotImplementedError("the quotient cover is not the canonical flattening of the selected presentation")
+                algebra_variables = tuple(flattening(generator) for generator in presentation_engine.gens())
 
             try:
                 scalar_kernel = defining_ideal.elimination_ideal(algebra_variables)
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
-                raise NotImplementedError(
-                    "the selected polynomial backend cannot eliminate the algebra variables"
-                ) from error
+            except (
+                AttributeError,
+                NotImplementedError,
+                TypeError,
+                ValueError,
+            ) as error:
+                raise NotImplementedError("the selected polynomial backend cannot eliminate the algebra variables") from error
             return bool(scalar_kernel.is_zero())
 
         def is_torsion_free(self) -> bool:
@@ -1665,13 +1600,9 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             if bool(_engine_ring(base).is_field()):
                 return True
             if base not in PrincipalIdealDomains():
-                raise NotImplementedError(
-                    "torsion-freeness of this algebra is currently decided over a represented PID"
-                )
+                raise NotImplementedError("torsion-freeness of this algebra is currently decided over a represented PID")
             if not bool(self.is_integral_domain()):
-                raise NotImplementedError(
-                    "the represented PID-algebra torsion criterion currently requires an integral target"
-                )
+                raise NotImplementedError("the represented PID-algebra torsion criterion currently requires an integral target")
             return self._represented_structure_morphism_kernel_is_zero()
 
         def _represented_primitive_hypersurface_relative_dimension(self) -> int:
@@ -1679,37 +1610,22 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
 
             relations = self.relations()
             if not relations.cardinality().is_finite() or int(relations.cardinality()) != 1:
-                raise NotImplementedError(
-                    "the represented relative-dimension criterion currently requires one defining equation"
-                )
+                raise NotImplementedError("the represented relative-dimension criterion currently requires one defining equation")
             labels = self.presentation_ring().algebra_generating_set()
             if not labels.cardinality().is_finite():
-                raise NotImplementedError(
-                    "the represented hypersurface criterion requires finitely many relative variables"
-                )
+                raise NotImplementedError("the represented hypersurface criterion requires finitely many relative variables")
             variable_count = int(labels.cardinality())
             if variable_count == 0:
-                raise NotImplementedError(
-                    "the represented hypersurface criterion requires a positive relative affine dimension"
-                )
+                raise NotImplementedError("the represented hypersurface criterion requires a positive relative affine dimension")
 
             relation_index = next(iter(relations.index_set()))
             relation = relations.value(relation_index)
             presentation = self.presentation_ring()
             presentation_engine = _engine_ring(presentation)
-            backend_relation = presentation_engine(
-                _engine_element(presentation, relation)
-            )
-            coefficient_ideal = self.base_ring().ideal(
-                *tuple(
-                    self.base_ring()._from_engine_element(coefficient)
-                    for coefficient in backend_relation.coefficients()
-                )
-            )
+            backend_relation = presentation_engine(_engine_element(presentation, relation))
+            coefficient_ideal = self.base_ring().ideal(*tuple(self.base_ring()._from_engine_element(coefficient) for coefficient in backend_relation.coefficients()))
             if coefficient_ideal != self.base_ring().ideal(self.base_ring().one()):
-                raise NotImplementedError(
-                    "the selected hypersurface equation is not primitive over the base"
-                )
+                raise NotImplementedError("the selected hypersurface equation is not primitive over the base")
             return variable_count - 1
 
         def algebra_presentation_morphism(self):
@@ -1750,8 +1666,12 @@ class CommutativeAlgebraCoproducts(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``R[x] \otimes_R R[y]``, the coproduct of two polynomial algebras."""
-        from dzack_research.preamble.categories.abstract_categories.constructions import Coproduct
-        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            Coproduct,
+        )
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebraOn,
+        )
 
         ring = self.base_ring()
         return Coproduct(SymmetricAlgebraOn(ring, ("x",)), SymmetricAlgebraOn(ring, ("y",)))
@@ -1810,8 +1730,12 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         The pushout of the span whose legs are the two isomorphisms
         \(R[t]\to R[x]\) and \(R[t]\to R[y]\).
         """
-        from dzack_research.preamble.categories.abstract_categories.constructions import Pushout
-        from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebraOn
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            Pushout,
+        )
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            SymmetricAlgebraOn,
+        )
 
         ring = self.base_ring()
         common = SymmetricAlgebraOn(ring, ("t",))
@@ -2247,7 +2171,9 @@ class OwnedAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The polynomial algebra on one generator."""
-        from dzack_research.preamble.categories.functors.free_algebras import SymmetricAlgebraFunctor
+        from dzack_research.preamble.categories.functors.free_algebras import (
+            SymmetricAlgebraFunctor,
+        )
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         return SymmetricAlgebraFunctor(self.base_ring())(Modules(self.base_ring()).an_object())
@@ -2536,11 +2462,7 @@ def algebra_from_multiplication(
     placement = []
     if unital:
         if unit is None:
-            unit = (
-                module.one()
-                if module in Algebras(ring).Associative().Unital()
-                else _unit_from_multiplication(multiplication)
-            )
+            unit = module.one() if module in Algebras(ring).Associative().Unital() else _unit_from_multiplication(multiplication)
         placement.append(Algebras(ring).Associative().Unital())
     placement.append(AssociativeAlgebrasWithChosenMultiplication(ring))
     if commutative is None:
