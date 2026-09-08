@@ -32,6 +32,11 @@ def test_simple_reflection_crosses_the_retained_wall() -> None:
     assert adjacency.transporter() == reflection
     assert adjacency.target().wall_roots()[0] == -root
     assert adjacency.shared_wall_covector() == lattice.algebraic_correlation_morphism()(root)
+    face = adjacency.shared_face()
+    assert face.dimension() == chamber.dimension() - 1
+    timelike = lattice.module_generator(0)
+    assert face.contains(timelike)
+    assert adjacency.transporter()(timelike) == timelike
 
 
 def test_a_double_wall_word_returns_to_the_original_root_orientation() -> None:

@@ -40,6 +40,10 @@ class ChamberAdjacency(SageObject):
         source = self.source().ambient_lattice()
         return source.algebraic_correlation_morphism()(self.wall_root())
 
+    def shared_face(self):
+        r"""Return the actual codimension-one cone common to the adjacent chambers."""
+        return self.source().face_on_covector(self.shared_wall_covector())
+
     def _repr_(self):
         return f"Chamber adjacency across {self.wall_root()}"
 

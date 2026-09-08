@@ -59,20 +59,36 @@ class RationalPolyhedralCones(OwnedCategory):
         return rational_polyhedral_cone(lattice, tuple(dual.module_generators()))
 
     class ParentMethods:
-        def __init__(self, lattice, halfspace_covectors, wall_roots=None, complete=None, **rest):
+        def __init__(
+            self,
+            lattice,
+            halfspace_covectors,
+            equation_covectors=(),
+            wall_roots=None,
+            complete=None,
+            **rest,
+        ):
             self._lattice = lattice
             dual = lattice.dual_module()
             self._halfspace_covectors = finite_ordered_set(
                 tuple(dual(covector) for covector in halfspace_covectors)
             )
+            self._equation_covectors = finite_ordered_set(
+                tuple(dual(covector) for covector in equation_covectors)
+            )
             self._wall_roots = None if wall_roots is None else finite_ordered_set(tuple(wall_roots))
             self._complete = complete
             labels = tuple(dual.module_generating_set())
-            rows = []
-            for covector in self._halfspace_covectors:
+
+            def engine_row(covector):
                 coefficients = module_coefficients(covector, dual)
-                rows.append([SageQQ.zero()] + [SageQQ(int(coefficients.get(label, 0))) for label in labels])
-            self._engine = Polyhedron(ieqs=rows, base_ring=SageQQ)
+                return [SageQQ.zero()] + [
+                    SageQQ(int(coefficients.get(label, 0))) for label in labels
+                ]
+
+            rows = [engine_row(covector) for covector in self._halfspace_covectors]
+            equations = [engine_row(covector) for covector in self._equation_covectors]
+            self._engine = Polyhedron(ieqs=rows, eqns=equations, base_ring=SageQQ)
             super().__init__(**rest)
 
         def ambient_lattice(self):
@@ -80,6 +96,9 @@ class RationalPolyhedralCones(OwnedCategory):
 
         def halfspace_covectors(self):
             return self._halfspace_covectors
+
+        def equation_covectors(self):
+            return self._equation_covectors
 
         def wall_roots(self):
             return self._wall_roots
@@ -108,25 +127,40 @@ class RationalPolyhedralCones(OwnedCategory):
 
             return CoxeterDiagrams().from_roots(tuple(self._wall_roots))
 
-        def transport(self, isometry):
-            r"""Transport a root-defined cone along a lattice isometry.
+        def _transport_covector(self, covector, isometry):
+            source = self.ambient_lattice()
+            target = isometry.codomain()
+            inverse = ~isometry
+            target_dual = target.dual_module()
+            return target_dual.linear_combination(
+                {
+                    label: self.evaluate_covector(
+                        covector,
+                        inverse(target.module_generator(label)),
+                    )
+                    for label in target.module_generating_set()
+                }
+            )
 
-            If ``C`` has walls ``b(r,-)>=0`` and ``g`` is an isometry, then
-            ``g(C)`` has walls ``b(g(r),-)>=0``.  The returned cone therefore
-            retains the transported roots and recomputes their exact
-            correlation covectors in the target lattice.
-            """
-            if self._wall_roots is None:
-                raise ValueError("transport is represented here for a root-defined cone")
+        def transport(self, isometry):
+            r"""Transport this cone and all retained defining covectors along an isometry."""
             source = self.ambient_lattice()
             if isometry.domain() is not source:
                 raise ValueError("the cone transporter has the wrong source lattice")
             target = isometry.codomain()
-            roots = tuple(isometry(root) for root in self._wall_roots)
-            correlation = target.algebraic_correlation_morphism()
+            roots = None
+            if self._wall_roots is not None:
+                roots = tuple(isometry(root) for root in self._wall_roots)
             return rational_polyhedral_cone(
                 target,
-                tuple(correlation(root) for root in roots),
+                tuple(
+                    self._transport_covector(covector, isometry)
+                    for covector in self._halfspace_covectors
+                ),
+                equation_covectors=tuple(
+                    self._transport_covector(covector, isometry)
+                    for covector in self._equation_covectors
+                ),
                 wall_roots=roots,
                 complete=self.is_complete_wall_set(),
             )
@@ -171,9 +205,13 @@ class RationalPolyhedralCones(OwnedCategory):
 
         def contains(self, vector) -> bool:
             lattice = self.ambient_lattice()
+            zero = lattice.base_ring().zero()
             return all(
-                self.evaluate_covector(covector, vector) >= lattice.base_ring().zero()
+                self.evaluate_covector(covector, vector) >= zero
                 for covector in self._halfspace_covectors
+            ) and all(
+                self.evaluate_covector(covector, vector) == zero
+                for covector in self._equation_covectors
             )
 
         def primitive_rays(self):
@@ -188,19 +226,37 @@ class RationalPolyhedralCones(OwnedCategory):
                 tuple(_owned_vector(lattice, _primitive_integral_coordinates(line)) for line in self._engine.lines())
             )
 
+        def face_on_covector(self, covector):
+            r"""Intersect this cone with the homogeneous wall ``covector=0``."""
+            dual = self.ambient_lattice().dual_module()
+            covector = dual(covector)
+            return rational_polyhedral_cone(
+                self.ambient_lattice(),
+                tuple(self._halfspace_covectors),
+                equation_covectors=tuple(self._equation_covectors) + (covector,),
+                complete=self.is_complete_wall_set(),
+            )
+
         def facet_covectors(self):
             if self._engine.dim() <= 0:
                 return finite_ordered_set(())
-            labels = tuple(self.ambient_lattice().dual_module().module_generating_set())
             facets = []
-            all_rows = [list(inequality) for inequality in self._engine.inequalities()]
             for covector in self._halfspace_covectors:
-                coefficients = module_coefficients(covector, self.ambient_lattice().dual_module())
-                equation = [SageQQ.zero()] + [SageQQ(int(coefficients.get(label, 0))) for label in labels]
-                face = Polyhedron(ieqs=all_rows, eqns=[equation], base_ring=SageQQ)
-                if face.dim() == self._engine.dim() - 1:
+                if self.face_on_covector(covector).dimension() == self.dimension() - 1:
                     facets.append(covector)
             return finite_ordered_set(tuple(facets))
+
+        def facets(self):
+            from dzack_research.preamble.categories.sets.indexed_families import (
+                finite_indexed_family,
+            )
+
+            facets = self.facet_covectors()
+            return finite_indexed_family(
+                facets,
+                self.face_on_covector,
+                name="Facets of a rational polyhedral cone",
+            )
 
         def hilbert_basis(self):
             assert self.is_pointed(), "the Hilbert basis is requested here only for a pointed cone"
@@ -254,11 +310,19 @@ class RationalPolyhedralCones(OwnedCategory):
             return f"Rational polyhedral cone in {self.ambient_lattice()} cut out by {self.halfspace_covectors().cardinality()} half-spaces"
 
 
-def rational_polyhedral_cone(lattice, halfspace_covectors, *, wall_roots=None, complete=None):
+def rational_polyhedral_cone(
+    lattice,
+    halfspace_covectors,
+    *,
+    equation_covectors=(),
+    wall_roots=None,
+    complete=None,
+):
     return object_of(
         RationalPolyhedralCones(),
         lattice=lattice,
         halfspace_covectors=tuple(halfspace_covectors),
+        equation_covectors=tuple(equation_covectors),
         wall_roots=wall_roots,
         complete=complete,
     )
