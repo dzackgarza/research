@@ -2238,7 +2238,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 3.6 Centralizers $O(L,f)$ and Equivariant Lattices
 
-- [ ] Involution centralizer algorithm for $f^2 = 1$: eigenspaces $V_\pm = \ker(f \mp 1)$, sublattices $L_\pm = L \cap V_\pm$, gluing subgroup $H_L = L/(L_+ \oplus L_-) \subset A_{L_+} \oplus A_{L_-}$, and $O(L,f) \cong \{(g_+, g_-) \in O(L_+) \times O(L_-) : (g_+, g_-)(H_L) = H_L\}$.
+- [x] Involution centralizer algorithm for $f^2 = 1$: eigenspaces $V_\pm = \ker(f \mp 1)$, sublattices $L_\pm = L \cap V_\pm$, gluing subgroup $H_L = L/(L_+ \oplus L_-) \subset A_{L_+} \oplus A_{L_-}$, and $O(L,f) \cong \{(g_+, g_-) \in O(L_+) \times O(L_-) : (g_+, g_-)(H_L) = H_L\}$.
 - [ ] Cyclotomic decomposition for finite-order $f$: $\bigoplus_{d \mid \operatorname{ord}(f)} V_{\Phi_d}$, sublattices $L_d = L \cap V_{\Phi_d}$, and equivariant gluing stabilizer.
 - [ ] Semantic decorated lattice types: `Lf = L.with_isometry(f)`, `Lf.centralizer_group()`, `Lf.equivariant_sublattice(...)`, `Lf.equivariant_isometry_to(Mg)`.
 - [ ] Equivariant orbit enumeration on decorated objects $(L,f)$ preserving $b_L$ and $f$ at every stage.
@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `O-isometry-centralizer-api-20260908-0634` | O / isometry-owned primitive extension and centralizer API | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattice_morphisms.py; tests/lattices/test_isometry_centralizer_semantic_api.py` (write) | `81f226ea` | 2026-09-08T06:34:00Z |
 
 #### Existing work awaiting adoption
 
