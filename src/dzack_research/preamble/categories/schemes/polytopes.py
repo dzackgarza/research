@@ -149,6 +149,20 @@ class ConvexPolytopes(OwnedCategory):
             r"""Return the private exact polyhedral computation object."""
             return self._polyhedron
 
+        def threejs_html(self):
+            r"""Return a local Three.js HTML view of a three-dimensional polytope.
+
+            The private exact Sage polyhedron remains the rendering engine.
+            This method does not attach display data to the owned polytope: it
+            asks Sage's existing ``Graphics3d`` Three.js serializer for a
+            self-contained local HTML representation at the view boundary.
+            """
+            if int(self._engine_polyhedron().ambient_dim()) != 3:
+                raise ValueError("a Three.js polytope view currently requires ambient dimension three")
+            graphic = self._engine_polyhedron().plot()
+            rich = graphic._rich_repr_threejs(online=False)
+            return rich.html.get_str()
+
         def _owned_rational_coordinate(self, coordinate):
             rationals = _own_ring(SageQQ)
             return rationals._from_engine_element(SageQQ(coordinate))

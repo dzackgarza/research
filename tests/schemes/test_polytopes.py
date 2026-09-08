@@ -58,3 +58,11 @@ def test_polygon_svg_is_a_view_of_the_live_exact_polygon() -> None:
     assert 'fill="none"' in svg
     assert 'stroke="currentColor"' in svg
     assert triangle.vertices() == LatticePolygon(((0, 0), (2, 0), (0, 1))).vertices()
+
+
+def test_three_dimensional_polytope_delegates_to_sages_local_threejs_view() -> None:
+    tetrahedron = ConvexPolytopes().an_object()
+    html = tetrahedron.threejs_html()
+
+    assert "threejs" in html.lower() or "THREE" in html
+    assert tetrahedron.dimension() == 3
