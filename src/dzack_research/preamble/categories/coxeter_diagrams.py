@@ -131,6 +131,45 @@ class CoxeterDiagrams(OwnedCategory):
                 self._computed_positions = {vertex: (coordinates[0], coordinates[1]) for vertex, coordinates in layout.items()}
             return dict(self._computed_positions)
 
+        def tikz_picture(self):
+            r"""Return a TikZ view of this live Coxeter diagram.
+
+            The Coxeter matrix remains the mathematical datum.  The rendering
+            draws exactly the pairs with ``m_ij != 2``.  The conventional
+            ``m=3`` bond is unlabeled; every other bond carries its Coxeter
+            order, including ``infinity``.
+            """
+            positions = self.preferred_positions()
+            ranking = self.index_set().ranking_map()
+            node_names = {
+                vertex: f"v{ranking(vertex)}" for vertex in self.index_set()
+            }
+            lines = [
+                r"\begin{tikzpicture}[every node/.style={circle,draw,inner sep=1.5pt}]"
+            ]
+            for vertex in self.index_set():
+                x, y = positions[vertex]
+                label = self.vertex_names()[ranking(vertex)]
+                lines.append(
+                    rf"  \node ({node_names[vertex]}) at ({float(x):.6g},{float(y):.6g}) {{$ {label} $}};"
+                )
+            for left, right in combinations(self.index_set(), 2):
+                bond = self.coxeter_entry(left, right)
+                if bond == 2:
+                    continue
+                if bond == 3:
+                    label = ""
+                else:
+                    bond_label = r"\infty" if bond == Infinity else str(bond)
+                    label = (
+                        rf" node[midway,fill=white,draw=none] {{$ {bond_label} $}}"
+                    )
+                lines.append(
+                    rf"  \draw ({node_names[left]}) --{label} ({node_names[right]});"
+                )
+            lines.append(r"\end{tikzpicture}")
+            return "\n".join(lines)
+
         def graph(self):
             r"""Return the Coxeter graph: one vertex per mirror, edges labelled by the bond.
 

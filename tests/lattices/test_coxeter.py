@@ -45,3 +45,18 @@ def test_induced_subdiagrams_preserve_selected_roots() -> None:
     assert _shape[0] == 2
     assert _shape[1] == 2
     assert subdiagram.coxeter_matrix()[0, 1] == 3
+
+
+def test_coxeter_tikz_is_a_view_of_the_live_bond_data() -> None:
+    diagram = CoxeterDiagrams().from_coxeter_matrix(
+        [[1, 3, 4], [3, 1, -1], [4, -1, 1]],
+        names=("a", "b", "c"),
+    )
+    tikz = diagram.tikz_picture()
+
+    assert tikz.startswith(r"\begin{tikzpicture}")
+    assert tikz.endswith(r"\end{tikzpicture}")
+    assert "$ 4 $" in tikz
+    assert r"$ \infty $" in tikz
+    assert "$ 3 $" not in tikz
+    assert "$ a $" in tikz
