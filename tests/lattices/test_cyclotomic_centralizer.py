@@ -57,6 +57,20 @@ def test_cyclotomic_component_tuple_lifts_exactly_when_it_preserves_the_glue() -
     assert not decomposition.component_isometries_extend(incompatible)
 
 
+def test_ambient_centralizer_restriction_round_trips_through_the_glue() -> None:
+    decorated = _cubic_rotation()
+    decomposition = decorated.cyclotomic_decomposition(3)
+    lattice = decorated.lattice()
+
+    for ambient in (decorated.isometry(), _negation(lattice)):
+        components = decomposition.restrict_centralizer_element(ambient)
+        assert all(
+            components[divisor] in decomposition.component_centralizers()[divisor]
+            for divisor in decomposition.nonzero_divisors()
+        )
+        assert decomposition.lift_component_isometries(components) == ambient
+
+
 def test_the_exact_order_is_part_of_the_cyclotomic_construction() -> None:
     decorated = _cubic_rotation()
 

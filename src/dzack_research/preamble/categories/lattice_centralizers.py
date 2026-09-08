@@ -317,6 +317,42 @@ class CyclotomicDecomposition(SageObject):
         r"""Return the actual ambient arithmetic centralizer ``Z_{O(L)}(f)``."""
         return self.decorated_lattice().centralizer_group()
 
+    def restrict_centralizer_element(self, automorphism):
+        r"""Restrict one ambient centralizer element to every cyclotomic summand.
+
+        Commutation with ``f`` makes each polynomial kernel
+        ``ker(Phi_d(f))`` stable, so every restriction is defined and belongs
+        to ``Z_{O(L_d)}(f_d)``.  The result is indexed by the nonzero
+        cyclotomic divisors and retains the actual component isometries.
+        """
+        if automorphism not in self.centralizer_group():
+            raise ValueError("a cyclotomic restriction requires an element of the ambient centralizer")
+        restrictions = self.component_isometries()
+        centralizers = self.component_centralizers()
+
+        def restrict(divisor):
+            summand = self.summand(divisor)
+            inclusion = summand.inclusion()
+            component = summand.O()(
+                {
+                    label: inclusion.lift(
+                        automorphism(inclusion(summand.module_generator(label)))
+                    )
+                    for label in summand.module_generating_set()
+                }
+            )
+            if component * restrictions[divisor] != restrictions[divisor] * component:
+                raise ArithmeticError("an ambient centralizer restriction does not commute with f_d")
+            if component not in centralizers[divisor]:
+                raise ArithmeticError("an ambient centralizer restriction left its component centralizer")
+            return component
+
+        return finite_indexed_family(
+            self.nonzero_divisors(),
+            restrict,
+            name=f"Cyclotomic restrictions of an element of {self.centralizer_group()}",
+        )
+
     def lift_component_isometries(self, component_isometries):
         r"""Lift a compatible tuple of component isometries to ``O(L,f)``.
 
