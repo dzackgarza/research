@@ -69,3 +69,35 @@ def test_lattice_vector_divisor_and_primitive_discriminant_class_use_live_form_d
         pass
     else:
         raise AssertionError("the primitive discriminant class is not defined on a nonprimitive vector")
+
+
+def test_sublattice_semantic_accessors_retain_the_actual_embedding_and_form() -> None:
+    lattice = Lattices(ZZ)("U")
+    e, _f = lattice.module_generators()
+    line = lattice.sublattice_from((2 * e,))
+
+    assert line.ambient_lattice() is lattice
+    assert line.inclusion().codomain() is lattice
+    assert line.rank() == line.module_rank() == 1
+    assert tuple(line.basis()) == tuple(line.module_generators())
+    assert not line.is_primitive()
+
+    saturated = line.saturation()
+    assert saturated.ambient_lattice() is lattice
+    assert saturated.is_primitive()
+    assert saturated.rank() == 1
+
+
+def test_isotropic_reduction_exposes_its_defining_inclusion_and_live_reduction_data() -> None:
+    lattice = Lattices(ZZ)("U") + Lattices(ZZ)("U")
+    e = lattice.module_generator(0)
+    isotropic = lattice.primitive_sublattice_from((e,))
+    reduction = isotropic.isotropic_reduction()
+
+    assert reduction.isotropic_sublattice() is isotropic
+    assert reduction.inclusion() is reduction.isotropic_inclusion()
+    assert reduction.inclusion().domain() is isotropic
+    assert reduction.inclusion().codomain() is reduction.orthogonal_complement()
+    assert reduction.quotient_lattice() is reduction
+    assert reduction.projection().domain() is reduction.orthogonal_complement()
+    assert reduction.projection().codomain() is reduction
