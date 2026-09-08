@@ -1360,17 +1360,21 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   action, plus line/plane incidence with actual embeddings and transporters.
 
 - [ ] **`chambers`**. **Needs:** none.
-  Complete the remaining chamber and Coxeter operations.
-  **Owners:** `categories/coxeter_diagrams.py`, Vinberg invariants,
-  hyperbolic lattices and the existing reflection engines.
-  **Deliver:** maximal elliptic/parabolic subdiagram posets, dominant cone/
-  fundamental chamber and chamber-complex maps, and the number-field root
-  computation in its valid arithmetic regimes.
+  Finish the remaining Coxeter-poset and number-field Vinberg operations.
+  **Owners:** `categories/coxeter_diagrams.py`, Vinberg invariants and the
+  reflection-engine adapter.
+  **Deliver:** maximal elliptic/parabolic subdiagram posets and the number-field
+  root computation in its valid arithmetic regimes. The exact root-half-space
+  chamber, dominant cone, positive-cone projectivization, Weyl group and lazy
+  chamber complex are already delivered at their owners.
   **Decision:** retain root-to-diagram maps and exact edge/vertex weights;
   bounded search is not a nonreflectivity proof. Reuse projectively weighted
-  graph objects and the current Vinberg/edge-walk implementations.
+  graph objects and the current Vinberg/edge-walk implementations. The
+  number-field operation remains a provider obligation rather than an integer
+  algorithm with coerced coefficients.
   **Acceptance:** sourced finite, affine, noncrystallographic and hyperbolic
-  literature examples distinguish the asserted regimes.
+  literature examples distinguish the asserted regimes, and a supported
+  totally-real number-field example returns roots over its actual integer ring.
 
 - [ ] **`arithmetic-applications`**. **Needs:** `witt-recursion`, `centralizers`, `reduction-complexes`.
   Assemble the three arithmetic research constructions with their maps.
