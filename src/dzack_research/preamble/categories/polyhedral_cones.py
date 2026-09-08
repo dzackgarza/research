@@ -215,9 +215,7 @@ class RationalPolyhedralCones(OwnedCategory):
             if any(lattice.q(ray) < 0 for ray in rays):
                 return False
             pairings = tuple(lattice.b(ray, timelike) for ray in rays)
-            nonnegative = all(value >= 0 for value in pairings)
-            nonpositive = all(value <= 0 for value in pairings)
-            return nonnegative or nonpositive
+            return all(value >= 0 for value in pairings)
 
         def _repr_(self):
             return f"Rational polyhedral cone in {self.ambient_lattice()} cut out by {self.halfspace_covectors().cardinality()} half-spaces"

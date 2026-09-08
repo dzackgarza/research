@@ -373,6 +373,20 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 )
             )
 
+        @cached_method
+        def positive_cone_component(self, timelike):
+            r"""Return the chosen component of ``{x:q(x)>0}`` containing ``timelike``."""
+            from dzack_research.preamble.categories.hyperbolic_geometry import (
+                positive_cone_component,
+            )
+
+            return positive_cone_component(self, timelike)
+
+        @cached_method
+        def hyperbolic_space(self, timelike):
+            r"""Return the projectivization of the positive-cone component containing ``timelike``."""
+            return self.positive_cone_component(timelike).projectivization()
+
         def fundamental_chamber(
             self, controlling_vector=None, *, max_roots=None, max_decompositions=None
         ):
@@ -397,6 +411,17 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 wall_roots=roots,
                 complete=complete,
             )
+
+        def coxeter_polyhedron(
+            self, timelike, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Projectivize the exact root chamber in the component selected by ``timelike``."""
+            chamber = self.fundamental_chamber(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            )
+            return self.hyperbolic_space(timelike).projectivize_cone(chamber)
 
         def dominant_cone(
             self, controlling_vector=None, *, max_roots=None, max_decompositions=None
