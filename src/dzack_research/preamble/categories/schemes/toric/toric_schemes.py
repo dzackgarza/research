@@ -701,6 +701,20 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return -self.toric_boundary_divisor()
 
         @cached_method
+        def canonical_line_bundle(self):
+            r"""Return ``omega_X = O_X(K_X)`` in the represented toric Cartier regime."""
+            return self.invertible_sheaf_of_divisor(self.canonical_divisor())
+
+        canonical_bundle = canonical_line_bundle
+
+        @cached_method
+        def anticanonical_line_bundle(self):
+            r"""Return ``omega_X^{-1} = O_X(-K_X)``."""
+            return self.invertible_sheaf_of_divisor(-self.canonical_divisor())
+
+        anticanonical_bundle = anticanonical_line_bundle
+
+        @cached_method
         def character_divisor_morphism(self):
             r"""``M -> Div_T(X)``, ``m |-> div(chi^m)`` (CLS Thm. 4.1.3).
 

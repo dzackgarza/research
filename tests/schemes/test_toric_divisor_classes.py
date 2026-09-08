@@ -100,6 +100,15 @@ def test_the_anticanonical_class_of_the_projective_plane_is_three_times_a_line()
     assert plane.divisor_class(plane.canonical_divisor()) == ZZ(-3) * line
 
 
+def test_projective_plane_canonical_and_anticanonical_bundles_retain_their_divisors() -> None:
+    plane = _projective_plane()
+    canonical = plane.canonical_line_bundle()
+    anticanonical = plane.anticanonical_line_bundle()
+
+    assert canonical.associated_divisor() == plane.canonical_divisor()
+    assert anticanonical.associated_divisor() == -plane.canonical_divisor()
+
+
 def test_only_a_fan_whose_rays_span_the_lattice_is_free_of_a_torus_factor() -> None:
     r"""``A^1 x k^*`` is the toric variety of the single ray ``e_1`` in ``ZZ^2``."""
     plane = _projective_plane()
