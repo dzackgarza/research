@@ -16,7 +16,12 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
-from dzack_research.preamble.categories.schemes.toric.fans import _engine_vector
+from dzack_research.preamble.categories.schemes.toric.fans import (
+    _engine_vector,
+    _owned_vector,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.refine import refine
 
 
@@ -45,6 +50,35 @@ class ToricWeightCohomologyComplexes(OwnedCategoryOverBaseRing):
                 "H^i(X,O_X(D))_m is identified with shifted reduced simplicial "
                 "cohomology H~^(i-1)(V_{D,m})"
             )
+
+
+class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
+    r"""Total toric line-bundle cohomology assembled from its live weight complexes."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "geometric toric line-bundle cohomology spaces"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.divisors.cohomology import (
+            LineBundleCohomologySpaces,
+        )
+
+        return [LineBundleCohomologySpaces(self.base_ring())]
+
+    class ParentMethods:
+        def cohomology_weight_support(self):
+            return self._preamble_cohomology_weight_support
+
+        def cohomology_weight_piece(self, weight):
+            weight = self.cohomology_scheme().character_lattice()(weight)
+            return self._preamble_cohomology_weight_pieces[weight]
+
+        def cohomology_weight_inclusion(self, weight):
+            weight = self.cohomology_scheme().character_lattice()(weight)
+            if weight not in self.cohomology_weight_support():
+                raise ValueError("this weight has zero cohomology in the selected degree")
+            return self.injection(weight)
 
 
 def _matrix_morphism(base, source, target, matrix):
@@ -133,7 +167,58 @@ def ToricWeightCohomology(scheme, divisor, weight, degree):
     )
 
 
+def ToricLineBundleCohomology(scheme, divisor, degree):
+    r"""Assemble ``H^degree(X,O_X(D))`` as the direct sum of its weight cohomologies."""
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+    degree = int(degree)
+    if degree < 0 or degree > int(scheme.dimension()):
+        raise ValueError("cohomological degree lies outside the scheme dimension")
+    if not scheme.fan().is_complete():
+        raise ValueError("finite-dimensional toric line-bundle cohomology requires a complete fan")
+    divisor = scheme.weil_divisor_group()(divisor)
+    if not scheme.is_cartier(divisor):
+        raise ValueError("the represented geometric cohomology requires a Cartier divisor")
+
+    engine_divisor = scheme._engine_toric_divisor(divisor)
+    support_hull = engine_divisor._sheaf_cohomology_support()
+    characters = scheme.character_lattice()
+    candidate_weights = tuple(
+        _owned_vector(characters, point)
+        for point in support_hull.integral_points()
+    )
+    pieces = {
+        weight: ToricWeightCohomology(scheme, divisor, weight, degree)
+        for weight in candidate_weights
+    }
+    pieces = {
+        weight: piece
+        for weight, piece in pieces.items()
+        if int(piece.dimension()) != 0
+    }
+    weights = finite_ordered_set(tuple(pieces))
+    base = scheme.scheme_base_ring()
+    if weights.cardinality() == 0:
+        total = BasedFreeModule(base, 0)
+    else:
+        total = Modules(base).biproduct(
+            finite_indexed_family(
+                weights,
+                lambda weight: pieces[weight],
+                name="Nonzero toric cohomology weight pieces",
+            )
+        )
+    total._preamble_cohomology_scheme = scheme
+    total._preamble_cohomology_divisor = divisor
+    total._preamble_cohomological_degree = degree
+    total._preamble_cohomology_weight_support = weights
+    total._preamble_cohomology_weight_pieces = pieces
+    return refine(total, ToricGeometricLineBundleCohomologySpaces(base))
+
+
 __all__ = [
+    "ToricGeometricLineBundleCohomologySpaces",
+    "ToricLineBundleCohomology",
     "ToricWeightCohomology",
     "ToricWeightCohomologyComplex",
     "ToricWeightCohomologyComplexes",

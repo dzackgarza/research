@@ -1174,31 +1174,12 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
 
         @cached_method
         def line_bundle_cohomology(self, divisor, degree):
-            r"""Return ``H^degree(X,O_X(D))`` as an owned vector space in characteristic zero.
-
-            Sage's toric divisor backend computes the finite-dimensional
-            cohomology by the character-graded Cech/simplicial-complex
-            algorithm of CLS §9.1.  That implementation computes simplicial
-            cohomology over ``QQ``; hence this public crossing is restricted to
-            characteristic-zero coefficient fields rather than silently
-            claiming characteristic-independent dimensions.
-            """
-            from dzack_research.preamble.categories.divisors.cohomology import (
-                LineBundleCohomologySpace,
+            r"""Return ``H^degree(X,O_X(D))`` from the represented toric weight complexes."""
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                ToricLineBundleCohomology,
             )
 
-            degree = int(degree)
-            if degree < 0 or degree > int(self.dimension()):
-                raise ValueError("cohomological degree lies outside the scheme dimension")
-            base = self.scheme_base_ring()
-            if _engine_ring(base).characteristic() != 0:
-                raise NotImplementedError(
-                    "the selected toric line-bundle cohomology backend is justified in characteristic zero"
-                )
-            divisor = self.weil_divisor_group()(divisor)
-            engine_divisor = self._engine_toric_divisor(divisor)
-            dimension = int(engine_divisor.cohomology(deg=degree, dim=True))
-            return LineBundleCohomologySpace(self, divisor, degree, dimension)
+            return ToricLineBundleCohomology(self, divisor, degree)
 
         def line_bundle_cohomology_dimensions(self, divisor):
             r"""Return the dimensions of all represented ``H^i(X,O_X(D))``."""

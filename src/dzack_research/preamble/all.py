@@ -763,6 +763,8 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     ToricLogPairs,
     ToricSchemes,
     ToricVariety,
+    ToricGeometricLineBundleCohomologySpaces,
+    ToricLineBundleCohomology,
     ToricWeightCohomology,
     ToricWeightCohomologyComplex,
     ToricWeightCohomologyComplexes,
