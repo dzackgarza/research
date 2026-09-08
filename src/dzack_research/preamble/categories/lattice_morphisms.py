@@ -819,8 +819,15 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             for _embedding in self:
                 return False
             return True
+        source = self.domain()
+        target = self.codomain()
+        if (
+            source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() == target.module_rank()
+        ):
+            return source.Isom(target).is_empty()
         if self._codomain_is_even_unimodular_indefinite():
-            source = self.domain()
             if not source.is_even():
                 return True
             _signature = self.codomain().signature_pair()
@@ -838,6 +845,20 @@ class LatticeEmbeddingHomset(CategoricalHomset):
             for embedding in self:
                 return embedding
             raise ValueError("the embedding homset is empty")
+        source = self.domain()
+        target = self.codomain()
+        if (
+            source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() == target.module_rank()
+        ):
+            isometry = source.Isom(target).an_element()
+            return self(
+                tuple(
+                    isometry(source.module_generator(label))
+                    for label in source.module_generating_set()
+                )
+            )
         if self._codomain_is_even_unimodular_indefinite():
             if self.is_empty():
                 raise ValueError("the embedding homset is empty")
