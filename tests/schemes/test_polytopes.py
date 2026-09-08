@@ -47,3 +47,14 @@ def test_ehrhart_polynomial_and_h_star_are_computed_without_latte() -> None:
     polar = square.polar_dual()
     assert polar in LatticePolygons()
     assert polar.polar_dual().vertices() == square.vertices()
+
+
+def test_polygon_svg_is_a_view_of_the_live_exact_polygon() -> None:
+    triangle = LatticePolygon(((0, 0), (2, 0), (0, 1)))
+    svg = triangle._repr_svg_()
+
+    assert svg.startswith('<svg xmlns="http://www.w3.org/2000/svg"')
+    assert '<polygon points="' in svg
+    assert 'fill="none"' in svg
+    assert 'stroke="currentColor"' in svg
+    assert triangle.vertices() == LatticePolygon(((0, 0), (2, 0), (0, 1))).vertices()

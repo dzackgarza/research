@@ -1,6 +1,6 @@
 r"""Convex polytopes and integral lattice polytopes."""
 
-from math import factorial
+from math import atan2, factorial
 
 from sage.categories.category import Category
 from sage.geometry.polyhedron.constructor import Polyhedron
@@ -515,6 +515,64 @@ class ConvexPolygons(OwnedCategory):
 
     def super_categories(self):
         return [ConvexPolytopes()]
+
+    class ParentMethods:
+        def _repr_svg_(self):
+            r"""Render this live polygon as a deterministic notebook SVG view.
+
+            The mathematical object remains the exact owned polygon.  Floating
+            point conversion is confined to this display boundary: the exact
+            engine vertices are sorted cyclically about their centroid and
+            affinely rescaled into a fixed SVG viewport.
+            """
+            vertices = tuple(
+                tuple(float(coordinate) for coordinate in vertex)
+                for vertex in self._engine_polyhedron().vertices_list()
+            )
+            if len(vertices) < 3:
+                return None
+
+            center_x = sum(vertex[0] for vertex in vertices) / len(vertices)
+            center_y = sum(vertex[1] for vertex in vertices) / len(vertices)
+            ordered = tuple(
+                sorted(
+                    vertices,
+                    key=lambda vertex: atan2(
+                        vertex[1] - center_y,
+                        vertex[0] - center_x,
+                    ),
+                )
+            )
+            minimum_x = min(vertex[0] for vertex in ordered)
+            maximum_x = max(vertex[0] for vertex in ordered)
+            minimum_y = min(vertex[1] for vertex in ordered)
+            maximum_y = max(vertex[1] for vertex in ordered)
+            span_x = maximum_x - minimum_x
+            span_y = maximum_y - minimum_y
+            scale = 260.0 / max(span_x, span_y, 1.0)
+            margin = 30.0
+
+            def screen_point(vertex):
+                x, y = vertex
+                return (
+                    margin + (x - minimum_x) * scale,
+                    margin + (maximum_y - y) * scale,
+                )
+
+            points = " ".join(
+                f"{x:.6g},{y:.6g}" for x, y in map(screen_point, ordered)
+            )
+            width = 2 * margin + span_x * scale
+            height = 2 * margin + span_y * scale
+            return (
+                f'<svg xmlns="http://www.w3.org/2000/svg" '
+                f'viewBox="0 0 {width:.6g} {height:.6g}" '
+                f'width="{width:.6g}" height="{height:.6g}">'
+                '<polygon points="'
+                + points
+                + '" fill="none" stroke="currentColor" stroke-width="2"/>'
+                "</svg>"
+            )
 
 
 
