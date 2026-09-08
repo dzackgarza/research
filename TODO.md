@@ -3128,7 +3128,6 @@ The UTC field records the latest claim, checkpoint, handoff, or release transact
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
-| `LATTICE-isometry-semantic-api-20260908-0652` | lattice / exact pairwise isometry semantic API | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_lattice_isometry_semantic_api.py` (write) | `647e5b28` | 2026-09-08T06:52:00Z |
 
 #### Existing work awaiting adoption
 
