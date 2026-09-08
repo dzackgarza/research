@@ -2150,7 +2150,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 - [x] `M = L.gram_matrix(basis=None)`: coordinate presentation of $B$.
 - [x] `L.b(v, w)`: bilinear pairing $b_L(v,w)$.
 - [x] `L.q(v)`: quadratic evaluation $b_L(v,v)$ without $1/2$ factor.
-- [ ] `L.metric_map()`: canonical map $L \to L.\operatorname{linear\_dual}()$.
+- [x] `L.metric_map()`: canonical map $L \to L.\operatorname{linear\_dual}()$.
 - [x] `L.linear_dual()`: exact module dual $\operatorname{Hom}_{\mathbb{Z}}(L, \mathbb{Z})$.
 - [x] `L.dual_lattice()`: dual lattice $L^\vee$ inside $L \otimes \mathbb{Q}$.
 - [x] `L.discriminant_module()`: finite formed module $A_L = L^\vee/L$ with quadratic form $q(x + L) \in \mathbb{Q}/2\mathbb{Z}$ (even) or bilinear form (odd).
@@ -2175,7 +2175,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 - [x] `v.parent()`: lattice $L$.
 - [x] `v.to_vector(basis=None)`: coordinate row vector.
-- [ ] `v.to_covector()`: dual evaluation $\beta_L(v) \in L.\operatorname{linear\_dual}()$.
+- [x] `v.to_covector()`: dual evaluation $\beta_L(v) \in L.\operatorname{linear\_dual}()$.
 - [x] `v.is_primitive()`: primitivity test in $L$.
 - [x] `v.divisor()`: positive generator of the ideal $b(v, L) \subset \mathbb{Z}$.
 - [x] `v.discriminant_class()`: associated class $[v / \operatorname{div}(v)] \in A_L$ for primitive $v$.
@@ -2186,7 +2186,7 @@ The selected presented-module `free_resolution` builds a length-one PID resoluti
 
 #### 3.3 Sublattices and Isotropic Reductions (`I`, `R`)
 
-- [ ] `I.ambient_lattice()`: derived codomain of inclusion morphism $\iota.\operatorname{codomain}()$.
+- [x] `I.ambient_lattice()`: derived codomain of inclusion morphism $\iota.\operatorname{codomain}()$.
 - [x] `I.inclusion()`: embedding morphism $\iota: I \hookrightarrow L$.
 - [x] `I.basis()`: basis elements of $I$.
 - [x] `I.rank()`: rank of $I$.
