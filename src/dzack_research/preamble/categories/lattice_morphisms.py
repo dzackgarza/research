@@ -696,6 +696,14 @@ class LatticeIsometry(LatticeEmbedding):
             self._discriminant_forward_morphism()
         )
 
+    def is_involution(self) -> bool:
+        r"""Return whether this lattice automorphism satisfies ``self^2 = 1``."""
+        match self.domain() is self.codomain():
+            case False:
+                return False
+            case True:
+                return self * self == self.parent().one()
+
     def cyclic_subgroup(self):
         r"""Return the literal subgroup ``<self> <= O(L)``."""
         if self.domain() is not self.codomain():
