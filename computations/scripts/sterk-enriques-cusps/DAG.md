@@ -193,10 +193,10 @@ dropped.
 | Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
 | Nk1 | $A_q$ (resp. $A_b$): the finite abelian group carrying the quadratic form $q$ (bilinear form $b$); $\ell(A)$ is the minimal number of generators of $A$ | Nikulin §1, 9° | F1.2 |
-| Nk2 | the $p$-adic localizations $q_p$, the canonical forms $q^{(p)}_\theta(p^k)$, $u^{(2)}_\pm(2^k)$, $v^{(2)}_\pm(2^k)$, and the lattices $K(q_p)$ realizing them | Nikulin §1, 8°–9° | Nk1; $p$-adic lattices |
-| Nk3 | **Theorem 1.10.1** (existence): an even lattice with invariants $(t_{(+)},t_{(-)},q)$ exists **iff** simultaneously (1) $t_{(+)}-t_{(-)} \equiv \operatorname{sign} q \pmod 8$; (2) $t_{(+)},t_{(-)} \ge 0$ and $t_{(+)}+t_{(-)} \ge \ell(A_q)$; (3) $(-1)^{t_{(-)}}\lvert A_q\rvert \equiv \operatorname{discr} K(q_p)$ … — **condition (3) not fully transcribed** | Nikulin Thm 1.10.1 | Nk1, Nk2 |
-| Nk4 | **Theorem 1.13.2** (uniqueness): an even lattice $S$ with invariants $(t_{(+)},t_{(-)},q)$ is unique if simultaneously (1) $t_{(+)}\ge 1$, $t_{(-)}\ge 1$, $t_{(+)}+t_{(-)}\ge 3$; (2) for each $p\ne 2$, either $\operatorname{rk} S \ge 2+\ell(A_{q_p})$ or $q_p \cong q^{(p)}_{\theta_1}(p^k)\oplus q^{(p)}_{\theta_2}(p^k)\oplus q_p'$; (3) for $p=2$, either $\operatorname{rk} S \ge 2+\ell(A_{q_2})$, or $q_2 \cong u^{(2)}_+(2^k)\oplus q_2'$, or $q_2 \cong v^{(2)}_+(2^k)\oplus q_2'$, or … — **the final alternative not transcribed** | Nikulin Thm 1.13.2 | Nk1, Nk2, Nk3 |
-| Nk5 | **Theorem 1.14.2**: for $T$ even and **indefinite** with (a) $\operatorname{rk} T \ge \ell(A_{T_p})+2$ for all $p\ne 2$, and (b) if $\operatorname{rk} T = \ell(A_{T_2})$ then $q_{T_2}\cong u^{(2)}_+(2)\oplus q_2'$ or $v^{(2)}_+(2)\oplus q_2'$ — **the genus of $T$ contains only one class, and $O(T)\to O(q_T)$ is surjective** | Nikulin Thm 1.14.2 | Nk1, Nk2, F3.1 |
+| Nk2 | superseded — decomposed as stratum Pa | Pa1–Pa8 |
+| Nk3 | **Theorem 1.10.1** (existence): an even lattice with invariants $(t_{(+)},t_{(-)},q)$ exists **iff** simultaneously (1) $t_{(+)}-t_{(-)} \equiv \operatorname{sign} q \pmod 8$; (2) $t_{(+)},t_{(-)} \ge 0$ and $t_{(+)}+t_{(-)} \ge \ell(A_q)$; (3) $(-1)^{t_{(-)}}\lvert A_q\rvert \equiv \operatorname{discr} K(q_p)$ … — **condition (3) not fully transcribed** | Nikulin Thm 1.10.1 | Nk1, Pa4 |
+| Nk4 | **Theorem 1.13.2** (uniqueness): an even lattice $S$ with invariants $(t_{(+)},t_{(-)},q)$ is unique if simultaneously (1) $t_{(+)}\ge 1$, $t_{(-)}\ge 1$, $t_{(+)}+t_{(-)}\ge 3$; (2) for each $p\ne 2$, either $\operatorname{rk} S \ge 2+\ell(A_{q_p})$ or $q_p \cong q^{(p)}_{\theta_1}(p^k)\oplus q^{(p)}_{\theta_2}(p^k)\oplus q_p'$; (3) for $p=2$, either $\operatorname{rk} S \ge 2+\ell(A_{q_2})$, or $q_2 \cong u^{(2)}_+(2^k)\oplus q_2'$, or $q_2 \cong v^{(2)}_+(2^k)\oplus q_2'$, or … — **the final alternative not transcribed** | Nikulin Thm 1.13.2 | Nk1, Pa4, Nk3 |
+| Nk5 | **Theorem 1.14.2**: for $T$ even and **indefinite** with (a) $\operatorname{rk} T \ge \ell(A_{T_p})+2$ for all $p\ne 2$, and (b) if $\operatorname{rk} T = \ell(A_{T_2})$ then $q_{T_2}\cong u^{(2)}_+(2)\oplus q_2'$ or $v^{(2)}_+(2)\oplus q_2'$ — **the genus of $T$ contains only one class, and $O(T)\to O(q_T)$ is surjective** | Nikulin Thm 1.14.2 | Nk1, Pa4, F3.1 |
 
 **A3 was stated without its hypotheses.**  It read "$L_-$ is determined up to
 isometry by its signature $(2,10)$ and its discriminant form", cited to 1.13.2.
@@ -216,6 +216,32 @@ the graph needs is an open audit point.
 
 Nk2 is where this branch descends into $p$-adic lattice theory, and neither it
 nor $\ell(A)$ has any Mathlib substrate.
+
+### Stratum Pa — the $p$-adic layer under Nk2, F3.1 and F3.2
+
+Read from Nikulin §1, 8°–9°.  This is what "the canonical $p$-adic forms"
+abbreviated, and it is where the genus and every one of Nikulin's numbered
+theorems actually bottom out.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| Pa1 | $\mathrm{qu}(\mathbb{Z}_p)$, $\mathrm{qu}(\mathbb{Z})$, $\mathrm{bil}(\mathbb{Z})$: the semigroups of quadratic and bilinear forms in which the relations below are stated | Nikulin §1, 8° | Mathlib: $\mathbb{Z}_p$, quadratic forms |
+| Pa2 | $K^{(p)}_\theta(p^k)$: the one-dimensional $p$-adic lattice with matrix $\langle\theta p^k\rangle$, $k\ge 0$ and $\theta\in\mathbb{Z}_p^*$ taken mod $(\mathbb{Z}_p^*)^2$ | Nikulin §1, 8° | Pa1 |
+| Pa3 | $U^{(2)}(2^k)$ and $V^{(2)}(2^k)$: the two-dimensional 2-adic lattices with matrices $\begin{pmatrix}0&2^k\\2^k&0\end{pmatrix}$ and $\begin{pmatrix}2^{k+1}&2^k\\2^k&2^{k+1}\end{pmatrix}$, $k\ge 0$ | Nikulin §1, 8° | Pa1 |
+| Pa4 | $q^{(p)}_\theta(p^k)$, $u^{(2)}_+(2^k)$, $v^{(2)}_+(2^k)$: the discriminant-quadratic forms of Pa2 and Pa3 for $k\ge 1$; and $b^{(p)}_\theta(p^k)$, $u^{(2)}_-$, $v^{(2)}_-$ their bilinear forms | Nikulin §1, 8° | Pa2, Pa3, F1.10 |
+| Pa5 | **Proposition 1.8.2**: the relations among these in $\mathrm{qu}(\mathbb{Z}_p)$, $\mathrm{qu}(\mathbb{Z})$ and $\mathrm{bil}(\mathbb{Z})$ — (a) $K^{(p)}_\theta(p^k)^2 \simeq K^{(p)}_{\theta'}(p^k)^2$ for $p\ne2$; (b) $U^{(2)}(2^k)^2\simeq V^{(2)}(2^k)^2$; (c)–(k) the remaining identities — **the full list is not transcribed** | Nikulin Prop. 1.8.2 | Pa4 |
+| Pa6 | Propositions 1.8.1 and 1.8.3, used in the canonical-decomposition arguments — **located, not transcribed** | Nikulin Props. 1.8.1, 1.8.3 | Pa4 |
+| Pa7 | 9°, the **strong approximation theorem in the even case**, and the invariant $\ell(A)$ as the minimal number of generators of $A$ | Nikulin §1, 9° | Pa5; strong approximation for algebraic groups |
+| Pa8 | Corollary 1.9.3 and the **canonical decompositions** of a $p$-adic lattice with given discriminant form; the count of 2-adic lattices realizing a given $q_2$ | Nikulin §1, 9° | Pa5, Pa7 |
+
+Pa5 is the computational engine: every one of Nikulin's classification proofs
+proceeds by reducing to these relations, and the graph had been carrying it as
+the phrase "the canonical $p$-adic forms".
+
+Pa7 descends further, into strong approximation — which is where this branch
+leaves lattice theory for algebraic groups, and it has no Mathlib substrate.
+Pa1–Pa4 are explicit matrices and are terminal against Mathlib's $\mathbb{Z}_p$
+and quadratic forms.
 
 ### Stratum Bo, from Borel 1972 — the extension theorem Sterk leans on
 
