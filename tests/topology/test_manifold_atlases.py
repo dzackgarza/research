@@ -1,0 +1,62 @@
+from sage.rings.infinity import Infinity
+
+from dzack_research.preamble.categories.manifolds import (
+    DifferentiableManifolds,
+    SmoothManifolds,
+    TopologicalManifolds,
+)
+
+
+def _two_chart_translation(manifold, shift):
+    source = manifold.chart("x", "x")
+    target = manifold.chart("y", "y")
+    x = source.coordinate(0)
+    y = target.coordinate(0)
+    transition = source.transition_to(target, (x + shift,), (y - shift,))
+    return source, target, transition
+
+
+def test_topological_atlas_retains_labels_and_nonidentity_transition() -> None:
+    manifold = TopologicalManifolds()(1, "T")
+    source, target, transition = _two_chart_translation(manifold, 1)
+
+    assert manifold in TopologicalManifolds()
+    assert manifold.regularity() == "topological"
+    assert tuple(manifold.chart_labels()) == ("x", "y")
+    assert manifold.atlas()["x"] is source
+    assert manifold.atlas()["y"] is target
+    assert transition.source() is source
+    assert transition.target() is target
+    assert transition.forward_expressions() == (source.coordinate(0) + 1,)
+    assert transition.inverse_expressions() == (target.coordinate(0) - 1,)
+    assert transition.inverse().inverse() is transition
+    assert manifold.transition("y", "x") is transition.inverse()
+
+
+def test_finite_Ck_atlas_retains_exact_differentiability_degree() -> None:
+    manifold = DifferentiableManifolds()(1, "C2", 2)
+    source, target, transition = _two_chart_translation(manifold, 2)
+
+    assert manifold in DifferentiableManifolds()
+    assert manifold in TopologicalManifolds()
+    assert manifold.differentiability_degree() == 2
+    assert manifold.regularity() == "C^2"
+    assert not manifold.is_smooth()
+    assert transition.regularity() == "C^2"
+    assert transition.forward_expressions() == (source.coordinate(0) + 2,)
+    assert transition.inverse_expressions() == (target.coordinate(0) - 2,)
+
+
+def test_smooth_atlas_is_a_differentiable_and_topological_atlas() -> None:
+    manifold = SmoothManifolds()(1, "S")
+    source, target, transition = _two_chart_translation(manifold, 3)
+
+    assert manifold in SmoothManifolds()
+    assert manifold in DifferentiableManifolds()
+    assert manifold in TopologicalManifolds()
+    assert manifold.differentiability_degree() == Infinity
+    assert manifold.regularity() == "smooth"
+    assert manifold.is_smooth()
+    assert transition.regularity() == "smooth"
+    assert transition.forward_expressions() == (source.coordinate(0) + 3,)
+    assert transition.inverse_expressions() == (target.coordinate(0) - 3,)
