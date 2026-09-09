@@ -10,7 +10,14 @@ whenever ``S`` is a group algebra; the constructor is
 from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_method
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
+from dzack_research.preamble.categories.lattice_morphisms import (
+    LatticeHomset,
+    LatticeMorphism,
+)
 from dzack_research.preamble.categories.lattices import (
     FiniteRankLattices,
     Lattice,
@@ -22,6 +29,63 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
+
+
+class GroupLatticeMorphism(LatticeMorphism):
+    r"""A form-preserving equivariant morphism of lattices with one group action."""
+
+    def __mul__(self, other):
+        if not isinstance(other, GroupLatticeMorphism):
+            return super().__mul__(other)
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return group_lattice_homset(other.domain(), self.codomain()).elementwise(
+            lambda element: self(other(element))
+        )
+
+
+class GroupLatticeHomset(LatticeHomset):
+    r"""Form-preserving maps commuting with one selected group action."""
+
+    Element = GroupLatticeMorphism
+
+    def __init__(self, hom_family, domain, codomain) -> None:
+        if domain.group() != codomain.group():
+            raise ValueError("a group-lattice Hom has one acting group")
+        if domain.base_ring() is not codomain.base_ring():
+            raise ValueError("a group-lattice Hom has one coefficient ring")
+        super().__init__(hom_family, domain, codomain)
+
+    def _check_equivariance(self, morphism) -> None:
+        group = self.domain().group()
+        if group.is_finitely_generated() is not True:
+            raise NotImplementedError(
+                "verifying a group-lattice morphism requires a represented finite generating set of the acting group"
+            )
+        domain = self.domain()
+        codomain = self.codomain()
+        for group_generator in group.group_generators():
+            for label in domain.module_generating_set():
+                vector = domain.module_generator(label)
+                if morphism(domain.act(group_generator, vector)) != codomain.act(
+                    group_generator, morphism(vector)
+                ):
+                    raise ValueError("a group-lattice morphism must be G-equivariant")
+
+    def _element_constructor_(self, images):
+        morphism = super()._element_constructor_(images)
+        self._check_equivariance(morphism)
+        return morphism
+
+    def elementwise(self, function, *, verify_linearity=True):
+        morphism = super().elementwise(function, verify_linearity=verify_linearity)
+        self._check_equivariance(morphism)
+        return morphism
+
+
+class GroupLatticeHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return GroupLatticeHomset
 
 
 class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
@@ -45,6 +109,8 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             Modules(self.base_ring()),
         ]
 
+    _HomCategory = GroupLatticeHomCategoryConstruction
+
     def an_object(self):
         r"""The hyperbolic plane with the swap of its two isotropic generators."""
         plane = Lattices(self.coefficient_ring())("U")
@@ -62,6 +128,25 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
     class ParentMethods:
         def group(self):
             return self._preamble_group_module_source.group()
+
+        def group_algebra(self):
+            return self._preamble_group_module_source.group_algebra()
+
+        def Mor(self, codomain, category=None):
+            group_lattices = Lattices(self.group_algebra())
+            if codomain in group_lattices and (
+                category is None or category.is_subcategory(group_lattices)
+            ):
+                return group_lattice_homset(self, codomain)
+            return super().Mor(codomain, category)
+
+        def _Hom_(self, codomain, category=None):
+            group_lattices = Lattices(self.group_algebra())
+            if codomain in group_lattices and (
+                category is None or category.is_subcategory(group_lattices)
+            ):
+                return group_lattice_homset(self, codomain)
+            return super()._Hom_(codomain, category)
 
         def is_trivial_action(self) -> bool:
             return self._preamble_group_module_source.is_trivial_action()
@@ -225,4 +310,21 @@ def group_lattice(lattice, group_or_action, action=None):
     return result
 
 
-__all__ = ["LatticesOverGroupAlgebra", "group_lattice"]
+def group_lattice_homset(domain, codomain):
+    r"""Return the form-preserving equivariant Homset of two lattices for one ``G``."""
+    group_algebra = domain.group_algebra()
+    if codomain.group_algebra() is not group_algebra:
+        raise ValueError("group-lattice morphisms require one group algebra")
+    if codomain.group() != domain.group():
+        raise ValueError("group-lattice morphisms require one acting group")
+    return Lattices(group_algebra).Mor(domain, codomain)
+
+
+__all__ = [
+    "GroupLatticeHomCategoryConstruction",
+    "GroupLatticeMorphism",
+    "GroupLatticeHomset",
+    "LatticesOverGroupAlgebra",
+    "group_lattice",
+    "group_lattice_homset",
+]

@@ -1,5 +1,7 @@
 r"""Archive reconciliation for formed isotypic sublattices of a group lattice."""
 
+import pytest
+
 from dzack_research.preamble.all import Groups, Lattices, ZZ
 
 
@@ -47,3 +49,51 @@ def test_equipping_an_existing_sublattice_preserves_its_ambient_inclusion() -> N
     assert equipped.inclusion()(equipped.module_generators()[0]) == invariant.inclusion()(
         invariant.module_generators()[0]
     )
+
+
+def test_archive_group_lattice_hom_is_both_isometric_and_equivariant() -> None:
+    acted = _acted_a2()
+    group_generator = acted.group().group_generators()[0]
+    action = acted.action_of(group_generator)
+    labels = acted.module_generating_set()
+
+    equivariant = acted.Mor(acted)(
+        {
+            label: action(acted.module_generator(label))
+            for label in labels
+        }
+    )
+    assert equivariant.domain() is acted
+    assert equivariant.codomain() is acted
+    for label in labels:
+        generator = acted.module_generator(label)
+        assert equivariant(generator) == action(generator)
+        for other_label in labels:
+            other = acted.module_generator(other_label)
+            assert acted.b(equivariant(generator), equivariant(other)) == acted.b(
+                generator, other
+            )
+
+    square = equivariant * equivariant
+    assert square.parent() is acted.Mor(acted)
+    for label in labels:
+        generator = acted.module_generator(label)
+        assert square(generator) == generator
+
+
+def test_archive_group_lattice_hom_rejects_a_nonequivariant_isometry() -> None:
+    acted = _acted_a2()
+    labels = acted.module_generating_set()
+    root = acted.module_generator(labels[0])
+    reflection = acted.reflection(root)
+    group_generator = acted.group().group_generators()[0]
+    action = acted.action_of(group_generator)
+
+    assert reflection * action != action * reflection
+    with pytest.raises(ValueError, match="G-equivariant"):
+        acted.Mor(acted)(
+            {
+                label: reflection(acted.module_generator(label))
+                for label in labels
+            }
+        )
