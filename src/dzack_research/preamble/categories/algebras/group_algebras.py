@@ -218,3 +218,51 @@ class GroupAlgebraFunctor(Functor):
 
     def _repr_(self):
         return f"Group-algebra functor over {self._base_ring}"
+
+
+class GroupAlgebraUnderlyingModuleFunctor(Functor):
+    r"""The composite ``Grp -> Alg_R -> Mod_R``, ``G |-> R[G]`` as a module.
+
+    This is the archived ``FreeModuleOnGroupFunctor`` construction stated at
+    its actual owner: first form the group algebra, then forget only its
+    multiplication.  Object and morphism actions therefore reuse the live
+    group-algebra and algebra-underlying-module functors rather than rebuilding
+    the free module or its induced map.
+    """
+
+    def __init__(self, base_ring) -> None:
+        from dzack_research.preamble.categories.functors.algebra_modules import (
+            algebra_underlying_module_functor,
+        )
+
+        ring = _owned_ring(base_ring)
+        self._base_ring = ring
+        self._group_algebra_functor = GroupAlgebraFunctor(ring)
+        self._underlying_module_functor = algebra_underlying_module_functor(
+            ring,
+            self._group_algebra_functor.codomain(),
+        )
+        super().__init__(OwnedGroups(), self._underlying_module_functor.codomain())
+
+    def base_ring(self):
+        return self._base_ring
+
+    def group_algebra_functor(self):
+        return self._group_algebra_functor
+
+    def underlying_module_functor(self):
+        return self._underlying_module_functor
+
+    def _apply_object(self, group):
+        return self.underlying_module_functor()(self.group_algebra_functor()(group))
+
+    def _apply_morphism(self, group_morphism):
+        return self.underlying_module_functor()(
+            self.group_algebra_functor()(group_morphism)
+        )
+
+    def _repr_(self):
+        return f"Underlying-module-of-group-algebra functor over {self.base_ring()}"
+
+
+FreeModuleOnGroupFunctor = GroupAlgebraUnderlyingModuleFunctor
