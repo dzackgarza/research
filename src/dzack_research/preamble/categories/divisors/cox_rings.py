@@ -1,40 +1,37 @@
 r"""Cox rings of represented toric schemes, with their divisor-class grading."""
 
-from sage.categories.category import Category
-from sage.misc.classcall_metaclass import typecall
-
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
+from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+    RepresentedToricSchemes,
+)
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 
-_COX_RING_CATEGORIES = {}
 
-
-class CoxRings(Category):
-    r"""Cox rings graded by the represented divisor class group of one scheme."""
+class CoxRings(OwnedParameterizedCategory):
+    r"""Cox rings graded by the represented divisor class group of one toric scheme."""
 
     @staticmethod
-    def __classcall__(category_class, scheme):
-        key = id(scheme)
-        cached = _COX_RING_CATEGORIES.get(key)
-        if cached is not None and cached.scheme() is scheme:
-            return cached
-        category = typecall(category_class, scheme)
-        _COX_RING_CATEGORIES[key] = category
-        return category
+    def __classcall__(cls, scheme):
+        return OwnedParameterizedCategory.__classcall__(cls, scheme)
 
     def __init__(self, scheme) -> None:
-        self._scheme = scheme
-        Category.__init__(self)
+        OwnedParameterizedCategory.__init__(self, scheme)
+
+    def parameter_category(self):
+        return RepresentedToricSchemes()
 
     def scheme(self):
-        return self._scheme
+        return self.base()
 
     def grading_group(self):
         return self.scheme().class_group()

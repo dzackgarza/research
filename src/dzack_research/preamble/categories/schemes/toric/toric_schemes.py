@@ -38,6 +38,7 @@ from itertools import combinations
 from sage.matrix.constructor import matrix as _engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.ideal import ToricIdeal as _SageToricIdeal
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
@@ -70,6 +71,10 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
@@ -514,6 +519,35 @@ def _glued_toric_scheme(fan, base_ring):
             for source_cone, target_cone in combinations(cones, 2)
         ),
     )
+
+
+class RepresentedToricSchemes(OwnedCategory):
+    r"""Represented toric schemes over arbitrary represented base rings.
+
+    This is the parameter domain for constructions such as ``CoxRings(X)``.
+    It does not recognize toric structure from coordinates: membership asks
+    the existing base-specific ``ToricSchemes(k)`` placement of ``X``.
+    """
+
+    def an_object(self):
+        return ToricSchemes(_own_ring(SageQQ)).an_object()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        base_method = getattr(candidate, "scheme_base_ring", None)
+        if not callable(base_method):
+            return False
+        try:
+            base = base_method()
+            return candidate in ToricSchemes(base)
+        except (AssertionError, AttributeError, TypeError, ValueError):
+            return False
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "represented toric schemes over arbitrary bases"
 
 
 class ToricSchemes(OwnedCategoryOverBaseRing):
@@ -1655,4 +1689,4 @@ def ToricVariety(fan, base_ring, polarizing_polytope=None):
     return refine_scheme(scheme, base, placements)
 
 
-__all__ = ["ToricSchemeMorphism", "ToricSchemes", "ToricVariety"]
+__all__ = ["RepresentedToricSchemes", "ToricSchemeMorphism", "ToricSchemes", "ToricVariety"]
