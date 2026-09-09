@@ -1640,7 +1640,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-metabolizers-20260909-0215` | archive reconciliation / finite-form metabolizers | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py; tests/forms/test_metabolizers_archive.py` (write) | `HEAD` | 2026-09-09T02:15:00Z |
 
 
 
