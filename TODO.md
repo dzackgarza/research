@@ -1640,7 +1640,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-maximal-isotropic-20260909-0220` | archive reconciliation / maximal isotropic finite-form subgroups | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py; tests/forms/test_maximal_isotropic_archive.py` (write) | `HEAD` | 2026-09-09T02:20:00Z |
 
 
 
