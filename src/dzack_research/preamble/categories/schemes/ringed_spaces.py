@@ -686,6 +686,32 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
         def stalk(self, point):
             return self.structure_sheaf().stalk(point)
 
+        def covering_family(
+            self,
+            charts,
+            embeddings,
+            overlaps,
+            *,
+            ambient_chart_index,
+        ):
+            r"""Return a represented finite covering family of this ringed space.
+
+            The currently verified regime contains this ambient space as one
+            chart.  Non-affine overlaps remain spaces with their two embeddings;
+            they are never replaced by spectra of global sections.
+            """
+            from dzack_research.preamble.categories.schemes.covering_families import (
+                ringed_covering_family,
+            )
+
+            return ringed_covering_family(
+                self,
+                charts,
+                embeddings,
+                overlaps,
+                ambient_chart_index=ambient_chart_index,
+            )
+
 
 __all__ = [
     "AffineModuleSheaf",
