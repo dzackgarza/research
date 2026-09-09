@@ -241,6 +241,28 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             self._preamble_side_decorations = side_decorations
             super().__init__(**rest)
 
+        def scheme(self):
+            r"""Return the scheme of this ADE base log pair, namely ``Y=V_Q``."""
+            return self.log_scheme()
+
+        def toric_scheme(self):
+            r"""Return the ambient toric scheme of this base pair, again ``Y=V_Q``."""
+            return self.log_scheme()
+
+        def base(self):
+            r"""Return this base ADE log pair itself."""
+            return self
+
+        def is_base(self) -> bool:
+            return True
+
+        def is_cover(self) -> bool:
+            return False
+
+        def codimension_in_toric_scheme(self):
+            r"""Return zero: the base scheme is its own toric ambient scheme."""
+            return _own_ring(SageZZ).zero()
+
         def dynkin_letter(self) -> str:
             return self._preamble_dynkin_letter
 

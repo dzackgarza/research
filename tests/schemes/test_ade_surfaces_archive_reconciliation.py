@@ -29,3 +29,14 @@ def test_archived_affine_predicate_keeps_the_affine_family_distinct() -> None:
     assert affine.is_affine()
     assert not finite.is_affine()
     assert affine.p_star() != finite.p_star()
+
+
+def test_archived_base_role_names_identify_the_actual_toric_base_pair() -> None:
+    pair = ADELogPair("E", 6, QQ)
+
+    assert pair.scheme() is pair.log_scheme()
+    assert pair.toric_scheme() is pair.log_scheme()
+    assert pair.base() is pair
+    assert pair.is_base()
+    assert not pair.is_cover()
+    assert pair.codimension_in_toric_scheme() == 0
