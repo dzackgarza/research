@@ -1622,6 +1622,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-fp-algebras-20260909-1507` | archive reconciliation / finitely presented algebra semantics | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/algebras/test_finitely_presented_algebras_archive.py` (write) | `HEAD` | 2026-09-09T15:07:00Z |
+
 
 
 
