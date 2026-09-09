@@ -155,11 +155,47 @@ disposition would mean the filtering was done silently.
 | 3.3.19, 3.3.20 | computations | **D5** |
 | 3.4 | — | **C12**, **G** |
 
-The out-of-scope rows are one coherent block: the period map, the geometry of
-the $K3$ double cover, and Torelli.  They are what makes $\Omega_-/\Gamma$ the
-period space of Enriques surfaces rather than an anonymous quotient, so they
-belong in the mission description and would be the natural second mission on
-this paper.  They are not inputs to the boundary computation.
+**The out-of-scope column above is not yet valid, and the reason it gave was
+wrong.**  Those rows — the period map, the $K3$ double cover, Torelli, almost
+polarizations — are inputs to the boundary computation exactly when the goal
+mentions Enriques surfaces or their period space, which the goal as stated
+does.  Excluding them while keeping the name is a narrowing of the target
+disguised as a scope judgment (`FDC-08`).  It runs deeper than the propositions
+listed: $L_-$ is not a Gram matrix in the source but the anti-invariant
+eigenlattice of the involution on $H^2(X,\mathbb{Z})$ of the $K3$ cover, tied to
+it by Horikawa's isometry $\mu : H^2(X;\mathbb{Z}) \to L$ with
+$I \circ \mu = \mu \circ I^*$.  Introducing $L_-$ by its Gram matrix severs that
+tie and leaves the development unable to say what $L_-$ is.
+
+Substrate for that layer, searched at revision `0df444a3`: no complex manifolds,
+no compact complex surfaces, no $K3$ surfaces, no Hodge structures, no line
+bundles, no period maps, no Torelli.  Stratum **E** below is therefore as absent
+as stratum F, and larger.
+
+| Node | What it is | Needed by |
+| --- | --- | --- |
+| E1 | complex manifolds, compact complex surfaces, divisors and line bundles, the canonical bundle | E2–E6 |
+| E2 | $K3$ surfaces and Enriques surfaces; the $K3$ double cover and its involution $I$ | 2.1–2.5, 2.9 |
+| E3 | $H^2$ with its intersection form; Horikawa's isometry identifying it with $L$, and $L_-$ as the anti-invariant eigenlattice | the definition of $L_-$ itself |
+| E4 | Hodge structures of weight 2 and the period point | 2.9, 2.12 |
+| E5 | the period map and its domain $\Omega_-$ | 2.9, 2.14 |
+| E6 | Torelli for $K3$ surfaces | 2.14 |
+
+Which means the target has to be chosen, not assumed:
+
+1. **The lattice statement.** No surface anywhere; $L_-$ by Gram matrix; the
+   theorem is about $\Gamma$-orbits of isotropic sublattices and their
+   incidences.  Honest, reachable after stratum F, and not Sterk's theorem —
+   the name must change with it.
+2. **Sterk's theorem as stated.** Strata E, F, A–D in full.  A decades-scale
+   program.
+3. **Sterk's theorem with its inputs open.** The E and D layers enter as
+   explicitly open child obligations with citations — Horikawa, Torelli,
+   Baily–Borel — so the goal reads: given these, the boundary complex is this
+   graph.  Nothing is defined away, the scope is visible, and the reachable
+   parts are attackable.
+
+Until that choice is made, every out-of-scope row above is provisional.
 
 Nodes added by this table and not in the strata above: **A1a** (2.11),
 **A6a** (2.15), **A8** (2.21), **D0** (3.2.4).

@@ -5213,6 +5213,16 @@ decomposition has nowhere to live, and ends up inside a definition.
 
 - **Violation Example**: answering "yes, every theorem is in the DAG" from the DAG.
 
+#### `FDC-08`: An Exclusion Is Valid Only If the Goal Names None of What It Excludes
+
+- **Rule**: A statement of the source may be dispositioned out of scope only when the goal statement mentions no object whose construction depends on it.  If the goal names Enriques surfaces, the surfaces are in scope; if they are excluded, the goal is restated so that it does not name them, and the restatement is put to the user as a change of target.  To formalize a paper is to formalize everything lying between it and the library: an exclusion is a decision about *which theorem is being proved*, never a decision about effort.
+
+- **Rationale**: Otherwise the exclusion silently narrows the target while the name advertises the original, which is `FRD-03` at the scale of a whole project rather than of a declaration.  The two failures compose: the excluded material is invisible because it is out of scope, and the narrowing is invisible because the title still promises it.
+
+- **Violation Example**: dispositioning the period map, the $K3$ double cover, and Torelli as "not inputs to the boundary computation", while planning to describe the work as formalizing the period space of Enriques surfaces; introducing a lattice by a Gram matrix when the source defines it as an eigenlattice of an involution on the cohomology of a surface, and then still calling it the period lattice of that surface.
+
+- **Correct Example**: either the geometric layer enters as open obligations carried by explicit nodes, or the goal is restated as a statement about a lattice and its arithmetic group, named as such, with the change of target raised as a decision rather than made in a table.
+
 ### 16. Fraud Precursors in Formalization (`FRD-*`)
 
 These name behaviours observed on this repository that would have resulted in
