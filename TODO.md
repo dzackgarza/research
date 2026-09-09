@@ -108,7 +108,6 @@ When work changes direction, use the relevant decision below immediately:
 
 | Observable choice in the current task | Decision already made; next action |
 | --- | --- |
-| `CONSTRUCTOR-kahler-20260909-0154` | constructor convergence / Kähler differentials | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/kahler_differentials.py; tests/algebras/test_kahler_constructor_convergence.py` (write) | `a2b31e29` | 2026-09-09T01:54:00Z |
 | A missing method looks like new mathematics | Unfold the requested mathematics first; then search the owned category, structural functors, and maintained implementations. Separate missing exposure, missing transport, and missing computation; record the observed gap and repair its mathematical owner (`OWN-01`, `OWN-08`, `DEV-59`). |
 | A foundational gap or papercut appears outside the selected item | Record the observed need and dependency path in COMPLAINTS, with inspected scope and existing partial capability. Link any existing repair item; do not suppress the finding or silently expand the current task (`DEV-59`). |
 | A package does not implement the Python class model | Evaluate its concrete computation separately. Generic compilation belongs to `sage-categories`; inability to compile classes does not reject CAP, Sage, or Julia mathematics (`OWN-01`). |
