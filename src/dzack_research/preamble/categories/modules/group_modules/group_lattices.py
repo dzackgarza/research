@@ -147,6 +147,37 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             """
             return self.invariant_lattice().orthogonal_complement()
 
+        def isotypic_lattice(self, character):
+            r"""Return the formed ``character``-isotypic sublattice with its restricted action.
+
+            The underlying module component is the exact isotypic subobject of
+            the associated ``R[G]``-module.  Its embedded basis is used to
+            rebuild the restricted lattice form, and the ambient action is
+            then restricted through that represented inclusion.  The result
+            remains a subobject of this lattice rather than an isomorphic
+            detached copy.
+            """
+            component = self.group_module().isotypic_component(character)
+            module_inclusion = component.inclusion()
+            component_module = module_inclusion.domain()
+            if module_inclusion.codomain() is not self:
+                raise ArithmeticError(
+                    "the isotypic module component is not embedded in the group lattice"
+                )
+            embedded_basis = tuple(
+                module_inclusion(component_module.module_generator(label))
+                for label in component_module.module_generating_set()
+            )
+            formed = self.subobject_on(embedded_basis)
+            inclusion = formed.inclusion()
+
+            def restricted_action(group_element, vector):
+                return inclusion.lift(
+                    self.action_of(group_element)(inclusion(vector))
+                )
+
+            return group_lattice(formed, self.group(), restricted_action)
+
         def character(self):
             return self.group_module().character()
 
@@ -175,6 +206,17 @@ def group_lattice(lattice, group_or_action, action=None):
         prototype._sage_lattice,
         extra_categories=tuple(extra_categories),
         construction_data=tuple(construction_data),
+        subobject_ambient=lattice.__dict__.get("_preamble_subobject_ambient"),
+        subobject_generator_images=lattice.__dict__.get(
+            "_preamble_subobject_generator_images"
+        ),
+        subobject_lift=lattice.__dict__.get("_preamble_subobject_lift"),
+        subobject_inclusion_factory=lattice.__dict__.get(
+            "_preamble_subobject_inclusion_factory"
+        ),
+        subobject_verify_linearity=lattice.__dict__.get(
+            "_preamble_subobject_verify_linearity", True
+        ),
     )
     result = result.lattice_category()._refine_lattice_object(result)
     assert group.is_finitely_generated() is True
