@@ -3035,6 +3035,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 | `FRM-*` | formal definitions, proof-assistant statements, and external citation |
 | `FDC-*` | formalization decomposition, scoping, and foundations audit |
 | `FRD-*` | fraud precursors in formalization work, and their observable signs |
+| `FSC-*` | formalization scale, calibration, and the scaffold that holds project state |
 
 ### 1. Mathematical Architecture & Ownership (`ARC-*`)
 
@@ -5295,6 +5296,109 @@ the source.
 - **Ban**: Submitting a formal statement to any external platform, repository, or reader while any node it depends on is carried by a definition, a placeholder, or an unstated assumption.
 - **Sign**: a submission prepared in the same session in which the decomposition was first written.
 - **Why**: publication converts a local defect into a claim that other people act on, and on a verification platform it mints a guarantee the platform cannot itself check.  Nothing published this way can be quietly withdrawn: solvers, citations, and downstream work attach to it.
+
+### 17. Formalization Scale, Calibration & Scaffolding (`FSC-*`)
+
+Every rule here corrects a misconception that produced a concrete failure on
+this repository: that a formalization's size is a reason to change what is being
+proved, that a graph of hundreds of nodes is prohibitive, that decomposition is
+paperwork preceding the real work.  Each was wrong by orders of magnitude, and
+each was stated with confidence.
+
+#### `FSC-00`: Calibration Data
+
+The reference points below are recorded facts about completed work, not
+estimates.  They exist so that no size claim is ever made from intuition.
+
+| Result | Scale | Duration |
+| --- | --- | --- |
+| Fermat's Last Theorem, end-to-end machine-checked (Anthropic, announced 2026-09-04) | 13 million lines of Lean; 30,300 theorems; ~6 billion output tokens; over 5× the size of Mathlib | 11 days, largely autonomous, human input limited to occasional high-level instruction |
+| Navier–Stokes finite-time blowup, Lean certificates (OpenAI, 2026-09) | Navier–Stokes and Euler blowup on ℝ³ and periodic domains | ~88 hours to the proof, a further 17 hours to formalize |
+
+The FLT run had a recorded prior failure mode: earlier attempts collapsed
+because the agents lost track of the project's state.  The successful run was
+the one carried on a platform maintaining a **directed acyclic graph of theorem
+statements**.  That is the evidential basis for `FSC-05`.
+
+#### `FSC-01`: The Target Is Immutable; Gaps Add Nodes
+
+- **Rule**: A formalization has one target node, fixed when the work is accepted.  Every gap discovered between it and the library adds nodes to the graph.  Size is an output of the graph and never an input to the goal.  Proposing a smaller target, a restated target, or a menu of targets is prohibited — including when the proposal is put to the user as a question.
+
+- **Rationale**: Scope discovery is the normal product of decomposition; treating it as a reason to renegotiate converts every unwelcome finding into a licence to prove something easier.  Routing the proposal through the user does not sanitize it: the user asked for a theorem, and the decision presented to them is manufactured by the same intuition the graph was built to replace.
+
+- **Violation Example**: on finding that the geometric layer is absent from the library, offering "the lattice statement", "the theorem in full", and "the theorem with open inputs" as three targets to choose between.
+
+- **Correct Example**: add the geometric layer as a stratum of nodes and continue.
+
+#### `FSC-02`: A Difficulty Intuition Is Not a Finding
+
+- **Rule**: No claim about the size, difficulty, or feasibility of a formalization may be stated without first checking it against `FSC-00` or against comparable completed work in the record.  An intuition, however strong, is a stale prior and carries no evidential weight.
+
+- **Rationale**: These intuitions are systematically miscalibrated in one direction — toward "too large" — and they are load-bearing precisely when they are wrong, because an inflated estimate is what makes narrowing the goal look responsible.
+
+- **Violation Example**: "a decades-scale program, not a mission", written about a graph of a few hundred nodes, in a month when a graph of 30,300 was discharged in eleven days.
+
+- **Correct Example**: state the node count, the loop body, and which strata lack substrate; compare with the recorded comparables; draw no feasibility conclusion beyond what that comparison supports.
+
+#### `FSC-03`: A Node Count Is Never a Reason to Stop
+
+- **Rule**: Counts in the hundreds, thousands, or tens of thousands are ordinary for this kind of work.  A count may be reported; it may never be used to justify deferring, narrowing, splitting away, or declining the target.
+
+- **Rationale**: Difficulty lives in the loop body, not in the number of items.  A body of "formalize one definition or lemma from a standard text, with its citation" is hours at most, and most nodes of such a graph are mutually independent, so the count measures duration and parallelism rather than hardness.
+
+- **Violation Example**: treating a seven-cluster foundations stratum as evidence that the mission is impossible rather than as the list of what to build first.
+
+#### `FSC-04`: Size in Nodes, Never in Time
+
+- **Rule**: Express scale as node count, stratum coverage, and loop body.  Do not write forward-looking durations for proposed work.  Recorded durations of *completed* work, as in `FSC-00`, are citable facts and are the only admissible form.
+
+- **Rationale**: A forward duration is an intuition wearing a unit, and it is the specific form in which the misconception above is expressed.
+
+#### `FSC-05`: The Scaffold Is Mandatory and Holds the State
+
+- **Rule**: The dependency graph lives in a durable, queryable store — the platform's theorem DAG where one exists, a committed artifact otherwise — before formal work begins, and is updated as nodes are discharged.  Project state lives there, never in a conversation and never in the working memory of a session.
+
+- **Rationale**: Loss of project state is the recorded cause of failure at scale, and holding the state in a theorem DAG is the recorded difference between the attempts that failed and the one that succeeded.  A session's context is not a store: it ends, it compacts, and what it held is gone.  The graph is not preparation for the work; it is the mechanism that makes the work possible across sessions and across agents.
+
+- **Violation Example**: opening a `.lean` file in the first minutes of a session on a platform whose entire purpose is to maintain the theorem DAG, and treating the DAG as a formality to satisfy afterwards.
+
+#### `FSC-06`: One Node, One Statement, One Citation
+
+- **Rule**: A node carries exactly one mathematical statement and exactly one source locator.  A node that bundles several statements, or that names a subject rather than a statement, is split until it does not.
+
+- **Rationale**: Bundled nodes are how whole theories hide behind the phrase "external, cited", and they are what makes a graph look finished while its leaves are unexamined.  Single-statement nodes are also the unit that can be handed to a fresh-context agent without transferring the rest of the project.
+
+- **Violation Example**: a single node reading "Vinberg 1975" and standing for hyperbolic reflection groups, fundamental polyhedra, and the affine Dynkin classification together.
+
+#### `FSC-07`: Independent Nodes Are Worked in Parallel, By Fresh Contexts
+
+- **Rule**: Nodes with no dependency between them are dispatched concurrently to fresh-context agents, each given its statement, its citation, and its dependencies' statements — not the project's history.  The graph is what makes this safe.
+
+- **Rationale**: Most of a formalization graph is independent, so serial execution wastes the dominant structural feature of the work.  Fresh contexts are also the only reliable audit: an agent that did not write a statement is the one that can read it back blind.
+
+#### `FSC-08`: Missing Library Theory Is Built as Theory, Not Worked Around
+
+- **Rule**: When the library lacks something a node needs, build it as a proper development suitable for contribution upstream.  Do not inline a special case, a surrogate, or a definition tailored to the one call site.
+
+- **Rationale**: The missing theory is usually the most reusable thing the project will produce — discriminant forms of even lattices serve all of Nikulin theory, not one paper — and a tailored surrogate has to be replaced later by exactly the general development that should have been written first.  It is also how a formalization contributes rather than accumulates.
+
+#### `FSC-09`: The Vocabulary of Refusal Is Banned
+
+- **Rule**: "Too big", "not a mission", "research-scale", "decades", "out of reach", "a formalization campaign rather than X" may not be written as conclusions about assigned work.  Where such a phrase would appear, write the node count and the missing strata instead.
+
+- **Rationale**: Each of these phrases states a feasibility verdict that `FSC-02` forbids, and each functions as the premise for narrowing that `FSC-01` forbids.  Banning the vocabulary removes the step where the verdict is smuggled in as description.
+
+#### `FSC-10`: Progress Is Discharged Nodes
+
+- **Rule**: Report progress as nodes discharged against the graph, with their statements.  Lines of Lean, files created, definitions written, and sessions spent are not progress and are not reported as such.
+
+- **Rationale**: Volume of output is exactly what rises when resemblance replaces work, so measuring by it rewards the failure.  A discharged node is a statement that could have been false and now is not.
+
+#### `FSC-11`: A Session Begins by Reading the Graph
+
+- **Rule**: Work on a formalization begins by reading the current state of the graph — which nodes are open, which are discharged, which are blocked and on what — and never by writing.  The first artifact a session produces is a node, not a file.
+
+- **Rationale**: The state is durable and the session is not; a session that begins by producing rather than reading is one that has substituted its own picture of the project for the recorded one, which is where losing track of the state begins.
 
 * * *
 
