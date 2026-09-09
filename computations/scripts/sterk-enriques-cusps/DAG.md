@@ -164,11 +164,11 @@ for Borel alone.  Each is cited by Sterk and none was a node.
 
 | Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
-| Cl1 | Horikawa, Thm 5.1: there exists an isometry $\mu : H^2(X;\mathbb{Z}) \to L$ with $I \circ \mu = \mu \circ I^*$ — **this is what makes $L_-$ the anti-invariant eigenlattice of the involution, so it is what ties the Gram matrix to the geometry** | Horikawa, *On the periods of Enriques surfaces I* (`6ZXI2FJ4`), Thm 5.1, via Sterk (2.1) | E2, E3 |
-| Cl2 | Horikawa 1978 II, Thm 3.1: the statement about $R_- = \{x \in L_- : (x,x) = -2\}$ and the divisor $D_V/\Gamma$ — **tail not transcribed** | Horikawa, *On the periods of Enriques surfaces II* (`RQ2EG4F7`), Thm 3.1, via Sterk (2.15)ff | Cl1, A6a |
-| Cl3 | the global Torelli theorem for $K3$ surfaces, in the form used at (2.14): an isometry of $H^2$ preserving the relevant structure is induced by an isomorphism of surfaces | Barth–Peters–Van de Ven, *Compact Complex Surfaces* (`VQUIPQ4Y`), Chap. VIII, via Sterk (2.14) | E6 |
+| Cl1 | = E6.  Horikawa I Thm 5.1: there exists an isometry $\mu : H^2(X;\mathbb{Z}) \to L$ with $I \circ \mu = \mu \circ I^*$ — **this is what makes $L_-$ the anti-invariant eigenlattice of the involution, so it is what ties the Gram matrix to the geometry** | Horikawa, *On the periods of Enriques surfaces I* (`6ZXI2FJ4`), Thm 5.1, via Sterk (2.1) | E2, E3 |
+| Cl2 | = E10.  Horikawa II Thm 3.1: the statement about $R_- = \{x \in L_- : (x,x) = -2\}$ and the divisor $D_V/\Gamma$ — **tail not transcribed** | Horikawa, *On the periods of Enriques surfaces II* (`RQ2EG4F7`), Thm 3.1, via Sterk (2.15)ff | Cl1, A6a |
+| Cl3 | = E9.  The global Torelli theorem for $K3$ surfaces, in the form used at (2.14): an isometry of $H^2$ preserving the relevant structure is induced by an isomorphism of surfaces | Barth–Peters–Van de Ven, *Compact Complex Surfaces* (`VQUIPQ4Y`), Chap. VIII, via Sterk (2.14) | E6 |
 | Cl4 | the faithfulness of the representation of $\mathrm{Aut}(X)$ on $O(H^2(X;\mathbb{Z}))$, used at (2.14) to descend $\tilde f$ | Sterk (2.14) | E2 |
-| Cl5 | Kodaira's projectivity criterion, used at (2.2) to conclude that an Enriques surface with a line bundle of positive self-intersection is projective | Barth–Peters–Van de Ven (`VQUIPQ4Y`), Chap. IV Thm 5.2, via Sterk (2.2) | E1 |
+| Cl5 | = E11.  Kodaira’s projectivity criterion, used at (2.2) to conclude that an Enriques surface with a line bundle of positive self-intersection is projective | Barth–Peters–Van de Ven (`VQUIPQ4Y`), Chap. IV Thm 5.2, via Sterk (2.2) | E1 |
 | Cl6 | Nikulin 1.13.2 and 1.14.2, as cited at (2.x) — the same nodes as Nk4, Nk5 | Sterk, citing Nikulin 1980 | Nk4, Nk5 |
 
 Cl1 is the load-bearing one for this graph, and it was invisible: without it the
@@ -465,19 +465,19 @@ disposition would mean the filtering was done silently.
 
 | Item | Kind | Disposition |
 | --- | --- | --- |
-| 1.1–1.4 | setup | **E3** — the $K3$ lattice $L$, the involution $I$, and the eigenlattices; this is where $L_-$ comes from |
+| 1.1–1.4 | setup | **E6** — the $K3$ lattice, the involution, and the eigenlattices; where $L_-$ comes from |
 | 2.1 | Definition | **E2** — almost polarization and its degree; names the surfaces whose period space this is |
 | 2.2, 2.3 | setup | **E2** — the $K3$ double cover and its marking |
 | 2.4 | Proposition | **E2** — the two elliptic fibrations on the double cover |
 | 2.5 | Proposition | **E2** — the same two pencils |
 | 2.6 | Remark | **E2** — commentary on 2.4 |
 | 2.7, 2.8 | Definitions | **A0** |
-| 2.9 | Proposition | **E5** — the period map is well defined; what makes $\Omega_-/\Gamma$ a period space at all |
+| 2.9 | Proposition | **E13** — the period map is well defined; what makes $\Omega_-/\Gamma$ a period space at all |
 | 2.10 | Lemma | **A1** |
 | 2.11 | Remark | **A1a** — $\Gamma$ is *not* the group one might expect; a caveat on the definition in A1 |
-| 2.12 | setup | **E4** — the period point and its image |
+| 2.12 | setup | **E12** — the period point and its image |
 | 2.13 | Lemma | **A2** |
-| 2.14 | Proposition | **E6** — $P$ is injective; rests on Torelli for $K3$ |
+| 2.14 | Proposition | **E8**, **E9** — $P$ is injective; rests on Torelli for $K3$ |
 | 2.15 | setup | **A6a** — defines the special sets $R_-$ and $S_-$ |
 | 2.16 | Lemma | **A4** |
 | 2.17 | Corollary | **A5** |
@@ -520,14 +520,43 @@ no compact complex surfaces, no $K3$ surfaces, no Hodge structures, no line
 bundles, no period maps, no Torelli.  Stratum **E** below is therefore as absent
 as stratum F, and larger.
 
-| Node | What it is | Needed by |
-| --- | --- | --- |
-| E1 | complex manifolds, compact complex surfaces, divisors and line bundles, the canonical bundle | E2–E6 |
-| E2 | $K3$ surfaces and Enriques surfaces; the $K3$ double cover and its involution $I$ | 2.1–2.5, 2.9 |
-| E3 | $H^2$ with its intersection form; Horikawa's isometry identifying it with $L$, and $L_-$ as the anti-invariant eigenlattice | the definition of $L_-$ itself |
-| E4 | Hodge structures of weight 2 and the period point | 2.9, 2.12 |
-| E5 | the period map and its domain $\Omega_-$ | 2.9, 2.14 |
-| E6 | Torelli for $K3$ surfaces | 2.14 |
+### Stratum E, from Horikawa and BPV — the surface theory
+
+Read from Horikawa, *On the periods of Enriques surfaces I* (`6ZXI2FJ4`) and
+*II* (`RQ2EG4F7`), with Barth–Peters–Van de Ven, *Compact Complex Surfaces*
+(`VQUIPQ4Y`) for the general surface theory.  These replace the six subject
+rows.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| E1 | compact complex surfaces: divisors, line bundles, the canonical bundle, $H^2$ with its intersection form, and the Hodge index theorem | BPV Chaps. I–IV | complex manifolds; **absent from Mathlib** |
+| E2 | Enriques surfaces and their $K3$ universal covering $T \to S$, with the covering involution | Horikawa I §§3–6; BPV Chap. VIII | E1 |
+| E3 | Horikawa I Thm 3.1: an Enriques surface $S$ has an elliptic pencil $\lvert D\rvert$, and the associated $g : S\to\mathbb{P}^1$ has exactly two multiple fibres, each of multiplicity 2 | Horikawa I Thm 3.1 | E2 |
+| E4 | Horikawa I Thms 4.1, 4.2: an Enriques surface not of special type is birationally a double covering of $\Sigma_0$ with branch locus $\Gamma_1+\Gamma_2+B_0$; one of special type is birationally a double covering of $\Sigma_2$ | Horikawa I Thms 4.1, 4.2 | E2, E3 |
+| E5 | Horikawa I Thm 4.3: any two Enriques surfaces are deformations of each other | Horikawa I Thm 4.3 | E4 |
+| E6 | **Horikawa I Thm 5.1** (= node Cl1): for $T$ a $K3$ surface which is the universal covering of an Enriques surface $S$, and $\tau : H_2(T,\mathbb{Z})\to H_2(T,\mathbb{Z})$ the involution induced by the covering transformation, **there exists an isomorphism $\varphi : H_2(T,\mathbb{Z})\to\Lambda$ of lattices with $\varphi\circ\tau = \varrho\circ\varphi$** — this is what makes $L_-$ an eigenlattice rather than a Gram matrix | Horikawa I Thm 5.1 | E2, E5, F1.1 |
+| E7 | Horikawa I Thms 6.1, 6.2: the universal covering $T$ described explicitly as a pull-back, in the non-special and special cases | Horikawa I Thms 6.1, 6.2 | E4 |
+| E8 | Horikawa I Thm 7.1 (Torelli for Enriques surfaces): distinguished Enriques surfaces with proportional periods are isomorphic | Horikawa I Thm 7.1 | E9, E6 |
+| E9 | Piatetski-Shapiro–Shafarevich, quoted as Horikawa I Thm 7.2: an isomorphism of $K3$ lattices satisfying (i) and (ii) is induced by an isomorphism of surfaces — **global Torelli for $K3$**, and the node Cl3 names | Horikawa I Thm 7.2, citing [17] | E1 |
+| E10 | Horikawa II Thm 3.1 (= node Cl2): the statement about $R_-$ and the divisor $D_V/\Gamma$ — **not transcribed**; Horikawa II is `RQ2EG4F7` | Horikawa II Thm 3.1 | E6, A6a |
+| E11 | Kodaira's projectivity criterion (= node Cl5): a surface carrying a line bundle of positive self-intersection is projective | BPV Chap. IV Thm 5.2 | E1 |
+| E12 | Hodge structures of weight 2 on $H^2$, and the period point | BPV Chap. I; Horikawa I §7 | E1 |
+| E13 | the period map for Enriques surfaces and its domain $\Omega_-$ | Horikawa I §7, Horikawa II | E12, E6 |
+
+**E6 is the load-bearing node of this stratum**, and note what it actually says:
+the isomorphism is onto $\Lambda$ intertwining $\tau$ with a fixed involution
+$\varrho$.  So $L_-$ is the $(-1)$-eigenlattice of $\varrho$ on $\Lambda$, and
+every statement in strata A and B that begins "let $L_- = U\oplus U(2)\oplus
+E_8(-2)$" is downstream of it.
+
+**E9 is not Horikawa's.**  He quotes it as Theorem 7.2, attributing it to
+Piatetski-Shapiro and Shafarevich [17], and derives his Enriques Torelli (E8)
+from it.  So Cl3, which the graph recorded as "global Torelli, via BPV Chap.
+VIII", has its statement here and its proof elsewhere again — the descent
+continues into [17].
+
+E1 has no Mathlib substrate at all, and it is the base of this whole stratum.
+
 
 **The target does not change.**  There is one target node — Sterk's theorem as
 stated — and every gap discovered between it and Mathlib adds nodes.  Size is
