@@ -112,6 +112,71 @@ def component_invariant(M, comp):
     return (len(comp), tuple(degs), tuple(labels))
 
 
+def symmetrizer_of(A):
+    """Positive rationals d with d_i A_ij = d_j A_ji, normalized to min 1.
+
+    Propagated along a spanning walk of the diagram; `A.symmetrizer()` is not
+    available on a transposed Cartan matrix, and the transpose is exactly the
+    case this table needs.
+    """
+    m = A.nrows()
+    d = {0: QQ(1)}
+    changed = True
+    while changed:
+        changed = False
+        for i in list(d):
+            for j in range(m):
+                if j in d or A[i, j] == 0:
+                    continue
+                d[j] = d[i] * A[i, j] / A[j, i]
+                changed = True
+    assert len(d) == m, "diagram is disconnected"
+    lo = min(d.values())
+    return [d[i] / lo for i in range(m)]
+
+
+def affine_type_table():
+    """Invariants of the extended Dynkin diagrams, keyed as `component_invariant`.
+
+    Each affine type is symmetrized to a Gram matrix and entered under both
+    normalizations of the root lengths (long = 4 with short = 2, and the plain
+    simply-laced scaling), which is what separates B~_n from C~_n here.
+    """
+    table = {}
+    fams = ([('A', n) for n in range(1, 12)] + [('B', n) for n in range(3, 12)]
+            + [('C', n) for n in range(2, 12)] + [('D', n) for n in range(4, 12)]
+            + [('E', 6), ('E', 7), ('E', 8), ('F', 4), ('G', 2)])
+    swap = {'B': 'C', 'C': 'B'}
+    for letter, n in fams:
+      A0 = CartanMatrix(CartanType([letter, n, 1]))
+      # A0 and its transpose are the Cartan matrices of a dual pair; transposing
+      # exchanges long and short roots, which is what tells B~_n from C~_n.
+      for A, name in ((A0, letter), (A0.transpose(), swap.get(letter, letter))):
+        m = A.nrows()
+        d = symmetrizer_of(A)
+        S = matrix(QQ, m, m, lambda i, j: d[i] * A[i, j])
+        for scale in (1, 2, 4):
+            G = -scale * S
+            if not all(x in ZZ for x in G.list()):
+                continue
+            G = matrix(ZZ, G)
+            if not all(G[i, i] in (-2, -4) for i in range(m)):
+                continue
+            inv = component_invariant(G, list(range(m)))
+            table.setdefault(inv, "%s~%d" % (name, n))
+    return table
+
+
+AFFINE_TYPES = None
+
+
+def affine_name(M, comp):
+    global AFFINE_TYPES
+    if AFFINE_TYPES is None:
+        AFFINE_TYPES = affine_type_table()
+    return AFFINE_TYPES.get(component_invariant(M, comp), "?")
+
+
 def maximal_parabolic_subdiagrams(M, rank):
     """Parabolic subdiagrams of the given rank, maximal under inclusion.
 
@@ -155,9 +220,68 @@ def cusp_ep():
                           e - f]                        # alpha_10
 
 
+def cusp_epfpa8():
+    """(3.3.10)  v = e' + f' + abar_8.  v^perp/Zv = H + E_8(-2).
+
+    The vertices are alpha_1..alpha_7 and alpha_9..alpha_13; alpha_8 itself is
+    not a mirror here (only alpha_8 - f' enters the span).
+    """
+    a9 = f - e
+    a10 = 2 * fp + abar[7]
+    return (alpha[0:7]
+            + [a9,
+               a10,
+               (e + f) - a9 - a10,                      # alpha_11 = 2e - 2f' - abar_8
+               2 * e + (abar[0] - abar[7]),             # alpha_12
+               (e + f) + (alpha[7] - fp)])              # alpha_13
+
+
+def cusp_2epfpa1():
+    """(3.3.11)  v = 2e' + f' + abar_1.  v^perp/Zv = H + E_8(-2).
+
+    Vertices alpha_2..alpha_12; alpha_1 is replaced by alpha_11.
+    """
+    return (list(alpha[1:8])                            # alpha_2..alpha_8
+            + [f - e,                                   # alpha_9
+               abar[7] + 2 * ep,                        # alpha_10
+               e + f + alpha[0] - ep,                   # alpha_11
+               2 * e - 2 * ep + abar[7] - abar[0]])     # alpha_12
+
+
+def cusp_2e2fa1():
+    """(3.3.12)  v = 2e + 2f + abar_1.
+
+    A different splitting of v^perp/Zv: et, ft span the H-summand and
+    at_1..at_8 the E_8(-2)-summand, with at_1 = e' - f', at_3 = f' + alpha_3
+    and at_i = alpha_i otherwise.  abart is the dual basis of that summand.
+    """
+    et = e + ep + fp - alpha[0]
+    ft = f + ep + fp - alpha[0]
+    at = [ep - fp, alpha[1], fp + alpha[2]] + list(alpha[3:8])
+    # dual basis of the at-summand: (abart_i, at_j) = 2 delta_ij
+    Gt = matrix(ZZ, 8, 8, lambda i, j: ip(at[i], at[j]))
+    Gti = Gt.inverse()
+    abart = [sum(QQ(2 * Gti[k, i]) * at[k] for k in range(8)) for i in range(8)]
+    for x in abart:
+        assert all(c in ZZ for c in x), "dual basis of the tilde summand is not integral"
+    abart = [V(x) for x in abart]
+    return ([at[1], at[3], at[4], at[5], at[6], at[7]]   # alpha_2, alpha_4..alpha_8
+            + [at[0],                                    # alpha~_1
+               abart[7],                                 # abar~_8
+               2 * et - at[0],                           # alpha_9
+               2 * et + (abart[1] - abart[2]),           # alpha_10
+               ft - et,                                  # alpha_11
+               et + ft + (abart[5] - abart[2]),          # alpha_12
+               et + ft + (abart[0] + abart[7] - abart[2]),   # alpha_13
+               et + ft + at[2]])                         # alpha_14
+
+
 CUSPS = [
-    ("3.3.7  v = e", cusp_e),
-    ("3.3.9  v = e'", cusp_ep),
+    ("3.3.7   v = e", cusp_e),
+    ("3.3.9   v = e'", cusp_ep),
+    ("3.3.10  v = e' + f' + abar_8", cusp_epfpa8),
+    ("3.3.11  v = 2e' + f' + abar_1", cusp_2epfpa1),
+    ("3.3.12  v = 2e + 2f + abar_1", cusp_2e2fa1),
 ]
 
 
@@ -176,8 +300,9 @@ def report():
         maxl = maximal_parabolic_subdiagrams(M, rank=8)
         print("   maximal parabolic subdiagrams of rank 8: %d" % len(maxl))
         for S, comps in maxl:
-            print("     ", [[i + 1 for i in c] for c in comps],
-                  [component_invariant(M, c) for c in comps])
+            print("      %-28s %s"
+                  % (" + ".join(affine_name(M, c) for c in comps),
+                     [[i + 1 for i in c] for c in comps]))
 
 
 # Sterk's own checks on the (3.3.7) roots, from the displayed ratios on p.57.
