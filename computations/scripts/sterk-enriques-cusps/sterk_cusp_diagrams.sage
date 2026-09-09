@@ -313,3 +313,61 @@ for _idx, _expected in ((9, 4), (10, 16), (11, 64)):
 assert ip(abar[0], abar[0]) == -8 and ip(abar[7], abar[7]) == -4
 
 report()
+
+
+# ---------------------------------------------------------- V13 primitivity
+
+def isotropic_vector_of(M, roots, comp):
+    """The vector u(Sigma_0) a connected parabolic component represents.
+
+    Vinberg 1983 §1.9: the e_i for i in the component span a parabolic subspace
+    whose radical is a line; u(Sigma_0) is the generator of that radical, taken
+    with nonnegative coefficients.  Vinberg's Lemma there warns that u(Sigma_0)
+    NEED NOT be primitive in L, and gives a sufficient condition for it to be.
+    This computes the vector and asks whether it is in fact primitive.
+    """
+    A = matrix(QQ, len(comp), len(comp), lambda i, j: M[comp[i], comp[j]])
+    ker = A.right_kernel().basis()
+    if len(ker) != 1:
+        return None
+    c = ker[0]
+    c = c / gcd([x for x in c if x != 0]) if any(x != 0 for x in c) else c
+    if any(x < 0 for x in c):
+        c = -c
+    v = sum(QQ(c[i]) * vector(ZZ, roots[comp[i]]) for i in range(len(comp)))
+    if not all(x in ZZ for x in v):
+        return ("non-integral", v)
+    v = vector(ZZ, v)
+    g = gcd(list(v))
+    return (v, g)
+
+
+def primitivity_report():
+    print()
+    print("=" * 68)
+    print("V13: is u(Sigma_0) primitive for each maximal parabolic component?")
+    for name, build in CUSPS:
+        roots = build()
+        M = gram_of(roots)
+        print("---", name)
+        seen = set()
+        for S, comps in maximal_parabolic_subdiagrams(M, rank=8):
+            for c in comps:
+                key = tuple(c)
+                if key in seen:
+                    continue
+                seen.add(key)
+                r = isotropic_vector_of(M, roots, c)
+                if r is None:
+                    print("    %-22s radical not one-dimensional" % affine_name(M, c))
+                    continue
+                v, g = r
+                if v == "non-integral":
+                    print("    %-22s u(Sigma_0) not integral: %s" % (affine_name(M, c), g))
+                else:
+                    flag = "primitive" if g == 1 else "NOT primitive, content %d" % g
+                    assert ip(v, v) == 0, "u(Sigma_0) is not isotropic"
+                    print("    %-22s %s" % (affine_name(M, c), flag))
+
+
+primitivity_report()

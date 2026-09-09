@@ -568,9 +568,7 @@ Questions about statements already in the graph, not missing nodes.
 5. **Borel's torsion-free hypothesis** (Bo1) against Sterk's $\Gamma$, which
    contains $-1$; Borel's Remark 3.8 records that with torsion $V$ need not be
    hyperbolically imbedded in $V^*$.
-6. **V13's primitivity hypothesis** must be checked for each of the five
-   diagrams: Vinberg states that $u(\Sigma_0)$ need not be primitive, and Sterk
-   reads isotropic vectors off parabolic subdiagrams throughout §3.3.
+6. ~~V13's primitivity hypothesis~~ — **settled below, and it fires.**
 7. **C7 disagrees with the source.**  The Sage reconstruction yields thirteen
    maximal parabolic subdiagrams in six shapes against Sterk's four types.
 
@@ -749,3 +747,30 @@ campaign rather than a lattice computation, and it is where the goal theorem
 gets its meaning: without D the count is a statement about orbits of
 sublattices, and calling those orbits boundary components — rather than proving
 they correspond — is the failure `FRM-01` names.
+
+### V13's primitivity, checked on all five diagrams
+
+Vinberg 1983 §1.9 warns that the vector $u(\Sigma_0)$ read off a connected
+parabolic component need not be primitive, and gives a sufficient condition for
+it to be.  Computed for every maximal parabolic component of all five diagrams
+(`sterk_cusp_diagrams.sage`, `primitivity_report`): **the warning fires
+constantly.**
+
+Every $\tilde E_8$, $\tilde E_7$ and $\tilde D_8$ component yields
+$u(\Sigma_0)$ of **content 2**, not 1.  The components that do give a primitive
+vector are the small ones — the $\tilde A_1$ pairs joined by an $\infty$ edge,
+and the $\tilde B$/$\tilde C$ components in the diagrams of (3.3.10)–(3.3.12).
+For $v = e$ the split is nine non-primitive against three primitive.
+
+This is consistent with Sterk where he shows his work: at (3.3.10) he reads off
+$\alpha_9+\alpha_{10} = e'+f'+\bar\alpha_8$, a coefficient-one sum on an
+$\tilde A_1$ component — one of the primitive cases.  For the large components
+the isotropic vector he wants is $u(\Sigma_0)/2$, and **the division is nowhere
+stated**.
+
+Two consequences.  A node stating "the isotropic vector represented by a
+parabolic subdiagram" must carry the content, since here it is 2 more often than
+1.  And the source of the factor is structural: $U(2)$ and $E_8(-2)$ are
+2-scaled, so a radical generator with coefficient-one support inherits a factor
+2 — which is also why Vinberg's sufficient condition, requiring a 2-root among
+the $e_i$, fails for exactly these components.
