@@ -654,24 +654,6 @@ restart of the module/algebra/action constructions.
   indexing set, and an unsupported callable equality problem retain their
   correct interfaces and computational frontier.
 
-- [ ] **`grading-witnesses`**. **Needs:** `constructor-data`.
-  Complete the remaining construction-specific witness and grading
-  contracts against their live owners.
-  **Deliver:** meaningful parameter types and owned `an_object()` examples;
-  general graded-commutativity from a specified parity homomorphism rather
-  than an identity check against `ZZ`; inherited self-module structures for
-  graded algebras; correct formed-module/vector-space
-  placements and readable names for the form functors.
-  The DGA-specific inherited complex, action, and cohomology obligations are
-  assigned to [shared complex and DGA integration](#shared-complex-and-dga-integration)
-  below; implement them there rather than opening a duplicate construction.
-  **Decision:** inspect each current implementation before changing it.
-  Existing membership and constructor repairs are inputs, not new work.
-  **Acceptance:** examples use the stated category's constructors and inherited
-  operations. Public exports contain mathematical categories, not abstract
-  runtime bases. Finite and infinite signatures retain the same mathematical
-  codomain.
-
 ## Covering families and sheaves
 
 **Integration route for this workstream:** the covering-family owner constructs
@@ -905,7 +887,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   cycle/boundary inclusions, quotient maps, representatives and induced maps via
   a maintained provider; no new local chain-reduction algorithm is introduced.
 
-- [ ] **`dga-cohomology`**. **Needs:** `complexes`, `grading-witnesses`.
+- [ ] **`dga-cohomology`**. **Needs:** `complexes`.
   Make the existing DGA/cohomology-algebra routes consume that same complex
   contract and preserve only the algebraic refinements the source justifies.
   **Owners:** `categories/algebras/differential_graded_algebras.py`,
@@ -1455,7 +1437,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `constructor-convergence`, `category-boundaries`, `general-modules`, `grading-witnesses`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `constructor-convergence`, `category-boundaries`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature
@@ -1649,6 +1631,5 @@ behavior.
 | --- | --- | --- | --- | --- | --- |
 | `ARCHIVE-fraction-field-subobjects-20260908-1910` | archive reconciliation / fraction-field quotient subobjects | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py; tests/modules/test_fraction_field_quotients_archive.py` (write) | `HEAD` | 2026-09-08T19:10:00Z |
 | `ARCHIVE-lattice-tensor-20260909-0125` | archive reconciliation / lattice tensor arithmetic | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/lattices/test_tensor_arithmetic_archive.py` (write) | `HEAD` | 2026-09-09T01:25:00Z |
-| `M0-grading-witnesses-20260909-0240` | grading-witnesses / concentrated grading acceptance | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/graded_modules.py; src/dzack_research/preamble/categories/algebras/graded_algebras.py; src/dzack_research/preamble/categories/algebras/graded_commutative_algebras.py; tests/algebras/test_grading_witnesses_acceptance.py; TODO.md` (write) | `HEAD` | 2026-09-09T02:40:00Z |
 | `A1-actual-group-algebra-parent-20260907-1700` | A1 / actual `R[G]` module parent and retained scalar restriction | Chat continuation 2026-09-07 Asia/Taipei; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/group_modules/group_modules.py; src/dzack_research/preamble/categories/functors/group_actions.py; src/dzack_research/preamble/categories/functors/group_scalar_change.py; tests/groups/test_actual_group_algebra_modules.py; src/dzack_research/preamble/categories/modules/group_modules/isotypic.py; src/dzack_research/preamble/categories/functors/group_induction.py; tests/groups/test_g_objects.py; tests/groups/test_restricted_actions.py` (write) | `152301b80e4ac18fa0684998c454bf54e34183ae` | 2026-09-07T07:57:50Z |
 | `LATTICE-parabolic-gluing-20260908-0832` | arithmetic / exact parabolic Levi image | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_parabolic_gluing.py` (write) | `9f36bcb0` | 2026-09-08T08:32:00Z |
