@@ -531,9 +531,8 @@ restart of the module/algebra/action constructions.
   the responsible category/object methods, `Mor`, and existing private adapters;
   session exports in `all.py`, notation in `lexicon/`, and catalogue entrypoints.
   **Scope:** every surviving public construction family, including those whose
-  feature implementation no longer appears in this queue. Start with localization,
-  completion, complexes and DGA cohomology, then their scheme, group, lattice,
-  and collection consumers. This is a source-conformance task, not a claim that
+  feature implementation no longer appears in this queue. Continue with localization
+  and completion, then their scheme, group, lattice, and collection consumers. This is a source-conformance task, not a claim that
   every family currently violates the contract.
   **Decision:** the constructor's defining datum and maps are authoritative.
   Document its allowed mathematical input forms at the existing declaration
@@ -553,9 +552,9 @@ restart of the module/algebra/action constructions.
   `OWN-05`. A call-site comment, same-file placement, new public raw accessor, or
   helper extraction cannot create an exception. Move raw computation only into
   its designated adapter and keep its raising inside that boundary.
-  **First specimen:** the selected localization or cohomology construction through
+  **First remaining specimen:** the selected localization construction through
   its object method and functor image, with a nonidentity induced map and the
-  owned source/target elements it acts on. Reuse specimens in those items rather
+  owned source/target elements it acts on. Reuse specimens in that item rather
   than commissioning another suite of implementation-shaped checks.
   **Acceptance:** the family's source routes converge and its public objects
   retain the required data before inherited operations run. The accompanying
