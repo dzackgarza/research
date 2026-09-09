@@ -114,8 +114,8 @@ carries what they rest on.
 
 | Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
-| D1 | the boundary components of $D$: the maximal connected complex analytic subsets of $\bar D \setminus D$ | Scattone §2 | complex analytic sets; **absent from Mathlib** |
-| D2 | a boundary component $F$ is **rational** when $N(F)_\mathbb{C}$ is defined over $\mathbb{Q}$; $\mathcal{B}(D)$ is the set of proper rational boundary components | Scattone §2 | D1; $\mathbb{Q}$-structures on algebraic groups |
+| D1 | the boundary components of $D$: the maximal connected complex analytic subsets of $\bar D \setminus D$ | Scattone §2 | HS11, HS12 — whose definition differs; see there |
+| D2 | a boundary component $F$ is **rational** when $N(F)_\mathbb{C}$ is defined over $\mathbb{Q}$; $\mathcal{B}(D)$ is the set of proper rational boundary components | Scattone §2 | D1, HS13, AG1 |
 | D3 | realizing $G_\mathbb{R}$ as the orthogonal group of a bilinear form $Q$ on $L_\mathbb{R}$, there is a bijection between boundary components $F \subset D$ and isotropic subspaces $E \subset L_\mathbb{R}$: $E \leftrightarrow F$ **iff** $\mathrm{Stab}_{O(L_\mathbb{R})}(E) = \mathrm{Stab}_{G_\mathbb{R}}(F)$ | Scattone §2 | D1 |
 | D4 | the basis and the realization may be chosen so that rationality is preserved: rational boundary components correspond to isotropic subspaces of $L_\mathbb{Q}$, identified with $I(L)$, the primitive isotropic sublattices of $L$ | Scattone §2 | D2, D3 |
 | D5 | **the bijection $I(L) \leftrightarrow \mathcal{B}(D)$ preserves incidence**: if $E \leftrightarrow F$ and $E' \leftrightarrow F'$ then $E \subset E' \iff F \subseteq \partial F'$ | Scattone §2 | D4 |
@@ -140,8 +140,8 @@ cites others for it.  These are the nodes underneath, read from Baily–Borel 19
 
 | Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
-| BB1 | a parabolic $k$-subgroup: an algebraic subgroup $P \le G$ with $G/P$ projective; such a $P$ is connected, equal to its own normalizer, and is the normalizer of its unipotent radical | BB 2.2 | algebraic groups, projective varieties; **absent from Mathlib** |
-| BB2 | a parabolic subgroup of $G^0_\mathbb{R}$ is its intersection with an algebraic parabolic $P \le G$ defined over $\mathbb{R}$; every maximal proper parabolic subgroup of $G^0_\mathbb{R}$ is conjugate to one and only one of the $P_b$ | BB 1.3 | BB1 |
+| BB1 | a parabolic $k$-subgroup: an algebraic subgroup $P \le G$ with $G/P$ projective; such a $P$ is connected, equal to its own normalizer, and is the normalizer of its unipotent radical | BB 2.2 | AG4, AG5 |
+| BB2 | a parabolic subgroup of $G^0_\mathbb{R}$ is its intersection with an algebraic parabolic $P \le G$ defined over $\mathbb{R}$; every maximal proper parabolic subgroup of $G^0_\mathbb{R}$ is conjugate to one and only one of the $P_b$ | BB 1.3 | BB1, AG12, AG14 |
 | BB3 | boundary components: $X_b = K_b\backslash L_b$ is hermitian symmetric with Harish-Chandra realization $D_b$; $\bar D = \bigcup_{0\le b\le t} o_b \cdot G^0_\mathbb{R}$; the orbit $F_b$ of $o_b$ under $L_b$ is $o_b + D_b$, and the boundary components are the transforms of the $F_b$ | BB 1.5, citing [27], [29], [30] | BB2; stratum HS below |
 | BB4 | **Theorem 3.7**: a boundary component $F$ of $X$ is rational **iff** $N(F)_\mathbb{C}$ is defined over $\mathbb{Q}$; if $F$ is rational then $\Gamma(F)$ is of arithmetic type; and the map $F \mapsto N(F)_\mathbb{C}$ … — **tail not transcribed** | BB 3.7 | BB3 |
 | BB5 | for a rational boundary component $F$, $N(F)_\mathbb{C}$ is a proper maximal parabolic $\mathbb{Q}$-subgroup of $G$ | BB §3 | BB4, BB2 |
@@ -156,6 +156,69 @@ symmetric spaces, Harish-Chandra realizations.
 Not descended further here: BB8 rests on the automorphic forms and
 Poincaré–Eisenstein series of BB §§5–8, and BB3 on Korányi–Wolf [27] and the
 other references BB 1.5 cites.  Those are the next descents on this branch.
+
+### Stratum AG, from Borel and Borel–Ji — what BB1, BB2, D2 and the goal rest on
+
+BB1 states what a parabolic $k$-subgroup is and BB2 what a parabolic subgroup of
+$G^0_\mathbb{R}$ is; D2 asks when $N(F)_\mathbb{C}$ is defined over $\mathbb{Q}$;
+HS13 lands on maximal parabolic subgroups; Pa7 needs strong approximation.  All
+four sit on the theory of reductive groups over a field, and **so does the goal's
+own opening sentence** — "$\Gamma\backslash\mathcal{T}(G)$, whose Tits building
+over $\mathbb{Q}$ is one-dimensional because $G$ has $\mathbb{Q}$-rank 2".  That
+sentence names two theorems and one computation, none of which was a node.
+
+Read from Borel, *Linear algebraic groups* (`5HRLF4GB`), §§11, 14, 20, 21, 23.4,
+and Borel–Ji, *Compactifications of symmetric and locally symmetric spaces*
+(`A5ASLV62`), §§I.2.18 and III.1.8.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| AG1 | $k$-structures on varieties, $k$-closed sets, and the Galois criteria for rationality: a $k$-closed subgroup normalized by a maximal $k$-torus is defined over $k$ when its root set is $\Gamma$-invariant | Borel AG §§11–14; Borel 20.3 | Mathlib schemes over a base; **no Galois descent for varieties** |
+| AG2 | linear algebraic groups, their Lie algebras, and the Jordan decomposition | Borel §§1–4 | Mathlib `AlgebraicGeometry/Group/{Affine,Smooth}`; **no Lie algebra of a group scheme** |
+| AG3 | diagonalizable groups and tori; $X^*(T)$, $X_*(T)$; a torus is **$k$-split** when it is diagonalizable over $k$ | Borel §8 | AG2; **absent** |
+| AG4 | a **parabolic subgroup** of $G$ is a closed $P$ with $G/P$ complete — equivalently projective, since $G/P$ is always quasi-projective; and $P$ is parabolic **iff** it contains a Borel subgroup | Borel 11.2 and its Corollary | AG2; complete varieties |
+| AG5 | **Chevalley**: every parabolic subgroup equals its own normalizer and is connected; every parabolic is conjugate to one and only one parabolic containing a fixed $B$ | Borel 11.16, 11.17 | AG4 |
+| AG6 | the root system $\Phi(T,G)$ with its one-dimensional root subgroups $U_\alpha$; and the **Tits system** $\mathcal{T} = (G,B,N,S)$, whence the Bruhat decomposition $G = \coprod_w BwB$ | Borel 14.8, 14.15 | AG4; Mathlib `LinearAlgebra/RootSystem/`, `GroupTheory/Coxeter/` |
+| AG7 | **standard parabolic subgroups**: $P_I = B\cdot W_I\cdot B$ for $I\subseteq\Delta$; $P_I$ is the semidirect product of $Z_G(T_I)$ by its unipotent radical $U_{\Phi(I)}$; and every parabolic subgroup is conjugate to exactly one $P_I$ | Borel 14.16–14.18 | AG6 |
+| AG8 | **Levi subgroups** of $P$ are the centralizers of the maximal tori of $\mathcal{R}P$, any two conjugate by a unique element of $\mathcal{R}_uP$; two parabolics are **opposite** when their intersection is a common Levi subgroup, and each $P$ with a chosen Levi has exactly one opposite containing it | Borel 14.19–14.21 | AG7 |
+| AG9 | $G$ is **isotropic over $k$** when it contains a nontrivial $k$-split subtorus; and for any $k$-split subtorus $S$, the centralizer $Z(S)$ is the Levi subgroup of a parabolic $k$-subgroup | Borel 20.1, 20.4 | AG3, AG8 |
+| AG10 | for $P$ parabolic and defined over $k$: $\mathcal{R}P$ and $\mathcal{R}_uP$ are defined over $k$; the Levi $k$-subgroups are the centralizers of the maximal $k$-tori of $\mathcal{R}P$, any two conjugate by a unique element of $\mathcal{R}_uP(k)$; the opposite $P^-$ containing a given Levi $k$-subgroup is defined over $k$; and $G(k)\to (G/P)(k)$ is **surjective** | Borel 20.5 | AG9, AG1 |
+| AG11 | for a proper parabolic $k$-subgroup $P$ with Levi $k$-subgroup $L$ and $S$ the identity component of $Z(L)$: $L = Z(S_d)$; $G$ has a proper parabolic $k$-subgroup **iff** it has a non-central $k$-split torus; and $P$ is minimal **iff** $S_d$ is a maximal $k$-split torus | Borel 20.6 | AG10 |
+| AG12 | the minimal parabolic $k$-subgroups are conjugate under $G(k)$; the maximal $k$-split tori are conjugate under $G(k)$; and parabolic $k$-subgroups conjugate under $G(K)$ are conjugate under $G(k)$ | Borel 20.9 | AG11 |
+| AG13 | the **$k$-rank** $r_k(G)$: the common dimension of the maximal $k$-split tori, well defined by AG12; the relative roots ${}_k\Phi = \Phi(S,G)$, empty exactly when $\mathcal{D}G$ is anisotropic; and the relative Weyl group ${}_kW = N(S)/Z(S)$ | Borel 21.1 | AG12 |
+| AG14 | ${}_kP_I = Z(S_I)\cdot U_{\psi(I)}$ for $I\subseteq{}_k\Delta$, with $S_I = (\bigcap_{\alpha\in I}\ker\alpha)^o$; these are distinct and are **all** the standard parabolic $k$-subgroups, and every parabolic $k$-subgroup is conjugate to one and only one of them by an element of $G(k)$ | Borel 21.11, 21.12 | AG13 |
+| AG15 | $(G(k), P(k), N(k), R)$ is a Tits system, and $Q\mapsto Q(k)$ is a bijection between the parabolic $k$-subgroups of $G$ and the parabolic subgroups of that Tits system — so a parabolic $k$-subgroup is determined by its $k$-points | Borel 21.15, 21.16 | AG14, AG6 |
+| AG16 | the **spherical Tits building** $\Delta_\mathbb{Q}(\mathbf{G})$: simplexes correspond bijectively to the proper rational parabolic subgroups, a proper maximal one is a vertex, and distinct maximal $\mathbf{Q}_0,\dots,\mathbf{Q}_k$ span a $k$-simplex **iff** $\mathbf{Q}_0\cap\cdots\cap\mathbf{Q}_k$ is a rational parabolic subgroup, that simplex being the intersection; $\mathbf{G}(\mathbb{Q})$ acts by conjugation | Borel–Ji III.1.8, citing Tits | AG14 |
+| AG17 | $\Delta_\mathbb{Q}(\mathbf{G})$ is a countable set of points when $r_\mathbb{Q}(\mathbf{G}) = 1$, and otherwise a **connected infinite simplicial complex of dimension $r_\mathbb{Q}(\mathbf{G}) - 1$**; the rational parabolic subgroups containing a maximal $\mathbb{Q}$-split torus form an apartment, triangulating an $(r_\mathbb{Q}-1)$-sphere | Borel–Ji III.1.8 | AG16, AG13 |
+| AG18 | for $\mathrm{SO}(Q)$ with $Q$ nondegenerate and isotropic over $k$ ($\mathrm{char}\,k\ne2$): $Q$ is isotropic over $k$ **iff** $\mathrm{SO}(Q)$ is, and $r_k(\mathrm{SO}(Q)) = q$, the **Witt index** of $Q$ over $k$; moreover $Z(S) = S\times \mathrm{SO}(Q_o)$ for the anisotropic kernel $Q_o$ | Borel 23.4 | AG13 |
+| AG19 | $r_\mathbb{Q}\big(\mathrm{SO}(L_-\otimes\mathbb{Q})\big) = 2$ | AG18 plus the computation below | AG18 |
+
+**AG19 is the goal's missing hypothesis, and it is now checked.**  The goal
+opens by saying the Tits building is one-dimensional "because $G$ has
+$\mathbb{Q}$-rank 2", and that clause named no theorem and no computation.  It
+is AG17 at $r_\mathbb{Q} = 2$, resting on AG18 and on the Witt index of $L_-$
+over $\mathbb{Q}$.  Computed: $L_-$ has signature $(2,10)$ and determinant
+$1024$, so the Witt index over $\mathbb{R}$ — hence over $\mathbb{Q}$ — is at
+most $2$; and $\langle e, e'\rangle$, the isotropic generators of $U$ and of
+$U(2)$, span a totally isotropic $\mathbb{Q}$-plane, so it is at least $2$.  It
+is therefore exactly $2$, the $\mathbb{Q}$-rank is $2$, and
+$\dim\Delta_\mathbb{Q} = 1$.  The one-dimensionality of the building is what
+makes "five vertices of one type, nine of the other, and the edges of 3.4" the
+*whole* of the boundary complex rather than its low-dimensional skeleton.
+
+**AG10's surjectivity of $G(k)\to(G/P)(k)$ is the step that makes rational
+boundary components a set of $\mathbb{Q}$-points at all**, and D4 uses it
+silently.
+
+Nothing in stratum AG has any substrate.  Mathlib has affine and smooth group
+schemes (`AlgebraicGeometry/Group/`) and root systems and Coxeter groups
+(`LinearAlgebra/RootSystem/`, `GroupTheory/Coxeter/`), but no torus, no Borel or
+parabolic subgroup, no unipotent radical, no Levi decomposition, no $k$-rank and
+no building; searching the tree for `parabolic` returns only the Möbius
+classification on the upper half plane.  The registry has no algebraic-groups
+corpus either.  `chrisflav/bruhat-tits` is the nearest listed repository and it
+builds the Bruhat–Tits **tree** of $\mathrm{SL}_2$ over a local field, which is
+neither the spherical building nor the general construction.
 
 ### Stratum HS, from Viviani — what BB3 and D1 rest on
 
@@ -282,7 +345,7 @@ theorems actually bottom out.
 | Pa4 | $q^{(p)}_\theta(p^k)$, $u^{(2)}_+(2^k)$, $v^{(2)}_+(2^k)$: the discriminant-quadratic forms of Pa2 and Pa3 for $k\ge 1$; and $b^{(p)}_\theta(p^k)$, $u^{(2)}_-$, $v^{(2)}_-$ their bilinear forms | Nikulin §1, 8° | Pa2, Pa3, F1.10 |
 | Pa5 | **Proposition 1.8.2**: the relations among these in $\mathrm{qu}(\mathbb{Z}_p)$, $\mathrm{qu}(\mathbb{Z})$ and $\mathrm{bil}(\mathbb{Z})$ — (a) $K^{(p)}_\theta(p^k)^2 \simeq K^{(p)}_{\theta'}(p^k)^2$ for $p\ne2$; (b) $U^{(2)}(2^k)^2\simeq V^{(2)}(2^k)^2$; (c)–(k) the remaining identities — **the full list is not transcribed** | Nikulin Prop. 1.8.2 | Pa4 |
 | Pa6 | Propositions 1.8.1 and 1.8.3, used in the canonical-decomposition arguments — **located, not transcribed** | Nikulin Props. 1.8.1, 1.8.3 | Pa4 |
-| Pa7 | 9°, the **strong approximation theorem in the even case**, and the invariant $\ell(A)$ as the minimal number of generators of $A$ | Nikulin §1, 9° | Pa5; strong approximation for algebraic groups |
+| Pa7 | 9°, the **strong approximation theorem in the even case**, and the invariant $\ell(A)$ as the minimal number of generators of $A$ | Nikulin §1, 9° | Pa5; strong approximation, over AG9–AG13 |
 | Pa8 | Corollary 1.9.3 and the **canonical decompositions** of a $p$-adic lattice with given discriminant form; the count of 2-adic lattices realizing a given $q_2$ | Nikulin §1, 9° | Pa5, Pa7 |
 
 Pa5 is the computational engine: every one of Nikulin's classification proofs
@@ -308,8 +371,8 @@ quotients of symmetric spaces and an extension theorem*, J. Diff. Geometry 6
 | --- | --- | --- | --- |
 | Bo1 | **Theorem A**: $X$ a bounded symmetric domain, $\Gamma$ an arithmetically defined **torsion-free** group of automorphisms, $V^*$ the compactification of $V = X/\Gamma$ of Baily–Borel; then every holomorphic $f : D^{*a}\times D^b \to V$ extends to a holomorphic map $D^{a+b} \to V^*$ | Borel 1972, Thm A | Bo3, BB8 |
 | Bo2 | **Theorem 3.7**: for $Z$ a normal hyperbolic space and $f : D^{*a}\times Z \to V$ *locally liftable* holomorphic, $f$ extends to a holomorphic map $D^a \times Z \to V^*$ | Borel 1972, 3.7 | Bo1 |
-| Bo3 | Kwack's extension theorem, in the variant Borel uses, and the Kobayashi pseudo-distance making $X$ hyperbolic | Borel 1972 §3, citing Kwack [12] and [9]; Kobayashi [10] | complex hyperbolic geometry; **absent from Mathlib** |
-| Bo4 | Theorems B and C: the Siegel-set and arithmetic-group properties Borel proves in §§1–2 and uses in §3.5 | Borel 1972 §§1–2 | reduction theory of arithmetic groups; **absent from Mathlib** |
+| Bo3 | Kwack's extension theorem, in the variant Borel uses, and the Kobayashi pseudo-distance making $X$ hyperbolic | Borel 1972 §3, citing Kwack [12] and [9]; Kobayashi [10] | Ky1–Ky3 |
+| Bo4 | Theorems B and C: the Siegel-set and arithmetic-group properties Borel proves in §§1–2 and uses in §3.5 | Borel 1972 §§1–2 | Rt1–Rt10 |
 | Bo5 | the consequence Borel records: for $S$ an algebraic variety and $h : S \to V$ holomorphic, $h$ is a morphism of algebraic varieties, $V$ carrying its quasi-projective structure | Borel 1972, introduction, citing BB Thm 3.10 | Bo1, BB8 |
 
 **Bo1 assumes $\Gamma$ torsion-free.**  Sterk's $\Gamma$ is not obviously
@@ -325,11 +388,99 @@ the period space (`FDC-08`), and Bo1 is the concrete cost of it: a classical
 input, with a hypothesis that may not hold, invisible to the graph because the
 section using it had been excluded.
 
+### Stratum Rt, from Borel–Harish-Chandra — what Bo4 rests on
+
+Bo4 said "the Siegel-set and arithmetic-group properties Borel proves in §§1–2",
+naming a section rather than a statement.  Read from Borel–Harish-Chandra,
+*Arithmetic subgroups of algebraic groups* (`BRDFP5YR`), §§1, 4, 6, 7, 9 and 11 —
+the paper that established this theory and that Borel 1972 rests on.  Borel 1972's
+own §§1–2 remain untranscribed; what follows is the theory they use, from its
+source, not a transcription of Borel's versions.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| Rt1 | the **Iwasawa decomposition** $G = K\cdot A\cdot N$ of an open subgroup of a real algebraic reductive group, and $\Sigma$ the simple restricted roots in the ordering making the roots of $\mathrm{ad}_\mathfrak{g}\mathfrak{a}$ in $\mathfrak{n}$ positive; the choice presupposes a Cartan involution $\theta$, a maximal subalgebra on which $\theta = -\mathrm{Id}$, and an ordering | Borel–Harish-Chandra 1.11, 4.1 | HS8; **absent from Mathlib** |
+| Rt2 | a **Siegel domain** $\mathfrak{S}_{t,\omega} = K\cdot A_t\cdot\omega$, with $A_t = \{a\in A : \lambda(\log a)\le t\ \forall\lambda\in\Sigma\}$ and $\omega\subset N$ compact; the union of all of them is $G$, and any finite union lies inside one | Borel–Harish-Chandra 4.1 | Rt1 |
+| Rt3 | for $a\in A_t$ and $n\in\omega$ the set of conjugates $a\,n\,a^{-1}$ is relatively compact in $N$ | Borel–Harish-Chandra 4.2 | Rt2 |
+| Rt4 | for $G$ semisimple every Siegel domain has **finite Haar measure**, computed against $dg = \exp[\sigma(\log a)]\,dk\,da\,dn$ with $\sigma$ the sum of the positive restricted roots | Borel–Harish-Chandra 4.3 | Rt2 |
+| Rt5 | $G_\mathbb{Z}$ is discrete in $G_\mathbb{R}$, and its **commensurability class is independent of the $\mathbb{Q}$-embedding** | Borel–Harish-Chandra 6.1 | AG1 |
+| Rt6 | the subgroup of $G_\mathbb{Z}$ preserving a lattice $\Gamma\subset V_\mathbb{Q}$ has finite index in $G_\mathbb{Z}$ | Borel–Harish-Chandra 6.2 | Rt5 |
+| Rt7 | **Theorem 6.5, the fundamental set**: for $G$ reductive over $\mathbb{Q}$ there are $b_1,\dots,b_m\in\mathrm{SL}(n,\mathbb{Z})$ such that the interior $U$ of $\bigcup_i(a^{-1}\mathfrak{S}b_i)\cap G_\mathbb{R}$ satisfies (i) $G_\mathbb{R} = U\cdot G_\mathbb{Z}$, (ii) $K\cdot U = U$ for a maximal compact $K$, (iii) $U^{-1}U\cap x G_\mathbb{Z} y$ is finite for all $x,y\in G_\mathbb{Q}$; and $G_\mathbb{Z}$ is **finitely generated** | Borel–Harish-Chandra 6.5 | Rt2, Rt6, AG9 |
+| Rt8 | Theorem 6.12: the same conclusion for an arbitrary algebraic $\mathbb{Q}$-group | Borel–Harish-Chandra 6.12 | Rt7 |
+| Rt9 | Theorem 9.4: $G_\mathbb{R}$ is unimodular and $G_\mathbb{R}/G_\mathbb{Z}$ has **finite invariant measure iff $X_\mathbb{Q}(G^0) = 1$**; for $G$ semisimple this is automatic (Thm. 7.8) | Borel–Harish-Chandra 7.8, 9.4 | Rt4, Rt7 |
+| Rt10 | Theorem 11.6: $G_\mathbb{R}/G_\mathbb{Z}$ is **compact iff** $X_\mathbb{Q}(G^0) = 1$ and $G_\mathbb{Q}$ consists of semisimple elements — equivalently (11.8) every unipotent element of $G_\mathbb{Q}$ lies in the radical | Borel–Harish-Chandra 11.6, 11.8 | Rt9 |
+
+**Rt10 is why this graph exists.**  $\Gamma$ is arithmetic in $G = O(L_-)$, which
+is $\mathbb{Q}$-isotropic by AG19, so $G_\mathbb{Q}$ contains unipotent elements
+outside the radical and the quotient is **not** compact.  The boundary the whole
+target describes is the price of that non-compactness; Rt9 says the volume is
+nevertheless finite, which is what makes a compactification with a
+finite boundary complex possible at all.
+
+Rt7 is the fundamental set Bo4 names, and Rt5 is what lets "$\Gamma$ arithmetic"
+be a property of $\Gamma$ rather than of a chosen matrix realization — which
+A0's definition of $\Gamma$ by its action on $L_-^*/L_-$ silently uses.
+
+Substrate: nothing.  Iwasawa decompositions, restricted roots, Haar measure on a
+Lie group and arithmetic subgroups are all absent; Mathlib has Haar measure on
+locally compact groups but no Lie-group structure theory to apply it to here.
+
+### Stratum Ky, from Kiernan–Kobayashi — what Bo3 rests on, and audit point 5
+
+Bo3 said "Kwack's extension theorem, in the variant Borel uses, and the
+Kobayashi pseudo-distance making $X$ hyperbolic", with no statement.  Read from
+Kiernan–Kobayashi, *Satake compactification and extension of holomorphic
+mappings* (`TCZ83KBC`), §§1 and 5 — a paper proving Borel's kind of theorem
+from the hyperbolic side, on the same compactification.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| Ky1 | the intrinsic (Kobayashi) pseudo-distance $d_M$ of a complex space; $M$ is **hyperbolic** when $d_M$ is a distance | Kiernan–Kobayashi §1 (1), after Kobayashi 1970 | HS1; **absent from Mathlib** |
+| Ky2 | $M\subseteq Y$ is **hyperbolically imbedded** when (1) $M$ is hyperbolic, (2) $\overline M$ is compact in $Y$, and (3) for every $p\in\partial M$ and neighbourhood $U$ of $p$ there is a neighbourhood $V$ with $\overline V\subset U$ and $d_M\big(M\cap(Y-U),\,M\cap V\big) > 0$ | Kiernan–Kobayashi §1 (1)–(3) | Ky1 |
+| Ky3 | **Kwack**: a holomorphic $X - A\to M$ extends to $X\to Y$ when $M$ is compact and $X$ is nonsingular; extended by Kobayashi to $X$, $A$ both nonsingular and $M$ not necessarily compact, and by Kiernan to $A$ with normal-crossing singularities.  For singular $X$ the statement is **false**, with counterexamples | Kiernan–Kobayashi §1, citing Kwack 1969, Kobayashi 1970, Kiernan | Ky2 |
+| Ky4 | **Kobayashi–Ochiai**: if $M = \mathcal{D}'/\Gamma'$ for an arithmetic $\Gamma'$ and $Y$ is its Satake–Baily–Borel compactification, then $M$ is hyperbolically imbedded in $Y$ | Kiernan–Kobayashi §1, citing Kobayashi–Ochiai 1971 — **that paper not read, and not in the library** | Ky2, BB8 |
+| Ky5 | **the torsion clause**: when $\Gamma'$ does not act freely on $\mathcal{D}'$, the distance $d_M$ in conditions (1) and (3) is replaced by the distance $d'_M$ induced from the intrinsic distance $d_{\mathcal{D}'}$ of the domain, and Ky4 holds in that form | Kiernan–Kobayashi §1 parenthesis and Thm. 2 proof, citing Kobayashi–Ochiai | Ky4 |
+| Ky6 | **Theorem 1**: for $\mathcal{D}$ symmetric bounded and $\Gamma$ arithmetic, every holomorphic $f : \mathcal{D}/\Gamma\to M$ into a complex space hyperbolically imbedded in $Y$ extends to $\mathcal{D}^*/\Gamma\to Y$ | Kiernan–Kobayashi Thm. 1 | Ky2, BB8 |
+| Ky7 | **Theorem 2**: every holomorphic $\mathcal{D}/\Gamma\to\mathcal{D}'/\Gamma'$ that lifts to $\mathcal{D}\to\mathcal{D}'$ extends to the compactifications, and the extension **sends each boundary component into a boundary component** | Kiernan–Kobayashi Thm. 2 | Ky6, Ky5, HS11 |
+| Ky8 | the proof of Theorem 2 uses Pyatetzki-Shapiro's topology on $\mathcal{D}^*/\Gamma$ and Borel's theorem that it **coincides** with Baily–Borel's; for Theorem 1 it is enough that it is at least as coarse | Kiernan–Kobayashi §3 | BB7 |
+
+**Ky5 settles audit point 5, and settles it against passing to a subgroup.**  The
+graph recorded that Borel's Theorem A assumes $\Gamma$ torsion-free, that Sterk's
+$\Gamma$ contains $-\mathrm{id}$ and so is not, and that "the standard repair is
+to pass to a neat finite-index subgroup and descend".  Kiernan and Kobayashi say
+in one parenthesis what the repair actually is: keep the group, and replace the
+intrinsic pseudo-distance of the quotient — which need not be a distance when the
+action is not free — by the distance induced from the domain above it.  That is a
+change of *metric*, not of *group*, and it is the form of the hyperbolic-imbedding
+statement that applies to Sterk's $\Gamma$.
+
+The audit point is therefore **narrowed, not closed**: what remains is to read
+Kobayashi–Ochiai 1971 for the modified condition (3) and to check that the
+extension Sterk uses — Borel's, over a punctured polydisc — follows from Ky6 in
+that form.  Kobayashi–Ochiai, *Satake compactification and the great Picard
+theorem*, J. Math. Soc. Japan **23** (1971), 340–350, is not in the library.
+
+Ky7's last clause is worth its own row for a different reason: it says the
+extension respects the boundary-component structure, which is the compatibility
+D5 and D6 need on the analytic side.
+
+Substrate: nothing.  Mathlib has no Kobayashi pseudo-distance, no hyperbolic
+complex space, and no big Picard theorem; the registry has no complex-hyperbolic
+corpus.  `kebekus/ProjectVD` covers Nevanlinna value-distribution theory, whose
+subject is adjacent — the great Picard theorem is Ky3's ancestor — but it does
+not supply these statements.
+
 ## Goal
 
 | Node | Statement | Depends on |
 | --- | --- | --- |
-| G | the boundary complex of the Baily–Borel compactification of $\Omega_-/\Gamma$ — equivalently $\Gamma\backslash\mathcal{T}(G)$ — is the explicit finite graph with five vertices of one type, nine of the other, and the edges of 3.4 | B3, C11, C12, D4 |
+| G | the boundary complex of the Baily–Borel compactification of $\Omega_-/\Gamma$ — equivalently $\Gamma\backslash\mathcal{T}(G)$ — is the explicit finite graph with five vertices of one type, nine of the other, and the edges of 3.4 | B3, C11, C12, D4, AG17, AG19 |
+
+The two rows the goal sentence needs and did not name are AG17, that
+$\dim\Delta_\mathbb{Q}(\mathbf{G}) = r_\mathbb{Q}(\mathbf{G}) - 1$, and AG19,
+that $r_\mathbb{Q}$ is $2$ here.  Without them "one-dimensional" is an
+assertion, and a graph is the whole boundary complex only because the building
+has no higher simplices.
 
 ## Stratum F — the foundations the other strata stand on
 
@@ -511,6 +662,49 @@ vector read off a parabolic subdiagram.  Neither paper read here is the 1983 one
 the library holds Vinberg 1983 *The two most algebraic K3 surfaces*
 (`4QDSPB92`), which is a plausible but unchecked match for that citation.
 
+#### Stratum Lo — the Lobachevskii space stratum V stands in
+
+Every row of stratum V names $\Lambda^n$, a $C$-polyhedron, a finite volume, an
+infinitely distant vertex or a distance $\rho(p_0,\Pi_e)$, and none of those was
+a node.  Read from Vinberg 1975 (`73LVC9YS`) §§1 and 3 — the same paper stratum
+V is read from, one section earlier — and from Iversen, *Hyperbolic geometry*
+(`ZE8F8SEY`), §§I.6 and II.4 for the metric.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| Lo1 | $E^{n,1}$: a real $(n+1)$-space with a nondegenerate scalar product of **negative inertial index 1**, and the cone $V = \{x : (x,x) < 0\}$, which has two connected components $V_\pm$ | Vinberg 1975 §3, (7) | Mathlib `QuadraticForm`, and `QuadraticForm/Signature.lean` for `sigPos`/`sigNeg` and Sylvester's law of inertia |
+| Lo2 | $\Lambda^n$: its points are the rays from the origin lying in $V_+$, and its motions are the maps induced by the automorphisms of $E^{n,1}$ leaving $V_+$ invariant | Vinberg 1975 §3 | Lo1 |
+| Lo3 | a subspace of $E^{n,1}$ is **hyperbolic**, **elliptic** or **parabolic** as the induced product is nondegenerate indefinite, positive, or degenerate; orthogonal complement exchanges hyperbolic with elliptic and preserves parabolic, in complementary dimension | Vinberg 1975 §3 | Lo1 |
+| Lo4 | an $s$-plane $\Pi\subset\Lambda^n$ corresponds to an $(s+1)$-dimensional hyperbolic subspace $\widehat\Pi$; a halfspace to a halfspace bounded by a hyperbolic hyperplane; a **convex polyhedron** $P$ is an intersection of halfspaces, and $\widehat P$ is the corresponding polyhedral angle with vertex at the origin, not containing it | Vinberg 1975 §3 | Lo3 |
+| Lo5 | $P$ is **bounded** iff $\widehat P\subset V_+$, and has **finite volume** iff $\widehat P\subset\overline{V}_+$; in the latter case the edges of $\widehat P$ lying on $\partial V_+$ are the **infinitely distant vertices** of $P$ | Vinberg 1975 §3, (8), (9) | Lo4 |
+| Lo6 | the outward normals $e_i$ to the bounding hyperplanes, normalized by $(e_i,e_i) = 1$ — possible because the $\widehat H_i$ are hyperbolic — and the **Gram matrix** of $P$; for hyperplanes meeting at angle $\alpha$, $a_{ij} = -\cos\alpha$ | Vinberg 1975 §2 (1), §3 (10) | Lo4 |
+| Lo7 | the hyperboloid model: in a space of Sylvester type $(-n,1)$ the vectors of norm 1 form a two-sheeted hyperboloid, $H^n$ is one sheet, $\langle P,Q\rangle\ge1$ for $P,Q\in H^n$, and $\cosh d(P,Q) = \langle P,Q\rangle$ defines a metric — the triangle inequality by the factorization $\Delta = 4\,\mathrm{sh}\,p\,\mathrm{sh}(p-a)\,\mathrm{sh}(p-b)\,\mathrm{sh}(p-c)$ of the Gram determinant | Iversen II.4.1–4.4 | Lo1 |
+| Lo8 | the tangent space at $A$ is $A^\perp$, of type $(-n,0)$; and any $B$ is $A\cosh d(A,B) + U\sinh d(A,B)$ for a unit tangent vector $U$ at $A$ | Iversen II.4.5, 4.6 | Lo7 |
+| Lo9 | for $\Gamma$ discrete and generated by finitely many reflections, the mirrors cut $\Lambda^n$ into **$\Gamma$-cells**, each a fundamental region, and the reflections in the walls of one cell generate $\Gamma$; a convex polyhedron is a $\Gamma$-cell **iff** all its dihedral angles are submultiples of $\pi$ | Vinberg 1975 §1, condition (R) | Lo4, Lo6 |
+
+**The two sources use opposite signs**, and stratum V is stated in Vinberg's.
+Vinberg puts $\Lambda^n$ inside a form of negative inertial index 1 and takes the
+rays with $(x,x) < 0$; Iversen takes the norm-${+}1$ sheet of a form of Sylvester
+type $(-n,1)$.  V9's condition (L1) — "rank $n+1$ with negative inertial index 1"
+— is Vinberg's convention, and Lo7's metric is Iversen's; a node mixing them is
+wrong by a global sign.  This is the same class of defect as audit point 1 and it
+is settled the same way, by fixing the convention once.
+
+**$n = 9$ throughout stratum C.**  Sterk runs Vinberg's algorithm not on $L_-$ —
+which has signature $(2,10)$ and is not hyperbolic — but on $v^\perp/\mathbb{Z}v$,
+which B4 identifies as $U\oplus E_8(-2)$ or $U(2)\oplus E_8(-2)$: rank 10,
+signature $(1,9)$.  So $E^{n,1}$ has $n+1 = 10$, the space is $\Lambda^9$, and
+V8's "principal $C^0$-submatrix of rank $n-1$" is rank 8 — which is exactly the
+`rank=8` the reconstruction passes to `maximal_parabolic_subdiagrams`.  The
+graph had never recorded which $n$ stratum V is about.
+
+Substrate: Mathlib has quadratic forms with `sigPos`, `sigNeg` and Sylvester's
+law of inertia (`LinearAlgebra/QuadraticForm/Signature.lean`), and a substantial
+convex-geometry tree including convex cones and their duals
+(`Analysis/Convex/`, `Analysis/Convex/Cone/`).  It has **no hyperbolic space**
+in any model, no reflection group acting on one, no polyhedral angle and no
+volume.  So Lo1 and Lo3 are within reach and Lo2, Lo4–Lo9 are greenfield.
+
 ### Still missing from this stratum
 
 Baily–Borel is decomposed as stratum BB above; its own next descents are BB SSSS5–8
@@ -584,10 +778,13 @@ probability, geometry, dynamics*; *Category theory, higher structures*.
 | F2.12, F2.13 | Eichler's lemma and Proposition 3.7.3 | nothing; the corpus has no Eichler |
 | F3.3, F3.4, Nk3–Nk5, F1.11, F1.12 | Nikulin's existence, uniqueness and one-class-plus-surjectivity theorems; the Minkowski–Siegel weight | nothing |
 | F4.2 | Niemeier's classification of the 24 lattices | nothing |
-| V1–V13 | $C^\pm$/$C^0$ matrices, $C^-$-polyhedra, Lemmas 2–5, Theorem 1 with (L1)–(L5), Coxeter's diagram classification, Vinberg's algorithm and Proposition 4, the infinite-vertex recovery and its primitivity lemma | Mathlib has finite Cartan matrices and Coxeter groups; **no affine classification, no Lobachevskii space, no fundamental polyhedron** |
+| V1–V13 | $C^\pm$/$C^0$ matrices, $C^-$-polyhedra, Lemmas 2–5, Theorem 1 with (L1)–(L5), Coxeter's diagram classification, Vinberg's algorithm and Proposition 4, the infinite-vertex recovery and its primitivity lemma | Mathlib has finite Cartan matrices and Coxeter groups; **no affine classification, no fundamental polyhedron** |
+| Lo2, Lo4–Lo9 | Lobachevskii space as the rays in the negative cone, its planes and halfspaces, polyhedral angles, boundedness and finite volume, the hyperboloid metric, and reflection cells | Mathlib has quadratic forms with `sigPos`/`sigNeg` and Sylvester's law of inertia, and convex cones with duals, so Lo1 and Lo3 are within reach; there is **no hyperbolic space in any model** |
 | BB1–BB8 | parabolic $\mathbb{Q}$-subgroups, hermitian symmetric domains, Harish-Chandra realizations, rational boundary components, the Satake topology, Baily–Borel's Theorem 10.11 | nothing — the registry has no algebraic-groups-with-parabolics corpus and no symmetric-space corpus |
+| AG1–AG19 | $k$-structures and Galois descent, tori and $k$-split tori, Borel and parabolic subgroups, unipotent radicals and Levi decompositions, Tits systems, the relative root system and $k$-rank, the spherical Tits building and its dimension | Mathlib has affine and smooth group schemes, root systems and Coxeter groups, and nothing above them; `chrisflav/bruhat-tits` is the nearest registry entry and builds the Bruhat–Tits tree of $\mathrm{SL}_2$ over a local field |
 | HS1–HS16 | almost-complex structures and Newlander–Nirenberg, Hermitian and Kähler structures, geodesic symmetries, semisimple Lie groups with their Cartan involutions, the Harish-Chandra and Borel embeddings, boundary components and the 5-term decomposition of a normalizer, symmetric cones and Euclidean Jordan algebras | Mathlib has `IsManifold` over `𝓘(ℂ, E)`, the `LieGroup` class, and a two-file Riemannian tree (`Riemannian/Basic`, `Riemannian/PathELength`) with no geodesics; `Geometry/Manifold/Complex.lean` says of itself "There is a whole theory to develop here" |
-| Bo1–Bo5 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance, Siegel sets and reduction theory | nothing |
+| Bo1–Bo5, Ky1–Ky8 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance and hyperbolic imbedding | nothing; `kebekus/ProjectVD` covers Nevanlinna theory, adjacent but not these statements |
+| Rt1–Rt10 | Iwasawa decompositions, restricted roots, Siegel domains, fundamental sets for arithmetic groups, and the finite-volume and compactness criteria | Mathlib has Haar measure on locally compact groups and no Lie structure theory to apply it to |
 | E1, E3–E13 | compact complex surfaces, Enriques and $K3$ surfaces, elliptic pencils, Horikawa's isometry, global Torelli, the period map | nothing; `nullstellensatz` gives local complex-analytic geometry only |
 | A0–A7, B1–B8, C3–C12, D1–D7, Cl1–Cl6 | the paper's own content | by construction |
 
@@ -630,13 +827,17 @@ Questions about statements already in the graph, not missing nodes.
    "the spinor norm" unqualified is ambiguous.
 3. ~~Rank hypotheses~~ — **settled below**.
 4. ~~A3's conditions~~ — **settled below**.
-5. **Borel's torsion-free hypothesis (Bo1) fails as stated.**  $-\mathrm{id}$
-   lies in $O(L_-)$, acts trivially on the discriminant form and so lies in
-   $\Gamma$, and has order 2 — so $\Gamma$ is **not** torsion-free and Theorem A
-   does not apply to it directly.  Borel's Remark 3.8 records that with torsion
-   $V$ need not be hyperbolically imbedded in $V^*$.  The standard repair is to
-   pass to a neat finite-index subgroup and descend, but **Sterk does not say
-   which**, so the descent is an obligation this graph carries.  Open.
+5. **Borel's torsion-free hypothesis (Bo1) fails as stated** — narrowed by
+   stratum Ky, not closed.  $-\mathrm{id}$ lies in $O(L_-)$, acts trivially on
+   the discriminant form and so lies in $\Gamma$, and has order 2 — so $\Gamma$
+   is **not** torsion-free and Theorem A does not apply to it directly.  Borel's
+   Remark 3.8 records that with torsion $V$ need not be hyperbolically imbedded
+   in $V^*$.  The repair is **not** passing to a neat subgroup: Kiernan and
+   Kobayashi record (Ky5) that for a non-free action one replaces the intrinsic
+   pseudo-distance of the quotient by the distance induced from the domain, and
+   the hyperbolic-imbedding statement holds in that form.  What is left is to
+   read Kobayashi–Ochiai 1971 for the modified condition, and to check that the
+   extension Sterk invokes follows from Ky6 in it.
 6. ~~V13's primitivity hypothesis~~ — **settled below, and it fires.**
 7. ~~C7 disagrees with the source~~ — **settled; the error was in the reading.**
    The figure on p. 64 lists **five** parabolic subdiagrams for (3.3.12), not
