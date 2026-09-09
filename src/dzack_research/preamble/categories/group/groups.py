@@ -1881,6 +1881,37 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 )
 
             @cached_method
+            def trivial_character(self):
+                r"""Return the degree-one trivial ordinary character of ``self``.
+
+                Its values live in the same cyclotomic field selected for the
+                ordinary irreducible characters of this group, so it is an
+                element of the same owned character set and composes with the
+                existing character arithmetic without a separate value model.
+                """
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
+                )
+                from dzack_research.preamble.categories.group.characters import (
+                    character_from_class_function,
+                )
+                from dzack_research.preamble.categories.rings.number_fields import (
+                    CyclotomicField,
+                )
+
+                gap_group = _gap_model(self)
+                field = CyclotomicField(int(gap_group.Exponent()))
+                representatives = self.conjugacy_classes_representatives()
+                return character_from_class_function(
+                    finite_group_class_function(
+                        self,
+                        field,
+                        tuple(field.one() for _representative in representatives),
+                        representatives=representatives,
+                    )
+                )
+
+            @cached_method
             def character_table(self):
                 r"""The character table: rows the irreducible characters, columns the classes.
 
