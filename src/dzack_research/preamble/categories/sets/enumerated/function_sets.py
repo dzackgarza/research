@@ -3,7 +3,6 @@ r"""Enumerated sets of functions, indexed by \(\mathbb N\) or by \(\mathbb Z\)."
 from operator import index as integer_index
 from typing import SupportsIndex
 
-from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ
@@ -21,6 +20,7 @@ from dzack_research.preamble.categories.sets.set_categories import NN, ranking_i
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalIsomorphism,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 
 
 def _nonnegative_integer(value, *, error_type):
@@ -95,14 +95,14 @@ def index_of_symbol(
     return index
 
 
-class FunctionEnumeratedSets(Category):
+class FunctionEnumeratedSets(OwnedCategory):
     r"""Enumerated sets whose elements stand for functions."""
 
     def super_categories(self):
         return [EnumeratedSets()]
 
 
-class EnumeratedByNaturals(Category):
+class EnumeratedByNaturals(OwnedCategory):
     r"""Infinite enumerated sets ranked by \(\mathbb N\)."""
 
     def super_categories(self):
@@ -122,7 +122,7 @@ class EnumeratedByNaturals(Category):
             return self[self._rank_from_index(index)]
 
 
-class EnumeratedByIntegers(Category):
+class EnumeratedByIntegers(OwnedCategory):
     r"""Infinite enumerated sets whose functions are indexed by \(\mathbb Z\).
 
     The ranking map still runs through \(\mathbb N\); :meth:`function` takes the
