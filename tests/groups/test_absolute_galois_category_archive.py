@@ -50,3 +50,15 @@ def test_finite_field_absolute_galois_group_refines_to_procyclic_specialization(
     assert group.is_abelian() is True
     assert group.is_finite() is False
     assert tuple(group.topological_group_generators()) == (group.frobenius(),)
+
+
+def test_finite_field_frobenius_uses_the_full_field_order() -> None:
+    field = GF(25, "a")
+    group = AbsoluteGaloisGroup(field)
+    generator = field.multiplicative_generator()
+    frobenius = group.frobenius()
+
+    q = group.base_field_order()
+    assert q == 25
+    assert frobenius(generator) == generator**q
+    assert frobenius(generator) != generator ** field.characteristic()

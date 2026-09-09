@@ -80,3 +80,81 @@ def test_lift_fiber_is_a_coset_of_the_restriction_kernel() -> None:
     assert coset.kernel() == restriction.kernel()
     assert coset.representative() == frobenius**3
     assert frobenius**3 in coset
+
+
+def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmetic() -> None:
+    from dzack_research.preamble.all import NumberField, PolynomialRing, QQ, QuadraticField
+    from dzack_research.preamble.categories.group.profinite.field_morphisms import exact_embeddings
+
+    polynomial_ring = PolynomialRing(QQ, "x")
+    x = polynomial_ring.algebra_generator("x")
+    cyclotomic = NumberField(x**4 - x**2 + QQ.one(), "z")
+    zeta = cyclotomic.primitive_element()
+    gaussian = QuadraticField(-1, "i")
+    real_quadratic = QuadraticField(3, "r")
+
+    gaussian_embedding = next(
+        embedding
+        for embedding in exact_embeddings(gaussian, cyclotomic)
+        if embedding(gaussian.primitive_element()) == zeta**3
+    )
+    real_embedding = next(
+        embedding
+        for embedding in exact_embeddings(real_quadratic, cyclotomic)
+        if embedding(real_quadratic.primitive_element()) == zeta + zeta**-1
+    )
+
+    group = AbsoluteGaloisGroup(QQ)
+    quotient = group.finite_quotient(group.extension_data(cyclotomic))
+    expected = {
+        1: (False, False),
+        5: (False, True),
+        7: (True, True),
+        11: (True, False),
+    }
+    by_exponent = {
+        exponent: next(
+            automorphism
+            for automorphism in quotient
+            if automorphism(zeta) == zeta**exponent
+        )
+        for exponent in expected
+    }
+
+    for exponent, (moves_i, moves_root_three) in expected.items():
+        automorphism = by_exponent[exponent]
+        on_gaussian = restrict_along(automorphism.action(), gaussian_embedding)
+        on_real = restrict_along(automorphism.action(), real_embedding)
+        assert (
+            on_gaussian(gaussian.primitive_element()) == -gaussian.primitive_element()
+        ) is moves_i
+        assert (
+            on_real(real_quadratic.primitive_element())
+            == -real_quadratic.primitive_element()
+        ) is moves_root_three
+
+
+def test_cyclotomic_restriction_is_multiplicative_without_a_false_absolute_lift() -> None:
+    from dzack_research.preamble.all import NumberField, PolynomialRing, QQ, QuadraticField
+    from dzack_research.preamble.categories.group.profinite.field_morphisms import exact_embeddings
+
+    polynomial_ring = PolynomialRing(QQ, "x")
+    x = polynomial_ring.algebra_generator("x")
+    cyclotomic = NumberField(x**4 - x**2 + QQ.one(), "z")
+    zeta = cyclotomic.primitive_element()
+    gaussian = QuadraticField(-1, "i")
+    embedding = next(
+        candidate
+        for candidate in exact_embeddings(gaussian, cyclotomic)
+        if candidate(gaussian.primitive_element()) == zeta**3
+    )
+    group = AbsoluteGaloisGroup(QQ)
+    quotient = group.finite_quotient(group.extension_data(cyclotomic))
+    generator = gaussian.primitive_element()
+
+    for sigma in quotient:
+        for tau in quotient:
+            product = restrict_along((sigma * tau).action(), embedding)
+            left = restrict_along(sigma.action(), embedding)
+            right = restrict_along(tau.action(), embedding)
+            assert product(generator) == left(right(generator))
