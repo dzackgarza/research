@@ -37,6 +37,12 @@ jobs:
         run: cp "$HOME/.pandoc/templates/css/mathjax-macros.html" docs/_mathjax-macros.html
       - run: python3 scripts/docs_check.py
         name: Render + integrity gate
+        # The runner has no uv, and quarto-actions already provisioned quarto.
+        # docs_check.py takes the command from $QUARTO; locally that default
+        # (uvx --from quarto-cli quarto) is what keeps the workstation free of
+        # a pinned install.
+        env:
+          QUARTO: quarto
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
