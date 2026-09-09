@@ -44,18 +44,34 @@ SUBSTRATE_MARKERS = (
 ROOTS: frozenset[str] = frozenset()
 
 
+# The last column of a dependency table is headed by one of these.  Tables headed
+# otherwise -- the construction floor, the route tables, the terminality tables,
+# the S-row index -- also have node ids in their first column and must not be
+# read as dependencies.  Keying on the header rather than on the row shape is
+# also what keeps S1-S7 out of the node count: DAG.md says they are subjects and
+# not nodes, and their table is headed "Mathlib substrate".
+DEPENDENCY_HEADERS = {"depends on", "next dependency"}
+
+
 def rows(text: str) -> list[tuple[int, str, str]]:
-    """Every table row whose first cell is a node id, as (line, id, last cell)."""
+    """Every dependency-table row keyed by a node id, as (line, id, dependency)."""
     out = []
+    in_dependency_table = False
     for i, line in enumerate(text.splitlines(), 1):
         if not line.startswith("| "):
+            in_dependency_table = False
             continue
         cells = [c.strip() for c in line.split("|")[1:-1]]
-        if len(cells) < 3:
+        if len(cells) < 2:
             continue
+        if not in_dependency_table:
+            # A header row declares what the table is; only dependency tables count.
+            in_dependency_table = cells[-1].lower() in DEPENDENCY_HEADERS
+            continue
+        if set(cells[-1]) <= set("- :"):
+            continue  # the |---|---| separator
         head = cells[0]
-        m = NODE_ID.fullmatch(head)
-        if not m:
+        if not NODE_ID.fullmatch(head):
             continue
         out.append((i, head, cells[-1]))
     return out

@@ -959,12 +959,17 @@ reader would otherwise sweep for it again.
 Two general observations from the sweep.  The registry's strength is
 **arithmetic**: number fields, adeles, modular forms, class field theory,
 $p$-adic analysis.  Its weakness is exactly this graph's upper half — Lie theory,
-algebraic groups, symmetric spaces and complex geometry — where it has almost
-nothing, and Mathlib's own manifold tree stops at the Riemannian level.  The
-second is that the near misses cluster one level below what is needed: an affine
-building instead of a spherical one, local analytic geometry instead of analytic
-spaces, rank-one automorphic forms instead of rank two, topological surfaces
-instead of complex ones.  That is what a frontier looks like from underneath.
+algebraic groups, symmetric spaces and complex geometry.  The second is that the
+near misses cluster one level below what is needed: an affine building instead of
+a spherical one, local analytic geometry instead of analytic spaces, rank-one
+automorphic forms instead of rank two, topological surfaces instead of complex
+ones.  That is what a frontier looks like from underneath.
+
+**This table is about suppliers, not about foundations**, and the two are easy to
+confuse.  Nothing in the registry proves any statement in these strata, and that
+is what "greenfield" means.  It does not mean the statements cannot be written:
+the primitives they are written over are almost all in the pinned Mathlib, and
+*The construction floor* below names them node by node.
 
 ### Greenfield — no formalization in Mathlib or the registry
 
@@ -998,7 +1003,9 @@ objects in the corpus already, and the 2-adic layer has a sorry-free supplier in
 Minkowski–Siegel and Eichler have no formalization anywhere the registry knows,
 and neither does Cartan–Dieudonné for an indefinite form.
 
-Seven whole strata are greenfield with nothing nearby: **V** and **Lo**
+Seven whole strata are greenfield — no supplier for any of their statements,
+though *The construction floor* below shows the primitives to write them in are
+almost all present: **V** and **Lo**
 (hyperbolic reflection groups, Lobachevskii space, Vinberg), **AG** (reductive
 groups over a field, parabolic subgroups, the Tits building), **HS** (hermitian
 symmetric domains and their boundary components), **AF** (automorphic forms and
@@ -1013,7 +1020,9 @@ Three floors carry everything above them, and each is shared.
 **HS, Ky and E share the complex-analytic floor**: an almost-complex structure
 on Mathlib's `IsManifold` tree, integrability, a Hermitian metric and a geodesic.
 Nothing in those three strata can start before it exists, and whatever pays for
-one pays for all three.
+one pays for all three.  It is four definitions over `ContMDiffSection`,
+`mlieBracket`, `ContMDiffRiemannianMetric` and `riemannianEDist`, all of which
+are in the checkout; see the floor table.
 
 **AG carries HS, Rt, AF and BB.**  HS13 lands on maximal parabolic subgroups,
 Rt1 on the Iwasawa decomposition, AF2 on $\mathcal{Z}(\mathfrak{g})$, BB1 on
@@ -1025,6 +1034,87 @@ not pass through reductive groups over a field.
 to the relations of Pa5 and the canonical decomposition of Pa9, and F3.2 — the
 bridge — is Pa10.
 
+
+## The construction floor
+
+A verdict of "greenfield" says a node has no supplier.  It does not say the node
+rests on nothing: a statement that must be authored is still *written over*
+something, and if that something does not exist either then the graph has not
+bottomed out.  This section names, for every greenfield stratum, the Mathlib
+declarations its nodes are constructed from, checked against the checkout.
+
+The result is one sentence: **Mathlib supplies the primitives and none of the
+statements.**  There is no stratum here whose nodes cannot be *written* today;
+what is missing is the mathematics, not the vocabulary to say it in.  Where a
+primitive is genuinely missing it is called out, and each of those is small.
+
+### Floor for HS, Ky and E — the complex-analytic stratum
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| HS1 | `TangentSpace`, `ContMDiffSection` (`Geometry/Manifold/VectorBundle/ContMDiffSection.lean`), the hom-bundle of `.../VectorBundle/Hom.lean`, `IsManifold` with `𝓘(ℂ, E)` | $J$ as a section of $\mathrm{End}(TM)$ with $J\circ J = -\mathrm{id}$, and its API |
+| HS2 | `mlieBracket`, `mlieBracketWithin` (`Geometry/Manifold/VectorField/LieBracket.lean`) | the Newlander–Nirenberg **equation is writable today**; the theorem is the analysis |
+| HS3 | `ContMDiffRiemannianMetric`, `ContinuousRiemannianMetric` (`Geometry/Manifold/VectorBundle/Riemannian.lean`) | $J$-compatibility, and the three-way equivalence of $h$, $g$, $\omega$ |
+| HS4 | `Diffeomorph`, `Isometry`, `Subgroup` | $\mathrm{Aut}(M,J,h)$ and the symmetry condition at a point |
+| HS5 | `pathELength`, `riemannianEDist` (`Geometry/Manifold/Riemannian/PathELength.lean`) | a geodesic — Mathlib has the length functional and the distance, not the curves that realize it |
+| HS8 | `LieGroup` (`Geometry/Manifold/Algebra/LieGroup.lean`), `LieAlgebra.IsSemisimple` (`Algebra/Lie/Semisimple/Defs.lean`), `killingForm` (`Algebra/Lie/Killing.lean`), `LieAlgebra.IsCartanSubalgebra` | the Cartan involution, and the adjoint-group statement |
+| HS9 | `Algebra/Lie/BaseChange.lean` for $\mathfrak{g}_\mathbb{C}$, `NormedSpace.exp` (`Analysis/Normed/Algebra/Exponential.lean`), AG4 | $G_\mathbb{C}$ as a group, and the two embeddings |
+| HS16 | `ProperCone` (`Analysis/Convex/Cone/Basic.lean`), `dual` (`.../Cone/Dual.lean`), `JordanRing` (`Algebra/Jordan/Basic.lean`) | the trace form, hence Euclidean Jordan algebras and symmetric cones |
+| Ky1, Ky2 | `Complex.UnitDisc` (`Analysis/Complex/UnitDisc/Basic.lean`), `EMetricSpace`, `Metric.infDist`, `iInf` | the Kobayashi pseudo-distance as an infimum over chains of disks — **writable today** |
+| E1 | HS1, HS3, `Matrix`, `QuadraticForm/Signature.lean` for the Hodge index | divisors, line bundles, the canonical bundle |
+
+### Floor for AG
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| AG2, AG3 | `HopfAlgebra` (`RingTheory/HopfAlgebra/Basic.lean`), `AlgebraicGeometry/Group/{Affine,Smooth}.lean`, `Scheme` | tori, $k$-split tori, $X^*(T)$ and $X_*(T)$ |
+| AG4, AG5 | `AlgebraicGeometry.IsProper` (`Morphisms/Proper.lean`), `UniversallyClosed`, `Subgroup.normalizer` | Borel and parabolic subgroups, Chevalley's theorem |
+| AG6, AG7 | `RootPairing`, `RootSystem` (`LinearAlgebra/RootSystem/`), `CoxeterMatrix`, `CoxeterSystem` (`GroupTheory/Coxeter/`) | root subgroups, the Tits system, Bruhat decomposition |
+| AG13 | `Module.rank`, `Subgroup`, AG3 | the $k$-rank, over the conjugacy theorem AG12 |
+| AG16, AG17 | `SimplicialComplex` (`Analysis/Convex/SimplicialComplex/Basic.lean`; also the abstract one in `AlgebraicTopology/SimplicialComplex/Basic.lean`) | the building from the poset of parabolic $\mathbb{Q}$-subgroups, and its dimension |
+
+### Floor for Rt and AF
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| Rt1 | `NormedSpace.exp`, `Algebra/Lie/Weights/` for restricted roots | the Iwasawa decomposition |
+| Rt2, Rt3 | `IsCompact`, `Set` algebra, Rt1 | the Siegel domain |
+| Rt4, Rt9 | `MeasureTheory.Measure.haar`, `IsHaarMeasure` (`MeasureTheory/Measure/Haar/Basic.lean`) | the finite-volume theorems |
+| Rt5 | `Subgroup.index`, `Subgroup.FG` | **`Commensurable` is absent** — `rg "def Commensurable"` returns nothing.  It is a two-line definition over `Subgroup.index` |
+| AF2 | `UniversalEnvelopingAlgebra` (`Algebra/Lie/UniversalEnveloping.lean`), `Subalgebra.center` | $\mathcal{Z}(\mathfrak{g})$-finiteness |
+| AF4, AF5 | `Summable`, `tsum`, `TendstoUniformlyOn`, `MeasureTheory` convolution | the Poincaré series and its convergence — **the statement is writable today** |
+| AF10 | `Topology/Sheaves/`, `AnalyticOn`, `TopologicalSpace` | normal analytic spaces, and the criterion over them |
+| AF12 | `Projectivization` (`LinearAlgebra/Projectivization/Basic.lean`), `AlgebraicGeometry.Scheme` | the embedding theorem |
+
+### Floor for Lo and V
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| Lo1, Lo3 | `QuadraticForm`, `sigPos`, `sigNeg` (`LinearAlgebra/QuadraticForm/Signature.lean`) | **nothing** — these are definitions over what exists |
+| Lo2, Lo4, Lo5 | `Convex`, `Submodule`, `Set.iInter`, `IsOpen` | $\Lambda^n$ as rays in the cone, polyhedral angles, finite volume as a closure condition |
+| Lo6, Lo9 | `Matrix`, `Matrix.rank`, `Real.cos`, `Subgroup.closure` | the Gram matrix of a polyhedron, reflection cells |
+| Lo7, Lo8 | `Real.cosh`, `Real.sinh`, **`Real.arcosh` (`Analysis/SpecialFunctions/Arcosh.lean`)**, `Matrix.det` | the hyperbolic distance is $\mathrm{arcosh}\langle P,Q\rangle$ — **writable today** |
+| V1–V10 | `Matrix`, `Matrix.rank`, `CoxeterMatrix`, `QuadraticForm/Signature.lean` | the $C^{\pm}$/$C^0$ conditions, Theorem 1, the affine classification |
+| V11–V13 | Lo7, `Nat.rec`, `sInf` | the algorithm as a recursion, and Proposition 4 |
+
+### What this changes
+
+Nothing in the terminality verdicts: no greenfield node acquired a supplier, and
+`check_dag.py` is unaffected.  What it removes is the reading that the greenfield
+strata are blocked on missing foundations.  They are not.  Six rows above are
+marked writable today — Newlander–Nirenberg's equation, the Kobayashi
+pseudo-distance, the Poincaré series, the hyperbolic metric, Lo1 and Lo3 — and
+the rest need definitions over primitives that exist, not primitives that do not.
+
+Exactly one primitive is missing anywhere in this table: `Commensurable`, which
+Rt5 needs and which is a definition over `Subgroup.index`.
+
+The honest shape of the cost is therefore **theorems, not infrastructure**.  The
+analysis in Newlander–Nirenberg, the structure theory in Borel §§20–21, the
+convergence estimates in Baily–Borel §§5–8 and Vinberg's Theorem 1 are the work;
+the tangent bundles, Lie brackets, Haar measures, Hopf algebras, simplicial
+complexes, proper morphisms, root systems, cones and hyperbolic functions they
+are written over are all in the pinned checkout.
 
 ## Open audit points
 
