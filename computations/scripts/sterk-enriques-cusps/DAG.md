@@ -13,7 +13,40 @@ Source: H. Sterk, *Compactifications of the period space of Enriques surfaces*
 
 Node status: **S** a numbered statement in Sterk; **U** an unnumbered
 computation in Sterk carried by a figure; **X** external, cited to another
-source; **M** requires substrate absent from Mathlib at the pinned revision.
+source; **M** requires substrate absent from Mathlib at the pinned revision;
+**LC** expected to be satisfied by the publication of `lean-categories` to
+Prove2Me (see *Satisfied by lean-categories* below).
+
+## Satisfied by lean-categories
+
+`~/gitclones/lean-categories` is a sorry-free corpus of 236 modules (1.9 MB,
+45,679 lines, 2,385 definitions and 1,486 theorems) whose `Lattices/Valued/`
+subtree covers much of what this graph calls stratum F.  It imports only
+`Mathlib`, `Lean` and itself, so the whole graph is publishable to Prove2Me as
+platform definitions and theorems; a definition may only be submitted once its
+dependencies are `PUBLISHED`, so publication is a bottom-up sweep of its 19
+dependency layers.  **That refactor and publication is tracked as an issue on
+`lean-categories`, not here.**  When it lands, the nodes below are satisfied by
+import rather than by work in this graph, and the integration is wired then.
+
+Correspondences, with their evidence — a filename is not evidence:
+
+| Node | lean-categories | Status |
+| --- | --- | --- |
+| F1.1 dual lattice | `Lattices/Valued/MetricDual`, `Discriminant.toMetricDualLattice` | **verified** by reading the declarations |
+| F1.2 discriminant group and its forms | `Discriminant` (`discriminantModule` $= L^\sharp/L$, `discriminantBilinMap`, `discriminantSymBilWQuadraticMap`, `discriminantSymBilWFormIsCokernel`), `DiscriminantQuadratic` (`evenDiscriminantQuadraticMap` with its `polar` lemma) | **verified** by reading the declarations |
+| F1.7 $O(L) \to O(q_L)$ | `DiscriminantAction`, `DiscriminantFunctor` | candidate — **not verified** |
+| F2.1 $O^*(L)$, $O_-(L)$ | `CanonicalSpinorNorm`, `AdelicSpinorNorm` | candidate — **not verified** |
+| F3.1 genus | `Hasse`, `SpinorGenusAdelic`, `DyadicSymbol`, `ClassFiniteness`, `Adele` | candidate — **not verified** |
+| F2.3 Eichler transvections $\mathcal{E}(L)$ | — | **absent.**  `Elementary.lean` is $I$- and $p$-elementary *lattices* — the ideal annihilating the discriminant module — a different notion, and the corpus has no occurrence of Eichler |
+| F4.1 Niemeier's 24 lattices | — | **absent** |
+
+So F1 is largely done, F2 and F3 are plausibly done and unchecked, and F2.3 and
+F4.1 are genuinely missing from both Mathlib and the corpus.  Each candidate row
+becomes verified only by reading the module and comparing it with the source
+statement it is supposed to satisfy — the same obligation `FDC-09` places on
+writing a node in the first place, since a correspondence asserted on a name is
+a fabricated dependency edge.
 
 ## Stratum A — the arithmetic of $L_- = U \oplus U(2) \oplus E_8(-2)$
 
