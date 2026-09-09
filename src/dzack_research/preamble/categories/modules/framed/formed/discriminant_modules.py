@@ -219,6 +219,33 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 for right in elements
             )
 
+        @cached_method
+        def isotropic_subgroups(self):
+            r"""Return all subgroups on which the bilinear form vanishes."""
+            return finite_ordered_filter(
+                self.subgroups(),
+                lambda subgroup: self.form_vanishes_on(subgroup.embedded_elements()),
+            )
+
+        @cached_method
+        def lagrangian_subgroups(self):
+            r"""Return totally isotropic ``H`` with ``|H|^2=|A|``."""
+            order = int(self.cardinality())
+            return finite_ordered_filter(
+                self.isotropic_subgroups(),
+                lambda subgroup: int(subgroup.cardinality()) ** 2 == order,
+            )
+
+        def is_metabolic(self) -> bool:
+            return int(self.lagrangian_subgroups().cardinality()) != 0
+
+        def metabolizer(self):
+            r"""Return one Lagrangian subgroup, refusing a nonmetabolic form."""
+            lagrangians = self.lagrangian_subgroups()
+            if int(lagrangians.cardinality()) == 0:
+                raise ValueError("this bilinear discriminant form is not metabolic")
+            return lagrangians[0]
+
         def associated_quadratic_form(self):
             r"""Return the canonical quadratic refinement when the source lattice is even.
 
@@ -441,6 +468,13 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
 
         def is_metabolic(self) -> bool:
             return int(self.lagrangian_subgroups().cardinality()) != 0
+
+        def metabolizer(self):
+            r"""Return one Lagrangian subgroup, refusing a nonmetabolic form."""
+            lagrangians = self.lagrangian_subgroups()
+            if int(lagrangians.cardinality()) == 0:
+                raise ValueError("this quadratic discriminant form is not metabolic")
+            return lagrangians[0]
 
         def form_vanishes_on(self, elements) -> bool:
             r"""Return whether ``q`` vanishes on every supplied element."""
