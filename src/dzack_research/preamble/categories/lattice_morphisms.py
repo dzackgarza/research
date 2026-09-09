@@ -1705,6 +1705,24 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         r"""Return the cardinality of the chosen generating set of ``O(L)``."""
         return self.group_generators().cardinality()
 
+    def structure_description(self):
+        r"""Return GAP's descriptive structure label for a finite ``O(L)``.
+
+        The maintained Sage ``GroupOfIsometries`` backend is GAP-backed and
+        supplies ``StructureDescription``.  This method is intentionally
+        descriptive only: GAP does not promise that the returned string is an
+        isomorphism invariant, so no equality or subgroup decision in the
+        owned layer depends on it.
+        """
+        lattice = self.domain()
+        match lattice.is_definite():
+            case True:
+                return str(self._engine_group().structure_description())
+            case False:
+                raise NotImplementedError(
+                    "GAP StructureDescription is exposed here for finite definite orthogonal groups"
+                )
+
     def __iter__(self):
         return (self._from_engine(element) for element in self._engine_group())
 
