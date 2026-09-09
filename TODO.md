@@ -1552,7 +1552,6 @@ review until every downstream consumer has copied the same bypass.
   no output is certified solely by a generated file or a server starting.
   Respect the user's push approval and active-task scope.
 
-| `ARCHIVE-base-change-adjunction-20260909-1727` | archive reconciliation / module scalar-extension adjunction unit and counit | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/modules/test_base_change_adjunction_archive.py` (write) | `0d9f009a` | 2026-09-09T17:27:00Z |
 
 ## Optional research consumers
 
