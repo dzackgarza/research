@@ -178,7 +178,7 @@ and Borel–Ji, *Compactifications of symmetric and locally symmetric spaces*
 | AG1 | $k$-structures on varieties, $k$-closed sets, and the Galois criteria for rationality: a $k$-closed subgroup normalized by a maximal $k$-torus is defined over $k$ when its root set is $\Gamma$-invariant | Borel AG §§11–14; Borel 20.3 | Mathlib schemes over a base; **no Galois descent for varieties** |
 | AG2 | linear algebraic groups, their Lie algebras, and the Jordan decomposition | Borel §§1–4 | Mathlib `AlgebraicGeometry/Group/{Affine,Smooth}`; **no Lie algebra of a group scheme** |
 | AG3 | diagonalizable groups and tori; $X^*(T)$, $X_*(T)$; a torus is **$k$-split** when it is diagonalizable over $k$ | Borel §8 | AG2; **absent** |
-| AG4 | a **parabolic subgroup** of $G$ is a closed $P$ with $G/P$ complete — equivalently projective, since $G/P$ is always quasi-projective; and $P$ is parabolic **iff** it contains a Borel subgroup | Borel 11.2 and its Corollary | AG2; complete varieties |
+| AG4 | a **parabolic subgroup** of $G$ is a closed $P$ with $G/P$ complete — equivalently projective, since $G/P$ is always quasi-projective; and $P$ is parabolic **iff** it contains a Borel subgroup | Borel 11.2 and its Corollary | AG2; Mathlib `AlgebraicGeometry/Morphisms/Proper.lean`, `.../UniversallyClosed.lean` |
 | AG5 | **Chevalley**: every parabolic subgroup equals its own normalizer and is connected; every parabolic is conjugate to one and only one parabolic containing a fixed $B$ | Borel 11.16, 11.17 | AG4 |
 | AG6 | the root system $\Phi(T,G)$ with its one-dimensional root subgroups $U_\alpha$; and the **Tits system** $\mathcal{T} = (G,B,N,S)$, whence the Bruhat decomposition $G = \coprod_w BwB$ | Borel 14.8, 14.15 | AG4; Mathlib `LinearAlgebra/RootSystem/`, `GroupTheory/Coxeter/` |
 | AG7 | **standard parabolic subgroups**: $P_I = B\cdot W_I\cdot B$ for $I\subseteq\Delta$; $P_I$ is the semidirect product of $Z_G(T_I)$ by its unipotent radical $U_{\Phi(I)}$; and every parabolic subgroup is conjugate to exactly one $P_I$ | Borel 14.16–14.18 | AG6 |
@@ -241,16 +241,16 @@ row below carries Viviani's own onward citation, mostly to Ash–Mumford–Rapop
 | HS4 | $\mathrm{Aut}(M,J,h)$, the holomorphic isometries; $M$ is **homogeneous** when it acts transitively, and **symmetric** (a **HSM**) when in addition some $p$ carries $s_p\in\mathrm{Aut}$ with $s_p^2=\mathrm{id}$ and $p$ an isolated fixed point | Viviani Def. 2.4 | HS3 |
 | HS5 | $s_p$ is the unique automorphism with $s_p(p)=p$ and $ds_p = -\mathrm{id}_{T_pM}$, hence the geodesic symmetry; a HSM is geodesically complete and $(M,J,\omega)$ is **Kähler** | Viviani Rmk. 2.5, via Helgason VIII.4.1 | HS4; geodesics, Kähler — **absent from Mathlib** |
 | HS6 | Euclidean, irreducible, non-Euclidean, compact and non-compact **type**; the decomposition theorem $M = M_0\times M_-\times M_+$, unique, with $M_\pm$ simply connected | Viviani Def. 2.7, Thm. 2.9, via Helgason VIII.4.4–5.5 | HS4 |
-| HS7 | the **rank** of a non-Euclidean HSM is the maximal dimension of a flat totally geodesic submanifold; it equals the dimension of any maximal $\mathbb{R}$-split torus of $G$ | Viviani Def. 2.10, Prop. 2.13 | HS5, HS6; $\mathbb{R}$-split tori — **absent** |
+| HS7 | the **rank** of a non-Euclidean HSM is the maximal dimension of a flat totally geodesic submanifold; it equals the dimension of any maximal $\mathbb{R}$-split torus of $G$ | Viviani Def. 2.10, Prop. 2.13 | HS5, HS6, AG3 |
 | HS8 | $\mathrm{Aut}(M)^o$ is a semisimple **adjoint** Lie group and $\mathrm{Stab}(o)$ compact with $\mathrm{Fix}(\sigma)^o\subseteq\mathrm{Stab}(o)\subseteq\mathrm{Fix}(\sigma)$ for $\sigma = s_o(-)s_o$; $[g]\mapsto g\cdot o$ is a diffeomorphism $\mathrm{Aut}(M)^o/\mathrm{Stab}(o)\to M$; and $s_o$ lies in the identity component of the centre of $\mathrm{Stab}(o)$ | Viviani Thm. 2.11, via Helgason IV.3.3, VIII.4.5 | HS4; Mathlib `LieGroup`; **no semisimple Lie groups, no Cartan involution** |
-| HS9 | the **Harish-Chandra embedding** $i_{HC} : M\hookrightarrow\mathfrak{p}_+$ and the **Borel embedding** into $G_\mathbb{C}/(P_-\rtimes K_\mathbb{C})$, a homogeneous projective variety; $i_{HC}$ is an open holomorphic embedding and $j$ a Zariski-open embedding | Viviani Thm. 2.22, via Helgason VIII.7 or Satake II.4 | HS8; complexification of a Lie group, parabolic subgroups — **absent** |
+| HS9 | the **Harish-Chandra embedding** $i_{HC} : M\hookrightarrow\mathfrak{p}_+$ and the **Borel embedding** into $G_\mathbb{C}/(P_-\rtimes K_\mathbb{C})$, a homogeneous projective variety; $i_{HC}$ is an open holomorphic embedding and $j$ a Zariski-open embedding | Viviani Thm. 2.22, via Helgason VIII.7 or Satake II.4 | HS8, AG4; complexification of a Lie group — **absent from Mathlib** |
 | HS10 | bounded, homogeneous, symmetric and irreducible **domains**; $i_{HC}(M)$ is a bounded symmetric domain, and $M\mapsto i_{HC}(M)$, $D\mapsto (D,J_D,h_D)$ are mutually inverse bijections preserving irreducibility | Viviani Def. 2.23, Thm. 2.25, Thm. 2.30 | HS9 |
 | HS11 | **boundary component**: an equivalence class in $\overline{D}$ for the relation $p\sim q$ iff $p$ and $q$ are joined by a finite chain of holomorphic disks $\lambda_i:\Delta\to\overline{D}$ with consecutive images meeting; and $F_2\le F_1$ iff $F_2\subseteq\overline{F_1}$ | Viviani Def. 4.1 | HS10 |
 | HS12 | $\overline{D} = \coprod_{F\le D}F$ and $G = \mathrm{Hol}(D)^o$ preserves it; each $F$ is itself a HSM of non-compact type, $F\subset\langle F\rangle$ **is** its Harish-Chandra embedding and $F\subset F^c$ its Borel embedding, with the square of inclusions Cartesian; $\le$ is transitive; and boundary components of a product are products | Viviani Thm. 4.2, citing AMRT III.3.3 | HS11 |
-| HS13 | $N(F) = \{g\in G : gF = F\}$; and $F\mapsto N(F)$ is a **bijection** from the boundary components of $D = D_1\times\cdots\times D_s$ onto the subgroups $P_1\times\cdots\times P_s$ with each $P_i$ either $G_i$ or a **maximal parabolic subgroup** of $G_i$ | Viviani Def. 4.4, Thm. 4.5, citing AMRT III.3.9 | HS12; parabolic subgroups of a real Lie group |
+| HS13 | $N(F) = \{g\in G : gF = F\}$; and $F\mapsto N(F)$ is a **bijection** from the boundary components of $D = D_1\times\cdots\times D_s$ onto the subgroups $P_1\times\cdots\times P_s$ with each $P_i$ either $G_i$ or a **maximal parabolic subgroup** of $G_i$ | Viviani Def. 4.4, Thm. 4.5, citing AMRT III.3.9 | HS12, AG4, AG5 |
 | HS14 | the **5-term decomposition**: $N(F) = \{g : \lim_{t\to0}w_F(t)gw_F(t)^{-1}$ exists$\}$ for a one-parameter subgroup $w_F$; $N(F)^o = Z(w_F)^o\ltimes W(F)$ with $W(F)$ the unipotent radical, 2-step, $0\to U(F)\to W(F)\to V(F)\to 0$; and $Z(w_F)^o = G_h(F)\cdot G_l(F)\cdot M(F)$ modulo finite subgroups, $M(F)$ compact semisimple, $G_h(F)/Z\cong\mathrm{Aut}(F)^o$, $G_l(F)$ reductive without compact factors | Viviani Thm. 4.8, citing AMRT III.3.7, 3.10, §4.1 | HS13, HS6 |
 | HS15 | $N(F)^o$ acts transitively on $D$; $G_h(F)$ has orbit $F$ through $o_F$ with stabilizer $K_h(F)$, so $G_h(F)/K_h(F)\cong F$; and $G_l(F)$ acting on $U(F)$ by conjugation has an open **cone** $C(F)$ as orbit, with $G_l(F)/K_l(F)\cong C(F)$ | Viviani Prop. 4.9, Thm. 4.10, citing AMRT III.4.1, 4.6 | HS14 |
-| HS16 | $C(F)$ is a **symmetric cone** — homogeneous and self-dual — hence classified by a Euclidean Jordan algebra; and $D$ has the Siegel-domain-of-the-third-kind presentation $D\cong\{(x,y,z)\in U(F)_\mathbb{C}\times\mathbb{C}^k\times F : \mathrm{Im}\,x - h_z(y,y)\in C(F)\}$ | Viviani Def. 4.16, Thm. 4.26, Cor. 4.15 | HS15; Jordan algebras — **absent from Mathlib** |
+| HS16 | $C(F)$ is a **symmetric cone** — homogeneous and self-dual — hence classified by a Euclidean Jordan algebra; and $D$ has the Siegel-domain-of-the-third-kind presentation $D\cong\{(x,y,z)\in U(F)_\mathbb{C}\times\mathbb{C}^k\times F : \mathrm{Im}\,x - h_z(y,y)\in C(F)\}$ | Viviani Def. 4.16, Thm. 4.26, Cor. 4.15 | HS15; Mathlib has Jordan rings (`Algebra/Jordan/Basic.lean`) and convex cones with duals, but **no trace form, no Euclidean Jordan algebra, no symmetric-cone classification** |
 
 **HS13 is what BB3 and D3 are really made of, and it is not what D1 says.**  A
 boundary component is defined by chains of holomorphic disks (HS11), not as a
@@ -387,15 +387,37 @@ theorems actually bottom out.
 | Pa4 | $q^{(p)}_\theta(p^k)$, $u^{(2)}_+(2^k)$, $v^{(2)}_+(2^k)$: the discriminant-quadratic forms of Pa2 and Pa3 for $k\ge 1$; and $b^{(p)}_\theta(p^k)$, $u^{(2)}_-$, $v^{(2)}_-$ their bilinear forms | Nikulin §1, 8° | Pa2, Pa3, F1.10 |
 | Pa5 | **Proposition 1.8.2**: the relations among these in $\mathrm{qu}(\mathbb{Z}_p)$, $\mathrm{qu}(\mathbb{Z})$ and $\mathrm{bil}(\mathbb{Z})$ — (a) $K^{(p)}_\theta(p^k)^2 \simeq K^{(p)}_{\theta'}(p^k)^2$ for $p\ne2$; (b) $U^{(2)}(2^k)^2\simeq V^{(2)}(2^k)^2$; (c)–(k) the remaining identities — **the full list is not transcribed** | Nikulin Prop. 1.8.2 | Pa4 |
 | Pa6 | Propositions 1.8.1 and 1.8.3, used in the canonical-decomposition arguments — **located, not transcribed** | Nikulin Props. 1.8.1, 1.8.3 | Pa4 |
-| Pa7 | 9°, the **strong approximation theorem in the even case**, and the invariant $\ell(A)$ as the minimal number of generators of $A$ | Nikulin §1, 9° | Pa5; strong approximation, over AG9–AG13 |
-| Pa8 | Corollary 1.9.3 and the **canonical decompositions** of a $p$-adic lattice with given discriminant form; the count of 2-adic lattices realizing a given $q_2$ | Nikulin §1, 9° | Pa5, Pa7 |
+| Pa7 | $\ell(A)$, the minimal number of generators of a finite abelian group, and $\lvert A\rvert$ its order | Nikulin §1, 9° | Nk1 |
+| Pa8 | **Theorem 1.9.1**: for $q_p\in\mathrm{qu}(\mathbb{Z})_p$ there is a **unique** $p$-adic lattice $K(q_p)$ of rank $\ell(A_{q_p})$ with discriminant form $q_p$ — **except** when $p = 2$ and $q_2 = q^{(2)}_\theta(2)\oplus q_2'$, where there are exactly **two**, $K_{\alpha_1}(q_2)$ and $K_{\alpha_2}(q_2)$, with $\operatorname{discr} = \alpha_i\lvert A_{q_2}\rvert(\mathbb{Z}_2^*)^2$ and $\alpha_1\alpha_2 = 5(\mathbb{Z}_2^*)^2$ | Nikulin Thm. 1.9.1 | Pa5, Pa6, Pa7 |
+| Pa9 | **Corollary 1.9.3, the canonical decomposition**: every $p$-adic lattice (even when $p=2$) has a unique expression $K_1^{(p)}(1)^{t_p-v_p}\oplus K_{\theta_p}^{(p)}(1)^{v_p}\oplus K(q_p)$ with $0\le v_p\le1$ (three cases, according to $p$ and whether $q_2$ has a $q^{(2)}_\theta(2)$ summand); **in particular $\operatorname{rk}K_p$, $\operatorname{discr}(K_p\otimes\mathbb{Q}_p)$ and $q_{K_p}$ determine $K_p$** | Nikulin Cor. 1.9.3 | Pa8 |
+| Pa10 | **Corollary 1.9.4**: the invariants $(t_{(+)},t_{(-)},q)$ determine the **genus** of an even lattice | Nikulin Cor. 1.9.4 | Pa9 |
+| Pa11 | **Theorem 1.9.5**: an isomorphism $q_{K_p}\to q_{K'_p}$ of the discriminant forms of isomorphic $p$-adic lattices is induced by an isomorphism $K_p\to K'_p$; **Corollary 1.9.6**: $O(K_p)\to O(q_{K_p})$ is surjective; **Corollary 1.9.7**: an isomorphism between two primitive sublattices of a unimodular $p$-adic lattice extends to an automorphism of it | Nikulin Thm. 1.9.5, Cors. 1.9.6, 1.9.7 | Pa9, Ni4 |
 
 Pa5 is the computational engine: every one of Nikulin's classification proofs
 proceeds by reducing to these relations, and the graph had been carrying it as
 the phrase "the canonical $p$-adic forms".
 
-Pa7 descends further, into strong approximation — which is where this branch
-leaves lattice theory for algebraic groups, and it has no Mathlib substrate.
+**Pa7 said this branch descends into strong approximation for algebraic groups.
+It does not.**  Nikulin's 9° is *titled* "The strong approximation theorem in the
+even case", and the graph took the title for the content.  What the section
+actually proves is Theorem 1.9.1 and its corollaries: a $p$-adic classification
+of the minimal-rank lattice realizing a discriminant form, with a single
+exceptional 2-adic case admitting exactly two.  No algebraic group appears in
+any numbered statement.  Where strong approximation does enter Nikulin's proofs
+is 1.14.2, which cites his reference [13]; that citation is unread, and it is
+where the branch would descend if it descends at all.
+
+**Pa10 is F3.2, and this is its proof.**  "Same genus iff same signature and
+same discriminant form" — the row the F-stratum calls the bridge the whole graph
+turns on — is Corollary 1.9.4, and it follows from the canonical decomposition
+Pa9, which follows from Theorem 1.9.1.  F3.2 cited Scattone, who states it; the
+descent ends here.
+
+**Pa11 is the local model of the two theorems A2 rests on.**  Corollary 1.9.6 is
+surjectivity of $O(K_p)\to O(q_{K_p})$ over $\mathbb{Z}_p$, which is what
+Nk5/Nikulin 1.14.2 globalizes, and Corollary 1.9.7 is the local Witt statement
+Ni8 globalizes.  Remark 1.9.8 attributes the $p\ne2$ half to Durfee.
+
 Pa1–Pa4 are explicit matrices and are terminal against Mathlib's $\mathbb{Z}_p$
 and quadratic forms.
 
@@ -599,10 +621,22 @@ states.  Substrate checked against the pinned revision `0df444a3`.
 | S6 | reductive groups over $\mathbb{Q}$, parabolic $\mathbb{Q}$-subgroups, spherical buildings; hermitian symmetric domains of type IV; the Baily–Borel construction and its topology | D1–D4 | absent |
 | S7 | the upper half plane and congruence subgroups, for $\mathbb{H}/\Gamma^1(2)$ | D5 | present — `UpperHalfPlane`, `Gamma0`/`Gamma1` |
 
-**These rows are subjects, not statements, so none is a node.**  They are placeholders standing where sub-graphs belong, and until
-each is decomposed the graph understates the work by an unknown amount — the
-same defect as the "external, cited" leaves that `FDC-03` was written about,
-one level down.  They survey what Mathlib has and lacks; the node numbering below is independent of them.
+**These rows are subjects, not statements, so none is a node.**  They are
+placeholders standing where sub-graphs belong, and each is now decomposed:
+
+| Subject | The stratum that carries it |
+| --- | --- |
+| S1 the discriminant form | F1.7, F1.9, F1.10 |
+| S2 $O^*(N)$ | F2.3–F2.5 |
+| S3 affine Coxeter and Dynkin diagrams | V10 |
+| S4 hyperbolic reflection groups | V1–V13 over Lo1–Lo9 |
+| S5 genus theory | F3.1–F3.4 over Pa1–Pa8 |
+| S6 reductive groups, buildings, hermitian domains, Baily–Borel | AG1–AG19, HS1–HS16, BB1–BB8, AF1–AF13 |
+| S7 the upper half plane | terminal against Mathlib |
+
+So the survey no longer understates the work by an unknown amount; it understates
+it by the amount stated in those strata.  The node numbering is independent of
+these rows and they are kept only as the index above.
 
 ### F2, rewritten from Scattone §§3.6–3.7
 
@@ -614,7 +648,7 @@ depend on, which was previously an open node saying "locate in Sterk".
 | Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
 | F2.1 | $\tau : O(L) \to O(G_L)$, the canonical homomorphism to the isometries of the discriminant form | Scattone §3.6 | F1.2, F1.7 |
-| F2.2 | $\tilde O(L) = \ker\tau$, equivalently $\{\phi \in O(L) : \phi v - v \in \mathrm{div}(v)\cdot L \text{ for all } v \in L\}$ | Scattone §3.6 | F2.1; the divisor $\mathrm{div}(v)$ |
+| F2.2 | $\tilde O(L) = \ker\tau$, equivalently $\{\phi \in O(L) : \phi v - v \in \mathrm{div}(v)\cdot L \text{ for all } v \in L\}$ | Scattone §3.6 | F2.1, F1.7 |
 | F2.3 | the **spinor norm** $\sigma_- : O(L) \to \{\pm 1\}$: writing $\phi = R_{v_1}\cdots R_{v_m}$ as a product of reflections in $O(L_\mathbb{Q})$ (not necessarily integral), $\sigma_-(\phi) = \prod_j\big(-\mathrm{sign}(v_j,v_j)\big)$, i.e. $+1$ exactly when $(v_j,v_j) > 0$ for an even number of the $v_j$.  **Scattone follows Brieskorn [6] and notes this is a modified form of the usual spinor norm** | Scattone §3.6 | Cartan–Dieudonné; quadratic forms over $\mathbb{Q}$ |
 | F2.4 | $O_-(L) = \ker\sigma_-$ | Scattone §3.6 | F2.3 |
 | F2.5 | **$O^*(L) = \tilde O(L)\cap O_-(L)$** | Scattone §3.6 | F2.2, F2.4 |
@@ -703,7 +737,7 @@ rows that carried section titles.
 | F1.11 | Thm 3.2.1 (= Nikulin 1.10.2): an even lattice with signature $(n_+,n_-)$ and discriminant form $q$ exists iff … — **condition not transcribed**; Nk3 carries Nikulin's three | Scattone Thm 3.2.1 | F1.10, Nk3 |
 | F1.12 | Thm 3.2.2 (Nikulin): an even lattice with signature $(t_+,t_-)$ and discriminant form $q$ can be primitively embedded … — **conclusion not transcribed** | Scattone Thm 3.2.2 | F1.10, F1.8 |
 | F3.1 | for $\mathbb{Z}_p$ the $p$-adic integers with the convention $\mathbb{Z}_\infty=\mathbb{R}$, and $L_p = L\otimes\mathbb{Z}_p$: lattices $L$, $M$ are in the same **genus** when $L_p\cong M_p$ for every $p = 2,3,5,7,\dots,\infty$ | Scattone §3.3 | F1.1; $p$-adic integers |
-| F3.2 | even lattices are in the same genus **iff** they have the same signature and the same discriminant-quadratic form | Scattone §3.3 | F3.1, F1.10 |
+| F3.2 | even lattices are in the same genus **iff** they have the same signature and the same discriminant-quadratic form | Scattone §3.3; proved as Nikulin Cor. 1.9.4 | F3.1, F1.10, Pa10 |
 | F3.3 | Theorem 3.3.1 (Nikulin, = Nk5): for $L$ even nondegenerate indefinite with $\mathrm{rk}\,L > \ell(G_L)+2$, the genus of $L$ contains one class and $O(L)\to O(G_L)$ is surjective | Scattone Thm 3.3.1, citing Nikulin 1.14.2 | F3.2, Nk5 |
 | F3.4 | for definite $L$, $O(L)$ is finite of order $o(L)$; the **weight** of a genus $\mathcal{G}$ is $w(\mathcal{G}) = \sum_i 1/o(L_i)$ over its classes — the Minkowski–Siegel mass | Scattone §3.4 | F3.1 |
 | F4.1 | $R(L)$, the roots of a negative definite even lattice, and the **type** of $L$: the decomposition of the sublattice spanned by $R(L)$ into irreducible root lattices $A_m$, $D_m$, $E_m$ | Scattone §3.5 | F1.5; root systems |
@@ -858,17 +892,30 @@ probability, geometry, dynamics*; *Category theory, higher structures*.
 | F1.1–F1.4, F1.7, F1.8 | `ZLattice`, `LinearAlgebra/BilinearForm/`, `LinearAlgebra/QuadraticForm/`, `Matrix`, `dualSubmodule` |
 | F1.9, F1.10 | finite abelian groups, `QuadraticForm`, `ZMod`; the target $\mathbb{Q}/2\mathbb{Z}$ is `QuotientAddGroup` |
 | F2.1, F2.2, F2.10, F2.11 | group homomorphisms and explicit formulas over the above |
-| F2.3, F2.4 | reflections and Cartan–Dieudonné live in `LinearAlgebra/QuadraticForm/`; **the modified Brieskorn convention is ours to state** |
 | F4.1 | `LinearAlgebra/RootSystem/`, `Matrix/Cartan.lean` (finite types through $E_8$) |
+| F1.3, and the inertial index in Lo1 | `LinearAlgebra/QuadraticForm/Signature.lean` — `sigPos`, `sigNeg`, and Sylvester's law of inertia |
+| AG4's completeness | `AlgebraicGeometry/Morphisms/Proper.lean`, `.../UniversallyClosed.lean` |
 | D8 | `UpperHalfPlane`, `CongruenceSubgroup.Gamma0`/`Gamma1` |
 | Pa1 | `Padics`, `PadicInt`, `QuadraticForm` |
+
+**F2.3 and F2.4 were in this table and do not belong here.**  The row read
+"reflections and Cartan–Dieudonné live in `LinearAlgebra/QuadraticForm/`".
+They do not: that directory contains no reflection at all.  Mathlib's
+Cartan–Dieudonné is `LinearIsometryEquiv.reflections_generate_dim` in
+`Analysis/InnerProductSpace/Projection/FiniteDimensional.lean`, whose own
+docstring calls it a *special case*, and it is stated for a finite-dimensional
+**real inner product space** — a positive definite form.  `LinearAlgebra/
+Reflection.lean` has reflections attached to a root pairing, not to a quadratic
+form.  F2.3 needs the factorization of an element of $O(L_\mathbb{Q})$ into
+reflections for an **indefinite** rational form, of signature $(2,10)$, and
+nothing in the pinned Mathlib supplies it.  Both rows move to greenfield.
 
 ### Terminal against a registry corpus
 
 | Nodes | Corpus | Status |
 | --- | --- | --- |
 | F1.5 ($E_8$), F4.1 (root lattices) | [`thefundamentaltheor3m/Sphere-Packing-Lean`](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean) — Viazovska dimension-8, $E_8$ lattice | **already integrated** into `lean-categories` at `Integration/SpherePacking` and `LeanCategoriesSpherePacking/E8` |
-| Pa2–Pa5, and the $p=2$ conditions in Nk3–Nk5 | [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) — dyadic Hilbert symbol over $\mathbb{Q}_2$, Serre's evaluation formula, 2-adic square-class facts | **sorry-free**, self-contained, Apache 2.0 |
+| Pa2–Pa5, Pa8's exceptional 2-adic case, and the $p=2$ conditions in Nk3–Nk5 | [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) — dyadic Hilbert symbol over $\mathbb{Q}_2$, Serre's evaluation formula, 2-adic square-class facts | **sorry-free**, self-contained, Apache 2.0 |
 | F3.1, F3.2 (the local invariants under the genus) | [`mariainesdff/HassePrinciple`](https://github.com/mariainesdff/HassePrinciple) — Hilbert symbols, Hasse–Minkowski over general fields | definitions in place, **key choice-independence proofs are `sorry`** — a partial route, not a supplier |
 | E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) — covering spaces and universal covers | partial: gives the covering-space language, not $K3$ surfaces |
 | F1.10, F1.7, F2.1, F2.4–F2.5, F3.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
@@ -877,7 +924,7 @@ probability, geometry, dynamics*; *Category theory, higher structures*.
 
 | Nodes | What must be authored | Nearest thing that exists |
 | --- | --- | --- |
-| F2.5–F2.9 | $O^*(L) = \tilde O(L)\cap O_-(L)$, its index-2 relation, and surjectivity of $\tau$ on $O_-(L)$ | `lean-categories` spinor-norm files (unverified route) |
+| F2.3–F2.9 | Cartan–Dieudonné for an indefinite rational form, the modified Brieskorn spinor norm, $O^*(L) = \tilde O(L)\cap O_-(L)$, its index-2 relation, and surjectivity of $\tau$ on $O_-(L)$ | Mathlib's Cartan–Dieudonné is the positive-definite real case; `lean-categories` spinor-norm files are an unverified route |
 | F2.12, F2.13 | Eichler's lemma and Proposition 3.7.3 | nothing; the corpus has no Eichler |
 | F3.3, F3.4, Nk3–Nk5, F1.11, F1.12, Ni1–Ni10 | Nikulin's existence, uniqueness and one-class-plus-surjectivity theorems; his primitive-embedding classification and the analogue of Witt's theorem; the Minkowski–Siegel weight | nothing |
 | F4.2 | Niemeier's classification of the 24 lattices | nothing |
@@ -1050,7 +1097,7 @@ rows.
 
 | Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
-| E1 | compact complex surfaces: divisors, line bundles, the canonical bundle, $H^2$ with its intersection form, and the Hodge index theorem | BPV Chaps. I–IV | complex manifolds; **absent from Mathlib** |
+| E1 | compact complex surfaces: divisors, line bundles, the canonical bundle, $H^2$ with its intersection form, and the Hodge index theorem | BPV Chaps. I–IV | HS1, HS3 |
 | E2 | Enriques surfaces and their $K3$ universal covering $T \to S$, with the covering involution | Horikawa I §§3–6; BPV Chap. VIII | E1 |
 | E3 | Horikawa I Thm 3.1: an Enriques surface $S$ has an elliptic pencil $\lvert D\rvert$, and the associated $g : S\to\mathbb{P}^1$ has exactly two multiple fibres, each of multiplicity 2 | Horikawa I Thm 3.1 | E2 |
 | E4 | Horikawa I Thms 4.1, 4.2: an Enriques surface not of special type is birationally a double covering of $\Sigma_0$ with branch locus $\Gamma_1+\Gamma_2+B_0$; one of special type is birationally a double covering of $\Sigma_2$ | Horikawa I Thms 4.1, 4.2 | E2, E3 |
