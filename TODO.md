@@ -1628,6 +1628,7 @@ behavior.
 
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
+| `ARCHIVE-p-elementary-boundary-20260909-0344` | archive reconciliation / p-elementary predicate boundary | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/lattices/test_p_elementary_archive.py` (write) | `HEAD` | 2026-09-09T03:44:00Z |
 | --- | --- | --- | --- | --- | --- |
 | `ARCHIVE-fraction-field-subobjects-20260908-1910` | archive reconciliation / fraction-field quotient subobjects | Chat continuation 2026-09-08; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py; tests/modules/test_fraction_field_quotients_archive.py` (write) | `HEAD` | 2026-09-08T19:10:00Z |
 | `ARCHIVE-lattice-tensor-20260909-0125` | archive reconciliation / lattice tensor arithmetic | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/lattices/test_tensor_arithmetic_archive.py` (write) | `HEAD` | 2026-09-09T01:25:00Z |
