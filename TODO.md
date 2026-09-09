@@ -1624,7 +1624,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-owned-sets-20260909-1944` | archive reconciliation / owned set cardinality and order hierarchy | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/sets/test_owned_sets_archive.py` (write) | `HEAD` | 2026-09-09T19:44:00Z |
 
 
 
