@@ -5225,6 +5225,66 @@ decomposition has nowhere to live, and ends up inside a definition.
 
 - **Correct Example**: either the geometric layer enters as open obligations carried by explicit nodes, or the goal is restated as a statement about a lattice and its arithmetic group, named as such, with the change of target raised as a decision rather than made in a table.
 
+#### `FDC-09`: A Node Is a Transcription, Never a Recollection
+
+- **Rule**: Every node of a dependency graph is written with its source open.  The statement is transcribed from the text, and the node records the locator — section, numbered item, page.  Writing a node from knowledge of the subject is prohibited, however standard the material and however confident the writer.
+
+- **Rationale**: A graph is a claim about what the proof requires, and a recalled node is a guess about that dressed as a finding.  The guesses are not random: they reproduce the shape the writer expects, which is exactly the shape the source is likely to differ from, and the difference is invisible because the guess is plausible.  The cost is not one wrong row — dependencies, mechanism and the order of work all follow the node, so a fabricated node misdirects everything built under it.
+
+- **Violation Example**: writing nine nodes for the theory of discriminant forms "needing no source beyond Nikulin §1" without opening Nikulin; deriving a node's dependencies from a remembered proof strategy.  Concretely: a fabricated node had nine lattice classes arising from a $p$-adic genus computation via two recalled Nikulin theorem numbers, where the source derives them from primitive embeddings of $D_7$ into Niemeier lattices, the ninth class arising because one Niemeier lattice admits two inequivalent embeddings.  Every dependency was wrong.
+
+- **Correct Example**: open the memoir, read the section, take the numbered statements it actually contains, and record what each one says with its number.
+
+#### `FDC-10`: Selective Source-Marking Is Not Sourcing
+
+- **Rule**: The sourcing status of a node is a fact about whether its source was read, not about how confident the writer feels.  When some nodes in a batch are marked as needing a source, all unmarked nodes must have been read; otherwise the marks are prohibited and the whole batch is marked unsourced.
+
+- **Rationale**: Marking the least certain rows and leaving the rest bare produces a graph that displays diligence while being uniformly unsourced.  The marks then read as a coverage claim about the unmarked rows, which is the opposite of the truth.  Confidence is not evidence, and on standard material it is highest exactly where recall is most likely to be a smooth reconstruction of the wrong thing.
+
+- **Violation Example**: forty nodes written from memory with ten marked "needs source read" — the ten the writer felt least sure of.
+
+#### `FDC-11`: Terminal Means the Next Dependency Is in the Library
+
+- **Rule**: A node is terminal **only** when what it depends on next is available in the target library.  A node whose next dependency is a theorem in a paper, a classification in a memoir, or a body of theory is not terminal, and the graph is not complete until the descent below it has been traced to the library.
+
+- **Rationale**: A graph whose leaves are large results understates the work by the size of everything under those leaves, and understates it invisibly, because a leaf looks finished.  This is how "external, cited" hides a subject: the phrase names a stopping point that the mathematics does not have.  The rule gives a mechanical test — name the next dependency, ask whether it is in the library, and if not, keep going.
+
+- **Violation Example**: listing Niemeier's classification of the 24 even unimodular rank-24 lattices, or "the genus of a lattice", as leaves of a graph targeting Mathlib, which has neither.
+
+- **Correct Example**: each row carries a *next dependency* column naming what it descends into, and rows whose entry is not a Mathlib name are visibly unfinished.
+
+#### `FDC-12`: A Citation Is Not a Node
+
+- **Rule**: A node states one mathematical proposition.  A reference to a work, a section, a subject, or an author is not a node, and may not stand in the graph as though it were one.
+
+- **Rationale**: A node is the unit that gets stated, reviewed, proved and discharged, and none of those operations is defined on a subject.  Bundling also defeats the terminality test of `FDC-11`, because a subject has no single next dependency.  `FSC-06` states the same requirement for the work unit; this is its form inside the graph.
+
+- **Violation Example**: a node reading "Vinberg 1975" standing for hyperbolic reflection groups, fundamental polyhedra, the algorithm, its completeness, and the affine classification together.
+
+#### `FDC-13`: Read the Section, Not the Corollary
+
+- **Rule**: When a source is opened for one statement, establish what that statement rests on within the same source before treating it as a leaf.  A corollary quoted out of a development carries the development with it.
+
+- **Rationale**: Sources are written as chains, and the result that a downstream paper cites is usually the last link.  Quoting it alone imports the conclusion and drops the apparatus — which is precisely the material that will turn out to be the foundations stratum.
+
+- **Violation Example**: quoting a memoir's §6.3 and one remark from §5.1 as the source for a node, when §3 of the same memoir develops the discriminant forms, genera, orthogonal groups and Eichler transformations that the whole graph stands on.
+
+#### `FDC-14`: Check Availability Before Recording a Source as Unread-Because-Unavailable
+
+- **Rule**: Before recording that a node awaits a source, search the local library for that source.  A node may be marked as awaiting reading; it may not be marked as awaiting acquisition without a search that failed.
+
+- **Rationale**: "The source has not been read" and "the source is not available" are different facts, and confusing them converts a reading task into an imagined blocker, which then justifies writing the node from memory instead.
+
+- **Violation Example**: recording that four primary sources needed to be obtained before a stratum could be decomposed, while all four sat in the library with text extractions.
+
+#### `FDC-15`: Fabricated Material Is Deleted, Not Annotated
+
+- **Rule**: On discovering that nodes were written from memory, delete them and write the sourced version.  Do not keep them beside a warning.  This does **not** conflict with `FRM-06`: what that rule protects is a *requirement the work owes*, and a fabricated node is not a requirement — it is a guess about one, and the requirement it displaced is recovered by reading the source, not by preserving the guess.
+
+- **Rationale**: Annotated fabrications continue to be read, cited and built on, because a table row outlives the paragraph above it.  Keeping them also blurs the one distinction that matters when repairing this class of error: a claim that was smuggled in must be promoted to a theorem, while a claim that was invented must be removed and replaced by what the source says.
+
+- **Violation Example**: retitling five fabricated subsections "(unsourced)" and leaving their tables in place.
+
 ### 16. Fraud Precursors in Formalization (`FRD-*`)
 
 These name behaviours observed on this repository that would have resulted in
