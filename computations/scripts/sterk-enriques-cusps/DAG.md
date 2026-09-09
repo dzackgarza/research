@@ -80,6 +80,35 @@ $(v, F)$, not on $F$.
 | --- | --- | --- |
 | G | the boundary complex of the Baily–Borel compactification of $\Omega_-/\Gamma$ — equivalently $\Gamma\backslash\mathcal{T}(G)$ — is the explicit finite graph with five vertices of one type, nine of the other, and the edges of 3.4 | B3, C11, C12, D4 |
 
+## Stratum F — the foundations the other strata stand on
+
+The nodes above are the paper's own steps.  Several of them are not leaves: they
+rest on theory that the pinned Mathlib does not have, and that no node of A–D
+states.  Substrate checked against the pinned revision `0df444a3`.
+
+| Node | What it is | Needed by | Mathlib substrate |
+| --- | --- | --- | --- |
+| F1 | even lattices, the dual $L^*$, the discriminant group $L^*/L$, and the discriminant **form** $q : L^*/L \to \mathbb{Q}/2\mathbb{Z}$ with its orthogonal decomposition | **A0, A1** — the definition of $\Gamma$ — and C11, A3 | `ZLattice` and `dualSubmodule` exist; the discriminant form does not |
+| F2 | $O^*(N)$: the isometries Sterk distinguishes from $O(N)$, by spinor norm / preserved component of the positive cone | A5, A6 (2.17, 2.18), B1 | absent — no spinor norm |
+| F3 | affine Coxeter and Dynkin diagrams: the extended types, subdiagrams, parabolic subdiagrams and their rank | C1, and the explicit half of C3–C7 | finite Cartan matrices only (`Matrix/Cartan.lean`, through $E_8$); no affine types |
+| F4 | hyperbolic reflection groups: Lobachevskii space, the fundamental polyhedron of $W(G)$, Vinberg's algorithm and its completeness | C1, C2 | absent |
+| F5 | genus theory of even lattices — $p$-adic invariants — enough to state Scattone's nine possibilities for $F^\perp/F$ | C11 | absent |
+| F6 | reductive groups over $\mathbb{Q}$, parabolic $\mathbb{Q}$-subgroups, spherical buildings; hermitian symmetric domains of type IV; the Baily–Borel construction and its topology | D1–D4 | absent |
+| F7 | the upper half plane and congruence subgroups, for $\mathbb{H}/\Gamma^1(2)$ | D5 | present — `UpperHalfPlane`, `Gamma0`/`Gamma1` |
+
+**F1 is the root of the whole tree, not a side condition.** $\Gamma$ is defined
+by how an isometry acts on $L_-^*/L_-$ respecting a decomposition of the
+discriminant form; without F1 the group cannot be stated, so neither can any
+theorem that mentions it — which is every theorem here.  Any formalization
+begins with F1 or begins by inventing a surrogate for it.
+
+F3 has a consequence for the C stratum that the earlier "cheap half" reading
+missed.  Stating that a set of vertices is a parabolic subdiagram *of type
+$\tilde E_8$, of rank 8* needs the affine classification.  What is genuinely
+free of F3 is smaller: the roots, their Gram matrix, and that the restricted
+form is negative semidefinite with a one-dimensional radical per component.
+Naming the type is not.
+
 ## Coverage: every labelled statement of Chap. 2
 
 The DAG above is a subgraph of the paper, not the whole of it.  This table is
