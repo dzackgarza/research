@@ -1640,6 +1640,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-primary-discriminant-part-20260909-0210` | archive reconciliation / discriminant primary part | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py; tests/lattices/test_discriminant_primary_part_archive.py` (write) | `HEAD` | 2026-09-09T02:10:00Z |
+
 
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
