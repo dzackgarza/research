@@ -5,7 +5,8 @@ compactification of $\Omega_-/\Gamma$: five zero-dimensional strata, nine
 one-dimensional strata, with the incidence relation of Sterk (3.4).
 Equivalently, $\Gamma \backslash \mathcal{T}(G)$ for $G = \mathrm{O}(L_-\otimes\mathbb{Q})$,
 whose Tits building over $\mathbb{Q}$ is one-dimensional because $G$ has
-$\mathbb{Q}$-rank 2.
+$\mathbb{Q}$-rank 2 — a clause that names two theorems and a computation, and is
+AG17 over AG18 and AG19.
 
 Source: H. Sterk, *Compactifications of the period space of Enriques surfaces*
 (Nijmegen thesis, 1988), Chap. 2; published as Math. Z. 207 (1991) with §3.2,
@@ -17,9 +18,14 @@ source; **M** requires substrate absent from Mathlib at the pinned revision;
 **LC** a known implementation route through `lean-categories`, pending its
 publication to Prove2Me (see *Implementation routes* below).
 
-`check_dag.py` reads this file and fails if any dependency cell names a node no
-row defines, or names neither a node nor a substrate.  Both are ways for the
-graph to look complete while hiding work; run it after editing a table.
+The strata, in the order they are read below: **A**, **B**, **C**, **D** are the
+paper's own steps; **BB**, **Bo**, **Cl**, **E**, **Nk** are what its citations
+open; **AF**, **AG**, **HS**, **Ky**, **Lo**, **Ni**, **Pa**, **Rt**, **V** and
+the **F** rows are the foundations under those.
+
+`check_dag.py` reads this file and fails if a dependency cell names a node no row
+defines, names neither a node nor a substrate, or is empty.  All three are ways
+for the graph to look complete while hiding work; run it after editing a table.
 
 ## Implementation routes through lean-categories
 
