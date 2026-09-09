@@ -39,8 +39,9 @@ route is not a satisfied node:
 | F2.1 $\tau : O(L) \to O(G_L)$ | `DiscriminantAction`, `DiscriminantFunctor` | route suspected — filename only |
 | F2.4, F2.5 $O_-(L)$, $O^*(L)$ | `CanonicalSpinorNorm`, `AdelicSpinorNorm` | route suspected — filename only |
 | F3.1 genus | `Hasse`, `SpinorGenusAdelic`, `DyadicSymbol`, `ClassFiniteness`, `Adele` | route suspected — filename only |
-| F2.10, F2.11 the transformations $E_{f,x}$ and $\mathcal{E}(L)$ | — | **absent.**  `Elementary.lean` is $I$- and $p$-elementary *lattices* — the ideal annihilating the discriminant module — a different notion, and the corpus has no occurrence of Eichler |
-| F4.2 Niemeier's 24 lattices | — | **absent** |
+| F2.10, F2.11 the transformations $E_{f,x}$ and $\mathcal{E}(L)$ | — | **absent.**  `Elementary.lean` is $I$- and $p$-elementary *lattices* — the ideal annihilating the discriminant module — a different notion, and `rg -i eichler` over the corpus returns nothing |
+| F4.1 root lattices; the summands named in F5.4, F5.5, F5.7 | `DefiniteNondegenerate` (`isRootLattice`, `RootLatticeCat`, `rootLatticeRootPairing`, `aRootLatticeObject`, `e8RootLatticeObject`), `DRootLattice` (`dRootLatticeObject`, $D_n$ for $4\le n$ with its Gram matrix proved negative definite) | route located — declarations read.  Supplies the **objects** $A_n$, $D_n$, $E_6$, $E_7$, $E_8$; supplies none of F5.4's embedding statements |
+| F4.2 Niemeier's 24 lattices | — | **absent.**  `rg -i niemeier` over the corpus returns nothing |
 
 **No node in this graph is stated, let alone proved, and the corpus changes none
 of that.** What the table records is a known implementation route: for some
@@ -918,7 +919,7 @@ nothing in the pinned Mathlib supplies it.  Both rows move to greenfield.
 | Pa2–Pa5, Pa8's exceptional 2-adic case, and the $p=2$ conditions in Nk3–Nk5 | [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) — dyadic Hilbert symbol over $\mathbb{Q}_2$, Serre's evaluation formula, 2-adic square-class facts | **sorry-free**, self-contained, Apache 2.0 |
 | F3.1, F3.2 (the local invariants under the genus) | [`mariainesdff/HassePrinciple`](https://github.com/mariainesdff/HassePrinciple) — Hilbert symbols, Hasse–Minkowski over general fields | definitions in place, **key choice-independence proofs are `sorry`** — a partial route, not a supplier |
 | E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) — covering spaces and universal covers | partial: gives the covering-space language, not $K3$ surfaces |
-| F1.10, F1.7, F2.1, F2.4–F2.5, F3.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
+| F1.10, F1.7, F2.1, F2.4–F2.5, F3.1, F4.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness`, and the root-lattice objects of `DefiniteNondegenerate` and `DRootLattice` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
 
 ### Greenfield — no formalization in Mathlib or the registry
 
@@ -946,20 +947,38 @@ the paper's own results, and the point of the project is to prove them.
 
 The foundations split cleanly.  The **lattice-theoretic base is essentially
 solved**: F1 is Mathlib plus `lean-categories`, $E_8$ arrives through
-Sphere-Packing-Lean, and the 2-adic layer has a sorry-free supplier in
+Sphere-Packing-Lean, the root lattices $A_n$, $D_n$, $E_6$, $E_7$, $E_8$ are
+objects in the corpus already, and the 2-adic layer has a sorry-free supplier in
 `gq2-lean`.  The **classification theorems are not**: Nikulin, Niemeier,
-Minkowski–Siegel and Eichler have no formalization anywhere the registry knows.
+Minkowski–Siegel and Eichler have no formalization anywhere the registry knows,
+and neither does Cartan–Dieudonné for an indefinite form.
 
-Four whole strata are greenfield with nothing nearby: **V** (hyperbolic
-reflection groups and Vinberg), **BB** (algebraic groups, symmetric domains,
-Baily–Borel), **HS** (the hermitian symmetric theory BB3 rests on) and **E**
-(complex surfaces, $K3$, Torelli).  Those are the real cost of the target, and
-each is a formalization programme in its own right rather than a node.
+Seven whole strata are greenfield with nothing nearby: **V** and **Lo**
+(hyperbolic reflection groups, Lobachevskii space, Vinberg), **AG** (reductive
+groups over a field, parabolic subgroups, the Tits building), **HS** (hermitian
+symmetric domains and their boundary components), **AF** (automorphic forms and
+the projective embedding), **Rt** and **Ky** (reduction theory, and hyperbolic
+imbedding for the extension theorem), and **E** (complex surfaces, $K3$,
+Torelli).  **BB** and **Bo** are the paper-level statements sitting on top of
+them.  Those are the real cost of the target, and each is a formalization
+programme in its own right rather than a node.
 
-HS and E share a floor.  Both begin at complex manifolds with a Hermitian
-metric, and neither can start before Mathlib's `IsManifold` tree acquires an
-almost-complex structure and a geodesic.  Whatever pays for one pays for the
-other.
+Three floors carry everything above them, and each is shared.
+
+**HS, Ky and E share the complex-analytic floor**: an almost-complex structure
+on Mathlib's `IsManifold` tree, integrability, a Hermitian metric and a geodesic.
+Nothing in those three strata can start before it exists, and whatever pays for
+one pays for all three.
+
+**AG carries HS, Rt, AF and BB.**  HS13 lands on maximal parabolic subgroups,
+Rt1 on the Iwasawa decomposition, AF2 on $\mathcal{Z}(\mathfrak{g})$, BB1 on
+parabolic $k$-subgroups, and the goal's own $\mathbb{Q}$-rank clause on AG17.
+There is no route to the boundary of the Baily–Borel compactification that does
+not pass through reductive groups over a field.
+
+**Pa carries Nk, Ni and F3.**  Every one of Nikulin's numbered theorems reduces
+to the relations of Pa5 and the canonical decomposition of Pa9, and F3.2 — the
+bridge — is Pa10.
 
 
 ## Open audit points
