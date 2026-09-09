@@ -1,6 +1,7 @@
 """Modules graded by a monoid."""
 
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.infinity import Infinity as _Infinity
 from sage.structure.parent import Parent
 from sage.categories.morphism import Morphism
 
@@ -13,6 +14,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     ModuleMorphism,
     _ModuleHomsetCommonMethods,
     _initialize_module_hom_parent,
+    module_coefficients,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     LinearEndCategoryConstruction,
@@ -32,6 +34,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -225,6 +228,101 @@ class GradedModules(OwnedCategoryOverBaseRing):
             if selected is None:
                 raise TypeError(f"{self} is not represented as a concentrated graded module")
             return selected
+
+        def degree_on_module_generator(self, module_generator):
+            r"""Return the selected degree of one homogeneous framing generator.
+
+            A graded object whose grading is read from a framing supplies this
+            operation.  Construction-specific parents such as free graded
+            algebras override it; a merely category-placed object with no
+            represented grading on its framing refuses rather than guessing.
+            """
+            selected = self.__dict__.get("_preamble_degree_on_module_generator")
+            if selected is None:
+                raise NotImplementedError(
+                    f"{self} has no represented degree on its selected module framing"
+                )
+            return selected(module_generator)
+
+        def module_generators_of_degree(self, degree):
+            r"""Return the selected framing generators lying in ``degree``."""
+            if self not in FramedModules(self.base_ring()):
+                raise TypeError("graded-piece generators require a framed graded module")
+            labels = self.module_generating_set()
+            if labels.cardinality().is_finite() is not True:
+                raise NotImplementedError(
+                    "generic degree-piece filtering requires a finite selected framing; "
+                    "an infinite graded construction supplies its intrinsic graded_piece instead"
+                )
+            return finite_ordered_set(
+                tuple(
+                    self.module_generator(label)
+                    for label in labels
+                    if self.degree_on_module_generator(self.module_generator(label)) == degree
+                )
+            )
+
+        def graded_piece(self, degree):
+            r"""Return the represented degree piece as a subobject of this module.
+
+            This is the generic framing-derived fallback.  Constructions with
+            a more intrinsic degree-piece owner, such as tensor or symmetric
+            powers, override this method and remain authoritative.
+            """
+            if self not in FramedModules(self.base_ring()):
+                raise TypeError("a generic graded piece requires a framed graded module")
+            return self.subobject_on(self.module_generators_of_degree(degree))
+
+    class ElementMethods:
+        def degree(self):
+            r"""Return the largest degree occurring in the selected finite support.
+
+            The zero element has degree ``-Infinity``.
+            """
+            parent = self.parent()
+            if parent.grading_monoid() is not _own_ring(SageZZ):
+                raise TypeError("top degree is represented here only for the integer grading")
+            support = module_coefficients(self, parent)
+            if not support:
+                return -_Infinity
+            return max(
+                parent.degree_on_module_generator(parent.module_generator(label))
+                for label in support
+            )
+
+        def is_homogeneous(self) -> bool:
+            r"""Whether all nonzero framing terms lie in one degree."""
+            parent = self.parent()
+            degrees = {
+                parent.degree_on_module_generator(parent.module_generator(label))
+                for label in module_coefficients(self, parent)
+            }
+            return len(degrees) <= 1
+
+        def homogeneous_components(self):
+            r"""Return the degree-indexed nonzero homogeneous components."""
+            parent = self.parent()
+            components = {}
+            for label, coefficient in module_coefficients(self, parent).items():
+                generator = parent.module_generator(label)
+                degree = parent.degree_on_module_generator(generator)
+                component = components.get(degree, parent.zero())
+                components[degree] = component + parent.scalar_multiple(
+                    coefficient, generator
+                )
+            return components
+
+        def truncate(self, degree):
+            r"""Return the sum of homogeneous terms of degree strictly below ``degree``."""
+            parent = self.parent()
+            if parent.grading_monoid() is not _own_ring(SageZZ):
+                raise TypeError("degree truncation is represented here only for the integer grading")
+            result = parent.zero()
+            for label, coefficient in module_coefficients(self, parent).items():
+                generator = parent.module_generator(label)
+                if parent.degree_on_module_generator(generator) < degree:
+                    result += parent.scalar_multiple(coefficient, generator)
+            return result
 
 
 def graded_module_homset(domain, codomain) -> GradedModuleHomset:
