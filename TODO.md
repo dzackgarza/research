@@ -1621,6 +1621,7 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
+| `ARCHIVE-presented-module-hermite-20260909-0738` | archive reconciliation / finitely presented module Hermite form | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py; tests/modules/test_finitely_presented_module_archive.py` (write) | `HEAD` | 2026-09-09T07:38:00Z |
 
 
 
