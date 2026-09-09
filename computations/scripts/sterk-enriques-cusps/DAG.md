@@ -102,8 +102,8 @@ a fabricated dependency edge.
 
 C3–C7 are reconstructed and checked in `sterk_cusp_diagrams.sage`: the Gram
 matrices are rebuilt from the root vectors and reproduce the printed diagrams.
-C3–C6 agree with Sterk's labels; **C7 does not yet** — see the commit message of
-`18213910`.  C9 is why a formalization must state the labelling on flags
+C3–C7 all agree with Sterk’s labels once the p. 64 figure is read in full — see
+the audit points.  C9 is why a formalization must state the labelling on flags
 $(v, F)$, not on $F$.
 
 ## Stratum D — from sublattices to boundary components
@@ -575,8 +575,15 @@ Questions about statements already in the graph, not missing nodes.
    pass to a neat finite-index subgroup and descend, but **Sterk does not say
    which**, so the descent is an obligation this graph carries.  Open.
 6. ~~V13's primitivity hypothesis~~ — **settled below, and it fires.**
-7. **C7 disagrees with the source.**  The Sage reconstruction yields thirteen
-   maximal parabolic subdiagrams in six shapes against Sterk's four types.
+7. ~~C7 disagrees with the source~~ — **settled; the error was in the reading.**
+   The figure on p. 64 lists **five** parabolic subdiagrams for (3.3.12), not
+   four: $\tilde A_7\oplus\tilde A_1$, $\tilde C_4\oplus\tilde C_4$,
+   $\tilde C_6\oplus\tilde C_2$, $\tilde B_3\oplus\tilde B_3\oplus\tilde C_2$,
+   $\tilde C_8$.  The count of four came from a text line quoting only part of
+   the list.  The reconstruction'''s thirteen subdiagrams collapse to exactly
+   these five, including the three-component one; the residual differences are
+   $\tilde B$ where Sterk writes $\tilde C$, which is audit point 2 and not a
+   mathematical discrepancy.
 
 ### Two settled by computation
 
