@@ -157,6 +157,37 @@ Not descended further here: BB8 rests on the automorphic forms and
 Poincaré–Eisenstein series of BB §§5–8, and BB3 on Korányi–Wolf [27] and the
 other references BB 1.5 cites.  Those are the next descents on this branch.
 
+### Stratum Bo, from Borel 1972 — the extension theorem Sterk leans on
+
+Sterk uses this at Chap. 2 §4: "by Borel's extension theorem [Borel 1972].  The
+limit point $\bar p(0)$ will be an element of a type II Satake–Baily–Borel
+boundary component which we shall determine."  It is how a degenerating family
+over a punctured disc acquires a limit *in the compactification*, and it was
+missing from this graph entirely.  Borel, *Some metric properties of arithmetic
+quotients of symmetric spaces and an extension theorem*, J. Diff. Geometry 6
+(1972), 543–560; Zotero `W6PPVK2D`.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| Bo1 | **Theorem A**: $X$ a bounded symmetric domain, $\Gamma$ an arithmetically defined **torsion-free** group of automorphisms, $V^*$ the compactification of $V = X/\Gamma$ of Baily–Borel; then every holomorphic $f : D^{*a}\times D^b \to V$ extends to a holomorphic map $D^{a+b} \to V^*$ | Borel 1972, Thm A | Bo3, BB8 |
+| Bo2 | **Theorem 3.7**: for $Z$ a normal hyperbolic space and $f : D^{*a}\times Z \to V$ *locally liftable* holomorphic, $f$ extends to a holomorphic map $D^a \times Z \to V^*$ | Borel 1972, 3.7 | Bo1 |
+| Bo3 | Kwack's extension theorem, in the variant Borel uses, and the Kobayashi pseudo-distance making $X$ hyperbolic | Borel 1972 §3, citing Kwack [12] and [9]; Kobayashi [10] | complex hyperbolic geometry; **absent from Mathlib** |
+| Bo4 | Theorems B and C: the Siegel-set and arithmetic-group properties Borel proves in §§1–2 and uses in §3.5 | Borel 1972 §§1–2 | reduction theory of arithmetic groups; **absent from Mathlib** |
+| Bo5 | the consequence Borel records: for $S$ an algebraic variety and $h : S \to V$ holomorphic, $h$ is a morphism of algebraic varieties, $V$ carrying its quasi-projective structure | Borel 1972, introduction, citing BB Thm 3.10 | Bo1, BB8 |
+
+**Bo1 assumes $\Gamma$ torsion-free.**  Sterk's $\Gamma$ is not obviously
+torsion-free — it contains $-1$ — so either the hypothesis is met by passing to
+a subgroup, or Sterk is using the theorem in a form that tolerates torsion.
+Borel's own Remark 3.8 notes that when $\Gamma$ has torsion, $V$ need not be
+hyperbolically imbedded in $V^*$.  **This is an audit point, not a resolved
+one**: the node cannot be stated until it is settled which form Sterk needs.
+
+This stratum sits under Sterk Chap. 2 §4, which the coverage table below
+dispositioned out of scope.  That disposition is invalid while the goal names
+the period space (`FDC-08`), and Bo1 is the concrete cost of it: a classical
+input, with a hypothesis that may not hold, invisible to the graph because the
+section using it had been excluded.
+
 ## Goal
 
 | Node | Statement | Depends on |
