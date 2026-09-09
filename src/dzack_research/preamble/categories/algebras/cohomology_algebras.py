@@ -15,7 +15,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     ring_morphism,
 )
-from dzack_research.preamble.categories.algebras.differential_graded_algebras import dga_homset
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    DifferentialGradedAlgebras,
+    dga_homset,
+)
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
 
 
@@ -29,10 +32,29 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The cohomology of the de Rham algebra of the polynomial algebra."""
-        from dzack_research.preamble.categories.algebras.cohomology_algebras import CohomologyAlgebra
         from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
-        return CohomologyAlgebra(DeRhamAlgebras(self.base_ring()).an_object())
+        return self(DeRhamAlgebras(self.base_ring()).an_object())
+
+    def _call_(self, dga):
+        r"""Construct ``H^*(dga)`` with its descended graded multiplication.
+
+        The source DGA is the defining datum.  This category constructor owns
+        both identity caching and the private graded-direct-sum realization;
+        :func:`CohomologyAlgebra` is notebook notation for this operation and
+        the cohomology-algebra functor lands here through the same path.
+        """
+        dgas = DifferentialGradedAlgebras(self.base_ring())
+        if dga not in dgas:
+            raise TypeError(
+                "a cohomology algebra is constructed from a differential graded algebra over the same base ring"
+            )
+        cached = _COHOMOLOGY_ALGEBRA_CACHE.get(id(dga))
+        if cached is not None and cached.source_dga() is dga:
+            return cached
+        result = _CohomologyAlgebra(dga)
+        _COHOMOLOGY_ALGEBRA_CACHE[id(dga)] = result
+        return result
 
     @classmethod
     def _repr_object_names(cls):
@@ -191,13 +213,8 @@ _COHOMOLOGY_ALGEBRA_CACHE = {}
 
 
 def CohomologyAlgebra(dga):
-    r"""Return the graded algebra ``H^*(dga)`` with descended multiplication."""
-    cached = _COHOMOLOGY_ALGEBRA_CACHE.get(id(dga))
-    if cached is not None and cached.source_dga() is dga:
-        return cached
-    result = _CohomologyAlgebra(dga)
-    _COHOMOLOGY_ALGEBRA_CACHE[id(dga)] = result
-    return result
+    r"""Notebook notation for ``CohomologyAlgebras(R)(dga)``."""
+    return CohomologyAlgebras(dga.base_ring())(dga)
 
 
 __all__ = [
