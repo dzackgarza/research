@@ -132,6 +132,19 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
                 name=f"Primary components of {self}",
             )
 
+        def primary_part(self, prime):
+            r"""Return the ``prime``-primary subgroup ``A_prime <= A``.
+
+            This is the single-prime view of :meth:`primary_components`.  If
+            ``prime`` does not divide ``|A|`` the primary subgroup is the zero
+            subgroup, not a missing lookup.
+            """
+            prime = SageZZ(prime)
+            components = self.primary_components()
+            if prime in components.index_set():
+                return components[prime]
+            return self.subgroup_on(())
+
         def dual_lattice_lift(self, element):
             r"""Return a representative of ``element`` in the selected metric dual ``L^#``.
 
