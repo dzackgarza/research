@@ -181,21 +181,35 @@ as stratum F, and larger.
 | E5 | the period map and its domain $\Omega_-$ | 2.9, 2.14 |
 | E6 | Torelli for $K3$ surfaces | 2.14 |
 
-Which means the target has to be chosen, not assumed:
+**The target does not change.**  There is one target node — Sterk's theorem as
+stated — and every gap discovered between it and Mathlib adds nodes.  Size is
+an output of this graph, never an input to the goal.  So there is no
+out-of-scope column: the rows above marked "out" are E-stratum nodes, and the
+dispositions stand only as an ordering, not as exclusions.
 
-1. **The lattice statement.** No surface anywhere; $L_-$ by Gram matrix; the
-   theorem is about $\Gamma$-orbits of isotropic sublattices and their
-   incidences.  Honest, reachable after stratum F, and not Sterk's theorem —
-   the name must change with it.
-2. **Sterk's theorem as stated.** Strata E, F, A–D in full.  A decades-scale
-   program.
-3. **Sterk's theorem with its inputs open.** The E and D layers enter as
-   explicitly open child obligations with citations — Horikawa, Torelli,
-   Baily–Borel — so the goal reads: given these, the boundary complex is this
-   graph.  Nothing is defined away, the scope is visible, and the reachable
-   parts are attackable.
+An earlier revision of this file called stratum E "a decades-scale program".
+That was off by about three orders of magnitude, and it was load-bearing: it
+was the premise for offering a smaller target.
 
-Until that choice is made, every out-of-scope row above is provisional.
+Comparable completed work, September 2026.  Fermat's Last Theorem was formalized
+end to end in **11 days**, largely autonomously, with human input limited to
+occasional high-level instructions: 13 million lines of Lean, 30,300 theorems,
+about six billion output tokens — over five times the size of Mathlib, for a
+substrate (automorphic forms, Galois representations, Shimura varieties) far
+larger than anything here.  The Navier–Stokes finite-time blowup was formalized
+in 17 hours after a proof produced in about 88.
+
+Two things follow for this graph.  Its size — hundreds of nodes, not tens of
+thousands — puts it well inside what that record makes routine.  And the
+mechanism matters: the FLT attempts that **failed** did so because agents lost
+track of the project's state, and the successful run was the one that moved to
+Prove2Me, whose DAG of theorem statements is what kept the state.  The graph is
+not preliminary paperwork before the real work; it is the artifact that makes
+the work possible at this scale.
+
+The loop body here is: formalize one definition or lemma from a standard text,
+with its citation.  Hours per node at most, most nodes mutually independent.
+The correct description is a grind of known size.
 
 Nodes added by this table and not in the strata above: **A1a** (2.11),
 **A6a** (2.15), **A8** (2.21), **D0** (3.2.4).
