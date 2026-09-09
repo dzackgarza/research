@@ -6239,6 +6239,54 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   shared construction with its consumer. Remove the complaint only when that
   requirement is delivered, retaining any still-unverified execution obligation.
 
+#### `DEV-60`: Close One Front at a Time in Dependency Order
+
+- **Rule**: Work exactly one `TODO.md` node at a time, in the DAG's dependency
+  order, and drive it to its stated acceptance before opening any other front.
+  Shared-substrate (preamble) edits are in scope only when the current node's
+  contract requires them. If multiple fronts are already open, close the
+  nearest-to-acceptance front before any new authoring. During the refactor,
+  commits use `--no-verify` per `DEV-58`; address real defects observed in the
+  work itself as they arise, but do not run hooks, test suites, or type-check
+  gates mid-refactor, and do not spend effort making files pass checks while
+  the architecture around them is incomplete.
+
+- **Rationale**: Parallel half-open fronts multiply integration debt, hide
+  which mathematical contract is actually blocked, and leave abandoned
+  mid-flight work that no later contributor can distinguish from delivered
+  construction. One closed node is progress; several open ones are risk.
+
+- **Violation Example**: open a second construction because the first grew
+  difficult, touch shared preamble modules for a node that never named them,
+  and leave a large refactor uncommitted and unowned across many files while
+  starting new authoring elsewhere.
+
+- **Correct Example**: select the next unblocked `TODO.md` node, complete and
+  commit it to its stated acceptance, release it, and only then claim the
+  following node; when a prior front is already open, finish the one closest
+  to acceptance first.
+
+#### `DEV-61`: Author Only Under a Live TODO Claim
+
+- **Rule**: All authoring requires a live claim in the `TODO.md` claim ledger.
+  Before claiming, reconcile the ledger against actual repository state so the
+  claim reflects work already delivered or in flight; reconcile again at
+  release. Batch-committing a body of work authored without a claim is
+  prohibited.
+
+- **Rationale**: The claim ledger is the only surface by which concurrent
+  workers avoid duplicate or colliding construction. Unclaimed authoring is
+  invisible until it lands as an unreviewable batch, and a stale ledger routes
+  the next worker into work that is already done or already owned.
+
+- **Violation Example**: author a many-file change with no ledger entry and
+  commit it as one batch; claim a node from a ledger last reconciled before
+  another worker's release landed.
+
+- **Correct Example**: reconcile the ledger against the repository, record the
+  claim for the selected node, author and commit under that claim, then
+  release the claim with the delivered state reflected in the ledger.
+
 
 * * *
 
