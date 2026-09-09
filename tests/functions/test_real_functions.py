@@ -173,7 +173,7 @@ def test_smooth_maps_have_formal_taylor_series() -> None:
     assert ell(2)(maclaurin)(5) == QQ(1) / factorial(5)
 
     try:
-        Lp(2)(exp).maclaurin_series()
+        Lp(2)(exp(-(Lp(2).indeterminate() ** 2))).maclaurin_series()
     except TypeError as error:
         assert "C^k" in str(error)
     else:

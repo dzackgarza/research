@@ -28,6 +28,8 @@ and \(b(a,c)=\sum_{n\in\mathbb N}a_n c_n\) respectively.
 from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.categories.sets_cat import Sets
+from sage.functions.log import exp
+from sage.functions.trig import cos, sin
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.rings.fraction_field import FractionField_generic
@@ -41,6 +43,7 @@ from sage.rings.lazy_series import LazyPowerSeries
 from sage.rings.lazy_series_ring import LazyPowerSeriesRing
 from sage.rings.power_series_ring_element import PowerSeries
 from sage.rings.power_series_ring import PowerSeriesRing
+from sage.rings.qqbar import AA
 from sage.rings.rational_field import QQ
 from sage.rings.semirings.non_negative_integer_semiring import NN
 from sage.structure.element import Element, ModuleElement, parent as element_parent
@@ -49,6 +52,8 @@ from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.expression import Expression
 from sage.symbolic.function import Function as SymbolicMap
+from sage.symbolic.integration.integral import integrate
+from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.sets.cardinals import continuum
@@ -91,6 +96,139 @@ def _integrability(p):
     except (TypeError, ValueError):
         return p
     return integral if rationals(integral) == p else p
+
+
+def _l2_real_polynomial(expression, variable):
+    r"""Return ``expression`` as an exact real-algebraic polynomial, or ``None``."""
+    if not expression.is_polynomial(variable):
+        return None
+    coefficients = expression.coefficients(variable, sparse=False)
+    if not all(coefficient in AA for coefficient in coefficients):
+        return None
+    return AA[str(variable)](coefficients)
+
+
+def _l2_rational_function(expression, variable):
+    r"""Return an exact reduced real rational function ``(p,q)``, or ``None``."""
+    numerator = _l2_real_polynomial(expression.numerator(), variable)
+    denominator = _l2_real_polynomial(expression.denominator(), variable)
+    if numerator is None or denominator is None:
+        return None
+    common = numerator.gcd(denominator)
+    return numerator // common, denominator // common
+
+
+def _l2_rational_verdict(expression, variable):
+    r"""Decide square-integrability of an exact real rational function.
+
+    In lowest terms ``p/q`` belongs to ``L^2(RR)`` exactly when ``q`` has no
+    real root and ``deg(q) >= deg(p)+1``.  A real root is a genuine pole and
+    the degree inequality is precisely the ``p``-test at infinity.
+    """
+    fraction = _l2_rational_function(expression, variable)
+    if fraction is None:
+        return None
+    numerator, denominator = fraction
+    if denominator.roots(AA):
+        return False
+    return denominator.degree() >= numerator.degree() + 1
+
+
+def _l2_gaussian(expression, variable) -> bool:
+    if expression.operator() is not exp:
+        return False
+    exponent = expression.operands()[0]
+    return (
+        exponent.is_polynomial(variable)
+        and exponent.degree(variable) == 2
+        and bool(exponent.coefficient(variable, 2) < 0)
+    )
+
+
+def _l2_polynomially_bounded(expression, variable) -> bool:
+    if expression.is_polynomial(variable):
+        return True
+    if expression.operator() in (sin, cos):
+        return expression.operands()[0].is_polynomial(variable)
+    return False
+
+
+def _l2_schwartz(expression, variable) -> bool:
+    factors = (
+        expression.operands()
+        if expression.operator() is mul_vararg
+        else (expression,)
+    )
+    return any(_l2_gaussian(factor, variable) for factor in factors) and all(
+        _l2_gaussian(factor, variable)
+        or _l2_polynomially_bounded(factor, variable)
+        for factor in factors
+    )
+
+
+def _l2_bounded(expression, variable) -> bool:
+    if expression.operator() in (sin, cos):
+        return True
+    fraction = _l2_rational_function(expression, variable)
+    if fraction is None:
+        return False
+    numerator, denominator = fraction
+    return (
+        not denominator.roots(AA)
+        and denominator.degree() >= numerator.degree()
+    )
+
+
+def _l2_symbolic_verdict(expression, variable):
+    r"""Return ``True``, ``False`` or ``None`` for membership in ``L^2(RR)``.
+
+    ``None`` means that the supported exact criteria do not decide the
+    formula; construction then remains an explicit placement claim.  In
+    particular, failure of symbolic integration is never interpreted as a
+    proof of nonmembership.
+    """
+    rational = _l2_rational_verdict(expression, variable)
+    if rational is not None:
+        return rational
+
+    if expression.operator() in (sin, cos):
+        argument = expression.operands()[0]
+        if argument.is_polynomial(variable) and argument.degree(variable) == 1:
+            return False
+
+    if _l2_schwartz(expression, variable):
+        return True
+
+    if expression.operator() is add_vararg:
+        verdicts = tuple(
+            _l2_symbolic_verdict(summand, variable)
+            for summand in expression.operands()
+        )
+        if all(verdict is True for verdict in verdicts):
+            return True
+        if verdicts.count(False) == 1 and verdicts.count(None) == 0:
+            return False
+
+    if expression.operator() is mul_vararg:
+        factors = expression.operands()
+        for position, factor in enumerate(factors):
+            others = factors[:position] + factors[position + 1 :]
+            if all(_l2_bounded(other, variable) for other in others):
+                if _l2_symbolic_verdict(factor, variable) is True:
+                    return True
+
+    try:
+        integral = integrate(expression**2, variable, -Infinity, Infinity)
+    except (RuntimeError, TypeError, ValueError):
+        return None
+    if integral is Infinity or integral == Infinity:
+        return False
+    try:
+        if integral.is_numeric():
+            return True
+    except AttributeError:
+        return None
+    return None
 
 
 def _parameter_name(value) -> str:
@@ -829,6 +967,19 @@ class Lp(_FunctionSpace):
         if p == 2:
             self._form = BilinearForms(self, RR)(_l2_pairing)
             self._pairing = self._form
+
+    def _element_constructor_(self, value):
+        element = super()._element_constructor_(value)
+        if self.integrability_exponent() != 2:
+            return element
+        try:
+            expression = element.expression()
+        except ValueError:
+            return element
+        verdict = _l2_symbolic_verdict(expression, self.indeterminate())
+        if verdict is False:
+            raise ValueError(f"{expression} is not square-integrable on RR")
+        return element
 
     def integrability_exponent(self):
         return self._exponent
