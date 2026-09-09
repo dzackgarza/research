@@ -147,15 +147,17 @@ cites others for it.  These are the nodes underneath, read from Baily–Borel 19
 | BB5 | for a rational boundary component $F$, $N(F)_\mathbb{C}$ is a proper maximal parabolic $\mathbb{Q}$-subgroup of $G$ | BB §3 | BB4, BB2 |
 | BB6 | **Theorem 3.8** — the structure statement in the notation of 3.3(ii); **located, not transcribed** | BB 3.8 | BB4 |
 | BB7 | the Satake topology: $X^*$, the union of $X$ with its rational boundary components, carries a topology defined by a suitable fundamental set in $X$, for which each $g \in G_\mathbb{Q}$ acts continuously | BB introduction, after Satake [33] | BB4 |
-| BB8 | **Theorem 10.11**: there is a weight $l$ and finitely many integral automorphic forms of weight $l$ whose extensions to $X^*$ are nowhere simultaneously zero, and the associated map embeds $V^* = X^*/\Gamma$ as a projective variety | BB 10.11 | BB7; automorphic forms |
+| BB8 | **Theorem 10.11**: there is a weight $l$ and finitely many integral automorphic forms of weight $l$ whose extensions to $X^*$ are nowhere simultaneously zero, and the associated map embeds $V^* = X^*/\Gamma$ as a projective variety | BB 10.11 | BB7, AF1–AF13 |
 
 BB3 is what D1 states, BB4 what D2 states, and BB8 is D7.  BB1–BB3 have no
 Mathlib substrate: algebraic groups with their parabolic subgroups, hermitian
 symmetric spaces, Harish-Chandra realizations.
 
-Not descended further here: BB8 rests on the automorphic forms and
-Poincaré–Eisenstein series of BB §§5–8, and BB3 on Korányi–Wolf [27] and the
-other references BB 1.5 cites.  Those are the next descents on this branch.
+BB8's automorphic forms are stratum AF below and BB3's hermitian symmetric
+theory is stratum HS.  What is still not descended on this branch is Korányi–Wolf
+[27] and the other references BB 1.5 cites for the boundary components
+themselves; HS12 states their content with a different onward citation, to AMRT,
+and whether the two agree is unchecked.
 
 ### Stratum AG, from Borel and Borel–Ji — what BB1, BB2, D2 and the goal rest on
 
@@ -270,6 +272,46 @@ manifolds only as `IsManifold` over a model with corners on $\mathbb{C}^n$, and
 develop here"; there is no almost-complex structure, no integrability, no
 geodesic, no Kähler form, and no semisimple Lie group.  Every row of stratum HS
 is greenfield.
+
+#### Stratum AF — the automorphic forms BB8 and D7 rest on
+
+BB8 is Baily–Borel's Theorem 10.11, and its "next dependency" read "BB7;
+automorphic forms".  Everything under that phrase is Baily–Borel Part II and
+§§9–10, read from `Z9PM5MMD`.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| AF1 | an **automorphy factor** for $H$ on a complex manifold $M$ with values in a complex Lie group $Q$: a map $\mu : M\times H\to Q$, holomorphic in $x$ for fixed $h$, satisfying the cocycle identity; the jacobian and its determinant $J(x,h)$ are automorphy factors, and the **canonical** one $\mu_b(x,g) = (e^x c_b g c_b^{-1})_0$ belongs to the unbounded realization $S_b$ | Baily–Borel 1.8 | HS9 |
+| AF2 | functions of **type $\rho$** and of **finite type** with respect to $K$; the universal enveloping algebra as right-invariant differential operators, its centre $\mathcal{Z}(\mathfrak{g})$ as the bi-invariant ones, and **$\mathcal{Z}(\mathfrak{g})$-finiteness** | Baily–Borel 5.1, 5.2 | HS8; universal enveloping algebras — Mathlib `Algebra/Lie/UniversalEnveloping` |
+| AF3 | Harish-Chandra's lemma: a $C^\infty$, $K$-finite, $\mathcal{Z}(\mathfrak{g})$-finite $f$ satisfies $f = f * \alpha$ for some conjugation-invariant $\alpha\in C_c^\infty(U)$ | Baily–Borel 5.3, citing Harish-Chandra | AF2 |
+| AF4 | **Theorem 5.4**: for $\Gamma$ discrete in $H$ and $f\in L^1(H)\otimes V$ that is $\mathcal{Z}(\mathfrak{g})$-finite and $K$-finite on the right, the **Poincaré series** $p_f(g) = \sum_{\gamma\in\Gamma}f(g\gamma)$ and $p_{\|f\|}$ converge absolutely and uniformly on compacta and are bounded | Baily–Borel 5.4 | AF3 |
+| AF5 | Theorem 6.2 and the **Poincaré–Eisenstein series** attached to a rational boundary component; Theorem 7.2: there is $l_0$ such that for every positive multiple $l$ of $l_0$ the series $E_{\varphi,l,\Gamma}\circ g$ converges absolutely and uniformly on compacta | Baily–Borel 6.2, 7.2 | AF4, BB4 |
+| AF6 | Theorem 7.8: the growth estimate for $E$ on a **truncated Siegel domain** adapted to a rational boundary component | Baily–Borel 7.8 | AF5, Rt2 |
+| AF7 | the operator $\Phi_F$; **Theorem 8.6**: a P–E series adapted to $F$ of weight $l$ is an **integral automorphic form**, $\Phi_{F^*}E = 0$ when $\dim F^*\le\dim F$ and $F^*\not\subset F\cdot\Gamma$, and $\Phi_F$ maps the module of P–E series adapted to $F$ onto the module of Poincaré series for $\Gamma(F)$ | Baily–Borel 8.2–8.6 | AF5 |
+| AF8 | **integral automorphic form** (8.3, 8.4): $\omega$ of weight $l$ for $\Gamma_x$ on $X\cap N(x)$ is integral when it **extends** to an automorphic form on $F'\cap N(x)$ for every rational boundary component $F'$ meeting the good neighbourhood $N(x)$ | Baily–Borel 8.3, 8.4 | AF1, BB7 |
+| AF9 | **Proposition 8.8, the separation statement**: for rational boundary components $F$, $F'$ with $\dim F\ge\dim F'$ and either $F = F'$ or $F\not\subset F'\cdot\Gamma$, and $x\in F$, $y\in F'$ inequivalent under $\Gamma$, there is $l_0$ such that for every multiple $l$ there is an integral automorphic form $E$ with $\Phi_F E(x)\ne0$ and $\Phi_{F'}E(y) = 0$ | Baily–Borel 8.8 | AF7 |
+| AF10 | **Theorem 9.2, the analyticity criterion**: for $V$ a locally compact second-countable space, a locally finite disjoint union of irreducible normal analytic spaces $V_i$, the sheaf of $\mathcal{Q}$-functions makes $V$ an analytic space provided (i) each $V_{(d)}$ is closed with $V_0$ dense of full dimension, (ii) each point has a fundamental system of neighbourhoods meeting $V_0$ connectedly, (iii) the $\mathcal{Q}$-functions restrict to the structure sheaf of each $V_i$, and (iv) they separate points locally | Baily–Borel 9.1, 9.2 | normal analytic spaces; **absent from Mathlib** |
+| AF11 | 10.1–10.2: $V^* = X^*/\Gamma$ is the disjoint union of finitely many $V_i = F_i/\Gamma(F_i)$, each an irreducible normal analytic space, so 9.1 applies; and a quotient $\omega/\omega'$ of integral automorphic forms of equal weight with $\omega'$ nonvanishing is a $\mathcal{Q}$-function | Baily–Borel 10.1, 10.2 | AF8, AF10, D6 |
+| AF12 | **Theorem 10.11 (= BB8)**: there are a weight $l$ and finitely many integral automorphic forms $E_i$ of weight $l$ whose extensions to $X^*$ never vanish simultaneously, and the associated map $V^*\to\mathbf{P}(N,\mathbb{C})$ is an isomorphism onto a **normally projective** subvariety | Baily–Borel 10.11 | AF9, AF11 |
+| AF13 | Theorem 10.14: if $G$ has no normal $\mathbb{Q}$-subgroup of dimension 3, the direct image $i_*\mathcal{Q}_\rho$ is an algebraic coherent sheaf, the space of automorphic forms of type $\tilde\xi_\rho$ is **finite dimensional**, and the ring of automorphic forms of positive weight is **finitely generated** | Baily–Borel 10.14 | AF12 |
+
+**AF9 is what makes the boundary complex a compactification rather than a
+quotient.**  It is the statement that automorphic forms separate boundary
+components of different dimension, and it is exactly the separation condition
+(iv) that AF10 needs.  The strata this graph counts are the $V_i$ of AF11, and
+the finiteness of that list is where "five and nine" acquires its meaning as a
+statement about a projective variety.
+
+$G$ here is $O(L_-)$, of dimension 66, so AF13's hypothesis is satisfied and the
+ring of automorphic forms is finitely generated — worth recording since Sterk's
+Chapter 3 works with that ring.
+
+Substrate: Mathlib has universal enveloping algebras (`Algebra/Lie/
+UniversalEnveloping`) and modular forms for $\mathrm{SL}_2(\mathbb{Z})$, and
+nothing else on this list: no automorphy factor, no Poincaré series, no normal
+analytic space, no coherent sheaf on one.  `CBirkbeck/ModularForms_Lean4` and
+`loefflerd/ModularFormDimensions` are the nearest registry entries and are about
+the rank-one case.
 
 ### Stratum Cl — the classical inputs Chap. 2 cites
 
@@ -786,8 +828,10 @@ subdiagram *of type $\tilde E_8$, of rank 8* needs it.  What is genuinely free
 of it is smaller: the roots, their Gram matrix, and that the restricted form is
 negative semidefinite with a one-dimensional radical per component — which is
 what the Sage reconstruction computes.  Naming the type is not free, and the
-node that would carry the classification is one of the two deleted as
-fabricated, so it is currently unrecorded.
+node that carries the classification is **V10**, Coxeter's list of the
+nondecomposable $C^+$ and $C^0$ matrices by diagram with their rank subscripts,
+cited to Vinberg 1975 §4.  This paragraph previously said the node was
+unrecorded; V10 records it.
 
 ## Terminality verdicts
 
@@ -840,6 +884,7 @@ probability, geometry, dynamics*; *Category theory, higher structures*.
 | V1–V13 | $C^\pm$/$C^0$ matrices, $C^-$-polyhedra, Lemmas 2–5, Theorem 1 with (L1)–(L5), Coxeter's diagram classification, Vinberg's algorithm and Proposition 4, the infinite-vertex recovery and its primitivity lemma | Mathlib has finite Cartan matrices and Coxeter groups; **no affine classification, no fundamental polyhedron** |
 | Lo2, Lo4–Lo9 | Lobachevskii space as the rays in the negative cone, its planes and halfspaces, polyhedral angles, boundedness and finite volume, the hyperboloid metric, and reflection cells | Mathlib has quadratic forms with `sigPos`/`sigNeg` and Sylvester's law of inertia, and convex cones with duals, so Lo1 and Lo3 are within reach; there is **no hyperbolic space in any model** |
 | BB1–BB8 | parabolic $\mathbb{Q}$-subgroups, hermitian symmetric domains, Harish-Chandra realizations, rational boundary components, the Satake topology, Baily–Borel's Theorem 10.11 | nothing — the registry has no algebraic-groups-with-parabolics corpus and no symmetric-space corpus |
+| AF1–AF13 | automorphy factors, $\mathcal{Z}(\mathfrak{g})$-finiteness, Poincaré and Poincaré–Eisenstein series, integral automorphic forms and the $\Phi$ operator, the analyticity criterion, and the projective embedding | Mathlib has universal enveloping algebras and modular forms for $\mathrm{SL}_2(\mathbb{Z})$; `CBirkbeck/ModularForms_Lean4` and `loefflerd/ModularFormDimensions` are the nearest registry entries, both rank one |
 | AG1–AG19 | $k$-structures and Galois descent, tori and $k$-split tori, Borel and parabolic subgroups, unipotent radicals and Levi decompositions, Tits systems, the relative root system and $k$-rank, the spherical Tits building and its dimension | Mathlib has affine and smooth group schemes, root systems and Coxeter groups, and nothing above them; `chrisflav/bruhat-tits` is the nearest registry entry and builds the Bruhat–Tits tree of $\mathrm{SL}_2$ over a local field |
 | HS1–HS16 | almost-complex structures and Newlander–Nirenberg, Hermitian and Kähler structures, geodesic symmetries, semisimple Lie groups with their Cartan involutions, the Harish-Chandra and Borel embeddings, boundary components and the 5-term decomposition of a normalizer, symmetric cones and Euclidean Jordan algebras | Mathlib has `IsManifold` over `𝓘(ℂ, E)`, the `LieGroup` class, and a two-file Riemannian tree (`Riemannian/Basic`, `Riemannian/PathELength`) with no geodesics; `Geometry/Manifold/Complex.lean` says of itself "There is a whole theory to develop here" |
 | Bo1–Bo5, Ky1–Ky8 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance and hyperbolic imbedding | nothing; `kebekus/ProjectVD` covers Nevanlinna theory, adjacent but not these statements |
