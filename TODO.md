@@ -1622,7 +1622,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-ringed-spaces-20260909-1514` | archive reconciliation / ringed and locally ringed space semantics | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/schemes/test_ringed_spaces_archive.py` (write) | `HEAD` | 2026-09-09T15:14:00Z |
 
 
 
