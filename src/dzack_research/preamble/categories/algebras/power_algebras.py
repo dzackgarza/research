@@ -146,7 +146,7 @@ class PowerAlgebra(GradedDirectSumModule):
             return self.from_component(1, self.free_source_module()(value))
         try:
             scalar = self.base_ring()(value)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             if isinstance(value, dict):
                 return GradedDirectSumModule._element_constructor_(self, value)
             raise TypeError(f"{value!r} does not define an element of {self}") from None

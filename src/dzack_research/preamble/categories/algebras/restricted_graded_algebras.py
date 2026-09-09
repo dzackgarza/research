@@ -73,7 +73,7 @@ class RestrictedGradedAlgebra(GradedDirectSumModule):
         try:
             degree_zero_labels = self.degree_zero_algebra().algebra_generating_set()
             degree_one_labels = extension_algebra.free_source_module().module_generating_set()
-        except AttributeError, TypeError:
+        except (AttributeError, TypeError):
             self._preamble_algebra_generating_set = None
         else:
             framing = CoproductOfFamily(

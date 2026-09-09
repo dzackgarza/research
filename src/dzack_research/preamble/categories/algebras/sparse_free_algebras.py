@@ -536,7 +536,7 @@ class SparseFreeAlgebra(Parent):
             return result
         try:
             scalar = self.base_ring()(value)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             if isinstance(value, dict):
                 return self._from_dict(value)
             raise TypeError(f"{value!r} does not define an element of {self}") from None

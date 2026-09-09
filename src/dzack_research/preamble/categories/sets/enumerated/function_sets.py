@@ -192,7 +192,7 @@ class IndexedSymbolicFunctionSet(UniqueRepresentation, Parent):
     def __contains__(self, element):
         try:
             self.ranking_map()(element)
-        except IndexError, TypeError, ValueError:
+        except (IndexError, TypeError, ValueError):
             return False
         return True
 

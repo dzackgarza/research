@@ -118,7 +118,7 @@ class _FormalSymbols(UniqueRepresentation, Parent):
     def __contains__(self, elt):
         try:
             self.ranking_map()(elt)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         return True
 
@@ -461,7 +461,7 @@ class Lattice(Parent, IndexedGenerators):
                     key=lambda term: print_options["sorting_key"](term[0]),
                     reverse=print_options["sorting_reverse"],
                 )
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 pass
             return terms
 

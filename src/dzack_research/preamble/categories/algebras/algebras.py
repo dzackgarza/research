@@ -1329,7 +1329,7 @@ class AlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             _ = self_on_left
             try:
                 scalar = self.parent().base_ring()(actor)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 return None
             return self.parent().scalar_multiple(scalar, self)
 
