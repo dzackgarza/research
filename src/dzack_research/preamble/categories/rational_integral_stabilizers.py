@@ -53,21 +53,18 @@ generator images in the ``QQ``-framing that ``V`` carries; ``Res(V)`` has no
 framing of its own, being divisible and so not finitely generated over ``ZZ``,
 and none is needed.
 
-What each row needs now.  ``integral_stabilizer`` needs nothing further: it is
-definitional, decided on the finite module generators of ``L`` as described at
-its own site.  :class:`FiniteCommensurabilityQuotient` now owns the structural
-finite quotient ``F_M=M/dM``, its quotient map, the action ``rho`` for a
-represented reference lattice through its actual stabilizer ``G_M``, and every
-intermediate subgroup ``S_L=L/dM``.  The transporter, right cosets and double cosets still need the
-finite image together with the integralization/lifting algorithm that turns a
-finite-quotient representative into an actual element of the specified
-rational group.  For ``G=O(V)`` and full-rank integral lattices, the existing
-OSCAR integral-isometry witness now supplies a transporter and is conjugated
-through the actual lattice embeddings into a live element of ``O(V)``.  A
-proper prescribed rational subgroup still requires the separate lifting
-theorem.  ``polyhedral_common`` carries that arithmetic as
-``01_RatIntAutomorphy`` and ``sage-indefinite-port`` is the planned native
-provider.
+The structural finite quotient remains available locally through
+:class:`FiniteCommensurabilityQuotient`.  For a proper finitely generated
+rational isometry group, ``sage-indefinite-port`` now supplies the T2
+``IntegralStructureAction``: it constructs the invariant over-lattice, the
+exponent and finite submodule action, lifts the lattice stabilizer and
+transporters back to live rational isometries, and returns ``G/G_L`` and
+``V \ G / G_L`` with their sides retained.  This file reaches that operation
+through the lazy lattice-engine capability boundary; it does not import the
+port directly.  For ``G=O(V)`` and full-rank integral lattices, the existing
+OSCAR integral-isometry witness remains the direct transporter specialization.
+Predicate-only rational subgroups with no represented generating family still
+do not satisfy the T2 input contract and are refused rather than approximated.
 
 One further gap bounds the argument these operations take.  The preamble names
 no general linear group of a module: ``module_homset(V, V)`` is the
@@ -100,22 +97,40 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 _ABSENCE = (
-    "the structural objects exist: Res(V) holds L and M as two subobjects, "
-    "d M <= L <= M is verified by factorization, and a reference M has the "
-    "represented finite quotient F_M=M/dM with its G_M-action functor and "
-    "intermediate subgroup S_L.  This row is not complete: it still needs the "
-    "finite action image together with the integralization algorithm that lifts "
-    "the required quotient representative to an actual element of a prescribed "
-    "proper G.  The full O(V), full-rank case uses the OSCAR integral-isometry "
-    "witness directly.  The remaining general lifting operation is the one "
-    "polyhedral_common carries as 01_RatIntAutomorphy and sage-indefinite-port "
-    "will supply through the capability layer.  For a stabilizer inside one "
-    "lattice use the predicate subgroups of O(L); for the orbit splitting of a "
-    "finite-index subgroup of O(L) use the finite character quotient of "
-    "orthogonal_quotients"
+    "the structural finite quotient exists, but a prescribed proper rational "
+    "group must either be the T2 RationalMatrixGroup supplied by "
+    "sage-indefinite-port or have another exact integralization provider.  "
+    "Predicate-only subgroups with no represented generating family cannot be "
+    "recovered by bounding denominators or filtering ambient generators"
 )
+
+
+def _ported_rational_group(rational_group):
+    r"""Return the T2 rational-group carrier, or ``None`` for a preamble group."""
+    try:
+        rational_group.rational_lattice()
+        rational_group.generators()
+    except AttributeError:
+        return None
+    return rational_group
+
+
+def _ported_integral_structure(rational_group, lattice_inclusion):
+    r"""Reach T2 through the registered lazy provider without importing it here."""
+    selected = _ported_rational_group(rational_group)
+    match selected:
+        case None:
+            raise NotImplementedError(_ABSENCE)
+        case _:
+            return engine_capabilities.compute(
+                "lattice.rational_integral_structure",
+                selected,
+                lattice_inclusion,
+            )
+
 
 
 class FiniteCommensurabilityQuotient(SageObject):
@@ -384,6 +399,14 @@ def integral_stabilizer(rational_group, lattice_inclusion):
     lift.  Nothing is enumerated, so the subgroup is constructed for an
     infinite ``G`` as well.
     """
+    match _ported_rational_group(rational_group):
+        case None:
+            pass
+        case _:
+            return _ported_integral_structure(
+                rational_group, lattice_inclusion
+            ).lattice_stabilizer()
+
     from dzack_research.preamble.categories.group.predicate_subgroups import (
         predicate_subgroup,
     )
@@ -440,26 +463,37 @@ def integral_transporter(rational_group, source_inclusion, target_inclusion):
                 source_inclusion,
                 target_inclusion,
             )
-    assert False, (
-        f"an integral transporter in {rational_group} from {source_inclusion} "
-        f"to {target_inclusion} is not computed: {_ABSENCE}"
-    )
+    match _ported_rational_group(rational_group):
+        case None:
+            raise NotImplementedError(
+                f"an integral transporter in {rational_group} from {source_inclusion} "
+                f"to {target_inclusion} is not computed: {_ABSENCE}"
+            )
+        case _:
+            return _ported_integral_structure(
+                rational_group, source_inclusion
+            ).transporter(source_inclusion, target_inclusion)
 
 
 def integral_right_cosets(rational_group, lattice_inclusion):
-    r"""Return a transversal of the right cosets of ``G_L`` in ``G``."""
-    assert False, (
-        f"the right cosets of the {rational_group}-stabilizer of "
-        f"{lattice_inclusion} are not computed: {_ABSENCE}"
-    )
+    r"""Return ``G/G_L`` with the stabilizer explicitly on the right."""
+    return _ported_integral_structure(
+        rational_group, lattice_inclusion
+    ).right_cosets()
 
 
 def integral_double_cosets(subgroup, rational_group, lattice_inclusion):
-    r"""Return a transversal of ``V \\ G / G_L`` on the finite quotient of ``M``."""
-    assert False, (
-        f"the double cosets of {subgroup} in {rational_group} and the integral "
-        f"stabilizer of {lattice_inclusion} are not computed: {_ABSENCE}"
-    )
+    r"""Return ``subgroup \\ G / G_L`` with all three sides retained."""
+    action = _ported_integral_structure(rational_group, lattice_inclusion)
+    try:
+        ambient = subgroup.supergroup()
+    except AttributeError as error:
+        raise TypeError("the left double-coset factor must be a represented subgroup") from error
+    match ambient is rational_group:
+        case False:
+            raise ValueError("the left subgroup must have the selected rational group as ambient")
+        case True:
+            return action.double_cosets(subgroup)
 
 
 __all__ = [

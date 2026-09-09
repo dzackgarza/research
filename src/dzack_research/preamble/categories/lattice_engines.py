@@ -694,6 +694,12 @@ _PORT_REALIZATIONS = (
         None,
         None,
     ),
+    (
+        "lattice.rational_integral_structure",
+        "MatrixIntegral_* / GroupAction.g",
+        "sage_indefinite_port.groups.integral_structures",
+        "integral_structure_action_for_group",
+    ),
 )
 
 for _capability, _kernel, _module, _attribute in _PORT_REALIZATIONS:
