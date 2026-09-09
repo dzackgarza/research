@@ -62,3 +62,68 @@ def test_archive_divided_ideal_degree_includes_divided_relations() -> None:
 
     divided_relation = divided.divided_power(2 * x, 3)
     assert any(generator == divided_relation for generator in degree_three)
+
+
+def test_archive_free_algebra_retains_its_selected_generating_set() -> None:
+    from dzack_research.preamble.all import FreeAlgebraOn
+
+    labels = finite_ordered_set(("a", "b", "c"))
+    algebra = FreeAlgebraOn(QQ, labels)
+
+    assert algebra.algebra_generating_set() is labels
+    assert tuple(algebra.algebra_generators()) == tuple(
+        algebra.algebra_generator(label) for label in labels
+    )
+    assert algebra.algebra_generator_morphism().domain() is labels
+
+
+def test_archive_free_algebra_map_is_determined_on_generators_and_extends_multiplicatively() -> None:
+    from dzack_research.preamble.all import FreeAlgebraOn
+
+    source_labels = finite_ordered_set(("x", "y"))
+    target_labels = finite_ordered_set(("u", "v", "w"))
+    source = FreeAlgebraOn(QQ, source_labels)
+    target = FreeAlgebraOn(QQ, target_labels)
+    morphism = source.Mor(target)(
+        {
+            "x": target.algebra_generator("v"),
+            "y": target.algebra_generator("w"),
+        }
+    )
+
+    assert morphism.domain() is source
+    assert morphism.codomain() is target
+    assert morphism.algebra_generator_morphism()("x") == target.algebra_generator("v")
+    assert morphism.algebra_generator_morphism()("y") == target.algebra_generator("w")
+    assert morphism(source.algebra_generator("x") * source.algebra_generator("y")) == (
+        target.algebra_generator("v") * target.algebra_generator("w")
+    )
+
+
+def test_archive_free_algebra_morphisms_compose_and_have_the_expected_identity() -> None:
+    from dzack_research.preamble.all import FreeAlgebraOn
+
+    source = FreeAlgebraOn(QQ, finite_ordered_set(("x", "y")))
+    middle = FreeAlgebraOn(QQ, finite_ordered_set(("u", "v")))
+    target = FreeAlgebraOn(QQ, finite_ordered_set(("s", "t")))
+
+    first = source.Mor(middle)(
+        {
+            "x": middle.algebra_generator("v"),
+            "y": middle.algebra_generator("u"),
+        }
+    )
+    second = middle.Mor(target)(
+        {
+            "u": target.algebra_generator("s"),
+            "v": target.algebra_generator("t"),
+        }
+    )
+    composite = second * first
+    identity = source.Mor(source).identity()
+
+    assert composite(source.algebra_generator("x")) == target.algebra_generator("t")
+    assert composite(source.algebra_generator("y")) == target.algebra_generator("s")
+    assert identity.is_identity()
+    assert identity(source.algebra_generator("x")) == source.algebra_generator("x")
+    assert first * identity == first
