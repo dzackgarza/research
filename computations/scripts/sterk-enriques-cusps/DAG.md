@@ -108,10 +108,9 @@ $(v, F)$, not on $F$.
 
 ## Stratum D — from sublattices to boundary components
 
-Read from Scattone §2 (`SF7T3C8G`), which states the specialization this graph
-needs — the orthogonal-group case — rather than Baily–Borel's general theory of
-bounded symmetric domains.  Baily–Borel 1966 (`Z9PM5MMD`) remains the home of
-D7 only.
+Read from Scattone §2 (`SF7T3C8G`), which states these in the orthogonal-group
+form.  Scattone states them and cites others for them, so stratum BB below
+carries what they rest on.
 
 | Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
@@ -121,7 +120,7 @@ D7 only.
 | D4 | the basis and the realization may be chosen so that rationality is preserved: rational boundary components correspond to isotropic subspaces of $L_\mathbb{Q}$, identified with $I(L)$, the primitive isotropic sublattices of $L$ | Scattone §2 | D2, D3 |
 | D5 | **the bijection $I(L) \leftrightarrow \mathcal{B}(D)$ preserves incidence**: if $E \leftrightarrow F$ and $E' \leftrightarrow F'$ then $E \subset E' \iff F \subseteq \partial F'$ | Scattone §2 | D4 |
 | D6 | the action of $\Gamma$ on rational boundary components corresponds to its action on $I(L)$, so the boundary components of $D_k/\Gamma_k$ are in bijection with the $\Gamma$-equivalence classes of primitive isotropic sublattices | Scattone §2 | D5 |
-| D7 | the Baily–Borel compactification: $D \cup \mathcal{B}(D)$ carries a topology making $\overline{D/\Gamma}$ a normal projective variety | Baily–Borel 1966 — **not read**; §1.3 (maximal parabolic subgroups), §1.5 (boundary components) and the main theorem are where to check | D2 |
+| D7 | the Baily–Borel compactification: $D \cup \mathcal{B}(D)$ carries a topology making $\overline{D/\Gamma}$ a normal projective variety | Scattone §2; proved in Baily–Borel — see BB8 | D2, BB8 |
 | D8 | `S` 3.3.19, 3.3.20 — $\Gamma(E) \cap SL(E) \cong \Gamma^1(2)$, so each one-dimensional component is $\mathbb{H}/\Gamma^1(2)$, with no identification among its cusps | Sterk | D6, C11, B3 |
 
 **D5 is the node that was smuggled into `def Incident N P := N ≤ P`.**  It is a
@@ -133,11 +132,30 @@ D6 is what makes the target a statement about $\Gamma$-orbits at all.  D1 and D2
 are the nodes with no Mathlib substrate whatever: they need complex analytic
 sets and $\mathbb{Q}$-structures on algebraic groups.
 
-Using Scattone here rather than Baily–Borel is deliberate.  The general theory
-quantifies over bounded symmetric domains and their $\mathbb{R}$-root systems;
-what this graph needs is the orthogonal-group case, and Scattone states it in
-that form, so the audit is against a source that says the thing rather than a
-source it specializes from.
+### Stratum BB, from Baily–Borel — what D1, D2 and D7 rest on
+
+Scattone §2 *states* the correspondence D1–D6 use; it does not prove it, and
+cites others for it.  These are the nodes underneath, read from Baily–Borel 1966
+(`Z9PM5MMD`).
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| BB1 | a parabolic $k$-subgroup: an algebraic subgroup $P \le G$ with $G/P$ projective; such a $P$ is connected, equal to its own normalizer, and is the normalizer of its unipotent radical | BB 2.2 | algebraic groups, projective varieties; **absent from Mathlib** |
+| BB2 | a parabolic subgroup of $G^0_\mathbb{R}$ is its intersection with an algebraic parabolic $P \le G$ defined over $\mathbb{R}$; every maximal proper parabolic subgroup of $G^0_\mathbb{R}$ is conjugate to one and only one of the $P_b$ | BB 1.3 | BB1 |
+| BB3 | boundary components: $X_b = K_b\backslash L_b$ is hermitian symmetric with Harish-Chandra realization $D_b$; $\bar D = \bigcup_{0\le b\le t} o_b \cdot G^0_\mathbb{R}$; the orbit $F_b$ of $o_b$ under $L_b$ is $o_b + D_b$, and the boundary components are the transforms of the $F_b$ | BB 1.5, citing [27], [29], [30] | BB2; hermitian symmetric spaces |
+| BB4 | **Theorem 3.7**: a boundary component $F$ of $X$ is rational **iff** $N(F)_\mathbb{C}$ is defined over $\mathbb{Q}$; if $F$ is rational then $\Gamma(F)$ is of arithmetic type; and the map $F \mapsto N(F)_\mathbb{C}$ … — **tail not transcribed** | BB 3.7 | BB3 |
+| BB5 | for a rational boundary component $F$, $N(F)_\mathbb{C}$ is a proper maximal parabolic $\mathbb{Q}$-subgroup of $G$ | BB §3 | BB4, BB2 |
+| BB6 | **Theorem 3.8** — the structure statement in the notation of 3.3(ii); **located, not transcribed** | BB 3.8 | BB4 |
+| BB7 | the Satake topology: $X^*$, the union of $X$ with its rational boundary components, carries a topology defined by a suitable fundamental set in $X$, for which each $g \in G_\mathbb{Q}$ acts continuously | BB introduction, after Satake [33] | BB4 |
+| BB8 | **Theorem 10.11**: there is a weight $l$ and finitely many integral automorphic forms of weight $l$ whose extensions to $X^*$ are nowhere simultaneously zero, and the associated map embeds $V^* = X^*/\Gamma$ as a projective variety | BB 10.11 | BB7; automorphic forms |
+
+BB3 is what D1 states, BB4 what D2 states, and BB8 is D7.  BB1–BB3 have no
+Mathlib substrate: algebraic groups with their parabolic subgroups, hermitian
+symmetric spaces, Harish-Chandra realizations.
+
+Not descended further here: BB8 rests on the automorphic forms and
+Poincaré–Eisenstein series of BB §§5–8, and BB3 on Korányi–Wolf [27] and the
+other references BB 1.5 cites.  Those are the next descents on this branch.
 
 ## Goal
 
@@ -292,8 +310,8 @@ the library holds Vinberg 1983 *The two most algebraic K3 surfaces*
 
 ### Still missing from this stratum
 
-Baily–Borel (`Z9PM5MMD`) has not been read; D1–D6 are now sourced to Scattone §2,
-leaving D7 as the one node still resting on it.  Niemeier’s classification (F4.1) has no
+Baily–Borel is decomposed as stratum BB above; its own next descents are BB SSSS5–8
+and Korányi–Wolf.  Niemeier’s classification (F4.1) has no
 source assigned; the library holds Conway–Sloane, *Sphere Packings, Lattices and
 Groups* (`T2WVLTDB`), the obvious candidate, unchecked.  Nikulin (`TTY9FFJS`)
 has not been read, so F1.3, F1.4, F3.2 and A3 rest on Scattone's citations of
