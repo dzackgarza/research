@@ -45,12 +45,58 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 class CochainComplexes(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The free module of rank one in degree zero, with zero differential."""
-        from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplex
         from dzack_research.preamble.categories.modules.pure.modules import Modules
 
         ring = self.base_ring()
         free = Modules(ring).an_object()
-        return CochainComplex(ring, {0: free}, {})
+        return self({0: free}, {})
+
+    def _call_(self, pieces, differentials, name=None):
+        r"""Construct a finite-support cochain complex from its defining data.
+
+        A dictionary of pieces is a declaration that every unlisted integer
+        degree is the zero module.  The differentials are the selected maps
+        ``C^p -> C^(p+1)``; omitted maps between represented zero pieces are
+        zero.  This category constructor is the authoritative finite-support
+        construction.  :func:`CochainComplex` is notebook notation for this
+        operation, not a second factory.
+        """
+        if not isinstance(pieces, dict) or not isinstance(differentials, dict):
+            raise TypeError(
+                "the ordinary cochain-complex constructor requires dictionaries; "
+                "use CochainComplexes(R).from_family for a lazy integer family"
+            )
+        return CochainComplexObject(
+            self.base_ring(),
+            pieces,
+            differentials,
+            name=name,
+        )
+
+    def from_family(self, pieces, differentials, name=None):
+        r"""Construct a lazy integer-graded complex from two indexed families.
+
+        Unlike :meth:`_call_`, this construction does not assert that degrees
+        absent from a finite dictionary are zero: the supplied families define
+        the piece and outgoing differential in every owned integer degree.
+        """
+        if not isinstance(pieces, IndexedFamily) or not isinstance(
+            differentials, IndexedFamily
+        ):
+            raise TypeError(
+                "a family cochain complex requires indexed families of pieces and differentials"
+            )
+        if pieces.index_set() is not differentials.index_set():
+            raise ValueError(
+                "the piece and differential families require one degree index set"
+            )
+        return CochainComplexObject(
+            self.base_ring(),
+            pieces,
+            differentials,
+            name=name,
+            degree_index_set=pieces.index_set(),
+        )
 
     @classmethod
     def _repr_object_names(cls):
@@ -571,7 +617,8 @@ def cochain_homset(domain, codomain):
 
 
 def CochainComplex(base_ring, pieces, differentials, name=None):
-    return CochainComplexObject(base_ring, pieces, differentials, name=name)
+    r"""Notebook notation for ``CochainComplexes(base_ring)(pieces, differentials)``."""
+    return CochainComplexes(base_ring)(pieces, differentials, name=name)
 
 
 def CochainComplexFromFamily(base_ring, pieces, differentials, name=None):
@@ -581,18 +628,10 @@ def CochainComplexFromFamily(base_ring, pieces, differentials, name=None):
     degrees to be zero.  The two indexed families provide the actual component
     module and outgoing differential at every degree of their common index set.
     """
-    if not isinstance(pieces, IndexedFamily) or not isinstance(
-        differentials, IndexedFamily
-    ):
-        raise TypeError(
-            "a family cochain complex requires indexed families of pieces and differentials"
-        )
-    return CochainComplexObject(
-        base_ring,
+    return CochainComplexes(base_ring).from_family(
         pieces,
         differentials,
         name=name,
-        degree_index_set=pieces.index_set(),
     )
 
 
