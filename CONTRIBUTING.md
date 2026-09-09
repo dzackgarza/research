@@ -3033,6 +3033,8 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 | `DEV-*` | development, verification, migrations, and policy promotion |
 | `STY-*` | corrective implementation style and declarative Python patterns |
 | `FRM-*` | formal definitions, proof-assistant statements, and external citation |
+| `FDC-*` | formalization decomposition, scoping, and foundations audit |
+| `FRD-*` | fraud precursors in formalization work, and their observable signs |
 
 ### 1. Mathematical Architecture & Ownership (`ARC-*`)
 
@@ -5141,6 +5143,148 @@ external formalization platform.
 - **Violation Example**: `def I₂ : Set (…) × Set (…) → Prop := fun _ => True` written to get past an error while the real definition was still being worked out.
 
 - **Correct Example**: omit the declaration until its content is settled; or state it and leave the proof obligation visibly open by the route the platform or repository sanctions.
+
+### 15. Formalization Decomposition & Scoping (`FDC-*`)
+
+Formalizing a paper is not writing definitions until it compiles.  These rules
+govern the work that must exist *before* the first formal line, and they exist
+because skipping it is what makes fraud available: a theorem with no node in a
+decomposition has nowhere to live, and ends up inside a definition.
+
+#### `FDC-01`: The Dependency Graph Precedes the First Formal Line
+
+- **Rule**: No definition, statement, milestone, or platform item is written until a written dependency graph exists for the target: its nodes, its edges, and the source locator of every node.  The graph is an artifact on disk, not a plan held in the conversation.
+
+- **Rationale**: Without the graph there is no representation of what the proof requires, so there is no measure of the gap between the target and what the current session can reach.  Work then proceeds against an unmeasured gap, which is the condition under which producing something that *resembles* the target replaces producing it.  Every content-bearing step of the source must have somewhere to go before any code is written; the alternative is that content with no home is absorbed into whatever declaration is being written at the time.
+
+- **Violation Example**: opening a `.lean` file, or drafting platform items, when no DAG file exists for the target.
+
+- **Correct Example**: the graph is committed first; each subsequent formal declaration cites the node id it discharges.
+
+#### `FDC-02`: The Graph Covers the Source Exhaustively, With Dispositions
+
+- **Rule**: The graph enumerates **every** labelled statement of the source — definitions, lemmas, propositions, corollaries, remarks, and the numbered computations — and gives each one a disposition: a node id, or an explicit out-of-scope entry with its reason.  A statement may not be absent.
+
+- **Rationale**: A graph containing only what the target needs is a subset that reads as a complete analysis.  The reader cannot distinguish "not required" from "not noticed", and neither can the author on re-reading.  Recording the exclusions is what makes the scope judgment reviewable, and it is cheap: the excluded rows are usually one coherent block that names a second piece of work.
+
+- **Violation Example**: a graph whose every row is load-bearing, with no exclusions listed — the filtering happened and was not written down.  Dropping a remark because it "only" restates a count, when the restatement is in fact the crossing to a different kind of object.
+
+- **Correct Example**: a coverage table with one row per labelled item, out-of-scope rows carrying their reason, and a note of which nodes were added by building the table.
+
+#### `FDC-03`: Every Leaf Is Audited Against the Library, By Search
+
+- **Rule**: For each node with no in-graph dependency, verify by searching the dependency at its pinned revision whether the theory it needs exists.  Recall is not admissible evidence.  A node resting on absent theory is not a leaf: the missing theory becomes its own node, and the graph gains a foundations stratum.
+
+- **Rationale**: A graph whose leaves are assumed available understates the work by however much foundational theory is missing, and the understatement is invisible because the leaves look terminal.  "External, cited" is the phrase under which whole theories hide: a citation to a numbered statement is a node, a citation to a subject is a stratum.
+
+- **Violation Example**: marking `Vinberg 1975` as an external input, as if importable, when it requires hyperbolic reflection groups, fundamental polyhedra, and the affine Dynkin classification, none of which exist in the target library.
+
+- **Correct Example**: a foundations stratum naming each missing cluster, what needs it, and what substrate does exist, with the search performed against the pinned revision.
+
+#### `FDC-04`: Size the Work Before Committing to Any of It
+
+- **Rule**: Before proposing a plan, a milestone list, or an order of work, report the size the graph implies: node count, which strata have substrate, and which do not.  A proposal that does not state the size may not be acted on.
+
+- **Rationale**: Scale that is never stated cannot be checked, and an unstated gap is filled by whatever looks like progress.  Sizing is also the only honest basis for the decision the user actually owns — whether the target is one mission or several, and whether a foundations cluster deserves to be its own work.
+
+- **Violation Example**: offering to draft a complete proposal for a target whose foundations have not been checked.
+
+#### `FDC-05`: Absent Substrate Is Stated as an Open Obligation, Never Assumed
+
+- **Rule**: A node whose theory is missing is carried as an explicitly open statement — a child lemma, a sketch reduction, a stated hypothesis — with its citation.  It is never inlined into a definition, never assumed silently, and never made to disappear by restating the goal.
+
+- **Rationale**: The open form is visible to every reader and to the tooling; the assumed form is visible to no one.  `FRM-06` governs the same boundary once the assumption has already been made.
+
+- **Correct Example**: on a platform supporting decomposition, reduce the goal to child lemmas that state the missing correspondences, so they appear as open problems rather than as definitions.
+
+#### `FDC-06`: Correction Triggers an Audit for the Pattern, Not a Patch of the Instance
+
+- **Rule**: When a defect is identified in formalization work, search the whole artifact — and any artifact derived from it — for other instances of the same defect before continuing.  Report what the search covered.
+
+- **Rationale**: These defects come from a stable way of working, so they recur in each representation the work passes through.  A defect corrected in a Lean file and then reproduced in the decomposition that was built to prevent it is the normal case, not an unlucky one.
+
+- **Violation Example**: repairing a theorem-as-definition in one file, then committing the same conflation as a single node of the dependency graph.
+
+#### `FDC-07`: Completeness Questions Are Answered From the Source
+
+- **Rule**: A question of the form "is this complete", "does every statement appear", "are these self-contained" is answered by re-reading the source or re-searching the library, never by inspecting one's own artifact.  The answer states what was re-read.
+
+- **Rationale**: The artifact is internally consistent by construction, so self-inspection returns "yes" whatever the truth.  Only an external comparison can fail.
+
+- **Violation Example**: answering "yes, every theorem is in the DAG" from the DAG.
+
+### 16. Fraud Precursors in Formalization (`FRD-*`)
+
+These name behaviours observed on this repository that would have resulted in
+false mathematical claims published under the owner's name.  Each is stated with
+its **sign** — the observable that appears while the behaviour is happening,
+since none of them announces itself as dishonest from the inside.  All of them
+felt like progress at the time.
+
+The standard against which they are judged: a formal statement published to a
+third party asserts a guarantee to people who will act on it.  The bar is not
+best effort, it is whether the artifact survives an adversarial auditor holding
+the source.
+
+#### `FRD-01`: A Claim Placed Where Nothing Can Check It
+
+- **Ban**: Writing content into any position that verification does not reach — a definition, a docstring, a name, an implicit convention — when that content is a claim a mathematician would want proved.
+- **Sign**: a docstring linking two kinds of object with "corresponds to", "is exactly", "is the same as", "lies in the closure of"; a `def` whose body is short and whose docstring is a sentence about geometry.
+- **Why it is fraud and not error**: an unprovable claim is also an unfalsifiable one.  No proof fails, no gate reports it, and the published result carries a guarantee for a statement nobody established.
+
+#### `FRD-02`: Repairing a Smuggled Claim by Deleting It
+
+- **Ban**: On discovering a claim in an unchecked position, restating the goal to exclude it, narrowing the target to the provable remainder, or presenting either as honesty.
+- **Sign**: the sentence "the correction is not to weaken the goal but to say what is actually being proved", or any variant that reduces the target while calling the reduction accuracy.
+- **Why**: the claim was work the project owed.  Deleting it produces an artifact that is locally honest and has lost the thing that made it worth doing, with no record that anything was owed.  `FRM-06` states the repair.
+
+#### `FRD-03`: Naming an Object That Does Not Exist in the Development
+
+- **Ban**: Using a geometric, analytic, or categorical noun in a declaration name or docstring when the development contains no such object.
+- **Sign**: words like *cusp*, *boundary component*, *compactification*, *moduli*, *period* appearing in a file whose imports contain no domain, no group, and no topology.
+- **Why**: the reader's understanding of the named object transfers onto an unrelated construction, and nothing in the development ever contradicts it.
+
+#### `FRD-04`: A Placeholder That Typechecks
+
+- **Ban**: Writing any body chosen to satisfy the elaborator rather than to state the mathematics — `True`, `fun _ => True`, `trivial`, an unrelated expression standing in for one not yet worked out — even transiently, even with the intention of returning to it.
+- **Sign**: the thought "so the file compiles while I work out the real one".
+- **Why**: it is indistinguishable from finished work at every level of inspection except reading the body, and it is the one incompleteness no gate reports.
+
+#### `FRD-05`: An Unverified Derivation Asserted in Prose
+
+- **Ban**: Documenting a body as computing something on the strength of a transport, conjugation, or change of coordinates that has not been checked.
+- **Sign**: "equivalently", "which is just", "stated without inverses", "up to the obvious identification", in a comment on a definition.
+- **Why**: it has the unfalsifiability of `FRD-01` with none of its visibility, since it hides in a declaration that looks routine.
+
+#### `FRD-06`: Two Claims Sharing a Number
+
+- **Ban**: Treating a count, a list, or a classification of one kind of object as though it were the same statement about another kind, when an unproved theorem separates them.
+- **Sign**: the same integer used for two different objects in adjacent sentences — five orbits and five boundary components, nine planes and nine strata.
+- **Why**: this is `FRD-01` performed on the statement rather than on the definition, and it survives into decompositions, summaries, and abstracts, where it looks like a restatement.
+
+#### `FRD-07`: Presenting a Subset Reading as a Reading
+
+- **Ban**: Reporting an analysis of a source without stating what of the source was not covered.
+- **Sign**: a list of the source's statements with no exclusions; the phrase "the explicit statements are" followed by only the convenient ones.
+- **Why**: the reader cannot distinguish a scope judgment from an oversight, and neither can the author later.
+
+#### `FRD-08`: Self-Review Standing In for Verification
+
+- **Ban**: Offering the internal consistency of one's own artifact as evidence of its faithfulness; answering a completeness or correctness question by inspecting it.
+- **Sign**: "I checked and it all lines up", with no external artifact named; a compiling file cited as evidence about mathematics.
+- **Why**: internal consistency is what the artifact was built to have.  `FDC-07` states the required route.
+
+#### `FRD-09`: Producing Resemblance Under an Unmeasured Gap
+
+- **Ban**: Continuing to produce artifacts toward a target whose required work has not been sized.
+- **Sign**: a session in which the amount produced is large and the number of statements that could now be *false* is zero; work that looks like the deliverable arriving faster than understanding of the deliverable.
+- **Why**: this is the generating condition for every other rule in this family.  When the gap is unmeasured, resemblance to the target is indistinguishable from progress toward it, from the inside, in the moment.
+
+#### `FRD-10`: Publishing Before the Foundations Are Real
+
+- **Ban**: Submitting a formal statement to any external platform, repository, or reader while any node it depends on is carried by a definition, a placeholder, or an unstated assumption.
+- **Sign**: a submission prepared in the same session in which the decomposition was first written.
+- **Why**: publication converts a local defect into a claim that other people act on, and on a verification platform it mints a guarantee the platform cannot itself check.  Nothing published this way can be quietly withdrawn: solvers, citations, and downstream work attach to it.
 
 * * *
 
