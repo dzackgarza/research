@@ -1774,6 +1774,38 @@ class Lattices(OwnedCategoryOverBaseRing):
                 dual_lattice_element = self.correlation_morphism()(dual_lattice_element)
             return self.discriminant_module().discriminant_class(dual_lattice_element)
 
+        def primitive_dual(self, element):
+            r"""Return ``correlation(element)/div(element)`` in ``L^#``.
+
+            For the zero vector this is the zero correlation image, matching
+            the archived convention without dividing by the zero
+            divisibility.  For a nonzero integral vector, divisibility is the
+            positive generator of its pairing ideal, so every selected dual
+            coordinate of the correlation image is divisible by it.
+            """
+            if element.parent() is not self:
+                raise TypeError("primitive_dual expects an element of this lattice")
+            correlation_image = self.correlation_morphism()(element)
+            if element.is_zero():
+                return correlation_image
+            divisibility = self.div(element)
+            if divisibility <= self.base_ring().zero():
+                raise ArithmeticError("a nonzero integral vector has positive divisibility")
+            dual_lattice = self.dual_lattice()
+            divided_coefficients = {}
+            for label, coefficient in module_coefficients(
+                correlation_image, dual_lattice
+            ).items():
+                if not coefficient:
+                    continue
+                quotient = coefficient // divisibility
+                if divisibility * quotient != coefficient:
+                    raise ArithmeticError(
+                        "the correlation coordinates are not divisible by the vector divisibility"
+                    )
+                divided_coefficients[label] = quotient
+            return dual_lattice.linear_combination(divided_coefficients)
+
         def divided_discriminant_class(self, element):
             r"""Return the class represented by ``correlation(element)/div(element)``."""
             if element.parent() is not self:
@@ -1781,13 +1813,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             divisibility = self.div(element)
             if divisibility == 0:
                 raise ValueError("the zero vector has no divided discriminant class")
-            dual_lattice = self.dual_lattice()
-            correlation_image = self.correlation_morphism()(element)
-
-            divided = dual_lattice.linear_combination(
-                {label: coefficient // divisibility for label, coefficient in module_coefficients(correlation_image, dual_lattice).items() if coefficient}
-            )
-            return self.discriminant_class(divided)
+            return self.discriminant_class(self.primitive_dual(element))
 
         def radical(self):
             r"""Return ``rad(L)=id_L(L)^perp`` as a subobject of ``L``."""
@@ -2843,6 +2869,24 @@ class Lattices(OwnedCategoryOverBaseRing):
         def divisor(self):
             r"""Return the positive generator of ``b(v,L)`` over ``ZZ``."""
             return self.div()
+
+        def primitive_dual(self):
+            r"""Return ``v/div(v)`` under the metric embedding ``L -> L^#``."""
+            return self.parent().primitive_dual(self)
+
+        def primitive_dual_in_discriminant_bilinear_form(self):
+            r"""Return the class of ``v/div(v)`` in the discriminant bilinear form."""
+            form = self.parent().discriminant_bilinear_form()
+            return form.discriminant_class(self.primitive_dual())
+
+        def primitive_dual_in_discriminant_quadratic_form(self):
+            r"""Return the class of ``v/div(v)`` in the discriminant quadratic form.
+
+            This operation requires an even lattice, exactly as the
+            discriminant quadratic form itself does.
+            """
+            form = self.parent().discriminant_quadratic_form()
+            return form.discriminant_class(self.primitive_dual())
 
         def divided_discriminant_class(self):
             return self.parent().divided_discriminant_class(self)
