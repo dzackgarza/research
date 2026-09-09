@@ -39,7 +39,10 @@ from dzack_research.preamble.categories.modules.fractional_ideals import (
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    framing_morphism,
+    module_homset,
+)
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -294,6 +297,34 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
             )
 
     class ElementMethods:
+        @cached_method
+        def multiplication_morphism(self):
+            r"""Return multiplication by ``self`` on the selected finite ``QQ``-module presentation.
+
+            A number field element is canonically a ``QQ``-linear endomorphism
+            of its field.  The live field object keeps its ring identity, while
+            :meth:`as_algebra` supplies the selected finite-free presentation
+            used to represent this linear map.  No separate backend matrix is
+            exposed: the matrix below is the matrix of this owned module
+            morphism in that selected basis.
+            """
+
+            field = self.parent()
+            algebra = field.as_algebra()
+            multiplier = algebra._from_engine_element(
+                _engine_element(field, self)
+            )
+            return module_homset(algebra, algebra)(
+                lambda label: multiplier * algebra.module_generator(label)
+            )
+
+        def multiplication_matrix(self):
+            r"""Return the matrix of multiplication by ``self`` over ``QQ``."""
+
+            return self.multiplication_morphism().matrix()
+
+        matrix = multiplication_matrix
+
         def characteristic_polynomial(self):
             r"""Return the characteristic polynomial of multiplication by ``self`` over ``QQ``.
 
