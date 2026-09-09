@@ -555,6 +555,118 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
         return [FreeAlgebras(self.base_ring()), GradedAlgebras(self.base_ring())]
 
     class ParentMethods:
+        def _realize_graded_piece_basis_label(self, degree, label):
+            r"""Return the algebra monomial represented by one basis label of ``A_degree``.
+
+            The authoritative basis is the basis of :meth:`graded_piece`; this
+            method only realizes that basis element back in the algebra.  It
+            does not construct a second monomial system.
+            """
+            degree = int(degree)
+            if degree < 0:
+                raise ValueError("a graded degree is nonnegative")
+            if degree == 0:
+                return self.one()
+            if degree == 1:
+                return self.algebra_generator(label)
+
+            piece = self.graded_piece(degree)
+            from dzack_research.preamble.categories.algebras.power_algebras import (
+                PowerAlgebra,
+            )
+            from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
+                SparseFreeAlgebra,
+            )
+
+            if isinstance(self, PowerAlgebra):
+                return self.from_component(degree, piece.module_generator(label))
+            if isinstance(self, SparseFreeAlgebra):
+                return self.module_generator(self.basis_label(degree, label))
+
+            ring = self.algebra_base_ring()
+            result = self.one()
+            if self in TensorAlgebras(ring):
+                from dzack_research.preamble.categories.modules.tensor_products import (
+                    _flatten_tensor_label,
+                )
+
+                for source_label in _flatten_tensor_label(label, degree):
+                    result *= self.algebra_generator(source_label)
+                return result
+
+            if self in SymmetricAlgebras(ring):
+                for source_label in label.support():
+                    for _ in range(int(label.multiplicity(source_label))):
+                        result *= self.algebra_generator(source_label)
+                return result
+
+            raise TypeError(f"the graded-piece basis of {self} has no represented realization")
+
+        def degree_on_module_generator(self, module_generator):
+            r"""Return the degree of one represented homogeneous algebra basis element."""
+            return self.homogeneous_degree(module_generator)
+
+        def graded_piece_monomials(self, degree):
+            r"""Return the selected algebra basis of the canonical degree piece.
+
+            The index set is literally the framing of :meth:`graded_piece`;
+            values are those basis generators realized in this algebra.
+            """
+            degree = int(degree)
+            if degree < 0:
+                raise ValueError("a graded degree is nonnegative")
+            if degree == 0:
+                labels = finite_ordered_set((0,))
+            else:
+                labels = self.graded_piece(degree).module_generating_set()
+            return indexed_family(
+                labels,
+                lambda label: self._realize_graded_piece_basis_label(degree, label),
+                name=f"Degree-{degree} algebra monomial basis of {self}",
+            )
+
+        def ideal_generators_in_degree(self, relations, degree):
+            r"""Return generators of the degree-``degree`` ideal generated in degree one.
+
+            For tensor/symmetric/exterior algebras this is
+            ``sum_{i+j=d-1} A_i K A_j``.  For divided powers the divided
+            powers of the selected degree-one relations are included as well,
+            which is the divided-power ideal rather than an ordinary
+            polynomial ideal.
+            """
+            degree = int(degree)
+            if degree < 0:
+                raise ValueError("a graded degree is nonnegative")
+            selected = tuple(self(relation) for relation in relations)
+            if any(self.homogeneous_degree(relation) != 1 for relation in selected):
+                raise ValueError("these graded-ideal generators must lie in degree one")
+            if degree == 0:
+                return ()
+
+            generators = []
+            for relation in selected:
+                for left_degree in range(degree):
+                    right_degree = degree - 1 - left_degree
+                    left_basis = self.graded_piece_monomials(left_degree)
+                    right_basis = self.graded_piece_monomials(right_degree)
+                    for left_label in left_basis.index_set():
+                        for right_label in right_basis.index_set():
+                            generators.append(
+                                left_basis[left_label] * relation * right_basis[right_label]
+                            )
+
+            ring = self.algebra_base_ring()
+            if self in DividedPowerAlgebras(ring):
+                for relation in selected:
+                    for divided_degree in range(2, degree + 1):
+                        divided = self.divided_power(relation, divided_degree)
+                        complementary = self.graded_piece_monomials(
+                            degree - divided_degree
+                        )
+                        for label in complementary.index_set():
+                            generators.append(divided * complementary[label])
+            return tuple(generators)
+
         def graded_piece(self, degree):
             r"""Return the canonical degree piece of this free construction.
 
