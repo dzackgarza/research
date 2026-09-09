@@ -34,13 +34,13 @@ route is not a satisfied node:
 
 | Node | lean-categories | Status |
 | --- | --- | --- |
-| F1.1 dual lattice | `Lattices/Valued/MetricDual`, `Discriminant.toMetricDualLattice` | route located — declarations read; **satisfies nothing yet** |
-| F1.2 discriminant group and its forms | `Discriminant` (`discriminantModule` $= L^\sharp/L$, `discriminantBilinMap`, `discriminantSymBilWQuadraticMap`, `discriminantSymBilWFormIsCokernel`), `DiscriminantQuadratic` (`evenDiscriminantQuadraticMap` with its `polar` lemma) | route located — declarations read; **satisfies nothing yet** |
-| F1.7 $O(L) \to O(q_L)$ | `DiscriminantAction`, `DiscriminantFunctor` | route suspected — filename only |
-| F2.1 $O^*(L)$, $O_-(L)$ | `CanonicalSpinorNorm`, `AdelicSpinorNorm` | route suspected — filename only |
+| F1.7 dual lattice, divisor, $v^*$ | `Lattices/Valued/MetricDual`, `Discriminant.toMetricDualLattice` | route located — declarations read; **satisfies nothing yet** |
+| F1.10 discriminant group and its forms | `Discriminant` (`discriminantModule` $= L^\sharp/L$, `discriminantBilinMap`, `discriminantSymBilWQuadraticMap`, `discriminantSymBilWFormIsCokernel`), `DiscriminantQuadratic` (`evenDiscriminantQuadraticMap` with its `polar` lemma) | route located — declarations read; **satisfies nothing yet** |
+| F2.1 $\tau : O(L) \to O(G_L)$ | `DiscriminantAction`, `DiscriminantFunctor` | route suspected — filename only |
+| F2.4, F2.5 $O_-(L)$, $O^*(L)$ | `CanonicalSpinorNorm`, `AdelicSpinorNorm` | route suspected — filename only |
 | F3.1 genus | `Hasse`, `SpinorGenusAdelic`, `DyadicSymbol`, `ClassFiniteness`, `Adele` | route suspected — filename only |
-| F2.3 Eichler transvections $\mathcal{E}(L)$ | — | **absent.**  `Elementary.lean` is $I$- and $p$-elementary *lattices* — the ideal annihilating the discriminant module — a different notion, and the corpus has no occurrence of Eichler |
-| F4.1 Niemeier's 24 lattices | — | **absent** |
+| F2.10, F2.11 the transformations $E_{f,x}$ and $\mathcal{E}(L)$ | — | **absent.**  `Elementary.lean` is $I$- and $p$-elementary *lattices* — the ideal annihilating the discriminant module — a different notion, and the corpus has no occurrence of Eichler |
+| F4.2 Niemeier's 24 lattices | — | **absent** |
 
 **No node in this graph is stated, let alone proved, and the corpus changes none
 of that.** What the table records is a known implementation route: for some
@@ -51,7 +51,7 @@ statement is checked against the node — three steps, none of which has been
 taken. Until then "route located" means only that declarations of the right
 shape were read in another repository.
 
-F2.3 and F4.1 have no route at all, in Mathlib or the corpus.  Each candidate row
+F2.10–F2.11 and F4.2 have no route at all, in Mathlib or the corpus.  Each candidate row
 becomes verified only by reading the module and comparing it with the source
 statement it is supposed to satisfy — the same obligation `FDC-09` places on
 writing a node in the first place, since a correspondence asserted on a name is
@@ -169,7 +169,7 @@ for Borel alone.  Each is cited by Sterk and none was a node.
 | Cl3 | the global Torelli theorem for $K3$ surfaces, in the form used at (2.14): an isometry of $H^2$ preserving the relevant structure is induced by an isomorphism of surfaces | Sterk (2.14), citing BPV Chap. VIII | E6 |
 | Cl4 | the faithfulness of the representation of $\mathrm{Aut}(X)$ on $O(H^2(X;\mathbb{Z}))$, used at (2.14) to descend $\tilde f$ | Sterk (2.14) | E2 |
 | Cl5 | Kodaira's projectivity criterion, used at (2.2) to conclude that an Enriques surface with a line bundle of positive self-intersection is projective | Sterk (2.2), citing BPV Chap. IV Thm 5.2 | E1 |
-| Cl6 | Nikulin 1.13.2 and 1.14.2, as cited at (2.x) — the same nodes as F1.3, F1.4, F3.2 | Sterk, citing Nikulin 1980 | F1.3, F1.4, F3.2 |
+| Cl6 | Nikulin 1.13.2 and 1.14.2, as cited at (2.x) — the same nodes as Nk4, Nk5 | Sterk, citing Nikulin 1980 | Nk4, Nk5 |
 
 Cl1 is the load-bearing one for this graph, and it was invisible: without it the
 development can introduce $L_-$ by a Gram matrix but cannot say it is the
@@ -183,7 +183,7 @@ proves a different theorem, the semi-toric compactification.  That exclusion is
 valid under `FDC-08` only as long as the goal stays as stated, and it is
 recorded here rather than left silent.
 
-### Stratum Nk, from Nikulin 1980 — what A3, F1.3, F1.4, F3.2 and Cl6 rest on
+### Stratum Nk, from Nikulin 1980 — what A2, A3, F1.11, F1.12, F3.3 and Cl6 rest on
 
 Read from Nikulin, *Integral symmetric bilinear forms and some of their
 applications* (`TTY9FFJS`), §1.  Three of the graph's rows cited theorem numbers
@@ -353,52 +353,47 @@ infinite index in $O(L)$ — the same computation Sterk runs, on the degree-four
 K3 side.  That is a cross-check on C3–C7 from an independent source, and it was
 invisible to me while I was writing the node from memory.
 
-### Stratum F, rebuilt from Scattone §3
+### F1, F3, F4, rewritten from Scattone §§3.1–3.5
 
-The five subsections that stood here were written from memory and attributed to
-sources never opened.  They are deleted rather than kept as guesses.  What
-replaces them is read from Scattone (`SF7T3C8G`), whose §3 *is* this stratum,
-developed systematically — the theory Sterk uses, written out with numbers and
-proofs.  Its table of contents alone settles what the foundations are:
+Read from Scattone §3.1 *Lattices*, §3.2 *Discriminant-quadratic forms*,
+§3.3 *Genera*, §3.4 *The Minkowski–Siegel formula*, §3.5.  These replace the
+rows that carried section titles.
 
-    3.1 Lattices                          3.5 (Niemeier lattices)
-    3.2 Discriminant-quadratic forms      3.6 Orthogonal groups
-    3.3 Genera of lattices                3.7 Elementary transformations
-    3.4 The Minkowski–Siegel formula
-
-**A node is terminal only when its next dependency is in Mathlib.**  None of the
-nodes below is terminal; the *next* column names what each descends into, and
-where that is another source, the descent continues there.
-
-| Node | Statement | Read? | Next dependency |
+| Node | Statement | Source | Next dependency |
 | --- | --- | --- | --- |
-| F1.1 | §3.1, the lattice notions Scattone fixes: divisor of a vector, $v^*$, primitive sublattice, $I_{2,e}(L)$ | section **not read** | Mathlib `ZLattice`, `QuadraticForm` |
-| F1.2 | §3.2, the discriminant-quadratic form $q : G_L \to \mathbb{Q}/2\mathbb{Z}$ and the invariant $\ell(G_L)$ | section **not read** | F1.1; Nikulin §1 |
-| F1.3 | Thm 3.2.1 (= Nikulin 1.10.2): an even lattice with signature $(n_+,n_-)$ and discriminant form $q$ exists iff … | statement read, condition **not** transcribed | Nikulin 1.10.2 |
-| F1.4 | Thm 3.2.2 (Nikulin): an even lattice with signature $(t_+,t_-)$ and discriminant form $q$ can be primitively embedded … | statement read, conclusion **not** transcribed | Nikulin |
-| F3.1 | §3.3, the genus of a lattice | section **not read** | F1.2; $p$-adic quadratic forms |
-| F3.2 | Thm 3.3.1 (Nikulin): for $L$ even, nondegenerate, indefinite with $\mathrm{rk}\,L > \ell(G_L)+2$ — (i) the genus of $L$ contains one class, and (ii) $O(L)\to O(G_L)$ is **surjective** | statement read | Nikulin; F3.1 |
-| F3.3 | §3.4, the Minkowski–Siegel formula | section **not read** | F3.1 |
-| F4.1 | Thm 3.5.1 (Niemeier): exactly 24 even unimodular negative-definite lattices of rank 24 up to isomorphism, with the root type $R(L)$ a complete invariant; and the table of the 24 types | statement and table read | F3.1, F3.3 |
+| F1.1 | a **lattice** is a finitely generated free abelian group $L$ with a symmetric bilinear form $b : L\times L\to\mathbb{Z}$; $\langle B\rangle$ denotes the lattice with basis $v_1,\dots,v_n$ and $(v_i,v_j)=b_{ij}$; two are isomorphic iff $B' = {}^tABA$ for some $A\in GL(n;\mathbb{Z})$; $O(L)$ is the group of automorphisms | Scattone §3.1 | Mathlib: free $\mathbb{Z}$-modules, bilinear forms |
+| F1.2 | the associated quadratic form $q(v)=(v,v)$; $L$ is **even** when $q$ takes even values, equivalently all diagonal entries of $B$ are even | Scattone §3.1 | F1.1 |
+| F1.3 | definiteness, and the **signature** $(n_+,n_-)$ as the maximal ranks of positive- and negative-definite sublattices; $L$ is **nondegenerate** when $\mathrm{rk}\,L = n_+ + n_-$, and the index is $\min(n_+,n_-)$ | Scattone §3.1 | F1.1 |
+| F1.4 | the **discriminant** $d(L)=\lvert\det((v_i,v_j))\rvert$ over any basis; $L$ is nondegenerate iff $d(L)\ne 0$, **unimodular** when $d(L)=1$; an even unimodular lattice satisfies $n_+\equiv n_-\pmod 8$ | Scattone §3.1 | F1.3 |
+| F1.5 | $H = \langle\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\rangle$ and $E_8$ := $\mathbb{Z}^8$ with the **negative** of the $E_8$ Cartan matrix — so Scattone's $E_8$ is negative definite | Scattone §3.1 | F1.4 |
+| F1.6 | every even indefinite unimodular lattice is an orthogonal sum of copies of $H$, $E_8$ and $-E_8$, uniquely up to the relation $E_8\oplus(-E_8)\cong H^8$ | Scattone §3.1, citing [31] | F1.5 |
+| F1.7 | the **dual** $L^* \subseteq L_\mathbb{Q}$, and the **divisor** $\mathrm{div}(v)=d \iff (v,L)=d\mathbb{Z}$; $L^*$ is spanned by the $v/\mathrm{div}(v)$, and $v^* = v/\mathrm{div}(v) + L \in G_L$ | Scattone §3.1 | F1.4 |
+| F1.8 | an embedding $M\subset L$ is **primitive** when $L/M$ is torsion free; a vector is primitive when $\mathbb{Z}v$ is, and a primitive vector need not have divisor 1 | Scattone §3.1 | F1.7 |
+| F1.9 | a **quadratic form on a finite abelian group** $G$: $q : G\to\mathbb{Q}/2\mathbb{Z}$ with $q(ax)=a^2q(x)$ and $q(x+y)\equiv q(x)+q(y)+2b(x,y) \bmod 2\mathbb{Z}$ for a symmetric $b : G\times G\to\mathbb{Q}/\mathbb{Z}$; nondegenerate when $b$ is | Scattone §3.2, after Nikulin | F1.1 |
+| F1.10 | for even nondegenerate $L$: $G_L = L^*/L$ is finite, and $b_L : G_L\times G_L\to\mathbb{Q}/\mathbb{Z}$, $q_L : G_L\to\mathbb{Q}/2\mathbb{Z}$ are induced by the rational extension of $b$ — the **discriminant-quadratic form** | Scattone §3.2 | F1.7, F1.9 |
+| F1.11 | Thm 3.2.1 (= Nikulin 1.10.2): an even lattice with signature $(n_+,n_-)$ and discriminant form $q$ exists iff … — **condition not transcribed**; Nk3 carries Nikulin's three | Scattone Thm 3.2.1 | F1.10, Nk3 |
+| F1.12 | Thm 3.2.2 (Nikulin): an even lattice with signature $(t_+,t_-)$ and discriminant form $q$ can be primitively embedded … — **conclusion not transcribed** | Scattone Thm 3.2.2 | F1.10, F1.8 |
+| F3.1 | for $\mathbb{Z}_p$ the $p$-adic integers with the convention $\mathbb{Z}_\infty=\mathbb{R}$, and $L_p = L\otimes\mathbb{Z}_p$: lattices $L$, $M$ are in the same **genus** when $L_p\cong M_p$ for every $p = 2,3,5,7,\dots,\infty$ | Scattone §3.3 | F1.1; $p$-adic integers |
+| F3.2 | even lattices are in the same genus **iff** they have the same signature and the same discriminant-quadratic form | Scattone §3.3 | F3.1, F1.10 |
+| F3.3 | Theorem 3.3.1 (Nikulin, = Nk5): for $L$ even nondegenerate indefinite with $\mathrm{rk}\,L > \ell(G_L)+2$, the genus of $L$ contains one class and $O(L)\to O(G_L)$ is surjective | Scattone Thm 3.3.1, citing Nikulin 1.14.2 | F3.2, Nk5 |
+| F3.4 | for definite $L$, $O(L)$ is finite of order $o(L)$; the **weight** of a genus $\mathcal{G}$ is $w(\mathcal{G}) = \sum_i 1/o(L_i)$ over its classes — the Minkowski–Siegel mass | Scattone §3.4 | F3.1 |
+| F4.1 | $R(L)$, the roots of a negative definite even lattice, and the **type** of $L$: the decomposition of the sublattice spanned by $R(L)$ into irreducible root lattices $A_m$, $D_m$, $E_m$ | Scattone §3.5 | F1.5; root systems |
+| F4.2 | Theorem 3.5.1 (Niemeier): there are exactly 24 even unimodular negative definite lattices of rank 24 up to isomorphism, with the type $R(L)$ a **complete invariant**; and the table of the 24 types | Scattone Thm 3.5.1, citing Niemeier [24] | F4.1, F1.6 |
 
-**F2.5 is Sterk's 2.18 (node A6)**, in a cleaner form and with its hypothesis
-visible: *at least two hyperbolic planes*.  So A6 is not a leaf, its real content
-is Eichler's criterion, and the condition is equality of the images $v^*$ in the
-discriminant group — exactly the invariant F1.2 constructs.
+**F3.2 is the bridge the whole graph turns on**: same genus $\iff$ same
+signature and same discriminant-quadratic form.  It is what makes the
+discriminant form the carrier of the arithmetic, and it is where F1 and F3 meet.
 
-**F3.2 is what Sterk's 2.10 and 2.13 rest on.**  Surjectivity of
-$O(L)\to O(G_L)$ is Nikulin's theorem under a rank condition, not a fact about
-$L_-$, and A2 ("$G = O(L_-)$") is an instance of it.
+**F1.5 is a convention hazard.**  Scattone's $E_8$ is $\mathbb{Z}^8$ with the
+*negative* of the Cartan matrix, and he flags this as "a slight deviation from
+the general convention".  Sterk writes $E_8(-2)$ and $E_8(-1)$; the Sage
+reconstruction uses $-2\times$ the (positive) Cartan matrix.  **Which sign
+convention each node is stated in has to be fixed once and checked**, because
+$U\oplus U(2)\oplus E_8(-2)$ means different lattices under the two readings.
 
-**F4.1 is where F5 descends**, so the Niemeier classification is a node of this
-graph with its own descent, not a citation to lean on.
-
-Three things this makes visible that the invented version hid.  Scattone §3
-answers F2 completely, where the guessed version had "locate Sterk's definition
-of $O^*$" standing as an open problem.  The genus (F3.1) sits under both the
-Niemeier classification and F5, so it is load-bearing twice.  And every *not
-read* in the third column is a section of a memoir sitting in the library — the
-work is reading, and it has not been done.
+F3.1 is where this branch descends into $p$-adic lattices, and F4.1 into root
+systems; neither has Mathlib substrate for lattices over $\mathbb{Z}_p$, though
+Mathlib does have root systems and $p$-adic integers separately.
 
 ### Stratum V, from Vinberg — the hyperbolic reflection-group foundations
 
@@ -440,7 +435,7 @@ Baily–Borel is decomposed as stratum BB above; its own next descents are BB SS
 and Korányi–Wolf.  Niemeier’s classification (F4.1) has no
 source assigned; the library holds Conway–Sloane, *Sphere Packings, Lattices and
 Groups* (`T2WVLTDB`), the obvious candidate, unchecked.  Nikulin (`TTY9FFJS`)
-is decomposed as stratum Nk; F1.3, F1.4, F3.2, A3 and Cl6 now point at it,
+is decomposed as stratum Nk; A2, A3, F1.11, F1.12, F3.3 and Cl6 point at it,
 and A3’s dropped hypotheses are recorded there.
 
 **The discriminant form (F1.2) is the root of the whole tree, not a side
