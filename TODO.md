@@ -1622,6 +1622,8 @@ behavior.
 
 ### Active claims
 
+| `CORE-category-order-20260909-0749` | category-order / construction-order-independent owned category ordering | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/owned_category.py; src/dzack_research/preamble/owned_category_bases.py; src/dzack_research/preamble/refine.py; tests/categories/test_category_order_independence.py` (write); `src/dzack_research/preamble/all.py` (read) | `HEAD` | 2026-09-09T07:49:00Z |
+
 
 
 
