@@ -3,6 +3,7 @@ r"""Exact rank-decreasing data for the represented higher-Witt recursion."""
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.eichler_criterion import (
+    EichlerOrthogonalFactorizationDatum,
     EichlerRecursiveStabilizerDatum,
     two_u_eichler_model,
 )
@@ -35,3 +36,32 @@ def test_covering_stabilizers_restrict_to_rank_one_smaller_orthogonal_complement
             for label in perpendicular.module_generating_set():
                 element = perpendicular.module_generator(label)
                 assert inclusion(restricted(element)) == generator(inclusion(element))
+
+
+def test_every_live_orthogonal_generator_factors_through_stable_eichler_and_discriminant_parts() -> None:
+    integers = _own_ring(SageZZ)
+    model = two_u_eichler_model(Lattices(integers)("A2"))
+    lattice = model.lattice()
+    stable = model.stable_kernel()
+
+    for generator in lattice.O().group_generators():
+        factorization = model.factor_orthogonal_isometry(generator)
+        assert isinstance(factorization, EichlerOrthogonalFactorizationDatum)
+        assert factorization.isometry() == generator
+        assert factorization.stable_factor() in stable
+        assert factorization.discriminant_lift() in lattice.O()
+        assert (
+            factorization.discriminant_lift().discriminant_morphism()
+            == generator.discriminant_morphism()
+        )
+        assert factorization.reconstruct() == generator
+
+
+def test_source_defined_approximate_family_has_the_expected_four_n_shape() -> None:
+    integers = _own_ring(SageZZ)
+    model = two_u_eichler_model(Lattices(integers)("A2"))
+    family = model.approximate_generating_family()
+    rank = int(model.lattice().module_rank())
+
+    assert int(family.cardinality()) == 4 * rank
+    assert all(generator in model.lattice().O() for generator in family)

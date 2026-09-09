@@ -123,6 +123,43 @@ class EichlerRecursiveStabilizerDatum(SageObject):
         return f"Rank-decreasing stabilizer recursion at {self.vector()}"
 
 
+class EichlerOrthogonalFactorizationDatum(SageObject):
+    r"""The exact extension factorization of one ``g in O(2U+K)``.
+
+    The quotient factor is a live lift of the discriminant action of ``g``;
+    the residual factor lies in the stable orthogonal group.  Thus the datum
+    realizes the standard exact-sequence decomposition by the stable kernel
+    and a lift of the finite discriminant action.  It does not identify the
+    separately represented finite approximate subgroup with that kernel.
+    """
+
+    def __init__(self, isometry, stable_factor, discriminant_lift) -> None:
+        if stable_factor * discriminant_lift != isometry:
+            raise ValueError("the retained orthogonal factors do not reconstruct the isometry")
+        if stable_factor not in isometry.domain().stable_orthogonal_group():
+            raise ValueError("the residual orthogonal factor is not stable")
+        if discriminant_lift.discriminant_morphism() != isometry.discriminant_morphism():
+            raise ValueError("the quotient lift induces the wrong discriminant action")
+        self._isometry = isometry
+        self._stable_factor = stable_factor
+        self._discriminant_lift = discriminant_lift
+
+    def isometry(self):
+        return self._isometry
+
+    def stable_factor(self):
+        return self._stable_factor
+
+    def discriminant_lift(self):
+        return self._discriminant_lift
+
+    def reconstruct(self):
+        return self.stable_factor() * self.discriminant_lift()
+
+    def __repr__(self) -> str:
+        return f"Stable/discriminant factorization of {self.isometry()}"
+
+
 class TwoUEichlerModel(SageObject):
     r"""The represented determinant model ``U + U + K`` used by Eichler's theorem.
 
@@ -329,6 +366,60 @@ class TwoUEichlerModel(SageObject):
             name=f"K-direction Eichler transvections in {lattice}",
         )
 
+    def approximate_generating_family(self):
+        r"""Return the finite Eichler approximate-model generating family.
+
+        For each of the four canonical primitive isotropic vectors of ``2U``
+        take the transvections ``E_{e_i,v}`` on a selected basis of
+        ``e_i^perp``.  Together with the two standard generators in each of the
+        left and right copies of ``SL_2(ZZ)``, these are the finite generators
+        in the sourced ``2U`` approximate-model theorem.  Additivity
+        ``E_{e,x}E_{e,y}=E_{e,x+y}`` supplies all transvections for a fixed
+        ``e``.
+        """
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        special_linear_generators = self.special_linear_group().group_generators()
+        isotropic_vectors = self.hyperbolic_basis()
+        perpendiculars = tuple(vector.orthogonal_complement() for vector in isotropic_vectors)
+        labels = finite_ordered_set(
+            tuple(("left-SL2", generator) for generator in special_linear_generators)
+            + tuple(("right-SL2", generator) for generator in special_linear_generators)
+            + tuple(
+                ("Eichler", position, label)
+                for position, perpendicular in enumerate(perpendiculars)
+                for label in perpendicular.module_generating_set()
+            )
+        )
+
+        def generator(label):
+            kind = label[0]
+            match kind:
+                case "left-SL2":
+                    return self.left_action(label[1])
+                case "right-SL2":
+                    return self.right_action(label[1])
+                case "Eichler":
+                    position, perpendicular_label = label[1], label[2]
+                    perpendicular = perpendiculars[position]
+                    orthogonal = perpendicular.inclusion()(
+                        perpendicular.module_generator(perpendicular_label)
+                    )
+                    return self.eichler_transvection(isotropic_vectors[position], orthogonal)
+                case _:
+                    raise ValueError(f"unknown Eichler approximate-generator label {kind!r}")
+
+        return finite_indexed_family(
+            labels,
+            generator,
+            name=f"Eichler approximate generators in O({self.lattice()})",
+        )
+
     def covering_vector_representatives(self, square):
         r"""Return one explicit primitive vector for every covering class in ``A_K``.
 
@@ -422,6 +513,38 @@ class TwoUEichlerModel(SageObject):
             generators,
             lift,
             name=f"Discriminant-generator lifts in O({lattice})",
+        )
+
+    def stable_kernel(self):
+        r"""Return ``ker(O(L) -> O(A_L))``, the stable orthogonal subgroup."""
+        return self.lattice().stable_orthogonal_group()
+
+    def factor_orthogonal_isometry(self, isometry):
+        r"""Factor ``g`` as a stable-kernel factor times a discriminant lift.
+
+        This is the exact-sequence factorization for the represented ``2U`` construction.
+        The finite discriminant image is enumerated from exact generators of
+        ``O(L)`` while retaining a live lift.  Since the selected image is the
+        image of ``g`` itself, failure to lift is an arithmetic inconsistency,
+        not a supported ``None`` branch.
+        """
+        orthogonal_group = self.lattice().O()
+        isometry = orthogonal_group(isometry)
+        quotient_action = isometry.discriminant_morphism()
+        quotient_lift = orthogonal_group.discriminant_lift(quotient_action)
+        if quotient_lift is None:
+            raise ArithmeticError(
+                "the discriminant action of a live orthogonal isometry was absent from the generated image"
+            )
+        stable_factor = isometry * ~quotient_lift
+        if stable_factor not in self.stable_kernel():
+            raise ArithmeticError(
+                "removing an equal discriminant lift did not leave the stable orthogonal group"
+            )
+        return EichlerOrthogonalFactorizationDatum(
+            isometry,
+            stable_factor,
+            quotient_lift,
         )
 
     def source_generating_family(self):
@@ -757,6 +880,7 @@ def are_in_one_stable_orbit(left, right) -> bool:
 
 __all__ = [
     "EichlerCoveringOrbitDatum",
+    "EichlerOrthogonalFactorizationDatum",
     "EichlerRecursiveStabilizerDatum",
     "TwoUEichlerModel",
     "are_in_one_stable_orbit",
