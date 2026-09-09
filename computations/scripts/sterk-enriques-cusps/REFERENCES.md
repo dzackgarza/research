@@ -77,6 +77,35 @@ times the size of Mathlib.  Records that earlier attempts failed because agents
 lost track of project state, and that the successful run was carried on
 Prove2Me, which maintains a DAG of theorem statements.  Basis of `FSC-00`.
 
+**[AntTR26]** Anthropic, *Formalizing Fermat's Last Theorem in Lean: A timeline
+and selected excerpts from Claude's reasoning*, September 2026.
+<https://www-cdn.anthropic.com/9e431dff043da6538d99d6c2d231b670aa3da263.pdf>.
+Read in full (pp. 1–14).  **The primary process document for the 11-day run**,
+and the source for everything in `PROCESS.md` about it: Day 1 = 7 August 2026,
+root card Proved 22:00 ET on 17 August; harness built on Prove2Me, developed by
+Tianyi Peng's group at Columbia; a *card* is one theorem statement posted as a
+node in the shared dependency graph plus its accepted proof; humans "wrote no
+mathematics and no Lean beyond the one-line statement of the goal theorem";
+agents "wrote the statements, checked one another's statements, and proved
+them"; built on Mathlib, on the Imperial College FLT project — whose blueprint
+the opening reduction follows, with **106 files adapted with credit** — and on
+flt-regular; 29,511 theorems, ~533,000 local supporting lemmas, 13M lines (10.5M
+without generated boilerplate), 3 standard axioms, no `sorry`; the Day 7 dip in
+the theorem count is "a rewiring of that dependency tree, not lost work"; §4 the
+four-stage end-to-end check (recompile outside the platform, single-project
+build, Lean FRO comparator, nanoda); §5 Claude's own assessment that
+"correctness is not the difference.  The difference is form."
+
+**[AntRepo]** Anthropic, *fermats-last-theorem*.
+<https://github.com/anthropics/fermats-last-theorem>.  The released proof, with
+a `PROOF-PATH.md` recording how strong each named result is as proved.
+**Not yet read.**
+
+**[Xena26]** K. Buzzard, *FLT: Anthropic has beaten me to it*, Xena Project blog,
+2026-09-04.  <https://xenaproject.wordpress.com/2026/09/04/flt-anthropic-has-beaten-me-to-it/>.
+**Not yet read** — the assessment of the run by the person running the human
+project, and the obvious next thing to read.
+
 **[FLT]** Imperial College London, *FLT* — ongoing Lean formalization of Fermat's
 Last Theorem.  <https://github.com/ImperialCollegeLondon/FLT>.  Created
 2023-11-19, active, 69 contributors, EPSRC grant EP/Y022904/1 to Kevin Buzzard,

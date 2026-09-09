@@ -1,129 +1,265 @@
 # What the large formalization projects actually do
 
-Read from the repositories themselves on 2026-09-09, not from summaries.  Every
-claim below is sourced in `REFERENCES.md`.
+Read from the repositories and the primary technical report on 2026-09-09, not
+from summaries.  Sources in `REFERENCES.md`.
 
-## FLT: build from both ends, state before proving
+Two projects, deliberately kept apart, because they are different kinds of
+thing: the **Imperial College FLT project** is a five-year human crowd-sourced
+effort, and the **11-day autonomous run** is a team of Claude agents on
+Prove2Me.  The second is the model for work of the kind attempted here; the
+first is one of its inputs.
 
-The instruction that most contradicts the instinct to build foundations first,
-from the project's own `GENERAL.md`:
+## The 11-day run: how it was actually organized
 
-> "This project will start everywhere at once.  We're going to build from both
-> ends.  The project will have achieved its initial goal if it successfully
-> reduces Fermat's Last Theorem (initially proved in the 1990s) to a collection
-> of several far more complex mathematical claims, all of which were known by
-> the end of the 1980s. […] We'll also work up from the basics, PRing stuff to
-> Lean's mathematics library `mathlib` as we go, and eventually we'll meet in
-> the middle.  A preliminary early goal will be to *state* all of the major
-> claims which we shall initially be assuming."
+Day 1 was 7 August 2026; the root card read Proved at 22:00 ET on 17 August.
+The harness was built on **Prove2Me**, developed by Tianyi Peng's group at
+Columbia.  The unit of work is a **card**: one theorem statement, posted as a
+node in the shared dependency graph, together with its proof once one is
+accepted.  About 30,000 cards; 29,511 theorems in the final tree; ~533,000
+supporting lemmas local to proof files; 13 million lines, 10.5 million without
+generated boilerplate.
 
-Four things follow.
+**What the humans did.** "Humans occasionally commented on priorities or offered
+encouragement, but wrote no mathematics and no Lean beyond the one-line
+statement of the goal theorem."  Human reviewers appear inside the run — one
+remark on Day 6 redirects which of Mazur's arguments was being followed — but
+the mathematics and the statements were the agents'.
 
-**Leaves may be large and unproved, provided they are stated and cited.** The
-whole first phase of FLT is a reduction to claims it does not prove.  Carrying
-Baily–Borel or Torelli as stated, cited, open nodes is therefore the ordinary
-structure of such a project, not a compromise and not one option among several.
+**What the agents did.** "A team of Claude agents working in parallel wrote the
+statements, checked one another's statements, and proved them."  Three
+activities, and the middle one is the load-bearing one.
 
-**Statements are the primary artifact; proofs come later and from other people.**
-Buzzard states results he does not know how to prove — explicitly including
-Langlands' cyclic base change and Jacquet–Langlands, of which he says he has "the
-most superficial understanding" — and hands them on.  The formal statement is the
-interface that makes the division of labour possible.
+**What it stood on.** Mathlib; the Imperial College FLT project, whose blueprint
+the opening reduction follows and from which **106 files were adapted with
+credit**; and flt-regular.  The five-year human project was a direct input to
+the eleven-day one.
 
-**Missing library theory is contributed upstream while the top-down work
-proceeds.**  Not a phase, a parallel track.
+## When the ~30,000 nodes came into existence: continuously, top-down
 
-**The route is designed by a domain expert.**  FLT's path "was essentially
-completely designed by Richard Taylor after discussions with Kevin Buzzard".
-The DAG's shape is a research decision, not a mechanical derivation from the
-source text.
+Not up front.  The root card — the elementary statement of FLT — was placed at
+the top of the tree on Day 1, and the graph grew underneath it for eleven days
+by decomposition: an agent facing a goal posts child statements as cards, other
+agents check and prove them, and each proof posts its own children.  The running
+total from Figure 1: ~2,100 by Day 2, 10,000 by Day 6, ~17,000 by Day 8, 20,000
+by Day 9, ~30,000 by Day 12.  The Day 7 dip is the tree being rewired.
 
-## FLT: the orchestration is lightweight and state-bearing
+So the graph is not a plan drawn before the work; it is the work's own
+accumulating structure, with exactly one node fixed in advance.  What is decided
+up front is the root and the route; everything below is discovered.
 
-From `CONTRIBUTING.md` and the repository metadata: 69 contributors, open since
-2023-11-19, still active, with monthly commit counts between 4 and 249 —
-sustained low-intensity work, not a sprint.
+## Nothing was assumed — because everything was restricted
 
-- A GitHub **project dashboard** with explicit columns: `Unclaimed`, `Claimed`,
-  `In Progress`, `In Review`, `Completed`.
-- Tasks are **issues**; work is claimed by commenting the single word `claim`,
-  released with `disclaim`, linked to a PR with `propose #N`, withdrawn with
-  `withdraw #N`, and moved to review by commenting `awaiting-review`.
-- Labels `awaiting-review` / `awaiting-author` carry the review ping-pong.
-- The blueprint graph colours nodes by status, including nodes marked as
-  suitable for a small project — task granularity is a first-class design
-  concern, and newcomer-sized work is identified in the graph itself.
-- Pre-push hooks and a `run_before_push.sh` exist to keep CI green.
+This falsifies the reading I took from the Imperial project.  The two projects
+have **opposite** strategies at the leaves, and only one of them carries big
+results as open assumptions:
 
-The coordination vocabulary is five words on issues.  The state lives in the
-dashboard and the blueprint, not in conversations.
+> "**Nothing assumed.**  The deep steps on our route (Mazur-type irreducibility,
+> Langlands–Tunnell, modularity lifting, Ribet) are all proved, in the restricted
+> strength this argument needs.  The Imperial project takes a different, more
+> modest route that avoids Langlands–Tunnell and Ribet, is building toward a
+> general modularity lifting theorem, and for now assumes 1980s-era inputs."
 
-## FLT: what actually went backwards
+The agentic run proved everything down to Mathlib and the three axioms.  What
+made that possible is **restriction**: each deep theorem is formalized in the
+special case the argument actually needs, not in general.
 
-Scanning ~1,400 commit messages for `revert`, `redefine`, `wrong`, `mistake`,
-`deprecat`: the hits are almost entirely infrastructure — Ruby gem bumps in the
-docs build reverted four times (#879, #927, #951, #1041), Mathlib deprecations
-propagating downstream, CI actions.  Mathematical rework barely appears.
+> "**Not general.**  Our 'Ribet', 'Wiles', 'Mazur' and 'Langlands–Tunnell' are
+> restricted versions, and modularity and semistability are predicates on a
+> chosen equation.  `docs/limitations.md` says none 'should be cited as a
+> formalisation of the general classical theorem'."
 
-That is a structural result, not luck.  When statements are fixed in a blueprint
-before proofs are attempted, the expensive class of rework — discovering that
-what you proved was not what you meant — mostly does not happen.  The churn
-migrates to dependencies and tooling, which is cheap.
+And missing library theory was built rather than waited for:
 
-## Navier–Stokes: what a finished AI formalization ships with
+> "**It built what Mathlib lacked instead of waiting:** Hecke algebras, Galois
+> representations of eigenforms, modular curves and their Jacobians, Néron
+> models, finite flat group schemes, Tate curves, and deformation rings with
+> Taylor–Wiles patching."
 
-`openai/NavierStokesAndEuler`, published 2026-09-08, is small (two entry files,
-three directories) and carries three things worth copying.
+Restriction is the lever that makes "assume nothing" affordable, and it is
+bought at a stated price: the results are not citable as the general theorems,
+and the project says so in a `limitations.md`.
 
-**A machine-readable manifest.**  `formalization.yaml`, following the
-`mathlib-initiative/formalization.yaml` schema v0.4, records at repository root:
-the sources being formalized with their `location` and an explicit
-`relationship: formalizes`; `related_formalizations` with `relationship:
-builds-on`; MSC2020 and arXiv classification; and a `status` block giving
+## The cost of proving each card in isolation
 
-```yaml
-  sorry_count: 0
-  sorry_in_definitions: 0
-  main_results:
-    - declaration: "NavierStokes.Comparator.navier_stokes_breakdown_R3"
-      file: "NavierStokes/ComparatorSolution.lean"
-      sorry_count: 0
-      axioms: ["propext", "Classical.choice", "Quot.sound"]
-```
+The swarm's topology — each card compiled against only its children's
+*statements* — produced measured, published inefficiency:
 
-`sorry_in_definitions` is a tracked field of its own, and the axioms actually
-used by each main result are enumerated.  Both are exactly the surface where
-this repository's failures would have been visible.
+> "**Duplicated, not shared.**  Each card was proved in isolation.  Roughly two
+> in five theorem statements inside the proof files repeat, word for word, a
+> statement already made in another proof file.  About a fifth of all proof-file
+> lines are verbatim copies of declarations found elsewhere in the tree, and one
+> basic lemma is re-declared in over 300 files."
 
-**Statements sourced from an independent party.**  The Comparator reference
-statements are adapted from DeepMind's Formal Conjectures formalization of the
-Clay problem, not written by the authors of the proof.  Separating who states
-the theorem from who proves it is a structural defence against semantic
-hallucination: you cannot quietly prove a weaker statement if you did not write
-the statement.
+> "**Fragile and expensive.**  31% of the bytes are generated preambles that
+> switch off instances and simp lemmas so each proof's environment holds still.
+> About 11,700 files set their own computation (heartbeat) limits, up to 2,000×
+> Lean's default and some unlimited… A clean build takes 5 h 52 min on 96 cores
+> and 512 GiB of memory.  One toolchain bump, Lean 4.30 to 4.33 with the matching
+> Mathlib, changed 7,620 of 29,511 proof files (26%), and 5,672 (19%) needed
+> individual repair."
 
-**Independent kernel re-checking.**  `lake exe comparator` runs the
-formalization against `leanprover/comparator` with `lean4export` and an external
-checker (`nanoda_bin`) under a sandbox (`landrun`), rather than trusting the
-build that produced it.
+Isolation buys parallelism and pays for it in duplication (40% of statements),
+in environment-freezing boilerplate (31% of bytes), and in brittleness under a
+toolchain bump (a quarter of files touched, a fifth hand-repaired).  Shared
+intermediate lemmas are the obvious missing mechanism, and the run's own
+retrospective names it.
 
-## The convergence conditions, and their opposites
+Two further consequences it records: over 900 files exceed Mathlib's 1,500-line
+cap, helper names are machine-generated, comments were stripped at release
+because agent notes mixed mathematics with bookkeeping, and
+`docs/verification.md` states the tree "has not been refereed as mathematics".
 
-What made these projects converge:
+## Statements are reviewed before they are proved, and this is where errors die
 
-- statements fixed and cited before proofs are attempted;
-- a dependency graph as the durable store of project state;
-- statement authorship separated from proof authorship, and from review;
-- big known results carried as stated, cited, open leaves;
-- foundations contributed upstream in parallel with top-down work;
-- per-node status, sorry counts, and axiom lists as tracked data;
-- an independent checker run over the finished artifact.
+> "Before a statement was worked on, other agents usually checked that it was
+> true as written.  This caught several false statements early."
 
-What sent work sideways or backwards:
+The record of that mechanism working, in the run's own log:
 
-- **loss of project state** — the recorded cause of the failed FLT attempts,
-  where agents lost track of what was done and what remained;
-- dependency and tooling churn, which is the cheap kind and shows up as
-  repeated reverts in the commit log;
-- semantic hallucination, the expensive kind, which the statement-first
-  discipline is designed to prevent rather than to detect.
+- **Day 3.** Another agent points out that a claim about $q$-expansions with
+  bounded denominators is wrong; Claude checks, agrees the denominators are
+  unbounded, and drops its planned route.
+- **Day 9.** A statement in a branch is found false as written and corrected; the
+  whole subtree closes less than three hours later.
+- **Day 11, 7:54.** "A false lemma passed one review and was caught by another" —
+  a model-domination lemma, refuted by a counterexample another agent computed
+  where the first reviewer had argued instead of computed. "It was caught before
+  anyone wrote a proof against it."
+- **Day 11, 20:25.** An agent objects to a lemma Claude had passed *as reviewer*;
+  Claude rechecks, finds its own error, and posts a correction: "Own-miss.  I
+  must post a correction promptly."
+
+Two reviews were not always enough — one false statement passed the first — and
+the catch came from an agent who *computed* rather than argued.  The cost of a
+false statement caught at review is nil; the cost after proofs are built on it
+is the subtree.
+
+## Estimates were wrong constantly, in both directions, and were repriced
+
+- **Day 4.** A lemma another agent estimated at "a few days" actually needs
+  Ribet's level lowering — months-class.  Repriced upward.
+- **Day 5.** The shared plan estimates the rest of Mazur's theorem at "1–3
+  weeks" in the morning; at 15:30 it is revised to "days to ≈a week"; the last
+  part is proved at 21:40 the same evening.
+- **Day 10.** A step "estimated at weeks" and labelled a wall closes in two
+  hours sixteen minutes: "mostly because a proof I had written on Friday already
+  contained the hard representation theory in disguise."
+- **Day 10.** "Two honest re-prices this hour, both downward in the end."
+
+Estimates were off by one to two orders of magnitude routinely, and *both ways*.
+Repricing is a normal, frequent, logged activity — not a sign that something
+went wrong.  No estimate was ever a reason to abandon a node.
+
+## The dependency graph is rewired mid-run
+
+The dip in the running theorem count on Day 7 "is a rewiring of that dependency
+tree, not lost work."  The graph is a live structure that gets restructured as
+understanding improves; a drop in the headline count is not regression.
+
+## "Proved" on the platform is not an end-to-end check
+
+Prove2Me compiles each card's proof separately, against only the *statements* of
+its children.  So the platform's verdict is local.  The end-to-end check was a
+separate, later, layered process:
+
+1. all 29,511 cards recompiled from source outside the platform;
+2. the whole tree built the next day as a **single Lean project**, which fails
+   unless the final theorem rests on exactly `propext`, `Classical.choice`,
+   `Quot.sound`, with no `sorry` anywhere, and which also derives Mathlib's own
+   statement of FLT from theirs;
+3. the Lean FRO's **comparator** confirms the statement proved is exactly the one
+   in a reference file importing only Mathlib, that no other axioms are used, and
+   replays the entire proof through Lean's kernel;
+4. **nanoda**, an independent reimplementation of Lean's kernel in Rust, accepts
+   every declaration.
+
+## The honest-caveat discipline
+
+Asked by a teammate whether the theorem was formalized, an agent's own rule for
+answering:
+
+> "the precise honest caveat is important here to prevent over-claiming to
+> colleagues… what 'Proved on prove2me' means; what's been checked, what hasn't;
+> what the statement is; what is assumed; scale.  Keep it ≤6 lines, no jargon."
+
+and
+
+> "Until the re-check reads clean the honest sentence is 'proved on prove2me,
+> pending the independent re-check' rather than 'FLT is formalized'."
+
+The published repository carries a `PROOF-PATH.md` stating **how strong each
+named result is as proved** — the named theorems are proved in the special cases
+the argument needs, not in general.
+
+## Claude's own assessment of the difference from the human project
+
+> "Both developments are checked by the same Lean kernel, on the same three
+> axioms, on top of Mathlib, so correctness is not the difference.  The
+> difference is form.  Ours is a finished proof delivered as 60,474 almost
+> entirely machine-written files.  Theirs is an unfinished library written for
+> people to read, reuse and maintain.  As it stands, ours would fail most of
+> Mathlib's mechanical entry rules… and our own README says it 'is not meant for
+> upstreaming as it stands'."
+
+## The Imperial College project: the other model
+
+Five years, 69 contributors, open since 2023-11-19, EPSRC-funded to September
+2029.  From its `GENERAL.md`: "This project will start everywhere at once.
+We're going to build from both ends" — reduce the target downward while PRing
+foundations upward into Mathlib — and "a preliminary early goal will be to
+*state* all of the major claims which we shall initially be assuming."  Its
+route "was essentially completely designed by Richard Taylor after discussions
+with Kevin Buzzard": the graph's shape is an expert research decision.
+
+Orchestration is five words on GitHub issues — `claim`, `disclaim`,
+`propose #N`, `withdraw #N`, `awaiting-review` — over a dashboard with
+`Unclaimed`/`Claimed`/`In Progress`/`In Review`/`Completed`, with blueprint
+nodes coloured by status and some marked as suitable for a small project.
+
+Scanning ~1,400 of its commit messages for `revert`, `redefine`, `wrong`,
+`mistake`: the hits are almost entirely infrastructure — Ruby gem bumps in the
+docs build reverted four times, Mathlib deprecations propagating.  Mathematical
+rework barely appears.
+
+## The Navier–Stokes repository: what a finished artifact ships with
+
+`openai/NavierStokesAndEuler`, published 2026-09-08, carries a machine-readable
+`formalization.yaml` (mathlib-initiative schema v0.4) recording sources with
+locators and `relationship: formalizes`, and a status block with `sorry_count`,
+**`sorry_in_definitions` as its own tracked field**, and the axioms used by each
+main result.  Its Comparator reference statements are adapted from DeepMind's
+independent Formal Conjectures formalization of the Clay problem — the people
+who proved the theorem did not write the statement of it.
+
+## What converges, and what does not
+
+Converges: one node — the goal — fixed in advance, and a route chosen; the graph
+grown top-down by decomposition rather than drawn up front; every unit of work a
+card carrying one statement; statements peer-reviewed for truth before anyone
+proves them; false statements killed at review by *computing* rather than
+arguing; deep results formalized in the restricted strength the argument needs,
+with the restriction documented; missing library theory built inside the project
+instead of waited for; frequent honest repricing in both directions; the tree
+rewired when understanding improves; layered independent checking afterwards;
+and caveats sized to what has actually been checked.
+
+Does not: losing project state, the recorded cause of the failed earlier
+attempts; reviewers who argue instead of computing, which is how the one false
+lemma passed a review; and proving every card in isolation, which is efficient
+in parallelism and expensive in duplication, boilerplate, and fragility.
+
+## What this implies for a project of our size
+
+The 11-day run is the wrong shape to copy wholesale — its duplication and
+environment-freezing costs are worth paying only when tens of thousands of cards
+must be proved concurrently.  What transfers at our scale is the discipline
+rather than the topology: the root fixed first, the graph grown by decomposition
+as understanding arrives, statements reviewed for truth before proof, deep
+inputs formalized in the restricted form actually needed with the restriction
+written down, and missing foundations built rather than assumed.
+
+The two projects also settle the question of what to do about absent
+substrate — and they answer it the same way, from opposite directions.  Imperial
+states its 1980s inputs and proves the reduction; the agentic run proves the
+inputs in restricted form.  Neither shrinks the target, and neither defines the
+gap away.
