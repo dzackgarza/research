@@ -44,3 +44,44 @@ def test_nonidentity_group_map_moves_the_group_basis_through_the_same_composite(
     assert induced(source_module.module_generator(source.one())) == (
         target_module.module_generator(target.one())
     )
+
+
+def test_group_algebra_of_an_infinite_free_group_has_the_group_as_its_lazy_basis() -> None:
+    group = Groups.Free(1, names="t")
+    generator = group.group_generators()[0]
+    algebra = GroupAlgebraFunctor(ZZ)(group)
+    module = algebra.underlying_module()
+
+    assert algebra.group() is group
+    assert module.module_generating_set() is group
+    assert not module.module_generating_set().cardinality().is_finite()
+    assert (
+        algebra.module_generator(generator)
+        * algebra.module_generator(generator.inverse())
+        == algebra.one()
+    )
+    assert (
+        algebra.module_generator(generator**2)
+        * algebra.module_generator(generator**-3)
+        == algebra.module_generator(generator**-1)
+    )
+
+
+def test_group_algebra_functor_carries_a_nonidentity_map_between_infinite_free_groups() -> None:
+    source = Groups.Free(1, names="s")
+    target = Groups.Free(2, names=("x", "y"))
+    source_generator = source.group_generators()[0]
+    target_generators = tuple(target.group_generators())
+    morphism = group_homset(source, target)(
+        {source_generator: target_generators[0] * target_generators[1]}
+    )
+    functor = GroupAlgebraUnderlyingModuleFunctor(ZZ)
+    induced = functor(morphism)
+
+    assert induced.domain() is functor(source)
+    assert induced.codomain() is functor(target)
+    assert induced(
+        induced.domain().module_generator(source_generator**2)
+    ) == induced.codomain().module_generator(
+        (target_generators[0] * target_generators[1]) ** 2
+    )

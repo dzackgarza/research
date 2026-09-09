@@ -29,11 +29,12 @@ from dzack_research.preamble.categories.group.groups import (
 )
 from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
+    FreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
@@ -89,6 +90,10 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
             the conjugation orbit of its representative.
             """
             group = self.group()
+            if group not in FiniteGroups():
+                raise NotImplementedError(
+                    "the conjugacy-class-sum basis of the group-algebra center is materialized here only for finite groups"
+                )
             module = self.underlying_module()
             class_sums = finite_ordered_set(
                 [
@@ -162,17 +167,14 @@ def GroupAlgebra(base_ring, group):
     r"""The group algebra \(R[G]\): the free \(R\)-module on \(G\), multiplied by the group law."""
     ring = _owned_ring(base_ring)
     group = _owned_group(group)
-    assert group in FiniteGroups(), (
-        "the free module on an infinite group needs a lazy framing, which this route lacks"
-    )
-    elements = finite_ordered_set(group)
-    module = BasedFreeModule(ring, elements)
-    multiplication = module_homset(TensorSquare(module), module)(
-        {
-            (left, right): module.module_generator(left * right)
-            for left in elements
-            for right in elements
-        }
+    module = FreeModuleOn(ring, group)
+    multiplication = TensorSquare(module).from_bilinear(
+        BilinearMap(
+            module,
+            module,
+            module,
+            lambda left, right: module.module_generator(left * right),
+        )
     )
     unit_element = module.module_generator(group.one())
     unit = _unit_morphism_from_element(module, unit_element, ring)
@@ -209,10 +211,7 @@ class GroupAlgebraFunctor(Functor):
         source_module = source.underlying_module()
         target_module = target.underlying_module()
         linear = module_homset(source_module, target_module)(
-            {
-                label: target_module.module_generator(group_morphism(label))
-                for label in source.module_generating_set()
-            }
+            lambda label: target_module.module_generator(group_morphism(label))
         )
         return algebra_homset(source, target)(linear)
 
