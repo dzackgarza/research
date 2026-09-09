@@ -17,6 +17,10 @@ source; **M** requires substrate absent from Mathlib at the pinned revision;
 **LC** a known implementation route through `lean-categories`, pending its
 publication to Prove2Me (see *Implementation routes* below).
 
+`check_dag.py` reads this file and fails if any dependency cell names a node no
+row defines, or names neither a node nor a substrate.  Both are ways for the
+graph to look complete while hiding work; run it after editing a table.
+
 ## Implementation routes through lean-categories
 
 `~/gitclones/lean-categories` is a sorry-free corpus of 236 modules (1.9 MB,
@@ -69,7 +73,10 @@ a fabricated dependency edge.
 | A4 | `S` 2.16 — for $\Lambda = U \oplus U(2)$ and $v$ primitive: $v \sim_{O(\Lambda)} e + kf$ if $(v,v) = 2k$, $v \notin 2\Lambda^*$; $v \sim e' + kf'$ if $(v,v) = 4k$, $v \in 2\Lambda^*$ | — |
 | A5 | `S` 2.17 — the same under $O^*(\Lambda)$, with the extra branch $ke' + f'$ | A4 |
 | A6 | `S` 2.18 = Scattone Prop. 3.7.3 = F2.13; note the hypotheses that row omitted: $L$ even with **at least two hyperbolic planes**, criterion $v^* = w^*$ in the discriminant group | A5, F2.13 |
-| A7 | `S` 2.19 — $S_-$ is a single $\Gamma$-orbit | A1, A6 |
+| A6a | `S` (2.15) — defines the special sets $R_- = \{x\in L_- : (x,x) = -2\}$ and $S_-$ — **the rest of the setup not transcribed** | A0 |
+| A7 | `S` 2.19 — $S_-$ is a single $\Gamma$-orbit | A1, A6, A6a |
+| A8 | `S` 2.21 — $R_-$ is a single $\Gamma$-orbit, by 2.18 | A6a, A6 |
+| A1a | `S` 2.11 — a caveat on the definition in A1: $\Gamma$ is *not* the group one might expect — **the remark not transcribed** | A1 |
 
 ## Stratum B — the isotropic sublattices
 
@@ -122,6 +129,7 @@ carries what they rest on.
 | D5 | **the bijection $I(L) \leftrightarrow \mathcal{B}(D)$ preserves incidence**: if $E \leftrightarrow F$ and $E' \leftrightarrow F'$ then $E \subset E' \iff F \subseteq \partial F'$ | Scattone §2 | D4 |
 | D6 | the action of $\Gamma$ on rational boundary components corresponds to its action on $I(L)$, so the boundary components of $D_k/\Gamma_k$ are in bijection with the $\Gamma$-equivalence classes of primitive isotropic sublattices | Scattone §2 | D5 |
 | D7 | the Baily–Borel compactification: $D \cup \mathcal{B}(D)$ carries a topology making $\overline{D/\Gamma}$ a normal projective variety | Scattone §2; proved in Baily–Borel — see BB8 | D2, BB8 |
+| D0 | `S` 3.2.4 — the five zero-dimensional **boundary components**; Sterk's own crossing from $\Gamma$-orbits of isotropic vectors to strata of the compactification, so it rests on D4, not on B3 alone | Sterk | B3, D4, D6 |
 | D8 | `S` 3.3.19, 3.3.20 — $\Gamma(E) \cap SL(E) \cong \Gamma^1(2)$, so each one-dimensional component is $\mathbb{H}/\Gamma^1(2)$, with no identification among its cusps | Sterk | D6, C11, B3 |
 
 **D5 is the node that was smuggled into `def Incident N P := N ≤ P`.**  It is a
@@ -650,7 +658,7 @@ depend on, which was previously an open node saying "locate in Sterk".
 | --- | --- | --- | --- |
 | F2.1 | $\tau : O(L) \to O(G_L)$, the canonical homomorphism to the isometries of the discriminant form | Scattone §3.6 | F1.2, F1.7 |
 | F2.2 | $\tilde O(L) = \ker\tau$, equivalently $\{\phi \in O(L) : \phi v - v \in \mathrm{div}(v)\cdot L \text{ for all } v \in L\}$ | Scattone §3.6 | F2.1, F1.7 |
-| F2.3 | the **spinor norm** $\sigma_- : O(L) \to \{\pm 1\}$: writing $\phi = R_{v_1}\cdots R_{v_m}$ as a product of reflections in $O(L_\mathbb{Q})$ (not necessarily integral), $\sigma_-(\phi) = \prod_j\big(-\mathrm{sign}(v_j,v_j)\big)$, i.e. $+1$ exactly when $(v_j,v_j) > 0$ for an even number of the $v_j$.  **Scattone follows Brieskorn [6] and notes this is a modified form of the usual spinor norm** | Scattone §3.6 | Cartan–Dieudonné; quadratic forms over $\mathbb{Q}$ |
+| F2.3 | the **spinor norm** $\sigma_- : O(L) \to \{\pm 1\}$: writing $\phi = R_{v_1}\cdots R_{v_m}$ as a product of reflections in $O(L_\mathbb{Q})$ (not necessarily integral), $\sigma_-(\phi) = \prod_j\big(-\mathrm{sign}(v_j,v_j)\big)$, i.e. $+1$ exactly when $(v_j,v_j) > 0$ for an even number of the $v_j$.  **Scattone follows Brieskorn [6] and notes this is a modified form of the usual spinor norm** | Scattone §3.6 | F1.1; Cartan–Dieudonné for an **indefinite** rational form — Mathlib has only the positive definite real case, see the terminality note |
 | F2.4 | $O_-(L) = \ker\sigma_-$ | Scattone §3.6 | F2.3 |
 | F2.5 | **$O^*(L) = \tilde O(L)\cap O_-(L)$** | Scattone §3.6 | F2.2, F2.4 |
 | F2.6 | for $v \in R(L)$ and $z \in L^*$, $R_v(z) = z + (v,z)v \in z + L$, so $R_v$ induces the identity on $L^*/L$; hence $O_r(L)\subseteq O^*(L)$, and $O_r(L)\subseteq \hat O_r(L)\subseteq O_-(L)$ | Scattone §3.6 | F2.5 |
@@ -697,7 +705,7 @@ lattices and primitive embeddings of $D_7$**.
 | Node | Statement | Source | Depends on |
 | --- | --- | --- | --- |
 | F5.1 | Niemeier's classification: the 24 even unimodular lattices of rank 24, by root system | Scattone (3.5.1), the table of $\mathcal{U}^{24}$ | — |
-| F5.2 | for $E \in I_{2,e}(L)$, the lattice $E^\perp/E$ lies in the genus of $\langle -2k/e^2\rangle \oplus E_8 \oplus E_8$ | Scattone Remark 5.1.4 | genus of a lattice |
+| F5.2 | for $E \in I_{2,e}(L)$, the lattice $E^\perp/E$ lies in the genus of $\langle -2k/e^2\rangle \oplus E_8 \oplus E_8$ | Scattone Remark 5.1.4 | F3.1, F3.2 |
 | F5.3 | Proposition 6.1.2 at $k=2$: $N \cong D_7$, and the classes are obtained from the primitive embeddings of $N$ into the members of $\mathcal{U}^{24}$ | Scattone Prop. 6.1.2 | F5.1 |
 | F5.4 | $D_7 \subset E_8$, $D_7 \not\subset E_7$, $D_7 \not\subset A_m$ for every $m$ | Scattone §6.3 | — |
 | F5.5 | hence only eight Niemeier lattices admit such an embedding: $E_8^3$, $E_8{+}D_{16}$, $E_7^2{+}D_{10}$, $D_{24}$, $D_{12}^2$, $D_8^3$, $D_9{+}A_{15}$, $E_6{+}D_7{+}A_{11}$ | Scattone §6.3 | F5.3, F5.4 |
@@ -1175,8 +1183,10 @@ The loop body here is: formalize one definition or lemma from a standard text,
 with its citation.  Hours per node at most, most nodes mutually independent.
 The correct description is a grind of known size.
 
-Nodes added by this table and not in the strata above: **A1a** (2.11),
-**A6a** (2.15), **A8** (2.21), **D0** (3.2.4).
+Nodes this table added: **A1a** (2.11), **A6a** (2.15), **A8** (2.21) and
+**D0** (3.2.4).  They were named here and had no row of their own until
+`check_dag.py` found A6a referenced by Cl2 and E10 with nothing defining it;
+all four now have rows in strata A and D.
 
 ## What the DAG says about scope
 
