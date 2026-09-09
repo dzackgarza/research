@@ -66,11 +66,11 @@ a fabricated dependency edge.
 
 | Node | Statement | Depends on |
 | --- | --- | --- |
-| A0 | `S` (2.7), (2.8) — definition of $\Gamma$ and of the special sets | — |
+| A0 | `S` (2.7), (2.8) — definition of $\Gamma$ and of the special sets.  $\Gamma$ is defined by how an isometry acts on $L_-^*/L_-$, so it cannot be stated before the discriminant form, and $L_-$ is an eigenlattice, so it cannot be stated before E6 | F1.7, F1.10, E6 |
 | A1 | `S` 2.10 — $\Gamma$ is exactly the isometries whose induced map on $L_-^*/L_-$ respects the decomposition $(U(2)^*/U(2)) \oplus (E_8(-2)^*/E_8(-2))$ | A0 |
 | A2 | `S` 2.13 — $G = O(L_-)$; an instance of Nk5, whose rank hypotheses must be checked for $L_-$ | A1, Nk5 |
 | A3 | `X` Nikulin 1.13.2 — uniqueness of the even lattice with invariants $(2,10,q)$, **conditional**: see Nk4 for the three conditions, of which (2) and (3) must be checked for $L_-$ | Nk4 |
-| A4 | `S` 2.16 — for $\Lambda = U \oplus U(2)$ and $v$ primitive: $v \sim_{O(\Lambda)} e + kf$ if $(v,v) = 2k$, $v \notin 2\Lambda^*$; $v \sim e' + kf'$ if $(v,v) = 4k$, $v \in 2\Lambda^*$ | — |
+| A4 | `S` 2.16 — for $\Lambda = U \oplus U(2)$ and $v$ primitive: $v \sim_{O(\Lambda)} e + kf$ if $(v,v) = 2k$, $v \notin 2\Lambda^*$; $v \sim e' + kf'$ if $(v,v) = 4k$, $v \in 2\Lambda^*$ | F1.1, F1.7, F1.8 |
 | A5 | `S` 2.17 — the same under $O^*(\Lambda)$, with the extra branch $ke' + f'$ | A4 |
 | A6 | `S` 2.18 = Scattone Prop. 3.7.3 = F2.13; note the hypotheses that row omitted: $L$ even with **at least two hyperbolic planes**, criterion $v^* = w^*$ in the discriminant group | A5, F2.13 |
 | A6a | `S` (2.15) — defines the special sets $R_- = \{x\in L_- : (x,x) = -2\}$ and $S_-$ — **the rest of the setup not transcribed** | A0 |
@@ -86,7 +86,8 @@ a fabricated dependency edge.
 | B2 | `S` 3.2.2 — otherwise $(v, L_-) = 2\mathbb{Z}$, and $\tfrac12 v$ is a nontrivial isotropic element of $L_-^*/L_-$; the isotropic elements of the discriminant form, modulo $\Gamma_q$, are the four listed | A1 |
 | B3 | `S` 3.2.3 — every primitive isotropic vector is $\Gamma$-equivalent to exactly one of $e$, $e'$, $e'+f'+\omega$, $e'+2f'+\alpha$, $2e+2f+\alpha$ ($\alpha^2 = -8$, $\omega^2 = -4$ in $E_8(-2)$); hence $\lvert I_1(L_-)/\Gamma \rvert = 5$ | B1, B2, A6 |
 | B4 | `S` 3.3.4 — $v^\perp/\mathbb{Z}v \cong U \oplus E_8(-2)$ for $v \ne e$, and $e^\perp/\mathbb{Z}e \cong U(2) \oplus E_8(-2)$ | B3, A6 |
-| B5 | `S` 3.3.14 — $U(2) \oplus E_8(-1)$ is the largest even sublattice of $K$ | — |
+| B0 | the ambient lattices of 3.3.14–3.3.16: $\Lambda$, which E6 identifies with $H_2$ of the $K3$ cover, and $K$ — **Sterk's definition of $K$ is not transcribed, and until it is, B5–B7 name a lattice this graph has not defined** | E6, F1.1 |
+| B5 | `S` 3.3.14 — $U(2) \oplus E_8(-1)$ is the largest even sublattice of $K$ | B0, F1.2 |
 | B6 | `S` 3.3.15 — every $g \in O(K(2))$ extends to an isometry of $\Lambda$ | B5 |
 | B7 | `S` 3.3.16 — $K(2)$ is the unique rank-10 sublattice $\tilde\Lambda \subseteq \Lambda$ with $\tilde\Lambda^* = \tfrac12\tilde\Lambda$ and $\tfrac12\tilde\Lambda(2)$ odd | B5 |
 | B8 | `U` 3.3.13 — the symmetries of each diagram lift to $\Gamma_v$ | B6, B7 |
@@ -704,10 +705,10 @@ lattices and primitive embeddings of $D_7$**.
 
 | Node | Statement | Source | Depends on |
 | --- | --- | --- | --- |
-| F5.1 | Niemeier's classification: the 24 even unimodular lattices of rank 24, by root system | Scattone (3.5.1), the table of $\mathcal{U}^{24}$ | — |
+| F5.1 | Niemeier's classification: the 24 even unimodular lattices of rank 24, by root system | Scattone (3.5.1), the table of $\mathcal{U}^{24}$ | F4.2 — the same theorem |
 | F5.2 | for $E \in I_{2,e}(L)$, the lattice $E^\perp/E$ lies in the genus of $\langle -2k/e^2\rangle \oplus E_8 \oplus E_8$ | Scattone Remark 5.1.4 | F3.1, F3.2 |
 | F5.3 | Proposition 6.1.2 at $k=2$: $N \cong D_7$, and the classes are obtained from the primitive embeddings of $N$ into the members of $\mathcal{U}^{24}$ | Scattone Prop. 6.1.2 | F5.1 |
-| F5.4 | $D_7 \subset E_8$, $D_7 \not\subset E_7$, $D_7 \not\subset A_m$ for every $m$ | Scattone §6.3 | — |
+| F5.4 | $D_7 \subset E_8$, $D_7 \not\subset E_7$, $D_7 \not\subset A_m$ for every $m$ | Scattone §6.3 | F4.1, Ni1 |
 | F5.5 | hence only eight Niemeier lattices admit such an embedding: $E_8^3$, $E_8{+}D_{16}$, $E_7^2{+}D_{10}$, $D_{24}$, $D_{12}^2$, $D_8^3$, $D_9{+}A_{15}$, $E_6{+}D_7{+}A_{11}$ | Scattone §6.3 | F5.3, F5.4 |
 | F5.6 | each embedding is unique up to equivalence **except** the two distinct embeddings into $E_8 + D_{16}$ — which is where the nine comes from | Scattone §6.3 | F5.5, Ni4 |
 | F5.7 | the orthogonal complements are the nine generalized types $\langle-4\rangle{+}E_8{+}E_8$, $\langle-4\rangle{+}D_{16}$, $E_8{+}D_9$, $E_7^2{+}A_3$, $D_{17}$, $D_{12}{+}D_5$, $\langle-4\rangle{+}D_8^2$, $A_1^2{+}A_{15}$, $E_6{+}A_{11}$ | Scattone §6.3 | F5.6 |

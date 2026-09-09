@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-"""Check DAG.md for dangling node references and for undecomposed dependencies.
+"""Check DAG.md for the ways a dependency graph can look complete and not be.
 
-Two failure modes are checked, and both are failures of the same kind: a place
-where the graph looks complete and is not.
+Three failure modes, all the same kind: a place where the graph presents a
+finished edge and there is none behind it.
 
 1. A dependency cell names a node id that no row defines.  The edge is then
    fabricated: it points at nothing, and nobody reading the graph can tell.
 2. A dependency cell names neither a node nor a substrate.  The graph then
    understates the work by an unknown amount, which is the defect the stratum
    decompositions exist to remove.
+3. A dependency cell is empty, presenting the node as a root of the graph.  A
+   real root rests on nothing at all, which is rare; an empty cell is usually a
+   node whose dependencies were never worked out, and it reads as the opposite.
+   Roots are declared in ROOTS below, and anything else empty is a finding.
 
 A cell counts as naming a substrate when it says where the thing lives or that
 it is absent -- Mathlib, a registry corpus, or an explicit absence.
@@ -32,6 +36,12 @@ SUBSTRATE_MARKERS = (
     "sphere-packing", "gq2-lean", "hasseprinciple", "registry",
     "`", "see there", "see below",
 )
+
+
+# Nodes that genuinely rest on nothing in this graph: pure definitions over the
+# ambient conventions, with no earlier node and no Mathlib dependency worth
+# naming.  Every other empty dependency cell is a finding.
+ROOTS: frozenset[str] = frozenset()
 
 
 def rows(text: str) -> list[tuple[int, str, str]]:
@@ -62,8 +72,12 @@ def main(path: Path) -> int:
     dangling: list[tuple[int, str, str]] = []
     undecomposed: list[tuple[int, str, str]] = []
 
+    rootless: list[tuple[int, str]] = []
+
     for line, node, dep in table:
         if not dep or dep in {"—", "-", ""}:
+            if node not in ROOTS:
+                rootless.append((line, node))
             continue
         referenced = set(NODE_ID.findall(dep))
         unknown = {r for r in referenced if r not in defined}
@@ -83,9 +97,13 @@ def main(path: Path) -> int:
         print(f"\n{len(undecomposed)} dependency cell(s) naming neither a node nor a substrate:")
         for line, node, dep in undecomposed:
             print(f"  DAG.md:{line}  {node} -> {dep}")
+    if rootless:
+        print(f"\n{len(rootless)} node(s) with an empty dependency cell, presented as roots:")
+        for line, node in rootless:
+            print(f"  DAG.md:{line}  {node}")
 
-    if not dangling and not undecomposed:
-        print("\nevery dependency names a defined node or a substrate verdict")
+    if not dangling and not undecomposed and not rootless:
+        print("\nevery node has a dependency, naming a defined node or a substrate verdict")
         return 0
     return 1
 
