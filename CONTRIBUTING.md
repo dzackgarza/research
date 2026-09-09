@@ -3032,6 +3032,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 | `ENV-*` | repository execution and environment conventions |
 | `DEV-*` | development, verification, migrations, and policy promotion |
 | `STY-*` | corrective implementation style and declarative Python patterns |
+| `FRM-*` | formal definitions, proof-assistant statements, and external citation |
 
 ### 1. Mathematical Architecture & Ownership (`ARC-*`)
 
@@ -5064,6 +5065,82 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Correct Example**: display the embedding and its cokernel/torsion-freeness, or assert the relevant predicate and print the resulting mathematical object when useful.
 
 
+
+### 14. Formal Definitions & External Citation (`FRM-*`)
+
+These govern every formal statement written for a proof assistant — Lean files
+in this repository, and any theorem, definition, or milestone submitted to an
+external formalization platform.
+
+#### `FRM-01`: A Definition May Not Carry a Theorem
+
+- **Rule**: A `def` is a stipulation and nothing checks it.  If a mathematician reading the line would want to see it *proved*, it is a theorem and must be written as one — stated, named, cited, and either proved or left visibly open.  This applies with full force to correspondences between a construction and the object it classifies.
+
+- **Rationale**: A definition cannot be false, so a theorem written as a definition becomes unfalsifiable and escapes the process that would have tested it.  In a proof assistant the kernel checks every step except the definitions, so smuggling a theorem into the trusted base places it exactly outside what verification covers: the file compiles, the result is reported as verified, and the hole sits where no one looks.  A `sorry` is honest by comparison — visible, greppable, and rejected by the gates.  Worse, the names then lie: every downstream statement mentioning the geometric object is really about the combinatorial surrogate, and the discrepancy is visible at no site except the definition.  Missing hypotheses can never surface, because nothing is ever asked to use them.
+
+- **Violation Example**: `def Incident (N P : Submodule ℤ V) : Prop := N ≤ P` documented as "a zero-dimensional boundary component lies in the closure of a one-dimensional one exactly when the line is contained in the plane" — this makes the Baily–Borel correspondence true by fiat; defining the boundary components of a compactification *to be* the Γ-orbits of isotropic sublattices; `IsIsometry g := gᵀ * G * g = G ∧ IsUnit g.det`, where the determinant clause is a theorem-equivalent for preserving the lattice rather than the condition itself.
+
+- **Correct Example**: define the isotropic sublattices and their Γ-orbits; state the correspondence with rational parabolics and with boundary components as separate cited theorems; let the goal theorem mention the boundary complex and depend on those theorems, so the content is carried by statements a reader can dispute.
+
+#### `FRM-02`: Every Definition Carries an Exact External Citation
+
+- **Rule**: Every formal definition names its source precisely: a Zotero citation key or a publicly resolvable URL, plus a locator that identifies the statement — section, numbered item, and page.  `-- Sterk, Chap. 2 (2.10), p. 41` or `-- Ste95a §2 (2.7)`; never a bare author name, never "standard", never "see the literature".  If no source states the definition in the form written, that fact is recorded at the site and the divergence is described.
+
+- **Rationale**: A formal definition is the only place where content enters unchecked, so it is the only place where a citation does real work: it is the sole means by which a reader, an auditor, or a later agent can test the definition against anything at all.  Without a locator the reader cannot tell a faithful transcription from an invention, and inventions in definitions are the failure mode that no downstream proof can detect.
+
+- **Violation Example**: a docstring citing "Sterk" with no section; citing a paper whose numbering differs from the edition actually consulted; carrying a citation for the surrounding module but none on the individual definitions.
+
+- **Correct Example**: each `def` carries the numbered statement it transcribes, and where a paper and its thesis version differ in numbering, both are given.
+
+#### `FRM-03`: The Docstring and the Body State the Same Thing
+
+- **Rule**: When a docstring names a construction, the body is that construction.  An extensionally equivalent surrogate is not permitted merely because the equivalence is a theorem over the ring at hand.
+
+- **Rationale**: The reader audits the body against the docstring; if they disagree, the docstring is what enters the reader's understanding and the body is what enters the mathematics.  Even a genuine equivalence puts the burden of knowing it on every future reader, and the moment the ring, the hypotheses, or the ambient category shift, the surrogate silently stops meaning what the name says.  `DEF-01` governs the same boundary for predicates in ordinary code.
+
+- **Violation Example**: a docstring reading "primitive when the cokernel of the inclusion is torsion free" over a body implementing elementwise saturation `∀ d v, d ≠ 0 → d • v ∈ N → v ∈ N`.
+
+- **Correct Example**: `Module.IsTorsionFree ℤ (L ⧸ Submodule.comap L.subtype N)`.
+
+#### `FRM-04`: No Unverified Derivation Asserted in Prose
+
+- **Rule**: A docstring may not assert that the body computes something unless that has been checked.  An identity relied on to write the body — a conjugation, a transport along an isomorphism, a change of coordinates — is either verified and stated as a lemma, or the body is written so that no such identity is needed.
+
+- **Rationale**: A derivation asserted in a comment is believed by every later reader and proved by no one; it has the unfalsifiability of `FRM-01` with none of its visibility, since it hides inside a definition that otherwise looks routine.
+
+- **Violation Example**: documenting a matrix condition as "this is the induced action on `L*/L` read on the two blocks, stated without inverses" when the transport `G g G⁻¹ = (g⁻¹)ᵀ` was never checked and the body in fact applies the map to `G v` rather than to `v`.
+
+- **Correct Example**: construct the dual lattice and the quotient, define the induced map as the actual induced map, and let the coordinate form be a proved lemma if one is wanted.
+
+#### `FRM-05`: A Name May Only Mention What Is Constructed
+
+- **Rule**: A formal name or docstring may refer to a geometric, analytic, or categorical object only when that object exists in the development.  Otherwise the declaration is named for what it actually is.
+
+- **Rationale**: Names are the interface every reader uses; a name promising an object that was never built transfers the reader's understanding of that object onto an unrelated construction, and no proof will ever contradict them.
+
+- **Violation Example**: `I₁` documented as "the zero-dimensional boundary components of the Baily–Borel compactification" in a development containing no compactification, no domain, and no group.
+
+- **Correct Example**: `I₁` documented as the primitive isotropic rank-one sublattices, with the relation to boundary components stated as a cited theorem elsewhere.
+
+#### `FRM-06`: Repair a Smuggled Claim by Promoting It, Never by Deleting It
+
+- **Rule**: When a theorem is found inside a definition, the correction is to state it as a theorem and carry it as an obligation.  Removing the claim, narrowing the goal to the part already provable, or restating the target as the surrogate, is goal substitution and is prohibited.
+
+- **Rationale**: The smuggled claim was content the work owed.  Deleting it makes the artifact honest and the project poorer by exactly the thing that made it worth doing, and it leaves no record that anything was owed.  This is the `Removal Means Deletion` failure inverted: the requirement, not the prohibition, is what gets erased.
+
+- **Violation Example**: on discovering that Baily–Borel had been smuggled into `Incident`, proposing that the goal theorem be restated as a count of lattice orbits with the boundary components dropped.
+
+- **Correct Example**: keep the goal theorem about the boundary complex; state the correspondence as cited child lemmas; let the goal depend on them, open, until they are proved.
+
+#### `FRM-07`: No Placeholder That Typechecks
+
+- **Rule**: A declaration whose body is chosen to make the file compile — `fun _ => True`, a trivial `Prop`, an unrelated expression standing in for one not yet worked out — must not be written, not even transiently.  Where the content is not yet known, the declaration is absent or its statement is left explicitly open.
+
+- **Rationale**: A placeholder that typechecks is indistinguishable from finished work at every level of inspection except reading its body, and it is the one form of incompleteness that no gate reports.
+
+- **Violation Example**: `def I₂ : Set (…) × Set (…) → Prop := fun _ => True` written to get past an error while the real definition was still being worked out.
+
+- **Correct Example**: omit the declaration until its content is settled; or state it and leave the proof obligation visibly open by the route the platform or repository sanctions.
 
 * * *
 
