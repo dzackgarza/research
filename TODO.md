@@ -1269,7 +1269,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   or integral morphism, verify its action on the lattice, and retain exact
   stabilizer inclusions and coset orientation.
 
-- [ ] **`centralizers`**. **Needs:** `transporters`.
+- [x] **`centralizers`**. **Needs:** `transporters`.
   Extend centralizers from involutions to higher finite-order isometries
   and their equivariant orbits.
   **Deliver:** cyclotomic primary subspaces, their integral intersections,
@@ -1622,7 +1622,6 @@ behavior.
 
 ### Active claims
 
-| `LATTICE-centralizer-decorated-orbits-20260909-0747` | arithmetic / finite-order centralizer decorated sublattice and flag orbits | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattice_centralizers.py; tests/lattices/test_cyclotomic_centralizer.py` (write) | `HEAD` | 2026-09-09T07:47:00Z |
 
 
 
