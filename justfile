@@ -363,3 +363,21 @@ review-packet:
         --mtime='UTC 2020-01-01' --format=gnu \
         -cf review-packet.tar -C "$staging" .
     echo "review-packet.tar: $(tar -tf review-packet.tar | grep -c -v '/$') files"
+
+# Sterk formalization: link authored files into the Prove2Me workspace and check
+# that every proved solution rests on Lean's three standard axioms.
+sterk-link workspace=(env('HOME') / "prove2me_workspace"):
+    #!/usr/bin/env bash
+    set -euo pipefail
+    src="{{justfile_directory()}}/formalization/sterk-enriques"
+    for d in Definitions Theorems Solutions; do
+        mkdir -p "{{workspace}}/$d"
+        shopt -s nullglob
+        for f in "$src/$d"/*.lean; do
+            ln -sfn "$f" "{{workspace}}/$d/$(basename "$f")"
+        done
+    done
+    echo "linked into {{workspace}}"
+
+sterk-check workspace=(env('HOME') / "prove2me_workspace"):
+    @formalization/sterk-enriques/verification/check_axioms.sh {{workspace}}

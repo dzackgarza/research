@@ -1,0 +1,46 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mathlib-initiative/formalization.yaml/main/schema/formalization.schema.json
+
+# Repo-root metadata for this formalization, following the schema the
+# openai/NavierStokesAndEuler artifact uses.  sorry_in_definitions is tracked as
+# its own field: a `sorry` in a statement file is expected, one in a definition
+# is a defect.
+version: "v0.4"
+
+project:
+  name: "sterk-enriques-boundary-complex"
+  description: >-
+    Formalizes the boundary complex of the Baily-Borel compactification of the
+    period space of degree-2 almost polarized Enriques surfaces: five
+    zero-dimensional strata, nine one-dimensional strata, and the incidence
+    relation between them, following Sterk.
+  authors:
+    - "D. Zack Garza"
+  license: "Apache-2.0"
+
+sources:
+  - title: "Compactifications of the period space of Enriques surfaces: arithmetic and geometric aspects"
+    authors:
+      - "H. J. M. Sterk"
+    type: "thesis"
+    location: "Chap. 2 §§1-3; the target is (3.4), with (3.2.3), (3.2.4) and §3.3"
+    relationship: "formalizes"
+  - title: "Compactifications of the period space of Enriques surfaces. I"
+    authors:
+      - "H. Sterk"
+    type: "article"
+    location: "Math. Z. 207 (1991); §§4.2-4.3, the published numbering of the above"
+    relationship: "formalizes"
+
+classification:
+  msc2020:
+    - "14J28"   # K3 surfaces and Enriques surfaces
+    - "11H56"   # automorphism groups of lattices
+    - "11F55"   # groups and symmetric spaces, other groups and their modular forms
+
+status:
+  scope: >-
+    Not started.  The dependency graph exists; no node has a statement and none
+    has a proof.  See LIMITATIONS.md.
+  sorry_count: 0
+  sorry_in_definitions: 0
+  main_results: []
