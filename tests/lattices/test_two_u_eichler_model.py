@@ -134,3 +134,19 @@ def test_unimodular_complement_covering_representative_is_the_hyperbolic_one() -
     assert vector.q() == 2
     assert vector.div() == 1
     assert vector.is_primitive()
+
+
+def test_two_u_model_lifts_generators_of_its_full_discriminant_group() -> None:
+    integers = _own_ring(SageZZ)
+    complement = Lattices(integers)("A2")
+    model = two_u_eichler_model(complement)
+    lattice = model.lattice()
+    target = lattice.discriminant_group().O()
+    lifts = model.discriminant_generator_lifts()
+
+    target_generators = target.group_generators()
+    assert lifts.index_set() == target_generators
+    for generator in lifts.index_set():
+        witness = lifts[generator]
+        assert witness in lattice.O()
+        assert witness.discriminant_morphism() == generator

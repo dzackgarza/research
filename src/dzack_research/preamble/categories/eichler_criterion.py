@@ -295,6 +295,40 @@ class TwoUEichlerModel(SageObject):
             name=f"Eichler covering representatives of square {square} in {lattice}",
         )
 
+    def discriminant_generator_lifts(self):
+        r"""Return live lifts in ``O(2U+K)`` of generators of ``O(A_K)``.
+
+        The discriminant form of ``2U+K`` is canonically the one of ``K``.
+        This method asks the actual arithmetic orthogonal-group generators to
+        lift each generator of the full finite orthogonal group of that
+        discriminant form.  It therefore succeeds exactly when the computed
+        discriminant representation is surjective; otherwise it refuses
+        rather than replacing the missing lift by a formal discriminant action.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        lattice = self.lattice()
+        discriminant_orthogonal_group = lattice.discriminant_group().O()
+        generators = discriminant_orthogonal_group.group_generators()
+
+        def lift(generator):
+            witness = lattice.O().discriminant_lift(generator)
+            if witness is None:
+                raise NotImplementedError(
+                    "the represented orthogonal-group generators do not surject onto O(A_L)"
+                )
+            if witness.discriminant_morphism() != generator:
+                raise ArithmeticError("a discriminant lift induces the wrong finite-form automorphism")
+            return witness
+
+        return finite_indexed_family(
+            generators,
+            lift,
+            name=f"Discriminant-generator lifts in O({lattice})",
+        )
+
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
 

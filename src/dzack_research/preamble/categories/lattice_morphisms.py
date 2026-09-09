@@ -1376,6 +1376,56 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             tuple(generator.discriminant_morphism() for generator in self.group_generators())
         )
 
+    def discriminant_lift(self, automorphism):
+        r"""Return ``g in O(L)`` inducing ``automorphism`` on ``A_L``, or ``None``.
+
+        The image of ``O(L) -> O(A_L)`` is finite.  Starting from the known
+        arithmetic generators of ``O(L)``, enumerate that finite image while
+        retaining one live lattice isometry above every image element.  The
+        search is exhaustive in the generated image and therefore returns
+        ``None`` exactly when the selected discriminant automorphism is not in
+        that image; no denominator bound or lattice-vector search is used.
+        """
+        if self.domain() is not self.codomain():
+            raise ValueError("a discriminant lift is defined for an automorphism group")
+        target = self.domain().discriminant_group().orthogonal_group()
+        automorphism = target(automorphism)
+        identity = self.one()
+        identity_image = identity.discriminant_morphism()
+        if automorphism == identity_image:
+            return identity
+
+        witnesses = {identity_image: identity}
+        steps = []
+        for generator in self.group_generators():
+            image = generator.discriminant_morphism()
+            steps.append((image, generator))
+            inverse = ~generator
+            steps.append((~image, inverse))
+        frontier = [identity_image]
+        bound = int(target.cardinality())
+        while frontier:
+            current_image = frontier.pop()
+            current_witness = witnesses[current_image]
+            for step_image, step_witness in steps:
+                candidate_image = step_image * current_image
+                if candidate_image in witnesses:
+                    continue
+                candidate_witness = step_witness * current_witness
+                if candidate_witness.discriminant_morphism() != candidate_image:
+                    raise ArithmeticError(
+                        "the retained discriminant-image witness has the wrong induced action"
+                    )
+                witnesses[candidate_image] = candidate_witness
+                if candidate_image == automorphism:
+                    return candidate_witness
+                frontier.append(candidate_image)
+                if len(witnesses) > bound:
+                    raise ArithmeticError(
+                        "the generated discriminant image exceeds O(A_L)"
+                    )
+        return None
+
     def discriminant_preimage(self, subgroup):
         r"""Return ``rho_L^{-1}(subgroup)`` as a predicate subgroup of ``O(L)``."""
         if self.domain() is not self.codomain():
