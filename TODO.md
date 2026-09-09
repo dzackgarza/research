@@ -1622,6 +1622,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-varieties-20260909-1456` | archive reconciliation / varieties curves and surfaces | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/schemes/test_varieties_archive.py` (write) | `HEAD` | 2026-09-09T14:56:00Z |
+
 
 
 
