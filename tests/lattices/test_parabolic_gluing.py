@@ -54,3 +54,24 @@ def test_every_reported_Levi_generator_is_the_descent_of_a_parabolic_generator()
 
     assert set(reduction.levi_image_generators()) == descended
     assert all(generator in reduction.O() for generator in descended)
+
+
+def test_every_element_of_the_Levi_image_retains_an_actual_parabolic_lift() -> None:
+    _lattice, _isotropic, line = _glued_divisibility_two_cusp()
+    reduction = line.isotropic_reduction()
+    levi = reduction.levi_action()
+
+    for isometry in reduction.levi_image():
+        lifted = reduction.levi_lift(isometry)
+        assert lifted is not None
+        assert lifted in reduction.parabolic_subgroup()
+        assert levi(lifted) == isometry
+
+
+def test_gluing_obstruction_is_an_actual_missing_Levi_lift() -> None:
+    _lattice, _isotropic, line = _glued_divisibility_two_cusp()
+    reduction = line.isotropic_reduction()
+    image = reduction.levi_image()
+    excluded = next(isometry for isometry in reduction.O() if isometry not in image)
+
+    assert reduction.levi_lift(excluded) is None

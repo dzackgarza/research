@@ -3116,6 +3116,22 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
+        def _parabolic_levi_generator_pairs(self):
+            r"""Return paired generators ``(g, gbar)`` for ``P_I -> O(K_I)``."""
+            if not self.is_definite():
+                raise ValueError(
+                    "the exact represented Levi image currently requires a definite isotropic reduction"
+                )
+            embedding = self.isotropic_embedding()
+            source = embedding.domain()
+            ambient = embedding.codomain()
+            levi = self.levi_action()
+            return tuple(
+                (generator, levi(generator))
+                for generator in ambient.O().isotropic_stabilizer_generators(source)
+            )
+
+        @cached_method
         def levi_image_generators(self):
             r"""Return exact generators of the image of ``P_I -> O(K_I)`` when ``K_I`` is definite.
 
@@ -3126,23 +3142,72 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             group is a finite represented group in which the image subgroup
             can be materialized exactly.
             """
-            if not self.is_definite():
-                raise ValueError(
-                    "the exact represented Levi image currently requires a definite isotropic reduction"
-                )
-            embedding = self.isotropic_embedding()
-            source = embedding.domain()
-            ambient = embedding.codomain()
-            stabilizer_generators = ambient.O().isotropic_stabilizer_generators(source)
-            levi = self.levi_action()
             return finite_ordered_set(
-                tuple(levi(generator) for generator in stabilizer_generators)
+                tuple(
+                    image
+                    for _generator, image in self._parabolic_levi_generator_pairs()
+                )
             )
 
         @cached_method
         def levi_image(self):
             r"""Return the exact subgroup ``im(P_I -> O(K_I))`` for definite ``K_I``."""
             return self.Aut().subgroup_on(tuple(self.levi_image_generators()))
+
+        @cached_method
+        def _levi_lift_table(self):
+            r"""Return one actual parabolic lift of every element of the finite Levi image."""
+            image = self.levi_image()
+            ambient_identity = self.parabolic_subgroup().one()
+            target_identity = self.Aut().one()
+            witnesses = {target_identity: ambient_identity}
+            steps = []
+            for ambient_generator, target_generator in self._parabolic_levi_generator_pairs():
+                steps.append((ambient_generator, target_generator))
+                steps.append((~ambient_generator, ~target_generator))
+            frontier = [target_identity]
+            while frontier:
+                current_target = frontier.pop()
+                current_ambient = witnesses[current_target]
+                for ambient_step, target_step in steps:
+                    candidate_target = target_step * current_target
+                    if candidate_target in witnesses:
+                        continue
+                    candidate_ambient = ambient_step * current_ambient
+                    if candidate_target not in image:
+                        raise ArithmeticError(
+                            "a descended parabolic word left the represented Levi image"
+                        )
+                    if self.levi_action()(candidate_ambient) != candidate_target:
+                        raise ArithmeticError(
+                            "a retained parabolic word descends to the wrong Levi element"
+                        )
+                    witnesses[candidate_target] = candidate_ambient
+                    frontier.append(candidate_target)
+            if len(witnesses) != int(image.cardinality()):
+                raise ArithmeticError(
+                    "the paired parabolic generators did not enumerate the represented Levi image"
+                )
+            return witnesses
+
+        def levi_lift(self, isometry):
+            r"""Return a parabolic lift of ``isometry`` exactly when the gluing permits one.
+
+            For definite ``K_I`` the represented Levi image is finite, so this
+            returns an actual witness in ``P_I`` rather than only a membership
+            decision.  An element of ``O(K_I)`` outside that image has no lift
+            through the retained arithmetic parabolic and returns ``None``.
+            """
+            if isometry.parent() is not self.Aut():
+                raise ValueError("a Levi lift starts with an element of O(K_I)")
+            if isometry not in self.levi_image():
+                return None
+            lifted = self._levi_lift_table()[isometry]
+            if lifted not in self.parabolic_subgroup():
+                raise ArithmeticError("a retained Levi lift is not parabolic")
+            if self.levi_action()(lifted) != isometry:
+                raise ArithmeticError("a retained Levi lift descends incorrectly")
+            return lifted
 
         @cached_method
         def unipotent_kernel(self):
