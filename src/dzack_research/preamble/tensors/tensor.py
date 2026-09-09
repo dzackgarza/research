@@ -454,10 +454,92 @@ class Tensor:
             for j in range(second_rank)
         )
 
-    def contract(self, *vectors):
-        r"""Fully contract a purely covariant tensor with contravariant vectors."""
+    def _partial_contract(self, other, slot=0, other_slot=0):
+        r"""Contract upper ``slot`` of ``self`` with lower ``other_slot`` of ``other``."""
+        if not isinstance(other, Tensor):
+            raise TypeError("tensor contraction pairs two represented tensors")
+        if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("tensor contraction requires one base ring")
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        other_upper = other._upper_index_ranks()
+        other_lower = other._lower_index_ranks()
+        slot = int(slot)
+        other_slot = int(other_slot)
+        if slot < 0 or slot >= len(upper):
+            raise IndexError("the selected slot is not an upper index of the left tensor")
+        if other_slot < 0 or other_slot >= len(other_lower):
+            raise IndexError("the selected slot is not a lower index of the right tensor")
+        if upper[slot] != other_lower[other_slot]:
+            raise ValueError("contracted tensor slots must have the same rank")
+        if Infinity in self._index_ranks() + other._index_ranks():
+            raise NotImplementedError("coordinate contraction currently requires finite index ranks")
+
+        from itertools import product as cartesian_product
+
+        result_upper = upper[:slot] + upper[slot + 1 :] + other_upper
+        result_lower = lower + other_lower[:other_slot] + other_lower[other_slot + 1 :]
+        entries = {}
+        self_positions = cartesian_product(*(range(rank) for rank in self._index_ranks()))
+        other_positions = tuple(
+            cartesian_product(*(range(rank) for rank in other._index_ranks()))
+        )
+        for left_index in self_positions:
+            left_value = self[left_index]
+            if not left_value:
+                continue
+            left_upper = left_index[: len(upper)]
+            left_lower = left_index[len(upper) :]
+            contracted = left_upper[slot]
+            for right_index in other_positions:
+                right_upper = right_index[: len(other_upper)]
+                right_lower = right_index[len(other_upper) :]
+                if contracted != right_lower[other_slot]:
+                    continue
+                right_value = other[right_index]
+                if not right_value:
+                    continue
+                result_index = (
+                    left_upper[:slot]
+                    + left_upper[slot + 1 :]
+                    + right_upper
+                    + left_lower
+                    + right_lower[:other_slot]
+                    + right_lower[other_slot + 1 :]
+                )
+                entries[result_index] = entries.get(
+                    result_index, self.base_ring().zero()
+                ) + left_value * right_value
+
+        if not result_upper and not result_lower:
+            return entries.get((), self.base_ring().zero())
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, self.base_ring().zero())
+            for index in cartesian_product(*(range(rank) for rank in shape))
+        )
+        return tensor(
+            self.base_ring(),
+            result_upper,
+            result_lower,
+            _nested(values, shape),
+        )
+
+    def contract(self, *vectors, slot=0, other_slot=0):
+        r"""Contract represented tensor slots or fully evaluate a covariant tensor.
+
+        When this tensor has an upper slot, ``contract(other, slot=i,
+        other_slot=j)`` pairs that upper slot with lower slot ``j`` of
+        ``other``.  The result has type ``(p-1+p', q+q'-1)``.  When this tensor
+        is purely covariant, the historical evaluation spelling is retained:
+        ``contract(v_1,...,v_q)`` fully evaluates it on contravariant vectors.
+        """
         if self._upper_index_ranks():
-            raise TypeError("full contraction here requires a purely covariant tensor")
+            if len(vectors) != 1:
+                raise TypeError("partial tensor contraction takes exactly one other tensor")
+            return self._partial_contract(vectors[0], slot=slot, other_slot=other_slot)
+        if int(slot) != 0 or int(other_slot) != 0:
+            raise TypeError("slot selectors apply only to upper/lower tensor contraction")
         if len(vectors) != len(self._lower_index_ranks()):
             raise TypeError(
                 f"a type-{self.tensor_valence()} tensor takes "
@@ -481,6 +563,106 @@ class Tensor:
                 for position in cartesian_product(*(range(rank) for rank in self._lower_index_ranks()))
             ),
             self.base_ring().zero(),
+        )
+
+    def trace(self, slot=0, other_slot=0):
+        r"""Contract one upper and one lower slot of this tensor."""
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        slot = int(slot)
+        other_slot = int(other_slot)
+        if slot < 0 or slot >= len(upper) or other_slot < 0 or other_slot >= len(lower):
+            raise IndexError("the tensor has no such upper/lower pair of slots")
+        if upper[slot] != lower[other_slot]:
+            raise ValueError("traced tensor slots must have the same rank")
+        if Infinity in self._index_ranks():
+            raise NotImplementedError("coordinate trace currently requires finite index ranks")
+
+        from itertools import product as cartesian_product
+
+        result_upper = upper[:slot] + upper[slot + 1 :]
+        result_lower = lower[:other_slot] + lower[other_slot + 1 :]
+        entries = {}
+        for index in cartesian_product(*(range(rank) for rank in self._index_ranks())):
+            upper_index = index[: len(upper)]
+            lower_index = index[len(upper) :]
+            if upper_index[slot] != lower_index[other_slot]:
+                continue
+            result_index = (
+                upper_index[:slot]
+                + upper_index[slot + 1 :]
+                + lower_index[:other_slot]
+                + lower_index[other_slot + 1 :]
+            )
+            entries[result_index] = entries.get(
+                result_index, self.base_ring().zero()
+            ) + self[index]
+
+        if not result_upper and not result_lower:
+            return entries.get((), self.base_ring().zero())
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, self.base_ring().zero())
+            for index in cartesian_product(*(range(rank) for rank in shape))
+        )
+        return tensor(
+            self.base_ring(),
+            result_upper,
+            result_lower,
+            _nested(values, shape),
+        )
+
+    def tensor_product(self, other):
+        r"""Return the outer tensor product, preserving upper/lower slot order."""
+        if not isinstance(other, Tensor):
+            raise TypeError("tensor_product requires another represented tensor")
+        if _engine_ring(other.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("a tensor product requires one base ring")
+        if Infinity in self._index_ranks() + other._index_ranks():
+            raise NotImplementedError("coordinate tensor products currently require finite index ranks")
+
+        from itertools import product as cartesian_product
+
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        other_upper = other._upper_index_ranks()
+        other_lower = other._lower_index_ranks()
+        result_upper = upper + other_upper
+        result_lower = lower + other_lower
+        entries = {}
+        left_positions = cartesian_product(*(range(rank) for rank in self._index_ranks()))
+        right_positions = tuple(
+            cartesian_product(*(range(rank) for rank in other._index_ranks()))
+        )
+        for left_index in left_positions:
+            left_upper = left_index[: len(upper)]
+            left_lower = left_index[len(upper) :]
+            left_value = self[left_index]
+            if not left_value:
+                continue
+            for right_index in right_positions:
+                right_value = other[right_index]
+                if not right_value:
+                    continue
+                right_upper = right_index[: len(other_upper)]
+                right_lower = right_index[len(other_upper) :]
+                result_index = left_upper + right_upper + left_lower + right_lower
+                entries[result_index] = entries.get(
+                    result_index, self.base_ring().zero()
+                ) + left_value * right_value
+
+        shape = result_upper + result_lower
+        if not shape:
+            return entries.get((), self.base_ring().zero())
+        values = tuple(
+            entries.get(index, self.base_ring().zero())
+            for index in cartesian_product(*(range(rank) for rank in shape))
+        )
+        return tensor(
+            self.base_ring(),
+            result_upper,
+            result_lower,
+            _nested(values, shape),
         )
 
     def dual_tensor(self):
