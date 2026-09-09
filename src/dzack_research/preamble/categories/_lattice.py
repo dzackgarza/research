@@ -228,6 +228,63 @@ def _lattice_vector_from_coefficients(lattice, coefficients):
     )
 
 
+def _normalized_lattice_names(names, basis_keys):
+    r"""Normalize the named-generator datum for a finite lattice framing.
+
+    Sage's ``L.<a1,...,a8> =`` preparser supplies the literal three-name tuple
+    ``("a1", "Ellipsis", "a8")``.  The lattice constructor owns the rank, so
+    it is the responsible place to expand that syntactic datum to the eight
+    mathematical generator names.  Ordinary strings remain Sage's native
+    comma-separated naming syntax.
+    """
+    match names:
+        case None | str():
+            return names
+        case _:
+            selected = tuple(names)
+    size = basis_keys.cardinality()
+    assert size.is_finite(), "explicit lattice generator names require a finite framing"
+    rank = int(size.finite_value())
+    ellipsis_positions = tuple(
+        position
+        for position, name in enumerate(selected)
+        if name is Ellipsis or str(name) == "Ellipsis"
+    )
+    match ellipsis_positions:
+        case ():
+            assert len(selected) == rank, (
+                f"{len(selected)} lattice generator names were supplied for rank {rank}"
+            )
+            return selected
+        case (position,):
+            assert position > 0 and position + 1 < len(selected), (
+                "an ellipsis in lattice generator names needs indexed endpoints"
+            )
+            assert len(selected) == 3 and position == 1, (
+                "lattice generator ellipsis syntax has the form a1, ..., an"
+            )
+            first = re.fullmatch(r"(.*?)(\d+)", str(selected[0]))
+            last = re.fullmatch(r"(.*?)(\d+)", str(selected[2]))
+            assert first is not None and last is not None, (
+                "lattice generator ellipsis endpoints must end in integers"
+            )
+            assert first.group(1) == last.group(1), (
+                "lattice generator ellipsis endpoints require one common prefix"
+            )
+            start = int(first.group(2))
+            stop = int(last.group(2))
+            assert start <= stop, "lattice generator ellipsis endpoints are increasing"
+            expanded = tuple(
+                f"{first.group(1)}{index}" for index in range(start, stop + 1)
+            )
+            assert len(expanded) == rank, (
+                f"{len(expanded)} lattice generator names were supplied for rank {rank}"
+            )
+            return expanded
+        case _:
+            raise ValueError("lattice generator names contain more than one ellipsis")
+
+
 class Lattice(Parent, IndexedGenerators):
     r"""A lattice: a free module with a form, as a parent in :class:`Lattices`.
 
@@ -304,7 +361,9 @@ class Lattice(Parent, IndexedGenerators):
             "category": parent_category,
         }
         if names is not None:
-            parent_arguments["names"] = names
+            parent_arguments["names"] = _normalized_lattice_names(
+                names, _basis_keys(module)
+            )
         Parent.__init__(self, **parent_arguments)
 
     def __call__(self, x):
