@@ -908,6 +908,321 @@ class _FiniteSchemeGluingDatum(SageObject):
         return f"Finite affine scheme gluing datum indexed by {self.chart_index_set()}"
 
 
+class FiniteAtlasRefinement(SageObject):
+    r"""A represented refinement of one finite affine atlas by another.
+
+    A refinement consists of a map from fine chart labels to coarse chart
+    labels together with actual chart morphisms ``V_a -> U_i``.  The chart
+    maps are required to commute with every pairwise transition.  Consequently
+    they glue to a comparison morphism from the scheme presented by the fine
+    atlas to the scheme presented by the coarse atlas.
+
+    The two glued scheme carriers need not be literally identical objects.
+    The comparison morphism is retained explicitly; a consumer that knows the
+    refinement is an isomorphism may also construct and retain its inverse.
+    """
+
+    def __init__(self, coarse_datum, fine_datum, index_map, chart_maps) -> None:
+        if not isinstance(coarse_datum, _FiniteSchemeGluingDatum):
+            raise TypeError("the coarse atlas of a finite refinement is a represented affine gluing")
+        if not isinstance(fine_datum, _FiniteSchemeGluingDatum):
+            raise TypeError("the fine atlas of a finite refinement is a represented affine gluing")
+        if coarse_datum.base_ring() is not fine_datum.base_ring():
+            raise ValueError("a finite-atlas refinement keeps the scheme base ring")
+        self._coarse_datum = coarse_datum
+        self._fine_datum = fine_datum
+        fine_indices = fine_datum.chart_index_set()
+        raw_index_map = _family_on_finite_ordered_set(
+            fine_indices,
+            index_map,
+            name="Fine-to-coarse chart labels",
+            noun="finite-atlas refinement index data",
+        )
+        self._index_map = finite_indexed_family(
+            fine_indices,
+            lambda index: coarse_datum.normalize_chart_index(raw_index_map[index]),
+            name="Fine-to-coarse chart map",
+        )
+        self._chart_maps = _family_on_finite_ordered_set(
+            fine_indices,
+            chart_maps,
+            name="Chart morphisms of a finite-atlas refinement",
+            noun="finite-atlas refinement chart maps",
+        )
+        for fine_index in fine_indices:
+            chart_map = self._chart_maps[fine_index]
+            coarse_index = self._index_map[fine_index]
+            if not isinstance(chart_map, SchemeMorphism):
+                raise TypeError("a finite-atlas refinement chart map is a scheme morphism")
+            if chart_map.domain() is not fine_datum.chart(fine_index):
+                raise ValueError("a refinement chart map has the wrong fine-chart domain")
+            if chart_map.codomain() is not coarse_datum.chart(coarse_index):
+                raise ValueError("a refinement chart map has the wrong coarse-chart codomain")
+        self._verify_overlap_compatibility()
+        self._comparison_morphism = fine_datum.scheme().Mor(coarse_datum.scheme())(
+            finite_indexed_family(
+                fine_indices,
+                lambda index: coarse_datum.chart_embedding(self._index_map[index])
+                * self._chart_maps[index],
+                name="Local maps of the finite-atlas refinement comparison",
+            )
+        )
+
+    def coarse_datum(self):
+        return self._coarse_datum
+
+    def fine_datum(self):
+        return self._fine_datum
+
+    def coarse_scheme(self):
+        return self.coarse_datum().scheme()
+
+    def fine_scheme(self):
+        return self.fine_datum().scheme()
+
+    def coarse_index(self, fine_index):
+        fine_index = self.fine_datum().normalize_chart_index(fine_index)
+        return self._index_map[fine_index]
+
+    def chart_map(self, fine_index):
+        fine_index = self.fine_datum().normalize_chart_index(fine_index)
+        return self._chart_maps[fine_index]
+
+    def comparison_morphism(self):
+        return self._comparison_morphism
+
+    def overlap_map(self, source_index, target_index):
+        r"""Map one fine overlap to the corresponding coarse overlap or chart."""
+        fine = self.fine_datum()
+        coarse = self.coarse_datum()
+        source_index = fine.normalize_chart_index(source_index)
+        target_index = fine.normalize_chart_index(target_index)
+        source_overlap = fine.overlap(source_index, target_index)
+        into_coarse_chart = self.chart_map(source_index) * source_overlap.inclusion()
+        coarse_source = self.coarse_index(source_index)
+        coarse_target = self.coarse_index(target_index)
+        if coarse_source == coarse_target:
+            return into_coarse_chart
+        return coarse.overlap(coarse_source, coarse_target).corestriction(
+            into_coarse_chart
+        )
+
+    def _verify_overlap_compatibility(self) -> None:
+        fine = self.fine_datum()
+        coarse = self.coarse_datum()
+        for source_index, target_index in fine.transition_index_set():
+            fine_transition = fine.transition_between(source_index, target_index).forward()
+            source_overlap = fine.overlap(source_index, target_index)
+            target_overlap = fine.overlap(target_index, source_index)
+            coarse_source = self.coarse_index(source_index)
+            coarse_target = self.coarse_index(target_index)
+            if coarse_source == coarse_target:
+                left = self.chart_map(source_index) * source_overlap.inclusion()
+                right = (
+                    self.chart_map(target_index)
+                    * target_overlap.inclusion()
+                    * fine_transition
+                )
+            else:
+                left = (
+                    coarse.transition_between(coarse_source, coarse_target).forward()
+                    * self.overlap_map(source_index, target_index)
+                )
+                right = self.overlap_map(target_index, source_index) * fine_transition
+            if left != right:
+                raise ValueError(
+                    "finite-atlas refinement chart maps do not commute with an overlap transition"
+                )
+
+    def pullback_module_datum(self, descent):
+        r"""Pull a finite-atlas module descent datum to the fine atlas.
+
+        Distinct coarse overlap rings remain distinct.  When two fine charts
+        refine one coarse chart, the transition is the canonical scalar-change
+        identification.  Otherwise the coarse semilinear transition is
+        restricted through the represented map of fine overlaps.
+        """
+        if descent.gluing_datum() is not self.coarse_datum():
+            raise ValueError("module descent is pulled back from this refinement's coarse atlas")
+        fine = self.fine_datum()
+        local_modules = {
+            fine_index: descent.local_module(self.coarse_index(fine_index)).base_change(
+                self.chart_map(fine_index).coordinate_algebra_morphism()
+            )
+            for fine_index in fine.chart_indices()
+        }
+        transition_data = {}
+        for source_index, target_index in fine.transition_index_set():
+            coarse_source = self.coarse_index(source_index)
+            coarse_target = self.coarse_index(target_index)
+            if coarse_source == coarse_target:
+                def forward_identity(label, _domain, codomain):
+                    return codomain.module_generator(label)
+
+                def inverse_identity(label, _domain, codomain):
+                    return codomain.module_generator(label)
+
+                transition_data[source_index, target_index] = (
+                    forward_identity,
+                    inverse_identity,
+                )
+                continue
+
+            coarse_transition = descent.transition(coarse_source, coarse_target)
+            coarse_source_pair = coarse_transition.source_module()
+            coarse_target_pair = coarse_transition.target_module()
+            source_ring_map = self.overlap_map(
+                source_index, target_index
+            ).coordinate_algebra_morphism()
+            target_ring_map = self.overlap_map(
+                target_index, source_index
+            ).coordinate_algebra_morphism()
+
+            def forward_images(
+                label,
+                _domain,
+                codomain,
+                coarse_transition=coarse_transition,
+                coarse_target_pair=coarse_target_pair,
+                coarse_source_pair=coarse_source_pair,
+                source_ring_map=source_ring_map,
+            ):
+                image = coarse_transition.pullback()(
+                    coarse_target_pair.module_generator(label)
+                )
+                return _change_coefficients(
+                    image,
+                    coarse_source_pair,
+                    codomain,
+                    source_ring_map,
+                )
+
+            def inverse_images(
+                label,
+                _domain,
+                codomain,
+                coarse_transition=coarse_transition,
+                coarse_source_pair=coarse_source_pair,
+                coarse_target_pair=coarse_target_pair,
+                target_ring_map=target_ring_map,
+            ):
+                image = coarse_transition.inverse_pullback()(
+                    coarse_source_pair.module_generator(label)
+                )
+                return _change_coefficients(
+                    image,
+                    coarse_target_pair,
+                    codomain,
+                    target_ring_map,
+                )
+
+            transition_data[source_index, target_index] = (
+                forward_images,
+                inverse_images,
+            )
+        return FiniteAtlasModuleGluingDatum(
+            fine,
+            local_modules,
+            transition_data,
+        )
+
+    def pullback_invertible_sheaf(self, line_bundle):
+        r"""Pull a finite-atlas line bundle across this atlas refinement.
+
+        The returned comparison retains the refined line bundle and the actual
+        local module isomorphisms from the chartwise scalar pullbacks.
+        """
+        from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+            FiniteAtlasInvertibleSheaf,
+        )
+
+        if not isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
+            raise TypeError("finite-atlas refinement pulls back a finite-atlas invertible sheaf")
+        if line_bundle.gluing_datum() is not self.coarse_datum():
+            raise ValueError("the line bundle belongs to this refinement's coarse atlas")
+        fine = self.fine_datum()
+        units = {}
+        for source_index, target_index in fine.transition_index_set():
+            coarse_source = self.coarse_index(source_index)
+            coarse_target = self.coarse_index(target_index)
+            source_overlap_ring = fine.overlap(
+                source_index, target_index
+            ).coordinate_algebra()
+            if coarse_source == coarse_target:
+                units[source_index, target_index] = source_overlap_ring.one()
+            else:
+                ring_map = self.overlap_map(
+                    source_index, target_index
+                ).coordinate_algebra_morphism()
+                units[source_index, target_index] = ring_map(
+                    line_bundle.transition_unit(coarse_source, coarse_target)
+                )
+        refined = FiniteAtlasInvertibleSheaf(fine, units)
+        return FiniteAtlasInvertibleSheafRefinement(self, line_bundle, refined)
+
+
+class FiniteAtlasInvertibleSheafRefinement(SageObject):
+    r"""The chartwise pullback comparison for a finite-atlas line bundle."""
+
+    def __init__(self, refinement, coarse_bundle, refined_bundle) -> None:
+        self._refinement = refinement
+        self._coarse_bundle = coarse_bundle
+        self._refined_bundle = refined_bundle
+        fine = refinement.fine_datum()
+        local_isomorphisms = {}
+        for fine_index in fine.chart_indices():
+            coarse_index = refinement.coarse_index(fine_index)
+            pulled = coarse_bundle.local_module(coarse_index).base_change(
+                refinement.chart_map(fine_index).coordinate_algebra_morphism()
+            )
+            refined = refined_bundle.local_module(fine_index)
+            pulled_labels = tuple(pulled.module_generating_set())
+            refined_labels = tuple(refined.module_generating_set())
+            if len(pulled_labels) != len(refined_labels):
+                raise ArithmeticError("line-bundle refinement changed the local rank")
+            forward = module_homset(pulled, refined)(
+                {
+                    source_label: refined.module_generator(target_label)
+                    for source_label, target_label in zip(
+                        pulled_labels, refined_labels, strict=True
+                    )
+                }
+            )
+            inverse = module_homset(refined, pulled)(
+                {
+                    target_label: pulled.module_generator(source_label)
+                    for source_label, target_label in zip(
+                        pulled_labels, refined_labels, strict=True
+                    )
+                }
+            )
+            local_isomorphisms[fine_index] = Isomorphism(forward, inverse)
+        self._local_isomorphisms = finite_indexed_family(
+            fine.chart_index_set(),
+            lambda index: local_isomorphisms[index],
+            name="Local line-bundle isomorphisms under atlas refinement",
+        )
+
+    def refinement(self):
+        return self._refinement
+
+    def coarse_bundle(self):
+        return self._coarse_bundle
+
+    def refined_bundle(self):
+        return self._refined_bundle
+
+    def scheme_comparison(self):
+        return self.refinement().comparison_morphism()
+
+    def local_isomorphisms(self):
+        return self._local_isomorphisms
+
+    def local_isomorphism(self, fine_index):
+        fine_index = self.refinement().fine_datum().normalize_chart_index(fine_index)
+        return self.local_isomorphisms()[fine_index]
+
+
 def _finite_framing(module):
     if not module.is_framed():
         raise TypeError("affine module descent currently requires finitely framed local modules")
@@ -3170,6 +3485,8 @@ __all__ = [
     "FiniteAtlasAlgebraGluingDatum",
     "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
+    "FiniteAtlasInvertibleSheafRefinement",
+    "FiniteAtlasRefinement",
     "FiniteAtlasModuleGluingDatum",
     "FiniteAtlasModuleGluingMorphism",
     "FiniteAtlasModuleTransition",
