@@ -1624,7 +1624,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-trivial-action-20260909-1935` | archive reconciliation / trivial lattice action functor and adjunctions | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/groups/test_trivial_action_archive.py` (write) | `HEAD` | 2026-09-09T19:35:00Z |
 
 
 
