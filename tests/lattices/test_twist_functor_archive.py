@@ -1,53 +1,35 @@
 r"""Archive reconciliation for the lattice twist endofunctor.
 
-The archived operation was stronger than the surviving object method: it was
-an actual faithful endofunctor, acting on morphisms by the same coordinate
-matrix.  These specimens retain that mathematical contract without reviving
-the archived implementation.
+The archive required Nikulin's ``L -> L(a)`` to act on morphisms as well as
+objects.  The live functor delegates object scaling to the lattice owner and
+reparents the same coordinate matrix between the twisted endpoints.
 """
 
-from sage.rings.integer_ring import ZZ as SageZZ
+import pytest
 
+from dzack_research.preamble.all import Lattices, ZZ
 from dzack_research.preamble.categories.functors.twist import twist_functor
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
-def test_twist_functor_scales_the_form_and_caches_the_selected_image() -> None:
-    integers = _own_ring(SageZZ)
-    plane = Lattices(integers)("U")
-    twist = twist_functor(integers(2))
+def test_twist_functor_transports_a_nonidentity_isometry_with_the_same_matrix() -> None:
+    lattice = Lattices(ZZ)("A2")
+    root = lattice.module_generator(0)
+    reflection = lattice.reflection(root)
+    functor = twist_functor(-2)
 
-    image = twist(plane)
+    twisted = functor(lattice)
+    moved = functor(reflection)
 
-    assert twist.domain() == Lattices(integers)
-    assert twist.codomain() == Lattices(integers)
-    assert twist.is_faithful()
-    assert twist(plane) is image
-    assert image.gram_matrix() == integers(2) * plane.gram_matrix()
+    assert moved.domain() is twisted
+    assert moved.codomain() is twisted
+    assert moved.matrix() == reflection.matrix()
+    assert moved != twisted.Hom(twisted).identity()
+    assert moved(twisted.module_generator(0)).q() == twisted.module_generator(0).q()
+    assert twisted.module_generator(0).q() == -2 * root.q()
 
 
-def test_nonidentity_isometry_keeps_its_matrix_after_twisting() -> None:
-    integers = _own_ring(SageZZ)
-    plane = Lattices(integers)("U")
-    labels = tuple(plane.module_generating_set())
-    swap = plane.Aut()(
-        {
-            labels[0]: plane.module_generator(labels[1]),
-            labels[1]: plane.module_generator(labels[0]),
-        }
-    )
-    twist = twist_functor(integers(-3))
-
-    carried = twist(swap)
-    twisted_plane = twist(plane)
-
-    assert carried.domain() is twisted_plane
-    assert carried.codomain() is twisted_plane
-    assert carried.matrix() == swap.matrix()
-    assert carried(twisted_plane.module_generator(labels[0])) == (
-        twisted_plane.module_generator(labels[1])
-    )
-    assert carried(twisted_plane.module_generator(labels[1])) == (
-        twisted_plane.module_generator(labels[0])
-    )
+def test_twist_functor_is_cached_and_zero_is_not_a_lattice_twist() -> None:
+    assert twist_functor(3) is twist_functor(3)
+    assert twist_functor(3).scale() == ZZ(3)
+    with pytest.raises(ValueError):
+        twist_functor(0)
