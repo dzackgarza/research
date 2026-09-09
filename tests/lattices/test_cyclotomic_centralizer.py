@@ -80,3 +80,69 @@ def test_the_exact_order_is_part_of_the_cyclotomic_construction() -> None:
         pass
     else:
         raise AssertionError("an order-three isometry cannot be declared to have exact order six")
+
+
+def _same_sublattice(left, right) -> bool:
+    try:
+        left.inclusion().factor_through(right.inclusion())
+        right.inclusion().factor_through(left.inclusion())
+    except ValueError:
+        return False
+    return True
+
+
+def test_equivariant_coordinate_lines_have_exact_centralizer_orbits_and_transporters() -> None:
+    lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    decorated = lattice.with_isometry(_negation(lattice))
+    generators = tuple(lattice.module_generators())
+    lines = tuple(lattice.subobject_on((generator,)) for generator in generators)
+
+    decomposition = decorated.equivariant_sublattice_orbit_decomposition(lines)
+
+    assert decomposition.orbits().cardinality() == 1
+    assert decomposition.representatives().cardinality() == 1
+    transporter = decomposition.transporter(lines[0], lines[2])
+    assert transporter is not None
+    assert transporter in decorated.centralizer_group()
+    assert _same_sublattice((transporter * lines[0].inclusion()).image(), lines[2])
+    stabilizer = decomposition.stabilizer(lines[0])
+    assert stabilizer.supergroup() is decorated.centralizer_group()
+    assert all(
+        _same_sublattice((element * lines[0].inclusion()).image(), lines[0])
+        for element in (stabilizer.one(),)
+    )
+
+
+def test_equivariant_line_plane_flags_have_exact_centralizer_orbits_and_transporters() -> None:
+    lattice = Lattices(ZZ)([[1, 0, 0], [0, 1, 0], [0, 0, 1]])
+    decorated = lattice.with_isometry(_negation(lattice))
+    generators = tuple(lattice.module_generators())
+    lines = tuple(lattice.subobject_on((generator,)) for generator in generators)
+    planes = {
+        frozenset((left, right)): lattice.subobject_on(
+            (generators[left], generators[right])
+        )
+        for left in range(3)
+        for right in range(left + 1, 3)
+    }
+    flags = tuple(
+        decorated.equivariant_flag((lines[line], planes[frozenset((line, other))]))
+        for line in range(3)
+        for other in range(3)
+        if line != other
+    )
+
+    decomposition = decorated.equivariant_flag_orbit_decomposition(flags)
+
+    assert decomposition.orbits().cardinality() == 1
+    assert decomposition.representatives().cardinality() == 1
+    transporter = decomposition.transporter(flags[0], flags[-1])
+    assert transporter is not None
+    assert transporter in decorated.centralizer_group()
+    source_terms = tuple(flags[0].terms())
+    target_terms = tuple(flags[-1].terms())
+    assert all(
+        _same_sublattice((transporter * source.inclusion()).image(), target)
+        for source, target in zip(source_terms, target_terms, strict=True)
+    )
+    assert decomposition.stabilizer(flags[0]).supergroup() is decorated.centralizer_group()

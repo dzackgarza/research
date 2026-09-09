@@ -164,6 +164,190 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         raise ArithmeticError("one centralizer orbit has no transporter between two of its members")
 
 
+def _same_embedded_sublattice(left, right) -> bool:
+    if left.ambient_lattice() is not right.ambient_lattice():
+        return False
+    try:
+        left.inclusion().factor_through(right.inclusion())
+        right.inclusion().factor_through(left.inclusion())
+    except (AttributeError, TypeError, ValueError):
+        return False
+    return True
+
+
+def _transport_sublattice(automorphism, sublattice):
+    return (automorphism * sublattice.inclusion()).image()
+
+
+class EquivariantSublatticeFlag(SageObject):
+    r"""A nested finite flag of represented sublattices stable under ``f``."""
+
+    def __init__(self, decorated_lattice, terms) -> None:
+        terms = tuple(terms)
+        if not terms:
+            raise ValueError("an equivariant sublattice flag has at least one term")
+        previous = None
+        for term in terms:
+            decorated_lattice.equivariant_sublattice(term)
+            if previous is not None:
+                previous.inclusion().factor_through(term.inclusion())
+                if int(previous.module_rank()) >= int(term.module_rank()):
+                    raise ValueError("an equivariant flag has strictly increasing ranks")
+            previous = term
+        self._decorated_lattice = decorated_lattice
+        self._terms = terms
+
+    def decorated_lattice(self):
+        return self._decorated_lattice
+
+    def lattice(self):
+        return self.decorated_lattice().lattice()
+
+    def terms(self):
+        return finite_ordered_set(self._terms)
+
+    def ranks(self):
+        return finite_ordered_set(tuple(term.module_rank() for term in self._terms))
+
+    def __repr__(self) -> str:
+        return f"Equivariant sublattice flag of ranks {tuple(self.ranks())} in {self.lattice()}"
+
+
+def _same_equivariant_flag(left, right) -> bool:
+    left_terms = tuple(left.terms())
+    right_terms = tuple(right.terms())
+    if len(left_terms) != len(right_terms):
+        return False
+    return all(
+        _same_embedded_sublattice(source, target)
+        for source, target in zip(left_terms, right_terms, strict=True)
+    )
+
+
+def _transport_equivariant_flag(automorphism, flag):
+    decorated = flag.decorated_lattice()
+    return EquivariantSublatticeFlag(
+        decorated,
+        tuple(_transport_sublattice(automorphism, term) for term in flag.terms()),
+    )
+
+
+class _EquivariantFiniteOrbit(SageObject):
+    def __init__(self, decomposition, representative, members) -> None:
+        self._decomposition = decomposition
+        self._representative = representative
+        self._members = finite_ordered_set(tuple(members))
+
+    def decomposition(self):
+        return self._decomposition
+
+    def group(self):
+        return self.decomposition().group()
+
+    def representative(self):
+        return self._representative
+
+    def members(self):
+        return self._members
+
+    def stabilizer(self):
+        from dzack_research.preamble.categories.group.predicate_subgroups import (
+            stabilizer_subgroup,
+        )
+
+        representative = self.representative()
+        decomposition = self.decomposition()
+        return stabilizer_subgroup(
+            self.group(),
+            representative,
+            "on the represented finite family",
+            lambda automorphism: decomposition.same(
+                decomposition.act(automorphism, representative), representative
+            ),
+            description=f"g fixes {representative}",
+        )
+
+    def transporter_from(self, source):
+        return self.decomposition().transporter(source, self.representative())
+
+
+class EquivariantFiniteOrbitDecomposition(SageObject):
+    r"""Exact centralizer orbits on a supplied finite centralizer-stable family."""
+
+    def __init__(self, decorated_lattice, candidates, action, equality) -> None:
+        candidates = tuple(candidates)
+        if not candidates:
+            raise ValueError("an equivariant finite orbit decomposition needs candidates")
+        self._decorated_lattice = decorated_lattice
+        self._action = action
+        self._equality = equality
+        self._centralizer_elements = tuple(
+            _finite_supergroup_elements(decorated_lattice.centralizer_group())
+        )
+
+        for candidate in candidates:
+            for automorphism in self._centralizer_elements:
+                image = self.act(automorphism, candidate)
+                if not any(self.same(image, target) for target in candidates):
+                    raise ValueError(
+                        "the supplied finite family is not stable under the full centralizer"
+                    )
+
+        remaining = list(candidates)
+        orbits = []
+        while remaining:
+            representative = remaining.pop(0)
+            members = []
+            for candidate in candidates:
+                if any(
+                    self.same(self.act(automorphism, representative), candidate)
+                    for automorphism in self._centralizer_elements
+                ):
+                    members.append(candidate)
+            remaining = [
+                candidate
+                for candidate in remaining
+                if not any(self.same(candidate, member) for member in members)
+            ]
+            orbits.append(_EquivariantFiniteOrbit(self, representative, members))
+        self._orbits = finite_ordered_set(tuple(orbits))
+
+    def decorated_lattice(self):
+        return self._decorated_lattice
+
+    def group(self):
+        return self.decorated_lattice().centralizer_group()
+
+    def act(self, automorphism, candidate):
+        return self._action(automorphism, candidate)
+
+    def same(self, left, right) -> bool:
+        return bool(self._equality(left, right))
+
+    def orbits(self):
+        return self._orbits
+
+    def representatives(self):
+        return finite_ordered_set(tuple(orbit.representative() for orbit in self.orbits()))
+
+    def orbit_of(self, candidate):
+        for orbit in self.orbits():
+            if any(self.same(candidate, member) for member in orbit.members()):
+                return orbit
+        raise ValueError("the selected object is not in the represented finite family")
+
+    def stabilizer(self, candidate):
+        return self.orbit_of(candidate).stabilizer()
+
+    def transporter(self, source, target):
+        if self.orbit_of(source) is not self.orbit_of(target):
+            return None
+        for automorphism in self._centralizer_elements:
+            if self.same(self.act(automorphism, source), target):
+                return automorphism
+        raise ArithmeticError("one exact centralizer orbit has no transporter")
+
+
 def _isometry_power(isometry, exponent):
     r"""Return an exact nonnegative power of one lattice automorphism."""
     exponent = int(exponent)
@@ -511,6 +695,41 @@ class EquivariantLattice(SageObject):
     def equivariant_vector_orbit_decomposition(self, square):
         r"""Return exact ``O(L,f)``-orbits on vectors of the selected square."""
         return EquivariantVectorOrbitDecomposition(self, square)
+
+    def equivariant_sublattice_orbit_decomposition(self, sublattices):
+        r"""Return exact centralizer orbits on a finite stable family of sublattices.
+
+        Every selected sublattice must be stable under ``f`` and the supplied
+        finite family must be stable under the full centralizer.  In the
+        definite regime the centralizer is finite and is listed exactly, so
+        the returned representatives, stabilizers and transporters form the
+        complete quotient of the stated family rather than a search prefix.
+        """
+        sublattices = tuple(sublattices)
+        for sublattice in sublattices:
+            self.equivariant_sublattice(sublattice)
+        return EquivariantFiniteOrbitDecomposition(
+            self,
+            sublattices,
+            _transport_sublattice,
+            _same_embedded_sublattice,
+        )
+
+    def equivariant_flag(self, terms):
+        r"""Return the represented nested flag of ``f``-stable sublattices."""
+        return EquivariantSublatticeFlag(self, terms)
+
+    def equivariant_flag_orbit_decomposition(self, flags):
+        r"""Return exact centralizer orbits on a finite stable family of flags."""
+        flags = tuple(flags)
+        if any(flag.decorated_lattice() is not self for flag in flags):
+            raise ValueError("an equivariant flag family belongs to one equipped lattice")
+        return EquivariantFiniteOrbitDecomposition(
+            self,
+            flags,
+            _transport_equivariant_flag,
+            _same_equivariant_flag,
+        )
 
     def __repr__(self) -> str:
         return f"{self.lattice()} equipped with {self.isometry()}"
