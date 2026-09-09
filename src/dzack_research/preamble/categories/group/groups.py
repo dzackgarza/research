@@ -417,6 +417,9 @@ def _presentation_of(group):
         case CoxeterMatrixGroup():
             free, relations = coxeter_presentation(engine.coxeter_matrix())
             return _own_group(free), relations
+        case FinitelyGeneratedMatrixGroup_gap() if _engine_finiteness(engine) is True:
+            presented = engine.as_permutation_group().as_finitely_presented_group()
+            return _own_group(presented.free_group()), tuple(presented.relations())
         case NamedMatrixGroup_generic() | NamedMatrixGroup_gap():
             presented = engine.as_permutation_group().as_finitely_presented_group()
             return _own_group(presented.free_group()), tuple(presented.relations())
@@ -473,7 +476,13 @@ def _has_chosen_presentation(engine):
         return True
     return _engine_finiteness(engine) is True and isinstance(
         engine,
-        (PermutationGroup_generic, AbelianGroup_class, NamedMatrixGroup_generic, NamedMatrixGroup_gap),
+        (
+            PermutationGroup_generic,
+            AbelianGroup_class,
+            FinitelyGeneratedMatrixGroup_gap,
+            NamedMatrixGroup_generic,
+            NamedMatrixGroup_gap,
+        ),
     )
 
 

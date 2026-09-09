@@ -19,6 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
 from dzack_research.preamble.categories.group.groups import (
+    GroupsWithChosenFinitePresentation,
     OwnedFiniteGroups,
     OwnedGroups,
 )
@@ -1213,6 +1214,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
                 and domain.is_definite()
             ):
                 categories.append(OwnedFiniteGroups())
+                categories.append(GroupsWithChosenFinitePresentation())
         LatticeEmbeddingHomset.__init__(
             self,
             hom_family,
