@@ -929,6 +929,36 @@ nothing in the pinned Mathlib supplies it.  Both rows move to greenfield.
 | E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) — covering spaces and universal covers | partial: gives the covering-space language, not $K3$ surfaces |
 | F1.10, F1.7, F2.1, F2.4–F2.5, F3.1, F4.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness`, and the root-lattice objects of `DefiniteNondegenerate` and `DRootLattice` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
 
+### Registry sweep for the strata added after the first pass
+
+The first sweep covered the strata that existed then.  AG, HS, AF, Rt, Ky, Lo
+and Ni were added afterwards and needed their own, against the same registry
+(`lean-categories` `AGENTS.md` §"Formalization source registry").  What follows
+is the result of that sweep, with the near misses named — a repository is more
+useful recorded as *not* a supplier than left unmentioned, because the next
+reader would otherwise sweep for it again.
+
+| Stratum | Nearest thing in the registry | Why it is not a supplier |
+| --- | --- | --- |
+| AG | [`chrisflav/bruhat-tits`](https://github.com/chrisflav/bruhat-tits); [`singerng/steinberg-formalization`](https://github.com/singerng/steinberg-formalization) | the Bruhat–Tits **tree** of $\mathrm{SL}_2$ over a local field is an affine building for one group, not the spherical building of AG16; Steinberg groups are a presentation, not the parabolic structure theory |
+| HS, Ky | `Mathlib/Geometry/Manifold/Riemannian/` with [`leanprover-community/physlib`](https://github.com/leanprover-community/physlib) for pseudo-Riemannian metrics | Riemannian metrics and path length exist; the almost-complex structure, integrability, geodesics and Kähler form of HS1–HS5 do not |
+| HS, E, AF10 | [`BochaoKong/nullstellensatz`](https://github.com/BochaoKong/nullstellensatz) | local complex-analytic geometry — germs, the Rückert Nullstellensatz.  The nearest thing to a normal analytic space, and it is the local theory, not the space |
+| E | [`mccorvie/classification-of-surfaces`](https://github.com/mccorvie/classification-of-surfaces) | compact **topological** surfaces.  A false friend: stratum E is about compact complex surfaces, which are real four-manifolds |
+| Lo, V | [`Jun2M/Main-theorem-of-polytopes`](https://github.com/Jun2M/Main-theorem-of-polytopes); [`dwrensha/Rupert.lean`](https://github.com/dwrensha/Rupert.lean) | convex polytopes in Euclidean space; Lo4's polyhedra live in a Lorentz space and are cut out by the light cone |
+| AF | [`CBirkbeck/ModularForms_Lean4`](https://github.com/CBirkbeck/ModularForms_Lean4), [`loefflerd/ModularFormDimensions`](https://github.com/loefflerd/ModularFormDimensions), [`CBirkbeck/WeilConverse`](https://github.com/CBirkbeck/WeilConverse), [`ANR-FALSE/PadicModForms`](https://github.com/ANR-FALSE/PadicModForms) | all rank one — forms on $\mathbb{H}$ for congruence subgroups of $\mathrm{SL}_2$.  AF is automorphic forms on a bounded symmetric domain of rank 2 |
+| Rt | — | nothing: no Iwasawa decomposition, no Siegel set, no arithmetic-group reduction theory anywhere in the registry |
+| Ni, Pa | [`smmercuri/adele-ring_locally-compact`](https://github.com/smmercuri/adele-ring_locally-compact), [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) | `gq2-lean` supplies Pa's dyadic layer; the adele ring is a route for F3.1's adelic phrasing, not for Nikulin's theorems |
+
+Two general observations from the sweep.  The registry's strength is
+**arithmetic**: number fields, adeles, modular forms, class field theory,
+$p$-adic analysis.  Its weakness is exactly this graph's upper half — Lie theory,
+algebraic groups, symmetric spaces and complex geometry — where it has almost
+nothing, and Mathlib's own manifold tree stops at the Riemannian level.  The
+second is that the near misses cluster one level below what is needed: an affine
+building instead of a spherical one, local analytic geometry instead of analytic
+spaces, rank-one automorphic forms instead of rank two, topological surfaces
+instead of complex ones.  That is what a frontier looks like from underneath.
+
 ### Greenfield — no formalization in Mathlib or the registry
 
 | Nodes | What must be authored | Nearest thing that exists |
