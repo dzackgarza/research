@@ -432,6 +432,44 @@ class Cardinalities(OwnedCategory):
             )
         return _cardinal_with_expression(_PowerCardinal(cardinal_base, cardinal_exponent))
 
+    def sum_morphism(
+        self,
+        *morphisms: CardinalityMorphism,
+    ) -> CardinalityMorphism:
+        r"""Apply cardinal addition to a finite family of comparison morphisms."""
+        source = self.sum(*(morphism.domain() for morphism in morphisms))
+        target = self.sum(*(morphism.codomain() for morphism in morphisms))
+        return self.Mor(source, target).unique_morphism()
+
+    def product_morphism(
+        self,
+        *morphisms: CardinalityMorphism,
+    ) -> CardinalityMorphism:
+        r"""Apply cardinal multiplication to a finite family of comparison morphisms."""
+        source = self.product(*(morphism.domain() for morphism in morphisms))
+        target = self.product(*(morphism.codomain() for morphism in morphisms))
+        return self.Mor(source, target).unique_morphism()
+
+    def power_morphism(
+        self,
+        base_morphism: CardinalityMorphism,
+        exponent_morphism: CardinalityMorphism,
+    ) -> CardinalityMorphism:
+        r"""Apply exponentiation to comparisons when the source base is nonzero."""
+        if not self.le(1, base_morphism.domain()):
+            raise ValueError(
+                "cardinal exponentiation is monotone in the exponent only for a nonzero source base"
+            )
+        source = self.power(
+            base_morphism.domain(),
+            exponent_morphism.domain(),
+        )
+        target = self.power(
+            base_morphism.codomain(),
+            exponent_morphism.codomain(),
+        )
+        return self.Mor(source, target).unique_morphism()
+
     def supremum(
         self,
         *cardinal_numbers: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
