@@ -1972,6 +1972,38 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             return self.Emb(enlarged)(images)
 
+        def maximal_overlattice(self):
+            r"""Return one maximal integral/even overlattice inclusion of ``L``.
+
+            Nikulin's overlattice correspondence identifies integral
+            overlattices with bilinear-isotropic subgroups of ``A_L`` and,
+            for even ``L``, even overlattices with quadratic-isotropic
+            subgroups.  ``discriminant_group()`` selects the applicable form;
+            choosing one maximal isotropic subgroup therefore gives one
+            maximal overlattice.  No uniqueness is asserted.
+            """
+            if not self.is_nondegenerate():
+                raise ValueError("maximal overlattices require a finite discriminant form")
+            form = self.discriminant_group()
+            maximal = form.maximal_isotropic_subgroups()
+            if maximal.cardinality() == 0:
+                raise ArithmeticError(
+                    "a finite discriminant form has no maximal isotropic subgroup"
+                )
+            subgroup = maximal[0]
+            inclusion = form.overlattice_from_isotropic_subobject(subgroup)
+            for larger in form.isotropic_subgroups():
+                if int(larger.cardinality()) <= int(subgroup.cardinality()):
+                    continue
+                if all(
+                    element in larger
+                    for element in subgroup.embedded_elements()
+                ):
+                    raise ArithmeticError(
+                        "the selected glue subgroup is not maximal isotropic"
+                    )
+            return inclusion
+
         def local_modification(self, prime, *discriminant_classes):
             r"""Return the isotropic ``p``-primary overlattice modification.
 
