@@ -1622,6 +1622,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-ambient-spaces-20260909-1445` | archive reconciliation / affine and projective ambient-space constructors | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/schemes/test_ambient_spaces_archive.py` (write) | `HEAD` | 2026-09-09T14:45:00Z |
+
 
 
 
