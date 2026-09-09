@@ -1622,6 +1622,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-base-forms-20260909-1502` | archive reconciliation / bilinear and quadratic base-form semantics | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/forms/test_forms_archive.py` (write) | `HEAD` | 2026-09-09T15:02:00Z |
+
 
 
 
