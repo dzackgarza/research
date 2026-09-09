@@ -555,19 +555,25 @@ rather than a node.
 
 Questions about statements already in the graph, not missing nodes.
 
-1. **Sign convention.** Scattone's $E_8$ is $\mathbb{Z}^8$ with the *negative*
-   Cartan matrix, flagged in his §3.1 as a deviation; Sterk writes $E_8(-2)$;
-   the Sage reconstruction uses $-2\times$ the positive Cartan matrix.
-   $U\oplus U(2)\oplus E_8(-2)$ denotes different lattices under the readings.
-   Fix once, check every node.
+1. ~~Sign convention~~ — **settled by computation.**  Scattone's $E_8$ (his
+   §3.1: $\mathbb{Z}^8$ with the *negative* Cartan matrix, flagged there as a
+   deviation) is **equal** to Sterk's $E_8(-1)$; both are even, negative
+   definite, determinant 1.  $E_8(-2) = -2C$ has determinant 256 and elementary
+   divisors all 2, so its discriminant group is $(\mathbb{Z}/2)^8$ — which
+   independently confirms the $\ell(A_{L_-}) = 10$ the A2 and A3 checks rest on.
+   The readings agree, and the Sage reconstruction already uses $-2C$.
 2. **Spinor norm convention.** Scattone's $\sigma_-$ follows Brieskorn and is a
    modified form of the usual spinor norm; he says so at §3.6.  Any node reading
    "the spinor norm" unqualified is ambiguous.
 3. ~~Rank hypotheses~~ — **settled below**.
 4. ~~A3's conditions~~ — **settled below**.
-5. **Borel's torsion-free hypothesis** (Bo1) against Sterk's $\Gamma$, which
-   contains $-1$; Borel's Remark 3.8 records that with torsion $V$ need not be
-   hyperbolically imbedded in $V^*$.
+5. **Borel's torsion-free hypothesis (Bo1) fails as stated.**  $-\mathrm{id}$
+   lies in $O(L_-)$, acts trivially on the discriminant form and so lies in
+   $\Gamma$, and has order 2 — so $\Gamma$ is **not** torsion-free and Theorem A
+   does not apply to it directly.  Borel's Remark 3.8 records that with torsion
+   $V$ need not be hyperbolically imbedded in $V^*$.  The standard repair is to
+   pass to a neat finite-index subgroup and descend, but **Sterk does not say
+   which**, so the descent is an obligation this graph carries.  Open.
 6. ~~V13's primitivity hypothesis~~ — **settled below, and it fires.**
 7. **C7 disagrees with the source.**  The Sage reconstruction yields thirteen
    maximal parabolic subdiagrams in six shapes against Sterk's four types.
