@@ -1,6 +1,13 @@
 r"""Archived standard-cardinality facts not already covered by live catalogues."""
 
-from dzack_research.preamble.all import MatrixSpace, QQ, RR, aleph0, continuum
+from dzack_research.preamble.all import (
+    MatrixSpace,
+    PowerSeriesRing,
+    QQ,
+    RR,
+    aleph0,
+    continuum,
+)
 
 
 def test_matrix_ring_cardinality_tracks_the_coefficient_ring() -> None:
@@ -9,3 +16,9 @@ def test_matrix_ring_cardinality_tracks_the_coefficient_ring() -> None:
 
     assert rational_matrices.cardinality() == aleph0
     assert real_matrices.cardinality() == continuum
+
+
+def test_rational_power_series_have_continuum_cardinality() -> None:
+    power_series = PowerSeriesRing(QQ, "t")
+
+    assert power_series.cardinality() == continuum
