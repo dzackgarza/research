@@ -3036,6 +3036,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 | `FDC-*` | formalization decomposition, scoping, and foundations audit |
 | `FRD-*` | fraud precursors in formalization work, and their observable signs |
 | `FSC-*` | formalization scale, calibration, and the scaffold that holds project state |
+| `FSV-*` | semantic verification of formal statements; the review surface and its audit |
 
 ### 1. Mathematical Architecture & Ownership (`ARC-*`)
 
@@ -5399,6 +5400,55 @@ statements**.  That is the evidential basis for `FSC-05`.
 - **Rule**: Work on a formalization begins by reading the current state of the graph — which nodes are open, which are discharged, which are blocked and on what — and never by writing.  The first artifact a session produces is a node, not a file.
 
 - **Rationale**: The state is durable and the session is not; a session that begins by producing rather than reading is one that has substituted its own picture of the project for the recorded one, which is where losing track of the state begins.
+
+### 18. Semantic Verification of Formal Statements (`FSV-*`)
+
+The rules of `FRM-*` say what a formal declaration may contain.  These say how a
+project checks that its declarations *mean* what the source means — a separate
+process from proof checking, owned by people and by agents that did not write
+the declaration.
+
+The framework and terminology are Yanahama and Sannai, *Lean Atlas: An
+Integrated Proof Environment for Scalable Human-AI Collaborative
+Formalization*, arXiv:2604.16347 (2026).
+
+#### `FSV-01`: The Kernel Checks Logic, Not Meaning
+
+- **Rule**: Treat Lean core and Mathlib as the trusted base and every project-specific declaration as unverified in meaning until it has been semantically reviewed.  A successful build is never cited as evidence that a statement is faithful to its source.
+
+- **Rationale**: The type checker guarantees that a proof term is correctly constructed for a given proposition.  It says nothing about whether the proposition, or the definitions occurring in it, represent the intended mathematics.  The published name for the resulting defect is **semantic hallucination**: a formalization that passes the type checker, may carry a complete proof, and is not semantically equivalent to the statement it claims to formalize (op. cit., Def. 1).
+
+#### `FSV-02`: Definitions Are the Review Surface
+
+- **Rule**: Concentrate semantic review on definitions and on the propositions of theorems.  A theorem's *proof* need not be semantically reviewed; a definition's *body* always must.  Design toward few, small, heavily cited definitions, pushing content into theorems wherever the mathematics permits.
+
+- **Rationale**: The asymmetry is mechanical.  A dependency appearing in a declaration's type is a proposition- or definition-level relationship a human must verify; a dependency appearing only in a theorem's value is a proof term the kernel already guarantees, and can be pruned from review.  A dependency appearing only in a *definition's* value carries computational content absent from its type signature and must be retained (op. cit., Defs. 2–3, Table 1).  This is the precise reason a theorem written as a definition escapes every check: it moves content out of the mechanically verified half and into the reviewed half, and then out of review if the author is the only reviewer.
+
+- **Correct Example**: a project whose definitions are transcriptions with locators, and whose mathematical content lives in theorems the checker carries.
+
+#### `FSV-03`: Review the Cone, and Expect It Not to Shrink Here
+
+- **Rule**: For each target theorem, determine the set of project-specific declarations whose semantic correctness can affect it, and review that set.  Do not assume the set is small.
+
+- **Rationale**: On proof-heavy projects the reduction from the full graph to the review set is 94–99%; on a six-theorem milestone subset of FLT it was 59.8%; on a definition-heavy project it was 27.3% (op. cit., abstract).  A formalization whose strata are mostly new definitions — new foundations — sits at the definition-heavy end, so its review burden is proportional to its definitions and is a fact to plan around rather than to discover late.
+
+#### `FSV-04`: The Audit Checklist Is the Hallucination Taxonomy
+
+- **Rule**: Every semantic review of a statement checks, by name: definition mismatch; missing or extra assumptions; goal substitution; quantifier and scope errors; type default semantics shift.  A review that does not report against these five has not been performed.
+
+- **Rationale**: These are the recorded patterns (op. cit., §3.1).  Naming them converts review from an impression into a check with a fixed surface, and three of the five — definition mismatch, missing assumptions, goal substitution — are the ones this repository has actually produced.
+
+#### `FSV-05`: The Author Never Reviews Their Own Statement
+
+- **Rule**: Semantic review of a declaration is performed by a person, or by a fresh-context agent, that did not write it and is given the formal code alone — never the informal statement, the source, or the author's intent.  The reviewer's output is a read-back: what the code literally asserts.  The comparison against the source is then made by a third party holding both.
+
+- **Rationale**: The author knows what the code was meant to say and reads that meaning into it; their review returns the intent rather than the content.  Blind read-back is the only form of review that can disagree with the author.
+
+#### `FSV-06`: Verification Status Is Per-Node and Recorded
+
+- **Rule**: Each node carries its own recorded status: semantic-verification state, who verified it, proof progress, and `sorry` status.  Status lives with the node in the graph, never in a session or a summary.
+
+- **Rationale**: Semantic correctness is a property of individual declarations, so a project-level claim of faithfulness is meaningless unless it is the conjunction of recorded per-node states.  `FSC-05` owns the same requirement for structural state.
 
 * * *
 
