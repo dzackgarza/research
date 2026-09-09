@@ -88,11 +88,10 @@ class DifferentialComponentMorphism(DegreewiseLinearMorphism):
 class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""That de Rham algebra, whose differential makes it a DGA."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        return DeRhamAlgebras(ring).an_object()
 
     @classmethod
     def _repr_object_names(cls):
@@ -171,11 +170,10 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""That de Rham algebra, which is graded-commutative."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        return DeRhamAlgebras(ring).an_object()
 
     @classmethod
     def _repr_object_names(cls):
@@ -192,11 +190,10 @@ class CommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 class StrictlyCommutativeDifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""That de Rham algebra, strictly graded-commutative."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
+        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
 
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        return DeRhamAlgebras(ring).an_object()
 
     @classmethod
     def _repr_object_names(cls):

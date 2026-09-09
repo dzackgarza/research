@@ -1,10 +1,10 @@
 r"""Affine algebraic de Rham algebras of represented commutative algebras."""
 
-from sage.misc.cachefunc import cached_function
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     Differential,
     StrictlyCommutativeDifferentialGradedAlgebras,
 )
+from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
 )
@@ -22,11 +22,29 @@ from dzack_research.preamble.categories.algebras.framed_free_algebras import Alt
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The algebraic de Rham algebra of the polynomial algebra on one generator."""
-        from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebra
-
         ring = self.base_ring()
-        return DeRhamAlgebra(CommutativeAlgebras(ring).an_object())
+        return self(CommutativeAlgebras(ring).an_object())
+
+    def _call_(self, algebra):
+        r"""Construct ``Omega^*_{A/R}`` from the represented ``R``-algebra ``A``.
+
+        The source algebra is the defining datum.  This category constructor
+        owns the Kähler-differential/exterior-algebra realization and identity
+        cache; :func:`DeRhamAlgebra` is notation for this operation.
+        """
+        if algebra not in CommutativeAlgebras(self.base_ring()):
+            raise TypeError(
+                "an algebraic de Rham algebra is constructed from a commutative algebra over the same base ring"
+            )
+        cached = _DE_RHAM_CACHE.get(id(algebra))
+        if cached is not None and cached.de_rham_source_algebra() is algebra:
+            return cached
+        omega = KahlerDifferentials(algebra)
+        exterior = AlternatingAlgebraOf(omega)
+        ring_map = algebra.algebra_structure_morphism()
+        result = _DeRhamAlgebra(algebra, exterior, omega, ring_map)
+        _DE_RHAM_CACHE[id(algebra)] = result
+        return result
 
     @classmethod
     def _repr_object_names(cls):
@@ -98,7 +116,9 @@ class _DeRhamAlgebra(RestrictedGradedAlgebra):
         self._preamble_differential = Differential(self, differential)
 
 
-@cached_function(key=lambda algebra: id(algebra))
+_DE_RHAM_CACHE = {}
+
+
 def DeRhamAlgebra(algebra):
     r"""Return the strictly commutative DGA ``Omega^*_{A/R}``.
 
@@ -108,10 +128,7 @@ def DeRhamAlgebra(algebra):
     constants ``R`` along the selected algebra structure morphism.
     """
 
-    omega = KahlerDifferentials(algebra)
-    exterior = AlternatingAlgebraOf(omega)
-    ring_map = algebra.algebra_structure_morphism()
-    return _DeRhamAlgebra(algebra, exterior, omega, ring_map)
+    return DeRhamAlgebras(algebra.base_ring())(algebra)
 
 
 __all__ = ["DeRhamAlgebra", "DeRhamAlgebras"]
