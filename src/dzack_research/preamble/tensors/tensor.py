@@ -665,6 +665,115 @@ class Tensor:
             _nested(values, shape),
         )
 
+    def raise_index(self, formed_module, slot=0):
+        r"""Raise one lower index with the inverse Gram tensor of ``formed_module``.
+
+        The selected lower slot must have the rank of the supplied formed
+        module.  Over an integral base this requires the inverse Gram entries
+        to remain integral; no automatic scalar extension is performed.
+        """
+        lower = self._lower_index_ranks()
+        upper = self._upper_index_ranks()
+        slot = int(slot)
+        if slot < 0 or slot >= len(lower):
+            raise IndexError("the selected slot is not a lower tensor index")
+        if _engine_ring(formed_module.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("raising an index requires the tensor and form over one base ring")
+        rank = int(formed_module.module_rank())
+        if lower[slot] != rank:
+            raise ValueError("the selected lower slot has the wrong rank for this form")
+        if Infinity in self._index_ranks():
+            raise NotImplementedError("coordinate index raising currently requires finite index ranks")
+
+        inverse = _engine_component_matrix(formed_module.gram_tensor()).inverse()
+        ring = self.base_ring()
+        coefficients = {}
+        for raised in range(rank):
+            for contracted in range(rank):
+                try:
+                    coefficients[raised, contracted] = ring._from_engine_element(
+                        inverse[raised, contracted]
+                    )
+                except (TypeError, ValueError) as error:
+                    raise ValueError(
+                        "raising an index over this ring requires the inverse Gram entries in the base ring"
+                    ) from error
+
+        from itertools import product as cartesian_product
+
+        result_upper = upper + (rank,)
+        result_lower = lower[:slot] + lower[slot + 1 :]
+        entries = {}
+        for index in cartesian_product(*(range(index_rank) for index_rank in self._index_ranks())):
+            value = self[index]
+            if not value:
+                continue
+            upper_index = index[: len(upper)]
+            lower_index = index[len(upper) :]
+            contracted = lower_index[slot]
+            remaining_lower = lower_index[:slot] + lower_index[slot + 1 :]
+            for raised in range(rank):
+                coefficient = coefficients[raised, contracted]
+                if not coefficient:
+                    continue
+                result_index = upper_index + (raised,) + remaining_lower
+                entries[result_index] = entries.get(
+                    result_index, ring.zero()
+                ) + coefficient * value
+
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, ring.zero())
+            for index in cartesian_product(*(range(index_rank) for index_rank in shape))
+        )
+        return tensor(ring, result_upper, result_lower, _nested(values, shape))
+
+    def lower_index(self, formed_module, slot=0):
+        r"""Lower one upper index with the Gram tensor of ``formed_module``."""
+        upper = self._upper_index_ranks()
+        lower = self._lower_index_ranks()
+        slot = int(slot)
+        if slot < 0 or slot >= len(upper):
+            raise IndexError("the selected slot is not an upper tensor index")
+        if _engine_ring(formed_module.base_ring()) != _engine_ring(self.base_ring()):
+            raise TypeError("lowering an index requires the tensor and form over one base ring")
+        rank = int(formed_module.module_rank())
+        if upper[slot] != rank:
+            raise ValueError("the selected upper slot has the wrong rank for this form")
+        if Infinity in self._index_ranks():
+            raise NotImplementedError("coordinate index lowering currently requires finite index ranks")
+
+        gram = formed_module.gram_tensor()
+        ring = self.base_ring()
+        from itertools import product as cartesian_product
+
+        result_upper = upper[:slot] + upper[slot + 1 :]
+        result_lower = lower + (rank,)
+        entries = {}
+        for index in cartesian_product(*(range(index_rank) for index_rank in self._index_ranks())):
+            value = self[index]
+            if not value:
+                continue
+            upper_index = index[: len(upper)]
+            lower_index = index[len(upper) :]
+            contracted = upper_index[slot]
+            remaining_upper = upper_index[:slot] + upper_index[slot + 1 :]
+            for lowered in range(rank):
+                coefficient = gram[lowered, contracted]
+                if not coefficient:
+                    continue
+                result_index = remaining_upper + lower_index + (lowered,)
+                entries[result_index] = entries.get(
+                    result_index, ring.zero()
+                ) + coefficient * value
+
+        shape = result_upper + result_lower
+        values = tuple(
+            entries.get(index, ring.zero())
+            for index in cartesian_product(*(range(index_rank) for index_rank in shape))
+        )
+        return tensor(ring, result_upper, result_lower, _nested(values, shape))
+
     def dual_tensor(self):
         r"""Dualize a nondegenerate pairing or copairing.
 
