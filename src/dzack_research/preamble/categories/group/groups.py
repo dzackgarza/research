@@ -304,14 +304,14 @@ def _free_generator(group, index):
     if index not in basis:
         try:
             normalized = basis(index)
-        except TypeError, ValueError, AttributeError:
+        except (TypeError, ValueError, AttributeError):
             normalized = None
         if normalized is not None and normalized in basis:
             index = normalized
         else:
             try:
                 size = cardinal(basis.cardinality())
-            except AttributeError, TypeError, ValueError:
+            except (AttributeError, TypeError, ValueError):
                 size = None
             if size is None or not size.is_finite():
                 raise ValueError(f"{index!r} is not in the chosen free basis")
@@ -321,7 +321,7 @@ def _free_generator(group, index):
                     continue
                 try:
                     coerced = parent(index)
-                except TypeError, ValueError:
+                except (TypeError, ValueError):
                     continue
                 if coerced == candidate:
                     index = candidate
@@ -452,7 +452,7 @@ def _is_abelian_witness(engine):
         return True
     try:
         return bool(engine.is_abelian())
-    except AttributeError, NotImplementedError, TypeError, ValueError:
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
         return False
 
 
@@ -658,7 +658,7 @@ class OwnedGroup(Parent):
             if callable(to_engine):
                 try:
                     return self._from_engine(self._engine(to_engine(value)))
-                except TypeError, ValueError:
+                except (TypeError, ValueError):
                     pass
         if isinstance(value, SageObject):
             raise TypeError("raw backend group elements are not accepted by the public preamble API")
@@ -722,7 +722,7 @@ class _TransportedGroupSubobject(Parent):
             return False
         try:
             return self._supergroup._to_engine(value) in self._engine
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
 
     def __iter__(self):
@@ -774,7 +774,7 @@ def _group_constructor_argument(value):
     try:
         if value in OwnedRings():
             return _engine_ring(value)
-    except AttributeError, TypeError, ValueError:
+    except (AttributeError, TypeError, ValueError):
         pass
 
     parent = getattr(value, "parent", lambda: None)()
@@ -782,18 +782,18 @@ def _group_constructor_argument(value):
         try:
             if parent in OwnedGroups():
                 return _element_to_engine(parent, value)
-        except AttributeError, NameError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NameError, NotImplementedError, TypeError, ValueError):
             pass
         try:
             if parent in OwnedRings():
                 return _engine_element(parent, value)
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             pass
         try:
             base_ring = parent.base_ring()
             if parent in MatrixSpaces(base_ring):
                 return _engine_matrix(value)
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             pass
 
     if isinstance(value, tuple):
@@ -830,7 +830,7 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
         try:
             size = cardinal(index_set.cardinality())
             finite_index_set = size.is_finite()
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             finite_index_set = getattr(index_set, "is_finite", lambda: False)() is True
         if finite_index_set:
             backend_index_set = tuple(engine_label(label) for label in index_set)
