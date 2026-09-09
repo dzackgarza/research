@@ -1311,7 +1311,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   **Acceptance:** explicit action morphisms and a completeness argument,
   with each recursive step decreasing the parameter its termination proof uses.
 
-- [ ] **`parabolic-gluing`**. **Needs:** `transporters`.
+- [x] **`parabolic-gluing`**. **Needs:** `transporters`.
   Replace heuristic parabolic constructions by exact integral gluing.
   **Owners:** isotropic reductions, group actions and arithmetic groups.
   **Deliver:** the rational Witt decomposition with integral sublattices,
