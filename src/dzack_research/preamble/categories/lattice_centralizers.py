@@ -861,6 +861,76 @@ class IsometryPrimitiveExtension:
         r"""Return ``rho_L(O(L,f)) <= O(A_L)``, the finite image of the centralizer."""
         return self.isometry.centralizer_discriminant_image()
 
+    @cached_method
+    def coinvariant_extension_subgroup(self):
+        r"""Return the coinvariant restriction image in the full-glue involution case.
+
+        Suppose ``f`` is an involution and the primitive extension glues the
+        *entire* discriminant forms of ``L^f`` and ``(L^f)^perp``.  Then every
+        isometry of the coinvariant lattice commutes with ``f|_{L^-}=-1``, and
+        it extends across the primitive gluing exactly when its discriminant
+        action belongs to
+
+        ``gamma rho(O(L^f)) gamma^-1``.
+
+        The returned group is therefore the actual finite-character preimage
+        in ``O(L^-)``; it is not a separately represented copy of the ambient
+        centralizer.
+        """
+        if not self.acts_as_negation_on_coinvariants():
+            raise NotImplementedError(
+                "the coinvariant extension subgroup is currently represented for involutions"
+            )
+
+        glue = self.glue()
+        invariant_form = self.invariant.discriminant_group()
+        coinvariant_form = self.coinvariant.discriminant_group()
+        glue_source = glue.domain()
+        glue_target = glue.codomain()
+        source_inclusion = glue_source.inclusion()
+        target_inclusion = glue_target.inclusion()
+        twisted_coinvariant_form = target_inclusion.codomain()
+
+        if glue_source.cardinality() != invariant_form.cardinality():
+            raise NotImplementedError(
+                "the represented primitive extension does not glue the full invariant discriminant form"
+            )
+        if glue_target.cardinality() != coinvariant_form.cardinality():
+            raise NotImplementedError(
+                "the represented primitive extension does not glue the full coinvariant discriminant form"
+            )
+
+        invariant_image = self.invariant.discriminant_image()
+        coinvariant_orthogonal_group = coinvariant_form.O()
+
+        def conjugate(invariant_automorphism):
+            images = {}
+            for label in coinvariant_form.module_generating_set():
+                element = coinvariant_form.module_generator(label)
+                unformed = coinvariant_form.forget_form_morphism()(element)
+                twisted = twisted_coinvariant_form.equip_form_morphism()(unformed)
+                target_element = target_inclusion.lift(twisted)
+                source_element = glue.inverse_morphism()(target_element)
+                invariant_class = source_inclusion(source_element)
+                moved_invariant_class = invariant_automorphism(invariant_class)
+                moved_source = source_inclusion.lift(moved_invariant_class)
+                moved_target = glue.forward()(moved_source)
+                moved_twisted = target_inclusion(moved_target)
+                moved_unformed = twisted_coinvariant_form.forget_form_morphism()(
+                    moved_twisted
+                )
+                images[label] = coinvariant_form.equip_form_morphism()(moved_unformed)
+            morphism = module_homset(coinvariant_form, coinvariant_form)(images)
+            return coinvariant_orthogonal_group(morphism)
+
+        allowed_discriminant_image = coinvariant_orthogonal_group.subgroup_on(
+            tuple(
+                conjugate(generator)
+                for generator in invariant_image.group_generators()
+            )
+        )
+        return self.coinvariant.O().discriminant_preimage(allowed_discriminant_image)
+
     def _restriction(self, automorphism, subobject):
         assert automorphism.domain() is self.lattice, (
             "a restriction of the centralizer is taken of an automorphism of L"
