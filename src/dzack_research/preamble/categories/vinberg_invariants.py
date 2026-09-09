@@ -131,6 +131,76 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
         def num_edges(self):
             return int(self.edges().cardinality())
 
+        def induced_subgraph(self, vertices):
+            r"""Return the projectively weighted subgraph on ``vertices``.
+
+            The selected labels remain the vertex set; every retained vertex
+            and every edge with both endpoints selected keeps its exact point
+            of ``P^1``.  This is an induced subgraph, so no new edge is inferred
+            from the ambient graph.
+            """
+            selected = finite_ordered_set(tuple(vertices))
+            if any(vertex not in self._vertices for vertex in selected):
+                raise ValueError("an induced weighted subgraph uses vertices of the ambient graph")
+            edge_weights = {
+                (left, right): weight
+                for (left, right), weight in self._edge_weights.items()
+                if left in selected and right in selected
+            }
+            vertex_weights = {
+                vertex: self.vertex_weight(vertex) for vertex in selected
+            }
+            return projective_weighted_graph(
+                self.base_ring(),
+                tuple(selected),
+                edge_weights,
+                vertex_weights=vertex_weights,
+                directed=self.is_directed(),
+                symmetric=self.is_symmetric(),
+            )
+
+        subgraph = induced_subgraph
+        subdiagram = induced_subgraph
+
+        def vinberg_invariant_matrix(self):
+            r"""Reconstruct the symmetric Vinberg matrix represented by this graph.
+
+            A Vinberg graph omits exactly the orthogonal pairs, whose invariant
+            is the projective point ``[0:1]``.  Vertex weights supply the
+            diagonal.  Thus a symmetric projectively weighted graph determines
+            one projective invariant matrix.  An asymmetric/directed graph is
+            more general data and is deliberately not coerced into a symmetric
+            reflection arrangement.
+            """
+            if self.is_directed() or not self.is_symmetric():
+                raise ValueError(
+                    "a Vinberg invariant matrix is reconstructed from a symmetric undirected weighted graph"
+                )
+            vertices = tuple(self.vertices())
+            ring = self.base_ring()
+            numerators = []
+            denominators = []
+            for left in vertices:
+                numerator_row = []
+                denominator_row = []
+                for right in vertices:
+                    if left == right:
+                        weight = self.vertex_weight(left)
+                    elif self.has_edge(left, right):
+                        weight = self.edge_weight(left, right)
+                    else:
+                        weight = self.projective_line()([ring.zero(), ring.one()])
+                    numerator_row.append(ring(weight[0]))
+                    denominator_row.append(ring(weight[1]))
+                numerators.append(numerator_row)
+                denominators.append(denominator_row)
+            return _vinberg_invariant_matrix(
+                ring,
+                vertices,
+                numerators,
+                denominators,
+            )
+
         def projectivization(self):
             r"""Return this graph: its weights already lie in ``P^1``."""
             return self
