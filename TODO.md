@@ -1622,6 +1622,8 @@ behavior.
 
 ### Active claims
 
+| `LATTICE-reduction-complex-20260909-0748` | arithmetic / exact finite reduction-complex exploration and completeness | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/reduction_complexes.py; tests/lattices/test_reduction_complex_exploration.py` (write) | `HEAD` | 2026-09-09T07:48:00Z |
+
 
 
 
