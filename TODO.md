@@ -1621,7 +1621,6 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
-| `LATTICE-centralizer-decorated-orbits-20260909-0711` | arithmetic / higher-order centralizer decorated sublattice and flag orbits | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattice_centralizers.py; tests/lattices/test_centralizer_decorated_orbits.py` (write) | `HEAD` | 2026-09-09T07:11:00Z |
 
 
 
