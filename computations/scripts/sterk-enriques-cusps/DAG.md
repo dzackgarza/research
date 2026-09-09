@@ -1142,7 +1142,9 @@ Questions about statements already in the graph, not missing nodes.
    pseudo-distance of the quotient by the distance induced from the domain, and
    the hyperbolic-imbedding statement holds in that form.  What is left is to
    read Kobayashi–Ochiai 1971 for the modified condition, and to check that the
-   extension Sterk invokes follows from Ky6 in it.
+   extension Sterk invokes follows from Ky6 in it.  That paper is open access at
+   `10.2969/jmsj/02320340` and needs one manual download — Project Euclid blocks
+   scripted requests; see `REFERENCES.md`.
 6. ~~V13's primitivity hypothesis~~ — **settled below, and it fires.**
 7. ~~C7 disagrees with the source~~ — **settled; the error was in the reading.**
    The figure on p. 64 lists **five** parabolic subdiagrams for (3.3.12), not

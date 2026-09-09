@@ -150,6 +150,13 @@ Zotero `VQUIPQ4Y`.  Cited for E1, E9, E11 and E12; **not read in the original**.
 - **Kobayashi–Ochiai**, *Satake compactification and the great Picard theorem*,
   J. Math. Soc. Japan **23** (1971), 340–350 — Ky4 and Ky5, and so the
   resolution of audit point 5, rest on it.  **Not in the Zotero library.**
+  Locator resolved: DOI [10.2969/jmsj/02320340](https://doi.org/10.2969/jmsj/02320340),
+  Project Euclid
+  <https://projecteuclid.org/journals/journal-of-the-mathematical-society-of-japan/volume-23/issue-2/Satake-compactification-and-the-great-Picard-theorem/10.2969/jmsj/02320340.full>,
+  listed **open access**, 11 pp.  Project Euclid serves an Incapsula challenge to
+  scripted requests, so `curl` returns the challenge page and not the PDF; it
+  needs one manual download in a browser, after which it goes in Zotero and Ky4,
+  Ky5 and audit point 5 can be settled from the original.
 - **[AMRT10]** and **[Hel01]** above: the onward citations of every Viviani row.
 - Nikulin's reference **[13]**, where strong approximation actually enters his
   proof of Thm. 1.14.2.
