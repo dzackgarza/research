@@ -1553,6 +1553,8 @@ review until every downstream consumer has copied the same bypass.
   Respect the user's push approval and active-task scope.
 
 
+| `ARCHIVE-functor-images-20260909-1727` | archive reconciliation / functor image provenance and ambiguous preimages | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/categories/test_functor_images_archive.py` (write) | `HEAD` | 2026-09-09T17:27:00Z |
+
 ## Optional research consumers
 
 These are not prerequisites for the required mathematics or terminal T.
