@@ -1296,7 +1296,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   sends one cell to the other, and the group-generation/completeness argument
   distinguishes a full domain from a finite exploration prefix.
 
-- [ ] **`witt-recursion`**. **Needs:** `lattice-embeddings`, `parabolic-gluing`.
+- [x] **`witt-recursion`**. **Needs:** `lattice-embeddings`, `parabolic-gluing`.
   Implement higher-Witt-index recursion and the `2U` Eichler construction
   through the existing isometry, discriminant and transporter owners.
   **Deliver:** complete the source-defined subgroup beyond the represented
