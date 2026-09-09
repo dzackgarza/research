@@ -23,15 +23,24 @@ form reverses every half-space condition \(b(x,r)\leq 0\).
 """
 
 from sage.arith.misc import divisors
+from importlib.util import find_spec
+from pathlib import Path
+
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.modules.free_module_element import vector as engine_vector
+from sage.quadratic_forms.quadratic_form import QuadraticForm
+from sage.rings.algebraic_real import AA as SageAA
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _engine_element,
+    _engine_ring,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
@@ -49,6 +58,342 @@ _EDGEWALK_PROVISIONING = (
     "build polyhedral_common (github.com/MathieuDutSik/polyhedral_common) and "
     "put LORENTZ_ReflectiveEdgewalk on PATH"
 )
+
+_VINBERG_NF_PROJECT = (
+    Path(__file__).resolve().parents[4]
+    / "src.bak"
+    / "backends"
+    / "external"
+    / "vinbergs_algorithm"
+    / "references"
+    / "VinbergsAlgorithmNF"
+)
+
+_VINBERG_NF_PROVISIONING = (
+    "install github.com/dzackgarza/sage-julia-bridge into Sage's environment, "
+    "make Julia available to that bridge, and instantiate the pinned "
+    f"VinbergsAlgorithmNF project at {_VINBERG_NF_PROJECT}"
+)
+
+_VINBERG_NF_ADAPTER_SOURCE = r'''
+module DzackResearchVinbergNFAdapter
+using Hecke
+using VinbergsAlgorithmNF
+const VA = VinbergsAlgorithmNF
+
+_qq(pair) = QQ(BigInt(pair[1])) // QQ(BigInt(pair[2]))
+
+function _field(polynomial_coefficients)
+    polynomial_ring, x = Hecke.polynomial_ring(QQ, "x")
+    polynomial = polynomial_ring(0)
+    for (index, coefficient) in enumerate(polynomial_coefficients)
+        polynomial += _qq(coefficient) * x^(index - 1)
+    end
+    return Hecke.number_field(polynomial, "a")
+end
+
+function _element(field, generator, coefficients)
+    value = field(0)
+    for (index, coefficient) in enumerate(coefficients)
+        value += field(_qq(coefficient)) * generator^(index - 1)
+    end
+    return value
+end
+
+function _pair(value)
+    q = QQ(value)
+    return [string(numerator(q)), string(denominator(q))]
+end
+
+function _serialize(field, value)
+    degree = Hecke.degree(field)
+    return [_pair(coeff(value, index)) for index in 0:degree-1]
+end
+
+function vinberg_roots(
+    polynomial_coefficients,
+    gram_coefficients,
+    selected_primitive_approximation,
+    count,
+)
+    field, generator = _field(polynomial_coefficients)
+    degree = Hecke.degree(field)
+    if degree != 2
+        error("the represented VinbergsAlgorithmNF adapter currently supports real quadratic fields")
+    end
+
+    places = Hecke.infinite_places(field)
+    if length(places) != 2
+        error("the represented VinbergsAlgorithmNF adapter requires a totally real quadratic field")
+    end
+    target = parse(BigFloat, selected_primitive_approximation)
+    first = BigFloat(Hecke.conjugates_real(generator, 128)[1])
+    second = BigFloat(Hecke.conjugates_real(generator, 128)[2])
+    swap = abs(second - target) < abs(first - target)
+    linear_coefficient = _qq(polynomial_coefficients[2])
+    selected_generator = swap ? -linear_coefficient - generator : generator
+
+    dimension = length(gram_coefficients)
+    flat = Any[]
+    for row in gram_coefficients
+        if length(row) != dimension
+            error("the Vinberg Gram matrix is not square")
+        end
+        append!(flat, [_element(field, selected_generator, entry) for entry in row])
+    end
+    gram = Hecke.matrix(field, dimension, dimension, flat)
+    data = VA.VinbergData(field, gram)
+    status, (roots, _dict, _diagram) = VA.next_n_roots!(data, n = Int(count))
+
+    inverse_generator = selected_generator
+    serialized = Any[]
+    for root in roots
+        row = Any[]
+        for entry in root
+            if swap
+                coefficients = [coeff(entry, index) for index in 0:degree-1]
+                entry = _element(field, inverse_generator, [_pair(c) for c in coefficients])
+            end
+            push!(row, _serialize(field, entry))
+        end
+        push!(serialized, row)
+    end
+    return [Bool(status), serialized]
+end
+end
+'''
+
+
+def _vinberg_nf_available() -> bool:
+    return find_spec("sage_julia_bridge") is not None and _VINBERG_NF_PROJECT.is_dir()
+
+
+def _rational_pair(value):
+    value = SageQQ(value)
+    return (int(value.numerator()), int(value.denominator()))
+
+
+def _number_field_coefficients(field_engine, value):
+    value = field_engine(value)
+    degree = int(field_engine.degree())
+    coefficients = tuple(value.list())
+    return tuple(
+        _rational_pair(coefficients[index] if index < len(coefficients) else SageQQ.zero())
+        for index in range(degree)
+    )
+
+
+def _vinberg_nf_bridge():
+    from sage_julia_bridge import julia
+
+    if not julia.sage("isdefined(Main, :DzackResearchVinbergNFAdapter)"):
+        old_project = julia.sage("Base.active_project()")
+        julia.eval(f'import Pkg; Pkg.activate("{_VINBERG_NF_PROJECT}")')
+        try:
+            julia.eval("using Hecke; using VinbergsAlgorithmNF")
+            julia.eval(_VINBERG_NF_ADAPTER_SOURCE)
+        finally:
+            if old_project:
+                julia.eval(f'import Pkg; Pkg.activate("{Path(old_project).parent}")')
+    return julia
+
+
+def _vinberg_nf_roots(polynomial, gram, selected_primitive_approximation, count):
+    result = _vinberg_nf_bridge().call(
+        "DzackResearchVinbergNFAdapter.vinberg_roots",
+        polynomial,
+        gram,
+        selected_primitive_approximation,
+        int(count),
+    )
+    if not isinstance(result, list) or len(result) != 2:
+        raise RuntimeError("VinbergsAlgorithmNF returned malformed root data")
+    complete, roots = result
+    return bool(complete), tuple(tuple(entry for entry in row) for row in roots)
+
+
+engine_capabilities.register(
+    "number_field_vinberg_root_enumeration",
+    "VinbergsAlgorithmNF-via-sage-julia-bridge",
+    _vinberg_nf_roots,
+    available=_vinberg_nf_available,
+    provisioning=_VINBERG_NF_PROVISIONING,
+)
+
+
+def _signature_at_real_embedding(lattice, embedding):
+    order = lattice.base_ring()
+    field = order.fraction_field()
+    field_engine = _engine_ring(field)
+    order_engine = _engine_ring(order)
+    embedding_engine = embedding._engine_morphism_crossing()
+    rank = int(lattice.module_rank())
+    rows = []
+    for i in range(rank):
+        row = []
+        for j in range(rank):
+            entry = _engine_element(order, lattice.gram_tensor()[i, j])
+            image = embedding_engine(field_engine(order_engine(entry)))
+            row.append(SageAA(image))
+        rows.append(row)
+    positive, negative, radical = QuadraticForm(
+        SageAA, engine_matrix(SageAA, rows)
+    ).signature_vector()
+    if radical:
+        raise ValueError("a Vinberg lattice must be nondegenerate at every real place")
+    return int(positive), int(negative)
+
+
+class NumberFieldVinbergLattice(SageObject):
+    r"""A lattice over ``O_K`` together with its distinguished hyperbolic real place.
+
+    This is the arithmetic convention used by Bottinelli's
+    ``VinbergsAlgorithmNF``: at the distinguished place the form has signature
+    ``(n,1)``, while every other real conjugate is positive definite.  It is
+    deliberately a different equipped object from :class:`HyperbolicLattices`,
+    whose integral ``ZZ`` convention negates the form so roots have negative
+    square.
+    """
+
+    def __init__(self, lattice, real_embedding) -> None:
+        order = lattice.base_ring()
+        field = order.fraction_field()
+        real_algebraics = _own_ring(SageAA)
+        if int(field.degree()) != 2:
+            raise NotImplementedError(
+                "the represented VinbergsAlgorithmNF crossing currently supports real quadratic fields"
+            )
+        signature = field.signature()
+        if int(signature.second()) != 0:
+            raise ValueError("VinbergsAlgorithmNF requires a totally real number field")
+        if int(field.class_number()) != 1:
+            raise NotImplementedError(
+                "the pinned VinbergsAlgorithmNF realization uses principal-ideal element gcds"
+            )
+        if _engine_ring(order) != _engine_ring(field).ring_of_integers():
+            raise ValueError("the Vinberg lattice must be defined over the maximal order O_K")
+        if real_embedding.domain() is not field or real_embedding.codomain() is not real_algebraics:
+            raise ValueError("the distinguished place is an exact embedding K -> AA")
+
+        embeddings = tuple(field.embeddings(real_algebraics))
+        if real_embedding not in embeddings:
+            raise ValueError("the distinguished real place is not an embedding of this field")
+        selected_signature = _signature_at_real_embedding(lattice, real_embedding)
+        rank = int(lattice.module_rank())
+        if selected_signature != (rank - 1, 1):
+            raise ValueError(
+                "the distinguished real place must give signature (rank-1, 1)"
+            )
+        other_signatures = tuple(
+            _signature_at_real_embedding(lattice, embedding)
+            for embedding in embeddings
+            if embedding != real_embedding
+        )
+        if any(other != (rank, 0) for other in other_signatures):
+            raise ValueError(
+                "every conjugate away from the distinguished place must be positive definite"
+            )
+
+        self._lattice = lattice
+        self._real_embedding = real_embedding
+        self._selected_signature = selected_signature
+        self._other_signatures = other_signatures
+
+    def lattice(self):
+        return self._lattice
+
+    def real_embedding(self):
+        return self._real_embedding
+
+    def signature_at_selected_place(self):
+        return self._selected_signature
+
+    def other_signatures(self):
+        return self._other_signatures
+
+    def _serialized_field(self):
+        field = self.lattice().base_ring().fraction_field()
+        engine = _engine_ring(field)
+        degree = int(engine.degree())
+        coefficients = tuple(engine.defining_polynomial().list())
+        return tuple(
+            _rational_pair(
+                coefficients[index]
+                if index < len(coefficients)
+                else SageQQ.zero()
+            )
+            for index in range(degree + 1)
+        )
+
+    def _serialized_gram(self):
+        lattice = self.lattice()
+        order = lattice.base_ring()
+        field = order.fraction_field()
+        field_engine = _engine_ring(field)
+        order_engine = _engine_ring(order)
+        rank = int(lattice.module_rank())
+        return tuple(
+            tuple(
+                _number_field_coefficients(
+                    field_engine,
+                    field_engine(
+                        order_engine(
+                            _engine_element(order, lattice.gram_tensor()[i, j])
+                        )
+                    ),
+                )
+                for j in range(rank)
+            )
+            for i in range(rank)
+        )
+
+    def _selected_primitive_approximation(self):
+        field = self.lattice().base_ring().fraction_field()
+        image = self.real_embedding()(field.primitive_element())
+        backend = _engine_element(_own_ring(SageAA), image)
+        return str(backend.n(128))
+
+    def _cross_root(self, serialized_row):
+        lattice = self.lattice()
+        order = lattice.base_ring()
+        field = order.fraction_field()
+        field_engine = _engine_ring(field)
+        order_engine = _engine_ring(order)
+        generator = field_engine.gen()
+        coefficients = []
+        for serialized_entry in serialized_row:
+            value = field_engine.zero()
+            for exponent, pair in enumerate(serialized_entry):
+                numerator, denominator = pair
+                value += SageQQ(numerator) / SageQQ(denominator) * generator**exponent
+            integral = order_engine(value)
+            coefficients.append(order._from_engine_element(integral))
+        root = lattice(tuple(coefficients))
+        if root.q() <= 0:
+            raise ArithmeticError("VinbergsAlgorithmNF returned a non-positive root")
+        return root
+
+    def vinberg_simple_roots(self, *, count):
+        r"""Return ``(complete, roots)`` from the pinned number-field Vinberg engine."""
+        if int(count) <= 0:
+            raise ValueError("a number-field Vinberg search asks for a positive root count")
+        complete, rows = engine_capabilities.compute(
+            "number_field_vinberg_root_enumeration",
+            self._serialized_field(),
+            self._serialized_gram(),
+            self._selected_primitive_approximation(),
+            int(count),
+        )
+        roots = tuple(self._cross_root(row) for row in rows)
+        return complete, roots
+
+    def __repr__(self) -> str:
+        return f"Number-field Vinberg lattice ({self.lattice()}, {self.real_embedding()})"
+
+
+def number_field_vinberg_lattice(lattice, real_embedding):
+    r"""Equip a maximal-order lattice with the real place used by Vinberg's algorithm."""
+    return NumberFieldVinbergLattice(lattice, real_embedding)
 
 
 def _vinal_is_available() -> bool:
@@ -564,4 +909,8 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             return finite_ordered_set(roots)
 
 
-__all__ = ["HyperbolicLattices"]
+__all__ = [
+    "HyperbolicLattices",
+    "NumberFieldVinbergLattice",
+    "number_field_vinberg_lattice",
+]
