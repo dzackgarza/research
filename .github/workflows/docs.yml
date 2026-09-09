@@ -30,11 +30,13 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install --yes pdf2svg poppler-utils texlive-full
-      - name: Fetch shared bibliography
-        run: curl -sSL https://raw.githubusercontent.com/dzackgarza/pandoc-config/main/bib/references.bib
-          -o docs/references.bib
-      - name: Fetch shared MathJax macros
-        run: cp "$HOME/.pandoc/templates/css/mathjax-macros.html" docs/_mathjax-macros.html
+      - name: Fetch shared bibliography and MathJax macros
+        # From the pandoc-config clone above, the same way `just docs-assets`
+        # takes them from ~/.pandoc. Fetching the bib over raw.githubusercontent
+        # instead let CI read a different revision than the filters beside it.
+        run: |
+          cp "$HOME/.pandoc/bib/references.bib" docs/references.bib
+          cp "$HOME/.pandoc/templates/css/mathjax-macros.html" docs/_mathjax-macros.html
       - run: python3 scripts/docs_check.py
         name: Render + integrity gate
         # The runner has no uv, and quarto-actions already provisioned quarto.
