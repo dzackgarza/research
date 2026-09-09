@@ -85,6 +85,44 @@ class EichlerCoveringOrbitDatum(SageObject):
         return f"Eichler covering orbit datum for {self.discriminant_class()}"
 
 
+class EichlerRecursiveStabilizerDatum(SageObject):
+    r"""One exact rank-decreasing stabilizer step at a nonisotropic vector.
+
+    For ``v`` of nonzero square, every element of ``P_v=Stab_{O(L)}(v)``
+    preserves ``v^perp``.  This object retains the embedded complement and the
+    restrictions of the selected exact stabilizer generators to that lattice.
+    The recursive parameter is the lattice rank, which drops by one.
+    """
+
+    def __init__(self, vector, perpendicular, stabilizer_generators, restrictions) -> None:
+        if vector.q() == vector.parent().base_ring().zero():
+            raise ValueError("the nonisotropic Witt recursion requires a nonzero vector square")
+        if int(perpendicular.module_rank()) + 1 != int(vector.parent().module_rank()):
+            raise ValueError("a nonisotropic orthogonal complement must lower rank by one")
+        self._vector = vector
+        self._perpendicular = perpendicular
+        self._stabilizer_generators = stabilizer_generators
+        self._restrictions = restrictions
+
+    def vector(self):
+        return self._vector
+
+    def perpendicular_lattice(self):
+        return self._perpendicular
+
+    def stabilizer_generators(self):
+        return self._stabilizer_generators
+
+    def restricted_generators(self):
+        return self._restrictions
+
+    def rank_drop(self):
+        return self.vector().parent().base_ring().one()
+
+    def __repr__(self) -> str:
+        return f"Rank-decreasing stabilizer recursion at {self.vector()}"
+
+
 class TwoUEichlerModel(SageObject):
     r"""The represented determinant model ``U + U + K`` used by Eichler's theorem.
 
@@ -489,6 +527,60 @@ class TwoUEichlerModel(SageObject):
             name=f"Recursive covering-orbit data of square {square} in {lattice}",
         )
 
+    def recursive_stabilizer_data(self, square):
+        r"""Return the exact rank-one-smaller stabilizer actions for the covering vectors.
+
+        The full orthogonal stabilizer generators are supplied by the existing
+        exact lattice backend.  Each generator fixes the selected covering
+        vector and therefore preserves its embedded orthogonal complement.
+        Restricting through that embedding gives a live isometry of the
+        rank-one-smaller lattice.  This is the recursive stabilizer step; it
+        does not by itself assert the separate theorem generating all of
+        ``O(L)`` from the source subgroup and these stabilizers.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        orbit_data = self.covering_orbit_data(square)
+
+        def recursive(discriminant_class):
+            datum = orbit_data[discriminant_class]
+            vector = datum.representative()
+            perpendicular = vector.orthogonal_complement()
+            inclusion = perpendicular.inclusion()
+            stabilizer_generators = datum.stabilizer_generators()
+
+            def restrict(generator):
+                if generator(vector) != vector:
+                    raise ArithmeticError("a recursive stabilizer generator does not fix its vector")
+                return perpendicular.O()(
+                    {
+                        label: inclusion.lift(
+                            generator(inclusion(perpendicular.module_generator(label)))
+                        )
+                        for label in perpendicular.module_generating_set()
+                    }
+                )
+
+            restrictions = finite_indexed_family(
+                stabilizer_generators,
+                restrict,
+                name=f"Restrictions of Stab({vector}) to {perpendicular}",
+            )
+            return EichlerRecursiveStabilizerDatum(
+                vector,
+                perpendicular,
+                stabilizer_generators,
+                restrictions,
+            )
+
+        return finite_indexed_family(
+            orbit_data.index_set(),
+            recursive,
+            name=f"Rank-decreasing stabilizer recursion of square {square} in {self.lattice()}",
+        )
+
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
 
@@ -665,6 +757,7 @@ def are_in_one_stable_orbit(left, right) -> bool:
 
 __all__ = [
     "EichlerCoveringOrbitDatum",
+    "EichlerRecursiveStabilizerDatum",
     "TwoUEichlerModel",
     "are_in_one_stable_orbit",
     "covering_discriminant_classes",
