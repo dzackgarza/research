@@ -62,6 +62,7 @@ from dzack_research.preamble.categories.sets.cardinals import (
     continuum,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     CountablyInfiniteSets,
     FiniteSets,
@@ -125,7 +126,7 @@ class RingMorphism(Morphism):
             return False
         try:
             return bool(self._engine_morphism.is_identity())
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return False
 
     def extension_of_ideal(self, ideal):
@@ -315,7 +316,7 @@ class PredicateSubrings(OwnedCategory):
         def _element_constructor_(self, element):
             try:
                 candidate = self._ambient_ring(element)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 raise ValueError(f"{element} is not in the ambient ring {self._ambient_ring}") from None
             if candidate not in self:
                 raise ValueError(f"{candidate} does not satisfy {self._description}")
@@ -379,7 +380,7 @@ class LocalizationRings(OwnedCategory):
                 try:
                     if other_parent.base_ring() is self.parent():
                         return other_parent.scalar_multiple(self, other)
-                except AttributeError, TypeError, ValueError:
+                except (AttributeError, TypeError, ValueError):
                     pass
             return NotImplemented
 
@@ -562,7 +563,7 @@ class LocalizationRings(OwnedCategory):
                         source._from_engine_element(source_engine(represented.denominator())),
                         _trusted_denominator=trusted_denominator,
                     )
-                except AttributeError, TypeError, ValueError:
+                except (AttributeError, TypeError, ValueError):
                     pass
             return self.fraction(value)
 
@@ -574,7 +575,7 @@ class LocalizationRings(OwnedCategory):
                 return True
             try:
                 self(value)
-            except NotImplementedError, TypeError, ValueError:
+            except (NotImplementedError, TypeError, ValueError):
                 return False
             return True
 
@@ -630,7 +631,7 @@ class LocalizationRings(OwnedCategory):
                 try:
                     annihilator = source.ideal(source.zero()).colon(source.ideal(difference))
                     return any(not prime.contains_ambient_element(generator) for generator in annihilator.ideal_generators())
-                except AttributeError, NotImplementedError, TypeError, ValueError:
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
 
             from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -648,7 +649,7 @@ class LocalizationRings(OwnedCategory):
                             product *= generator
                         saturated = source.defining_ideal().saturation(source_ring.ideal(product))
                         return saturated.contains_ambient_element(representative)
-                except AttributeError, NotImplementedError, TypeError, ValueError:
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
 
             # A selected exact coefficient presentation A = P/I contains the
@@ -660,7 +661,7 @@ class LocalizationRings(OwnedCategory):
             # product kills d, and conversely every such common power lies in S.
             try:
                 has_presentation = source._has_selected_exact_coefficient_presentation()
-            except AttributeError, NotImplementedError, TypeError, ValueError:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 has_presentation = False
             if has_presentation:
                 try:
@@ -678,7 +679,7 @@ class LocalizationRings(OwnedCategory):
                     defining_ideal = presentation_ring.ideal(*(relations or (presentation_ring.zero(),)))
                     saturated = defining_ideal.saturation(presentation_ring.ideal(product))
                     return saturated.contains_ambient_element(representative)
-                except AttributeError, NotImplementedError, TypeError, ValueError:
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
                     pass
 
             try:
@@ -696,7 +697,7 @@ class LocalizationRings(OwnedCategory):
                         seen.append(current)
                         pending.extend(source(generator * current) for generator in generators)
                     return False
-            except AttributeError, NotImplementedError, TypeError, ValueError:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 pass
             return Unknown
 
@@ -890,7 +891,7 @@ class _PredicateSubringParent(Parent):
     def _element_constructor_(self, element):
         try:
             candidate = self._ambient_ring(element)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             raise ValueError(f"{element} is not in the ambient ring {self._ambient_ring}") from None
         if candidate not in self:
             raise ValueError(f"{candidate} does not satisfy {self._description}")
@@ -905,7 +906,7 @@ class _PredicateSubringParent(Parent):
     def __contains__(self, element):
         try:
             candidate = self._ambient_ring(element)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         answer = self._predicate(candidate)
         if answer is True or answer is False:
@@ -1684,7 +1685,7 @@ class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategor
         try:
             if self in candidate.category().all_super_categories(proper=False):
                 return True
-        except AttributeError, TypeError, ValueError:
+        except (AttributeError, TypeError, ValueError):
             return False
         # Placement has not put the candidate here.  A category that states no
         # condition of its own is not decided by placement: its objects are
@@ -1701,6 +1702,54 @@ def _cross_engine_ring_value(value):
     if parent in SageRings():
         return _own_ring(parent)._from_engine_element(value)
     return value
+
+
+class OwnedFactorization(SageObject):
+    r"""A finite factorization retaining its unit and factor multiplicities."""
+
+    def __init__(self, parent, unit, factors) -> None:
+        self._parent = parent
+        self._unit = parent._from_engine_element(unit)
+        engine_pairs = tuple(factors)
+        owned_factors = tuple(
+            parent._from_engine_element(factor) for factor, _multiplicity in engine_pairs
+        )
+        indices = finite_ordered_set(owned_factors)
+        multiplicities = {
+            factor: _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity))
+            for factor, (_engine_factor, multiplicity) in zip(
+                owned_factors, engine_pairs, strict=True
+            )
+        }
+        self._factors = finite_indexed_family(
+            indices,
+            multiplicities.__getitem__,
+            name=f"Factor multiplicities in {parent}",
+        )
+
+    def parent_ring(self):
+        return self._parent
+
+    def unit(self):
+        return self._unit
+
+    def factor_multiplicities(self):
+        return self._factors
+
+    def cardinality(self):
+        return self._factors.cardinality()
+
+    def items(self):
+        return self._factors.items()
+
+    def reconstruct(self):
+        product = self.unit()
+        for factor, multiplicity in self.items():
+            product = product * factor ** int(multiplicity)
+        return product
+
+    def _repr_(self):
+        return f"Factorization of an element of {self.parent_ring()}"
 
 
 def _proper_restriction_base_ring(ring):
@@ -1752,7 +1801,7 @@ class _OwnedRingElement(RingElement):
     def __add__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._add_(other)
 
@@ -1761,14 +1810,14 @@ class _OwnedRingElement(RingElement):
     def __sub__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._add_(-other)
 
     def __rsub__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return other._add_(-self)
 
@@ -1798,18 +1847,18 @@ class _OwnedRingElement(RingElement):
             try:
                 if other_parent.base_ring() is self.parent():
                     return other_parent.scalar_multiple(self, other)
-            except AttributeError, TypeError, ValueError:
+            except (AttributeError, TypeError, ValueError):
                 return NotImplemented
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._mul_(other)
 
     def __rmul__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return self._mul_(other)
 
@@ -1820,14 +1869,14 @@ class _OwnedRingElement(RingElement):
         if not isinstance(other, _OwnedRingElement) or other.parent() is not self.parent():
             try:
                 other = self.parent()(other)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 return NotImplemented
         return richcmp(self._backend(), other._backend(), op)
 
     def __eq__(self, other):
         try:
             other = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             # Not this ring's decision: a cardinal, say, knows whether it
             # equals a natural number of the ring, so Python asks it next.
             return NotImplemented
@@ -1891,7 +1940,7 @@ class _OwnedRingElement(RingElement):
         if modulus is not None:
             try:
                 modulus = self.parent()(modulus)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 return NotImplemented
             value = pow(self._backend(), exponent, modulus._backend())
         else:
@@ -1910,7 +1959,7 @@ class _OwnedRingElement(RingElement):
     def __rtruediv__(self, other):
         try:
             numerator = self.parent()(other)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
         return numerator.__truediv__(self)
 
@@ -1938,6 +1987,16 @@ class _OwnedRingElement(RingElement):
         other = self.parent()(other)
         return self.parent()._from_engine_element(self._backend().gcd(other._backend()))
 
+    def xgcd(self, other):
+        r"""Return ``(g,s,t)`` with ``g = s*self + t*other`` in this ring."""
+        other = self.parent()(other)
+        gcd, left, right = self._backend().xgcd(other._backend())
+        return (
+            self.parent()._from_engine_element(gcd),
+            self.parent()._from_engine_element(left),
+            self.parent()._from_engine_element(right),
+        )
+
     def lcm(self, other):
         other = self.parent()(other)
         return self.parent()._from_engine_element(self._backend().lcm(other._backend()))
@@ -1952,6 +2011,59 @@ class _OwnedRingElement(RingElement):
 
     def is_prime(self):
         return bool(self._backend().is_prime())
+
+    def factor(self):
+        r"""Return the engine factorization crossed into owned factors and multiplicities."""
+        factorization = self._backend().factor()
+        return OwnedFactorization(
+            self.parent(),
+            factorization.unit(),
+            tuple(factorization),
+        )
+
+    def is_irreducible(self):
+        return bool(self._backend().is_irreducible())
+
+    def roots(self, ring=None):
+        r"""Return the finite family of roots indexed by the roots themselves."""
+        if ring is None:
+            backend_roots = tuple(self._backend().roots())
+        else:
+            ring = _owned_ring(ring)
+            backend_roots = tuple(self._backend().roots(_engine_ring(ring)))
+        if ring is None:
+            owned_pairs = tuple(
+                (
+                    _cross_engine_ring_value(root),
+                    _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity)),
+                )
+                for root, multiplicity in backend_roots
+            )
+        else:
+            owned_pairs = tuple(
+                (
+                    ring._from_engine_element(root),
+                    _own_ring(SageZZ)._from_engine_element(SageZZ(multiplicity)),
+                )
+                for root, multiplicity in backend_roots
+            )
+        indices = finite_ordered_set(tuple(root for root, _multiplicity in owned_pairs))
+        multiplicities = dict(owned_pairs)
+        return finite_indexed_family(
+            indices,
+            multiplicities.__getitem__,
+            name=f"Roots of {self}",
+        )
+
+    def discriminant(self):
+        return _cross_engine_ring_value(self._backend().discriminant())
+
+    def resultant(self, other):
+        other = self.parent()(other)
+        return _cross_engine_ring_value(self._backend().resultant(other._backend()))
+
+    def splitting_field(self):
+        return _own_ring(self._backend().splitting_field())
 
     def factorial(self):
         return self.parent()._from_engine_element(self._backend().factorial())
@@ -2056,7 +2168,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             try:
                 if parent in OwnedRings():
                     return self._from_engine_element(self._engine(_engine_element(parent, value)))
-            except TypeError, ValueError, AttributeError:
+            except (TypeError, ValueError, AttributeError):
                 pass
             if parent in SageRings() or parent is self._engine:
                 raise TypeError("raw backend ring elements are not accepted by the public preamble API")
@@ -2172,7 +2284,7 @@ def _owned_ring_category(engine: Ring) -> Category:
         extra.append(OwnedPrincipalIdealDomains())
     try:
         noetherian = engine.is_noetherian()
-    except AttributeError, NotImplementedError, TypeError, ValueError:
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
         noetherian = engine is SageZZ
     if noetherian is True or engine is SageZZ:
         extra.append(OwnedNoetherianRings())
