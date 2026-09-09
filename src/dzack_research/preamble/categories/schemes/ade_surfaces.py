@@ -247,6 +247,14 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def dynkin_rank(self):
             return _own_ring(SageZZ)(self._preamble_dynkin_rank)
 
+        def letter(self) -> str:
+            r"""Return the ADE letter; archived synonym for :meth:`dynkin_letter`."""
+            return self.dynkin_letter()
+
+        def rank(self):
+            r"""Return the ADE rank; archived synonym for :meth:`dynkin_rank`."""
+            return self.dynkin_rank()
+
         def dynkin_variant(self):
             r"""The decorations naming this member of its family."""
             return finite_family(
@@ -256,6 +264,14 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         def is_affine_type(self) -> bool:
             return self._preamble_is_affine_type
+
+        def variant(self):
+            r"""Return the selected ADE side-decoration variant."""
+            return self.dynkin_variant()
+
+        def is_affine(self) -> bool:
+            r"""Return whether this is an affine ADE family member."""
+            return self.is_affine_type()
 
         @cached_method
         def coxeter_diagram(self):
@@ -284,6 +300,14 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             r"""The distinguished rational point ``p*`` on the boundary of ``Q``."""
             return self._preamble_distinguished_point
 
+        def p_star(self):
+            r"""Return the distinguished point ``p*``; archived mathematical name."""
+            return self.distinguished_point()
+
+        def polarizing_polytope(self):
+            r"""Return the ADE polarizing polygon ``Q``."""
+            return self.polygon()
+
         def side_decorations(self):
             r"""The decorations of the sides of ``Q`` incident to ``p*``."""
             return self._preamble_side_decorations
@@ -309,6 +333,10 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             return group.linear_combination(
                 {ray: _own_ring(SageZZ).one() for ray in blue}
             )
+
+        def blue_line_divisor(self):
+            r"""Return the blue divisor ``C``; archived mathematical name."""
+            return self.blue_divisor()
 
         def complementary_divisor(self):
             r"""``C'``: the rest of the toric boundary, so that ``C + C' = Delta``."""
