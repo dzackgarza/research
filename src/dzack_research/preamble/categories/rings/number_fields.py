@@ -1,6 +1,5 @@
 r"""Owned number fields and their selected primitive-element presentations."""
 
-from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.all import (
     CyclotomicField as _SageCyclotomicField,
@@ -16,6 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.rings.embeddings import (
     NumberFieldHomset,
     order_homset,
@@ -86,10 +86,14 @@ class NumberFieldHomCategoryConstruction(HomCategoryConstruction):
         return NumberFieldHomset
 
 
-class OwnedNumberFields(CategoryPacketMethods, Category):
+class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
     r"""Finite extensions of ``QQ``."""
 
     _HomCategory = NumberFieldHomCategoryConstruction
+
+    def an_object(self):
+        r"""The rational field as the degree-one number field."""
+        return _own_number_field(SageQQ)
     _certifying_predicate = "_preamble_is_number_field"
 
     @classmethod
@@ -366,10 +370,14 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
             )
 
 
-class NumberFieldsWithChosenPrimitiveElement(Category):
+class NumberFieldsWithChosenPrimitiveElement(OwnedCategory):
     r"""Number fields carrying the primitive element selected by their presentation."""
 
     _certifying_predicate = "_preamble_has_chosen_primitive_element"
+
+    def an_object(self):
+        r"""A quadratic field with its selected generator."""
+        return QuadraticField(2, "a")
 
     @classmethod
     def _repr_object_names(cls):
@@ -410,10 +418,14 @@ class NumberFieldsWithChosenPrimitiveElement(Category):
             )
 
 
-class OrdersWithChosenIntegralBasis(Category):
+class OrdersWithChosenIntegralBasis(OwnedCategory):
     r"""Number-field orders carrying their selected integral basis."""
 
     _certifying_predicate = "_preamble_is_number_field_order"
+
+    def an_object(self):
+        r"""The maximal order of a quadratic field with its selected integral basis."""
+        return QuadraticField(5, "a").ring_of_integers()
 
     @classmethod
     def _repr_object_names(cls):
@@ -546,7 +558,7 @@ def _owned_number_field_view(engine):
     categories = [OwnedNumberFields()]
     if engine is not SageQQ:
         categories.append(NumberFieldsWithChosenPrimitiveElement())
-    return refine(_owned_engine_ring(engine), Category.join(tuple(categories)))
+    return refine(_owned_engine_ring(engine), OwnedCategory.join(tuple(categories)))
 
 
 
