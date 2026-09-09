@@ -1346,7 +1346,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   **Acceptance:** a non-unimodular example where gluing restricts the Levi
   action, plus line/plane incidence with actual embeddings and transporters.
 
-- [ ] **`chambers`**. **Needs:** none.
+- [x] **`chambers`**. **Needs:** none.
   Finish the remaining Coxeter-poset and number-field Vinberg operations.
   **Owners:** `categories/coxeter_diagrams.py`, Vinberg invariants and the
   reflection-engine adapter.
