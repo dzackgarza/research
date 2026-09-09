@@ -67,6 +67,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     Modules,
     ModulesWithChosenFinitePresentation,
+    VectorSpaces,
     restrict_scalars,
 )
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
@@ -1376,6 +1377,8 @@ def FormModule(
     base_ring = module.base_ring()
     labels = module.module_generating_set()
     categories = [FormModules(base_ring)]
+    if module in VectorSpaces(base_ring):
+        categories.append(VectorSpaces(base_ring))
     is_free = module in FramedFreeModules(base_ring)
     is_presented = module in ModulesWithChosenFinitePresentation(base_ring)
     if is_free:
