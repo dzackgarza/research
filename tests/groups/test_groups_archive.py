@@ -62,3 +62,31 @@ def test_endomorphisms_of_an_abelian_group_form_the_live_endomorphism_ring() -> 
         assert zero(element) == group.one()
         assert twice(element) == element * element
         assert (twice * twice)(element) == twice(twice(element))
+
+
+def test_archived_abelian_group_is_a_module_over_the_integers_by_its_power_action() -> None:
+    from dzack_research.preamble.all import ZZ
+
+    group = Groups.Abelian([2, 4])
+    action = group.scalar_action()
+    element = tuple(group.group_generators())[0] * tuple(group.group_generators())[1]
+
+    assert action.domain() is ZZ
+    assert action.codomain() is group.endomorphism_ring()
+    for exponent in (-3, -1, 0, 1, 2, 4, 6):
+        scalar = ZZ(exponent)
+        assert action(scalar)(element) == element**exponent
+        assert group.scalar_multiple(scalar, element) == element**exponent
+
+
+def test_archived_discriminant_module_keeps_group_and_module_structure_on_one_parent() -> None:
+    from dzack_research.preamble.all import Lattices, Modules, ZZ
+    from dzack_research.preamble.categories.group.groups import OwnedFiniteAbelianGroups
+
+    discriminant = Lattices(ZZ)("A2").discriminant_group()
+
+    assert discriminant in OwnedFiniteAbelianGroups()
+    assert discriminant in Modules(ZZ)
+    element = next(iter(discriminant))
+    order = ZZ(element.additive_order())
+    assert discriminant.scalar_multiple(order, element) == discriminant.zero()
