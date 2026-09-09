@@ -63,8 +63,8 @@ a fabricated dependency edge.
 | --- | --- | --- |
 | A0 | `S` (2.7), (2.8) — definition of $\Gamma$ and of the special sets | — |
 | A1 | `S` 2.10 — $\Gamma$ is exactly the isometries whose induced map on $L_-^*/L_-$ respects the decomposition $(U(2)^*/U(2)) \oplus (E_8(-2)^*/E_8(-2))$ | A0 |
-| A2 | `S` 2.13 — $G = O(L_-)$ | A1 |
-| A3 | `X` Nikulin 1.13.2 — $L_-$ is determined up to isometry by its signature $(2,10)$ and its discriminant form | — |
+| A2 | `S` 2.13 — $G = O(L_-)$; an instance of Nk5, whose rank hypotheses must be checked for $L_-$ | A1, Nk5 |
+| A3 | `X` Nikulin 1.13.2 — uniqueness of the even lattice with invariants $(2,10,q)$, **conditional**: see Nk4 for the three conditions, of which (2) and (3) must be checked for $L_-$ | Nk4 |
 | A4 | `S` 2.16 — for $\Lambda = U \oplus U(2)$ and $v$ primitive: $v \sim_{O(\Lambda)} e + kf$ if $(v,v) = 2k$, $v \notin 2\Lambda^*$; $v \sim e' + kf'$ if $(v,v) = 4k$, $v \in 2\Lambda^*$ | — |
 | A5 | `S` 2.17 — the same under $O^*(\Lambda)$, with the extra branch $ke' + f'$ | A4 |
 | A6 | `S` 2.18 — for $N = \Lambda \oplus P$, $P$ even nondegenerate: primitive $v, w$ with equal norm, equal divisor $p\mathbb{Z}$, and $v \equiv w \bmod pN$ are $O^*(N)$-equivalent | A5 |
@@ -182,6 +182,40 @@ nodes, because the goal names the Baily–Borel boundary complex and Chapter 3
 proves a different theorem, the semi-toric compactification.  That exclusion is
 valid under `FDC-08` only as long as the goal stays as stated, and it is
 recorded here rather than left silent.
+
+### Stratum Nk, from Nikulin 1980 — what A3, F1.3, F1.4, F3.2 and Cl6 rest on
+
+Read from Nikulin, *Integral symmetric bilinear forms and some of their
+applications* (`TTY9FFJS`), §1.  Three of the graph's rows cited theorem numbers
+taken from Scattone and Sterk; the statements have hypotheses those rows had
+dropped.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| Nk1 | $A_q$ (resp. $A_b$): the finite abelian group carrying the quadratic form $q$ (bilinear form $b$); $\ell(A)$ is the minimal number of generators of $A$ | Nikulin §1, 9° | F1.2 |
+| Nk2 | the $p$-adic localizations $q_p$, the canonical forms $q^{(p)}_\theta(p^k)$, $u^{(2)}_\pm(2^k)$, $v^{(2)}_\pm(2^k)$, and the lattices $K(q_p)$ realizing them | Nikulin §1, 8°–9° | Nk1; $p$-adic lattices |
+| Nk3 | **Theorem 1.10.1** (existence): an even lattice with invariants $(t_{(+)},t_{(-)},q)$ exists **iff** simultaneously (1) $t_{(+)}-t_{(-)} \equiv \operatorname{sign} q \pmod 8$; (2) $t_{(+)},t_{(-)} \ge 0$ and $t_{(+)}+t_{(-)} \ge \ell(A_q)$; (3) $(-1)^{t_{(-)}}\lvert A_q\rvert \equiv \operatorname{discr} K(q_p)$ … — **condition (3) not fully transcribed** | Nikulin Thm 1.10.1 | Nk1, Nk2 |
+| Nk4 | **Theorem 1.13.2** (uniqueness): an even lattice $S$ with invariants $(t_{(+)},t_{(-)},q)$ is unique if simultaneously (1) $t_{(+)}\ge 1$, $t_{(-)}\ge 1$, $t_{(+)}+t_{(-)}\ge 3$; (2) for each $p\ne 2$, either $\operatorname{rk} S \ge 2+\ell(A_{q_p})$ or $q_p \cong q^{(p)}_{\theta_1}(p^k)\oplus q^{(p)}_{\theta_2}(p^k)\oplus q_p'$; (3) for $p=2$, either $\operatorname{rk} S \ge 2+\ell(A_{q_2})$, or $q_2 \cong u^{(2)}_+(2^k)\oplus q_2'$, or $q_2 \cong v^{(2)}_+(2^k)\oplus q_2'$, or … — **the final alternative not transcribed** | Nikulin Thm 1.13.2 | Nk1, Nk2, Nk3 |
+| Nk5 | **Theorem 1.14.2**: for $T$ even and **indefinite** with (a) $\operatorname{rk} T \ge \ell(A_{T_p})+2$ for all $p\ne 2$, and (b) if $\operatorname{rk} T = \ell(A_{T_2})$ then $q_{T_2}\cong u^{(2)}_+(2)\oplus q_2'$ or $v^{(2)}_+(2)\oplus q_2'$ — **the genus of $T$ contains only one class, and $O(T)\to O(q_T)$ is surjective** | Nikulin Thm 1.14.2 | Nk1, Nk2, F3.1 |
+
+**A3 was stated without its hypotheses.**  It read "$L_-$ is determined up to
+isometry by its signature $(2,10)$ and its discriminant form", cited to 1.13.2.
+The theorem is conditional: three numbered conditions, of which the first —
+$t_{(+)}\ge 1$, $t_{(-)}\ge 1$, $t_{(+)}+t_{(-)}\ge 3$ — is satisfied by
+$(2,10)$, while (2) and (3) are conditions on $\operatorname{rk} S$ against
+$\ell(A_{q_p})$ at each prime and must be **checked for $L_-$**, not assumed.
+That check is itself a node, and it is not yet written.
+
+**Nk5 is Scattone's Theorem 3.3.1** and is what A2 ("$G = O(L_-)$") rests on:
+surjectivity of $O(T)\to O(q_T)$ holds under a rank condition, and Sterk's A2 is
+an instance of it whose hypothesis needs verifying for $L_-$.  Scattone states
+the rank condition as $\operatorname{rk} L > \ell(G_L)+2$; Nikulin's is
+$\operatorname{rk} T \ge \ell(A_{T_p})+2$ per odd prime plus a separate
+condition at $2$.  **Those are not obviously the same condition**, and which one
+the graph needs is an open audit point.
+
+Nk2 is where this branch descends into $p$-adic lattice theory, and neither it
+nor $\ell(A)$ has any Mathlib substrate.
 
 ### Stratum Bo, from Borel 1972 — the extension theorem Sterk leans on
 
@@ -371,8 +405,8 @@ Baily–Borel is decomposed as stratum BB above; its own next descents are BB SS
 and Korányi–Wolf.  Niemeier’s classification (F4.1) has no
 source assigned; the library holds Conway–Sloane, *Sphere Packings, Lattices and
 Groups* (`T2WVLTDB`), the obvious candidate, unchecked.  Nikulin (`TTY9FFJS`)
-has not been read, so F1.3, F1.4, F3.2 and A3 rest on Scattone's citations of
-him rather than on the source.
+is decomposed as stratum Nk; F1.3, F1.4, F3.2, A3 and Cl6 now point at it,
+and A3’s dropped hypotheses are recorded there.
 
 **The discriminant form (F1.2) is the root of the whole tree, not a side
 condition.** $\Gamma$ is defined by how an isometry acts on $L_-^*/L_-$
