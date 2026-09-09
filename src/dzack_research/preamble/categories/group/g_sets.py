@@ -9,7 +9,6 @@ standard finite free/cofree constructions.
 
 from collections import deque
 
-from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.abstract_method import abstract_method
@@ -603,30 +602,27 @@ def fixed_point_set(g_set):
     return finite_ordered_filter(finite_ordered_set(g_set), g_set.is_invariant)
 
 
-class Torsors(Category):
-    r"""The category of free transitive ``G``-sets."""
+class Torsors(OwnedParameterizedCategory):
+    r"""The owned category of free transitive ``G``-sets."""
 
     @staticmethod
     def __classcall__(cls, group):
-        return Category.__classcall__(cls, _owned_group(group))
+        return OwnedParameterizedCategory.__classcall__(cls, _owned_group(group))
 
-    def __init__(self, group):
-        self._group = group
-        super().__init__()
-
-    def _make_named_class_key(self, name):
-        return self._group
+    def parameter_category(self):
+        r"""A torsor is parameterized by its actual acting group ``G``."""
+        return OwnedGroups()
 
     def group(self):
-        return self._group
+        return self.base()
 
     acting_group = group
 
     def super_categories(self):
-        return [GSets(self._group)]
+        return [GSets(self.group())]
 
     def _repr_object_names(self):
-        return f"torsors under {self._group}"
+        return f"torsors under {self.group()}"
 
     def __contains__(self, candidate) -> bool:
         if candidate not in FiniteGSets(self.group()):
