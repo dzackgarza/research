@@ -60,6 +60,7 @@ Two measurements fixed this shape:
 from __future__ import annotations
 
 import copyreg
+import hashlib
 from abc import ABCMeta
 from collections.abc import Hashable
 from dataclasses import dataclass
@@ -182,6 +183,113 @@ def _element_class_of(category: Category) -> type:
 
 def _morphism_class_of(category: Category) -> type:
     return category.morphism_class
+
+
+def _declared_category_class(category: Category) -> type:
+    r"""Return the source class declaring ``category``, not Sage's dynamic wrapper."""
+    category_type = type(category)
+    if category_type.__name__.endswith("_with_category"):
+        return category_type.__base__
+    return category_type
+
+
+def _category_graph_signature(category: Category, memo=None):
+    r"""Return a session-independent signature of one category graph node.
+
+    Comparison ordering is an implementation concern of the category graph, so
+    the signature records exactly that graph: the declaring category class and
+    the immediate supercategories.  It deliberately does *not* use ``repr`` or
+    Sage's ``_cmp_key``.  Parameter values that induce the same category graph
+    therefore share a signature, matching ``CategoryWithParameters``' named-
+    class optimization; parameter regimes with different supercategory graphs
+    do not.
+    """
+    if memo is None:
+        memo = {}
+    identity = id(category)
+    cached = memo.get(identity)
+    if cached is not None:
+        return cached
+    declaring = _declared_category_class(category)
+    # Install a temporary acyclic marker only to make an accidental category
+    # graph cycle fail here rather than recurse indefinitely.  Sage category
+    # graphs are DAGs, so encountering it is a structural defect.
+    marker = ("<category-cycle>", declaring.__module__, declaring.__qualname__)
+    memo[identity] = marker
+    supers = tuple(
+        sorted(
+            (
+                _category_graph_signature(super_category, memo)
+                for super_category in category._super_categories
+            ),
+            key=repr,
+        )
+    )
+    signature = (declaring.__module__, declaring.__qualname__, supers)
+    memo[identity] = signature
+    return signature
+
+
+def _category_graph_depth(category: Category, memo=None) -> int:
+    r"""Return the depth of ``category`` in the immediate-supercategory DAG."""
+    if memo is None:
+        memo = {}
+    identity = id(category)
+    cached = memo.get(identity)
+    if cached is not None:
+        return cached
+    supers = tuple(category._super_categories)
+    if not supers:
+        memo[identity] = 0
+        return 0
+    depth = 1 + max(_category_graph_depth(super_category, memo) for super_category in supers)
+    memo[identity] = depth
+    return depth
+
+
+def _stable_signature_integer(signature) -> int:
+    r"""Encode a structural category signature as a deterministic positive integer."""
+    digest = hashlib.blake2b(repr(signature).encode("utf-8"), digest_size=16).digest()
+    return int.from_bytes(digest, "big")
+
+
+class _OwnedCategoryComparisonKey:
+    r"""Deterministic ``_cmp_key`` for owned categories.
+
+    Sage's native comparison key is ``(flags, creation_counter)``.  The flags
+    carry semantic ordering conventions, but the counter makes sibling order a
+    function of which category a session happened to touch first.  Owned
+    categories retain Sage's flags and replace only that counter by a structural
+    integer.  Graph depth occupies the high bits, so a strict owned subcategory
+    always compares below its owned supercategory; a digest of the category
+    graph resolves siblings reproducibly.
+
+    This is a non-data descriptor.  Its first use writes the resulting tuple to
+    the category instance, exactly as Sage's Cython descriptor does, after which
+    normal instance lookup is the fast path.
+    """
+
+    _DEPTH_SHIFT = 160
+    _OWNED_FLOOR = 1 << 240
+
+    def __get__(self, category: Category | None, owner=None):
+        if category is None:
+            return self
+        # Ask Sage's original descriptor for the flags.  It temporarily stores
+        # its session counter on the instance; the assignment below immediately
+        # replaces that value with the owned structural key.
+        native_descriptor = Category.__dict__["_cmp_key"]
+        flags, _session_counter = native_descriptor.__get__(category, type(category))
+        depth = _category_graph_depth(category)
+        signature = _category_graph_signature(category)
+        structural = (
+            self._OWNED_FLOOR
+            + (depth << self._DEPTH_SHIFT)
+            + _stable_signature_integer(signature)
+        )
+        result = (flags, structural)
+        category._cmp_key = result
+        return result
 
 
 class CatConstructionsMixin:
@@ -373,6 +481,14 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     """
 
     _TIED_NAMED_CLASSES = frozenset(("parent_class", "element_class", "morphism_class"))
+
+    # Sage's default key ends in a global creation counter.  Owned categories
+    # instead derive that ordering component from their declared graph, so class
+    # construction is independent of which branch a session happened to touch
+    # first.  The descriptor is inherited by every owned category shape in
+    # ``owned_category_bases.py`` and intentionally does not affect Sage-native
+    # categories.
+    _cmp_key = _OwnedCategoryComparisonKey()
 
     _IMPLEMENTATION_PROVIDER_NAMES = {
         "ParentMethods": ("ParentMethods",),
