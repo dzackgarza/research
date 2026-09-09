@@ -142,7 +142,7 @@ cites others for it.  These are the nodes underneath, read from Baily–Borel 19
 | --- | --- | --- | --- |
 | BB1 | a parabolic $k$-subgroup: an algebraic subgroup $P \le G$ with $G/P$ projective; such a $P$ is connected, equal to its own normalizer, and is the normalizer of its unipotent radical | BB 2.2 | algebraic groups, projective varieties; **absent from Mathlib** |
 | BB2 | a parabolic subgroup of $G^0_\mathbb{R}$ is its intersection with an algebraic parabolic $P \le G$ defined over $\mathbb{R}$; every maximal proper parabolic subgroup of $G^0_\mathbb{R}$ is conjugate to one and only one of the $P_b$ | BB 1.3 | BB1 |
-| BB3 | boundary components: $X_b = K_b\backslash L_b$ is hermitian symmetric with Harish-Chandra realization $D_b$; $\bar D = \bigcup_{0\le b\le t} o_b \cdot G^0_\mathbb{R}$; the orbit $F_b$ of $o_b$ under $L_b$ is $o_b + D_b$, and the boundary components are the transforms of the $F_b$ | BB 1.5, citing [27], [29], [30] | BB2; hermitian symmetric spaces |
+| BB3 | boundary components: $X_b = K_b\backslash L_b$ is hermitian symmetric with Harish-Chandra realization $D_b$; $\bar D = \bigcup_{0\le b\le t} o_b \cdot G^0_\mathbb{R}$; the orbit $F_b$ of $o_b$ under $L_b$ is $o_b + D_b$, and the boundary components are the transforms of the $F_b$ | BB 1.5, citing [27], [29], [30] | BB2; stratum HS below |
 | BB4 | **Theorem 3.7**: a boundary component $F$ of $X$ is rational **iff** $N(F)_\mathbb{C}$ is defined over $\mathbb{Q}$; if $F$ is rational then $\Gamma(F)$ is of arithmetic type; and the map $F \mapsto N(F)_\mathbb{C}$ … — **tail not transcribed** | BB 3.7 | BB3 |
 | BB5 | for a rational boundary component $F$, $N(F)_\mathbb{C}$ is a proper maximal parabolic $\mathbb{Q}$-subgroup of $G$ | BB §3 | BB4, BB2 |
 | BB6 | **Theorem 3.8** — the structure statement in the notation of 3.3(ii); **located, not transcribed** | BB 3.8 | BB4 |
@@ -156,6 +156,57 @@ symmetric spaces, Harish-Chandra realizations.
 Not descended further here: BB8 rests on the automorphic forms and
 Poincaré–Eisenstein series of BB §§5–8, and BB3 on Korányi–Wolf [27] and the
 other references BB 1.5 cites.  Those are the next descents on this branch.
+
+### Stratum HS, from Viviani — what BB3 and D1 rest on
+
+BB3 names hermitian symmetric spaces, their Harish-Chandra realizations and
+their boundary components, and D1 states the boundary components as "the
+maximal connected complex analytic subsets of $\bar D\setminus D$".  Neither is
+a leaf: both are theorems about bounded symmetric domains, with a definition of
+boundary component that is not the one D1 quotes.  Read from Viviani, *A tour
+on Hermitian symmetric manifolds* (`RSX977NH`), §§2 and 4 — a survey, so every
+row below carries Viviani's own onward citation, mostly to Ash–Mumford–Rapoport–Tai
+(`HLAKVB4J`) and Helgason (`3DSB9N5S`).
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| HS1 | a **complex manifold** is $(M,\mathcal{O}_M)$ locally isomorphic to $(\mathbb{C}^N,\mathcal{O}_{\mathbb{C}^N})$; a **quasi-complex manifold** is $(M,J)$ with $J$ a $(1,1)$-tensor field, $J_p^2 = -\mathrm{id}$ on $T_pM$ | Viviani Def. 2.1 | Mathlib has `IsManifold 𝓘(ℂ, E) n M`; **no almost-complex structure** |
+| HS2 | **Newlander–Nirenberg**: $J$ is induced by a complex structure iff $[JX,JY] = J[JX,Y]+J[X,JY]+[X,Y]$ for all vector fields, and then the complex structure is unique | Viviani Thm. 2.2, via Helgason VIII.1.2 | HS1; **absent** |
+| HS3 | a **Hermitian structure** on $(M,J)$: equivalently a Hermitian metric $h$, a $J$-compatible Riemannian metric $g$, or a $J$-compatible positive $2$-form $\omega$, related by $g = \mathrm{Re}\,h = \omega(\cdot,J\cdot)$ and $\omega = -\mathrm{Im}\,h = g(J\cdot,\cdot)$ | Viviani Lemma-Def. 2.3 | HS1; Mathlib `Geometry/Manifold/Riemannian/Basic` |
+| HS4 | $\mathrm{Aut}(M,J,h)$, the holomorphic isometries; $M$ is **homogeneous** when it acts transitively, and **symmetric** (a **HSM**) when in addition some $p$ carries $s_p\in\mathrm{Aut}$ with $s_p^2=\mathrm{id}$ and $p$ an isolated fixed point | Viviani Def. 2.4 | HS3 |
+| HS5 | $s_p$ is the unique automorphism with $s_p(p)=p$ and $ds_p = -\mathrm{id}_{T_pM}$, hence the geodesic symmetry; a HSM is geodesically complete and $(M,J,\omega)$ is **Kähler** | Viviani Rmk. 2.5, via Helgason VIII.4.1 | HS4; geodesics, Kähler — **absent from Mathlib** |
+| HS6 | Euclidean, irreducible, non-Euclidean, compact and non-compact **type**; the decomposition theorem $M = M_0\times M_-\times M_+$, unique, with $M_\pm$ simply connected | Viviani Def. 2.7, Thm. 2.9, via Helgason VIII.4.4–5.5 | HS4 |
+| HS7 | the **rank** of a non-Euclidean HSM is the maximal dimension of a flat totally geodesic submanifold; it equals the dimension of any maximal $\mathbb{R}$-split torus of $G$ | Viviani Def. 2.10, Prop. 2.13 | HS5, HS6; $\mathbb{R}$-split tori — **absent** |
+| HS8 | $\mathrm{Aut}(M)^o$ is a semisimple **adjoint** Lie group and $\mathrm{Stab}(o)$ compact with $\mathrm{Fix}(\sigma)^o\subseteq\mathrm{Stab}(o)\subseteq\mathrm{Fix}(\sigma)$ for $\sigma = s_o(-)s_o$; $[g]\mapsto g\cdot o$ is a diffeomorphism $\mathrm{Aut}(M)^o/\mathrm{Stab}(o)\to M$; and $s_o$ lies in the identity component of the centre of $\mathrm{Stab}(o)$ | Viviani Thm. 2.11, via Helgason IV.3.3, VIII.4.5 | HS4; Mathlib `LieGroup`; **no semisimple Lie groups, no Cartan involution** |
+| HS9 | the **Harish-Chandra embedding** $i_{HC} : M\hookrightarrow\mathfrak{p}_+$ and the **Borel embedding** into $G_\mathbb{C}/(P_-\rtimes K_\mathbb{C})$, a homogeneous projective variety; $i_{HC}$ is an open holomorphic embedding and $j$ a Zariski-open embedding | Viviani Thm. 2.22, via Helgason VIII.7 or Satake II.4 | HS8; complexification of a Lie group, parabolic subgroups — **absent** |
+| HS10 | bounded, homogeneous, symmetric and irreducible **domains**; $i_{HC}(M)$ is a bounded symmetric domain, and $M\mapsto i_{HC}(M)$, $D\mapsto (D,J_D,h_D)$ are mutually inverse bijections preserving irreducibility | Viviani Def. 2.23, Thm. 2.25, Thm. 2.30 | HS9 |
+| HS11 | **boundary component**: an equivalence class in $\overline{D}$ for the relation $p\sim q$ iff $p$ and $q$ are joined by a finite chain of holomorphic disks $\lambda_i:\Delta\to\overline{D}$ with consecutive images meeting; and $F_2\le F_1$ iff $F_2\subseteq\overline{F_1}$ | Viviani Def. 4.1 | HS10 |
+| HS12 | $\overline{D} = \coprod_{F\le D}F$ and $G = \mathrm{Hol}(D)^o$ preserves it; each $F$ is itself a HSM of non-compact type, $F\subset\langle F\rangle$ **is** its Harish-Chandra embedding and $F\subset F^c$ its Borel embedding, with the square of inclusions Cartesian; $\le$ is transitive; and boundary components of a product are products | Viviani Thm. 4.2, citing AMRT III.3.3 | HS11 |
+| HS13 | $N(F) = \{g\in G : gF = F\}$; and $F\mapsto N(F)$ is a **bijection** from the boundary components of $D = D_1\times\cdots\times D_s$ onto the subgroups $P_1\times\cdots\times P_s$ with each $P_i$ either $G_i$ or a **maximal parabolic subgroup** of $G_i$ | Viviani Def. 4.4, Thm. 4.5, citing AMRT III.3.9 | HS12; parabolic subgroups of a real Lie group |
+| HS14 | the **5-term decomposition**: $N(F) = \{g : \lim_{t\to0}w_F(t)gw_F(t)^{-1}$ exists$\}$ for a one-parameter subgroup $w_F$; $N(F)^o = Z(w_F)^o\ltimes W(F)$ with $W(F)$ the unipotent radical, 2-step, $0\to U(F)\to W(F)\to V(F)\to 0$; and $Z(w_F)^o = G_h(F)\cdot G_l(F)\cdot M(F)$ modulo finite subgroups, $M(F)$ compact semisimple, $G_h(F)/Z\cong\mathrm{Aut}(F)^o$, $G_l(F)$ reductive without compact factors | Viviani Thm. 4.8, citing AMRT III.3.7, 3.10, §4.1 | HS13, HS6 |
+| HS15 | $N(F)^o$ acts transitively on $D$; $G_h(F)$ has orbit $F$ through $o_F$ with stabilizer $K_h(F)$, so $G_h(F)/K_h(F)\cong F$; and $G_l(F)$ acting on $U(F)$ by conjugation has an open **cone** $C(F)$ as orbit, with $G_l(F)/K_l(F)\cong C(F)$ | Viviani Prop. 4.9, Thm. 4.10, citing AMRT III.4.1, 4.6 | HS14 |
+| HS16 | $C(F)$ is a **symmetric cone** — homogeneous and self-dual — hence classified by a Euclidean Jordan algebra; and $D$ has the Siegel-domain-of-the-third-kind presentation $D\cong\{(x,y,z)\in U(F)_\mathbb{C}\times\mathbb{C}^k\times F : \mathrm{Im}\,x - h_z(y,y)\in C(F)\}$ | Viviani Def. 4.16, Thm. 4.26, Cor. 4.15 | HS15; Jordan algebras — **absent from Mathlib** |
+
+**HS13 is what BB3 and D3 are really made of, and it is not what D1 says.**  A
+boundary component is defined by chains of holomorphic disks (HS11), not as a
+maximal connected complex analytic subset; Viviani's Theorem 4.2 then makes each
+one a bounded symmetric domain in its own right.  The bijection onto maximal
+parabolic subgroups is a theorem (HS13), and it is the *real* form of what D3
+states with stabilizers and what BB5 states over $\mathbb{Q}$.  Rationality is a
+further condition on top of HS13, and that is stratum AG.
+
+**D1's phrase "maximal connected complex analytic subsets" is a third
+description**, and this graph has now seen three: Sterk's, Scattone's via
+Baily–Borel, and Viviani's.  Whether they agree is an audit point, not a
+substitution: nothing read here proves that the disk-chain classes are the
+maximal analytic subsets.
+
+HS1–HS5 are where the analytic substrate runs out.  Mathlib carries complex
+manifolds only as `IsManifold` over a model with corners on $\mathbb{C}^n$, and
+`Geometry/Manifold/Complex.lean`'s own header says "There is a whole theory to
+develop here"; there is no almost-complex structure, no integrability, no
+geodesic, no Kähler form, and no semisimple Lie group.  Every row of stratum HS
+is greenfield.
 
 ### Stratum Cl — the classical inputs Chap. 2 cites
 
@@ -493,6 +544,12 @@ formalization source registry (`AGENTS.md` §"Formalization source registry",
 resolved 2026-08-14).  Everything else is **greenfield** — no formalization
 exists anywhere the registry knows of, so the node must be authored.
 
+The revision.  The `lean-categories` Mathlib checkout is at `db584cd6d4`, the
+bump to toolchain v4.33.0; the revision `0df444a3` named above is its **child**,
+the bump to v4.33.1, one commit later.  Every substrate claim below was checked
+against the checkout, so where the two differ the claims are the weaker,
+earlier ones.
+
 Registry surfaces swept: the Mathlib subtrees table; *Quadratic forms, lattices,
 sphere packing*; *Algebra, number theory, algebraic geometry*; *Analysis,
 probability, geometry, dynamics*; *Category theory, higher structures*.
@@ -529,6 +586,7 @@ probability, geometry, dynamics*; *Category theory, higher structures*.
 | F4.2 | Niemeier's classification of the 24 lattices | nothing |
 | V1–V13 | $C^\pm$/$C^0$ matrices, $C^-$-polyhedra, Lemmas 2–5, Theorem 1 with (L1)–(L5), Coxeter's diagram classification, Vinberg's algorithm and Proposition 4, the infinite-vertex recovery and its primitivity lemma | Mathlib has finite Cartan matrices and Coxeter groups; **no affine classification, no Lobachevskii space, no fundamental polyhedron** |
 | BB1–BB8 | parabolic $\mathbb{Q}$-subgroups, hermitian symmetric domains, Harish-Chandra realizations, rational boundary components, the Satake topology, Baily–Borel's Theorem 10.11 | nothing — the registry has no algebraic-groups-with-parabolics corpus and no symmetric-space corpus |
+| HS1–HS16 | almost-complex structures and Newlander–Nirenberg, Hermitian and Kähler structures, geodesic symmetries, semisimple Lie groups with their Cartan involutions, the Harish-Chandra and Borel embeddings, boundary components and the 5-term decomposition of a normalizer, symmetric cones and Euclidean Jordan algebras | Mathlib has `IsManifold` over `𝓘(ℂ, E)`, the `LieGroup` class, and a two-file Riemannian tree (`Riemannian/Basic`, `Riemannian/PathELength`) with no geodesics; `Geometry/Manifold/Complex.lean` says of itself "There is a whole theory to develop here" |
 | Bo1–Bo5 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance, Siegel sets and reduction theory | nothing |
 | E1, E3–E13 | compact complex surfaces, Enriques and $K3$ surfaces, elliptic pencils, Horikawa's isometry, global Torelli, the period map | nothing; `nullstellensatz` gives local complex-analytic geometry only |
 | A0–A7, B1–B8, C3–C12, D1–D7, Cl1–Cl6 | the paper's own content | by construction |
@@ -544,11 +602,16 @@ Sphere-Packing-Lean, and the 2-adic layer has a sorry-free supplier in
 `gq2-lean`.  The **classification theorems are not**: Nikulin, Niemeier,
 Minkowski–Siegel and Eichler have no formalization anywhere the registry knows.
 
-Three whole strata are greenfield with nothing nearby: **V** (hyperbolic
+Four whole strata are greenfield with nothing nearby: **V** (hyperbolic
 reflection groups and Vinberg), **BB** (algebraic groups, symmetric domains,
-Baily–Borel) and **E** (complex surfaces, $K3$, Torelli).  Those are the real
-cost of the target, and each is a formalization programme in its own right
-rather than a node.
+Baily–Borel), **HS** (the hermitian symmetric theory BB3 rests on) and **E**
+(complex surfaces, $K3$, Torelli).  Those are the real cost of the target, and
+each is a formalization programme in its own right rather than a node.
+
+HS and E share a floor.  Both begin at complex manifolds with a Hermitian
+metric, and neither can start before Mathlib's `IsManifold` tree acquires an
+almost-complex structure and a geodesic.  Whatever pays for one pays for the
+other.
 
 
 ## Open audit points
