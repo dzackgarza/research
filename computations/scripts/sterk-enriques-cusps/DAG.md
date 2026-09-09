@@ -86,21 +86,20 @@ The nodes above are the paper's own steps.  Several of them are not leaves: they
 rest on theory that the pinned Mathlib does not have, and that no node of A–D
 states.  Substrate checked against the pinned revision `0df444a3`.
 
-| Node | What it is | Needed by | Mathlib substrate |
+| Subject | What it is | Needed by | Mathlib substrate |
 | --- | --- | --- | --- |
-| F1 | even lattices, the dual $L^*$, the discriminant group $L^*/L$, and the discriminant **form** $q : L^*/L \to \mathbb{Q}/2\mathbb{Z}$ with its orthogonal decomposition | **A0, A1** — the definition of $\Gamma$ — and C11, A3 | `ZLattice` and `dualSubmodule` exist; the discriminant form does not |
-| F2 | $O^*(N)$: the isometries Sterk distinguishes from $O(N)$, by spinor norm / preserved component of the positive cone | A5, A6 (2.17, 2.18), B1 | absent — no spinor norm |
-| F3 | affine Coxeter and Dynkin diagrams: the extended types, subdiagrams, parabolic subdiagrams and their rank | C1, and the explicit half of C3–C7 | finite Cartan matrices only (`Matrix/Cartan.lean`, through $E_8$); no affine types |
-| F4 | hyperbolic reflection groups: Lobachevskii space, the fundamental polyhedron of $W(G)$, Vinberg's algorithm and its completeness | C1, C2 | absent |
-| F5 | genus theory of even lattices — $p$-adic invariants — enough to state Scattone's nine possibilities for $F^\perp/F$ | C11 | absent |
-| F6 | reductive groups over $\mathbb{Q}$, parabolic $\mathbb{Q}$-subgroups, spherical buildings; hermitian symmetric domains of type IV; the Baily–Borel construction and its topology | D1–D4 | absent |
-| F7 | the upper half plane and congruence subgroups, for $\mathbb{H}/\Gamma^1(2)$ | D5 | present — `UpperHalfPlane`, `Gamma0`/`Gamma1` |
+| S1 | even lattices, the dual $L^*$, the discriminant group $L^*/L$, and the discriminant **form** $q : L^*/L \to \mathbb{Q}/2\mathbb{Z}$ with its orthogonal decomposition | **A0, A1** — the definition of $\Gamma$ — and C11, A3 | `ZLattice` and `dualSubmodule` exist; the discriminant form does not |
+| S2 | $O^*(N)$: the isometries Sterk distinguishes from $O(N)$, by spinor norm / preserved component of the positive cone | A5, A6 (2.17, 2.18), B1 | absent — no spinor norm |
+| S3 | affine Coxeter and Dynkin diagrams: the extended types, subdiagrams, parabolic subdiagrams and their rank | C1, and the explicit half of C3–C7 | finite Cartan matrices only (`Matrix/Cartan.lean`, through $E_8$); no affine types |
+| S4 | hyperbolic reflection groups: Lobachevskii space, the fundamental polyhedron of $W(G)$, Vinberg's algorithm and its completeness | C1, C2 | absent |
+| S5 | genus theory of even lattices — $p$-adic invariants — enough to state Scattone's nine possibilities for $F^\perp/F$ | C11 | absent |
+| S6 | reductive groups over $\mathbb{Q}$, parabolic $\mathbb{Q}$-subgroups, spherical buildings; hermitian symmetric domains of type IV; the Baily–Borel construction and its topology | D1–D4 | absent |
+| S7 | the upper half plane and congruence subgroups, for $\mathbb{H}/\Gamma^1(2)$ | D5 | present — `UpperHalfPlane`, `Gamma0`/`Gamma1` |
 
-**Every row of this table is a subject, not a statement, and so violates
-`FSC-06`.**  They are placeholders standing where sub-graphs belong, and until
+**These rows are subjects, not statements, so none is a node.**  They are placeholders standing where sub-graphs belong, and until
 each is decomposed the graph understates the work by an unknown amount — the
 same defect as the "external, cited" leaves that `FDC-03` was written about,
-one level down.  Two are worked below; the rest are outstanding.
+one level down.  They survey what Mathlib has and lacks; the node numbering below is independent of them.
 
 ### F5, rewritten from Scattone
 
@@ -140,126 +139,82 @@ infinite index in $O(L)$ — the same computation Sterk runs, on the degree-four
 K3 side.  That is a cross-check on C3–C7 from an independent source, and it was
 invisible to me while I was writing the node from memory.
 
-### ⚠ F1, F2, F3, F4, F6 below are UNSOURCED and must be redone
+### Stratum F, rebuilt from Scattone §3
 
-The tables in the five subsections that follow were written from memory and
-attributed to sources that were never opened — Nikulin for F1, Vinberg for F3
-and F4, Baily–Borel for F6 — in violation of `FRM-02`, which forbids exactly
-this.  The excuse recorded at the time, that the sources needed reading first,
-was also false: Nikulin (`TTY9FFJS`), Vinberg 1975 (`73LVC9YS`), Scattone
-(`SF7T3C8G`) and Baily–Borel (`Z9PM5MMD`) are all in the library with text
-extractions.
+The five subsections that stood here were written from memory and attributed to
+sources never opened.  They are deleted rather than kept as guesses.  What
+replaces them is read from Scattone (`SF7T3C8G`), whose §3 *is* this stratum,
+developed systematically — the theory Sterk uses, written out with numbers and
+proofs.  Its table of contents alone settles what the foundations are:
 
-F5 above has since been rewritten from Scattone and shows what the difference
-costs: the fabricated version had the nine arising from a $p$-adic genus
-computation through Nikulin 1.13.2 and 1.14.2, and the source has it arising
-from primitive embeddings of $D_7$ into Niemeier lattices, with the ninth class
-coming from $E_8+D_{16}$ admitting two inequivalent embeddings.  The
-dependencies were wrong, the mechanism was wrong, and the shape of the work was
-wrong.
+    3.1 Lattices                          3.5 (Niemeier lattices)
+    3.2 Discriminant-quadratic forms      3.6 Orthogonal groups
+    3.3 Genera of lattices                3.7 Elementary transformations
+    3.4 The Minkowski–Siegel formula
 
-Treat every row below as a guess about what the source might say, not as a node.
-Each is to be rewritten from its source in turn, as F5 was.
+**A node is terminal only when its next dependency is in Mathlib.**  None of the
+nodes below is terminal; the *next* column names what each descends into, and
+where that is another source, the descent continues there.
 
-### F1 (unsourced): discriminant forms
+| Node | Statement | Read? | Next dependency |
+| --- | --- | --- | --- |
+| F1.1 | §3.1, the lattice notions Scattone fixes: divisor of a vector, $v^*$, primitive sublattice, $I_{2,e}(L)$ | section **not read** | Mathlib `ZLattice`, `QuadraticForm` |
+| F1.2 | §3.2, the discriminant-quadratic form $q : G_L \to \mathbb{Q}/2\mathbb{Z}$ and the invariant $\ell(G_L)$ | section **not read** | F1.1; Nikulin §1 |
+| F1.3 | Thm 3.2.1 (= Nikulin 1.10.2): an even lattice with signature $(n_+,n_-)$ and discriminant form $q$ exists iff … | statement read, condition **not** transcribed | Nikulin 1.10.2 |
+| F1.4 | Thm 3.2.2 (Nikulin): an even lattice with signature $(t_+,t_-)$ and discriminant form $q$ can be primitively embedded … | statement read, conclusion **not** transcribed | Nikulin |
+| F2.1 | §3.6, the orthogonal groups $O(L)$, $O^*(L)$, $O_-(L)$ as Scattone defines them — **the definition node A5, A6 and B1 need, and it is here, not in Sterk** | section **not read** | F1.2 |
+| F2.2 | Lemma 3.6.1: for $L = \langle-2k\rangle \oplus H^2 \oplus E_8^2$, $\lvert O(G_L)\rvert = 2^{p(k)}$ with $p(k)$ the number of distinct … | statement read, tail **not** transcribed | F2.1, F1.2 |
+| F2.3 | §3.7, the group $\mathcal{E}(L)$ of elementary (Eichler) transformations | section **not read** | F1.1 |
+| F2.4 | Lemma 3.7.1 (Eichler): $\mathcal{E}(L) \subseteq O^*(L)$ for every even lattice $L$ | statement read | F2.1, F2.3 |
+| F2.5 | Prop 3.7.3: for $L$ even containing **at least two hyperbolic planes** and $v,w$ primitive with $(v,v)=(w,w)$ — some $\phi\in\mathcal{E}(L)$ carries $v$ to $w$ **iff** $v^* = w^*$ | statement read | F2.3, F2.4, F1.1 |
+| F3.1 | §3.3, the genus of a lattice | section **not read** | F1.2; $p$-adic quadratic forms |
+| F3.2 | Thm 3.3.1 (Nikulin): for $L$ even, nondegenerate, indefinite with $\mathrm{rk}\,L > \ell(G_L)+2$ — (i) the genus of $L$ contains one class, and (ii) $O(L)\to O(G_L)$ is **surjective** | statement read | Nikulin; F3.1 |
+| F3.3 | §3.4, the Minkowski–Siegel formula | section **not read** | F3.1 |
+| F4.1 | Thm 3.5.1 (Niemeier): exactly 24 even unimodular negative-definite lattices of rank 24 up to isomorphism, with the root type $R(L)$ a complete invariant; and the table of the 24 types | statement and table read | F3.1, F3.3 |
 
-| Node | Statement | Depends on |
-| --- | --- | --- |
-| F1.1 | for a nondegenerate lattice $L$, the dual $L^* = \{x\in L\otimes\mathbb{Q} : (x,L)\subseteq\mathbb{Z}\}$ is a lattice, containing $L$ when $L$ is integral | — |
-| F1.2 | the discriminant group $A_L = L^*/L$ is finite of order $\lvert\det\mathrm{Gram}(L)\rvert$ | F1.1 |
-| F1.3 | the discriminant bilinear form $b_L : A_L\times A_L\to\mathbb{Q}/\mathbb{Z}$ is well defined and nondegenerate | F1.2 |
-| F1.4 | for $L$ **even**, the discriminant quadratic form $q_L : A_L\to\mathbb{Q}/2\mathbb{Z}$, $q_L(x+L)=(x,x)\bmod 2\mathbb{Z}$, is well defined and satisfies $q(x+y)-q(x)-q(y)=2b(x,y)$ | F1.3 |
-| F1.5 | $A_{L\oplus M}\cong A_L\oplus A_M$ orthogonally, with $q_{L\oplus M}=q_L\oplus q_M$ | F1.4 |
-| F1.6 | $O(q_L)$: the automorphisms of $A_L$ preserving $q_L$ | F1.4 |
-| F1.7 | the natural homomorphism $O(L)\to O(q_L)$ | F1.6 |
-| F1.8 | $A_U=0$; $A_{U(2)}\cong(\mathbb{Z}/2)^2$ with its form; $A_{E_8(-2)}\cong(\mathbb{Z}/2)^8$ | F1.4, F1.5 |
-| F1.9 | hence $A_{L_-}\cong\tfrac12 U(2)/U(2)\oplus\tfrac12 E_8(-2)/E_8(-2)$ — the decomposition $\Gamma$ is defined to respect | F1.5, F1.8 |
+**F2.5 is Sterk's 2.18 (node A6)**, in a cleaner form and with its hypothesis
+visible: *at least two hyperbolic planes*.  So A6 is not a leaf, its real content
+is Eichler's criterion, and the condition is equality of the images $v^*$ in the
+discriminant group — exactly the invariant F1.2 constructs.
 
-Nine elementary nodes from the root of stratum F to the object A1 (Sterk 2.10)
-quantifies over.
+**F3.2 is what Sterk's 2.10 and 2.13 rest on.**  Surjectivity of
+$O(L)\to O(G_L)$ is Nikulin's theorem under a rank condition, not a fact about
+$L_-$, and A2 ("$G = O(L_-)$") is an instance of it.
 
-### F2 (unsourced): $O^*$, and the transformations 2.18 runs on
+**F4.1 is where F5 descends**, so the Niemeier classification is a node of this
+graph with its own descent, not a citation to lean on.
 
-Sterk works with $O^*$ rather than $O$ throughout 2.17, 2.18 and 3.2.1, and the
-proof of 2.18 is built from Siegel–Eichler transformations.  Neither was in the
-graph.
+Three things this makes visible that the invented version hid.  Scattone §3
+answers F2 completely, where the guessed version had "locate Sterk's definition
+of $O^*$" standing as an open problem.  The genus (F3.1) sits under both the
+Niemeier classification and F5, so it is load-bearing twice.  And every *not
+read* in the third column is a section of a memoir sitting in the library — the
+work is reading, and it has not been done.
 
-| Node | Statement | Depends on |
-| --- | --- | --- |
-| F2.1 | Sterk's definition of $O^*(N)$ — **locate in Chap. 2 §1; not present in the text read so far** | — |
-| F2.2 | the Siegel–Eichler transformation $E_{u,y}$ for isotropic $u$ and $y\perp u$, and that it is an isometry | F1.1 |
-| F2.3 | $E_{u,y}\in O^*(N)$ | F2.1, F2.2 |
-| F2.4 | $E_{u,y}$ acts trivially on $A_N$, so lies in the kernel of $O(N)\to O(q_N)$ | F2.2, F1.7 |
-| F2.5 | for $\Lambda = U\oplus U(2)$, the involution $e'\mapsto f'$, $f'\mapsto e'$, $e\mapsto e$, $f\mapsto f$ generates $O(\Lambda)/O^*(\Lambda)$ — stated in the proof of 2.17 | F2.1 |
+### Still missing from this stratum
 
-### F3 (unsourced): affine diagrams and parabolic subdiagrams
+Vinberg's algorithm and Baily–Borel had subsections here that were fabricated
+and are now deleted.  Both sources are in the library — Vinberg 1975
+(`73LVC9YS`), Baily–Borel 1966 (`Z9PM5MMD`) — and both need the treatment
+Scattone §3 just received: read the section, take the numbered statements, name
+the next dependency of each.  Until then C1, C2 and D1–D4 have no foundations
+recorded beneath them.
 
-| Node | Statement | Depends on |
-| --- | --- | --- |
-| F3.1 | the Coxeter diagram of a finite set of roots: vertices the roots, edge datum $(\alpha_i,\alpha_j)^2/\big((\alpha_i,\alpha_i)(\alpha_j,\alpha_j)\big)$, with value $1$ drawn $\infty$ | — |
-| F3.2 | a diagram is *parabolic* when the restricted form is negative semidefinite with a one-dimensional radical per connected component | F3.1 |
-| F3.3 | the rank of a parabolic diagram is $\#\text{vertices}-\#\text{components}$ | F3.2 |
-| F3.4 | the extended Dynkin diagrams $\tilde A_n,\tilde B_n,\tilde C_n,\tilde D_n,\tilde E_{6,7,8},\tilde F_4,\tilde G_2$, each as an explicit Gram matrix in a fixed convention | F3.1 |
-| F3.5 | **classification**: every connected parabolic diagram is one of F3.4 | F3.2, F3.4; needs Vinberg read |
-| F3.6 | the type of a parabolic subdiagram is determined by its Gram matrix up to isomorphism, and vertex norms together with edge data separate $\tilde B_n$ from $\tilde C_n$ | F3.4 |
+**The discriminant form (F1.2) is the root of the whole tree, not a side
+condition.** $\Gamma$ is defined by how an isometry acts on $L_-^*/L_-$
+respecting a decomposition of the discriminant form; without it the group cannot
+be stated, so neither can any theorem that mentions it — which is every theorem
+here.  Any formalization begins at F1.1–F1.2 or begins by inventing a surrogate
+for them.
 
-F3.6 is the node the Sage reconstruction already needs and that the namer there
-got wrong twice: the path with two short end nodes is not $\tilde B_n$ in the
-Bourbaki convention, and Sterk follows Vinberg's table.  Whichever convention
-F3.4 fixes is the one C3–C7 must be stated in.
-
-### F4 (unsourced): Vinberg's algorithm
-
-| Node | Statement | Depends on |
-| --- | --- | --- |
-| F4.1 | for $N$ of signature $(1,n)$: the positive cone $C$ and the Lobachevskii space $\Lambda(N)=C/\mathbb{R}_+$ | — |
-| F4.2 | points at infinity of $\Lambda(N)$ correspond to isotropic lines in $N_\mathbb{R}$ | F4.1 |
-| F4.3 | for $G\le O_C(N)$ of finite index: the reflection subgroup $W(G)$ and its fundamental polyhedron $P$ | F4.1 |
-| F4.4 | the algorithm: from $x\in C\cap N$, mirrors are enumerated by minimizing $(x,y)^2/\lvert(y,y)\rvert$ subject to nonnegativity against those already chosen | F4.3; needs Vinberg read |
-| F4.5 | **completeness**: the enumeration gives every wall of $P$ | F4.4; needs Vinberg read |
-| F4.6 | vertices at infinity of $P$ correspond to parabolic subdiagrams of $\Sigma(G)$ of rank $n-1$ | F4.5, F3.5; needs Vinberg read |
-| F4.7 | the isotropic vector a parabolic subdiagram represents, as a nonnegative combination of its vertices | F4.6; needs Vinberg 1983 (1.9) read |
-
-F4.5 is the expensive node and the only one C3–C7 genuinely need: without it the
-five diagrams are lists of mirrors that may be incomplete, and every count of
-isotropic planes is a lower bound rather than a classification.
-
-### F6 (unsourced): from isotropic subspaces to boundary strata
-
-| Node | Statement | Depends on |
-| --- | --- | --- |
-| F6.1 | the type IV domain $\Omega=\{[\omega]\in\mathbb{P}(L\otimes\mathbb{C}) : (\omega,\omega)=0,\ (\omega,\bar\omega)>0\}$ for $L$ of signature $(2,n)$, with two connected components | — |
-| F6.2 | an arithmetic $\Gamma\le O(L)$ acts properly discontinuously on $\Omega$ | F6.1 |
-| F6.3 | boundary components of $\Omega$ are indexed by isotropic subspaces of $L\otimes\mathbb{R}$, and are rational exactly when the subspace is defined over $\mathbb{Q}$ | F6.1 |
-| F6.4 | in signature $(2,n)$ an isotropic subspace has dimension $1$ or $2$, giving a point or a half-plane — Sterk asserts exactly this at (3.1) | F6.3 |
-| F6.5 | the Baily–Borel topology on $\Omega^*$, and that $\Omega^*/\Gamma$ is a normal projective variety | F6.2, F6.3; needs Baily–Borel read |
-| F6.6 | the boundary strata of $\Omega^*/\Gamma$ are the $\Gamma$-orbits of rational boundary components | F6.5 |
-| F6.7 | one stratum lies in the closure of another exactly when the isotropic subspaces are nested | F6.5 |
-| F6.8 | equivalently, the boundary complex is $\Gamma\backslash\mathcal{T}(G)$ | F6.6, F6.7 |
-
-F6.4 is what makes the target finite — it is why the building is
-one-dimensional.  F6.6 and F6.7 are what D0 (3.2.4) and the incidence diagram
-(3.4) rest on, and they are exactly what was smuggled into `def Incident`.
-
-### Reading owed
-
-Ten nodes are marked as needing a source read: F3.5, F4.4–F4.7 (Vinberg 1975,
-1983), F5.3–F5.6 (Scattone, Nikulin), F6.5 (Baily–Borel).  F2.1 needs a
-definition located in Sterk himself.  Every other node of F1–F6 is statable from
-what is in hand.
-
-**F1 is the root of the whole tree, not a side condition.** $\Gamma$ is defined
-by how an isometry acts on $L_-^*/L_-$ respecting a decomposition of the
-discriminant form; without F1 the group cannot be stated, so neither can any
-theorem that mentions it — which is every theorem here.  Any formalization
-begins with F1 or begins by inventing a surrogate for it.
-
-F3 has a consequence for the C stratum that the earlier "cheap half" reading
-missed.  Stating that a set of vertices is a parabolic subdiagram *of type
-$\tilde E_8$, of rank 8* needs the affine classification.  What is genuinely
-free of F3 is smaller: the roots, their Gram matrix, and that the restricted
-form is negative semidefinite with a one-dimensional radical per component.
-Naming the type is not.
+The affine classification has a consequence for stratum C that an earlier
+"cheap half" reading missed.  Stating that a set of vertices is a parabolic
+subdiagram *of type $\tilde E_8$, of rank 8* needs it.  What is genuinely free
+of it is smaller: the roots, their Gram matrix, and that the restricted form is
+negative semidefinite with a one-dimensional radical per component — which is
+what the Sage reconstruction computes.  Naming the type is not free, and the
+node that would carry the classification is one of the two deleted as
+fabricated, so it is currently unrecorded.
 
 ## Coverage: every labelled statement of Chap. 2
 
