@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
@@ -229,7 +229,7 @@ class AffineGroupSchemeActionHomCategoryConstruction(HomCategoryConstruction):
         return AffineGroupSchemeActionHomset
 
 
-class AffineGroupSchemeActions(CategoryPacketMethods, Category):
+class AffineGroupSchemeActions(CategoryPacketMethods, OwnedCategory):
     r"""Affine schemes over the same base with an action of one affine group scheme."""
 
     @staticmethod
@@ -244,7 +244,7 @@ class AffineGroupSchemeActions(CategoryPacketMethods, Category):
 
     def __init__(self, group_scheme) -> None:
         self._group_scheme = group_scheme
-        Category.__init__(self)
+        OwnedCategory.__init__(self)
 
     def group_scheme(self):
         return self._group_scheme
