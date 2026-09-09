@@ -1621,7 +1621,6 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
-| `ARCHIVE-divisor-role-groups-20260909-0728` | archive reconciliation / formal, Cartier, Weil, Picard and class group roles | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/divisors/test_divisor_groups_archive.py` (write) | `HEAD` | 2026-09-09T07:28:00Z |
 
 
 
