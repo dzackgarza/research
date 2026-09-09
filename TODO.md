@@ -1621,6 +1621,7 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
+| `ARCHIVE-number-field-inverse-20260909-0724` | archive reconciliation / number-field inverse method | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/number_fields.py; tests/rings/test_number_field_archive.py` (write) | `HEAD` | 2026-09-09T07:24:00Z |
 
 
 
