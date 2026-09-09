@@ -633,6 +633,17 @@ class EquivariantLattice(SageObject):
         r"""Return the integral cyclotomic decomposition for the exact stated order."""
         return CyclotomicDecomposition(self, order)
 
+    @cached_method
+    def polarized(self, polarization):
+        r"""Return this equivariant lattice together with an invariant polarization.
+
+        The polarization is an actual vector of ``L`` fixed by the equipped
+        isometry.  The resulting object owns the structured arithmetic group
+        ``Z_{O(L)}(f) cap Stab(h)`` rather than requiring callers to reconstruct
+        that intersection ad hoc.
+        """
+        return PolarizedEquivariantLattice(self, polarization)
+
     def equivariant_sublattice(self, sublattice):
         r"""Equip an ``f``-stable represented sublattice with the restricted isometry."""
         if not callable(getattr(sublattice, "inclusion", None)):
@@ -733,6 +744,66 @@ class EquivariantLattice(SageObject):
 
     def __repr__(self) -> str:
         return f"{self.lattice()} equipped with {self.isometry()}"
+
+
+class PolarizedEquivariantLattice(SageObject):
+    r"""An equivariant lattice ``(L,f)`` with an invariant polarization ``h``.
+
+    This owns the three live objects that define the polarized arithmetic
+    group: the centralizer ``Z_{O(L)}(f)``, the point stabilizer of ``h``, and
+    their structured intersection.  The polarization is retained both in the
+    ambient lattice and through its lift to the invariant lattice ``L^f``.
+    """
+
+    def __init__(self, decorated_lattice, polarization) -> None:
+        if not isinstance(decorated_lattice, EquivariantLattice):
+            raise TypeError("a polarized equivariant lattice starts from an EquivariantLattice")
+        lattice = decorated_lattice.lattice()
+        polarization = lattice(polarization)
+        if decorated_lattice.isometry()(polarization) != polarization:
+            raise ValueError("a polarization of (L,f) must lie in the invariant lattice")
+        if polarization == lattice.zero():
+            raise ValueError("a polarization is nonzero")
+        self._decorated_lattice = decorated_lattice
+        self._polarization = polarization
+
+    def decorated_lattice(self):
+        return self._decorated_lattice
+
+    def lattice(self):
+        return self.decorated_lattice().lattice()
+
+    def isometry(self):
+        return self.decorated_lattice().isometry()
+
+    def polarization(self):
+        return self._polarization
+
+    def primitive_extension(self):
+        return self.decorated_lattice().primitive_extension()
+
+    @cached_method
+    def invariant_polarization(self):
+        invariant = self.primitive_extension().invariant
+        inclusion = invariant.inclusion()
+        if not inclusion.is_in_image(self.polarization()):
+            raise ArithmeticError("an f-invariant polarization did not lie in L^f")
+        return inclusion.lift(self.polarization())
+
+    def centralizer_group(self):
+        return self.decorated_lattice().centralizer_group()
+
+    @cached_method
+    def polarization_stabilizer(self):
+        return self.lattice().O().stabilizer(self.polarization())
+
+    @cached_method
+    def polarized_group(self):
+        r"""Return ``Z_{O(L)}(f) cap Stab(h)`` as a structured subgroup."""
+        return self.centralizer_group().intersection(self.polarization_stabilizer())
+
+    def __repr__(self) -> str:
+        return f"{self.decorated_lattice()} polarized by {self.polarization()}"
 
 
 class IsometryPrimitiveExtension:
@@ -1079,6 +1150,7 @@ __all__ = [
     "EquivariantVectorOrbit",
     "EquivariantVectorOrbitDecomposition",
     "IsometryPrimitiveExtension",
+    "PolarizedEquivariantLattice",
     "cyclotomic_summand",
     "isometry_primitive_extension",
 ]
