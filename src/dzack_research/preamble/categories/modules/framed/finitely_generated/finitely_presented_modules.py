@@ -870,6 +870,47 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return Isomorphism(forward, inverse)
 
         @cached_method
+        def hermite_form(self):
+            r"""Return the isomorphism onto the row-normalized presentation.
+
+            Hermite normalization changes only the chosen generators of the
+            relation submodule.  It therefore keeps the quotient's selected
+            module framing fixed, unlike Smith normalization, which also
+            changes the target basis.  Over a PID the private matrix engine's
+            row-module basis is the canonical independent row normal form;
+            over a field it is the usual echelon basis.
+            """
+
+            ring = self.base_ring()
+            if ring not in PrincipalIdealDomains():
+                raise NotImplementedError(
+                    "Hermite presentation normalization is guaranteed here over a PID"
+                )
+            backend = _engine_matrix(self.presentation_matrix()).row_module().basis_matrix()
+            labels = self.module_generating_set()
+            rows = tuple(
+                tuple(
+                    ring._from_engine_element(backend[row, column])
+                    for column in range(int(backend.ncols()))
+                )
+                for row in range(int(backend.nrows()))
+            )
+            normalized = self._presented_module_from_relation_rows(labels, rows)
+            forward = module_homset(self, normalized)(
+                {
+                    label: normalized.module_generator(label)
+                    for label in labels
+                }
+            )
+            inverse = module_homset(normalized, self)(
+                {
+                    label: self.module_generator(label)
+                    for label in labels
+                }
+            )
+            return Isomorphism(forward, inverse)
+
+        @cached_method
         def invariant_factors(self):
             r"""Return the indexed family of non-unit invariant factors."""
 
