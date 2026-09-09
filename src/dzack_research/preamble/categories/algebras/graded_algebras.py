@@ -11,6 +11,8 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.modules.graded_modules import (
+    concentrated_graded_module,
+    grading_identity,
     require_grading_monoid,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -30,6 +32,8 @@ from dzack_research.preamble.categories.algebras.algebras import (
     algebra_homset,
 )
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
+from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.refine import refine
 
 
@@ -176,10 +180,30 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
     """
 
     def an_object(self):
-        r"""The de Rham algebra of the polynomial algebra, graded by form degree."""
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
-
-        return DeRhamAlgebras(self.base_ring()).an_object()
+        r"""A rank-one unital algebra concentrated in the identity degree."""
+        ring = self.base_ring()
+        monoid = self.grading_monoid()
+        module = concentrated_graded_module(ring, monoid)
+        labels = module.module_generating_set()
+        label = labels[0]
+        generator = module.module_generator(label)
+        multiplication = TensorProduct(module, module).from_bilinear(
+            BilinearMap(
+                module,
+                module,
+                module,
+                {(label, label): generator},
+            )
+        )
+        unit = _unit_morphism_from_element(module, generator, ring)
+        algebra = Algebras(ring).Associative().Unital()(
+            module,
+            multiplication,
+            unit,
+        )
+        algebra._preamble_concentrated_degree = grading_identity(monoid)
+        refine(algebra, self)
+        return algebra
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
@@ -213,6 +237,10 @@ class GradedAlgebras(OwnedCategoryOverBaseRing):
             element = self(element)
             if element == self.zero():
                 raise ValueError("zero has no selected homogeneous degree here")
+
+            concentrated = self.__dict__.get("_preamble_concentrated_degree")
+            if concentrated is not None:
+                return concentrated
 
             components = getattr(element, "homogeneous_components", None)
             if callable(components):

@@ -25,6 +25,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.refine import refine
 
 
 @cached_function
@@ -61,10 +63,14 @@ def koszul_parity(grading_monoid, parity=None):
 
 class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
-        r"""That de Rham algebra, graded-commutative."""
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
-
-        return DeRhamAlgebras(self.base_ring()).an_object()
+        r"""The identity-degree rank-one algebra with the selected parity."""
+        algebra = GradedAlgebras(
+            self.base_ring(),
+            self.grading_monoid(),
+        ).an_object()
+        refine(algebra, Algebras(self.base_ring()).Commutative())
+        refine(algebra, self)
+        return algebra
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):
@@ -99,10 +105,14 @@ class GradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
 
 class StrictlyGradedCommutativeAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
-        r"""That de Rham algebra, strictly graded-commutative."""
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
-
-        return DeRhamAlgebras(self.base_ring()).an_object()
+        r"""The identity-degree rank-one algebra, where odd-square conditions are vacuous."""
+        algebra = GradedCommutativeAlgebras(
+            self.base_ring(),
+            self.grading_monoid(),
+            self.parity_homomorphism(),
+        ).an_object()
+        refine(algebra, self)
+        return algebra
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None, parity=None):

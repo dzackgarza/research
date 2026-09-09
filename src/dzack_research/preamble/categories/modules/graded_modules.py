@@ -29,6 +29,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreshFreeModuleOn,
+)
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def normalize_grading_monoid(monoid: Parent | None) -> Parent:
@@ -41,6 +45,47 @@ def require_grading_monoid(monoid: Parent | None) -> Parent:
     if monoid not in Monoids() and monoid not in AdditiveMonoids():
         raise TypeError(f"{monoid} is not a monoid in the owned category graph")
     return monoid
+
+
+def grading_identity(monoid: Parent | None):
+    r"""Return the identity degree of the selected grading monoid."""
+    monoid = require_grading_monoid(monoid)
+    if monoid in AdditiveMonoids():
+        return monoid.zero()
+    return monoid.one()
+
+
+def concentrated_graded_module(base_ring, grading_monoid=None):
+    r"""Return a rank-one graded module concentrated in the identity degree."""
+    monoid = require_grading_monoid(grading_monoid)
+    return FreshFreeModuleOn(
+        base_ring,
+        Sets.Δ[0],
+        _extra_categories=(GradedModules(base_ring, monoid),),
+        _extra_construction_data={
+            "concentrated_degree": grading_identity(monoid),
+        },
+    )
+
+
+def _selected_homogeneous_degree(element):
+    r"""Return one represented homogeneous degree without imposing one element API."""
+    parent = element.parent()
+    selected = parent.__dict__.get("_preamble_concentrated_degree")
+    if selected is not None:
+        if element == parent.zero():
+            raise ValueError("zero has no selected homogeneous degree here")
+        return selected
+    try:
+        homogeneous = element.is_homogeneous()
+        degree = element.degree()
+    except AttributeError as error:
+        raise NotImplementedError(
+            "this graded-module element has no represented homogeneous degree"
+        ) from error
+    if not homogeneous:
+        raise ValueError("the graded-module element is not homogeneous")
+    return degree
 
 
 class GradedModuleMorphism(ModuleMorphism):
@@ -58,21 +103,17 @@ class GradedModuleMorphism(ModuleMorphism):
         for label in domain.module_generating_set():
             source = domain.module_generator(label)
             try:
-                source_homogeneous = source.is_homogeneous()
-                source_degree = source.degree()
-            except AttributeError:
+                source_degree = _selected_homogeneous_degree(source)
+            except NotImplementedError:
                 continue
-            if not source_homogeneous:
-                raise ValueError("a selected graded-module generator is not homogeneous")
             image = self(source)
             if image == self.codomain().zero():
                 continue
             try:
-                target_homogeneous = image.is_homogeneous()
-                target_degree = image.degree()
-            except AttributeError as error:
+                target_degree = _selected_homogeneous_degree(image)
+            except NotImplementedError as error:
                 raise ValueError("a graded-module map has a nonhomogeneous image") from error
-            if not target_homogeneous or target_degree != source_degree:
+            if target_degree != source_degree:
                 raise ValueError("a graded-module morphism must preserve degree")
 
     def __mul__(self, other):
@@ -119,10 +160,8 @@ class GradedModules(OwnedCategoryOverBaseRing):
     """
 
     def an_object(self):
-        r"""That de Rham algebra, as a graded module."""
-        from dzack_research.preamble.categories.algebras.de_rham_algebras import DeRhamAlgebras
-
-        return DeRhamAlgebras(self.base_ring()).an_object()
+        r"""The rank-one module concentrated in the identity degree."""
+        return concentrated_graded_module(self.base_ring(), self.grading_monoid())
 
     @staticmethod
     def __classcall__(cls, base_ring, grading_monoid=None):
@@ -180,6 +219,12 @@ class GradedModules(OwnedCategoryOverBaseRing):
             if monoid in AdditiveMonoids():
                 return left + right
             return left * right
+
+        def concentrated_degree(self):
+            selected = self.__dict__.get("_preamble_concentrated_degree")
+            if selected is None:
+                raise TypeError(f"{self} is not represented as a concentrated graded module")
+            return selected
 
 
 def graded_module_homset(domain, codomain) -> GradedModuleHomset:
