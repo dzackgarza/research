@@ -3116,6 +3116,35 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
+        def levi_image_generators(self):
+            r"""Return exact generators of the image of ``P_I -> O(K_I)`` when ``K_I`` is definite.
+
+            The indefinite backend supplies generators of the full stabilizer
+            ``P_I = Stab_{O(L)}(I)``.  Descending those generators through
+            :meth:`levi_action` therefore generates the exact Levi image.  The
+            target is required to be definite so that its owned orthogonal
+            group is a finite represented group in which the image subgroup
+            can be materialized exactly.
+            """
+            if not self.is_definite():
+                raise ValueError(
+                    "the exact represented Levi image currently requires a definite isotropic reduction"
+                )
+            embedding = self.isotropic_embedding()
+            source = embedding.domain()
+            ambient = embedding.codomain()
+            stabilizer_generators = ambient.O().isotropic_stabilizer_generators(source)
+            levi = self.levi_action()
+            return finite_ordered_set(
+                tuple(levi(generator) for generator in stabilizer_generators)
+            )
+
+        @cached_method
+        def levi_image(self):
+            r"""Return the exact subgroup ``im(P_I -> O(K_I))`` for definite ``K_I``."""
+            return self.Aut().subgroup_on(tuple(self.levi_image_generators()))
+
+        @cached_method
         def unipotent_kernel(self):
             r"""Return \(U_I=\ker(P_I\to GL(I)\times O(K_I))\), the unipotent radical."""
             embedding = self.isotropic_embedding()
