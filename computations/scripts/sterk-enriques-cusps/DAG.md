@@ -527,6 +527,38 @@ $C^-$-polyhedron definitions), D8 (via `UpperHalfPlane` and `Gamma0`).
 $\mathcal{E}(L)$ and the Eichler transformations (F2.10–F2.11); Niemeier
 (F4.2); everything in BB, Bo and E.
 
+### Two audit points settled by computation
+
+$L_- = U \oplus U(2) \oplus E_8(-2)$ has signature $(2,10)$, so $t_{(+)} = 2$,
+$t_{(-)} = 10$, $\mathrm{rk} = 12$.  Its discriminant group is
+$A_{L_-} = \big(U(2)^*/U(2)\big)\oplus\big(E_8(-2)^*/E_8(-2)\big) \cong
+(\mathbb{Z}/2)^2\oplus(\mathbb{Z}/2)^8 = (\mathbb{Z}/2)^{10}$, so
+$\ell(A_{L_-}) = 10$, concentrated at $p = 2$: $\ell(A_{q_p}) = 0$ for odd $p$.
+
+**A3 cannot be justified by Nikulin's Corollary 1.13.3.**  That corollary — the
+convenient existence-and-uniqueness form — requires
+$t_{(+)} + t_{(-)} > 2 + \ell(A_q)$.  Here $12 > 12$ is **false**, by exactly one.
+So the easy route fails, and A3 must go through the full Theorem 1.13.2, whose
+conditions (2) and (3) are alternatives.  Condition (2) is vacuous for odd $p$
+since $\mathrm{rk}\,S = 12 \ge 2 + 0$.  Condition (3) at $p=2$ offers
+$\mathrm{rk}\,S \ge 2 + \ell(A_{q_2}) = 12$, which **holds with equality**, so
+1.13.2 applies via its first alternative at 2.  *The margin is one, and it is
+the kind of thing a prose citation of "Nikulin 1.13.2" hides completely.*
+
+**A2's hypothesis holds.**  Nikulin 1.14.2 (= Nk5, = Scattone 3.3.1) requires
+(a) $\mathrm{rk}\,T \ge \ell(A_{T_p}) + 2$ for all $p \ne 2$: here $12 \ge 2$,
+satisfied; and (b) *if* $\mathrm{rk}\,T = \ell(A_{T_2})$ then a condition on
+$q_{T_2}$ — but $12 \ne 10$, so (b) is vacuous.  Hence the genus of $L_-$
+contains one class and $O(L_-)\to O(q_{L_-})$ **is** surjective, which is what
+A2 asserts.
+
+This also resolves the earlier worry that Scattone's rank condition
+($\mathrm{rk}\,L > \ell(G_L)+2$) and Nikulin's ($\mathrm{rk}\,T \ge
+\ell(A_{T_p})+2$ per odd prime) might differ.  They do differ, and for $L_-$ it
+matters: Scattone's form would read $12 > 12$, false, while Nikulin's is
+satisfied.  **Nikulin's is the one that applies**, and any node stated with
+Scattone's phrasing would be unusable here.
+
 ### Open audit points, not gaps in the graph
 
 1. **Sign convention.** Scattone's $E_8$ is $\mathbb{Z}^8$ with the *negative*
@@ -534,10 +566,10 @@ $\mathcal{E}(L)$ and the Eichler transformations (F2.10–F2.11); Niemeier
    $-2\times$ the positive Cartan matrix.  Fix once, check every node.
 2. **Spinor norm convention.** Scattone's $\sigma_-$ is Brieskorn's modified
    form, and he says so.
-3. **Rank hypotheses.** Scattone 3.3.1 says $\mathrm{rk}\,L > \ell(G_L)+2$;
-   Nikulin 1.14.2 says $\mathrm{rk}\,T \ge \ell(A_{T_p})+2$ per odd prime plus a
-   condition at 2.  Not obviously the same, and A2 needs one of them.
-4. **A3's conditions** (Nk4 (2) and (3)) must be checked for $L_-$.
+3. ~~Rank hypotheses~~ — **settled above**: the two conditions differ, and for
+   $L_-$ Nikulin's holds while Scattone's fails.
+4. ~~A3's conditions~~ — **settled above**: 1.13.3 fails by one, 1.13.2 applies
+   through its first alternative at $p = 2$.
 5. **Borel's torsion-free hypothesis** (Bo1) against Sterk's $\Gamma$, which
    contains $-1$.
 6. **V13's primitivity hypothesis** must be checked for each of the five
