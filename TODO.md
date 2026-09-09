@@ -667,7 +667,7 @@ larger operation; do not assume a finite-category presheaf package computes
 arbitrary scheme sheaves. Keep the exact missing comparison or descent datum
 with the item that requires it (`OWN-08`, `OWN-09`, `DEV-56`).
 
-- [ ] **`affine-descent`**. **Needs:** none.
+- [x] **`affine-descent`**. **Needs:** none.
   Extend module and algebra descent from one distinguished affine cover to
   covering families with distinct overlap rings.
   **Owners:** `categories/schemes/gluing.py`,
@@ -1645,7 +1645,6 @@ behavior.
 | `ARCHIVE-tensor-center-20260909-0958` | archive reconciliation / center of a free tensor algebra | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/free_algebras.py; tests/algebras/test_tensor_center_archive.py` (write) | `HEAD` | 2026-09-09T09:58:00Z |
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
-| `DESCENT-finite-atlas-refinement-20260909-2255` | affine descent / finite-atlas refinement | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/gluing.py; tests/schemes/test_finite_atlas_refinement.py` (write) | `392df09c` | 2026-09-09T22:55:00Z |
 | `ARCHIVE-isotropic-type-20260909-1816` | archive reconciliation / primitive isotropic cusp type | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_isotropic_type_archive.py` (write) | `HEAD` | 2026-09-09T18:16:00Z |
 | `ARCHIVE-fraction-quotient-subobjects-20260909-0355` | archive reconciliation / fraction-field quotient cyclic subobjects | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py; tests/modules/test_fraction_field_quotients_archive.py` (write) | `HEAD` | 2026-09-09T03:55:00Z |
 | --- | --- | --- | --- | --- | --- |
