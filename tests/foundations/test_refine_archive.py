@@ -42,3 +42,28 @@ def test_successful_property_refinement_keeps_existing_elements_and_operations()
     assert refined.module_generator(0) == generator
     assert generator.parent() is refined
     assert generator.q() == 2
+
+
+def test_archived_owned_polynomial_real_roots_keep_exact_multiplicities() -> None:
+    from sage.rings.qqbar import AA as AlgebraicReals
+
+    from dzack_research.preamble.all import PolynomialRing, QQ
+
+    polynomial_ring = PolynomialRing(QQ, "x")
+    x = polynomial_ring.algebra_generator("x")
+
+    roots = (x**2 - 5).roots(ring=AlgebraicReals)
+    assert [multiplicity for _root, multiplicity in roots] == [1, 1]
+    assert [root**2 for root, _multiplicity in roots] == [5, 5]
+    assert roots[0][0] < 0 < roots[1][0]
+    assert ((x - 1) ** 2 * (x - 2)).roots(ring=AlgebraicReals) == [
+        (AlgebraicReals(1), 2),
+        (AlgebraicReals(2), 1),
+    ]
+    assert (x**2 + 1).roots(ring=AlgebraicReals) == []
+
+
+def test_archived_noncrystallographic_H4_group_has_order_14400() -> None:
+    from sage.combinat.root_system.coxeter_group import CoxeterGroup
+
+    assert CoxeterGroup(["H", 4]).cardinality() == 14400
