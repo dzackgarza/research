@@ -622,6 +622,24 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                 "the normalized Gauss sum is not an eighth root of unity; the form may be degenerate"
             )
 
+    class ElementMethods:
+        def is_characteristic(self) -> bool:
+            r"""Return whether this class is characteristic for the quadratic form.
+
+            A class ``v`` is characteristic when
+
+            ``q(x) - b(x, v)`` lies in ``ZZ`` for every ``x`` in the
+            discriminant group.  The quadratic and bilinear values live in
+            quotient value modules, so the comparison is made on their
+            selected rational lifts exactly as in the archived contract.
+            """
+            parent = self.parent()
+            return all(
+                parent.q(element).lift() - parent.b(element, self).lift()
+                in SageZZ
+                for element in parent.elements()
+            )
+
 
 class DiscriminantSubmodules(OwnedCategoryOverBaseRing):
     r"""Finite subgroups of a discriminant module with the restricted form."""
