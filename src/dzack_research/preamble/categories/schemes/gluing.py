@@ -1067,6 +1067,169 @@ class SemilinearModuleMorphism(SageObject):
         )
 
 
+class SemilinearAlgebraMorphism(SageObject):
+    r"""A semilinear algebra morphism over a represented scalar map.
+
+    For ``sigma : R -> S`` this is the algebra morphism
+    ``A -> Res_sigma(B)`` written as a map from the original ``R``-algebra
+    ``A`` to the original ``S``-algebra ``B``.  Multiplication and the unit are
+    therefore checked by the existing algebra-Hom owner, while composition
+    retains the composed scalar map.
+    """
+
+    def __init__(self, source, target, scalar_map, images) -> None:
+        if scalar_map.domain() is not source.base_ring():
+            raise ValueError("a semilinear algebra scalar map starts at the source base ring")
+        if scalar_map.codomain() is not target.base_ring():
+            raise ValueError("a semilinear algebra scalar map ends at the target base ring")
+        labels = source.algebra_generating_set()
+        if not labels.cardinality().is_finite():
+            raise TypeError("finite-atlas algebra descent requires finite algebra framings")
+        self._source = source
+        self._target = target
+        self._scalar_map = scalar_map
+        self._restricted_target = restrict_algebra_scalars(target, scalar_map)
+        supplied = (
+            {label: images(label) for label in labels}
+            if callable(images)
+            else dict(images)
+        )
+        self._morphism = source.Mor(self._restricted_target)(
+            {
+                label: self._restricted_target(target(supplied[label]))
+                for label in labels
+            }
+        )
+
+    def source(self):
+        return self._source
+
+    domain = source
+
+    def target(self):
+        return self._target
+
+    codomain = target
+
+    def scalar_map(self):
+        return self._scalar_map
+
+    def restricted_target(self):
+        return self._restricted_target
+
+    def algebra_morphism(self):
+        return self._morphism
+
+    def __call__(self, element):
+        return self.target()(self.algebra_morphism()(self.source()(element)))
+
+    def __mul__(self, other):
+        if not isinstance(other, SemilinearAlgebraMorphism):
+            return NotImplemented
+        if other.target() is not self.source():
+            return NotImplemented
+        scalar_map = self.scalar_map() * other.scalar_map()
+        return SemilinearAlgebraMorphism(
+            other.source(),
+            self.target(),
+            scalar_map,
+            {
+                label: self(other(other.source().algebra_generator(label)))
+                for label in other.source().algebra_generating_set()
+            },
+        )
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, SemilinearAlgebraMorphism)
+            and other.source() is self.source()
+            and other.target() is self.target()
+            and other.scalar_map() == self.scalar_map()
+            and all(
+                other(self.source().algebra_generator(label))
+                == self(self.source().algebra_generator(label))
+                for label in self.source().algebra_generating_set()
+            )
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    @classmethod
+    def identity(cls, algebra):
+        return cls(
+            algebra,
+            algebra,
+            algebra.base_ring().Mor(algebra.base_ring()).identity(),
+            {
+                label: algebra.algebra_generator(label)
+                for label in algebra.algebra_generating_set()
+            },
+        )
+
+    @classmethod
+    def from_linear(cls, morphism):
+        source = morphism.domain()
+        target = morphism.codomain()
+        if source.base_ring() is not target.base_ring():
+            raise ValueError("an algebra morphism has one scalar base")
+        return cls(
+            source,
+            target,
+            source.base_ring().Mor(source.base_ring()).identity(),
+            {
+                label: morphism(source.algebra_generator(label))
+                for label in source.algebra_generating_set()
+            },
+        )
+
+
+class FiniteAtlasAlgebraTransition(SageObject):
+    r"""One semilinear algebra-descent isomorphism across two affine overlaps."""
+
+    def __init__(self, scheme_transition, source_algebra, target_algebra, pullback, inverse_pullback) -> None:
+        if not isinstance(scheme_transition, CategoricalIsomorphism):
+            raise TypeError("an algebra overlap transition lies over a represented scheme isomorphism")
+        self._scheme_transition = scheme_transition
+        self._source_algebra = source_algebra
+        self._target_algebra = target_algebra
+        self._pullback = pullback
+        self._inverse_pullback = inverse_pullback
+        forward_scalar = scheme_transition.forward().coordinate_algebra_morphism()
+        reverse_scalar = scheme_transition.inverse().coordinate_algebra_morphism()
+        if (
+            pullback.source() is not target_algebra
+            or pullback.target() is not source_algebra
+            or pullback.scalar_map() != forward_scalar
+        ):
+            raise ValueError("the algebra pullback has the wrong semilinear endpoints")
+        if (
+            inverse_pullback.source() is not source_algebra
+            or inverse_pullback.target() is not target_algebra
+            or inverse_pullback.scalar_map() != reverse_scalar
+        ):
+            raise ValueError("the inverse algebra pullback has the wrong semilinear endpoints")
+        if pullback * inverse_pullback != SemilinearAlgebraMorphism.identity(source_algebra):
+            raise ValueError("the finite-atlas algebra transition is not left-invertible")
+        if inverse_pullback * pullback != SemilinearAlgebraMorphism.identity(target_algebra):
+            raise ValueError("the finite-atlas algebra transition is not right-invertible")
+
+    def scheme_transition(self):
+        return self._scheme_transition
+
+    def source_algebra(self):
+        return self._source_algebra
+
+    def target_algebra(self):
+        return self._target_algebra
+
+    def pullback(self):
+        return self._pullback
+
+    def inverse_pullback(self):
+        return self._inverse_pullback
+
+
 class FiniteAtlasModuleTransition(SageObject):
     r"""One semilinear module-descent isomorphism across two affine overlaps.
 
@@ -1487,6 +1650,283 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
             if left != right:
                 raise ValueError(
                     "finite-atlas local module maps are incompatible with an overlap transition"
+                )
+
+
+class FiniteAtlasAlgebraGluingDatum(SageObject):
+    r"""Algebra descent on a finite affine atlas with distinct overlap rings."""
+
+    def __init__(self, gluing_datum, local_algebras, transitions) -> None:
+        if not isinstance(gluing_datum, _FiniteSchemeGluingDatum):
+            raise TypeError("finite-atlas algebra descent requires a represented finite scheme gluing")
+        self._gluing_datum = gluing_datum
+        indices = gluing_datum.chart_index_set()
+        self._local_algebras = _family_on_finite_ordered_set(
+            indices, local_algebras,
+            name="Local algebras of finite-atlas descent",
+            noun="finite-atlas local algebra data",
+        )
+        for index in indices:
+            algebra = self._local_algebras[index]
+            ring = gluing_datum.chart(index).coordinate_algebra()
+            if algebra not in AlgebrasWithChosenFinitePresentation(ring):
+                raise TypeError("finite-atlas algebra descent requires chosen finite local presentations")
+        self._transition_data = _family_on_finite_ordered_set(
+            gluing_datum.transition_index_set(), transitions,
+            name="Semilinear algebra transition data of a finite atlas",
+            noun="finite-atlas algebra transition data",
+        )
+        self._pair_algebras = []
+        self._triple_algebras = []
+        self._transitions = []
+        self._triple_transitions = []
+        for pair in gluing_datum.transition_index_set():
+            self.transition(*pair)
+        self._verify_cocycle()
+
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def scheme(self):
+        return self.gluing_datum().scheme()
+
+    def chart_indices(self):
+        return self.gluing_datum().chart_indices()
+
+    def local_algebras(self):
+        return self._local_algebras
+
+    def local_algebra(self, index):
+        return self.local_algebras()[self.gluing_datum().normalize_chart_index(index)]
+
+    def pair_algebra(self, chart_index, other_index):
+        datum = self.gluing_datum()
+        chart_index = datum.normalize_chart_index(chart_index)
+        other_index = datum.normalize_chart_index(other_index)
+        key = (chart_index, other_index)
+        for cached_key, cached in self._pair_algebras:
+            if cached_key == key:
+                return cached
+        overlap = datum.overlap(chart_index, other_index)
+        ring_map = overlap.inclusion().coordinate_algebra_morphism()
+        from dzack_research.preamble.categories.functors.algebra_scalar_change import AlgebraScalarExtensionFunctor
+        algebra = AlgebraScalarExtensionFunctor(ring_map)(self.local_algebra(chart_index))
+        self._pair_algebras.append((key, algebra))
+        return algebra
+
+    def triple_algebra(self, chart_index, first_other, second_other):
+        datum = self.gluing_datum()
+        chart_index = datum.normalize_chart_index(chart_index)
+        ranking = datum.chart_index_set().ranking_map()
+        others = tuple(sorted((datum.normalize_chart_index(first_other), datum.normalize_chart_index(second_other)), key=ranking))
+        key = (chart_index, *others)
+        for cached_key, cached in self._triple_algebras:
+            if cached_key == key:
+                return cached
+        triple = datum.triple_overlap(chart_index, *others)
+        ring_map = triple.inclusion().coordinate_algebra_morphism()
+        from dzack_research.preamble.categories.functors.algebra_scalar_change import AlgebraScalarExtensionFunctor
+        algebra = AlgebraScalarExtensionFunctor(ring_map)(self.local_algebra(chart_index))
+        self._triple_algebras.append((key, algebra))
+        return algebra
+
+    def _transition_images(self, source_index, target_index):
+        datum = self.gluing_datum()
+        pair = datum._ordered_pair(source_index, target_index)
+        supplied = self._transition_data[pair]
+        if not isinstance(supplied, (tuple, list)) or len(supplied) != 2:
+            raise TypeError("finite-atlas algebra transition data are (pullback images, inverse-pullback images)")
+        if pair == (datum.normalize_chart_index(source_index), datum.normalize_chart_index(target_index)):
+            return supplied[0], supplied[1]
+        return supplied[1], supplied[0]
+
+    @staticmethod
+    def _images(domain, codomain, specification):
+        labels = domain.algebra_generating_set()
+        if callable(specification):
+            return {label: specification(label, domain, codomain) for label in labels}
+        supplied = dict(specification)
+        if set(supplied) != set(labels):
+            raise ValueError("algebra transition coordinates require one image per source generator")
+        return {label: codomain(supplied[label]) for label in labels}
+
+    def transition(self, source_index, target_index):
+        datum = self.gluing_datum()
+        source_index = datum.normalize_chart_index(source_index)
+        target_index = datum.normalize_chart_index(target_index)
+        key = (source_index, target_index)
+        for cached_key, cached in self._transitions:
+            if cached_key == key:
+                return cached
+        scheme_transition = datum.transition_between(source_index, target_index)
+        source = self.pair_algebra(source_index, target_index)
+        target = self.pair_algebra(target_index, source_index)
+        pullback_images, inverse_images = self._transition_images(source_index, target_index)
+        pullback = SemilinearAlgebraMorphism(
+            target, source, scheme_transition.forward().coordinate_algebra_morphism(),
+            self._images(target, source, pullback_images),
+        )
+        inverse_pullback = SemilinearAlgebraMorphism(
+            source, target, scheme_transition.inverse().coordinate_algebra_morphism(),
+            self._images(source, target, inverse_images),
+        )
+        transition = FiniteAtlasAlgebraTransition(scheme_transition, source, target, pullback, inverse_pullback)
+        self._transitions.append((key, transition))
+        return transition
+
+    def _restriction(self, chart_index, first_other, second_other):
+        pair = self.pair_algebra(chart_index, first_other)
+        triple = self.triple_algebra(chart_index, first_other, second_other)
+        pair_open = self.gluing_datum().overlap(chart_index, first_other)
+        triple_open = self.gluing_datum().triple_overlap(chart_index, first_other, second_other)
+        ring_map = pair_open.corestriction(triple_open.inclusion()).coordinate_algebra_morphism()
+        return SemilinearAlgebraMorphism(
+            pair, triple, ring_map,
+            {label: triple.algebra_generator(label) for label in pair.algebra_generating_set()},
+        )
+
+    def transition_on_triple(self, source_index, target_index, third_index):
+        datum = self.gluing_datum()
+        source_index = datum.normalize_chart_index(source_index)
+        target_index = datum.normalize_chart_index(target_index)
+        third_index = datum.normalize_chart_index(third_index)
+        key = (source_index, target_index, third_index)
+        for cached_key, cached in self._triple_transitions:
+            if cached_key == key:
+                return cached
+        pair_transition = self.transition(source_index, target_index)
+        source_pair = pair_transition.source_algebra()
+        target_pair = pair_transition.target_algebra()
+        source_triple = self.triple_algebra(source_index, target_index, third_index)
+        target_triple = self.triple_algebra(target_index, source_index, third_index)
+        source_restriction = self._restriction(source_index, target_index, third_index)
+        target_restriction = self._restriction(target_index, source_index, third_index)
+        triple_scheme_transition = datum.transition_on_triple(source_index, target_index, third_index)
+        pullback = SemilinearAlgebraMorphism(
+            target_triple, source_triple, triple_scheme_transition.coordinate_algebra_morphism(),
+            {
+                label: source_restriction(pair_transition.pullback()(target_pair.algebra_generator(label)))
+                for label in target_triple.algebra_generating_set()
+            },
+        )
+        inverse_scheme_transition = datum.transition_on_triple(target_index, source_index, third_index)
+        inverse_pullback = SemilinearAlgebraMorphism(
+            source_triple, target_triple, inverse_scheme_transition.coordinate_algebra_morphism(),
+            {
+                label: target_restriction(pair_transition.inverse_pullback()(source_pair.algebra_generator(label)))
+                for label in source_triple.algebra_generating_set()
+            },
+        )
+        transition = FiniteAtlasAlgebraTransition(
+            Isomorphism(triple_scheme_transition, inverse_scheme_transition),
+            source_triple, target_triple, pullback, inverse_pullback,
+        )
+        self._triple_transitions.append((key, transition))
+        return transition
+
+    def _verify_cocycle(self) -> None:
+        labels = tuple(self.chart_indices())
+        for left, middle, right in combinations(labels, 3):
+            left_middle = self.transition_on_triple(left, middle, right).pullback()
+            middle_right = self.transition_on_triple(middle, right, left).pullback()
+            left_right = self.transition_on_triple(left, right, middle).pullback()
+            if left_middle * middle_right != left_right:
+                raise ValueError("finite-atlas algebra transitions fail the triple cocycle")
+
+    def restricted_local_map(self, target_datum, chart_index, other_index, local_map):
+        if target_datum.gluing_datum() is not self.gluing_datum():
+            raise ValueError("finite-atlas algebra maps require one underlying affine atlas")
+        datum = self.gluing_datum()
+        chart_index = datum.normalize_chart_index(chart_index)
+        other_index = datum.normalize_chart_index(other_index)
+        if (
+            local_map.domain() is not self.local_algebra(chart_index)
+            or local_map.codomain() is not target_datum.local_algebra(chart_index)
+        ):
+            raise ValueError("a local algebra-descent map has the wrong chart endpoints")
+        source_pair = self.pair_algebra(chart_index, other_index)
+        target_pair = target_datum.pair_algebra(chart_index, other_index)
+        overlap = datum.overlap(chart_index, other_index)
+        ring_map = overlap.inclusion().coordinate_algebra_morphism()
+        from dzack_research.preamble.categories.functors.algebra_scalar_change import (
+            AlgebraScalarExtensionFunctor,
+        )
+
+        extended_map = AlgebraScalarExtensionFunctor(ring_map)(local_map)
+        extended_source = extended_map.domain()
+        return source_pair.Mor(target_pair)(
+            {
+                label: target_pair(
+                    extended_map(extended_source.algebra_generator(label))
+                )
+                for label in source_pair.algebra_generating_set()
+            }
+        )
+
+    def morphism_to(self, target, local_maps):
+        return FiniteAtlasAlgebraGluingMorphism(self, target, local_maps)
+
+
+class FiniteAtlasAlgebraGluingMorphism(SageObject):
+    r"""A morphism of finite-atlas algebra descent data."""
+
+    def __init__(self, source, target, local_maps) -> None:
+        if not isinstance(source, FiniteAtlasAlgebraGluingDatum) or not isinstance(
+            target, FiniteAtlasAlgebraGluingDatum
+        ):
+            raise TypeError("finite-atlas algebra morphisms connect finite-atlas descent data")
+        if source.gluing_datum() is not target.gluing_datum():
+            raise ValueError("finite-atlas algebra morphisms require one underlying affine atlas")
+        self._source = source
+        self._target = target
+        self._local_maps = _family_on_finite_ordered_set(
+            source.gluing_datum().chart_index_set(),
+            local_maps,
+            name="Local maps of a finite-atlas algebra morphism",
+            noun="finite-atlas local algebra map data",
+        )
+        for index in source.chart_indices():
+            local_map = self._local_maps[index]
+            if (
+                local_map.domain() is not source.local_algebra(index)
+                or local_map.codomain() is not target.local_algebra(index)
+            ):
+                raise ValueError("a finite-atlas local algebra map has the wrong chart endpoints")
+        self._verify_overlap_compatibility()
+
+    def source(self):
+        return self._source
+
+    domain = source
+
+    def target(self):
+        return self._target
+
+    codomain = target
+
+    def local_maps(self):
+        return self._local_maps
+
+    def local_map(self, index):
+        return self.local_maps()[self.source().gluing_datum().normalize_chart_index(index)]
+
+    def _verify_overlap_compatibility(self) -> None:
+        for source_index, target_index in self.source().gluing_datum().transition_index_set():
+            source_transition = self.source().transition(source_index, target_index)
+            target_transition = self.target().transition(source_index, target_index)
+            source_side = self.source().restricted_local_map(
+                self.target(), source_index, target_index, self.local_map(source_index)
+            )
+            target_side = self.source().restricted_local_map(
+                self.target(), target_index, source_index, self.local_map(target_index)
+            )
+            left = target_transition.pullback() * SemilinearAlgebraMorphism.from_linear(
+                target_side
+            )
+            right = SemilinearAlgebraMorphism.from_linear(source_side) * source_transition.pullback()
+            if left != right:
+                raise ValueError(
+                    "finite-atlas local algebra maps are incompatible with an overlap transition"
                 )
 
 
@@ -2727,6 +3167,9 @@ __all__ = [
     "AlgebraGluingMorphism",
     "CompatibleLocalAlgebraSections",
     "CompatibleLocalSectionsModule",
+    "FiniteAtlasAlgebraGluingDatum",
+    "FiniteAtlasAlgebraGluingMorphism",
+    "FiniteAtlasAlgebraTransition",
     "FiniteAtlasModuleGluingDatum",
     "FiniteAtlasModuleGluingMorphism",
     "FiniteAtlasModuleTransition",
@@ -2736,5 +3179,6 @@ __all__ = [
     "ModuleGluingDatum",
     "ModuleGluingHomset",
     "ModuleGluingMorphism",
+    "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
 ]
