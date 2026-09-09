@@ -3073,6 +3073,47 @@ class RankOneRationalWittDecomposition:
         return f"Rational Witt decomposition of {self.reduction().isotropic_embedding().codomain()} along {self.integral_line()}"
 
 
+class RankOneParabolicLeviExactSequence:
+    r"""The exact sequence ``1 -> U_I -> P_I^1 -> M_I^1 -> 1``.
+
+    Here ``P_I^1`` is the pointwise stabilizer of a primitive isotropic line,
+    ``M_I^1`` is its represented image in ``O(K_I)``, and ``U_I`` is the
+    kernel.  The target is the actual gluing-preserving image, not the whole
+    orthogonal group of the reduction.
+    """
+
+    def __init__(self, reduction) -> None:
+        self._reduction = reduction
+
+    def reduction(self):
+        return self._reduction
+
+    def source(self):
+        return self.reduction().pointwise_parabolic_subgroup()
+
+    def kernel(self):
+        return self.reduction().unipotent_kernel()
+
+    def target(self):
+        return self.reduction().pointwise_levi_image()
+
+    @cached_method
+    def projection(self):
+        target = self.target()
+        levi = self.reduction().levi_action()
+        return SetMorphism(
+            self.source().Mor(target),
+            lambda isometry: target(levi(isometry)),
+        )
+
+    def lift(self, isometry):
+        r"""Return the retained pointwise-parabolic lift of one target element."""
+        return self.reduction().pointwise_levi_lift(isometry)
+
+    def __repr__(self) -> str:
+        return f"1 -> {self.kernel()} -> {self.source()} -> {self.target()} -> 1"
+
+
 class IsotropicReductions(OwnedCategoryOverBaseRing):
     r"""Lattices \(K_I=I^\perp/I\) built from a totally isotropic \(\iota:I\hookrightarrow L\).
 
@@ -3252,6 +3293,12 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             return embedding.codomain().O().setwise_stabilizer(embedding)
 
         @cached_method
+        def pointwise_parabolic_subgroup(self):
+            r"""Return ``P_I^1``, the subgroup fixing the isotropic sublattice pointwise."""
+            embedding = self.isotropic_embedding()
+            return embedding.codomain().O().pointwise_stabilizer(embedding)
+
+        @cached_method
         def levi_action(self):
             r"""Return \(P_I\to O(K_I)\), \(g\mapsto\bar g\), the action on \(I^\perp/I\).
 
@@ -3318,6 +3365,87 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             return self.Aut().subgroup_on(tuple(self.levi_image_generators()))
 
         @cached_method
+        def _rank_one_combined_levi_lift_table(self):
+            r"""Return lifts indexed by ``(action on I, action on K_I)`` for rank one."""
+            line = self.isotropic_sublattice()
+            if int(line.module_rank()) != 1:
+                raise ValueError("the selected combined Levi table currently treats an isotropic line")
+            embedding = self.isotropic_embedding()
+            line_label = line.module_generating_set()[0]
+            embedded = embedding(line.module_generator(line_label))
+            ring = embedding.codomain().base_ring()
+
+            def line_scalar(isometry):
+                preimage = embedding.lift(isometry(embedded))
+                coefficients = module_coefficients(preimage, line)
+                scalar = coefficients.get(line_label, ring.zero())
+                if scalar not in (ring.one(), -ring.one()):
+                    raise ArithmeticError(
+                        "a rank-one parabolic generator does not act on I by a unit"
+                    )
+                return scalar
+
+            target_identity = self.Aut().one()
+            ambient_identity = self.parabolic_subgroup().one()
+            identity_key = (ring.one(), target_identity)
+            witnesses = {identity_key: ambient_identity}
+            steps = []
+            for ambient_generator, target_generator in self._parabolic_levi_generator_pairs():
+                scalar = line_scalar(ambient_generator)
+                steps.append((scalar, target_generator, ambient_generator))
+                inverse = ~ambient_generator
+                steps.append((scalar, ~target_generator, inverse))
+            frontier = [identity_key]
+            levi = self.levi_action()
+            while frontier:
+                current_scalar, current_target = frontier.pop()
+                current_ambient = witnesses[current_scalar, current_target]
+                for step_scalar, step_target, step_ambient in steps:
+                    candidate_scalar = step_scalar * current_scalar
+                    candidate_target = step_target * current_target
+                    key = (candidate_scalar, candidate_target)
+                    if key in witnesses:
+                        continue
+                    candidate_ambient = step_ambient * current_ambient
+                    if line_scalar(candidate_ambient) != candidate_scalar:
+                        raise ArithmeticError("the retained parabolic word has the wrong action on I")
+                    if levi(candidate_ambient) != candidate_target:
+                        raise ArithmeticError("the retained parabolic word has the wrong action on K_I")
+                    witnesses[key] = candidate_ambient
+                    frontier.append(key)
+            return witnesses
+
+        @cached_method
+        def pointwise_levi_image(self):
+            r"""Return the image of ``P_I^1`` in ``O(K_I)`` for a rank-one definite reduction."""
+            ring = self.isotropic_embedding().codomain().base_ring()
+            targets = tuple(
+                target
+                for (scalar, target) in self._rank_one_combined_levi_lift_table()
+                if scalar == ring.one()
+            )
+            return self.Aut().subgroup_on(targets)
+
+        def pointwise_levi_lift(self, isometry):
+            r"""Return a lift in ``P_I^1`` exactly when ``isometry`` lies in its Levi image."""
+            if isometry.parent() is not self.Aut():
+                raise ValueError("a pointwise Levi lift starts with an element of O(K_I)")
+            if isometry not in self.pointwise_levi_image():
+                return None
+            ring = self.isotropic_embedding().codomain().base_ring()
+            lifted = self._rank_one_combined_levi_lift_table()[ring.one(), isometry]
+            if lifted not in self.pointwise_parabolic_subgroup():
+                raise ArithmeticError("the retained pointwise Levi lift does not fix I")
+            if self.levi_action()(lifted) != isometry:
+                raise ArithmeticError("the retained pointwise Levi lift descends incorrectly")
+            return lifted
+
+        @cached_method
+        def parabolic_levi_exact_sequence(self):
+            r"""Return ``1 -> U_I -> P_I^1 -> M_I^1 -> 1`` in the represented rank-one regime."""
+            return RankOneParabolicLeviExactSequence(self)
+
+        @cached_method
         def _levi_lift_table(self):
             r"""Return one actual parabolic lift of every element of the finite Levi image."""
             image = self.levi_image()
@@ -3376,18 +3504,11 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def unipotent_kernel(self):
             r"""Return \(U_I=\ker(P_I\to GL(I)\times O(K_I))\), the unipotent radical."""
             embedding = self.isotropic_embedding()
-            source = embedding.domain()
-            embedded = tuple(
-                embedding(generator) for generator in source.module_generators()
-            )
             levi = self.levi_action()
             identity = self.Aut().one()
             return predicate_subgroup(
-                self.parabolic_subgroup(),
-                lambda isometry: all(
-                    isometry(vector) == vector for vector in embedded
-                )
-                and levi(isometry) == identity,
+                self.pointwise_parabolic_subgroup(),
+                lambda isometry: levi(isometry) == identity,
                 "g fixes I pointwise and acts trivially on I^perp/I",
             )
 

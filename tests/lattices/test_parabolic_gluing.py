@@ -96,3 +96,32 @@ def test_divisibility_two_cusp_retains_its_rational_Witt_decomposition() -> None
     assert rational.b(e, f) == 1
     assert witt.hyperbolic_plane().module_rank() == 2
     assert witt.orthogonal_summand().module_rank() == reduction.module_rank()
+
+
+def test_pointwise_parabolic_sequence_has_the_unipotent_kernel_and_actual_Levi_image() -> None:
+    _lattice, _isotropic, line = _glued_divisibility_two_cusp()
+    reduction = line.isotropic_reduction()
+    sequence = reduction.parabolic_levi_exact_sequence()
+
+    assert sequence.source() is reduction.pointwise_parabolic_subgroup()
+    assert sequence.kernel() is reduction.unipotent_kernel()
+    assert sequence.target() is reduction.pointwise_levi_image()
+    assert sequence.kernel().supergroup() is sequence.source()
+
+    projection = sequence.projection()
+    for target in sequence.target():
+        lifted = sequence.lift(target)
+        assert lifted is not None
+        assert lifted in sequence.source()
+        assert projection(lifted) == target
+
+
+def test_pointwise_Levi_kernel_is_exactly_the_unipotent_kernel() -> None:
+    _lattice, _isotropic, line = _glued_divisibility_two_cusp()
+    reduction = line.isotropic_reduction()
+    sequence = reduction.parabolic_levi_exact_sequence()
+    identity = sequence.target().one()
+
+    for generator in reduction.isotropic_embedding().codomain().O().isotropic_stabilizer_generators(line):
+        if generator in sequence.source():
+            assert (generator in sequence.kernel()) == (sequence.projection()(generator) == identity)
