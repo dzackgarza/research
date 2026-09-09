@@ -102,7 +102,7 @@ each is decomposed the graph understates the work by an unknown amount — the
 same defect as the "external, cited" leaves that `FDC-03` was written about,
 one level down.  Two are worked below; the rest are outstanding.
 
-### F5 decomposed, as far as the sources in hand allow
+### F5, rewritten from Scattone
 
 `C11` needs: for $F \in I_2(L_4)$, the isomorphism type of $F^\perp/F$ is one of
 nine.  Sterk states the list (thesis p. 59, citing Scattone 5.6.10 and §6, and
@@ -113,27 +113,55 @@ $$E_8(-1)^{\oplus 2}\oplus\langle-4\rangle,\quad D_{16}(-1)\oplus\langle-4\rangl
 $$D_{17}(-1),\quad D_{12}(-1)\oplus D_5(-1),\quad D_8(-1)^{\oplus 2}\oplus\langle-4\rangle,
 \quad A_{15}(-1)\oplus A_1(-1)^{\oplus 2},\quad E_6(-1)\oplus A_{11}(-1).$$
 
-| Node | Statement | Status |
-| --- | --- | --- |
-| F5.1 | the nine lattices above exist and are pairwise non-isomorphic | statable now; a finite check on explicit Gram matrices |
-| F5.2 | each of the nine embeds in $L_4$ as $F^\perp/F$ for some isotropic plane $F$ | statable once $L_4 = (e+f,e+f,0)^\perp$ and the plane are constructed |
-| F5.3 | **there are no others** — Scattone's classification | **not statable**: needs Scattone read, and rests on F5.4–F5.6 |
-| F5.4 | genus of an even lattice; $p$-adic Jordan decomposition and its invariants | needs Nikulin and Conway–Sloane read; rests on F1 |
-| F5.5 | Nikulin 1.13.2: an even lattice is determined up to isometry by signature and discriminant form (= node A3) | needs Nikulin read; rests on F1, F5.4 |
-| F5.6 | Nikulin 1.14.2 and the primitive-embedding theory Scattone's argument uses | needs Nikulin read |
+Read from Scattone (Zotero `SF7T3C8G`), §6.3 *Degree four*, and Remark 5.1.4.
+The argument is not a $p$-adic genus computation; it runs through **Niemeier
+lattices and primitive embeddings of $D_7$**.
 
-F5.3 is the load-bearing one and it is the one that cannot be written.  Only the
-enumeration is available second-hand; the classification theorem behind it is
-not, and transcribing a list from a citation is not formalizing the theorem that
-the list is complete.
+| Node | Statement | Source | Depends on |
+| --- | --- | --- | --- |
+| F5.1 | Niemeier's classification: the 24 even unimodular lattices of rank 24, by root system | Scattone (3.5.1), the table of $\mathcal{U}^{24}$ | — |
+| F5.2 | for $E \in I_{2,e}(L)$, the lattice $E^\perp/E$ lies in the genus of $\langle -2k/e^2\rangle \oplus E_8 \oplus E_8$ | Scattone Remark 5.1.4 | genus of a lattice |
+| F5.3 | Proposition 6.1.2 at $k=2$: $N \cong D_7$, and the classes are obtained from the primitive embeddings of $N$ into the members of $\mathcal{U}^{24}$ | Scattone Prop. 6.1.2 | F5.1 |
+| F5.4 | $D_7 \subset E_8$, $D_7 \not\subset E_7$, $D_7 \not\subset A_m$ for every $m$ | Scattone §6.3 | — |
+| F5.5 | hence only eight Niemeier lattices admit such an embedding: $E_8^3$, $E_8{+}D_{16}$, $E_7^2{+}D_{10}$, $D_{24}$, $D_{12}^2$, $D_8^3$, $D_9{+}A_{15}$, $E_6{+}D_7{+}A_{11}$ | Scattone §6.3 | F5.3, F5.4 |
+| F5.6 | each embedding is unique up to equivalence **except** the two distinct embeddings into $E_8 + D_{16}$ — which is where the nine comes from | Scattone §6.3 | F5.5, Nikulin's primitive-embedding theory |
+| F5.7 | the orthogonal complements are the nine generalized types $\langle-4\rangle{+}E_8{+}E_8$, $\langle-4\rangle{+}D_{16}$, $E_8{+}D_9$, $E_7^2{+}A_3$, $D_{17}$, $D_{12}{+}D_5$, $\langle-4\rangle{+}D_8^2$, $A_1^2{+}A_{15}$, $E_6{+}A_{11}$ | Scattone §6.3 | F5.6 |
+| F5.8 | Corollary 5.6.10: for $k$ equal to 1, a prime, or the square of an odd prime, $I_2(L)/O^*(L) = I_2(L)/O_-(L)$, so the two compactifications have isomorphic boundaries | Scattone Cor. 5.6.10 | F5.7 |
 
-The same shape will recur wherever Sterk quotes a table: what is in hand is the
-data, what is missing is the theorem that the data is exhaustive.
+F5.7 is Sterk's list, and it matches his p. 59 verbatim.  The count of nine is
+**not** a genus-class count: it is eight lattices with one of them admitting two
+inequivalent embeddings.  That is a fact about primitive embeddings, and I would
+not have recovered it by reasoning about discriminant forms.
 
-### F1 decomposed: discriminant forms
+Scattone also records (§6.3) that the same root systems can be recovered "by
+applying Vinberg's method to the lattice $L = \langle-4\rangle \oplus H \oplus
+E_8^2$", with the Coxeter diagram in his Figure 6.3.1, noting that $O_r(L)$ has
+infinite index in $O(L)$ — the same computation Sterk runs, on the degree-four
+K3 side.  That is a cross-check on C3–C7 from an independent source, and it was
+invisible to me while I was writing the node from memory.
 
-The root of the tree.  Every node is a definition or a small structural theorem,
-none needing a source beyond Nikulin §1.
+### ⚠ F1, F2, F3, F4, F6 below are UNSOURCED and must be redone
+
+The tables in the five subsections that follow were written from memory and
+attributed to sources that were never opened — Nikulin for F1, Vinberg for F3
+and F4, Baily–Borel for F6 — in violation of `FRM-02`, which forbids exactly
+this.  The excuse recorded at the time, that the sources needed reading first,
+was also false: Nikulin (`TTY9FFJS`), Vinberg 1975 (`73LVC9YS`), Scattone
+(`SF7T3C8G`) and Baily–Borel (`Z9PM5MMD`) are all in the library with text
+extractions.
+
+F5 above has since been rewritten from Scattone and shows what the difference
+costs: the fabricated version had the nine arising from a $p$-adic genus
+computation through Nikulin 1.13.2 and 1.14.2, and the source has it arising
+from primitive embeddings of $D_7$ into Niemeier lattices, with the ninth class
+coming from $E_8+D_{16}$ admitting two inequivalent embeddings.  The
+dependencies were wrong, the mechanism was wrong, and the shape of the work was
+wrong.
+
+Treat every row below as a guess about what the source might say, not as a node.
+Each is to be rewritten from its source in turn, as F5 was.
+
+### F1 (unsourced): discriminant forms
 
 | Node | Statement | Depends on |
 | --- | --- | --- |
@@ -150,7 +178,7 @@ none needing a source beyond Nikulin §1.
 Nine elementary nodes from the root of stratum F to the object A1 (Sterk 2.10)
 quantifies over.
 
-### F2 decomposed: $O^*$, and the transformations 2.18 runs on
+### F2 (unsourced): $O^*$, and the transformations 2.18 runs on
 
 Sterk works with $O^*$ rather than $O$ throughout 2.17, 2.18 and 3.2.1, and the
 proof of 2.18 is built from Siegel–Eichler transformations.  Neither was in the
@@ -164,7 +192,7 @@ graph.
 | F2.4 | $E_{u,y}$ acts trivially on $A_N$, so lies in the kernel of $O(N)\to O(q_N)$ | F2.2, F1.7 |
 | F2.5 | for $\Lambda = U\oplus U(2)$, the involution $e'\mapsto f'$, $f'\mapsto e'$, $e\mapsto e$, $f\mapsto f$ generates $O(\Lambda)/O^*(\Lambda)$ — stated in the proof of 2.17 | F2.1 |
 
-### F3 decomposed: affine diagrams and parabolic subdiagrams
+### F3 (unsourced): affine diagrams and parabolic subdiagrams
 
 | Node | Statement | Depends on |
 | --- | --- | --- |
@@ -180,7 +208,7 @@ got wrong twice: the path with two short end nodes is not $\tilde B_n$ in the
 Bourbaki convention, and Sterk follows Vinberg's table.  Whichever convention
 F3.4 fixes is the one C3–C7 must be stated in.
 
-### F4 decomposed: Vinberg's algorithm
+### F4 (unsourced): Vinberg's algorithm
 
 | Node | Statement | Depends on |
 | --- | --- | --- |
@@ -196,7 +224,7 @@ F4.5 is the expensive node and the only one C3–C7 genuinely need: without it t
 five diagrams are lists of mirrors that may be incomplete, and every count of
 isotropic planes is a lower bound rather than a classification.
 
-### F6 decomposed: from isotropic subspaces to boundary strata
+### F6 (unsourced): from isotropic subspaces to boundary strata
 
 | Node | Statement | Depends on |
 | --- | --- | --- |
