@@ -150,3 +150,32 @@ def test_two_u_model_lifts_generators_of_its_full_discriminant_group() -> None:
         witness = lifts[generator]
         assert witness in lattice.O()
         assert witness.discriminant_morphism() == generator
+
+
+def test_source_generating_family_retains_each_mathematical_source() -> None:
+    integers = _own_ring(SageZZ)
+    complement = Lattices(integers)("A2")
+    model = two_u_eichler_model(complement)
+    family = model.source_generating_family()
+    kinds = {kind for kind, _datum in family.index_set()}
+
+    assert kinds == {
+        "left-SL2",
+        "right-SL2",
+        "O(K)",
+        "Eichler",
+        "discriminant-lift",
+    }
+    assert all(isometry in model.lattice().O() for isometry in family)
+    for kind, datum in family.index_set():
+        match kind:
+            case "left-SL2":
+                assert family[kind, datum] == model.left_action(datum)
+            case "right-SL2":
+                assert family[kind, datum] == model.right_action(datum)
+            case "O(K)":
+                assert family[kind, datum] == model.complement_action(datum)
+            case "Eichler" | "discriminant-lift":
+                assert family[kind, datum] in model.lattice().O()
+            case _:
+                raise AssertionError(f"unexpected generator source {kind}")

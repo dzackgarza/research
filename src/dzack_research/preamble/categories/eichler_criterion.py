@@ -329,6 +329,61 @@ class TwoUEichlerModel(SageObject):
             name=f"Discriminant-generator lifts in O({lattice})",
         )
 
+    def source_generating_family(self):
+        r"""Return the represented source-defined finite family inside ``O(2U+K)``.
+
+        The family retains five mathematically different sources of
+        isometries: the two determinant-model ``SL_2(ZZ)`` actions, the
+        chosen generators of ``O(K)`` extended by the identity on ``2U``,
+        the selected ``K``-direction Eichler transvections, and explicit
+        lifts of generators of ``O(A_L)``.  Labels retain those sources even
+        when two labels happen to determine the same lattice isometry.
+
+        This is generating *data*, not a claim that the generated subgroup is
+        the full orthogonal group.  That equality belongs to the recursive
+        generation theorem and its parabolic-stabilizer hypotheses.
+        """
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        special_linear_generators = self.special_linear_group().group_generators()
+        complement_generators = self.orthogonal_complement().O().group_generators()
+        eichler = self.complement_eichler_transvections()
+        discriminant_lifts = self.discriminant_generator_lifts()
+        labels = finite_ordered_set(
+            tuple(("left-SL2", generator) for generator in special_linear_generators)
+            + tuple(("right-SL2", generator) for generator in special_linear_generators)
+            + tuple(("O(K)", generator) for generator in complement_generators)
+            + tuple(("Eichler", label) for label in eichler.index_set())
+            + tuple(("discriminant-lift", label) for label in discriminant_lifts.index_set())
+        )
+
+        def generator(label):
+            kind, datum = label
+            match kind:
+                case "left-SL2":
+                    return self.left_action(datum)
+                case "right-SL2":
+                    return self.right_action(datum)
+                case "O(K)":
+                    return self.complement_action(datum)
+                case "Eichler":
+                    return eichler[datum]
+                case "discriminant-lift":
+                    return discriminant_lifts[datum]
+                case _:
+                    raise ValueError(f"unknown 2U source-generator label {kind!r}")
+
+        return finite_indexed_family(
+            labels,
+            generator,
+            name=f"Source-defined Eichler generating family in O({self.lattice()})",
+        )
+
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
 
