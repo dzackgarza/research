@@ -108,13 +108,36 @@ $(v, F)$, not on $F$.
 
 ## Stratum D — from sublattices to boundary components
 
-| Node | Statement | Depends on |
-| --- | --- | --- |
-| D1 | `X` `M` for a $\mathbb{Q}$-algebraic group $G$, the Tits building $\mathcal{T}(G)$: the flag complex of proper parabolic $\mathbb{Q}$-subgroups | — |
-| D2 | `X` `M` for $G = \mathrm{O}(L_-\otimes\mathbb{Q})$ of signature $(2,10)$: the maximal parabolic $\mathbb{Q}$-subgroups are the stabilizers of the isotropic $\mathbb{Q}$-subspaces, which have dimension 1 or 2; so $\mathcal{T}(G)$ is the bipartite incidence graph of isotropic lines and planes | D1 |
-| D3 | `X` `M` Baily–Borel — the rational boundary components of a type IV domain $D$ correspond to the maximal parabolic $\mathbb{Q}$-subgroups, zero-dimensional to isotropic lines and one-dimensional to isotropic planes | D1, D2 |
-| D4 | `X` `M` Baily–Borel — the boundary of $D/\Gamma$ is $\Gamma\backslash$(rational boundary components), with closure relations induced by incidence | D3 |
-| D5 | `S` 3.3.19, 3.3.20 — $\Gamma(E) \cap SL(E) \cong \Gamma^1(2)$, so each one-dimensional component is $\mathbb{H}/\Gamma^1(2)$; no identification among its cusps occurs | D4, C11, B3 |
+Read from Scattone §2 (`SF7T3C8G`), which states the specialization this graph
+needs — the orthogonal-group case — rather than Baily–Borel's general theory of
+bounded symmetric domains.  Baily–Borel 1966 (`Z9PM5MMD`) remains the home of
+D7 only.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| D1 | the boundary components of $D$: the maximal connected complex analytic subsets of $\bar D \setminus D$ | Scattone §2 | complex analytic sets; **absent from Mathlib** |
+| D2 | a boundary component $F$ is **rational** when $N(F)_\mathbb{C}$ is defined over $\mathbb{Q}$; $\mathcal{B}(D)$ is the set of proper rational boundary components | Scattone §2 | D1; $\mathbb{Q}$-structures on algebraic groups |
+| D3 | realizing $G_\mathbb{R}$ as the orthogonal group of a bilinear form $Q$ on $L_\mathbb{R}$, there is a bijection between boundary components $F \subset D$ and isotropic subspaces $E \subset L_\mathbb{R}$: $E \leftrightarrow F$ **iff** $\mathrm{Stab}_{O(L_\mathbb{R})}(E) = \mathrm{Stab}_{G_\mathbb{R}}(F)$ | Scattone §2 | D1 |
+| D4 | the basis and the realization may be chosen so that rationality is preserved: rational boundary components correspond to isotropic subspaces of $L_\mathbb{Q}$, identified with $I(L)$, the primitive isotropic sublattices of $L$ | Scattone §2 | D2, D3 |
+| D5 | **the bijection $I(L) \leftrightarrow \mathcal{B}(D)$ preserves incidence**: if $E \leftrightarrow F$ and $E' \leftrightarrow F'$ then $E \subset E' \iff F \subseteq \partial F'$ | Scattone §2 | D4 |
+| D6 | the action of $\Gamma$ on rational boundary components corresponds to its action on $I(L)$, so the boundary components of $D_k/\Gamma_k$ are in bijection with the $\Gamma$-equivalence classes of primitive isotropic sublattices | Scattone §2 | D5 |
+| D7 | the Baily–Borel compactification: $D \cup \mathcal{B}(D)$ carries a topology making $\overline{D/\Gamma}$ a normal projective variety | Baily–Borel 1966 — **not read**; §1.3 (maximal parabolic subgroups), §1.5 (boundary components) and the main theorem are where to check | D2 |
+| D8 | `S` 3.3.19, 3.3.20 — $\Gamma(E) \cap SL(E) \cong \Gamma^1(2)$, so each one-dimensional component is $\mathbb{H}/\Gamma^1(2)$, with no identification among its cusps | Sterk | D6, C11, B3 |
+
+**D5 is the node that was smuggled into `def Incident N P := N ≤ P`.**  It is a
+stated theorem with a locator, and it is an *iff* between containment of
+isotropic subspaces and closure of boundary components — precisely the content
+that a definition made true by fiat.
+
+D6 is what makes the target a statement about $\Gamma$-orbits at all.  D1 and D2
+are the nodes with no Mathlib substrate whatever: they need complex analytic
+sets and $\mathbb{Q}$-structures on algebraic groups.
+
+Using Scattone here rather than Baily–Borel is deliberate.  The general theory
+quantifies over bounded symmetric domains and their $\mathbb{R}$-root systems;
+what this graph needs is the orthogonal-group case, and Scattone states it in
+that form, so the audit is against a source that says the thing rather than a
+source it specializes from.
 
 ## Goal
 
@@ -269,8 +292,8 @@ the library holds Vinberg 1983 *The two most algebraic K3 surfaces*
 
 ### Still missing from this stratum
 
-Baily–Borel (`Z9PM5MMD`) has not been read, so D1–D4 and F6 still have no
-foundations recorded beneath them.  Niemeier's classification (F4.1) has no
+Baily–Borel (`Z9PM5MMD`) has not been read; D1–D6 are now sourced to Scattone §2,
+leaving D7 as the one node still resting on it.  Niemeier’s classification (F4.1) has no
 source assigned; the library holds Conway–Sloane, *Sphere Packings, Lattices and
 Groups* (`T2WVLTDB`), the obvious candidate, unchecked.  Nikulin (`TTY9FFJS`)
 has not been read, so F1.3, F1.4, F3.2 and A3 rest on Scattone's citations of
