@@ -591,6 +591,23 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
             )
             return finite_ordered_set(roots)
 
+        def vinberg_algorithm(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the roots accepted by Vinberg's algorithm.
+
+            This is the archived public mathematical name for the same owned
+            root family exposed by :meth:`vinberg_simple_roots`.  Historical
+            engine controls such as progress output and CoxIter selection are
+            not part of the mathematical operation and are deliberately not
+            restored at the public boundary.
+            """
+            return self.vinberg_simple_roots(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            )
+
         def is_reflective(
             self, controlling_vector=None, *, max_roots=None, max_decompositions=None
         ):
@@ -643,6 +660,22 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_decompositions=max_decompositions,
             )
             return self.O().subgroup([self.reflection(root) for root in roots])
+
+        def weyl_group(
+            self, controlling_vector=None, *, max_roots=None, max_decompositions=None
+        ):
+            r"""Return the reflection/Weyl subgroup \(W(L)\leq O(L)\).
+
+            ``weyl_group`` is the archived public vocabulary for the same
+            subgroup now constructed by :meth:`reflection_group`; retaining
+            both names does not create a second group or a second root
+            enumeration.
+            """
+            return self.reflection_group(
+                controlling_vector,
+                max_roots=max_roots,
+                max_decompositions=max_decompositions,
+            )
 
         def reflection_coxeter_diagram(
             self, controlling_vector=None, *, max_roots=None, max_decompositions=None
