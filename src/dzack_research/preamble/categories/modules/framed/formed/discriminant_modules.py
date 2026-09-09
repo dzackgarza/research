@@ -228,6 +228,24 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
+        def maximal_isotropic_subgroups(self):
+            r"""Return the isotropic subgroups maximal under inclusion."""
+            isotropic = self.isotropic_subgroups()
+
+            def is_maximal(subgroup):
+                subgroup_order = int(subgroup.cardinality())
+                return not any(
+                    int(larger.cardinality()) > subgroup_order
+                    and all(
+                        element in larger
+                        for element in subgroup.embedded_elements()
+                    )
+                    for larger in isotropic
+                )
+
+            return finite_ordered_filter(isotropic, is_maximal)
+
+        @cached_method
         def lagrangian_subgroups(self):
             r"""Return totally isotropic ``H`` with ``|H|^2=|A|``."""
             order = int(self.cardinality())
@@ -455,6 +473,24 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
                     for element in subgroup.embedded_elements()
                 ),
             )
+
+        @cached_method
+        def maximal_isotropic_subgroups(self):
+            r"""Return the quadratic-isotropic subgroups maximal under inclusion."""
+            isotropic = self.isotropic_subgroups()
+
+            def is_maximal(subgroup):
+                subgroup_order = int(subgroup.cardinality())
+                return not any(
+                    int(larger.cardinality()) > subgroup_order
+                    and all(
+                        element in larger
+                        for element in subgroup.embedded_elements()
+                    )
+                    for larger in isotropic
+                )
+
+            return finite_ordered_filter(isotropic, is_maximal)
 
         @cached_method
         def lagrangian_subgroups(self):
