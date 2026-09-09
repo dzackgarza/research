@@ -1622,7 +1622,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-rad-invariants-20260909-0750` | archive reconciliation / r-a-delta period lattice invariants | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/lattices/test_rad_invariants_archive.py` (write); `archives/notebooks/r-a-delta lattice verifications.ipynb; src/dzack_research/preamble/catalogue.py` (read) | `HEAD` | 2026-09-09T07:50:00Z |
 
 
 
