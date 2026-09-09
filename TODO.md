@@ -1622,6 +1622,8 @@ behavior.
 
 ### Active claims
 
+| `LATTICE-centralizer-decorated-orbits-20260909-0747` | arithmetic / finite-order centralizer decorated sublattice and flag orbits | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattice_centralizers.py; tests/lattices/test_cyclotomic_centralizer.py` (write) | `HEAD` | 2026-09-09T07:47:00Z |
+
 
 
 
