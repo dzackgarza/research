@@ -1826,6 +1826,18 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise TypeError("isotropic reduction requires a chosen lattice inclusion")
             return self.inclusion().isotropic_reduction()
 
+        def I_perp_mod_I(self, vectors):
+            r"""Return ``I^perp/I`` for the primitive isotropic span of ``vectors``.
+
+            This is the archived parent-facing name for the same owned
+            isotropic-reduction construction.  The input vectors are promoted
+            immediately to a represented primitive totally isotropic
+            subobject, so the quotient retains its inclusion, perpendicular,
+            projection lifts and parabolic data.
+            """
+            isotropic = primitive_isotropic_subobject(self, tuple(vectors))
+            return isotropic.inclusion().isotropic_reduction()
+
         def radical_quotient(self):
             r"""Return the nondegenerate quotient ``L/rad(L)``."""
             return self.radical().isotropic_reduction()
@@ -2981,6 +2993,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         def isotropic_reduction(self):
             r"""Return \(v^\perp/Rv\) for an isotropic vector, with its parabolic data."""
             return self.sublattice().inclusion().isotropic_reduction()
+
+        def e_perp_mod_e(self):
+            r"""Return ``v^perp/Rv``; archived synonym for :meth:`isotropic_reduction`."""
+            return self.isotropic_reduction()
 
         def is_root(self) -> bool:
             r"""Return whether the orthogonal reflection in this vector is integral.
