@@ -75,3 +75,24 @@ def test_gluing_obstruction_is_an_actual_missing_Levi_lift() -> None:
     excluded = next(isometry for isometry in reduction.O() if isometry not in image)
 
     assert reduction.levi_lift(excluded) is None
+
+
+def test_divisibility_two_cusp_retains_its_rational_Witt_decomposition() -> None:
+    lattice, isotropic, line = _glued_divisibility_two_cusp()
+    reduction = line.isotropic_reduction()
+    witt = reduction.rational_witt_decomposition()
+
+    assert witt.integral_line() is line
+    assert witt.integral_reduction() is reduction
+    assert witt.integral_perpendicular() is reduction.orthogonal_complement()
+    assert witt.divisibility() == 2
+    assert lattice.b(isotropic, witt.bezout_partner()) == 2
+
+    rational = witt.rational_lattice()
+    e = witt.isotropic_vector()
+    f = witt.dual_isotropic_vector()
+    assert rational.q(e) == 0
+    assert rational.q(f) == 0
+    assert rational.b(e, f) == 1
+    assert witt.hyperbolic_plane().module_rank() == 2
+    assert witt.orthogonal_summand().module_rank() == reduction.module_rank()

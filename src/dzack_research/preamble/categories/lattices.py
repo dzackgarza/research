@@ -3002,6 +3002,77 @@ class EvenLattices(OwnedCategoryOverBaseRing):
         return [Lattices(self.base_ring())]
 
 
+class RankOneRationalWittDecomposition:
+    r"""The rational Witt decomposition attached to a primitive isotropic line.
+
+    The integral objects ``I <= I^perp <= L`` and ``K_I=I^perp/I`` remain the
+    source arithmetic data.  After base change to ``Frac(R)``, a selected
+    isotropic partner ``f`` with ``b(e,f)=1`` gives
+
+    ``L_Q = <e,f> perp K_Q``.
+
+    In a non-unimodular cusp ``f`` need not lie in ``L``; that failure is the
+    integral gluing which can restrict the Levi image.
+    """
+
+    def __init__(
+        self,
+        reduction,
+        bezout_partner,
+        rational_lattice,
+        rational_isotropic,
+        rational_partner,
+        hyperbolic_plane,
+        orthogonal_summand,
+    ) -> None:
+        self._reduction = reduction
+        self._bezout_partner = bezout_partner
+        self._rational_lattice = rational_lattice
+        self._rational_isotropic = rational_isotropic
+        self._rational_partner = rational_partner
+        self._hyperbolic_plane = hyperbolic_plane
+        self._orthogonal_summand = orthogonal_summand
+
+    def reduction(self):
+        return self._reduction
+
+    def integral_line(self):
+        return self.reduction().isotropic_sublattice()
+
+    def integral_perpendicular(self):
+        return self.reduction().orthogonal_complement()
+
+    def integral_reduction(self):
+        return self.reduction()
+
+    def divisibility(self):
+        inclusion = self.reduction().isotropic_embedding()
+        generator = self.integral_line().module_generators()[0]
+        return inclusion(generator).div()
+
+    def bezout_partner(self):
+        r"""Return integral ``h`` with ``b(e,h)=div(e)``."""
+        return self._bezout_partner
+
+    def rational_lattice(self):
+        return self._rational_lattice
+
+    def isotropic_vector(self):
+        return self._rational_isotropic
+
+    def dual_isotropic_vector(self):
+        return self._rational_partner
+
+    def hyperbolic_plane(self):
+        return self._hyperbolic_plane
+
+    def orthogonal_summand(self):
+        return self._orthogonal_summand
+
+    def __repr__(self) -> str:
+        return f"Rational Witt decomposition of {self.reduction().isotropic_embedding().codomain()} along {self.integral_line()}"
+
+
 class IsotropicReductions(OwnedCategoryOverBaseRing):
     r"""Lattices \(K_I=I^\perp/I\) built from a totally isotropic \(\iota:I\hookrightarrow L\).
 
@@ -3046,6 +3117,98 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def inclusion(self):
             r"""Return \(I\hookrightarrow I^\perp\), the inclusion defining the quotient."""
             return self.isotropic_inclusion()
+
+        @cached_method
+        def rational_witt_decomposition(self):
+            r"""Return the exact rational Witt decomposition for a rank-one isotropic line.
+
+            If ``e`` generates ``I`` and ``d=div(e)``, an exact Bezout
+            combination of the selected lattice frame gives ``h in L`` with
+            ``b(e,h)=d``.  Over the fraction field put
+
+            ``f = h/d - q(h)e/(2d^2)``.
+
+            Then ``e^2=f^2=0`` and ``b(e,f)=1``.  The orthogonal complement of
+            ``<e,f>`` is the rational anisotropic/reduction summand.  The
+            integral line, perpendicular and quotient remain separately
+            retained; no integral splitting is asserted.
+            """
+            line = self.isotropic_sublattice()
+            if int(line.module_rank()) != 1:
+                raise ValueError("the selected rational Witt construction currently starts from an isotropic line")
+            ambient = self.isotropic_embedding().codomain()
+            ring = ambient.base_ring()
+            if _engine_ring(ring) is not SageZZ:
+                raise ValueError("the selected Bezout Witt construction currently uses an integral ZZ-lattice")
+            line_generator = line.module_generators()[0]
+            isotropic = self.isotropic_embedding()(line_generator)
+            labels = tuple(ambient.module_generating_set())
+            pairings = tuple(ambient.b(isotropic, ambient.module_generator(label)) for label in labels)
+            gcd_value = ring.zero()
+            coefficients = []
+            for pairing in pairings:
+                new_gcd, old_coefficient, new_coefficient = gcd_value.xgcd(pairing)
+                coefficients = [old_coefficient * coefficient for coefficient in coefficients]
+                coefficients.append(new_coefficient)
+                gcd_value = new_gcd
+            divisibility = isotropic.div()
+            if gcd_value != divisibility:
+                coefficients = [-coefficient for coefficient in coefficients]
+                gcd_value = -gcd_value
+            if gcd_value != divisibility:
+                raise ArithmeticError("the Bezout pairing witness has the wrong divisibility")
+            bezout_partner = ambient.linear_combination(
+                {
+                    label: coefficient
+                    for label, coefficient in zip(labels, coefficients, strict=True)
+                    if coefficient
+                }
+            )
+            if ambient.b(isotropic, bezout_partner) != divisibility:
+                raise ArithmeticError("the selected integral Witt partner has the wrong pairing")
+
+            fraction_map = ring.fraction_field_map()
+            rational = ambient.base_change(fraction_map)
+            field = rational.base_ring()
+
+            def rationalize(vector):
+                coefficients = module_coefficients(vector, ambient)
+                return rational.linear_combination(
+                    {
+                        label: fraction_map(coefficient)
+                        for label, coefficient in coefficients.items()
+                        if coefficient
+                    }
+                )
+
+            rational_isotropic = rationalize(isotropic)
+            rational_bezout = rationalize(bezout_partner)
+            d = fraction_map(divisibility)
+            two = field(2)
+            correction = rational.q(rational_bezout) / (two * d * d)
+            rational_partner = (
+                rational.scalar_multiple(field.one() / d, rational_bezout)
+                - rational.scalar_multiple(correction, rational_isotropic)
+            )
+            if rational.q(rational_partner) != field.zero():
+                raise ArithmeticError("the rational Witt partner is not isotropic")
+            if rational.b(rational_isotropic, rational_partner) != field.one():
+                raise ArithmeticError("the rational Witt hyperbolic pair does not pair to one")
+            hyperbolic_plane = rational.subobject_on(
+                (rational_isotropic, rational_partner)
+            )
+            orthogonal_summand = hyperbolic_plane.orthogonal_complement()
+            if int(orthogonal_summand.module_rank()) + 2 != int(rational.module_rank()):
+                raise ArithmeticError("the rational Witt orthogonal summand has the wrong rank")
+            return RankOneRationalWittDecomposition(
+                self,
+                bezout_partner,
+                rational,
+                rational_isotropic,
+                rational_partner,
+                hyperbolic_plane,
+                orthogonal_summand,
+            )
 
         def reduction_lifts(self):
             r"""Return the chosen lifts of the framing of \(K_I\) into \(I^\perp\)."""
