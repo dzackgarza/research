@@ -28,6 +28,63 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.sage_object import SageObject
 
 
+class EichlerCoveringOrbitDatum(SageObject):
+    r"""One explicit covering vector together with its recursive orbit data.
+
+    A covering discriminant class need not be a distinct full ``O(L)`` orbit.
+    This object therefore retains both the vector constructed from that class
+    and the actual full-orbit representative selected by the indefinite
+    backend, together with a transporter between them and generators of the
+    covering vector's stabilizer ``P_v``.
+    """
+
+    def __init__(
+        self,
+        discriminant_class,
+        representative,
+        stabilizer_generators,
+        full_orbit_representative,
+        transporter,
+    ) -> None:
+        match transporter(representative) == full_orbit_representative:
+            case True:
+                pass
+            case False:
+                raise ValueError(
+                    "the retained transporter moves the covering vector to the wrong orbit representative"
+                )
+        match any(generator(representative) != representative for generator in stabilizer_generators):
+            case False:
+                pass
+            case True:
+                raise ValueError(
+                    "a retained covering stabilizer generator does not fix its vector"
+                )
+        self._discriminant_class = discriminant_class
+        self._representative = representative
+        self._stabilizer_generators = stabilizer_generators
+        self._full_orbit_representative = full_orbit_representative
+        self._transporter = transporter
+
+    def discriminant_class(self):
+        return self._discriminant_class
+
+    def representative(self):
+        return self._representative
+
+    def stabilizer_generators(self):
+        return self._stabilizer_generators
+
+    def full_orbit_representative(self):
+        return self._full_orbit_representative
+
+    def transporter_to_full_orbit(self):
+        return self._transporter
+
+    def __repr__(self) -> str:
+        return f"Eichler covering orbit datum for {self.discriminant_class()}"
+
+
 class TwoUEichlerModel(SageObject):
     r"""The represented determinant model ``U + U + K`` used by Eichler's theorem.
 
@@ -384,6 +441,54 @@ class TwoUEichlerModel(SageObject):
             name=f"Source-defined Eichler generating family in O({self.lattice()})",
         )
 
+    def covering_orbit_data(self, square):
+        r"""Return exact stabilizer/transporter data for every covering class.
+
+        The finite discriminant list indexes explicitly constructed primitive
+        vectors.  For each one, the exact indefinite backend supplies
+        generators of its full-orthogonal stabilizer and a transporter to one
+        of the backend's full ``O(L)`` orbit representatives.  Several covering
+        classes are allowed to land in the same full orbit; this method records
+        that fact instead of quotienting the covering list prematurely.
+        """
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        lattice = self.lattice()
+        orthogonal_group = lattice.O()
+        representatives = self.covering_vector_representatives(square)
+        full_orbits = tuple(orthogonal_group.vector_orbit_representatives(square))
+
+        def datum(discriminant_class):
+            vector = representatives[discriminant_class]
+            stabilizer_generators = orthogonal_group.vector_stabilizer_generators(vector)
+            for full_representative in full_orbits:
+                transporter = orthogonal_group.vector_equivalence_witness(
+                    vector,
+                    full_representative,
+                )
+                match transporter:
+                    case None:
+                        continue
+                    case _:
+                        return EichlerCoveringOrbitDatum(
+                            discriminant_class,
+                            vector,
+                            stabilizer_generators,
+                            full_representative,
+                            transporter,
+                        )
+            raise ArithmeticError(
+                "an explicit covering vector did not belong to any full orthogonal-group orbit returned by the backend"
+            )
+
+        return finite_indexed_family(
+            representatives.index_set(),
+            datum,
+            name=f"Recursive covering-orbit data of square {square} in {lattice}",
+        )
+
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
 
@@ -559,6 +664,7 @@ def are_in_one_stable_orbit(left, right) -> bool:
 
 
 __all__ = [
+    "EichlerCoveringOrbitDatum",
     "TwoUEichlerModel",
     "are_in_one_stable_orbit",
     "covering_discriminant_classes",
