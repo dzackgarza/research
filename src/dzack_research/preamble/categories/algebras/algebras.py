@@ -133,9 +133,21 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
             r"""Whether the chosen multiplication commutes, decided at construction."""
             return self._preamble_algebra_is_commutative
 
+        def multiplication_source_module(self):
+            r"""Return the exact supplied module that was equipped with multiplication."""
+            return self._preamble_multiplication_source_module
+
+        def source_multiplication(self):
+            r"""Return the multiplication originally supplied on the source module."""
+            return self._preamble_source_multiplication
+
+        def source_algebra_unit(self):
+            r"""Return the selected source-module unit, or ``None`` when none was supplied."""
+            return self._preamble_source_algebra_unit
+
         @cached_method
         def _multiplication_transport_maps(self):
-            source = self._preamble_multiplication_source_module
+            source = self.multiplication_source_module()
             labels = self.module_generating_set()
             forget = module_homset(self, source)({label: source.module_generator(label) for label in labels})
             equip = module_homset(source, self)({label: self.module_generator(label) for label in labels})
@@ -143,7 +155,7 @@ class AssociativeAlgebrasWithChosenMultiplication(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _transported_multiplication_morphism(self):
-            source_multiplication = self._preamble_source_multiplication
+            source_multiplication = self.source_multiplication()
             forget, equip = self._multiplication_transport_maps()
             source_tensor = source_multiplication.domain()
             tensor_constructor = getattr(source_tensor, "_same_presentation_module", None)
