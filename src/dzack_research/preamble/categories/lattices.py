@@ -2348,6 +2348,34 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             )
 
+        def is_coeven(self) -> bool:
+            r"""Return whether the discriminant quadratic form is integer-valued.
+
+            This is the coeven property of an even nondegenerate integral
+            lattice.  Unlike :meth:`delta`, it is not restricted to
+            2-elementary discriminant groups: every element of ``A_L`` is
+            checked in the finite discriminant quadratic module.
+            """
+            if _engine_ring(self.base_ring()) is not SageZZ:
+                raise TypeError("coevenness is currently the integral-lattice invariant")
+            if not self.is_even():
+                raise ValueError("coevenness uses the discriminant quadratic form of an even lattice")
+            if not self.is_nondegenerate():
+                raise ValueError("coevenness requires a finite discriminant quadratic module")
+            discriminant_form = self.discriminant_quadratic_form()
+            ring = self.base_ring()
+            for element in discriminant_form:
+                lifted = discriminant_form.q(element).lift()
+                try:
+                    ring(lifted)
+                except (TypeError, ValueError):
+                    return False
+            return True
+
+        def is_coodd(self) -> bool:
+            r"""Return the negation of :meth:`is_coeven`."""
+            return not self.is_coeven()
+
         def two_elementary_invariants(self):
             r"""Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
 
