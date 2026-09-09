@@ -157,6 +157,32 @@ Not descended further here: BB8 rests on the automorphic forms and
 Poincaré–Eisenstein series of BB §§5–8, and BB3 on Korányi–Wolf [27] and the
 other references BB 1.5 cites.  Those are the next descents on this branch.
 
+### Stratum Cl — the classical inputs Chap. 2 cites
+
+The sweep for inputs the graph had left implicit, done over Chap. 2 rather than
+for Borel alone.  Each is cited by Sterk and none was a node.
+
+| Node | Statement | Source | Next dependency |
+| --- | --- | --- | --- |
+| Cl1 | Horikawa, Thm 5.1: there exists an isometry $\mu : H^2(X;\mathbb{Z}) \to L$ with $I \circ \mu = \mu \circ I^*$ — **this is what makes $L_-$ the anti-invariant eigenlattice of the involution, so it is what ties the Gram matrix to the geometry** | Sterk (2.1), citing Horikawa 1978 I, Thm 5.1 | E2, E3 |
+| Cl2 | Horikawa 1978 II, Thm 3.1: the statement about $R_- = \{x \in L_- : (x,x) = -2\}$ and the divisor $D_V/\Gamma$ — **tail not transcribed** | Sterk (2.15)ff, citing Horikawa 1978 II, Thm 3.1 | Cl1, A6a |
+| Cl3 | the global Torelli theorem for $K3$ surfaces, in the form used at (2.14): an isometry of $H^2$ preserving the relevant structure is induced by an isomorphism of surfaces | Sterk (2.14), citing BPV Chap. VIII | E6 |
+| Cl4 | the faithfulness of the representation of $\mathrm{Aut}(X)$ on $O(H^2(X;\mathbb{Z}))$, used at (2.14) to descend $\tilde f$ | Sterk (2.14) | E2 |
+| Cl5 | Kodaira's projectivity criterion, used at (2.2) to conclude that an Enriques surface with a line bundle of positive self-intersection is projective | Sterk (2.2), citing BPV Chap. IV Thm 5.2 | E1 |
+| Cl6 | Nikulin 1.13.2 and 1.14.2, as cited at (2.x) — the same nodes as F1.3, F1.4, F3.2 | Sterk, citing Nikulin 1980 | F1.3, F1.4, F3.2 |
+
+Cl1 is the load-bearing one for this graph, and it was invisible: without it the
+development can introduce $L_-$ by a Gram matrix but cannot say it is the
+eigenlattice of anything.  Every earlier version of the Lean definitions did
+exactly that.
+
+Chapter 3's classical inputs — Meyer's theorem via Serre, Zariski's main
+theorem, Riemann's extension theorem, Chow's theorem — are **not** listed as
+nodes, because the goal names the Baily–Borel boundary complex and Chapter 3
+proves a different theorem, the semi-toric compactification.  That exclusion is
+valid under `FDC-08` only as long as the goal stays as stated, and it is
+recorded here rather than left silent.
+
 ### Stratum Bo, from Borel 1972 — the extension theorem Sterk leans on
 
 Sterk uses this at Chap. 2 §4: "by Borel's extension theorem [Borel 1972].  The
@@ -373,27 +399,27 @@ disposition would mean the filtering was done silently.
 
 | Item | Kind | Disposition |
 | --- | --- | --- |
-| 1.1–1.4 | setup | out — the $K3$ lattice $L$, the involution $I$, and the eigenlattices; ambient notation, carried implicitly by the coordinates of $L_-$ |
-| 2.1 | Definition | out — almost polarization and its degree; names the surfaces whose period space this is, needed for the mission description, not for the boundary complex |
-| 2.2, 2.3 | setup | out — the $K3$ double cover and its marking |
-| 2.4 | Proposition | out — identifies the two elliptic fibrations; geometry of the double cover |
-| 2.5 | Proposition | out — the same two pencils in terms of $\bar E'$ |
-| 2.6 | Remark | out — commentary on 2.4 |
+| 1.1–1.4 | setup | **E3** — the $K3$ lattice $L$, the involution $I$, and the eigenlattices; this is where $L_-$ comes from |
+| 2.1 | Definition | **E2** — almost polarization and its degree; names the surfaces whose period space this is |
+| 2.2, 2.3 | setup | **E2** — the $K3$ double cover and its marking |
+| 2.4 | Proposition | **E2** — the two elliptic fibrations on the double cover |
+| 2.5 | Proposition | **E2** — the same two pencils |
+| 2.6 | Remark | **E2** — commentary on 2.4 |
 | 2.7, 2.8 | Definitions | **A0** |
-| 2.9 | Proposition | out — the period map is well defined; needed to call $\Omega_-/\Gamma$ a period space, not to compute its boundary |
+| 2.9 | Proposition | **E5** — the period map is well defined; what makes $\Omega_-/\Gamma$ a period space at all |
 | 2.10 | Lemma | **A1** |
 | 2.11 | Remark | **A1a** — $\Gamma$ is *not* the group one might expect; a caveat on the definition in A1 |
-| 2.12 | setup | out — the period point and its image in $\Omega_-/\Gamma$ |
+| 2.12 | setup | **E4** — the period point and its image |
 | 2.13 | Lemma | **A2** |
-| 2.14 | Proposition | out — $P$ is injective; the Torelli half of the paper |
+| 2.14 | Proposition | **E6** — $P$ is injective; rests on Torelli for $K3$ |
 | 2.15 | setup | **A6a** — defines the special sets $R_-$ and $S_-$ |
 | 2.16 | Lemma | **A4** |
 | 2.17 | Corollary | **A5** |
 | 2.18 | Corollary | **A6** |
 | 2.19 | Lemma | **A7** |
-| 2.20 | Proposition | out — characterizes special Enriques surfaces |
+| 2.20 | Proposition | **E2** — characterizes special Enriques surfaces |
 | 2.21 | Remark | **A8** — $R_-$ is a single $\Gamma$-orbit, by 2.18 |
-| 3.1 | setup | out — recollection of the Satake–Baily–Borel construction; the content is D3, D4 |
+| 3.1 | setup | **D1–D7**, **BB1–BB8** — the Satake–Baily–Borel construction |
 | 3.2.1 | Lemma | **B1** |
 | 3.2.2 | computation | **B2** |
 | 3.2.3 | Proposition | **B3** |
@@ -410,17 +436,18 @@ disposition would mean the filtering was done silently.
 | 3.3.19, 3.3.20 | computations | **D5** |
 | 3.4 | — | **C12**, **G** |
 
-**The out-of-scope column above is not yet valid, and the reason it gave was
-wrong.**  Those rows — the period map, the $K3$ double cover, Torelli, almost
-polarizations — are inputs to the boundary computation exactly when the goal
-mentions Enriques surfaces or their period space, which the goal as stated
-does.  Excluding them while keeping the name is a narrowing of the target
-disguised as a scope judgment (`FDC-08`).  It runs deeper than the propositions
-listed: $L_-$ is not a Gram matrix in the source but the anti-invariant
-eigenlattice of the involution on $H^2(X,\mathbb{Z})$ of the $K3$ cover, tied to
-it by Horikawa's isometry $\mu : H^2(X;\mathbb{Z}) \to L$ with
-$I \circ \mu = \mu \circ I^*$.  Introducing $L_-$ by its Gram matrix severs that
-tie and leaves the development unable to say what $L_-$ is.
+**There is no out-of-scope column.**  An earlier revision carried one, marking
+the period map, the $K3$ double cover, Torelli and the almost polarizations as
+not needed.  They are needed exactly when the goal mentions Enriques surfaces or
+their period space, which it does, so excluding them while keeping the name was
+a narrowing of the target disguised as a scope judgment (`FDC-08`).  Every row
+above now names the node that carries it.
+
+It ran deeper than those propositions: $L_-$ is not a Gram matrix in the source
+but the anti-invariant eigenlattice of the involution on $H^2(X,\mathbb{Z})$ of
+the $K3$ cover, tied to it by Horikawa's isometry — node Cl1 — and introducing
+$L_-$ by its Gram matrix severs that tie, leaving the development unable to say
+what $L_-$ is.
 
 Substrate for that layer, searched at revision `0df444a3`: no complex manifolds,
 no compact complex surfaces, no $K3$ surfaces, no Hodge structures, no line
