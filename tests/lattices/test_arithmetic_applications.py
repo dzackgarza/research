@@ -61,3 +61,13 @@ def test_equivariant_application_retains_gluing_centralizer_and_polarization_gro
     assert application.anti_invariant_lattice().is_isometric(NamedLattices.TEn)
     assert application.anti_invariant_arithmetic_group().character_data_is_complete()
     assert application.anti_invariant_line_cusps().cardinality() > 0
+    assert application.anti_invariant_plane_cusps().cardinality() > 0
+
+    incidence = application.anti_invariant_tits_building_incidence()
+    assert incidence.cardinality() > 0
+    edge = incidence[0]
+    arithmetic_group = application.anti_invariant_arithmetic_group()
+    assert edge.line_transporter() in arithmetic_group
+    assert edge.plane_transporter() in arithmetic_group
+    assert edge.line() in edge.line_cusp()
+    assert edge.plane() in edge.plane_cusp()

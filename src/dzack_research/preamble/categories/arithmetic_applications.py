@@ -152,6 +152,17 @@ class EnriquesEquivariantK3Application(SageObject):
     def anti_invariant_plane_cusps(self):
         return self.anti_invariant_arithmetic_group().cusps(2)
 
+    @cached_method
+    def anti_invariant_tits_building_incidence(self):
+        r"""Return the glue-compatible line/plane incidence in the anti-invariant lattice.
+
+        The acting group is the arithmetic subgroup inherited from the integral
+        K3 gluing, not the full orthogonal group of ``T_En``.  Consequently the
+        returned incidence records retain transporters in that same arithmetic
+        subgroup.
+        """
+        return self.anti_invariant_arithmetic_group().tits_building_incidence()
+
 
 def lorentzian_e10_application():
     return LorentzianE10Application()
