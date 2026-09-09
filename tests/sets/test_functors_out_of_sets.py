@@ -107,7 +107,9 @@ def test_the_free_group_adjunction_has_a_unit_of_letters_and_a_multiplying_couni
 
 
 def test_the_cardinality_functor_is_defined_on_the_core_of_sets() -> None:
+    r"""Archive contract: ``# : core(Sets) -> Cardinalities`` is cached and functorial."""
     functor = Sets().cardinality_functor()
+    assert functor is Sets().cardinality_functor()
     assert functor.domain().base_category() == Sets()
     assert functor.codomain() == Cardinalities()
 
@@ -120,6 +122,7 @@ def test_the_cardinality_functor_is_defined_on_the_core_of_sets() -> None:
     carried = functor(relabelling)
     assert carried.domain() == cardinal(3)
     assert carried.codomain() == cardinal(3)
+    assert carried == Cardinalities().Mor(cardinal(3), cardinal(3)).unique_morphism()
 
 
 def test_the_power_set_functor_has_all_of_sets_for_its_domain() -> None:
