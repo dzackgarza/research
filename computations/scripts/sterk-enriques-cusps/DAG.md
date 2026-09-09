@@ -456,6 +456,67 @@ what the Sage reconstruction computes.  Naming the type is not free, and the
 node that would carry the classification is one of the two deleted as
 fabricated, so it is currently unrecorded.
 
+## Terminality audit
+
+A node is terminal only when its next dependency is in Mathlib at the pinned
+revision (`FDC-11`).  Counting the graph as it stands: 139 node rows across
+strata A (8), B (8), C (12), D (8), BB (8), Bo (5), Cl (6), Nk (5), V (13),
+E (13), F (46).
+
+### Terminal, or one step from it
+
+These bottom out in things Mathlib has — free $\mathbb{Z}$-modules, bilinear and
+quadratic forms, matrices, root systems, $p$-adic integers, the upper half plane
+and congruence subgroups:
+
+F1.1–F1.8 (lattices, evenness, signature, discriminant, $H$ and $E_8$, dual and
+divisor, primitivity), F1.9–F1.10 (forms on finite abelian groups, the
+discriminant-quadratic form), F2.1–F2.2, F2.10–F2.11 ($E_{f,x}$ and
+$\mathcal{E}(L)$ are explicit formulas), F3.1 (the genus, given $p$-adic
+lattices), F4.1 (root lattices and types), V1–V5 (the $C$-matrix and
+$C^-$-polyhedron definitions), D8 (via `UpperHalfPlane` and `Gamma0`).
+
+### Not terminal, with the descent named
+
+| Node(s) | What it descends into | Where |
+| --- | --- | --- |
+| F2.3 | Cartan–Dieudonné and the reflection decomposition; **and a convention**: Scattone's $\sigma_-$ follows Brieskorn and is a modified spinor norm | Scattone §3.6 |
+| F3.1, Nk2 | lattices over $\mathbb{Z}_p$, the canonical $p$-adic forms $q^{(p)}_\theta$, $u^{(2)}_\pm$, $v^{(2)}_\pm$ | Nikulin §1, 8°–9° |
+| F1.11, F1.12, Nk3, Nk4, Nk5 | Nikulin's proofs, and conditions this graph has not transcribed | Nikulin 1.10.1, 1.13.2, 1.14.2 |
+| F4.2 | Niemeier's classification | Niemeier [24] via Scattone 3.5.1 |
+| V9, V11 | Vinberg's Theorem 1 conditions, and the algorithm's correctness | Vinberg 1975 Thm 1; Vinberg 1972 §3.2 |
+| V10 | Coxeter's classification of $C^+$ and $C^0$ diagrams | Coxeter, via Vinberg 1975 §4 |
+| V12, V13 | the recovery of an infinite vertex, and its primitivity hypothesis | Vinberg 1983 §1.9 |
+| BB1–BB3 | algebraic groups and their parabolics; hermitian symmetric spaces; Harish-Chandra realizations | Baily–Borel §§1–2; Korányi–Wolf [27] |
+| BB8 | automorphic forms and Poincaré–Eisenstein series | Baily–Borel §§5–8 |
+| Bo3, Bo4 | Kwack's extension theorem, the Kobayashi pseudo-distance, Siegel sets and reduction theory | Borel 1972 §§1–3, citing Kwack [12], Kobayashi [10] |
+| E1 | complex manifolds and compact complex surfaces | BPV Chaps. I–IV |
+| E9 | global Torelli for $K3$ | Piatetski-Shapiro–Shafarevich [17], via Horikawa I Thm 7.2 |
+
+### Absent from both Mathlib and `lean-categories`
+
+$\mathcal{E}(L)$ and the Eichler transformations (F2.10–F2.11); Niemeier
+(F4.2); everything in BB, Bo and E.
+
+### Open audit points, not gaps in the graph
+
+1. **Sign convention.** Scattone's $E_8$ is $\mathbb{Z}^8$ with the *negative*
+   Cartan matrix; Sterk writes $E_8(-2)$; the Sage reconstruction uses
+   $-2\times$ the positive Cartan matrix.  Fix once, check every node.
+2. **Spinor norm convention.** Scattone's $\sigma_-$ is Brieskorn's modified
+   form, and he says so.
+3. **Rank hypotheses.** Scattone 3.3.1 says $\mathrm{rk}\,L > \ell(G_L)+2$;
+   Nikulin 1.14.2 says $\mathrm{rk}\,T \ge \ell(A_{T_p})+2$ per odd prime plus a
+   condition at 2.  Not obviously the same, and A2 needs one of them.
+4. **A3's conditions** (Nk4 (2) and (3)) must be checked for $L_-$.
+5. **Borel's torsion-free hypothesis** (Bo1) against Sterk's $\Gamma$, which
+   contains $-1$.
+6. **V13's primitivity hypothesis** must be checked for each of the five
+   diagrams, since Sterk reads isotropic vectors off parabolic subdiagrams
+   throughout §3.3 and needs them primitive.
+7. **C7** disagrees with the source; the Sage reconstruction yields thirteen
+   maximal parabolic subdiagrams in six shapes against Sterk's four types.
+
 ## Coverage: every labelled statement of Chap. 2
 
 The DAG above is a subgraph of the paper, not the whole of it.  This table is
