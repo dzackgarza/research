@@ -371,3 +371,87 @@ def primitivity_report():
 
 
 primitivity_report()
+
+
+def qrank_report():
+    """AG19: the Q-rank of SO(L_- tensor Q), which the goal statement assumes.
+
+    Borel, Linear algebraic groups 23.4: for a nondegenerate quadratic form Q
+    over k of characteristic not 2, r_k(SO(Q)) is the Witt index of Q over k.
+    Borel-Ji III.1.8: the rational Tits building has dimension r_Q(G) - 1.
+    So the goal's "one-dimensional Tits building" needs the Witt index of L_-
+    over Q to be exactly 2.
+
+    Upper bound: the Witt index over Q is at most the Witt index over R, which
+    is min(n_+, n_-) for a form of signature (n_+, n_-).
+    Lower bound: an explicit totally isotropic Q-plane.
+    """
+    print()
+    print("=" * 68)
+    print("AG19: the Witt index of L_- over Q, hence the Q-rank of SO(L_- x Q)")
+    QF = QuadraticForm(QQ, 2 * GRAM.change_ring(QQ))
+    n_pos, n_neg, n_zero = QF.signature_vector()
+    print("    signature (n+, n-, n0) = (%d, %d, %d), det = %d"
+          % (n_pos, n_neg, n_zero, GRAM.det()))
+    assert n_zero == 0, "L_- is degenerate"
+    upper = min(n_pos, n_neg)
+
+    plane = [e, ep]                        # the isotropic generators of U and U(2)
+    B = matrix(QQ, [vector(QQ, x) for x in plane])
+    assert B.rank() == len(plane), "the exhibited vectors are dependent"
+    assert (B * GRAM.change_ring(QQ) * B.transpose()).is_zero(), \
+        "the exhibited plane is not totally isotropic"
+    lower = len(plane)
+
+    print("    <e, e'> is totally isotropic over Q of dimension %d" % lower)
+    print("    so %d <= Witt index <= min(n+, n-) = %d" % (lower, upper))
+    assert lower == upper, "the bounds do not meet; the Witt index is undetermined"
+    print("    Witt index = %d, so r_Q(SO(L_- x Q)) = %d and dim Delta_Q = %d"
+          % (lower, lower, lower - 1))
+
+
+qrank_report()
+
+
+def rank_condition_report():
+    """A2: Nikulin 1.14.2 against Scattone 3.3.1, on L_- itself.
+
+    Both say that O(T) -> O(q_T) is surjective and the genus has one class,
+    under a rank condition, and the two conditions are different.
+    Nikulin 1.14.2: rk T >= l(A_{T_p}) + 2 for every p /= 2, and if
+    rk T = l(A_{T_2}) then q_{T_2} has a u_+ or v_+ summand.
+    Scattone 3.3.1: rk L > l(G_L) + 2.
+    """
+    print()
+    print("=" * 68)
+    print("A2: the rank conditions of Nikulin 1.14.2 and Scattone 3.3.1 on L_-")
+    divisors = [abs(d) for d in GRAM.smith_form()[0].diagonal() if abs(d) != 1]
+    ell = {}
+    for d in divisors:
+        for p, _ in factor(d):
+            ell[p] = ell.get(p, 0) + 1
+    rk = GRAM.nrows()
+    print("    elementary divisors > 1: %s" % divisors)
+    print("    A(L_-) = %s, so l(A_p) = %s, rank = %d"
+          % (" + ".join("Z/%d" % d for d in divisors), ell, rk))
+
+    for p in [2, 3, 5, 7, 11]:
+        if p == 2:
+            continue
+        assert rk >= ell.get(p, 0) + 2, "Nikulin (a) fails at p=%d" % p
+    print("    Nikulin (a): rk >= l(A_p) + 2 holds at every odd p")
+
+    assert rk != ell.get(2, 0), "Nikulin (b) is not vacuous; the 2-adic form must be checked"
+    print("    Nikulin (b): hypothesis rk = l(A_2) reads %d = %d, false, so (b) is vacuous"
+          % (rk, ell.get(2, 0)))
+    print("    => Nikulin 1.14.2 applies to L_-")
+
+    l_total = max(ell.values()) if ell else 0
+    assert not (rk > l_total + 2), \
+        "Scattone 3.3.1 now holds for L_-; the recorded disagreement is stale"
+    print("    Scattone 3.3.1 asks rk > l(A) + 2, i.e. %d > %d: false"
+          % (rk, l_total + 2))
+    print("    => A2 rests on Nikulin's condition, not on Scattone's")
+
+
+rank_condition_report()
