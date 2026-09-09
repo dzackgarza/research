@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the group-ring and underlying-module functors."""
 
-from dzack_research.preamble.all import Groups, ZZ, group_homset
+from dzack_research.preamble.all import GF, Groups, PolynomialRing, ZZ, group_homset
 from dzack_research.preamble.categories.algebras import (
     FreeModuleOnGroupFunctor,
     GroupAlgebraFunctor,
@@ -84,4 +84,44 @@ def test_group_algebra_functor_carries_a_nonidentity_map_between_infinite_free_g
         induced.domain().module_generator(source_generator**2)
     ) == induced.codomain().module_generator(
         (target_generators[0] * target_generators[1]) ** 2
+    )
+
+
+def test_group_algebra_keeps_nontrivial_coefficient_rings() -> None:
+    cyclic = Groups.C(3)
+    finite_field = GF(5)
+    polynomial_ring = PolynomialRing(ZZ, "u")
+
+    for ring in (finite_field, polynomial_ring):
+        algebra = GroupAlgebraFunctor(ring)(cyclic)
+        generator = cyclic.group_generators()[0]
+        assert algebra.base_ring() is ring
+        assert algebra.module_generating_set() is cyclic
+        assert (
+            algebra.module_generator(generator)
+            * algebra.module_generator(generator**2)
+            == algebra.one()
+        )
+
+
+def test_group_algebra_multiplication_remembers_whether_the_group_commutes() -> None:
+    cyclic = Groups.C(3)
+    cyclic_generator = cyclic.group_generators()[0]
+    cyclic_algebra = GroupAlgebraFunctor(ZZ)(cyclic)
+    assert (
+        cyclic_algebra.module_generator(cyclic_generator)
+        * cyclic_algebra.module_generator(cyclic_generator**2)
+        == cyclic_algebra.module_generator(cyclic_generator**2)
+        * cyclic_algebra.module_generator(cyclic_generator)
+    )
+
+    symmetric = Groups.S(3)
+    left, right = tuple(symmetric.group_generators())[:2]
+    assert left * right != right * left
+    symmetric_algebra = GroupAlgebraFunctor(ZZ)(symmetric)
+    assert (
+        symmetric_algebra.module_generator(left)
+        * symmetric_algebra.module_generator(right)
+        != symmetric_algebra.module_generator(right)
+        * symmetric_algebra.module_generator(left)
     )
