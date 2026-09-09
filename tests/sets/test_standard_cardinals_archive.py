@@ -2,6 +2,7 @@ r"""Archived standard-cardinality facts not already covered by live catalogues."
 
 from dzack_research.preamble.all import (
     MatrixSpace,
+    PolynomialRing,
     PowerSeriesRing,
     QQ,
     RR,
@@ -22,3 +23,9 @@ def test_rational_power_series_have_continuum_cardinality() -> None:
     power_series = PowerSeriesRing(QQ, "t")
 
     assert power_series.cardinality() == continuum
+
+
+def test_rational_polynomial_ring_is_countable() -> None:
+    polynomial = PolynomialRing(QQ, "x")
+
+    assert polynomial.cardinality() == aleph0
