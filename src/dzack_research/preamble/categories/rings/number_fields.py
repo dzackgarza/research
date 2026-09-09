@@ -297,6 +297,11 @@ class OwnedNumberFields(CategoryPacketMethods, Category):
             )
 
     class ElementMethods:
+        def inverse(self):
+            r"""Return the multiplicative inverse of this nonzero field element."""
+
+            return self.inverse_of_unit()
+
         @cached_method
         def multiplication_morphism(self):
             r"""Return multiplication by ``self`` on the selected finite ``QQ``-module presentation.
