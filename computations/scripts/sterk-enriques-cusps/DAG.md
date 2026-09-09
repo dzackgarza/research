@@ -80,6 +80,61 @@ $(v, F)$, not on $F$.
 | --- | --- | --- |
 | G | the boundary complex of the Baily–Borel compactification of $\Omega_-/\Gamma$ — equivalently $\Gamma\backslash\mathcal{T}(G)$ — is the explicit finite graph with five vertices of one type, nine of the other, and the edges of 3.4 | B3, C11, C12, D4 |
 
+## Coverage: every labelled statement of Chap. 2
+
+The DAG above is a subgraph of the paper, not the whole of it.  This table is
+the complete list of labelled statements in Chap. 2 §§1–3, so that a reader can
+see which are carried and which are deliberately not, with the reason.  A blank
+disposition would mean the filtering was done silently.
+
+| Item | Kind | Disposition |
+| --- | --- | --- |
+| 1.1–1.4 | setup | out — the $K3$ lattice $L$, the involution $I$, and the eigenlattices; ambient notation, carried implicitly by the coordinates of $L_-$ |
+| 2.1 | Definition | out — almost polarization and its degree; names the surfaces whose period space this is, needed for the mission description, not for the boundary complex |
+| 2.2, 2.3 | setup | out — the $K3$ double cover and its marking |
+| 2.4 | Proposition | out — identifies the two elliptic fibrations; geometry of the double cover |
+| 2.5 | Proposition | out — the same two pencils in terms of $\bar E'$ |
+| 2.6 | Remark | out — commentary on 2.4 |
+| 2.7, 2.8 | Definitions | **A0** |
+| 2.9 | Proposition | out — the period map is well defined; needed to call $\Omega_-/\Gamma$ a period space, not to compute its boundary |
+| 2.10 | Lemma | **A1** |
+| 2.11 | Remark | **A1a** — $\Gamma$ is *not* the group one might expect; a caveat on the definition in A1 |
+| 2.12 | setup | out — the period point and its image in $\Omega_-/\Gamma$ |
+| 2.13 | Lemma | **A2** |
+| 2.14 | Proposition | out — $P$ is injective; the Torelli half of the paper |
+| 2.15 | setup | **A6a** — defines the special sets $R_-$ and $S_-$ |
+| 2.16 | Lemma | **A4** |
+| 2.17 | Corollary | **A5** |
+| 2.18 | Corollary | **A6** |
+| 2.19 | Lemma | **A7** |
+| 2.20 | Proposition | out — characterizes special Enriques surfaces |
+| 2.21 | Remark | **A8** — $R_-$ is a single $\Gamma$-orbit, by 2.18 |
+| 3.1 | setup | out — recollection of the Satake–Baily–Borel construction; the content is D3, D4 |
+| 3.2.1 | Lemma | **B1** |
+| 3.2.2 | computation | **B2** |
+| 3.2.3 | Proposition | **B3** |
+| 3.2.4 | Remark | **D0** — five zero-dimensional *boundary components*; Sterk's own crossing from orbits to strata, so it depends on D4, not on B3 alone |
+| 3.3.1–3.3.3 | setup | **C1**, **C2** — the statement of Vinberg's results as used |
+| 3.3.4 | Lemma | **B4** |
+| 3.3.5–3.3.12 | computations | **C3**–**C8** |
+| 3.3.13 | method | **B8** |
+| 3.3.14 | Lemma | **B5** |
+| 3.3.15 | Proposition | **B6** |
+| 3.3.16 | Proposition | **B7** |
+| 3.3.17 | Remark | **C9** |
+| 3.3.18 | Remark | **C10** |
+| 3.3.19, 3.3.20 | computations | **D5** |
+| 3.4 | — | **C12**, **G** |
+
+The out-of-scope rows are one coherent block: the period map, the geometry of
+the $K3$ double cover, and Torelli.  They are what makes $\Omega_-/\Gamma$ the
+period space of Enriques surfaces rather than an anonymous quotient, so they
+belong in the mission description and would be the natural second mission on
+this paper.  They are not inputs to the boundary computation.
+
+Nodes added by this table and not in the strata above: **A1a** (2.11),
+**A6a** (2.15), **A8** (2.21), **D0** (3.2.4).
+
 ## What the DAG says about scope
 
 Strata A and B are ordinary lattice theory and are within reach of the pinned
