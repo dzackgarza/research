@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.hyperbolic_lattices import (
     number_field_vinberg_lattice,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 
 def _belolipetsky_lattice():
@@ -31,6 +32,11 @@ def _belolipetsky_lattice():
 
 
 def test_belolipetsky_number_field_vinberg_roots_stay_over_the_maximal_order() -> None:
+    r"""Archive engine seam: VinbergsAlgorithmNF raises exact maximal-order roots."""
+    assert engine_capabilities.provider_names(
+        "number_field_vinberg_root_enumeration"
+    ) == ("VinbergsAlgorithmNF-via-sage-julia-bridge",)
+
     lattice, selected = _belolipetsky_lattice()
     vinberg = number_field_vinberg_lattice(lattice, selected)
 
