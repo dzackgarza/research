@@ -689,7 +689,9 @@ with the item that requires it (`OWN-08`, `OWN-09`, `DEV-56`).
 
 - [ ] **`general-descent`**. **Needs:** `affine-descent`.
   Extend the same covering-family owner to non-affine overlaps and to the
-  corresponding locally ringed-space and manifold atlases.
+  corresponding locally ringed-space and manifold atlases. The locally
+  ringed-space part now retains non-affine overlaps, both embeddings, and
+  affine-refinement comparison maps; manifold atlas owners remain open.
   **Deliver:** an affine refinement of a represented non-affine overlap,
   comparison maps between refinements, and local-to-global gluing independent
   of the chosen refinement. Include smooth, topological, and `C^k`
@@ -1645,7 +1647,6 @@ behavior.
 | `ARCHIVE-tensor-center-20260909-0958` | archive reconciliation / center of a free tensor algebra | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/free_algebras.py; tests/algebras/test_tensor_center_archive.py` (write) | `HEAD` | 2026-09-09T09:58:00Z |
 | `ARCHIVE-dickson-ross-20260908-1210` | archive reconciliation / Dickson-Ross ternary isometry | Chat continuation 2026-09-08; `/home/dzack/research` | `tests/lattices/test_dickson_ross_archive.py` (write) | `a22c0dd58075865ec46a74da180726ab07aa9109` | 2026-09-08T12:10:00Z |
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
-| `DESCENT-ringed-covering-families-20260909-2312` | general descent / locally ringed covering families | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/covering_families.py; src/dzack_research/preamble/categories/schemes/ringed_spaces.py; src/dzack_research/preamble/categories/schemes/__init__.py; tests/schemes/test_ringed_covering_families.py` (write) | `95a97648` | 2026-09-09T23:12:00Z |
 | `ARCHIVE-isotropic-type-20260909-1816` | archive reconciliation / primitive isotropic cusp type | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/lattices.py; tests/lattices/test_isotropic_type_archive.py` (write) | `HEAD` | 2026-09-09T18:16:00Z |
 | `ARCHIVE-fraction-quotient-subobjects-20260909-0355` | archive reconciliation / fraction-field quotient cyclic subobjects | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py; tests/modules/test_fraction_field_quotients_archive.py` (write) | `HEAD` | 2026-09-09T03:55:00Z |
 | --- | --- | --- | --- | --- | --- |
