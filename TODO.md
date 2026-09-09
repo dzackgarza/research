@@ -1622,7 +1622,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-scheme-points-20260909-1451` | archive reconciliation / scheme points as actual morphisms | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/schemes/test_scheme_points_archive.py` (write) | `HEAD` | 2026-09-09T14:51:00Z |
 
 
 
