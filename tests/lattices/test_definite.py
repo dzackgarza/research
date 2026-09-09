@@ -525,6 +525,17 @@ def test_indefinite_complement_gluing_route_uses_full_finite_discriminant_orthog
     assert extension.index == 1
     assert extension.gluing_subgroup.cardinality() == 1
 
+    line_form = extension.line_discriminant_inclusion.domain()
+    line_label = line_form.module_generating_set()[0]
+    line_generator = line_form.module_generator(line_label)
+    times_five_morphism = line_form.Mor(line_form)(
+        {line_label: line_form.scalar_multiple(ZZ(5), line_generator)}
+    )
+    times_five = line_form.O()(times_five_morphism)
+    assert times_five(line_generator) == line_form.scalar_multiple(ZZ(5), line_generator)
+    assert times_five(line_generator) != line_generator
+    assert times_five(line_generator) != -line_generator
+
     classes = lattice.gluing_route_discriminant_classes(vector, vector)
     discriminant_group = lattice.discriminant_group().O()
     assert classes.cardinality() == discriminant_group.order()
