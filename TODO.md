@@ -1621,6 +1621,7 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
+| `ARCHIVE-cardinality-regression-repair-20260909-0732` | archive reconciliation / cardinality functor regression repair | Chat continuation 2026-09-09; `/home/dzack/research` | `tests/sets/test_cardinals_and_ordinals.py` (write) | `HEAD` | 2026-09-09T07:32:00Z |
 
 
 
