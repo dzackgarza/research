@@ -62,3 +62,38 @@ def test_opaque_callable_remains_an_explicit_placement_claim() -> None:
     placed = space(lambda point: point**2)
     assert placed(3) == 9
     assert (placed + space.zero())(3) == 9
+
+
+def test_archived_smooth_elementary_expression_is_owned_by_C_infinity() -> None:
+    smooth = C(Infinity, RR)
+    x = smooth.indeterminate()
+
+    element = smooth(sin(x) * exp(x) + x**3)
+    assert element.parent() is smooth
+
+
+def test_archived_l2_form_is_the_live_integral_pairing_without_a_finite_framing() -> None:
+    space = Lp(2)
+    x = space.indeterminate()
+    linear = space(x * exp(-(x**2)))
+    quadratic = space((x**2) * exp(-(x**2)))
+
+    assert space.b(linear, quadratic) == space.b(quadratic, linear)
+    assert space.q(linear) == space.b(linear, linear)
+    assert not hasattr(space, "module_generating_set")
+
+
+def test_archived_integral_fallback_decides_two_nonstructural_symbolic_cases() -> None:
+    space = Lp(2)
+    x = SR.var("x")
+
+    assert space(exp(-abs(x)))(0) == 1
+    with pytest.raises(ValueError, match="not square-integrable"):
+        space(exp(-x))
+
+
+def test_archived_finite_formed_module_still_has_a_gram_matrix() -> None:
+    from dzack_research.preamble.all import Lattices, ZZ
+
+    root_lattice = Lattices(ZZ)("A2")
+    assert root_lattice.gram_matrix().list() == [-2, 1, 1, -2]
