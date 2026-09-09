@@ -160,6 +160,73 @@ class EichlerOrthogonalFactorizationDatum(SageObject):
         return f"Stable/discriminant factorization of {self.isometry()}"
 
 
+class TwoUFullGeneratingDatum(SageObject):
+    r"""Finite generators supplied by the ``2U`` approximate-model theorem.
+
+    Let ``A`` be the finite-generator approximate subgroup, let ``v`` be the
+    selected primitive base vector, and let ``r_i`` run through the approximate
+    orbit representatives lying in the full ``O(L)``-orbit of ``v``.  Choose
+    ``t_i`` with ``t_i(v)=r_i`` and generators of ``P_v=Stab(v)``.  Since the
+    approximate-model oracle says every vector in that full orbit is
+    ``A``-equivalent to some ``r_i``, the elementary orbit argument gives
+
+    ``O(L) = < A, P_v, t_i >``.
+
+    The object retains precisely those finite families.  It does not claim a
+    word algorithm in the approximate subgroup beyond the sourced oracle.
+    """
+
+    def __init__(
+        self,
+        model,
+        square,
+        base_vector,
+        approximate_generators,
+        stabilizer_generators,
+        orbit_representatives,
+        orbit_transporters,
+        generating_family,
+    ) -> None:
+        self._model = model
+        self._square = square
+        self._base_vector = base_vector
+        self._approximate_generators = approximate_generators
+        self._stabilizer_generators = stabilizer_generators
+        self._orbit_representatives = orbit_representatives
+        self._orbit_transporters = orbit_transporters
+        self._generating_family = generating_family
+
+    def model(self):
+        return self._model
+
+    def lattice(self):
+        return self.model().lattice()
+
+    def square(self):
+        return self._square
+
+    def base_vector(self):
+        return self._base_vector
+
+    def approximate_generators(self):
+        return self._approximate_generators
+
+    def stabilizer_generators(self):
+        return self._stabilizer_generators
+
+    def orbit_representatives(self):
+        return self._orbit_representatives
+
+    def orbit_transporters(self):
+        return self._orbit_transporters
+
+    def generating_family(self):
+        return self._generating_family
+
+    def __repr__(self) -> str:
+        return f"Finite 2U orthogonal generating datum for {self.lattice()}"
+
+
 class TwoUEichlerModel(SageObject):
     r"""The represented determinant model ``U + U + K`` used by Eichler's theorem.
 
@@ -704,6 +771,88 @@ class TwoUEichlerModel(SageObject):
             name=f"Rank-decreasing stabilizer recursion of square {square} in {self.lattice()}",
         )
 
+    def full_generating_data(self, square):
+        r"""Return the finite theorem-backed generators of ``O(2U+K)``.
+
+        The finite approximate family and its covering vectors are the sourced
+        ``2U`` approximate model.  Restrict that covering list to one full
+        orthogonal orbit, retain one transporter from the selected base vector
+        to every listed representative, and adjoin exact generators of the
+        base stabilizer.  The approximate-oracle property then proves the
+        returned finite family generates the whole orthogonal group.
+        """
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            finite_indexed_family,
+        )
+
+        lattice = self.lattice()
+        orthogonal_group = lattice.O()
+        representatives = self.covering_vector_representatives(square)
+        if int(representatives.cardinality()) == 0:
+            raise ValueError("the selected square has no primitive approximate-orbit representative")
+        base_label = next(iter(representatives.index_set()))
+        base_vector = representatives[base_label]
+        selected_labels = []
+        transporters = {}
+        for label in representatives.index_set():
+            transporter = orthogonal_group.vector_equivalence_witness(
+                base_vector,
+                representatives[label],
+            )
+            if transporter is None:
+                continue
+            selected_labels.append(label)
+            transporters[label] = transporter
+        orbit_labels = finite_ordered_set(tuple(selected_labels))
+        orbit_representatives = finite_indexed_family(
+            orbit_labels,
+            lambda label: representatives[label],
+            name=f"Approximate representatives in the selected full orbit of square {square}",
+        )
+        orbit_transporters = finite_indexed_family(
+            orbit_labels,
+            lambda label: transporters[label],
+            name=f"Full-orthogonal transporters from {base_vector}",
+        )
+        approximate = self.approximate_generating_family()
+        stabilizer = orthogonal_group.vector_stabilizer_generators(base_vector)
+        generation_labels = finite_ordered_set(
+            tuple(("approximate", label) for label in approximate.index_set())
+            + tuple(("stabilizer", generator) for generator in stabilizer)
+            + tuple(("transporter", label) for label in orbit_labels)
+        )
+
+        def generator(label):
+            kind, datum = label
+            match kind:
+                case "approximate":
+                    return approximate[datum]
+                case "stabilizer":
+                    return datum
+                case "transporter":
+                    return orbit_transporters[datum]
+                case _:
+                    raise ValueError(f"unknown full-generation label {kind!r}")
+
+        generating_family = finite_indexed_family(
+            generation_labels,
+            generator,
+            name=f"Theorem-backed generators of O({lattice})",
+        )
+        return TwoUFullGeneratingDatum(
+            self,
+            lattice.base_ring()(square),
+            base_vector,
+            approximate,
+            stabilizer,
+            orbit_representatives,
+            orbit_transporters,
+            generating_family,
+        )
+
     def isometry_to(self, other):
         r"""Return the represented recursive isometry ``2U+K -> 2U+K'``.
 
@@ -882,6 +1031,7 @@ __all__ = [
     "EichlerCoveringOrbitDatum",
     "EichlerOrthogonalFactorizationDatum",
     "EichlerRecursiveStabilizerDatum",
+    "TwoUFullGeneratingDatum",
     "TwoUEichlerModel",
     "are_in_one_stable_orbit",
     "covering_discriminant_classes",

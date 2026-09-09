@@ -65,3 +65,25 @@ def test_source_defined_approximate_family_has_the_expected_four_n_shape() -> No
 
     assert int(family.cardinality()) == 4 * rank
     assert all(generator in model.lattice().O() for generator in family)
+
+
+def test_full_generation_data_retains_all_three_sources_of_the_orbit_argument() -> None:
+    integers = _own_ring(SageZZ)
+    model = two_u_eichler_model(Lattices(integers)("A2"))
+    lattice = model.lattice()
+    datum = model.full_generating_data(integers(-2))
+
+    assert datum.base_vector().q() == -2
+    assert datum.approximate_generators().cardinality() == 4 * int(lattice.module_rank())
+    assert datum.orbit_representatives().cardinality() > 0
+    assert datum.orbit_transporters().index_set() is datum.orbit_representatives().index_set()
+    assert all(
+        generator(datum.base_vector()) == datum.base_vector()
+        for generator in datum.stabilizer_generators()
+    )
+    for label in datum.orbit_representatives().index_set():
+        assert (
+            datum.orbit_transporters()[label](datum.base_vector())
+            == datum.orbit_representatives()[label]
+        )
+    assert all(generator in lattice.O() for generator in datum.generating_family())
