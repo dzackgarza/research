@@ -3,10 +3,8 @@ r"""Descent and gluing for represented schemes, modules, and algebras."""
 from collections.abc import Mapping
 from itertools import combinations, permutations
 
-from sage.categories.category import Category
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
-from sage.misc.classcall_metaclass import typecall
 from sage.schemes.generic.glue import GluedScheme as SageGluedScheme
 from sage.schemes.generic.scheme import Scheme as SageScheme
 from sage.structure.element import ModuleElement
@@ -23,7 +21,10 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
@@ -44,6 +45,9 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     restrict_scalars,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    DistinguishedAffineCovers,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     OpenImmersions,
@@ -1486,33 +1490,26 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
                 )
 
 
-_MODULE_GLUING_DATA_CATEGORIES = {}
-
-
 class ModuleGluingHomCategoryConstruction(HomCategoryConstruction):
     def fixed_category_class(self):
         return ModuleGluingHomset
 
 
-class ModuleGluingData(CategoryPacketMethods, Category):
+class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""Module descent data on one represented distinguished affine cover."""
 
     @staticmethod
-    def __classcall__(category_class, cover):
-        key = id(cover)
-        cached = _MODULE_GLUING_DATA_CATEGORIES.get(key)
-        if cached is not None and cached.cover() is cover:
-            return cached
-        category = typecall(category_class, cover)
-        _MODULE_GLUING_DATA_CATEGORIES[key] = category
-        return category
+    def __classcall__(cls, cover):
+        return OwnedParameterizedCategory.__classcall__(cls, cover)
 
     def __init__(self, cover) -> None:
-        self._cover = cover
-        Category.__init__(self)
+        OwnedParameterizedCategory.__init__(self, cover)
+
+    def parameter_category(self):
+        return DistinguishedAffineCovers()
 
     def cover(self):
-        return self._cover
+        return self.base()
 
     def super_categories(self):
         return [Objects()]
@@ -1961,7 +1958,6 @@ class ModuleGluingHomset(CategoricalHomset):
         )
 
 
-_ALGEBRA_GLUING_DATA_CATEGORIES = {}
 
 
 def _algebra_maps_agree_on_generators(left, right) -> bool:
@@ -1994,25 +1990,21 @@ class AlgebraGluingHomCategoryConstruction(HomCategoryConstruction):
         return AlgebraGluingHomset
 
 
-class AlgebraGluingData(CategoryPacketMethods, Category):
+class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
     r"""Finite algebra descent data on one represented distinguished affine cover."""
 
     @staticmethod
-    def __classcall__(category_class, cover):
-        key = id(cover)
-        cached = _ALGEBRA_GLUING_DATA_CATEGORIES.get(key)
-        if cached is not None and cached.cover() is cover:
-            return cached
-        category = typecall(category_class, cover)
-        _ALGEBRA_GLUING_DATA_CATEGORIES[key] = category
-        return category
+    def __classcall__(cls, cover):
+        return OwnedParameterizedCategory.__classcall__(cls, cover)
 
     def __init__(self, cover) -> None:
-        self._cover = cover
-        Category.__init__(self)
+        OwnedParameterizedCategory.__init__(self, cover)
+
+    def parameter_category(self):
+        return DistinguishedAffineCovers()
 
     def cover(self):
-        return self._cover
+        return self.base()
 
     def super_categories(self):
         return [Objects()]

@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
     OwnedCategory,
     OwnedParameterizedCategory,
 )
@@ -180,6 +181,20 @@ def _localization_restriction_map(source, target):
         return numerator * denominator.inverse_of_unit()
 
     return ring_morphism(source, target, restrict)
+
+
+class DistinguishedAffineCovers(OwnedCategory):
+    r"""The owned category of represented distinguished affine covers."""
+
+    def super_categories(self):
+        return [Objects()]
+
+    def __contains__(self, candidate) -> bool:
+        return isinstance(candidate, DistinguishedAffineCover)
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "distinguished affine covers"
 
 
 class DistinguishedAffineCover(SageObject):
@@ -676,6 +691,7 @@ __all__ = [
     "AffineModuleSheaf",
     "CoverRefinement",
     "DistinguishedAffineCover",
+    "DistinguishedAffineCovers",
     "LocallyRingedSpaces",
     "QuasiCoherentSheaves",
     "RingedSpaces",
