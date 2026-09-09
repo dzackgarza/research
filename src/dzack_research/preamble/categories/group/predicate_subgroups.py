@@ -153,7 +153,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             )
 
         def finite_character_quotient(self):
-
+            if not self.character_data_is_complete():
+                raise ValueError(
+                    "the retained finite characters do not define this whole subgroup"
+                )
             return OrthogonalCharacterQuotient(self)
 
         def vector_orbit_representatives(self, square):
