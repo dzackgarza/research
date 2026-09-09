@@ -485,98 +485,118 @@ what the Sage reconstruction computes.  Naming the type is not free, and the
 node that would carry the classification is one of the two deleted as
 fabricated, so it is currently unrecorded.
 
-## Terminality audit
+## Terminality verdicts
 
-A node is terminal only when its next dependency is in Mathlib at the pinned
-revision (`FDC-11`).  Counting the graph as it stands: 139 node rows across
-strata A (8), B (8), C (12), D (8), BB (8), Bo (5), Cl (6), Nk (5), V (13),
-E (13), F (46).
+A node is **terminal** when its next dependency is available: in Mathlib at the
+pinned revision, or in a Lean corpus listed in the `lean-categories`
+formalization source registry (`AGENTS.md` §"Formalization source registry",
+resolved 2026-08-14).  Everything else is **greenfield** — no formalization
+exists anywhere the registry knows of, so the node must be authored.
 
-### Terminal, or one step from it
+Registry surfaces swept: the Mathlib subtrees table; *Quadratic forms, lattices,
+sphere packing*; *Algebra, number theory, algebraic geometry*; *Analysis,
+probability, geometry, dynamics*; *Category theory, higher structures*.
 
-These bottom out in things Mathlib has — free $\mathbb{Z}$-modules, bilinear and
-quadratic forms, matrices, root systems, $p$-adic integers, the upper half plane
-and congruence subgroups:
+### Terminal against Mathlib
 
-F1.1–F1.8 (lattices, evenness, signature, discriminant, $H$ and $E_8$, dual and
-divisor, primitivity), F1.9–F1.10 (forms on finite abelian groups, the
-discriminant-quadratic form), F2.1–F2.2, F2.10–F2.11 ($E_{f,x}$ and
-$\mathcal{E}(L)$ are explicit formulas), F3.1 (the genus, given $p$-adic
-lattices), F4.1 (root lattices and types), V1–V5 (the $C$-matrix and
-$C^-$-polyhedron definitions), D8 (via `UpperHalfPlane` and `Gamma0`).
+| Nodes | Mathlib substrate |
+| --- | --- |
+| F1.1–F1.4, F1.7, F1.8 | `ZLattice`, `LinearAlgebra/BilinearForm/`, `LinearAlgebra/QuadraticForm/`, `Matrix`, `dualSubmodule` |
+| F1.9, F1.10 | finite abelian groups, `QuadraticForm`, `ZMod`; the target $\mathbb{Q}/2\mathbb{Z}$ is `QuotientAddGroup` |
+| F2.1, F2.2, F2.10, F2.11 | group homomorphisms and explicit formulas over the above |
+| F2.3, F2.4 | reflections and Cartan–Dieudonné live in `LinearAlgebra/QuadraticForm/`; **the modified Brieskorn convention is ours to state** |
+| F4.1 | `LinearAlgebra/RootSystem/`, `Matrix/Cartan.lean` (finite types through $E_8$) |
+| D8 | `UpperHalfPlane`, `CongruenceSubgroup.Gamma0`/`Gamma1` |
+| Pa1 | `Padics`, `PadicInt`, `QuadraticForm` |
 
-### Not terminal, with the descent named
+### Terminal against a registry corpus
 
-| Node(s) | What it descends into | Where |
+| Nodes | Corpus | Status |
 | --- | --- | --- |
-| F2.3 | Cartan–Dieudonné and the reflection decomposition; **and a convention**: Scattone's $\sigma_-$ follows Brieskorn and is a modified spinor norm | Scattone §3.6 |
-| F3.1, Nk2 | lattices over $\mathbb{Z}_p$, the canonical $p$-adic forms $q^{(p)}_\theta$, $u^{(2)}_\pm$, $v^{(2)}_\pm$ | Nikulin §1, 8°–9° |
-| F1.11, F1.12, Nk3, Nk4, Nk5 | Nikulin's proofs, and conditions this graph has not transcribed | Nikulin 1.10.1, 1.13.2, 1.14.2 |
-| F4.2 | Niemeier's classification | Niemeier [24] via Scattone 3.5.1 |
-| V11b | Proposition 4’s correctness proof, and the sequence being possibly infinite | Vinberg 1972 Prop. 4 |
-| V10 | Coxeter's classification of $C^+$ and $C^0$ diagrams | Coxeter, via Vinberg 1975 §4 |
-| V12, V13 | the recovery of an infinite vertex, and its primitivity hypothesis | Vinberg 1983 §1.9 |
-| BB1–BB3 | algebraic groups and their parabolics; hermitian symmetric spaces; Harish-Chandra realizations | Baily–Borel §§1–2; Korányi–Wolf [27] |
-| BB8 | automorphic forms and Poincaré–Eisenstein series | Baily–Borel §§5–8 |
-| Bo3, Bo4 | Kwack's extension theorem, the Kobayashi pseudo-distance, Siegel sets and reduction theory | Borel 1972 §§1–3, citing Kwack [12], Kobayashi [10] |
-| E1 | complex manifolds and compact complex surfaces | BPV Chaps. I–IV |
-| E9 | global Torelli for $K3$ | Piatetski-Shapiro–Shafarevich [17], via Horikawa I Thm 7.2 |
+| F1.5 ($E_8$), F4.1 (root lattices) | [`thefundamentaltheor3m/Sphere-Packing-Lean`](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean) — Viazovska dimension-8, $E_8$ lattice | **already integrated** into `lean-categories` at `Integration/SpherePacking` and `LeanCategoriesSpherePacking/E8` |
+| Pa2–Pa5, and the $p=2$ conditions in Nk3–Nk5 | [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) — dyadic Hilbert symbol over $\mathbb{Q}_2$, Serre's evaluation formula, 2-adic square-class facts | **sorry-free**, self-contained, Apache 2.0 |
+| F3.1, F3.2 (the local invariants under the genus) | [`mariainesdff/HassePrinciple`](https://github.com/mariainesdff/HassePrinciple) — Hilbert symbols, Hasse–Minkowski over general fields | definitions in place, **key choice-independence proofs are `sorry`** — a partial route, not a supplier |
+| E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) — covering spaces and universal covers | partial: gives the covering-space language, not $K3$ surfaces |
+| F1.10, F1.7, F2.1, F2.4–F2.5, F3.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
 
-### Absent from both Mathlib and `lean-categories`
+### Greenfield — no formalization in Mathlib or the registry
 
-$\mathcal{E}(L)$ and the Eichler transformations (F2.10–F2.11); Niemeier
-(F4.2); everything in BB, Bo and E.
+| Nodes | What must be authored | Nearest thing that exists |
+| --- | --- | --- |
+| F2.5–F2.9 | $O^*(L) = \tilde O(L)\cap O_-(L)$, its index-2 relation, and surjectivity of $\tau$ on $O_-(L)$ | `lean-categories` spinor-norm files (unverified route) |
+| F2.12, F2.13 | Eichler's lemma and Proposition 3.7.3 | nothing; the corpus has no Eichler |
+| F3.3, F3.4, Nk3–Nk5, F1.11, F1.12 | Nikulin's existence, uniqueness and one-class-plus-surjectivity theorems; the Minkowski–Siegel weight | nothing |
+| F4.2 | Niemeier's classification of the 24 lattices | nothing |
+| V1–V13 | $C^\pm$/$C^0$ matrices, $C^-$-polyhedra, Lemmas 2–5, Theorem 1 with (L1)–(L5), Coxeter's diagram classification, Vinberg's algorithm and Proposition 4, the infinite-vertex recovery and its primitivity lemma | Mathlib has finite Cartan matrices and Coxeter groups; **no affine classification, no Lobachevskii space, no fundamental polyhedron** |
+| BB1–BB8 | parabolic $\mathbb{Q}$-subgroups, hermitian symmetric domains, Harish-Chandra realizations, rational boundary components, the Satake topology, Baily–Borel's Theorem 10.11 | nothing — the registry has no algebraic-groups-with-parabolics corpus and no symmetric-space corpus |
+| Bo1–Bo5 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance, Siegel sets and reduction theory | nothing |
+| E1, E3–E13 | compact complex surfaces, Enriques and $K3$ surfaces, elliptic pencils, Horikawa's isometry, global Torelli, the period map | nothing; `nullstellensatz` gives local complex-analytic geometry only |
+| A0–A7, B1–B8, C3–C12, D1–D7, Cl1–Cl6 | the paper's own content | by construction |
 
-### Two audit points settled by computation
+### What the classification says
 
-$L_- = U \oplus U(2) \oplus E_8(-2)$ has signature $(2,10)$, so $t_{(+)} = 2$,
-$t_{(-)} = 10$, $\mathrm{rk} = 12$.  Its discriminant group is
-$A_{L_-} = \big(U(2)^*/U(2)\big)\oplus\big(E_8(-2)^*/E_8(-2)\big) \cong
-(\mathbb{Z}/2)^2\oplus(\mathbb{Z}/2)^8 = (\mathbb{Z}/2)^{10}$, so
-$\ell(A_{L_-}) = 10$, concentrated at $p = 2$: $\ell(A_{q_p}) = 0$ for odd $p$.
+Every node of strata A, B, C and D is greenfield **by construction** — they are
+the paper's own results, and the point of the project is to prove them.
 
-**A3 cannot be justified by Nikulin's Corollary 1.13.3.**  That corollary — the
-convenient existence-and-uniqueness form — requires
-$t_{(+)} + t_{(-)} > 2 + \ell(A_q)$.  Here $12 > 12$ is **false**, by exactly one.
-So the easy route fails, and A3 must go through the full Theorem 1.13.2, whose
-conditions (2) and (3) are alternatives.  Condition (2) is vacuous for odd $p$
-since $\mathrm{rk}\,S = 12 \ge 2 + 0$.  Condition (3) at $p=2$ offers
-$\mathrm{rk}\,S \ge 2 + \ell(A_{q_2}) = 12$, which **holds with equality**, so
-1.13.2 applies via its first alternative at 2.  *The margin is one, and it is
-the kind of thing a prose citation of "Nikulin 1.13.2" hides completely.*
+The foundations split cleanly.  The **lattice-theoretic base is essentially
+solved**: F1 is Mathlib plus `lean-categories`, $E_8$ arrives through
+Sphere-Packing-Lean, and the 2-adic layer has a sorry-free supplier in
+`gq2-lean`.  The **classification theorems are not**: Nikulin, Niemeier,
+Minkowski–Siegel and Eichler have no formalization anywhere the registry knows.
 
-**A2's hypothesis holds.**  Nikulin 1.14.2 (= Nk5, = Scattone 3.3.1) requires
-(a) $\mathrm{rk}\,T \ge \ell(A_{T_p}) + 2$ for all $p \ne 2$: here $12 \ge 2$,
-satisfied; and (b) *if* $\mathrm{rk}\,T = \ell(A_{T_2})$ then a condition on
-$q_{T_2}$ — but $12 \ne 10$, so (b) is vacuous.  Hence the genus of $L_-$
-contains one class and $O(L_-)\to O(q_{L_-})$ **is** surjective, which is what
-A2 asserts.
+Three whole strata are greenfield with nothing nearby: **V** (hyperbolic
+reflection groups and Vinberg), **BB** (algebraic groups, symmetric domains,
+Baily–Borel) and **E** (complex surfaces, $K3$, Torelli).  Those are the real
+cost of the target, and each is a formalization programme in its own right
+rather than a node.
 
-This also resolves the earlier worry that Scattone's rank condition
-($\mathrm{rk}\,L > \ell(G_L)+2$) and Nikulin's ($\mathrm{rk}\,T \ge
-\ell(A_{T_p})+2$ per odd prime) might differ.  They do differ, and for $L_-$ it
-matters: Scattone's form would read $12 > 12$, false, while Nikulin's is
-satisfied.  **Nikulin's is the one that applies**, and any node stated with
-Scattone's phrasing would be unusable here.
 
-### Open audit points, not gaps in the graph
+## Open audit points
+
+Questions about statements already in the graph, not missing nodes.
 
 1. **Sign convention.** Scattone's $E_8$ is $\mathbb{Z}^8$ with the *negative*
-   Cartan matrix; Sterk writes $E_8(-2)$; the Sage reconstruction uses
-   $-2\times$ the positive Cartan matrix.  Fix once, check every node.
-2. **Spinor norm convention.** Scattone's $\sigma_-$ is Brieskorn's modified
-   form, and he says so.
-3. ~~Rank hypotheses~~ — **settled above**: the two conditions differ, and for
-   $L_-$ Nikulin's holds while Scattone's fails.
-4. ~~A3's conditions~~ — **settled above**: 1.13.3 fails by one, 1.13.2 applies
-   through its first alternative at $p = 2$.
+   Cartan matrix, flagged in his §3.1 as a deviation; Sterk writes $E_8(-2)$;
+   the Sage reconstruction uses $-2\times$ the positive Cartan matrix.
+   $U\oplus U(2)\oplus E_8(-2)$ denotes different lattices under the readings.
+   Fix once, check every node.
+2. **Spinor norm convention.** Scattone's $\sigma_-$ follows Brieskorn and is a
+   modified form of the usual spinor norm; he says so at §3.6.  Any node reading
+   "the spinor norm" unqualified is ambiguous.
+3. ~~Rank hypotheses~~ — **settled below**.
+4. ~~A3's conditions~~ — **settled below**.
 5. **Borel's torsion-free hypothesis** (Bo1) against Sterk's $\Gamma$, which
-   contains $-1$.
+   contains $-1$; Borel's Remark 3.8 records that with torsion $V$ need not be
+   hyperbolically imbedded in $V^*$.
 6. **V13's primitivity hypothesis** must be checked for each of the five
-   diagrams, since Sterk reads isotropic vectors off parabolic subdiagrams
-   throughout §3.3 and needs them primitive.
-7. **C7** disagrees with the source; the Sage reconstruction yields thirteen
+   diagrams: Vinberg states that $u(\Sigma_0)$ need not be primitive, and Sterk
+   reads isotropic vectors off parabolic subdiagrams throughout §3.3.
+7. **C7 disagrees with the source.**  The Sage reconstruction yields thirteen
    maximal parabolic subdiagrams in six shapes against Sterk's four types.
+
+### Two settled by computation
+
+$L_-$ has signature $(2,10)$, rank 12, discriminant group
+$(\mathbb{Z}/2)^2\oplus(\mathbb{Z}/2)^8 = (\mathbb{Z}/2)^{10}$, so
+$\ell(A_{L_-}) = 10$ concentrated at $p=2$ and $\ell(A_{q_p}) = 0$ for odd $p$.
+
+**A3 cannot use Nikulin's Corollary 1.13.3**, the convenient
+existence-and-uniqueness form: it requires $t_{(+)}+t_{(-)} > 2+\ell(A_q)$, and
+$12 > 12$ is **false by exactly one**.  A3 must go through the full Theorem
+1.13.2, whose conditions are alternatives — (2) is vacuous for odd $p$ since
+$12 \ge 2+0$, and (3) at $p=2$ offers $\mathrm{rk}\,S \ge 2+\ell(A_{q_2}) = 12$,
+which holds **with equality**.  The theorem applies through its first
+alternative at 2, with a margin of one.
+
+**A2's hypothesis holds.**  Nikulin 1.14.2 needs $\mathrm{rk}\,T \ge
+\ell(A_{T_p})+2$ for odd $p$ — $12\ge 2$ — and a condition at 2 firing only when
+$\mathrm{rk}\,T = \ell(A_{T_2})$; since $12\ne 10$ it is vacuous.  So the genus
+of $L_-$ has one class and $O(L_-)\to O(q_{L_-})$ is surjective.
+
+This resolves the discrepancy between the two rank conditions.  They differ, and
+here it decides: Scattone's $\mathrm{rk}\,L > \ell(G_L)+2$ reads $12>12$ and
+**fails**; Nikulin's is satisfied.  **Nikulin's is the one that applies**, and a
+node stated with Scattone's phrasing would be unusable for $L_-$.
 
 ## Coverage: every labelled statement of Chap. 2
 
