@@ -1628,6 +1628,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-level-duplicate-cleanup-20260910-1944` | archive reconciliation / remove duplicate lattice-level regression | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/lattices/test_lattice_level_exponent_archive.py` (write) | `HEAD` | 2026-09-10T19:44:00Z |
+
 
 
 
