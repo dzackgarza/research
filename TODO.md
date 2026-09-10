@@ -1627,7 +1627,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-galois-lift-coset-20260910-0019` | archive reconciliation / Galois lift-coset ambient semantics | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/galois_quotient.py; tests/groups/test_galois_lift_coset_archive.py` (write) | `d0dbf7af485d763dd5ec21879d5ecdf7de820eda` | 2026-09-10T00:19:00Z |
 
 
 
