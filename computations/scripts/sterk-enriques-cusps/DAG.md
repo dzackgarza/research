@@ -1563,7 +1563,7 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 | the **order of vanishing** of a rational function at such a point | **conditionally, and it needs a hypothesis the node did not state**: `IsDiscreteValuationRing.addVal` (`RingTheory/DiscreteValuationRing/Basic.lean`) is the valuation, and it applies once the local ring at a codimension-one point *is* a DVR, which needs normality.  That chain is now **E16** |
 | the principal divisor, and linear equivalence | over E16 and a quotient — **yes, once E16 exists** |
 
-### Eight atoms and Lo10 now exist in `lean/Atoms.lean`
+### Eight atoms, Lo10, and F1.16's Gauss sum now exist in `lean/Atoms.lean`
 
 The searching stopped where it had to: five sweeps established that these
 notions are in no indexed Lean code.  The remedy for that is to write them, and
@@ -1580,6 +1580,7 @@ error, no warning, no `sorry` and no `axiom`.
 | E14's deck involution | `Sterk.DeckTransformation (f : E → X)` — a homeomorphism of the total space with `over_base` — its `CoeFun`, `id`, `IsInvolution`, and `IsInvolution.symm_apply` |
 | V1's nondecomposability | `Sterk.Matrix.IsDecomposable` and `IsIndecomposable`: a re-indexing $n \simeq \iota \oplus \kappa$ with both parts nonempty and the off-diagonal blocks zero |
 | Pa1's semigroup of classes | `Sterk.PadicForm` (a rank and a form on `Fin rank → ℤ_[p]`, which is the choice of representatives that makes the collection a set), `Isometric` with its refl/symm/trans, `isometricSetoid`, `orthogonalSum` — `QuadraticMap.prod` carried along `finSumFinEquiv` and `sumArrowLequivProdArrow` — and `PadicFormClasses` as the quotient |
+| F1.16's Gauss sum | `Sterk.ratCircleToRealCircle : AddCircle (2 : ℚ) →+ AddCircle ((2 : ℚ) : ℝ)`, because a discriminant form is valued in `ℚ/2ℤ` while the circle character is stated for a real period; **`Sterk.discriminantGaussSum`**, the sum over `AddCircle.toCircle_addChar`; `discriminantGaussSum_zero`, that the zero form's sum is the group's order; and `MilgramStatement`, the theorem written out as a proposition about the data.  Mathlib's `gaussSum` is for a `MulChar`/`AddChar` pair on a finite ring, which a discriminant form is not, so this object existed nowhere |
 | Lo10, **complete** | `Sterk.lorentz` (the standard form $-x_0^2+\sum_{i>0}x_i^2$ on `Fin (n+1) → ℝ`, which is Vinberg's $E^{n,1}$), `negativeCone` with `upper` and `lower`, `lorentz_continuous`, and the substantive lemma **`ne_zero_of_mem_negativeCone`** — on the cone the zeroth coordinate never vanishes, since if it did the form would be a sum of squares there.  From it: `negativeCone_eq_union`, `upper_disjoint_lower`, `isOpen_upper`, `isOpen_lower`.  Together these say the cone is disconnected by the sign of the zeroth coordinate, which is the half Sterk and Vinberg use when they fix $V_+$.  The other half is proved too: `lorentzPair` with `lorentz_smul_add`, then **`lorentzPair_neg_of_mem_upper`** — the reverse Cauchy–Schwarz inequality, that the pairing of two future-directed vectors is negative, over `Finset.sum_mul_sq_le_sq_mul_sq` — and from it `convex_upper` and `convex_lower`, the second by negation through `lorentz_neg`.  `negativeCone_two_components` collects the six facts that say **exactly two components**: each sheet preconnected, disjoint, open, and covering |
 | E15's Weil divisors | `Sterk.codimOnePoints` and `Sterk.WeilDivisor (X : Scheme) := codimOnePoints X →₀ ℤ` with its `AddCommGroup` instance and `WeilDivisor.single`.  **The order convention is the substance here**: Mathlib's `specializationPreorder` has $x \le y \iff y \leadsto x$, so a generic point is a *greatest* element and codimension is `Order.coheight`, not `Order.height` — the floor row for E15 had named `height`, which is the wrong end |
 
@@ -1602,11 +1603,12 @@ several files of work, not ten lines, and writing it badly — a definition whos
 class of models is empty — would be worse than leaving it named.  The dimension
 stratification and the $\mathcal{Q}$-functions sit above it.
 
-One theorem remains with it.  Lo10 is **done** — both halves, 21 theorems in
-the file.  F1.16, Milgram's congruence, is untouched and is the hardest single
-item in the graph: it needs the Gauss sum of a discriminant form and its absolute
-value, over `gaussSum` and `AddChar`, and it is a genuine piece of number
-theory rather than a definition.
+Lo10 is **done**, both halves.  F1.16 now has its **object** — the Gauss sum of
+a discriminant form, which existed nowhere — and `MilgramStatement` writes the
+theorem out as a proposition, marked in the file as a statement and not a proof.
+What is unproved is the theorem itself: the absolute value of that sum and the
+reduction to the $p$-adic pieces.  That is number theory, and the largest single
+proof obligation in the graph.
 
 ### Where the decomposition stops, and why it stops there
 
