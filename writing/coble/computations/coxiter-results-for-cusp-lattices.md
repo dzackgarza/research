@@ -90,4 +90,4 @@ The lists are the **full** sets of elliptic subdiagrams, before quotienting by d
 The notebook step that reduced them to orbits (`summarize_maximal_orbits`) has its outputs cleared, so the orbit counts do not survive; see [[computational-toolchain-and-recipe]].
 :::
 
-Related: [[root-vectors-and-folded-sterk-diagrams]], [[computational-toolchain-and-recipe]].
+Related: [[root-vectors-and-folded-sterk-diagrams]], [[computational-toolchain-and-recipe]], [[sterk-root-counts-and-computed-chambers]].

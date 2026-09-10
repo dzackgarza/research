@@ -76,6 +76,26 @@ The two root types of \Cref{def:2elementary-roots} are exactly the primitive vec
 For a norm $-4$ vector, integrality requires $\beta_L(v,L)\subseteq 2\ZZ$, which is precisely the condition $\div_L(v) = 2$; then $s_v(x) = x + \tfrac12\beta_L(v,x)\,v$ lies in $\Orth(L)$.
 :::
 
+::: {.Theorem #thm:2elementary-roots-characterization}
+### The two root types exhaust the roots
+
+Let $L$ be an even $2$-elementary lattice and let $v\in L$ satisfy $v^2 < 0$.
+Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and
+$\div_L(v) = 2$.
+The list of \Cref{def:2elementary-roots} is therefore exhaustive, not merely a
+selection of two convenient cases.
+:::
+
+::: {.proof}
+
+This is [@Ale22 §2]; that the two conditions are sufficient is
+\Cref{rmk:root-integrality}, and the content of the theorem is that no other norm
+occurs.
+For $L$ $2$-elementary one has $\div_L(v)\in\ts{1, 2}$, so the integrality
+condition $2\div_L(v)/v^2\in\ZZ$ of \Cref{def:k-root} restricts $v^2$ to
+$\ts{-2, -4}$, with $\div_L(v) = 2$ forced in the second case.
+:::
+
 ## Coroots and the weight space
 
 ::: {.Definition #def:coroot-weight}
@@ -110,6 +130,17 @@ The intersection pairing induces a hyperbolic metric on $L_\RR$, and the associa
   $$
   the image of the positive cone in projective space.
 
+In the projective model the boundary $\partial\mathbb{H}^n_L$ is the image $\PP(\ts{v\in L_\RR \mid v^2 = 0})$ of the isotropic cone, geodesics are straight line segments, and angles are distorted.
+The **Poincaré ball** and **upper half-space** charts are the two standard conformal models, in which dihedral angles agree with the angles between the bounding hyperplanes and geodesics are circular arcs meeting the boundary sphere orthogonally.
+
+The hyperbolic distance between points is recovered from the form: for $v, w\in C_L^+$,
+$$
+\cosh d\!\left([v],[w]\right) = \frac{\beta_L(v,w)}{\sqrt{v^2\,w^2}}
+,
+$$
+the right-hand side being at least $1$ by the reverse Cauchy--Schwarz inequality on the positive cone, with equality exactly when $[v] = [w]$.
+On the unit hyperboloid, where $v^2 = w^2 = 1$, this reads $\cosh d(v,w) = \beta_L(v,w)$.
+
 To a vector $v$ with $v^2 < 0$ we associate the hyperplane $H_v \da v^{\perp}\cap \mathbb{H}^n_L$.
 Taking $v,w$ to be unit normals of $H_v, H_w$, the relative position of two hyperplanes is governed by the pairing $v\cdot w \da \beta_L(v,w)$:
 
@@ -126,10 +157,11 @@ Taking $v,w$ to be unit normals of $H_v, H_w$, the relative position of two hype
 
 A **Coxeter group** is a group given by a presentation
 $$
-S = \gens{\, s_1,\dots,s_n \mid s_i^2 = (s_i s_j)^{m_{ij}} = e \,}
+W = \gens{\, s_1,\dots,s_n \mid s_i^2 = e,\ (s_i s_j)^{m_{ij}} = e \,}
 ,
 $$
-where $m_{ii} = 1$ and $m_{ij} = m_{ji}\geq 2$ for $i\neq j$.
+where $m_{ii} = 1$ and $m_{ij} = m_{ji}\in\ts{2,3,\dots}\cup\ts{\infty}$ for $i\neq j$, the relation $(s_i s_j)^{m_{ij}} = e$ being imposed only when $m_{ij} < \infty$.
+Writing $S = \ts{s_1,\dots,s_n}$ for the generating set, the pair $(W,S)$ is the associated **Coxeter system**, and $(m_{ij})$ is its Coxeter matrix (\longref{def:coxeter-matrix}).
 :::
 
 ::: {.Definition #def:coxeter-polytope}
@@ -194,15 +226,26 @@ For $2$-elementary lattices, vertices are drawn **white** for short roots ($v^2 
 Let $G$ be a Coxeter--Vinberg diagram with vertices the simple roots $v_i$.
 A subdiagram $D\subseteq G$ is:
 
-- **elliptic** if its Gram matrix $(v_i\cdot v_j)$ is positive definite; such a subdiagram defines a finite face of the Coxeter polytope;
+- **elliptic** if its Gram matrix $(v_i\cdot v_j)$ is negative definite; such a subdiagram defines a finite face of the Coxeter polytope;
 
-- **parabolic** if each connected component is parabolic (its Gram matrix positive semidefinite of corank one) and it is not contained in any strictly larger elliptic subdiagram.
+- **parabolic** if the Gram matrix of each of its connected components is negative semidefinite with a one-dimensional kernel;
+
+- **hyperbolic** if its Gram matrix is nondegenerate of signature $(1, k-1)$, where $k$ is the number of vertices of $D$.
+
+The signs follow the algebraic-geometry convention of this monograph, in which roots have negative norm; in the normalization by roots of norm $+2$ the three conditions read positive definite, positive semidefinite of corank one, and signature $(k-1,1)$.
 :::
 
 ::: {.Definition #def:parabolic-subdiagram}
 
 A parabolic subdiagram is **maximal** if it is not properly contained in a larger parabolic subdiagram.
-Maximal parabolic subdiagrams correspond bijectively to the rank-$2$ isotropic subspaces $J\subset L$ containing a fixed isotropic line $I$ --- equivalently, to the $1$-cusps adjacent to the $0$-cusp $[I]$ in the Baily--Borel compactification.
+
+Let $L$ have signature $(2,n)$, let $I\subset L$ be a primitive isotropic line, and let $\overline{L}_I \da I^{\perp L}/I$ be the hyperbolic lattice at the $0$-cusp $[I]$.
+The maximal parabolic subdiagrams of the Coxeter--Vinberg diagram of a fundamental chamber for a reflection group acting on $\overline{L}_I$ correspond bijectively to the primitive isotropic lines of $\overline{L}_I$ met by that chamber, that is, to the rank-$2$ primitive isotropic sublattices $J\subseteq L$ containing $I$; passing to orbits under the stabilizer of $I$ in the arithmetic group gives the $1$-cusps adjacent to the $0$-cusp $[I]$ in the Baily--Borel compactification.
+:::
+
+::: {.Remark}
+
+The bijection is the vertex correspondence of \longref{prop:polytope-vertex-subdiagram}: a maximal parabolic subdiagram of rank $n-1$ is cut out by the walls through an ideal vertex of the chamber, and that ideal vertex is the isotropic line spanned by the radical of the subdiagram.
 :::
 
 ## Vinberg's algorithm
@@ -235,6 +278,43 @@ The algorithm terminates in finitely many steps if and only if $\Gamma$ has fini
 ::: {.Remark}
 
 The source note states step 3 as "discard those roots whose hyperplanes do not intersect $\tilde P$ transversely"; the explicit inequality $v\cdot r_i\geq 0$ recorded above is Vinberg's acceptance criterion for that condition in the algebraic-geometry sign convention [@Vin75].
+:::
+
+::: {.Definition #def:lanner-subgraph}
+### Lannér subgraph
+
+A **Lannér subgraph** of a Coxeter--Vinberg diagram is a minimal non-parabolic
+subdiagram whose Coxeter group acts on hyperbolic space with a fundamental
+polyhedron of finite volume; equivalently, a diagram all of whose proper
+subdiagrams are elliptic but which is not itself elliptic or parabolic.
+:::
+
+::: {.Theorem #thm:vinberg-completeness-criterion}
+### A sufficient criterion for completeness
+
+Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a
+run of \Cref{thm:vinberg-algorithm}.
+If $\Gamma$ contains no Lannér subgraph, and every connected parabolic subdiagram
+of $\Gamma$ is contained in a maximal parabolic subdiagram of maximal rank, then
+$\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the
+algorithm may be stopped.
+:::
+
+::: {.proof}
+
+This is the sufficient condition of [@Vin75], in the form used in
+[@Ale22 §3].
+:::
+
+::: {.Remark}
+
+The criterion is what makes a run of Vinberg's algorithm into a proof rather than
+a computation that has not yet terminated: without it, the algorithm has produced
+a chamber that *might* still acquire further walls at greater height.
+It applies only in the absence of dotted edges, that is when no two walls of the
+chamber are ultra-parallel; for the diagrams on the line $r + a = 22$ this is the
+case, and \cref{thm:coxeter-built-on-complete-graphs} records the resulting
+diagrams.
 :::
 
 ## Root-system conventions and tables

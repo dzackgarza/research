@@ -32,6 +32,7 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
    Confirm 2-elementarity and read off $(r,a,\delta)$, computing $\delta$ by the diagonal test on the discriminant quadratic form.
 
 2. **Find the roots** by Vinberg's algorithm, or write them down by hand and verify with `root_intersection_matrix`, which asserts that the Gram matrix is symmetric with diagonal contained in $\{-2,-4\}$.
+   The polyhedral presentation of the resulting chamber, and the test deciding whether the accepted roots bound a finite-volume hyperbolic polyhedron, are in [[fundamental-chamber-polyhedra]].
 
 3. **Run CoxIter** on the diagram for the $f$-vector, a finite-covolume certificate, the count of vertices at infinity, and the growth series.
 
@@ -40,8 +41,10 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
    Check that each $s$ is actually a root: see the Sterk 4 case in [[root-vectors-and-folded-sterk-diagrams]], where an invariant vector is not a root and must be dropped.
 
 5. **Enumerate maximal elliptic subdiagrams up to symmetry.** All vertex subsets, filtered to connected with definite Gram; maximal under inclusion via `Poset(subgraphs, subset).maximal_elements()`; then `Aut(Gamma).orbit(vertices, action="OnSets")`, canonicalizing each orbit as a sorted tuple of tuples in a set; label the representative by `M.is_similar(M_type)` against `get_all_rank_n_types(n)`, joining components with direct sums.
+   The definiteness tests that decide each type, and the monotonicity that prunes the subset search, are in [[lattice-algorithms-by-signature]].
 
 6. **Enumerate isotropic orbits** with `INDEF_FORM_GetOrbitRepresentative` from `polyhedral_common` via GAP, using $\div(v)$ and $v^\perp/v$ as separating invariants, matched against the `two_elementary_lattices` registry.
+   The algorithm this invokes, its hypotheses, and the Tits building it computes are in [[isotropic-orbits-and-tits-buildings]].
 
 7. **Build the integral-affine structure** by the polygon-walking procedure in [[sterk-integral-affine-data]].
 :::
@@ -76,4 +79,4 @@ The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the sou
 - `Sterk IAS Plotting.ipynb` has four cells failing a rank assertion; see [[sterk-integral-affine-data]].
 :::
 
-Related: [[coxiter-results-for-cusp-lattices]], [[root-vectors-and-folded-sterk-diagrams]], [[coble-lattice-isotropic-candidates]], [[sterk-integral-affine-data]].
+Related: [[coxiter-results-for-cusp-lattices]], [[root-vectors-and-folded-sterk-diagrams]], [[coble-lattice-isotropic-candidates]], [[sterk-integral-affine-data]], [[lattice-algorithms-by-signature]], [[fundamental-chamber-polyhedra]], [[isotropic-orbits-and-tits-buildings]].
