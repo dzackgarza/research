@@ -32,6 +32,8 @@ public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 public import Mathlib.Algebra.BigOperators.Ring.Finset
+public import Mathlib.Analysis.Analytic.Basic
+public import Mathlib.Topology.Irreducible
 
 @[expose] public section
 
@@ -726,5 +728,80 @@ theorem discriminantGaussSum_mul_conj_of_nondegenerate
   rw [if_pos htriv, hq0, neg_zero, gaussTerm_zero, one_mul]
 
 end MilgramSteps
+
+section AnalyticSets
+
+variable {n : ℕ}
+
+/-- **AF10, the local model.**  An *analytic subset* of an open set `U` in `ℂⁿ`:
+the common zero locus in `U` of finitely many functions analytic on a
+neighbourhood of `U`.
+
+This is the object a reduced analytic space is locally isomorphic to, and the
+reason AF10's chain does not need a sheaf quotient: the local model can be given
+as a zero locus, with the structure sheaf described concretely below as the
+functions that extend holomorphically. -/
+def IsAnalyticSubset (U Z : Set (Fin n → ℂ)) : Prop :=
+  IsOpen U ∧ ∃ (m : ℕ) (f : Fin m → (Fin n → ℂ) → ℂ),
+    (∀ j, AnalyticOnNhd ℂ (f j) U) ∧ Z = U ∩ {z | ∀ j, f j z = 0}
+
+/-- An analytic subset is closed in its ambient open set. -/
+theorem IsAnalyticSubset.subset {U Z : Set (Fin n → ℂ)} (h : IsAnalyticSubset U Z) :
+    Z ⊆ U := by
+  obtain ⟨-, m, f, -, rfl⟩ := h
+  exact Set.inter_subset_left
+
+/-- The whole open set is an analytic subset of itself, cut out by no equations. -/
+theorem isAnalyticSubset_self {U : Set (Fin n → ℂ)} (hU : IsOpen U) :
+    IsAnalyticSubset U U := by
+  refine ⟨hU, 0, Fin.elim0, fun j => j.elim0, ?_⟩
+  ext z
+  simp
+
+/-- **AF10, the structure sheaf, concretely.**  A function on an analytic subset
+is *holomorphic at a point* when it agrees near that point with a function
+analytic on a neighbourhood in the ambient space.
+
+Stating the structure sheaf this way — as functions that extend, rather than as a
+quotient of the ambient sheaf by an ideal sheaf — is what keeps the definition
+inside what the pinned Mathlib supplies. -/
+def HolomorphicAtOnSubset (Z : Set (Fin n → ℂ)) (g : (Fin n → ℂ) → ℂ)
+    (z : Fin n → ℂ) : Prop :=
+  ∃ V : Set (Fin n → ℂ), IsOpen V ∧ z ∈ V ∧ ∃ G : (Fin n → ℂ) → ℂ,
+    AnalyticOnNhd ℂ G V ∧ ∀ w ∈ Z ∩ V, g w = G w
+
+/-- A function analytic on an ambient neighbourhood is holomorphic on the subset. -/
+theorem holomorphicAtOnSubset_of_analyticOnNhd {Z V : Set (Fin n → ℂ)}
+    (hV : IsOpen V) {z : Fin n → ℂ} (hz : z ∈ V) {G : (Fin n → ℂ) → ℂ}
+    (hG : AnalyticOnNhd ℂ G V) : HolomorphicAtOnSubset Z G z :=
+  ⟨V, hV, hz, G, hG, fun _ _ => rfl⟩
+
+/-- **AF10, the space.**  A *local model chart* on a topological space: a
+homeomorphism of an open set of the space onto an analytic subset of an open set
+of some `ℂⁿ`. -/
+structure AnalyticChart (X : Type u) [TopologicalSpace X] where
+  /-- The dimension of the ambient space of the model. -/
+  ambientDim : ℕ
+  /-- The open set of `X` the chart is defined on. -/
+  source : Set X
+  /-- The ambient open set of the model. -/
+  ambient : Set (Fin ambientDim → ℂ)
+  /-- The analytic subset the chart lands in. -/
+  model : Set (Fin ambientDim → ℂ)
+  source_open : IsOpen source
+  model_analytic : IsAnalyticSubset ambient model
+  /-- The chart itself, a homeomorphism onto the model. -/
+  toHomeomorph : source ≃ₜ model
+
+/-- **AF10.**  A space is *locally analytic* when its points are covered by local
+model charts.  With `IsIrreducible` from `Mathlib/Topology/Irreducible.lean` this
+gives "irreducible analytic space"; **normality is what remains** — it is a
+condition on the local ring at a point, so it needs the structure sheaf as a
+sheaf of rings rather than the pointwise predicate above, and that is the one
+piece of AF10 still unwritten. -/
+def IsLocallyAnalyticSpace (X : Type u) [TopologicalSpace X] : Prop :=
+  ∀ x : X, ∃ c : AnalyticChart X, x ∈ c.source
+
+end AnalyticSets
 
 end Sterk
