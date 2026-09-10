@@ -35,6 +35,19 @@ def test_archive_isotypic_lattice_retains_form_action_and_embedding() -> None:
     assert component.determinant() == 2
 
 
+def test_archive_coinvariant_lattice_is_the_formed_orthogonal_complement() -> None:
+    acted = _acted_a2()
+    invariant = acted.invariant_lattice()
+    coinvariant = acted.coinvariant_lattice()
+
+    assert coinvariant is acted.coinvariant_lattice()
+    assert coinvariant is acted.formed_coinvariants()
+    assert coinvariant.ambient_lattice() is acted
+    assert coinvariant.module_rank() == 1
+    assert coinvariant == invariant.orthogonal_complement()
+    assert acted.module_coinvariants() is not coinvariant
+
+
 def test_equipping_an_existing_sublattice_preserves_its_ambient_inclusion() -> None:
     acted = _acted_a2()
     invariant = acted.invariant_lattice()

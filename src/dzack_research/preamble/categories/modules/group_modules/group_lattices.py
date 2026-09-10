@@ -224,13 +224,16 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
             r"""Return the underlying module quotient by ``(g-1)M``."""
             return self.group_module().module_coinvariants()
 
-        def formed_coinvariants(self):
+        @cached_method
+        def coinvariant_lattice(self):
             r"""Return ``(L^G)^perp`` as a formed subobject of ``L``.
 
             Module coinvariants remain available separately as
             ``module_coinvariants() = L / <g v-v>``.
             """
             return self.invariant_lattice().orthogonal_complement()
+
+        formed_coinvariants = coinvariant_lattice
 
         def isotypic_lattice(self, character):
             r"""Return the formed ``character``-isotypic sublattice with its restricted action.
