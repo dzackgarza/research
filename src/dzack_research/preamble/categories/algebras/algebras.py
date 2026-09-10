@@ -303,6 +303,10 @@ class MultiplicativeAlgebraMorphism(Morphism):
 
     left = tensor_square_morphism
 
+    def corestrict_to_center(self):
+        r"""Factor this algebra morphism through the represented centre of its codomain."""
+        return _corestrict_algebra_morphism_to_center(self)
+
     @cached_method
     def cokernel(self):
         r"""Return the algebra cokernel as quotient by the generated algebra ideal.
@@ -1976,6 +1980,10 @@ class AlgebraMorphism(Morphism):
             raise NotImplementedError("an unframed algebra domain has no selected generator-image family")
         return self._generator_images
 
+    def corestrict_to_center(self):
+        r"""Factor this algebra morphism through the represented centre of its codomain."""
+        return _corestrict_algebra_morphism_to_center(self)
+
     def _richcmp_(self, other, op):
         r"""Decide equality from the source's chosen algebra generating set.
 
@@ -2085,6 +2093,10 @@ class PresentedAlgebraMorphism(Morphism):
     def algebra_generator_images(self):
         return self._generator_images
 
+    def corestrict_to_center(self):
+        r"""Factor this algebra morphism through the represented centre of its codomain."""
+        return _corestrict_algebra_morphism_to_center(self)
+
     def _call_(self, element):
         return self._presentation_map(self.domain().lift_to_presentation(element))
 
@@ -2123,6 +2135,39 @@ class _AlgebraHomsetCommonMethods:
     def _from_degree_preserving_generator_map(self, images):
         r"""Construct from a structurally degree-preserving generator map."""
         return self(images)
+
+
+def _corestrict_algebra_morphism_to_center(morphism):
+    r"""Return the unique represented ring-map factor ``A -> Z(B)`` of ``morphism``.
+
+    The source must carry a chosen algebra generating family, because centrality
+    is verified on that family.  Scalars already land centrally because
+    ``morphism`` is an algebra map, so checking the selected algebra generators
+    proves that its whole image lies in ``Z(B)``.  The factor is returned in the
+    owned ring Hom category, matching the mathematical codomain ``ring_center``
+    rather than requiring that the predicate centre carry a second algebra
+    presentation.
+    """
+    domain = morphism.domain()
+    codomain = morphism.codomain()
+    base = domain.base_ring()
+    if domain not in FramedAlgebras(base):
+        raise NotImplementedError(
+            "corestriction to the centre requires a chosen algebra generating set of the source"
+        )
+    labels = domain.algebra_generating_set()
+    if not labels.cardinality().is_finite():
+        raise NotImplementedError(
+            "corestriction to the centre requires finitely many selected algebra generators"
+        )
+    center = codomain.ring_center()
+    for label in labels:
+        image = morphism(domain.algebra_generator(label))
+        if image not in center:
+            raise ValueError(
+                f"the image of algebra generator {label} is not central in {codomain}"
+            )
+    return ring_morphism(domain, center, lambda element: center(morphism(element)))
 
 
 class PresentedAlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):

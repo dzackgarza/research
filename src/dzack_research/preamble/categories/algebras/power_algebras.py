@@ -6,7 +6,7 @@ their direct sum as an algebra; no second quotient-ring presentation is kept.
 """
 
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -43,6 +43,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
+    predicate_subring,
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
@@ -212,10 +213,17 @@ class PowerAlgebra(GradedDirectSumModule):
 
     algebra_structure_morphism = _ring_morphism_defining_algebra_structure
 
+    @cached_method
     def ring_center(self):
         if self.flavor() == "divided":
             return self
-        raise NotImplementedError("the ordinary center of an exterior algebra is not represented by a scalar-only shortcut")
+        if self.is_commutative():
+            return self
+        return predicate_subring(
+            self,
+            self.is_central,
+            "z commutes with every element",
+        )
 
     def _repr_(self):
         symbol = "Lambda" if self.flavor() == "alternating" else "Gamma"

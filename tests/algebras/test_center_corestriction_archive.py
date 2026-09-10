@@ -1,0 +1,55 @@
+r"""Archive reconciliation for corestriction of algebra maps to the centre."""
+
+import pytest
+
+from dzack_research.preamble.all import AlternatingAlgebraOn, MatrixSpace, QQ
+from dzack_research.preamble.categories.algebras.algebras import algebra_homset
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_homset,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+
+def test_exterior_algebra_center_is_the_archived_predicate_subring() -> None:
+    exterior = AlternatingAlgebraOn(QQ, finite_ordered_set(("e1", "e2")))
+    first = exterior.algebra_generator("e1")
+    second = exterior.algebra_generator("e2")
+    center = exterior.ring_center()
+
+    assert first * second in center
+    assert first not in center
+    assert center.ambient_ring() is exterior
+    assert center.inclusion()(first * second) == first * second
+
+
+def test_central_algebra_map_corestricts_through_the_actual_center() -> None:
+    source = MatrixSpace(QQ, 1)
+    matrices = MatrixSpace(QQ, 2)
+    source_module = source.underlying_module()
+    target_module = matrices.underlying_module()
+    source_label = next(iter(source_module.module_generating_set()))
+    underlying = module_homset(source_module, target_module)(
+        {
+            source_label: matrices._carrier_element(matrices.identity()),
+        }
+    )
+    morphism = algebra_homset(source, matrices)(underlying)
+
+    factor = morphism.corestrict_to_center()
+    center = matrices.ring_center()
+    inclusion = center.inclusion()
+
+    assert factor.domain() is source
+    assert factor.codomain() is center
+    for label in source.algebra_generating_set():
+        generator = source.algebra_generator(label)
+        central_image = factor(generator)
+        assert inclusion(central_image) == morphism(generator)
+
+
+def test_noncentral_generator_image_refuses_center_corestriction() -> None:
+    matrices = MatrixSpace(QQ, 2)
+    morphism = algebra_homset(matrices, matrices).identity()
+
+    with pytest.raises(ValueError, match="not central"):
+        morphism.corestrict_to_center()
