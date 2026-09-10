@@ -1628,6 +1628,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-lattice-level-exponent-20260910-1938` | archive reconciliation / lattice level versus discriminant exponent | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/lattices/test_lattice_level_exponent_archive.py` (write) | `HEAD` | 2026-09-10T19:38:00Z |
+
 
 
 
