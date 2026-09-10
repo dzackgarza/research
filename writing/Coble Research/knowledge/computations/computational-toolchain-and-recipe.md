@@ -11,12 +11,14 @@ tags:
 
 # Toolchain and recipe for a hyperbolic 2-elementary lattice
 
-**Provenance.** `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/sage-scripts/` and `.../notebooks/`. Nothing of this appears in the dissertation.
+**Provenance.** Originally `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/computational-research/canonical/sage-scripts/` and `.../notebooks/`, a tree that has since been trashed. Nothing of this appears in the dissertation.
 
-::: {.remark title="Relocation is required"}
-The scripts and notebooks live in a repository that is being dismantled.
-Nothing below is reproducible from this project alone until the `sage-scripts/` tree and the four live notebooks are relocated into this repository or another durable home.
-That relocation is the prerequisite for every open computational task in `content_pandoc/sections/Open_Problems/Open_Problems.md`.
+::: {.remark title="Where the code now lives"}
+The scripts and notebooks survived the deletion.
+A content-hash comparison of the whole source tree against `~/research` found 564 of its 587 files already byte-identical there: the reusable modules live under `computations/scripts/` in a newer form than the archived copies, and the notebooks under `archives/notebooks/`.
+The Coxeter input data was fully covered.
+Two files were unique to the deleted tree and are now committed there: an Oscar/Hecke Julia implementation of the $(r,a,\delta)$ verifications, and one notebook.
+The `vinal`, `AlVin` and `VinbergsAlgorithmNF` directories were empty in the source and remain unvendored, so step 2 of the recipe still needs a Vinberg implementation supplied before it will run.
 :::
 
 ## The recipe
