@@ -28,6 +28,8 @@ public import Mathlib.NumberTheory.Padics.PadicIntegers
 public import Mathlib.AlgebraicGeometry.Scheme
 public import Mathlib.Order.KrullDimension
 public import Mathlib.Data.Finsupp.Defs
+public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+public import Mathlib.Analysis.Convex.Topology
 
 @[expose] public section
 
@@ -354,5 +356,152 @@ theorem negativeCone.isOpen_lower (n : ℕ) : IsOpen (negativeCone.lower n) := b
   exact h1.inter h2
 
 end LorentzCone
+
+section LorentzConvexity
+
+variable {n : ℕ}
+
+/-- The Lorentzian pairing whose diagonal is `lorentz`. -/
+def lorentzPair (x y : Fin (n + 1) → ℝ) : ℝ :=
+  -(x 0 * y 0) + ∑ i ∈ Finset.univ.erase 0, x i * y i
+
+theorem lorentz_eq_lorentzPair_self (x : Fin (n + 1) → ℝ) : lorentz x = lorentzPair x x := by
+  unfold lorentz lorentzPair
+  simp only [sq]
+
+/-- The form expands on a linear combination through the pairing. -/
+theorem lorentz_smul_add (a b : ℝ) (x y : Fin (n + 1) → ℝ) :
+    lorentz (a • x + b • y)
+      = a ^ 2 * lorentz x + b ^ 2 * lorentz y + 2 * a * b * lorentzPair x y := by
+  unfold lorentz lorentzPair
+  have hpt : ∀ i : Fin (n + 1),
+      ((a • x + b • y) i) ^ 2
+        = a ^ 2 * (x i) ^ 2 + b ^ 2 * (y i) ^ 2 + 2 * a * b * (x i * y i) := by
+    intro i; simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul]; ring
+  rw [Finset.sum_congr rfl (fun i _ => hpt i)]
+  rw [Finset.sum_add_distrib, Finset.sum_add_distrib, ← Finset.mul_sum, ← Finset.mul_sum,
+    ← Finset.mul_sum]
+  simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+  ring
+
+/-- The spatial part of a vector on the cone is shorter than its time part. -/
+theorem sum_sq_lt_sq_of_mem_negativeCone {x : Fin (n + 1) → ℝ} (hx : x ∈ negativeCone n) :
+    ∑ i ∈ Finset.univ.erase (0 : Fin (n + 1)), (x i) ^ 2 < (x 0) ^ 2 := by
+  have h : lorentz x < 0 := hx
+  unfold lorentz at h
+  linarith
+
+/-- **Lo10.**  The pairing of two future-directed vectors of the cone is
+negative: the reverse Cauchy–Schwarz inequality for a form of index one. -/
+theorem lorentzPair_neg_of_mem_upper {x y : Fin (n + 1) → ℝ}
+    (hx : x ∈ negativeCone.upper n) (hy : y ∈ negativeCone.upper n) :
+    lorentzPair x y < 0 := by
+  obtain ⟨hxc, hx0⟩ := hx
+  obtain ⟨hyc, hy0⟩ := hy
+  set S := Finset.univ.erase (0 : Fin (n + 1)) with hS
+  have hxs : ∑ i ∈ S, (x i) ^ 2 < (x 0) ^ 2 := sum_sq_lt_sq_of_mem_negativeCone hxc
+  have hys : ∑ i ∈ S, (y i) ^ 2 < (y 0) ^ 2 := sum_sq_lt_sq_of_mem_negativeCone hyc
+  have hxnn : (0:ℝ) ≤ ∑ i ∈ S, (x i) ^ 2 := Finset.sum_nonneg fun i _ => sq_nonneg _
+  have hynn : (0:ℝ) ≤ ∑ i ∈ S, (y i) ^ 2 := Finset.sum_nonneg fun i _ => sq_nonneg _
+  have hcs : (∑ i ∈ S, x i * y i) ^ 2 ≤ (∑ i ∈ S, (x i) ^ 2) * ∑ i ∈ S, (y i) ^ 2 :=
+    Finset.sum_mul_sq_le_sq_mul_sq S x y
+  have hprod : (∑ i ∈ S, (x i) ^ 2) * (∑ i ∈ S, (y i) ^ 2) < (x 0 * y 0) ^ 2 := by
+    have h1 : (∑ i ∈ S, (x i) ^ 2) * (∑ i ∈ S, (y i) ^ 2) ≤ (x 0) ^ 2 * ∑ i ∈ S, (y i) ^ 2 :=
+      mul_le_mul_of_nonneg_right hxs.le hynn
+    have h2 : (x 0) ^ 2 * (∑ i ∈ S, (y i) ^ 2) < (x 0) ^ 2 * (y 0) ^ 2 := by
+      have hx0sq : (0:ℝ) < (x 0) ^ 2 := by positivity
+      exact mul_lt_mul_of_pos_left hys hx0sq
+    calc (∑ i ∈ S, (x i) ^ 2) * (∑ i ∈ S, (y i) ^ 2) ≤ (x 0) ^ 2 * ∑ i ∈ S, (y i) ^ 2 := h1
+      _ < (x 0) ^ 2 * (y 0) ^ 2 := h2
+      _ = (x 0 * y 0) ^ 2 := by ring
+  have hsq : (∑ i ∈ S, x i * y i) ^ 2 < (x 0 * y 0) ^ 2 := lt_of_le_of_lt hcs hprod
+  have hpos : (0:ℝ) < x 0 * y 0 := mul_pos hx0 hy0
+  have habs : ∑ i ∈ S, x i * y i < x 0 * y 0 := by
+    nlinarith [hsq, hpos]
+  unfold lorentzPair
+  linarith
+
+/-- **Lo10.**  The upper sheet is convex, hence connected. -/
+theorem convex_upper (n : ℕ) : Convex ℝ (negativeCone.upper n) := by
+  intro x hx y hy a b ha hb hab
+  have hpair : lorentzPair x y < 0 := lorentzPair_neg_of_mem_upper hx hy
+  obtain ⟨hxc, hx0⟩ := hx
+  obtain ⟨hyc, hy0⟩ := hy
+  have hxl : lorentz x < 0 := hxc
+  have hyl : lorentz y < 0 := hyc
+  constructor
+  · show lorentz (a • x + b • y) < 0
+    rw [lorentz_smul_add]
+    rcases eq_or_lt_of_le ha with rfl | ha'
+    · have hb1 : b = 1 := by linarith
+      subst hb1; norm_num; exact hyl
+    · rcases eq_or_lt_of_le hb with rfl | hb'
+      · have ha1 : a = 1 := by linarith
+        subst ha1; norm_num; exact hxl
+      · have t1 : a ^ 2 * lorentz x < 0 := mul_neg_of_pos_of_neg (by positivity) hxl
+        have t2 : b ^ 2 * lorentz y < 0 := mul_neg_of_pos_of_neg (by positivity) hyl
+        have t3 : 2 * a * b * lorentzPair x y < 0 :=
+          mul_neg_of_pos_of_neg (by positivity) hpair
+        linarith
+  · show 0 < (a • x + b • y) 0
+    simp only [Pi.add_apply, Pi.smul_apply, smul_eq_mul]
+    rcases eq_or_lt_of_le ha with rfl | ha'
+    · have hb1 : b = 1 := by linarith
+      subst hb1; simpa using hy0
+    · have u1 : 0 < a * x 0 := mul_pos ha' hx0
+      have u2 : 0 ≤ b * y 0 := mul_nonneg hb hy0.le
+      linarith
+
+/-- The form is invariant under negation. -/
+theorem lorentz_neg (z : Fin (n + 1) → ℝ) : lorentz (-z) = lorentz z := by
+  unfold lorentz
+  have h0 : ((-z) 0) ^ 2 = (z 0) ^ 2 := by
+    simp only [Pi.neg_apply]; ring
+  have hi : ∀ i : Fin (n + 1), ((-z) i) ^ 2 = (z i) ^ 2 := by
+    intro i; simp only [Pi.neg_apply]; ring
+  rw [h0, Finset.sum_congr rfl (fun i _ => hi i)]
+
+/-- **Lo10.**  The lower sheet is convex too, being the image of the upper under
+negation. -/
+theorem convex_lower (n : ℕ) : Convex ℝ (negativeCone.lower n) := by
+  intro x hx y hy a b ha hb hab
+  have hx' : -x ∈ negativeCone.upper n := by
+    obtain ⟨hxc, hx0⟩ := hx
+    refine ⟨?_, ?_⟩
+    · show lorentz (-x) < 0
+      rw [lorentz_neg]; exact hxc
+    · simpa using hx0
+  have hy' : -y ∈ negativeCone.upper n := by
+    obtain ⟨hyc, hy0⟩ := hy
+    refine ⟨?_, ?_⟩
+    · show lorentz (-y) < 0
+      rw [lorentz_neg]; exact hyc
+    · simpa using hy0
+  have hcomb := convex_upper n hx' hy' ha hb hab
+  obtain ⟨hc, h0⟩ := hcomb
+  refine ⟨?_, ?_⟩
+  · show lorentz (a • x + b • y) < 0
+    have heq : a • (-x) + b • (-y) = -(a • x + b • y) := by
+      ext i; simp only [Pi.add_apply, Pi.smul_apply, Pi.neg_apply, smul_eq_mul]; ring
+    rw [heq, lorentz_neg] at hc
+    exact hc
+  · show (a • x + b • y) 0 < 0
+    have heq : (a • (-x) + b • (-y)) 0 = -((a • x + b • y) 0) := by
+      simp only [Pi.add_apply, Pi.smul_apply, Pi.neg_apply, smul_eq_mul]; ring
+    rw [heq] at h0; linarith
+
+/-- **Lo10, complete.**  The negative cone of the standard form of index one has
+exactly two connected components: the two sheets, each convex hence connected,
+disjoint, open, and covering the cone. -/
+theorem negativeCone_two_components (n : ℕ) :
+    IsPreconnected (negativeCone.upper n) ∧ IsPreconnected (negativeCone.lower n) ∧
+      negativeCone n = negativeCone.upper n ∪ negativeCone.lower n ∧
+      Disjoint (negativeCone.upper n) (negativeCone.lower n) ∧
+      IsOpen (negativeCone.upper n) ∧ IsOpen (negativeCone.lower n) :=
+  ⟨(convex_upper n).isPreconnected, (convex_lower n).isPreconnected,
+    negativeCone_eq_union n, negativeCone.upper_disjoint_lower n,
+    negativeCone.isOpen_upper n, negativeCone.isOpen_lower n⟩
+
+end LorentzConvexity
 
 end Sterk

@@ -1563,7 +1563,7 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 | the **order of vanishing** of a rational function at such a point | **conditionally, and it needs a hypothesis the node did not state**: `IsDiscreteValuationRing.addVal` (`RingTheory/DiscreteValuationRing/Basic.lean`) is the valuation, and it applies once the local ring at a codimension-one point *is* a DVR, which needs normality.  That chain is now **E16** |
 | the principal divisor, and linear equivalence | over E16 and a quotient — **yes, once E16 exists** |
 
-### Eight atoms, and half of Lo10, now exist in `lean/Atoms.lean`
+### Eight atoms and Lo10 now exist in `lean/Atoms.lean`
 
 The searching stopped where it had to: five sweeps established that these
 notions are in no indexed Lean code.  The remedy for that is to write them, and
@@ -1580,7 +1580,7 @@ error, no warning, no `sorry` and no `axiom`.
 | E14's deck involution | `Sterk.DeckTransformation (f : E → X)` — a homeomorphism of the total space with `over_base` — its `CoeFun`, `id`, `IsInvolution`, and `IsInvolution.symm_apply` |
 | V1's nondecomposability | `Sterk.Matrix.IsDecomposable` and `IsIndecomposable`: a re-indexing $n \simeq \iota \oplus \kappa$ with both parts nonempty and the off-diagonal blocks zero |
 | Pa1's semigroup of classes | `Sterk.PadicForm` (a rank and a form on `Fin rank → ℤ_[p]`, which is the choice of representatives that makes the collection a set), `Isometric` with its refl/symm/trans, `isometricSetoid`, `orthogonalSum` — `QuadraticMap.prod` carried along `finSumFinEquiv` and `sumArrowLequivProdArrow` — and `PadicFormClasses` as the quotient |
-| Lo10, the separation half | `Sterk.lorentz` (the standard form $-x_0^2+\sum_{i>0}x_i^2$ on `Fin (n+1) → ℝ`, which is Vinberg's $E^{n,1}$), `negativeCone` with `upper` and `lower`, `lorentz_continuous`, and the substantive lemma **`ne_zero_of_mem_negativeCone`** — on the cone the zeroth coordinate never vanishes, since if it did the form would be a sum of squares there.  From it: `negativeCone_eq_union`, `upper_disjoint_lower`, `isOpen_upper`, `isOpen_lower`.  Together these say the cone **is disconnected, by the sign of the zeroth coordinate**, which is the half Sterk and Vinberg use when they fix $V_+$.  What is not proved is that each sheet is *connected*, so "exactly two components" is still open: that is the convexity of a Lorentzian half-cone, and it needs the reverse Cauchy–Schwarz inequality on the spatial parts |
+| Lo10, **complete** | `Sterk.lorentz` (the standard form $-x_0^2+\sum_{i>0}x_i^2$ on `Fin (n+1) → ℝ`, which is Vinberg's $E^{n,1}$), `negativeCone` with `upper` and `lower`, `lorentz_continuous`, and the substantive lemma **`ne_zero_of_mem_negativeCone`** — on the cone the zeroth coordinate never vanishes, since if it did the form would be a sum of squares there.  From it: `negativeCone_eq_union`, `upper_disjoint_lower`, `isOpen_upper`, `isOpen_lower`.  Together these say the cone is disconnected by the sign of the zeroth coordinate, which is the half Sterk and Vinberg use when they fix $V_+$.  The other half is proved too: `lorentzPair` with `lorentz_smul_add`, then **`lorentzPair_neg_of_mem_upper`** — the reverse Cauchy–Schwarz inequality, that the pairing of two future-directed vectors is negative, over `Finset.sum_mul_sq_le_sq_mul_sq` — and from it `convex_upper` and `convex_lower`, the second by negation through `lorentz_neg`.  `negativeCone_two_components` collects the six facts that say **exactly two components**: each sheet preconnected, disjoint, open, and covering |
 | E15's Weil divisors | `Sterk.codimOnePoints` and `Sterk.WeilDivisor (X : Scheme) := codimOnePoints X →₀ ℤ` with its `AddCommGroup` instance and `WeilDivisor.single`.  **The order convention is the substance here**: Mathlib's `specializationPreorder` has $x \le y \iff y \leadsto x$, so a generic point is a *greatest* element and codimension is `Order.coheight`, not `Order.height` — the floor row for E15 had named `height`, which is the wrong end |
 
 These are **definitions**, and that is the point: each was a clause a leaf
@@ -1602,10 +1602,11 @@ several files of work, not ten lines, and writing it badly — a definition whos
 class of models is empty — would be worse than leaving it named.  The dimension
 stratification and the $\mathcal{Q}$-functions sit above it.
 
-Two theorems remain with it, and one of them is now half done.  Lo10's
-separation is proved; its connectedness half is the convexity of the half-cone.
-F1.16, Milgram's congruence, is untouched and is the hardest single item in the
-graph: it needs the Gauss sum of a discriminant form and its absolute value.
+One theorem remains with it.  Lo10 is **done** — both halves, 21 theorems in
+the file.  F1.16, Milgram's congruence, is untouched and is the hardest single
+item in the graph: it needs the Gauss sum of a discriminant form and its absolute
+value, over `gaussSum` and `AddChar`, and it is a genuine piece of number
+theory rather than a definition.
 
 ### Where the decomposition stops, and why it stops there
 
