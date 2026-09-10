@@ -27,21 +27,6 @@ $$
 has order $2$, fixes the hyperplane $b$-orthogonal to $\alpha_s$, sends $\alpha_s$ to $-\alpha_s$, and preserves $b$; the assignment $s\mapsto\sigma_s$ extends to a homomorphism $W\to O(V,b)$ [@Hum90, §5.3].
 :::
 
-::: {#prp-coxeter-gram-entries}
-## Entries of the Gram matrix, and a base ring
-
-The off-diagonal entry $2\cos(\pi/m)$ takes the value $0$ at $m=2$, the value $1$ at $m=3$, and the value $2$ at $m=\infty$, and these are the only integer values it takes.
-So $G$ has entries in $\mathbb Z$ exactly when every $m(s,t)$ lies in $\{2,3,\infty\}$.
-
-For the remaining labels the entries are real algebraic integers and $G$ has entries in $\mathbb Z[2\cos(\pi/m)]$ for a single label $m$.
-At $m=5$ this ring is $\mathbb Z[\varphi]$ with $\varphi=(1+\sqrt5)/2$: writing $\theta=\pi/5$ and $x=\cos\theta$, the identity $3\theta=\pi-2\theta$ gives $\cos3\theta=-\cos2\theta$, hence
-$$
-4x^{3}+2x^{2}-3x-1=(x+1)(4x^{2}-2x-1)=0,
-$$
-and the root $x=(1+\sqrt5)/4$ gives $2\cos(\pi/5)=\varphi$.
-The diagrams $H_3$ and $H_4$ have off-diagonal labels in $\{2,3,5\}$, so both have Gram matrices over the one ring $\mathbb Z[\varphi]$, and this is the ring over which their root spans are lattices.
-:::
-
 ::: {#prp-canonical-form-cartan-matrix}
 ## The canonical form and the Cartan matrix
 
@@ -118,6 +103,8 @@ When $b$ has signature $(1,n-1,0)$, one component of $\{\lambda\in V\mid b(\lamb
 
 ::: {#def-coxeter-system-in-lattice}
 ## The category $\mathbf{Cox}_R$
+
+Let $R$ be a subring of $\mathbb R$ containing the entries $2\cos(\pi/m(s,t))$ of the Gram matrix of @def-coxeter-form, so that the canonical form takes values in $R$.
 
 A *Coxeter system in a lattice* over $R$ is a triple $(\Phi,L,\iota)$ consisting of
 
