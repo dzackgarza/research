@@ -1226,6 +1226,17 @@ branch, in a Zulip thread, or unpublished.  The registry's own refresh
 instruction — sweep the Reservoir index, Lean Pool and the community projects
 page — is the procedure for the first of those, and it has not been re-run here.
 
+**The live index, too.**  The snapshot above is from 2025-08-15, so the
+registry's own refresh procedure was run against the current index —
+`just source-sweep` in `lean-categories`, which clones `leanprover/reservoir-index`
+and prints the Mathlib-dependent packages it does not already link.  **338
+packages** came back.  By description exactly two could bear on the nine atoms,
+and neither does: `Xiyou-Wu/RiemannianGeometry` **no longer resolves on GitHub**
+— a dead index entry — and `pitmonticone/Hochster` is two files, one of them
+`Example.lean`, with no declarations.  Everything else in the 338 is complexity
+theory, verification benchmarks, course material or puzzles; the word "complex"
+in that list is computational complexity every time.
+
 **What this settles.**  The nine atoms are not absent from the places already
 looked; they are absent from every public Lean package this machine can see, and
 so from Mathlib, from the 277 registry repositories, and from Reservoir.  A leaf
