@@ -5524,6 +5524,107 @@ reviewed, maintained, composable with everything else built on it, and free,
 while an owned one is a permanent maintenance surface that owes a comparison
 theorem the day the library acquires its own version.
 
+#### The mental models these rules encode (`FSA-M1`–`FSA-M12`)
+
+The rules below are consequences.  These are the models they follow from, given
+names so a later reader can cite one instead of re-deriving it.  Each was arrived
+at by being wrong in the way it describes.
+
+**`FSA-M1`: The kernel checks proofs against statements; nothing checks
+statements against mathematics.**  A definition type-checks whether or not it
+names the intended notion.  So definitional work has the highest ratio of
+apparent progress to verifiable content available in a formalization project: it
+closes rows, satisfies checkers, and is immune to the only automatic check there
+is.  A wrong definition is not caught later either — every proof above it stays
+*valid* and becomes *useless*, which is a failure with no error message and no
+natural discovery point.
+
+**`FSA-M2`: Trust in a formalization has two components, and the machine supplies
+only one.**  The kernel supplies "the proof follows from the statements".  The
+other component — "the statements are the intended mathematics" — is supplied by
+provenance: review, a published source, downstream uses that pin a meaning,
+people who would notice a change.  A declaration with no provenance cannot be
+trusted; it can only be believed.  This is why a *known gap* is better than a
+*believed definition*: the gap is tracked work, the belief is untracked risk.
+
+**`FSA-M3`: Fluency counterfeits the evidence a reader uses to judge care.**
+Naming, structure, an assured docstring, apparent generality, tidy lemma
+ordering — a language model produces all of it for free and decoupled from
+correctness.  A human's wrong definition usually carries traces of struggle; a
+model's arrives clean, with a comment asserting that it is right.  The practical
+consequence is inverted heuristics: in model-authored mathematics, polish is
+weak evidence of correctness and should not be read as strong.
+
+**`FSA-M4`: Recall and confabulation are the same operation from the inside.**
+A model has no access to what a definition *should* be, only to what such
+definitions *look like*.  There is therefore no internal signal that separates
+"I know this" from "this completes fluently", and introspective confidence
+carries no evidential weight at all.  Discipline has to be procedural — the
+source is open, or the definition is not written — because judgment is exactly
+the faculty that is unavailable.
+
+**`FSA-M5`: Calibration observed on checkable claims transfers downward, never
+upward.**  In one session: an absent declaration that existed under a namespace,
+a cited class name that did not exist at all, an "exists nowhere" for a notion
+present in hundreds of lines, and a height/coheight confusion — each asserted
+with exactly the confidence of the true claims beside them.  If confidence fails
+to separate true from false on claims that take thirty seconds to check, it
+cannot be relied on for claims that cannot be checked mechanically at all.
+
+**`FSA-M6`: Finding and writing have opposite cost profiles, at roughly fifty to
+one.**  A found declaration costs minutes and arrives reviewed, maintained, and
+composable with everything already built on it.  A written one costs a session of
+compile cycles and arrives composable with nothing, owed a comparison theorem,
+and permanently maintained here.  Both close the same row.
+
+**`FSA-M7`: Search compounds; authoring anti-compounds.**  A hit teaches the
+file, its neighbours, the vocabulary the region is phrased in, and what the
+region lacks — which makes the next twenty lookups cheaper and tells you whether
+a nearby gap is real.  Every owned line, by contrast, is surface that must be
+kept consistent, migrated, and eventually reconciled: it makes future work more
+expensive.  Velocity on a long-horizon formalization is therefore mostly a
+function of how much was found rather than how much was written.
+
+**`FSA-M8`: Writing early destroys the information needed to write well.**  The
+correct formulation of a notion is determined by what it must compose with:
+downstream theorems, the surrounding library API, its categorical placement.  All
+of that becomes known by searching.  Fixing a formulation first guarantees
+rework, and rework on a definition is not local — it invalidates whatever was
+built above, silently.  So the expected cost of a premature definition is not
+"write it twice" but "write it twice and lose confidence in a subtree".
+
+**`FSA-M9`: An unapproved definition transfers labour rather than saving it.**
+Checking a model-authored definition against a source costs the reviewer about
+what writing it themselves would cost.  So the artifact provides no leverage, and
+it adds the risk that the check is skipped because the thing looks finished.  At
+any accuracy short of perfect, and with a nonzero chance of the check being
+skipped, the expected value is negative.
+
+**`FSA-M10`: A wrong definition recruits; a wrong proof does not.**  The kernel
+stops a bad proof at the door.  Nothing stops a plausible definition, and other
+agents — and later sessions of the same one — then build on it faithfully, cite
+it, extend it, and phrase new work in its vocabulary.  The error propagates while
+remaining invisible, so definitional mistakes compound where proof mistakes
+merely fail.
+
+**`FSA-M11`: Delegate to a model by checkability, not by subject.**  What a model
+can be trusted with is characterised by one property: the cost of checking the
+output is far below the cost of producing it, or the machine does the checking.
+Locating a declaration — checkable by opening the file.  Transcribing what a
+source says, with the locator.  Falsifiable claims, which can be refuted.  Proofs
+of statements a human fixed, which the kernel checks.  What fails the test is
+exactly the definition: not machine-checkable, expensive to check by hand, and
+authoritative the moment it lands.
+
+**`FSA-M12`: Context is the scarce resource, and it is spent very differently.**
+Compile-error ping-pong — a tactic name, an import path, a linter — produces
+nothing that outlives the turn.  Reading a subtree of the library produces
+durable knowledge that changes several later verdicts at once.  Both consume the
+same budget.  Preferring the second is not patience; it is the higher-yield use
+of the only thing that runs out.
+
+* * *
+
 #### `FSA-01`: Search Is the Instrument; Authoring Is the Last Resort
 
 - **Rule**: The response to a missing dependency is to search for it, and to keep searching until the named surfaces of `FSA-02` are exhausted.  Authoring the missing notion is the final option, taken after the search has failed and been recorded, not the first.
@@ -5649,6 +5750,40 @@ theorem the day the library acquires its own version.
 - **Rationale**: This is where the compounding lives.  The value of finding a declaration is mostly in what the finding teaches about the region, which is what makes the next search cheap and what tells a later reader whether a nearby gap is real.  A bare hit throws that away and the region has to be learned again.
 
 - **Correct Example**: reporting not just that a lemma exists but that its subtree also holds a sorry-free classification, seven files of decomposition machinery, and no analogue of the notion actually wanted.
+
+#### `FSA-16`: Introspective Confidence Is Never Offered as Evidence
+
+- **Rule**: Do not report that a definition, name, statement or absence is right because it is recalled, familiar, or standard.  A claim carries a locator — file, declaration, section, page — or it is marked unverified.  Phrases asserting recalled correctness are banned outright: "this is the standard definition", "as usual", "the canonical form is", "I'm confident that", "obviously", said of anything not just read.
+
+- **Rationale**: `FSA-M4`.  The faculty being appealed to does not exist: recall and confabulation are the same operation from the inside, so the assertion adds no information while consuming a reader's trust.  `FSA-M5` shows the calibration empirically — confident false claims about file contents appeared beside confident true ones, indistinguishable.
+
+- **Violation Example**: "normality is integral closedness of the local ring, which is standard", written without opening a source; "`JordanRing` is the class", from a filename.
+
+- **Correct Example**: "Grauert–Remmert Ch. 6 §2 defines it as …, transcribed"; or "unverified: no source consulted, do not build on this".
+
+#### `FSA-17`: Do Not Manufacture the Appearance of Care
+
+- **Rule**: Never dress an unverified artifact in the marks of a verified one.  A definition written without a source gets no docstring asserting what it means, no claim of canonicity or generality, no citation-shaped comment, and no confident naming borrowed from the literature.  If it must exist at all, it is labelled unverified at the declaration.
+
+- **Rationale**: `FSA-M3`.  Polish is produced for free and decoupled from correctness, so adding it to unverified work is not neutral presentation — it actively disables the reader's only heuristic.  This is the mechanism by which model-authored mathematics is more dangerous than model-authored code: the surface is indistinguishable from careful work and the substance is not checkable.
+
+- **Violation Example**: a definition of a normal analytic space carrying a docstring explaining what analytic spaces are, in the voice of a textbook, with no source read.
+
+#### `FSA-18`: A Model May Not Supply the Approval for Its Own Definition
+
+- **Rule**: A model's review of its own definition is not the approval `FSA-07` requires, and neither is compiling it, nor re-reading it, nor stating that it looks right.  The approval is a human's, or it is the kernel's against a statement a human fixed.  Self-review may be reported as a proposal's reasoning; it may never be recorded as verification.
+
+- **Rationale**: `FSA-M2` and `FSA-M4` together.  The missing component of trust is provenance, and provenance cannot be supplied by the same process that produced the artifact; a second pass by the same model reproduces the same priors and the same blind spots, with more confidence rather than more evidence.
+
+- **Violation Example**: "checked it again and it's correct"; treating "compiles with no `sorry`" as verification of a definition; a design document recording a self-authored file as substrate on the strength of its author's confidence.
+
+#### `FSA-19`: Choose Work by Checkability, Not by Difficulty
+
+- **Rule**: When selecting what to do next, prefer the task whose output can be checked far more cheaply than it can be produced: locating a declaration, transcribing a source with its locator, making a falsifiable claim, proving a statement someone else fixed.  Deprioritise work whose output is expensive to check and authoritative once written, whatever its apparent difficulty or convenience.
+
+- **Rationale**: `FSA-M11`.  Checkability, not subject matter or effort, is what makes model output worth having; a hard task with a cheap check is a good use of a model, and an easy task with no check is the worst one.  This is also the practical form of `FSA-13`: under pressure the tempting work is always the unfalsifiable kind, because it always succeeds.
+
+- **Correct Example**: reporting that a notion is absent, with the instruments used and the declarations a definition would rest on, in place of the definition — the absence is checkable, the definition is not.
 
 * * *
 
