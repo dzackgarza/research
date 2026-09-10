@@ -1627,6 +1627,8 @@ behavior.
 
 ### Active claims
 
+| `CORE-profinite-owned-category-boundary-20260910-1230` | category-boundaries / profinite and absolute-Galois owned categories | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/profinite_groups.py; src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py; tests/categories/test_profinite_owned_boundary.py` (write) | `$(git rev-parse HEAD)` | 2026-09-10T12:30:00Z |
+
 
 
 
