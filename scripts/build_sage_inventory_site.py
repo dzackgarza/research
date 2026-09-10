@@ -29,7 +29,7 @@ from pathlib import Path
 DATA = Path("writing/data")
 AUDIT = DATA / "sage-source-audit-10.9/sagemath-10.9-category-inventory.json"
 RUNTIME = DATA / "sage-runtime-10.10.beta0/sagemath-10.10.beta0-runtime-inventory.json"
-OUT = Path("writing/category-theory/sage/inventory")
+OUT = Path("writing/.book/inventory")
 
 SEP = "; "          # every multi-valued audit field except `bases`
 BASE_SEP = ","      # `bases` alone
@@ -303,7 +303,7 @@ body = [
     f"measured {runtime['metadata']['measured']}, recording which of those classes load "
     "and what the framework generates from them.",
     "",
-    "The narrative reading of both is [the framework reference](../Sage-Category-Framework-Inventory.md).",
+    "The narrative reading of both is [the framework reference](../category-theory/sage/Sage-Category-Framework-Inventory.md).",
     "",
 ]
 body += table(["catalogue", "entries"], [

@@ -30,6 +30,8 @@ book:
       chapters:
         - category-theory/framework/Higher-Categories-and-Universes.md
         - category-theory/framework/Categorical-Foundations.md
+        - category-theory/framework/Limits-and-Colimits.md
+        - category-theory/framework/Monoidal-Categories.md
         - category-theory/framework/Loops-and-Suspension.md
         - category-theory/framework/Identification.md
         - category-theory/framework/Truncation-and-Classifiers.md
@@ -42,6 +44,12 @@ book:
         - category-theory/framework/Bilinear-Forms-on-Algebra-Modules.md
         - category-theory/framework/Lattices-and-Discriminant-Forms.md
         - category-theory/framework/Isometries-and-Arithmetic-Invariants.md
+        - category-theory/framework/Coxeter-Systems-and-Lattices.md
+        - category-theory/framework/Generators-and-Presentations.md
+        - category-theory/framework/Hyperbolic-Forms-and-Witt-Classes.md
+        - category-theory/framework/Morphisms-of-Form-Modules.md
+        - category-theory/framework/Stable-Categories-of-Modules-with-Duality.md
+        - category-theory/framework/Chain-Complexes.md
         - category-theory/lean/Lean-Sage-Integration-Model.md
         - category-theory/lean/Category-Graph.md
         - category-theory/sage/Sage-Category-Framework-Inventory.md

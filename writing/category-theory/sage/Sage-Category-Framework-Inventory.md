@@ -9,7 +9,7 @@ The mathematical categories represented here are defined in [Algebraic categorie
 The pinned `sage.categories` source defines 222 category classes and wrapper constructors: 1 example-only class, 38 framework helpers, 6 public category-valued wrapper constructors, 173 public named classes, and 4 test-only classes.
 At runtime the framework generates further classes from these: 209 axiom-generated and 200 construction-generated classes among the 678 loaded in a full-import session.
 
-The [Sage category inventory](inventory/index.md) gives each class, axiom and functorial construction a page of its own, carrying its module, role, defining axiom chain, declared features and source permalink, together with the classes the framework generates from it at runtime.
+The [Sage category inventory](../../inventory/index.md) gives each class, axiom and functorial construction a page of its own, carrying its module, role, defining axiom chain, declared features and source permalink, together with the classes the framework generates from it at runtime.
 
 The chain of declared superclass relations from `Modules(ZZ)` to `Objects()` passes through `Sets()` and `SetsWithPartialMaps()`:
 
@@ -118,7 +118,7 @@ The pinned source and a running Sage kernel exhibit the following discrepancies 
 
 2. **The topological/metric naming gap.** The `Topological` construction has a declared nested class only at `Groups` (`groups.py:654`, "Category of topological groups"); `Metric` at none.
    All 76 bare joins constructed at import are intersections of a metric or topological Sage category with categories in the algebraic towers.
-   The join factors alone do not assert compatibility between the topology or metric and the algebraic operations (join table in the [runtime enumeration](inventory/runtime.md)).
+   The join factors alone do not assert compatibility between the topology or metric and the algebraic operations (join table in the [runtime enumeration](../../inventory/runtime.md)).
 
 3. **Construction declarations were not duplicated across the towers.** The additive tower received copies of the four magma axioms but not the `Topological` declaration, so `Groups().Topological()` is named while `AdditiveGroups().Topological()` is a bare join.
 
@@ -156,7 +156,7 @@ Covariant constructions add structure, as in `C.CartesianProducts()`. Regressive
 The SageMath 10.10.beta0 runtime walk loads 678 category classes: source-declared named classes, axiom-generated classes, construction-generated classes, and framework classes.
 The axiom-generated classes are nested `CategoryWithAxiom` classes — the premade implementations reached by `C._with_axiom(A)`.
 The construction-generated classes are nested `FunctorialConstructionCategory` classes: per-category implementations of the 17 functorial constructions, plus the framework base classes.
-Each is listed on the page of the category, axiom, or construction it belongs to; the [runtime enumeration](inventory/runtime.md) holds the instances and the joins.
+Each is listed on the page of the category, axiom, or construction it belongs to; the [runtime enumeration](../../inventory/runtime.md) holds the instances and the joins.
 
 Sage operates on category *instances*. A full import constructs 130 distinct instances: 14 plain, 30 axiom-refined, 2 construction-derived, and 84 joins.
 It also synthesizes 166 dynamic `<Base>_with_category` implementation classes.

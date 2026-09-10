@@ -27,7 +27,17 @@ QUARTO = shlex.split(os.environ.get("QUARTO", "uvx --from quarto-cli quarto"))
 
 failures: list[str] = []
 
-# --- 0. every part reaches the book as a link, never as a copy --------------------
+# --- 0. no second Quarto process on this project ----------------------------------
+# Quarto renders each input to a sibling .html beside the source and then moves it
+# into _site. A preview doing the same thing on the same paths steals this render's
+# intermediates, and the failure reads as a missing file on an arbitrary chapter.
+if subprocess.run(["ss", "-ltn", "sport = :7654"],
+                  capture_output=True, text=True).stdout.count(":7654"):
+    sys.exit("docs-check: a preview is serving on :7654. It renders the same "
+             "intermediate paths as this gate and they corrupt each other — stop it "
+             "first. Nothing is wrong with the book.")
+
+# --- 0b. every part reaches the book as a link, never as a copy -------------------
 # The book reaches the prose through these symlinks. Written out rather than
 # discovered, because a clobbered link is no longer a symlink and would drop out of
 # anything that went looking for one, leaving the check to pass on nothing. A tool
@@ -114,7 +124,20 @@ for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", REFS_WEB.read_text(encoding="
     elif "ncatlab.org" not in body:
         failures.append(f"refs-web.bib: @{key} carries no ncatlab.org URL — not a scraped entry")
 
-# 7. external links must resolve — a cited resource that 404s can't be verified to exist
+# 7. cross-references the book's resolver does not implement — checked in the source,
+# because the rendered page shows nothing at all. cnb-3-crossref.lua matches only
+# `\ref{` and `\longref{`; `\cref{x}` contains neither, and pandoc drops the raw
+# LaTeX inline rather than printing it, so the reference silently disappears from the
+# sentence. Check 2 cannot see this: `quarto-unresolved-ref` is Quarto's own crossref
+# marker, and a dropped \cref never became a Quarto crossref.
+for md in SITE_MD:
+    for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
+        for m in re.finditer(r"\\[cC]ref\{([^}]*)\}", line):
+            failures.append(f"{md.name}:{i}: {m.group(0)} renders as nothing — "
+                            f"the resolver implements \\ref and \\longref only; "
+                            f"write \\longref{{{m.group(1)}}}")
+
+# 8. external links must resolve — a cited resource that 404s can't be verified to exist
 import urllib.request
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor

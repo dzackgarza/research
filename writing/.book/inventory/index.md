@@ -6,7 +6,7 @@ Every category class, axiom and functorial construction Sage declares, each on i
 
 **Runtime axis.** A full-import walk of SageMath 10.10.beta0, measured 2026-07-18, recording which of those classes load and what the framework generates from them.
 
-The narrative reading of both is [the framework reference](../Sage-Category-Framework-Inventory.md).
+The narrative reading of both is [the framework reference](../category-theory/sage/Sage-Category-Framework-Inventory.md).
 
 | catalogue | entries |
 | --- | --- |
