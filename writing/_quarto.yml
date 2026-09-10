@@ -22,6 +22,8 @@ book:
   repo-url: https://github.com/dzackgarza/research
   site-url: https://dzackgarza.github.io/research/
   search: true
+  sidebar:
+    collapse-level: 1
   chapters:
     - index.md
     - part: category-theory/index.md
