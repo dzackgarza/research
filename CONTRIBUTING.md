@@ -5524,6 +5524,14 @@ reviewed, maintained, composable with everything else built on it, and free,
 while an owned one is a permanent maintenance surface that owes a comparison
 theorem the day the library acquires its own version.
 
+**The objective function is explicit: minimise the number of notions this
+repository owns.**  Every invented definition permanently enlarges the surface a
+human must audit for semantic correctness, that audit is the constraint no tool
+and no model can relieve, and it is not discharged by getting the definition
+right — see `FSA-M13`.  A notion avoided is therefore worth more than several
+written well, and a report of formalization progress that does not say how the
+count moved has not reported the thing that matters.
+
 #### The mental models these rules encode (`FSA-M1`–`FSA-M12`)
 
 The rules below are consequences.  These are the models they follow from, given
@@ -5622,6 +5630,37 @@ nothing that outlives the turn.  Reading a subtree of the library produces
 durable knowledge that changes several later verdicts at once.  Both consume the
 same budget.  Preferring the second is not patience; it is the higher-yield use
 of the only thing that runs out.
+
+**`FSA-M13`: Every owned definition permanently enlarges the human audit
+surface, and that surface is the binding constraint.**  A formalization is
+trusted when a human has satisfied themselves that its *statements* say the
+intended mathematics (`FSA-M2`).  Nothing automates that, and no model can
+supply it, so the total quantity of owned notions requiring semantic audit is
+denominated in the one resource the project cannot buy more of.  Four properties
+make it the constraint rather than a cost:
+
+- **Additive.**  Each invented notion adds its own audit, and the additions never
+  cancel.  Fifty small definitions are fifty audits.
+- **Permanent and repeatedly paid.**  The audit is re-paid every time the
+  definition is refactored, every time a new person or agent builds on it, and
+  every time the library acquires its own version and the two must be compared.
+- **Coupled.**  Owned notions must be audited against *each other* for coherence,
+  not only against sources, so the cost grows faster than the count: changing one
+  invalidates the audits of everything phrased in terms of it.
+- **Not discharged by correctness.**  A perfectly correct invented definition
+  costs a full audit, because the reader cannot know it is correct without
+  performing one.  Getting it right reduces the risk, not the burden.
+
+The consequence is the objective function of this family, and it is not "invent
+carefully": **minimise the number of notions this repository owns.**  A
+definition avoided is worth more than several written well.  Concretely, the
+moves that reduce the surface are, in order: find the notion in a library; weaken
+or reformulate what the project needs so that an existing notion suffices;
+express the notion as a construction over existing ones rather than a new
+primitive; contribute it upstream so the audit is performed by reviewers and
+shared; and only then own it.  The moves that *look* like progress but leave the
+surface untouched are writing it well, documenting it thoroughly, and proving
+lemmas about it.
 
 * * *
 
@@ -5784,6 +5823,34 @@ of the only thing that runs out.
 - **Rationale**: `FSA-M11`.  Checkability, not subject matter or effort, is what makes model output worth having; a hard task with a cheap check is a good use of a model, and an easy task with no check is the worst one.  This is also the practical form of `FSA-13`: under pressure the tempting work is always the unfalsifiable kind, because it always succeeds.
 
 - **Correct Example**: reporting that a notion is absent, with the instruments used and the declarations a definition would rest on, in place of the definition — the absence is checkable, the definition is not.
+
+#### `FSA-20`: A Proposal to Own a Notion States the Audit It Adds and the Avoidances Tried
+
+- **Rule**: No new owned definition is proposed without stating, in the same message: what human audit it adds and who would perform it; and which surface-reducing alternatives were attempted and why each failed — a library notion, a weakening or reformulation of what the project needs so an existing notion suffices, a construction over existing notions instead of a new primitive, and upstream contribution.  A proposal that omits the audit cost may not be accepted, and one that omits the avoidances has not been tried.
+
+- **Rationale**: `FSA-M13`.  The quantity to minimise is the count of owned notions, so a proposal that does not price its addition cannot be weighed against the alternative of not making it.  Naming the avoidances also prevents the common shape where a notion is invented because inventing was the first thing attempted.
+
+- **Violation Example**: proposing sixteen definitions as the natural completion of a graph's open rows, with no statement of who audits them and no attempt to reformulate the graph's needs onto existing notions.
+
+- **Correct Example**: "this needs a Weil divisor; Mathlib has none, searched thus; the two statements that need it can instead be phrased over `Finsupp` on the height-one points directly, which owns nothing; recommend that, and if rejected, upstreaming before local ownership."
+
+#### `FSA-21`: Where a Notion Must Be Owned, Prefer the Forced Formulation
+
+- **Rule**: An owned definition is chosen to have as few free choices as possible: pinned by a universal property, matching the library's own spelling of the nearest notion, or determined by the construction it must interoperate with.  Where choices remain, they are enumerated at the declaration as the things an auditor must check.
+
+- **Rationale**: `FSA-M13`, the coupling and the audit clause.  What a human must audit is exactly the free choices — a formulation forced by a universal property or copied from the library carries almost no audit, while one with several defensible variants carries the full burden and transmits it to everything built on it.  Enumerating the residual choices converts an unbounded review into a checklist.
+
+- **Violation Example**: choosing between three presentations of analytic space on convenience grounds and recording none of the choice; a definition whose docstring explains the notion but not what was decided.
+
+- **Correct Example**: "this is the reduced presentation; the free choices are (i) reduced rather than with nilpotents, (ii) structure functions by ambient extension rather than as a sheaf quotient, (iii) finitely many equations rather than an ideal.  An auditor should check those three against Grauert–Remmert."
+
+#### `FSA-22`: The Count of Owned Notions Is Reported, and Its Growth Is Justified
+
+- **Rule**: Any status report, plan, or completion claim for formalization work states the number of notions the repository owns and how that number changed.  Growth is justified in the same breath or it is treated as a regression, whatever else the work achieved.
+
+- **Rationale**: `FSA-M13`.  A quantity that is the binding constraint and is never reported will be traded away silently for things that are reported, such as closed rows and compiling files.  Making it a headline number is what keeps "we finished nine nodes" from concealing "we acquired nine audits".
+
+- **Violation Example**: a report leading with sixteen definitions written, a thousand lines compiled and no `sorry`, without stating that the repository's audit surface grew by sixteen notions.
 
 * * *
 
