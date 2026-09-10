@@ -27,6 +27,22 @@ QUARTO = shlex.split(os.environ.get("QUARTO", "uvx --from quarto-cli quarto"))
 
 failures: list[str] = []
 
+# --- 0. every part reaches the book as a link, never as a copy --------------------
+# The book reaches the prose through these symlinks. Written out rather than
+# discovered, because a clobbered link is no longer a symlink and would drop out of
+# anything that went looking for one, leaving the check to pass on nothing. A tool
+# that rewrites an input by renaming a temporary file into place replaces the link
+# with a copy; the copy renders perfectly well, so nothing else here would notice the
+# two drifting apart. Adding a part means adding its name here and to _quarto.yml.
+LINKED_PARTS = ("index.md", "category-theory", "coble", "data", ".assets")
+for name in LINKED_PARTS:
+    entry, source = BOOK / name, DOCS / name
+    if not entry.is_symlink():
+        sys.exit(f"docs-check: {entry} is a copy, not a link to {source} — "
+                 "the book would render the copy. Replace it with the symlink.")
+    if entry.resolve() != source.resolve():
+        sys.exit(f"docs-check: {entry} links to {entry.resolve()}, not to {source}")
+
 # --- render, capturing warnings -------------------------------------------------
 proc = subprocess.run(
     [*QUARTO, "render", str(BOOK)],
