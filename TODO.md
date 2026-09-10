@@ -587,9 +587,10 @@ restart of the module/algebra/action constructions.
   Complete the remaining owned category, Hom, and constructor boundaries.
   **Owners:** the common owned-category runtime, parameterized category bases,
   `rings/ring_foundation.py`, and each surviving mathematical category.
-  **Current starting points:** `AdicCompletions`, `RingedSpaces`, and
-  `LocallyRingedSpaces` directly use Sage's runtime `Category` base; inspect
-  their complete method-packet and ordering paths when integrating them.
+  **Current starting point:** `AdicCompletions` still directly uses Sage's
+  runtime `Category` base. `RingedSpaces`, `LocallyRingedSpaces`, and the
+  profinite/absolute-Galois hierarchy already use the owned category graph;
+  continue the surviving direct-Sage category scan from the remaining owners.
   Runtime inheritance alone does not establish a forbidden mathematical edge.
   **Deliver:** owned semantic supercategories, owned parameter normalization,
   and owned `Hom`, `End`, `Aut`, joins and property refinements throughout
@@ -1627,7 +1628,6 @@ behavior.
 
 ### Active claims
 
-| `CORE-profinite-owned-category-boundary-20260910-1230` | category-boundaries / profinite and absolute-Galois owned categories | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/profinite_groups.py; src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py; tests/categories/test_profinite_owned_boundary.py` (write) | `$(git rev-parse HEAD)` | 2026-09-10T12:30:00Z |
 
 
 
