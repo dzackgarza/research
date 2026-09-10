@@ -127,3 +127,33 @@ def test_archive_free_algebra_morphisms_compose_and_have_the_expected_identity()
     assert identity.is_identity()
     assert identity(source.algebra_generator("x")) == source.algebra_generator("x")
     assert first * identity == first
+
+
+def test_archive_exterior_shuffle_parity_is_retained() -> None:
+    labels = finite_ordered_set(("x", "y", "z"))
+    exterior = AlternatingAlgebraOn(QQ, labels)
+    x = exterior.algebra_generator("x")
+    y = exterior.algebra_generator("y")
+    z = exterior.algebra_generator("z")
+
+    assert (x * y) * z == x * (y * z)
+    assert z * x * y == x * y * z
+    assert y * x * z == -(x * y * z)
+    assert x * y * z != exterior.zero()
+
+
+def test_archive_scalars_enter_each_free_construction_through_its_unit() -> None:
+    labels = _two_labels()
+    for algebra in (
+        TensorAlgebraOn(QQ, labels),
+        SymmetricAlgebraOn(QQ, labels),
+        AlternatingAlgebraOn(QQ, labels),
+        DividedPowerAlgebraOn(QQ, labels),
+    ):
+        structure = algebra._ring_morphism_defining_algebra_structure()
+        x = algebra.algebra_generator("x")
+
+        assert structure.domain() is QQ
+        assert structure(QQ(3)) == QQ(3) * algebra.one()
+        assert structure(QQ(3)) * x == QQ(3) * x
+        assert x * structure(QQ(3)) == QQ(3) * x
