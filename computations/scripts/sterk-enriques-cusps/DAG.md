@@ -1080,7 +1080,7 @@ primitive is genuinely missing it is called out, and each of those is small.
 | Rt1 | `NormedSpace.exp`, `Algebra/Lie/Weights/` for restricted roots | the Iwasawa decomposition |
 | Rt2, Rt3 | `IsCompact`, `Set` algebra, Rt1 | the Siegel domain |
 | Rt4, Rt9 | `MeasureTheory.Measure.haar`, `IsHaarMeasure` (`MeasureTheory/Measure/Haar/Basic.lean`) | the finite-volume theorems |
-| Rt5 | `Subgroup.index`, `Subgroup.FG` | **`Commensurable` is absent** — `rg "def Commensurable"` returns nothing.  It is a two-line definition over `Subgroup.index` |
+| Rt5 | `Subgroup.Commensurable`, `Subgroup.commensurator` (`GroupTheory/Commensurable.lean`), `Subgroup.index`, `Subgroup.FG` | **nothing** — commensurability of subgroups is Mathlib's own definition, with the commensurator and its `refl`/`symm`/`trans` API |
 | AF2 | `UniversalEnvelopingAlgebra` (`Algebra/Lie/UniversalEnveloping.lean`), `Subalgebra.center` | $\mathcal{Z}(\mathfrak{g})$-finiteness |
 | AF4, AF5 | `Summable`, `tsum`, `TendstoUniformlyOn`, `MeasureTheory` convolution | the Poincaré series and its convergence — **the statement is writable today** |
 | AF10 | `Topology/Sheaves/`, `AnalyticOn`, `TopologicalSpace` | normal analytic spaces, and the criterion over them |
@@ -1106,8 +1106,10 @@ marked writable today — Newlander–Nirenberg's equation, the Kobayashi
 pseudo-distance, the Poincaré series, the hyperbolic metric, Lo1 and Lo3 — and
 the rest need definitions over primitives that exist, not primitives that do not.
 
-Exactly one primitive is missing anywhere in this table: `Commensurable`, which
-Rt5 needs and which is a definition over `Subgroup.index`.
+No primitive is missing anywhere in this table.  The one earlier claimed
+missing, `Commensurable` for Rt5, is `Subgroup.Commensurable` in
+`GroupTheory/Commensurable.lean`; the search that reported it absent was
+`rg "def Commensurable"`, and the declaration reads `def Subgroup.Commensurable`.
 
 The honest shape of the cost is therefore **theorems, not infrastructure**.  The
 analysis in Newlander–Nirenberg, the structure theory in Borel §§20–21, the
