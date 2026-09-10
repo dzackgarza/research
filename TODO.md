@@ -1627,7 +1627,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-absolute-galois-finite-generation-20260910-1005` | archive reconciliation / number-field absolute Galois finite-generation semantics | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py; tests/groups/test_absolute_galois_finite_generation_archive.py` (write) | `8c3201d9cea1e63a169db4b8464dd0a86ac03b3a` | 2026-09-10T10:05:00Z |
 
 
 
