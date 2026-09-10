@@ -30,6 +30,7 @@ public import Mathlib.Order.KrullDimension
 public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Convex.Topology
+public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 
 @[expose] public section
 
@@ -503,5 +504,52 @@ theorem negativeCone_two_components (n : ℕ) :
     negativeCone.isOpen_upper n, negativeCone.isOpen_lower n⟩
 
 end LorentzConvexity
+
+section DiscriminantGaussSum
+
+/-- **F1.16.**  The comparison `ℚ/2ℤ → ℝ/2ℤ`, induced by the inclusion of the
+rationals.  A discriminant form takes values in `AddCircle (2 : ℚ)`, and the
+additive character to the circle group that a Gauss sum needs is stated for
+`AddCircle (T : ℝ)`, so this map is the bridge between them. -/
+noncomputable def ratCircleToRealCircle : AddCircle (2 : ℚ) →+ AddCircle ((2 : ℚ) : ℝ) :=
+  QuotientAddGroup.map _ _ (Rat.castHom ℝ).toAddMonoidHom <| by
+    rw [AddSubgroup.zmultiples_le]
+    refine AddSubgroup.mem_comap.mpr ?_
+    show ((2 : ℚ) : ℝ) ∈ AddSubgroup.zmultiples ((2 : ℚ) : ℝ)
+    exact AddSubgroup.mem_zmultiples _
+
+/-- **F1.16.**  The Gauss sum of a `ℚ/2ℤ`-valued form on a finite abelian group:
+`∑ a, e(q a)` for the additive character `e` of the circle.
+
+This is the quantity Milgram's theorem evaluates, and the object F1.16 is stated
+over.  Mathlib has `gaussSum` for a `MulChar`/`AddChar` pair on a finite ring; a
+discriminant form is not that, and no Gauss sum of one exists anywhere. -/
+noncomputable def discriminantGaussSum {A : Type u} [AddCommGroup A] [Fintype A]
+    (q : A → AddCircle (2 : ℚ)) : ℂ :=
+  ∑ a : A, (AddCircle.toCircle_addChar (ratCircleToRealCircle (q a)) : ℂ)
+
+/-- The Gauss sum of the zero form counts the group: every term is the character
+at zero, which is one. -/
+theorem discriminantGaussSum_zero (A : Type u) [AddCommGroup A] [Fintype A] :
+    discriminantGaussSum (fun _ : A => (0 : AddCircle (2 : ℚ))) = Fintype.card A := by
+  unfold discriminantGaussSum
+  simp
+
+/-- **F1.16, the statement.**  Milgram's theorem: for an even lattice with
+discriminant form `q` and signature `σ = n₊ - n₋`, the normalized Gauss sum of
+`q` is the eighth root of unity `exp(2πi σ / 8)`.  Specialized to a unimodular
+lattice, where the discriminant group is trivial and the sum is one, it gives
+`σ ≡ 0 (mod 8)`, which is F1.4's last clause.
+
+This is the *statement*, as a proposition about the data.  It is **not proved
+here**: the proof needs the absolute value of the Gauss sum and a reduction to
+the `p`-adic pieces, and it is the hardest single item in the Sterk graph. -/
+def MilgramStatement {A : Type u} [AddCommGroup A] [Fintype A]
+    (q : A → AddCircle (2 : ℚ)) (σ : ℤ) : Prop :=
+  discriminantGaussSum q
+    = (Real.sqrt (Fintype.card A) : ℂ) *
+      Complex.exp (2 * Real.pi * Complex.I * (σ : ℂ) / 8)
+
+end DiscriminantGaussSum
 
 end Sterk
