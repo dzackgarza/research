@@ -1,0 +1,33 @@
+mod pandoc '~/.pandoc/justfile'
+
+# The shared recipes read their per-project settings from the environment when
+# they are parsed, which happens before a justfile's own `export` takes effect.
+# So the settings are placed in the environment of a nested `just`, not exported
+# from here:
+#   PANDOC_BIB_SOURCE  the live Zotero export every citation key resolves against
+#   PANDOC_TOP_LEVEL_DIVISION  "#" is a part, "##" a chapter, "###" a section
+#   PANDOC_CROSSREF    off; the text authors its own \label and \Cref
+
+# Compile the dissertation to dissertation-<date>.pdf
+compile:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  cd "{{justfile_directory()}}"
+  PANDOC_BIB_SOURCE="$HOME/.pandoc/bib/references.bib" \
+  PANDOC_TOP_LEVEL_DIVISION=part \
+  PANDOC_CROSSREF=no-crossref \
+    just pandoc::compile-pandoc-project dissertation uga-dissertation.tex main.md
+
+# Format all markdown sections
+format-md:
+  just pandoc::format-md sections
+
+# Live preview of one section file
+preview file:
+  just pandoc::preview {{file}} pdf uga-dissertation.tex
+
+# Remove build artifacts
+clean: pandoc::clean
+  #!/usr/bin/env bash
+  set -euo pipefail
+  rm -f dissertation-*.pdf

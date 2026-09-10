@@ -947,8 +947,13 @@ first two sweeps never mentioned turned up.
 
 | Nodes | Mathlib substrate |
 | --- | --- |
-| F1.1–F1.4, F1.7, F1.8 | `ZLattice`, `LinearAlgebra/BilinearForm/`, `LinearAlgebra/QuadraticForm/`, `Matrix`, `dualSubmodule` |
-| F1.9, F1.10 | finite abelian groups, `QuadraticForm`, `ZMod`; the target $\mathbb{Q}/2\mathbb{Z}$ is `QuotientAddGroup` |
+| F1.1's notion, $\langle B\rangle$, and the congruence criterion | a lattice is `Module.Free ℤ L` and `Module.Finite ℤ L` — equivalently a `Basis (Fin n) ℤ L` — with a `LinearMap.BilinForm ℤ L` satisfying `LinearMap.IsSymm` (`SesquilinearForm/Basic.lean`, a structure on `B : M →ₛₗ[I] M →ₗ[R] R`).  $\langle B\rangle$ from a matrix is `Matrix.toBilin` through a basis, or `Matrix.toBilin'` on `Fin n → ℤ` (`LinearAlgebra/Matrix/BilinearForm.lean`).  $B' = {}^tABA$ is `BilinForm.toMatrix_comp` at $l = r =$ the basis change, with `BilinForm.toMatrix_basisFun` for the standard basis; $\mathrm{GL}(n;\mathbb{Z})$ is `Matrix.GeneralLinearGroup (Fin n) ℤ` |
+| F1.2 | `QuadraticMap.polar` and `QuadraticMap.polarBilin` (`QuadraticForm/Basic.lean`) relate $q(v)=(v,v)$ to $b$; evenness is a condition on the diagonal of `BilinForm.toMatrix`, stated over `Int.even_iff` |
+| F1.3 | `QuadraticForm.sigPos` and `sigNeg` (`QuadraticForm/Signature.lean`) are **the same definition F1.3 gives** — the maximal dimension of a subspace on which $Q$ is positive (resp. negative) definite — and they are stated for `[CommRing R] [LinearOrder R] [Module R M]`, so they apply over $\mathbb{Z}$ with no base change.  Sylvester's law, `sigPos_of_equiv_weightedSumOfSquares`, is field-only, which is where $L\otimes\mathbb{R}$ enters |
+| F1.4's definitions | $d(L)$ is `Matrix.det` of `BilinForm.toMatrix`; nondegeneracy and unimodularity are conditions on it.  **Its last clause is not here** — that an even unimodular lattice has $n_+\equiv n_-\pmod 8$ is Milgram's theorem, and `rg -i 'milgram|oddity'` over the pinned tree finds only Lax–Milgram, a functional-analysis false friend.  That clause is greenfield |
+| F1.7's dual | **`BilinForm.dualSubmodule`** (`LinearAlgebra/BilinearForm/DualLattice.lean`): for $N \le M$ over $S \supseteq R$, $\{x \mid \forall y \in N,\ B\,x\,y \in (1 : \mathrm{Submodule}\ R\ S)\}$ — which at $R=\mathbb{Z}$, $S=\mathbb{Q}$, $M=L_\mathbb{Q}$ is exactly $L^*\subseteq L_\mathbb{Q}$, with `dualSubmoduleParing` for the pairing.  $\mathrm{div}(v)$ and $v^*$ are definitions over it |
+| F1.8 | `Submodule.torsion` and `RingTheory/Flat/TorsionFree.lean`: primitivity of $M\subset L$ is torsion-freeness of the quotient, which is the definition F1.8 gives |
+| F1.9, F1.10 | finite abelian groups with `GroupTheory/FiniteAbelian/Basic.lean`; **the value groups are `AddCircle`** — `AddCircle p := 𝕜 ⧸ zmultiples p` (`Topology/Instances/AddCircle/Defs.lean`), so $\mathbb{Q}/2\mathbb{Z}$ is `AddCircle (2 : ℚ)` and $\mathbb{Q}/\mathbb{Z}$ is `AddCircle (1 : ℚ)`, both `AddCommGroup` and so both `ℤ`-modules.  $q$ is then a `QuadraticMap ℤ G (AddCircle (2:ℚ))`, whose `toFun_smul` **is** F1.9's $q(ax)=a^2q(x)$, and `QuadraticMap.polar` supplies $q(x+y)-q(x)-q(y)$.  What must be authored is the doubling $\mathbb{Q}/\mathbb{Z}\to\mathbb{Q}/2\mathbb{Z}$ that turns that into $2b(x,y)$, and the induced forms on $L^*/L$ |
 | F2.1, F2.2, F2.10, F2.11 | group homomorphisms and explicit formulas over the above |
 | F4.1's root set | `LinearAlgebra/RootSystem/` and `Matrix/Cartan.lean`, which holds the Cartan **matrices** of $A$, $B$, $C$, $D$, $E_6$, $E_7$, $E_8$, $F_4$, $G_2$ with their determinants, and `ADEInequality.Admissible`.  The *type* of $L$ — the decomposition of the sublattice spanned by $R(L)$ into irreducibles — is **not** here: Mathlib has `RootPairing.IsIrreducible` as a predicate and lemmas its own files call "necessary for the classification", no decomposition theorem and no direct sum of root pairings.  That half of F4.1 goes through `lean-categories`' `adeClassification`; see the routes table |
 | F1.3, and the inertial index in Lo1 | `LinearAlgebra/QuadraticForm/Signature.lean` — `sigPos`, `sigNeg`, and Sylvester's law of inertia |
@@ -957,6 +962,23 @@ first two sweeps never mentioned turned up.
 | D8 | `UpperHalfPlane`, `CongruenceSubgroup.Gamma0`/`Gamma1` |
 | Pa1 | `Padics`, `PadicInt`, `QuadraticForm` |
 | Nk1, Pa7 | `AddGroup.rank` (`GroupTheory/Rank.lean`) is exactly $\ell(A)$ — "the minimum size of a generating set", `to_additive` from `Group.rank`, defined for `FG` groups — and $\lvert A\rvert$ is `Nat.card`; the form on $A_q$ is the F1.9/F1.10 substrate |
+
+**`ZLattice` was in the F1 row and is not this notion.**  Mathlib's `ZLattice`
+(`Algebra/Module/ZLattice/Basic.lean`) is a *discrete subgroup of full rank in a
+finite-dimensional vector space over a normed linearly ordered field* — an
+embedded lattice with a topology, built for geometry of numbers, and it carries
+**no bilinear form at all**.  F1.1's lattice is an abstract finitely generated
+free $\mathbb{Z}$-module *with* a symmetric form, of signature $(2,10)$ in the
+case that matters, and no ambient space.  `ZLattice` is the right tool for the
+volume side of Rt4 and Rt9, and for the geometry-of-numbers argument
+`lean-categories` runs in `ClassFiniteness`; it supplies nothing in F1.
+
+**$O(L)$ was in the F1 row and is not in Mathlib.**  `Matrix.orthogonalGroup n R`
+is an abbreviation for `unitaryGroup n R` (`LinearAlgebra/UnitaryGroup.lean`) —
+the matrices with ${}^tM = M^{-1}$, which is the orthogonal group of the
+*identity* Gram matrix.  $O(L)$ is $\{M : {}^tM G_L M = G_L\}$ for the lattice's
+own Gram matrix, and nothing in the pinned tree defines it.  It is a short
+definition over `Matrix` or over `LinearEquiv`, and it is greenfield.
 
 **F2.3 and F2.4 were in this table and do not belong here.**  The row read
 "reflections and Cartan–Dieudonné live in `LinearAlgebra/QuadraticForm/`".
@@ -1097,6 +1119,7 @@ is a node in this graph, and none of them has a formalization anywhere the regis
 | Bo1–Bo5, Ky1–Ky8 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance and hyperbolic imbedding | nothing; `kebekus/ProjectVD` covers Nevanlinna theory, adjacent but not these statements |
 | Rt1–Rt10 | Iwasawa decompositions, restricted roots, Siegel domains, fundamental sets for arithmetic groups, and the finite-volume and compactness criteria | Mathlib has Haar measure on locally compact groups and no Lie structure theory to apply it to; the rank-one case of the reduction theory *is* there, in `UpperHalfPlane`'s `ProperAction` and `Measure` files under `CongruenceSubgroup`.  `rg -i 'SiegelSet'` finds nothing, and every "Siegel" hit in the pinned tree is Siegel's lemma or Siegel's theorem; ATLAS's `IwasawaData` is a $KAN$ factorization whose $N$ carries no condition, over a `sorry` existence theorem asserted for every topological group |
 | E1, E3–E13 | compact complex surfaces, Enriques and $K3$ surfaces, elliptic pencils, Horikawa's isometry, global Torelli, the period map | nothing; `nullstellensatz` gives local complex-analytic geometry only |
+| F1.1's $O(L)$, F1.4's signature congruence | $O(L) = \{M : {}^tM G_L M = G_L\}$ as a group, and Milgram's theorem that an even unimodular lattice has $n_+\equiv n_-\pmod 8$ | for $O(L)$, `Matrix.orthogonalGroup` is the unitary group and so the orthogonal group of the identity form only — the general definition is a few lines over `Matrix` and is not written.  For the congruence, nothing: no Milgram, no Gauss sum, no oddity invariant anywhere in the pinned tree |
 | F1.6 | Milnor's classification of the even indefinite unimodular lattices as sums of $H$, $E_8$ and $-E_8$ | nothing.  `E_8` arrives as an object through Sphere-Packing-Lean and F1.5; the classification over it is nowhere |
 | F5.1 | Niemeier's 24 lattices — the same theorem as F4.2 | nothing; `rg -i --no-ignore niemeier` over Mathlib and all 111 cloned repositories returns no file |
 | F5.2, F5.8 | Scattone's Remark 5.1.4 and Corollary 5.6.10, both statements about a **genus** | nothing: the genus of a lattice has no formalization anywhere the registry reaches.  `HassePrinciple` supplies Hilbert symbols with its key proofs `sorry`, which is below these |
