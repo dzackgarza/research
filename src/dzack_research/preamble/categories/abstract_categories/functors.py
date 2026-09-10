@@ -364,7 +364,7 @@ class DiscreteCategory(OwnedCategory):
         return f"Discrete category on {self.object_set()}"
 
 
-class DiscreteCategories(Category):
+class DiscreteCategories(OwnedCategory):
     r"""The category of represented discrete categories."""
 
     def an_object(self) -> Category:
