@@ -904,6 +904,21 @@ the bump to v4.33.1, one commit later.  Every substrate claim below was checked
 against the checkout, so where the two differ the claims are the weaker,
 earlier ones.
 
+**Which checkout, exactly.**  There are two Mathlib clones on this machine and
+only one of them is the pinned one:
+
+- `~/gitclones/lean-categories/.lake/packages/mathlib` — **the pinned checkout,
+  `db584cd6d4`, 2026-08-10.**  Every claim in this file means this tree.
+- `~/gitclones/lean-reference-corpus/leanprover-community__mathlib4` —
+  `81a5d257c8`, 2026-07-13, a month older.  It is the corpus clone, and it is
+  the wrong tree to audit against.
+
+The difference is not cosmetic: `Mathlib/AlgebraicGeometry/Group/Affine.lean`
+exists in the pinned tree (23 KB, the Hopf-algebra/`Spec` anti-equivalence) and
+does not exist in the corpus clone at all.  An audit run against the older tree
+reports AG2's substrate as a fabricated path when it is a real file.  Check the
+revision with `git -C <tree> log -1` before believing an absence.
+
 Registry surfaces swept: the Mathlib subtrees table; *Quadratic forms, lattices,
 sphere packing*; *Algebra, number theory, algebraic geometry*; *Analysis,
 probability, geometry, dynamics*; *Category theory, higher structures*.
@@ -1144,7 +1159,8 @@ primitive is genuinely missing it is called out, and each of those is small.
 
 | Node | Written over | What must be authored |
 | --- | --- | --- |
-| AG2, AG3 | `HopfAlgebra` (`RingTheory/HopfAlgebra/Basic.lean`), `AlgebraicGeometry/Group/{Affine,Smooth}.lean`, `Scheme` | tori, $k$-split tori, $X^*(T)$ and $X_*(T)$ |
+| AG1 | `Scheme.Over` (`AlgebraicGeometry/Over.lean`, an abbreviation for `OverClass X S`), `IsGalois` (`FieldTheory/Galois/Basic.lean`), `pullback` for base change, and `CategoryTheory.MorphismProperty.Descent` with `AlgebraicGeometry/Morphisms/Descent.lean` | a $k$-structure, and Galois descent **of objects**.  Mathlib's descent is of morphism *properties* — `HasRingHomProperty.descendsAlong` and its siblings — with no descent datum and no twisted form, so the descent AG1 needs is the thing to author, over the $S$-scheme and Galois vocabulary that exists |
+| AG2, AG3 | `HopfAlgebra` (`RingTheory/HopfAlgebra/Basic.lean`), `AlgebraicGeometry/Group/Affine.lean` — where `hopfSpec` is the fully faithful $(\mathbf{CommHopfAlg}_R)^{\mathrm{op}} \to \mathbf{Grp}(\mathbf{Sch}/\mathrm{Spec}\,R)$ — `Group/Smooth.lean`, `Scheme`; and for the Lie algebra, `Derivation` with `Derivation.instLieAlgebra` (`RingTheory/Derivation/Lie.lean`) and the differentials of `Algebra/Category/ModuleCat/Differentials/Presheaf.lean` | tori, $k$-split tori, $X^*(T)$ and $X_*(T)$; and $\mathrm{Lie}(G)$, which AG2's verdict cell records as absent.  It is absent as a **definition**: `rg -i 'LieAlgebra|tangentSpace'` over `Mathlib/AlgebraicGeometry` returns nothing, while the derivations that carry the bracket are in place |
 | AG4, AG5 | `AlgebraicGeometry.IsProper` (`Morphisms/Proper.lean`), `UniversallyClosed`, `Subgroup.normalizer` | Borel and parabolic subgroups, Chevalley's theorem |
 | AG6, AG7 | `RootPairing`, `RootSystem` (`LinearAlgebra/RootSystem/`), `CoxeterMatrix`, `CoxeterSystem` (`GroupTheory/Coxeter/`) | root subgroups, the Tits system, Bruhat decomposition |
 | AG13 | `Module.rank`, `Subgroup`, AG3 | the $k$-rank, over the conjugacy theorem AG12 |
@@ -1187,6 +1203,14 @@ No primitive is missing anywhere in this table.  The one earlier claimed
 missing, `Commensurable` for Rt5, is `Subgroup.Commensurable` in
 `GroupTheory/Commensurable.lean`; the search that reported it absent was
 `rg "def Commensurable"`, and the declaration reads `def Subgroup.Commensurable`.
+
+Two absences in the table are absences of a **definition**, not of a primitive,
+and the distinction is the whole point of the section.  $\mathrm{Lie}(G)$ for a
+group scheme is nowhere in `Mathlib/AlgebraicGeometry`, and the bracket it would
+carry is `Derivation.instLieAlgebra`.  Galois descent of objects is nowhere, and
+the $S$-scheme and Galois vocabulary it would be stated in is in place.  Each is
+a definition to author over primitives that exist, which is the same position as
+every other row here.
 
 The honest shape of the cost is therefore **theorems, not infrastructure**.  The
 analysis in Newlander–Nirenberg, the structure theory in Borel §§20–21, the
