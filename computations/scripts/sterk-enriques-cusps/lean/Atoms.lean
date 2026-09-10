@@ -655,6 +655,76 @@ theorem sum_gaussTerm_diff_factor (q : A → AddCircle (2 : ℚ))
   rw [hval, gaussTerm_add]
 
 
+
+/-- **F1.16, step nine.**  The polar form at a fixed second argument, packaged as
+an additive character `A → ℂ`.
+
+The two hypotheses are the ones a discriminant form satisfies: the polar form is
+additive in its first argument, and vanishes when either argument does.  They are
+hypotheses here, so the character is exactly as strong as its input. -/
+noncomputable def polChar (pol : A → A → AddCircle (2 : ℚ))
+    (hadd : ∀ x y c, pol (x + y) c = pol x c + pol y c)
+    (hzero : ∀ c, pol 0 c = 0) (c : A) : AddChar A ℂ where
+  toFun := fun a => gaussTerm (-(pol a c))
+  map_zero_eq_one' := by simp only [hzero, neg_zero]; exact gaussTerm_zero
+  map_add_eq_mul' := fun a b => by
+    simp only [hadd a b c, neg_add]
+    exact gaussTerm_add _ _
+
+omit [Fintype A] in
+@[simp]
+theorem polChar_apply (pol : A → A → AddCircle (2 : ℚ)) (hadd hzero) (c a : A) :
+    polChar pol hadd hzero c a = gaussTerm (-(pol a c)) := rfl
+
+/-- **F1.16, step ten.**  The inner character sum is evaluated by
+`AddChar.sum_eq_ite`: it is `|A|` when the character is trivial and zero
+otherwise.  Triviality of `polChar … c` is exactly membership of `c` in the
+radical of the form. -/
+theorem sum_polChar (pol : A → A → AddCircle (2 : ℚ)) (hadd hzero) (c : A) :
+    ∑ a : A, gaussTerm (-(pol a c))
+      = if polChar pol hadd hzero c = 0 then (Fintype.card A : ℂ) else 0 := by
+  classical
+  simpa using AddChar.sum_eq_ite (polChar pol hadd hzero c)
+
+/-- **F1.16, the absolute value.**  For a form whose polar character is
+nontrivial away from zero — which is nondegeneracy — the squared modulus of the
+Gauss sum is the order of the group: `|G(q)|² = |A|`.
+
+This is the half of Milgram's theorem that concerns the *modulus*.  The other
+half, that the argument is `exp(2πiσ/8)`, relates `q` to the **signature of a
+lattice** and so cannot be proved from `A` and `q` alone: it needs F3.2's bridge
+between the two. -/
+theorem discriminantGaussSum_mul_conj_of_nondegenerate
+    (q : A → AddCircle (2 : ℚ)) (pol : A → A → AddCircle (2 : ℚ))
+    (hpol : ∀ x y, q (x + y) = q x + q y + pol x y)
+    (hadd : ∀ x y c, pol (x + y) c = pol x c + pol y c)
+    (hzero : ∀ c, pol 0 c = 0)
+    (hq0 : q 0 = 0) (hpol0 : ∀ a, pol a 0 = 0)
+    (hnd : ∀ c : A, c ≠ 0 → polChar pol hadd hzero c ≠ 0) :
+    discriminantGaussSum q * (starRingEnd ℂ) (discriminantGaussSum q)
+      = (Fintype.card A : ℂ) := by
+  classical
+  rw [discriminantGaussSum_mul_conj_eq_sum_diff, Finset.sum_comm]
+  have hterm : ∀ c : A, ∑ a : A, gaussTerm (q a - q (a + c))
+      = gaussTerm (-q c) * (if polChar pol hadd hzero c = 0 then (Fintype.card A : ℂ) else 0) := by
+    intro c
+    rw [sum_gaussTerm_diff_factor q pol hpol c, sum_polChar pol hadd hzero c]
+  rw [Finset.sum_congr rfl (fun c _ => hterm c)]
+  have hzeroTerms : ∀ c ∈ Finset.univ.erase (0 : A),
+      gaussTerm (-q c) * (if polChar pol hadd hzero c = 0 then (Fintype.card A : ℂ) else 0) = 0 := by
+    intro c hc
+    have hcne : c ≠ 0 := (Finset.mem_erase.mp hc).1
+    rw [if_neg (hnd c hcne)]
+    ring
+  rw [← Finset.sum_erase_add _ _ (Finset.mem_univ (0 : A))]
+  rw [Finset.sum_eq_zero hzeroTerms, zero_add]
+  have htriv : polChar pol hadd hzero 0 = 0 := by
+    ext a
+    simp only [polChar_apply, hpol0 a, neg_zero]
+    rw [gaussTerm_zero]
+    rfl
+  rw [if_pos htriv, hq0, neg_zero, gaussTerm_zero, one_mul]
+
 end MilgramSteps
 
 end Sterk
