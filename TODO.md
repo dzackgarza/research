@@ -1626,6 +1626,7 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
+| `ARCHIVE-number-field-base-change-20260910-0315` | archive reconciliation / selected number-field integral form and algebra base change | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/number_fields.py; src/dzack_research/preamble/categories/functors/algebra_scalar_change.py; tests/rings/test_number_field_base_change_archive.py` (write) | `392df09c` | 2026-09-10T03:15:00Z |
 
 
 
