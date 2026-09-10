@@ -71,3 +71,28 @@ def test_equivariant_application_retains_gluing_centralizer_and_polarization_gro
     assert edge.plane_transporter() in arithmetic_group
     assert edge.line() in edge.line_cusp()
     assert edge.plane() in edge.plane_cusp()
+
+
+def test_equivariant_application_lifts_boundary_transporters_to_the_k3_centralizer() -> None:
+    application = enriques_equivariant_k3_application()
+    incidence = application.ambient_anti_invariant_tits_building_incidence()
+
+    assert incidence.cardinality() > 0
+    edge = incidence[0]
+    centralizer = application.centralizer_group()
+    anti_group = application.anti_invariant_arithmetic_group()
+
+    assert edge.anti_invariant_line_transporter() in anti_group
+    assert edge.anti_invariant_plane_transporter() in anti_group
+    assert edge.line_transporter() in centralizer
+    assert edge.plane_transporter() in centralizer
+
+    extension = application.primitive_extension()
+    assert (
+        extension.coinvariant_restriction(edge.line_transporter())
+        == edge.anti_invariant_line_transporter()
+    )
+    assert (
+        extension.coinvariant_restriction(edge.plane_transporter())
+        == edge.anti_invariant_plane_transporter()
+    )

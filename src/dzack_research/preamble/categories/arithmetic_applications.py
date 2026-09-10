@@ -15,6 +15,54 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     cusps,
     tits_building_incidence,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+
+class AmbientEquivariantCuspIncidence(SageObject):
+    r"""An anti-invariant cusp incidence together with ambient K3 transporters."""
+
+    def __init__(self, application, incidence) -> None:
+        self._application = application
+        self._incidence = incidence
+
+    def application(self):
+        return self._application
+
+    def incidence(self):
+        return self._incidence
+
+    def line(self):
+        return self.incidence().line()
+
+    def plane(self):
+        return self.incidence().plane()
+
+    def line_cusp(self):
+        return self.incidence().line_cusp()
+
+    def plane_cusp(self):
+        return self.incidence().plane_cusp()
+
+    def anti_invariant_line_transporter(self):
+        return self.incidence().line_transporter()
+
+    def anti_invariant_plane_transporter(self):
+        return self.incidence().plane_transporter()
+
+    @cached_method
+    def line_transporter(self):
+        return self.application().lift_anti_invariant_isometry(
+            self.anti_invariant_line_transporter()
+        )
+
+    @cached_method
+    def plane_transporter(self):
+        return self.application().lift_anti_invariant_isometry(
+            self.anti_invariant_plane_transporter()
+        )
+
+    def __repr__(self) -> str:
+        return f"Ambient Enriques incidence {self.line_cusp()} < {self.plane_cusp()}"
 
 
 class LorentzianE10Application(SageObject):
@@ -146,6 +194,10 @@ class EnriquesEquivariantK3Application(SageObject):
     def anti_invariant_arithmetic_group(self):
         return self.primitive_extension().coinvariant_extension_subgroup()
 
+    def lift_anti_invariant_isometry(self, isometry):
+        r"""Lift one glue-compatible anti-invariant isometry to the K3 centralizer."""
+        return self.primitive_extension().lift_coinvariant_extension_element(isometry)
+
     def anti_invariant_line_cusps(self):
         return self.anti_invariant_arithmetic_group().cusps(1)
 
@@ -163,6 +215,16 @@ class EnriquesEquivariantK3Application(SageObject):
         """
         return self.anti_invariant_arithmetic_group().tits_building_incidence()
 
+    @cached_method
+    def ambient_anti_invariant_tits_building_incidence(self):
+        r"""Return the same cusp incidences with transporters in the full K3 centralizer."""
+        return finite_ordered_set(
+            tuple(
+                AmbientEquivariantCuspIncidence(self, incidence)
+                for incidence in self.anti_invariant_tits_building_incidence()
+            )
+        )
+
 
 def lorentzian_e10_application():
     return LorentzianE10Application()
@@ -177,6 +239,7 @@ def enriques_equivariant_k3_application():
 
 
 __all__ = [
+    "AmbientEquivariantCuspIncidence",
     "EnriquesEquivariantK3Application",
     "EnriquesHigherWittApplication",
     "LorentzianE10Application",
