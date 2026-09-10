@@ -1626,7 +1626,6 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
-| `ARCHIVE-coxeter-hyperbolic-tdd-20260910-0322` | archive reconciliation / Lanner and quasi-Lanner TDD literature specimens | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/lattices/test_coxeter_hyperbolic_tdd_archive.py` (write) | `bbc322b0` | 2026-09-10T03:22:00Z |
 
 
 
