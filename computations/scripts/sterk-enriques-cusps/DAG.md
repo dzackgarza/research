@@ -1128,6 +1128,37 @@ sets, hyperbolic space in any model, normal analytic spaces, $K3$ and Enriques s
 canonical decomposition of a $p$-adic lattice, and the genus of a lattice.  Every one of those
 is a node in this graph, and none of them has a formalization anywhere the registry reaches.
 
+### Fourth sweep: the registry's own list, counted
+
+The three earlier sweeps read the registry's *tables of interest* — the Mathlib
+subtree table and four domain tables — and the corpus as cloned.  Neither is the
+registry's full list.  `~/gitclones/lean-categories/AGENTS.md` §"Formalization
+source registry" links **277 repositories**, and 245 of them are named nowhere in
+this file.  Most are irrelevant by subject (combinatorics, quantum information,
+type theory, machine learning, competition benchmarks).  Five are not, and were
+cloned and read for this pass.  All five are sorry-free.
+
+| Node | Repository | What it supplies, read |
+| --- | --- | --- |
+| F1.10's computation; the $\ell(A_{L_-})=10$ in the A2 and A3 audit points | [`JJYYY-JJY/lean-normal-forms`](https://github.com/JJYYY-JJY/lean-normal-forms) | the Lean 4 artifact for arXiv:2607.22524: a verified Kannan–Bachem Smith reduction returning a canonical Smith matrix with four explicit transformation matrices, the uniqueness of the invariant factors through the classical minor characterisation (`diagPrefixProduct_dvd_minor`, `first_invariantFactor_eq_of_two_sided_equiv`), and polynomial cost bounds.  Its maintained scope is **square integer matrices with $\det \ne 0$** — which is exactly a nondegenerate Gram matrix, so $G_L = L^*/L$ as the cokernel is inside it, and $\ell(A_q)$ is the count of invariant factors above 1.  What it does **not** give is the discriminant *form*: the group's invariant factors are not $q_L$, and F1.10 is the form |
+| F3.1, F3.2 in rank three | [`MichaelStollBayreuth/LegendreQF`](https://github.com/MichaelStollBayreuth/LegendreQF) | Legendre's theorem on diagonal ternary forms: for $a,b,c$ squarefree and pairwise coprime, $ax^2+by^2+cz^2=0$ has a nontrivial integral solution iff the local conditions hold.  Sorry-free in Lean 4, with `IsSquareMod` under it.  This is the ternary case of Hasse–Minkowski, and it is **further along than `HassePrinciple`**, whose own `QuadraticForm/RankThree.lean` carries a `sorry`.  Rank three only, and diagonal only |
+| V11–V13, and Lo's basis work | [`leanprover/hex-lll`](https://github.com/leanprover/hex-lll) | LLL over `Matrix Int n m`: the $(\delta,\eta)$-reducedness predicate `isLLLReduced` with its short-vector bounds, decidable linear independence through an integer Gram–Schmidt, row operations proved to preserve the lattice, a checker and a native path.  Vinberg's algorithm needs a reduced basis of a hyperbolic lattice and a distance order on candidate roots; this is the reduction half over $\mathbb{Z}$, with no form of signature $(n,1)$ anywhere in it.  It is one of a family (`hex-gram-schmidt`, `hex-determinant`, `hex-bareiss`, `hex-row-reduce`, each also in a `-mathlib` variant) that the registry lists and this graph had never looked at |
+| Ky1, Ky2's ambient | [`vbeffara/RMT4`](https://github.com/vbeffara/RMT4) | the Riemann mapping theorem, `RMT` in `RMT4/Main.lean`: an open connected $U \ne \mathbb{C}$ admitting primitives is biholomorphic to the disc.  Sorry-free.  Ky1's pseudo-distance is an infimum over chains of *holomorphic maps from the disc*, so this is the uniformisation fact behind treating the disc as the model, and no part of Ky's own statements |
+
+Two of those five change a verdict recorded above: `lean-normal-forms` gives the
+computational step under F1.10 that the F1 rows had assigned to `Matrix.det`
+alone, and `LegendreQF` displaces `HassePrinciple` as the nearest thing to F3 in
+rank three.  Neither becomes a supplier of a node, for the reason each row gives.
+
+**The 240 that remain unnamed.** They were judged by subject from the registry's
+own one-line descriptions, not read.  That is a weaker standard than the rest of
+this file and it is the right one here: a repository on the Feit–Thompson
+theorem, on quantum resource theories or on Putnam problems cannot supply a node
+about hermitian symmetric domains, and reading 240 repositories to confirm that
+would buy nothing.  If a stratum later needs a capability this graph has not
+named, the registry list is the place to look before concluding it is absent —
+that is what this sweep found, twice.
+
 ### Greenfield — no formalization in Mathlib or the registry
 
 | Nodes | What must be authored | Nearest thing that exists |
