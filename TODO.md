@@ -1627,7 +1627,7 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-profinite-generator-semantics-20260910-0011` | archive reconciliation / profinite topological-generator semantics | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py; tests/groups/test_profinite_generator_archive.py` (write) | `8a5df2b8e12f2ba9218f48ef56654c22c2c0e6fa` | 2026-09-10T00:11:00Z |
+| `ARCHIVE-profinite-generator-semantics-20260910-0011` | archive reconciliation / profinite topological-generator semantics | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py; src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py; tests/groups/test_profinite_generator_archive.py` (write) | `8a5df2b8e12f2ba9218f48ef56654c22c2c0e6fa` | 2026-09-10T00:11:00Z |
 
 
 
