@@ -1329,6 +1329,36 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
 
             return module_homset(self, dual)(images)
 
+        @cached_method
+        def radical(self):
+            r"""Return ``rad(M)=ker(M -> M^vee)`` as an actual module subobject.
+
+            This is the radical of the represented scalar-valued bilinear
+            form.  It is defined by the correlation morphism, so the kernel
+            construction remains authoritative and no second Gram-kernel
+            computation is introduced here.
+            """
+            if self.value_module() is not self.base_ring():
+                raise TypeError("the radical via correlation requires a scalar-valued form")
+            return self.correlation_morphism().kernel()
+
+        @cached_method
+        def radical_quotient(self):
+            r"""Return ``M/rad(M)`` equipped with the descended form.
+
+            The underlying module is the literal cokernel of the radical
+            inclusion.  Since the radical pairs trivially with all of ``M``,
+            the selected form descends through that cokernel with unchanged
+            values; the returned formed module is built from that descended
+            form rather than from an isomorphic quotient presentation.
+            """
+            radical = self.radical()
+            inclusion = radical.inclusion()
+            value_module = self.value_module()
+            value_identity = module_homset(value_module, value_module).identity()
+            descended = self.form().descend_along(inclusion, value_identity)
+            return FormModule(descended)
+
         def determinant(self):
             r"""Return the determinant of the selected scalar-valued form."""
             assert self.value_module() is self.base_ring()
