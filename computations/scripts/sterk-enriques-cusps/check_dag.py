@@ -1,7 +1,21 @@
 #!/usr/bin/env python3
 """Check DAG.md for the ways a dependency graph can look complete and not be.
 
-Four failure modes, all the same kind: a place where the graph presents a
+WHAT THIS SCRIPT CANNOT DO.  Every check here is bookkeeping: it reads the tables
+and asks whether a cell or a row is *present*.  It never asks whether the row is
+*true*.  Whether a terminality verdict is correct -- whether the declaration it
+names exists in the pinned Mathlib, whether it says what the node says, whether a
+corpus claim survives reading the corpus -- is a question about a large body of
+Lean that this script does not read and could not check.  Those verdicts are
+established by hand, and the tables record what was read so a later reader can
+re-check them; four of them were false when this check was written and green.
+
+So a green run means only this: no cell is empty, no edge points at nothing, and
+no node or stratum is missing its row.  It is a guard against a table that has
+gone stale or been extended without its verdicts, not a proof that the graph
+bottoms out.
+
+Five failure modes, all the same kind: a place where the graph presents a
 finished edge or a finished node and there is nothing behind it.
 
 1. A dependency cell names a node id that no row defines.  The edge is then
@@ -20,7 +34,8 @@ finished edge or a finished node and there is nothing behind it.
    node in neither classification has no answer to the question the file exists
    to answer, and nothing else here notices: 24 nodes lost their verdict this way
    while the first three checks stayed green, because strata added after the
-   classification was written were never swept.  The two superseded nodes in
+   classification was written were never swept.  This finds the *missing* row; it
+   says nothing about whether a present row is right.  The two superseded nodes in
    SUPERSEDED are exempt; a node replaced by other nodes has no supplier.
 
 5. A greenfield stratum has no row in the construction floor.  Greenfield says
@@ -248,8 +263,10 @@ def main(path: Path) -> int:
 
     if not dangling and not undecomposed and not rootless and not unverdicted and not unfloored:
         print("\nevery node has a dependency naming a defined node or a substrate,")
-        print("a terminality verdict saying who supplies it, and for every greenfield")
-        print("stratum a construction floor naming what its nodes are written over")
+        print("a row in a terminality table, and for every greenfield stratum a row in")
+        print("the construction floor.  Whether those rows are TRUE is not checked here")
+        print("and cannot be: it is a question about the pinned Mathlib and the corpora,")
+        print("read by hand and recorded in the rows themselves.")
         return 0
     return 1
 

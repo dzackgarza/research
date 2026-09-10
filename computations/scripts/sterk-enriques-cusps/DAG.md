@@ -31,6 +31,19 @@ hiding work — the last two because a node with no verdict is a node nobody has
 asked who supplies, and a stratum with no floor reads as blocked on foundations
 that exist.  Run it after editing a table.
 
+**What it does not do, and what nothing here can do.**  Every one of those checks
+asks whether a cell or a row is *present*.  None asks whether it is *true*.  A
+terminality verdict is a claim about the pinned Mathlib and about several other
+Lean repositories — that a named declaration exists, that it says what the node
+says, that a corpus claim survives reading the corpus — and that is a question
+about a large body of code no script here reads.  Those verdicts are established
+by hand, and each row records what was read so the next reader can re-check it
+rather than trust it.  Four of them were false while the script was green: F4.1's
+substrate, `Commensurable` as the floor's one missing primitive, `JordanRing` in
+HS16, and "no hyperbolic space in any model" under Lo.  A green run is a guard
+against a stale or half-extended table.  It is not evidence that the graph bottoms
+out.
+
 ## Implementation routes through lean-categories
 
 `~/gitclones/lean-categories` is a sorry-free corpus of 236 modules (1.9 MB,
