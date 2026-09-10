@@ -564,7 +564,15 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
             raise NotImplementedError(
                 "no topological generating family is selected for this field"
             )
-        return (self.frobenius(),)
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+
+        return finite_ordered_set((self.frobenius(),))
+
+    def topological_generating_family(self):
+        r"""Return the selected topological generating family when represented."""
+        return self.topological_group_generators()
 
     def _finite_frobenius_image(self, element, exponent):
         if not self._is_finite_field():
