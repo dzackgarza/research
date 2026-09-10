@@ -5,6 +5,7 @@ from typing import cast
 from sage.categories.groups import Groups as SageGroups
 from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ
 from sage.structure.element import Element
 from sage.structure.parent import Parent
@@ -398,7 +399,9 @@ class ContinuousGroupHomset(Homset):
         Homset.__init__(self, domain, codomain, category=SageGroups())
 
 
+@cached_function(key=lambda domain, codomain: (id(domain), id(codomain)))
 def continuous_group_homset(domain, codomain):
+    r"""Return the canonical continuous-group Hom for these exact endpoints."""
     return ContinuousGroupHomset(domain, codomain)
 
 
