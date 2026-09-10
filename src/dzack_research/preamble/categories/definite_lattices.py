@@ -9,6 +9,7 @@ from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA
 from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.sage_object import SageObject
 from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
@@ -65,6 +66,133 @@ def _element_from_coordinates(lattice, coordinates):
             if coefficient
         }
     )
+
+
+class VoronoiFacet(SageObject):
+    r"""One oriented facet of a definite lattice's Voronoi cell.
+
+    The facet retains the exact relevant lattice vector ``v`` whose supporting
+    inequality is ``b(x,v) <= q(v)/2``.  This orientation matters: ``v`` and
+    ``-v`` define opposite facets, and the stabilizer of this facet is the
+    point stabilizer of ``v`` in ``O(L)``.
+    """
+
+    def __init__(self, cell, polytope, relevant_vector) -> None:
+        self._cell = cell
+        self._polytope = polytope
+        self._relevant_vector = relevant_vector
+
+    def cell(self):
+        return self._cell
+
+    def lattice(self):
+        return self.cell().lattice()
+
+    def polytope(self):
+        return self._polytope
+
+    def relevant_vector(self):
+        return self._relevant_vector
+
+    def vertices(self):
+        return self.polytope().vertices()
+
+    def stabilizer(self):
+        return self.lattice().O().stabilizer(self.relevant_vector())
+
+    def __repr__(self) -> str:
+        return f"Voronoi facet of {self.lattice()} normal to {self.relevant_vector()}"
+
+
+class VoronoiCell(SageObject):
+    r"""The exact rational Voronoi cell of a definite lattice.
+
+    The retained polytope is the existing owned convex-polytope object.  The
+    extra structure here is lattice-specific: every facet is paired with its
+    exact relevant vector, incidences retain actual facet and vertex objects,
+    and orthogonal-group stabilizers act on the same lattice that defined the
+    metric.
+    """
+
+    def __init__(self, lattice, polytope) -> None:
+        self._lattice = lattice
+        self._polytope = polytope
+
+    def lattice(self):
+        return self._lattice
+
+    def polytope(self):
+        return self._polytope
+
+    def _engine_polyhedron(self):
+        return self.polytope()._engine_polyhedron()
+
+    def volume(self):
+        return self.polytope().volume()
+
+    def vertices(self):
+        return self.polytope().vertices()
+
+    def n_vertices(self):
+        return self.polytope().n_vertices()
+
+    def facets(self):
+        lattice = self.lattice()
+        _sign, gram = _positive_gram(lattice)
+        rationals = lattice.base_ring().fraction_field()
+        dual_gram = gram.change_ring(rationals).dual_tensor()
+        result = []
+        for face in self._engine_polyhedron().facets():
+            inequalities = tuple(
+                inequality
+                for inequality in face.ambient_Hrepresentation()
+                if inequality.is_inequality()
+            )
+            if len(inequalities) != 1:
+                raise ArithmeticError(
+                    "a Voronoi facet must have one ambient supporting inequality"
+                )
+            inequality = inequalities[0]
+            coefficients = tuple(
+                rationals._from_engine_element(SageQQ(entry))
+                for entry in inequality.A()
+            )
+            covector = tensor(rationals, (), (len(coefficients),), coefficients)
+            vector_coordinates = -(dual_gram * covector)
+            relevant_vector = _element_from_coordinates(
+                lattice,
+                tuple(lattice.base_ring()(coordinate) for coordinate in vector_coordinates),
+            )
+            if relevant_vector == lattice.zero():
+                raise ArithmeticError("a Voronoi facet has a nonzero relevant vector")
+            result.append(
+                VoronoiFacet(
+                    self,
+                    ConvexPolytope(face.as_polyhedron().vertices_list(), lattice=lattice),
+                    relevant_vector,
+                )
+            )
+        return finite_ordered_set(tuple(result))
+
+    def n_facets(self):
+        return self.facets().cardinality()
+
+    def incidences(self):
+        r"""Return the exact facet--vertex incidences of this Voronoi cell."""
+        incidences = []
+        for facet in self.facets():
+            facet_vertices = facet.vertices()
+            for vertex in self.vertices():
+                if vertex in facet_vertices:
+                    incidences.append((facet, vertex))
+        return finite_ordered_set(tuple(incidences))
+
+    def stabilizer(self):
+        r"""Return the full orthogonal group preserving the origin-centred cell."""
+        return self.lattice().O()
+
+    def __repr__(self) -> str:
+        return f"Voronoi cell of {self.lattice()}"
 
 
 @dataclass(frozen=True)
@@ -380,8 +508,9 @@ def voronoi_cell(lattice, bound=None):
     rank = gram.tensor_shape()[0]
     rationals = lattice.base_ring().fraction_field()
     if rank == 0:
-        return ConvexPolytope(
-            Polyhedron(vertices=[[]], base_ring=SageQQ)
+        return VoronoiCell(
+            lattice,
+            ConvexPolytope(Polyhedron(vertices=[[]], base_ring=SageQQ).vertices_list()),
         )
     gram_q = gram.change_ring(rationals)
     engine_gram = _engine_component_matrix(gram)
@@ -413,8 +542,12 @@ def voronoi_cell(lattice, bound=None):
                 inequalities.append(
                     [_engine_element(rationals, entry) for entry in owned_entries]
                 )
-        return ConvexPolytope(
-            Polyhedron(ieqs=inequalities, base_ring=SageQQ)
+        return VoronoiCell(
+            lattice,
+            ConvexPolytope(
+                Polyhedron(ieqs=inequalities, base_ring=SageQQ).vertices_list(),
+                lattice=lattice,
+            ),
         )
 
     if bound is not None:
@@ -686,6 +819,8 @@ def kissing_number(lattice):
 
 __all__ = [
     "LatticeReduction",
+    "VoronoiCell",
+    "VoronoiFacet",
     "babai",
     "bkz_reduction",
     "center_density",
