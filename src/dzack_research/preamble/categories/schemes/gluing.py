@@ -1641,6 +1641,7 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         self._triple_modules = []
         self._transitions = []
         self._triple_transitions = []
+        self._sheaf = None
         for pair in gluing_datum.transition_index_set():
             self.transition(*pair)
         self._verify_cocycle()
@@ -1892,6 +1893,61 @@ class FiniteAtlasModuleGluingDatum(SageObject):
     def morphism_to(self, target, local_maps):
         return FiniteAtlasModuleGluingMorphism(self, target, local_maps)
 
+    def sheaf(self):
+        r"""Return the quasi-coherent module sheaf represented by this descent datum."""
+        if self._sheaf is None:
+            self._sheaf = FiniteAtlasGluedModuleSheaf(self)
+        return self._sheaf
+
+    def tensor_product(self, other):
+        r"""Return the descent datum for the chartwise tensor product with ``other``."""
+        if not isinstance(other, FiniteAtlasModuleGluingDatum):
+            raise TypeError("finite-atlas tensor products require two module descent data")
+        if other.gluing_datum() is not self.gluing_datum():
+            raise ValueError("finite-atlas tensor products require one underlying atlas")
+        datum = self.gluing_datum()
+        local_modules = {
+            index: Modules(self.local_module(index).base_ring()).tensor_product(
+                (self.local_module(index), other.local_module(index))
+            )
+            for index in datum.chart_indices()
+        }
+
+        def tensor_transition(left_datum, right_datum, source_index, target_index):
+            left_transition = left_datum.transition(source_index, target_index).pullback()
+            right_transition = right_datum.transition(source_index, target_index).pullback()
+            left_source = left_datum.pair_module(target_index, source_index)
+            right_source = right_datum.pair_module(target_index, source_index)
+            left_target = left_datum.pair_module(source_index, target_index)
+            right_target = right_datum.pair_module(source_index, target_index)
+
+            def images(label, _domain, codomain):
+                left_label = label.component(0)
+                right_label = label.component(1)
+                left_image = left_transition(left_source.module_generator(left_label))
+                right_image = right_transition(right_source.module_generator(right_label))
+                left_coefficients = module_coefficients(left_image, left_target)
+                right_coefficients = module_coefficients(right_image, right_target)
+                coefficients = {}
+                for tensor_label in codomain.module_generating_set():
+                    coefficient = (
+                        left_coefficients.get(tensor_label.component(0), codomain.base_ring().zero())
+                        * right_coefficients.get(tensor_label.component(1), codomain.base_ring().zero())
+                    )
+                    if coefficient:
+                        coefficients[tensor_label] = coefficient
+                return codomain.linear_combination(coefficients)
+
+            return images
+
+        transitions = {}
+        for source_index, target_index in datum.transition_index_set():
+            transitions[source_index, target_index] = (
+                tensor_transition(self, other, source_index, target_index),
+                tensor_transition(self, other, target_index, source_index),
+            )
+        return FiniteAtlasModuleGluingDatum(datum, local_modules, transitions)
+
 
 class FiniteAtlasModuleGluingMorphism(SageObject):
     r"""A morphism of finite-atlas module descent data.
@@ -1941,6 +1997,142 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
     def local_map(self, index):
         index = self.source().gluing_datum().normalize_chart_index(index)
         return self.local_maps()[index]
+
+    @staticmethod
+    def _base_changed_map(local_map, ring_map, source, target):
+        r"""Transport ``local_map`` to already selected scalar-extension parents."""
+        if source.base_ring() is not ring_map.codomain() or target.base_ring() is not ring_map.codomain():
+            raise ValueError("the selected base-changed map endpoints have the wrong scalar ring")
+        return module_homset(source, target)(
+            {
+                label: target.linear_combination(
+                    {
+                        target_label: ring_map(coefficient)
+                        for target_label, coefficient in module_coefficients(
+                            local_map(local_map.domain().module_generator(label)),
+                            local_map.codomain(),
+                        ).items()
+                        if ring_map(coefficient) != target.base_ring().zero()
+                    }
+                )
+                for label in local_map.domain().module_generating_set()
+            }
+        )
+
+    def kernel_datum(self):
+        r"""Return the finite-atlas descent datum of the sheaf kernel.
+
+        Localization is exact, so the chart kernel restricts to the overlap
+        kernel.  The current module-level factorization through a represented
+        kernel inclusion is constructive when that kernel has a selected free
+        framing; the general finitely presented factorization belongs to the
+        common local-module-map owner rather than to sheaf descent.
+        """
+        datum = self.source().gluing_datum()
+        local_kernels = {
+            index: self.local_map(index).kernel()
+            for index in datum.chart_indices()
+        }
+        if any(kernel.is_free() is not True for kernel in local_kernels.values()):
+            raise NotImplementedError(
+                "finite-atlas kernel descent currently requires locally free represented kernels; "
+                "factorization through a general finitely presented kernel belongs to local-module-maps"
+            )
+
+        def kernel_transition(source_index, target_index):
+            source_kernel = local_kernels[source_index]
+            target_kernel = local_kernels[target_index]
+            source_pair = self.source().pair_module(source_index, target_index)
+            target_pair = self.source().pair_module(target_index, source_index)
+            source_ring_map = datum.overlap(source_index, target_index).inclusion().coordinate_algebra_morphism()
+            target_ring_map = datum.overlap(target_index, source_index).inclusion().coordinate_algebra_morphism()
+            ambient_transition = self.source().transition(source_index, target_index).pullback()
+
+            def images(label, domain, codomain):
+                target_inclusion = self._base_changed_map(
+                    target_kernel.inclusion(),
+                    target_ring_map,
+                    domain,
+                    target_pair,
+                )
+                source_inclusion = self._base_changed_map(
+                    source_kernel.inclusion(),
+                    source_ring_map,
+                    codomain,
+                    source_pair,
+                )
+                ambient_image = ambient_transition(
+                    target_inclusion(domain.module_generator(label))
+                )
+                return source_inclusion.lift(ambient_image)
+
+            return images
+
+        transitions = {}
+        for source_index, target_index in datum.transition_index_set():
+            transitions[source_index, target_index] = (
+                kernel_transition(source_index, target_index),
+                kernel_transition(target_index, source_index),
+            )
+        return FiniteAtlasModuleGluingDatum(datum, local_kernels, transitions)
+
+    def cokernel_datum(self):
+        r"""Return the finite-atlas descent datum of the sheaf cokernel."""
+        datum = self.target().gluing_datum()
+        local_projections = {
+            index: self.local_map(index).cokernel_projection()
+            for index in datum.chart_indices()
+        }
+        local_cokernels = {
+            index: local_projections[index].codomain()
+            for index in datum.chart_indices()
+        }
+
+        def cokernel_transition(source_index, target_index):
+            source_pair = self.target().pair_module(source_index, target_index)
+            target_pair = self.target().pair_module(target_index, source_index)
+            source_ring_map = datum.overlap(source_index, target_index).inclusion().coordinate_algebra_morphism()
+            ambient_transition = self.target().transition(source_index, target_index).pullback()
+
+            def images(label, domain, codomain):
+                source_projection = self._base_changed_map(
+                    local_projections[source_index],
+                    source_ring_map,
+                    source_pair,
+                    codomain,
+                )
+                representative = target_pair.module_generator(label)
+                return source_projection(ambient_transition(representative))
+
+            return images
+
+        transitions = {}
+        for source_index, target_index in datum.transition_index_set():
+            transitions[source_index, target_index] = (
+                cokernel_transition(source_index, target_index),
+                cokernel_transition(target_index, source_index),
+            )
+        return FiniteAtlasModuleGluingDatum(datum, local_cokernels, transitions)
+
+    def stalk_map(self, chart_index, point):
+        r"""Return the induced map on the stalk at ``point`` of one affine chart."""
+        from dzack_research.preamble.categories.functors.module_localization import (
+            module_localization_functor,
+        )
+
+        chart_index = self.source().gluing_datum().normalize_chart_index(chart_index)
+        chart = self.source().gluing_datum().chart(chart_index)
+        spectrum = chart.underlying_space()
+        if point.parent() is not spectrum:
+            raise ValueError("a finite-atlas stalk point belongs to the selected affine chart")
+        localization = module_localization_functor(point.local_ring())
+        return localization(self.local_map(chart_index))
+
+    def kernel_sheaf(self):
+        return self.kernel_datum().sheaf()
+
+    def cokernel_sheaf(self):
+        return self.cokernel_datum().sheaf()
 
     def _verify_overlap_compatibility(self) -> None:
         for source_index, target_index in self.source().gluing_datum().transition_index_set():
@@ -3415,6 +3607,67 @@ class GluedModuleSheaf(SageObject):
         return f"Glued module sheaf on {self.scheme()} from {self.cover()}"
 
 
+class FiniteAtlasGluedModuleSheaf(SageObject):
+    r"""The quasi-coherent module sheaf represented on a finite affine atlas.
+
+    Unlike :class:`GluedModuleSheaf`, this owner allows the two presentations
+    of an overlap to have distinct coordinate rings.  All restrictions and
+    transitions are therefore read from the retained semilinear atlas datum.
+    """
+
+    def __init__(self, gluing_datum) -> None:
+        if not isinstance(gluing_datum, FiniteAtlasModuleGluingDatum):
+            raise TypeError("a finite-atlas module sheaf requires finite-atlas descent data")
+        self._gluing_datum = gluing_datum
+
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def atlas_datum(self):
+        return self.gluing_datum().gluing_datum()
+
+    def ringed_space(self):
+        return self.gluing_datum().scheme()
+
+    scheme = ringed_space
+
+    def sections_on_chart(self, index):
+        return self.gluing_datum().local_module(index)
+
+    def sections_on_intersection(self, chart_index, other_index):
+        return self.gluing_datum().pair_module(chart_index, other_index)
+
+    def transition(self, source_index, target_index):
+        return self.gluing_datum().transition(source_index, target_index)
+
+    def stalk_on_chart(self, chart_index, point):
+        r"""Return the stalk of this sheaf at a point of the selected chart."""
+        chart_index = self.atlas_datum().normalize_chart_index(chart_index)
+        chart = self.atlas_datum().chart(chart_index)
+        if point.parent() is not chart.underlying_space():
+            raise ValueError("the stalk point belongs to the selected affine chart")
+        return self.sections_on_chart(chart_index).localize_at_prime(point.ideal())
+
+    def tensor_product(self, other):
+        r"""Return ``self tensor O_X other`` by chartwise tensor descent."""
+        if not isinstance(other, FiniteAtlasGluedModuleSheaf):
+            raise TypeError("finite-atlas sheaf tensor products require two module sheaves")
+        return self.gluing_datum().tensor_product(other.gluing_datum()).sheaf()
+
+    def morphism_to(self, other, local_maps):
+        r"""Return the sheaf morphism represented by compatible chart maps."""
+        if not isinstance(other, FiniteAtlasGluedModuleSheaf):
+            raise TypeError("finite-atlas sheaf morphisms require two module sheaves")
+        return self.gluing_datum().morphism_to(other.gluing_datum(), local_maps)
+
+    def pullback_to_refinement(self, refinement):
+        r"""Return this sheaf on the selected finer affine atlas."""
+        return refinement.pullback_module_datum(self.gluing_datum()).sheaf()
+
+    def _repr_(self):
+        return f"Finite-atlas module sheaf on {self.scheme()}"
+
+
 class GluedAlgebraSheaf(SageObject):
     r"""The algebra sheaf represented by finite affine algebra descent data."""
 
@@ -3489,6 +3742,7 @@ __all__ = [
     "FiniteAtlasRefinement",
     "FiniteAtlasModuleGluingDatum",
     "FiniteAtlasModuleGluingMorphism",
+    "FiniteAtlasGluedModuleSheaf",
     "FiniteAtlasModuleTransition",
     "GluedAlgebraSheaf",
     "GluedModuleSheaf",
