@@ -11,7 +11,6 @@ from collections import deque
 
 from sage.categories.morphism import SetMorphism
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
-from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -53,6 +52,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     ranking_isomorphism,
 )
 from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.refine import refine
 
 
 def GSets(group):
@@ -632,12 +632,17 @@ class Torsors(OwnedParameterizedCategory):
     def _call_(self, candidate):
         if candidate not in self:
             raise ValueError(f"{candidate} is not a torsor under {self.group()}")
-        return candidate
+        return refine(candidate, self)
 
     class ParentMethods:
-        @abstract_method
         def an_element(self):
-            r"""Return the chosen point trivializing this torsor."""
+            r"""Return the selected point trivializing this represented torsor.
+
+            A torsor has no canonical point.  The represented finite ``G``-set
+            already carries an ordered point set, so its first point is the
+            presentation's selected trivializing choice.
+            """
+            return next(iter(self.point_set()))
 
         def acting_group(self):
             r"""Return the group named by this torsor's category node."""
