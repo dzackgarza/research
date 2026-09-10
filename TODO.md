@@ -1627,6 +1627,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-galois-character-extension-20260910-0025` | archive reconciliation / profinite-character factor extension | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/galois_characters.py; tests/groups/test_galois_character_extension_archive.py` (write) | `0d7770c9fa050b58a35598be2bf8fc098a6fe452` | 2026-09-10T00:25:00Z |
+
 
 
 
