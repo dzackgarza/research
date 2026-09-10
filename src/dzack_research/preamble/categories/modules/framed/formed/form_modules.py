@@ -342,6 +342,52 @@ class FormEmbedding(FormedModuleMorphism):
     def is_quadratic(self) -> bool:
         return self._quadratic
 
+    @cached_method
+    def orthogonal_complement(self):
+        r"""Return the orthogonal complement of this embedded formed submodule.
+
+        For ``i:S -> M`` this is the kernel of the pairing morphism
+        ``M -> S^vee``, ``x |-> (s |-> b_M(x,i(s)))``.  The kernel computation
+        belongs to the module-morphism owner; its image in ``M`` is then
+        equipped with the restricted form by ``M.subobject_on``.
+        """
+        source = self.domain()
+        target = self.codomain()
+        if source not in FinitelyGeneratedFreeFormModules(source.base_ring()):
+            raise TypeError("orthogonal complements currently require a finite free formed source")
+        if target not in FinitelyGeneratedFreeFormModules(target.base_ring()):
+            raise TypeError("orthogonal complements currently require a finite free formed target")
+        if source.value_module() is not source.base_ring():
+            raise TypeError("orthogonal complements currently require scalar-valued forms")
+        if target.value_module() is not target.base_ring():
+            raise TypeError("orthogonal complements currently require scalar-valued forms")
+        if source.base_ring() is not target.base_ring():
+            raise TypeError("an orthogonal complement is taken in one coefficient ring")
+
+        dual = source.dual_module()
+        images = {}
+        source_labels = tuple(source.module_generating_set())
+        for target_label in target.module_generating_set():
+            target_generator = target.module_generator(target_label)
+            images[target_label] = dual.linear_combination(
+                {
+                    source_label: coefficient
+                    for source_label in source_labels
+                    if (
+                        coefficient := target.b(
+                            target_generator,
+                            self(source.module_generator(source_label)),
+                        )
+                    )
+                }
+            )
+        pairing = module_homset(target, dual)(images)
+        kernel = pairing.kernel()
+        kernel_inclusion = kernel.inclusion()
+        return target.subobject_on(
+            tuple(kernel_inclusion(generator) for generator in kernel.module_generators())
+        )
+
 
 def form_embedding(domain, codomain, images, *, quadratic: bool | None = None) -> FormEmbedding:
     r"""Construct a form-preserving monomorphism on a chosen framing.
