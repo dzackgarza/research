@@ -390,6 +390,38 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
                 name="Blue rays",
             )
 
+        @cached_method
+        def distinguished_boundary_points(self):
+            r"""Return the integral boundary points lying on a blue facet of ``Q``.
+
+            A blue facet is one containing the distinguished point ``p*``.
+            Equivalently its inner normal is one of :meth:`_blue_rays`, so a
+            boundary lattice point lies on a blue facet exactly when it
+            minimizes the corresponding linear functional on ``Q``.  The
+            returned points remain elements of the polygon's owned ambient
+            lattice.
+            """
+            polygon = self.polygon()
+            engine_polyhedron = polygon._engine_polyhedron()
+            blue_rays = self._blue_rays()
+
+            def lies_on_blue_facet(point):
+                engine_point = polygon._engine_coordinates(point)
+                return any(
+                    _supports_point(
+                        engine_polyhedron,
+                        ray._engine_cone().rays()[0],
+                        engine_point,
+                    )
+                    for ray in blue_rays
+                )
+
+            return finite_ordered_filter(
+                polygon.boundary_integral_points(),
+                lies_on_blue_facet,
+                name="Distinguished ADE boundary points",
+            )
+
         def blue_divisor(self):
             r"""``C``: the invariant divisors whose facet of ``Q`` contains ``p*``."""
             group = self.log_scheme().torus_invariant_divisor_group()
