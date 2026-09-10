@@ -332,6 +332,21 @@ class _CallableForm(Element):
             raise TypeError("this quadratic form has no chosen bilinear lift")
         return _coerce_value(self.codomain(), self._lift_evaluation(left, right))
 
+    def lift_form(self):
+        r"""Return the chosen bilinear lift of this quadratic form.
+
+        This is defined only when the quadratic form was constructed from
+        finite symmetric bilinear coordinate data.  It is the actual bilinear
+        form whose diagonal recovers the quadratic form, and is distinct from
+        :meth:`polar_form`, which is twice this lift in the ordinary
+        characteristic-not-two situation.
+        """
+        if self.parent().kind() != "quadratic" or self._lift_evaluation is None:
+            raise TypeError("this quadratic form has no chosen bilinear lift")
+        return BilinearForms(self.module(), self.codomain())(
+            lambda left, right: self._lift_evaluation(left, right)
+        )
+
     def gram_tensor(self):
 
         if self.codomain() not in OwnedRings():
