@@ -40,3 +40,20 @@ def test_archived_base_role_names_identify_the_actual_toric_base_pair() -> None:
     assert pair.is_base()
     assert not pair.is_cover()
     assert pair.codimension_in_toric_scheme() == 0
+
+
+def test_archived_dynkin_diagram_is_the_owned_finite_coxeter_diagram() -> None:
+    pair = ADELogPair("E", 6, QQ)
+
+    assert pair.dynkin_diagram() is pair.coxeter_diagram()
+    assert pair.dynkin_diagram().cardinality() == 6
+    assert pair.dynkin_diagram().is_elliptic()
+
+
+def test_archived_affine_dynkin_diagram_uses_the_affine_cartan_type() -> None:
+    pair = ADELogPair("A", 3, QQ, affine=True)
+    diagram = pair.dynkin_diagram()
+
+    assert diagram is pair.coxeter_diagram()
+    assert diagram.cardinality() == 4
+    assert diagram.is_parabolic()

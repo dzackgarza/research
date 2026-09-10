@@ -297,22 +297,19 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         @cached_method
         def coxeter_diagram(self):
-            r"""The Coxeter diagram of the type, from the live diagram layer.
-
-            The affine families have no finite Coxeter diagram of the same
-            name, so the diagram is available exactly for the finite types.
-            """
+            r"""The owned Coxeter/Dynkin diagram of this finite or affine ADE type."""
             from dzack_research.preamble.categories.coxeter_diagrams import (
                 CoxeterDiagrams,
             )
 
-            assert not self.is_affine_type(), (
-                "the affine ADE types are named by an affine Cartan type, which "
-                "the finite Coxeter-diagram layer does not build"
-            )
-            return CoxeterDiagrams().from_cartan_type(
-                [self.dynkin_letter(), int(self.dynkin_rank())]
-            )
+            cartan_type = [self.dynkin_letter(), int(self.dynkin_rank())]
+            if self.is_affine_type():
+                cartan_type.append(1)
+            return CoxeterDiagrams().from_cartan_type(cartan_type)
+
+        def dynkin_diagram(self):
+            r"""Return the selected ADE Dynkin diagram; archived mathematical name."""
+            return self.coxeter_diagram()
 
         def polygon(self):
             r"""The integral ADE polygon ``Q``."""
