@@ -903,33 +903,123 @@ class IsometryPrimitiveExtension:
         invariant_image = self.invariant.discriminant_image()
         coinvariant_orthogonal_group = coinvariant_form.O()
 
-        def conjugate(invariant_automorphism):
-            images = {}
-            for label in coinvariant_form.module_generating_set():
-                element = coinvariant_form.module_generator(label)
-                unformed = coinvariant_form.forget_form_morphism()(element)
-                twisted = twisted_coinvariant_form.equip_form_morphism()(unformed)
-                target_element = target_inclusion.lift(twisted)
-                source_element = glue.inverse_morphism()(target_element)
-                invariant_class = source_inclusion(source_element)
-                moved_invariant_class = invariant_automorphism(invariant_class)
-                moved_source = source_inclusion.lift(moved_invariant_class)
-                moved_target = glue.forward()(moved_source)
-                moved_twisted = target_inclusion(moved_target)
-                moved_unformed = twisted_coinvariant_form.forget_form_morphism()(
-                    moved_twisted
-                )
-                images[label] = coinvariant_form.equip_form_morphism()(moved_unformed)
-            morphism = module_homset(coinvariant_form, coinvariant_form)(images)
-            return coinvariant_orthogonal_group(morphism)
-
         allowed_discriminant_image = coinvariant_orthogonal_group.subgroup_on(
             tuple(
-                conjugate(generator)
+                self._coinvariant_discriminant_from_invariant(generator)
                 for generator in invariant_image.group_generators()
             )
         )
         return self.coinvariant.O().discriminant_preimage(allowed_discriminant_image)
+
+    def _coinvariant_discriminant_from_invariant(self, invariant_automorphism):
+        r"""Conjugate an invariant discriminant action across the primitive glue.
+
+        If ``gamma:H_+ -> H_-(-1)`` is the glue anti-isometry, this returns
+        the automorphism of ``A_{L^-}`` induced by
+        ``gamma invariant_automorphism gamma^-1``.  The full-discriminant
+        hypothesis is exactly the one required by
+        :meth:`coinvariant_extension_subgroup`.
+        """
+        glue = self.glue()
+        invariant_form = self.invariant.discriminant_group()
+        coinvariant_form = self.coinvariant.discriminant_group()
+        glue_source = glue.domain()
+        glue_target = glue.codomain()
+        source_inclusion = glue_source.inclusion()
+        target_inclusion = glue_target.inclusion()
+        twisted_coinvariant_form = target_inclusion.codomain()
+
+        if glue_source.cardinality() != invariant_form.cardinality():
+            raise NotImplementedError(
+                "conjugating the invariant discriminant action is currently represented only for full gluing"
+            )
+        if glue_target.cardinality() != coinvariant_form.cardinality():
+            raise NotImplementedError(
+                "conjugating the coinvariant discriminant action is currently represented only for full gluing"
+            )
+
+        invariant_automorphism = invariant_form.O()(invariant_automorphism)
+        images = {}
+        for label in coinvariant_form.module_generating_set():
+            element = coinvariant_form.module_generator(label)
+            unformed = coinvariant_form.forget_form_morphism()(element)
+            twisted = twisted_coinvariant_form.equip_form_morphism()(unformed)
+            target_element = target_inclusion.lift(twisted)
+            source_element = glue.inverse_morphism()(target_element)
+            invariant_class = source_inclusion(source_element)
+            moved_invariant_class = invariant_automorphism(invariant_class)
+            moved_source = source_inclusion.lift(moved_invariant_class)
+            moved_target = glue.forward()(moved_source)
+            moved_twisted = target_inclusion(moved_target)
+            moved_unformed = twisted_coinvariant_form.forget_form_morphism()(
+                moved_twisted
+            )
+            images[label] = coinvariant_form.equip_form_morphism()(moved_unformed)
+        morphism = module_homset(coinvariant_form, coinvariant_form)(images)
+        return coinvariant_form.O()(morphism)
+
+    def lift_coinvariant_extension_element(self, coinvariant_part):
+        r"""Lift ``g_-`` from the anti-invariant extension group to ``O(L,f)``.
+
+        The selected ``g_-`` already has discriminant action in the conjugate
+        of the invariant discriminant image.  Enumerate that finite image,
+        choose the matching invariant discriminant action, lift it to an
+        actual isometry of ``L^f``, and assemble the pair through the retained
+        primitive glue.  The result is an ambient centralizer element whose
+        coinvariant restriction is literally ``g_-``.
+        """
+        subgroup = self.coinvariant_extension_subgroup()
+        if coinvariant_part not in subgroup:
+            raise ValueError(
+                "the selected coinvariant isometry does not preserve the primitive gluing"
+            )
+        coinvariant_part = self.coinvariant.O()(coinvariant_part)
+        target_action = coinvariant_part.discriminant_morphism()
+        invariant_group = self.invariant.O()
+        invariant_image = self.invariant.discriminant_image()
+
+        invariant_part = None
+        for invariant_action in invariant_image:
+            if self._coinvariant_discriminant_from_invariant(invariant_action) != target_action:
+                continue
+            invariant_part = invariant_group.discriminant_lift(invariant_action)
+            if invariant_part is not None:
+                break
+        if invariant_part is None:
+            raise ArithmeticError(
+                "a glue-compatible coinvariant action had no retained invariant discriminant lift"
+            )
+
+        lifted = self.centralizer_element(invariant_part, coinvariant_part)
+        if self.coinvariant_restriction(lifted) != coinvariant_part:
+            raise ArithmeticError(
+                "the ambient centralizer lift restricts to the wrong coinvariant isometry"
+            )
+        return lifted
+
+    def coinvariant_isotropic_orbit_representatives(self, rank, *, flag=False):
+        r"""Return anti-invariant isotropic orbits under the ambient centralizer image."""
+        return self.coinvariant_extension_subgroup().isotropic_orbit_representatives(
+            rank,
+            flag=flag,
+        )
+
+    def coinvariant_isotropic_equivalence_witness(self, left, right, *, flag=False):
+        r"""Return an ambient centralizer element carrying ``left`` to ``right``.
+
+        The finite-character subgroup first constructs the exact transporter
+        on the anti-invariant lattice.  This method then lifts that transporter
+        through the primitive gluing, so the witness acts on the original
+        lattice rather than only on ``L^-``.
+        """
+        coinvariant_witness = self.coinvariant_extension_subgroup().isotropic_equivalence_witness(
+            left,
+            right,
+            flag=flag,
+        )
+        if coinvariant_witness is None:
+            return None
+        return self.lift_coinvariant_extension_element(coinvariant_witness)
 
     def _restriction(self, automorphism, subobject):
         assert automorphism.domain() is self.lattice, (
