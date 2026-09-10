@@ -12,6 +12,10 @@ Surfaces* (D. Zack Garza, University of Georgia, 2025), and its build.
   conventions are `~/.pandoc/AUTHORING_STYLE.md`.
 - `figures` — symlink to `~/.pandoc/figures`, the single owner of every figure and
   its editable source.
+- `submitted-2025-08-12.pdf` — the dissertation as submitted to the UGA Graduate
+  School, 227 pages, built from the LaTeX that this Markdown superseded. It is a
+  record, not a build target; `just compile` does not produce it and will not
+  match it page for page.
 
 ## Build
 
