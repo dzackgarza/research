@@ -16,6 +16,7 @@ from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.categories.homset import Hom as _SageHom
 from sage.misc.cachefunc import cached_function
+from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -93,17 +94,60 @@ class AlgebraScalarExtensionFunctor(Functor):
         return self._ring_map
 
     def _apply_object(self, algebra):
-        if algebra not in AlgebrasWithChosenFinitePresentation(self._source_ring):
-            raise NotImplementedError(
-                "algebra scalar extension is currently materialized for algebras "
-                "with a chosen finite commutative polynomial presentation"
-            )
-        extended = algebra.base_change(self.ring_map())
-        return extended
+        match algebra in AlgebrasWithChosenFinitePresentation(self._source_ring):
+            case True:
+                return algebra.base_change(self.ring_map())
+            case False:
+                from dzack_research.preamble.categories.rings.number_fields import (
+                    OrdersWithChosenIntegralBasis,
+                )
+
+                match algebra in OrdersWithChosenIntegralBasis():
+                    case True:
+                        return algebra.base_change(self.ring_map())
+                    case False:
+                        raise NotImplementedError(
+                            "algebra scalar extension is currently materialized for algebras "
+                            "with a chosen finite commutative polynomial presentation or a "
+                            "number-field order with a chosen integral basis"
+                        )
 
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
+        from dzack_research.preamble.categories.rings.embeddings import OrderEmbedding
+
+        match isinstance(morphism, OrderEmbedding):
+            case True:
+                source_field = morphism.domain().fraction_field()
+                target_field = morphism.codomain().fraction_field()
+                match _engine_ring(source_field) is SageQQ:
+                    case True:
+                        return algebra_homset(source, target).identity()
+                    case False:
+                        pass
+                match _engine_ring(source_field).is_absolute():
+                    case True:
+                        pass
+                    case False:
+                        raise NotImplementedError(
+                            "order-morphism scalar extension currently uses the selected "
+                            "absolute primitive-element presentation"
+                        )
+                primitive_image = morphism.field_embedding()(
+                    source_field.primitive_element()
+                )
+                target_image = target._from_engine_element(
+                    _engine_element(target_field, primitive_image)
+                )
+                return algebra_homset(source, target)(
+                    {
+                        label: target_image
+                        for label in source.algebra_generating_set()
+                    }
+                )
+            case False:
+                pass
         return algebra_homset(source, target)(
             lambda label: _base_change_presented_element(
                 morphism.codomain(),
