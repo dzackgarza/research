@@ -45,7 +45,6 @@ release
 .sage-tmp/s-affine-current-c0b5786f
 .sage-tmp/s-xy-family-92e6dae2
 archives/lattice-research
-review-calibration
 subrepos/jupyter-assistant-api
 *.html
 **/*.html

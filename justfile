@@ -260,19 +260,6 @@ test-universe:
     fi
     echo "The proof surface stays inside the universe."
 
-# Review calibration (submodule) — delegate to review-calibration/justfile.
-# Requires the submodule: git submodule update --init review-calibration
-review-calibration-packet:
-    just -f review-calibration/justfile review-packet
-
-# Score a review calibration artifact
-review-calibration-score artifact:
-    just -f review-calibration/justfile score "{{artifact}}"
-
-# Trigger slop review on review-calibration
-review-calibration-slop:
-    gh workflow run "Slop Review" --repo dzackgarza/review-calibration
-
 # Assemble the LLM-review context packet (review-packet.tar).
 #
 # The packet is the extensible context surface for the advisory review
