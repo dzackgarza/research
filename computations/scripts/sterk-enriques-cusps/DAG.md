@@ -1563,6 +1563,38 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 | the **order of vanishing** of a rational function at such a point | **conditionally, and it needs a hypothesis the node did not state**: `IsDiscreteValuationRing.addVal` (`RingTheory/DiscreteValuationRing/Basic.lean`) is the valuation, and it applies once the local ring at a codimension-one point *is* a DVR, which needs normality.  That chain is now **E16** |
 | the principal divisor, and linear equivalence | over E16 and a quotient — **yes, once E16 exists** |
 
+### Six atoms now exist, in `lean/Atoms.lean`
+
+The searching stopped where it had to: five sweeps established that these
+notions are in no indexed Lean code.  The remedy for that is to write them, and
+six are written — `lean/Atoms.lean`, beside this file, **192 lines, compiled
+against the pinned Mathlib** with `lake env lean` from the `lean-categories`
+checkout, no error, no warning, no `sorry` and no `axiom`.
+
+| Node or clause | Declaration |
+| --- | --- |
+| F1.13, $O(L)$ as a group | `Sterk.orthogonalGroup (B : LinearMap.BilinForm R M) : Subgroup (M ≃ₗ[R] M)`, with `mem_orthogonalGroup_iff` |
+| F2.14, $O(q)$ as a group | `Sterk.quadraticOrthogonalGroup (Q : QuadraticMap R M N) : Subgroup (M ≃ₗ[R] M)`, with its membership lemma.  At $Q = q_L$ this is $O(G_L)$, so F2.1's $\tau$ now has both a domain and a codomain |
+| F1.14, $\mathrm{div}(v)$ | `Sterk.divisorIdeal (B) (v) : Ideal R` as the range of $y \mapsto B\,v\,y$, with `mem_divisorIdeal_iff` and `HasDivisorOne` — the hypothesis of Sterk 3.2.1 |
+| F1.15, the doubling $\mathbb{Q}/\mathbb{Z}\to\mathbb{Q}/2\mathbb{Z}$ | `Sterk.doubling : AddCircle (1 : ℚ) →+ AddCircle (2 : ℚ)`, through `QuotientAddGroup.map` on `AddMonoidHom.mulLeft 2` |
+| E14's deck involution | `Sterk.DeckTransformation (f : E → X)` — a homeomorphism of the total space with `over_base` — its `CoeFun`, `id`, `IsInvolution`, and `IsInvolution.symm_apply` |
+| V1's nondecomposability | `Sterk.Matrix.IsDecomposable` and `IsIndecomposable`: a re-indexing $n \simeq \iota \oplus \kappa$ with both parts nonempty and the off-diagonal blocks zero |
+
+These are **definitions**, and that is the point: each was a clause a leaf
+asserted with nothing under it, and each now resolves to a declaration that
+compiles.  What they are not is the mathematics above them — `orthogonalGroup`
+does not prove Sterk 2.13, and `DeckTransformation` does not produce the $K3$
+double cover.  A definition existing is exactly what "bottoms out" can mean for
+a node nobody has proved.
+
+Three of the nine remain unwritten, and each is larger than a definition over
+existing primitives: a **normal analytic space** with its dimension
+stratification and $\mathcal{Q}$-functions (AF10), a **Weil divisor** on an
+integral scheme (E15, over E16's valuation), and the **semigroup of isometry
+classes** of $p$-adic forms with its choice of representatives (Pa1).  Lo10's
+two-component theorem and F1.16's Milgram congruence are theorems, not
+definitions, and belong with them.
+
 ### Where the decomposition stops, and why it stops there
 
 Eleven clauses above are content rather than substrate.  Two of them were
