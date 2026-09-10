@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import MatrixSpace, OwnedRings, QQ
+from dzack_research.preamble.all import CommutativeRings, MatrixSpace, OwnedRings, QQ
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
@@ -19,11 +19,10 @@ def test_ring_center_is_functorial_on_a_nonidentity_ring_isomorphism() -> None:
     center = matrices.ring_center()
 
     assert center_functor.domain() is core
-    assert center_functor.codomain() is core
+    assert center_functor.codomain() is CommutativeRings()
     assert transported.domain() is center
     assert transported.codomain() is center
-    assert transported.forward()(center.one()) == center.one()
-    assert transported.inverse()(center.one()) == center.one()
+    assert transported(center.one()) == center.one()
 
 
 def test_ring_center_functor_has_the_same_objects_only_after_taking_centers() -> None:

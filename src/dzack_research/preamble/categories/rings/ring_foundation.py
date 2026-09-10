@@ -972,7 +972,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         return UnitGroupFunctor()
 
     def center_functor(self):
-        r"""Return ``Z : Core(Ring) -> Core(Ring)``."""
+        r"""Return ``Z : Core(Ring) -> CRing``."""
         return RingCenterFunctor()
 
     class Commutative(CategoryWithAxiom):
@@ -1638,20 +1638,16 @@ class RingCenterFunctor(Functor):
 
     def __init__(self) -> None:
         core = Core(OwnedRings())
-        super().__init__(core, core)
+        super().__init__(core, CommutativeRings())
 
     def _apply_object(self, ring):
         return ring.ring_center()
 
     def _apply_morphism(self, isomorphism):
-        source_center = self.object_image(isomorphism.domain())
-        target_center = self.object_image(isomorphism.codomain())
-        forward = _center_transport_of_ring_isomorphism(isomorphism.forward())
-        inverse = _center_transport_of_ring_isomorphism(isomorphism.inverse())
-        return self.codomain().Mor(source_center, target_center)(forward, inverse)
+        return _center_transport_of_ring_isomorphism(isomorphism.forward())
 
     def _repr_(self):
-        return "Ring center functor on Core(Ring)"
+        return "Ring center functor Core(Ring) -> CRing"
 
 
 class OwnedCategoryOverBaseRing(CategoryPacketMethods, OwnedParameterizedCategory):
