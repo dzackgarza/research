@@ -1628,7 +1628,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-splag-51ab-genus-20260910-1942` | archive reconciliation / SPLAG 51a and 51b one genus two classes | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/lattices/test_splag_51ab_genus_archive.py` (write) | `HEAD` | 2026-09-10T19:42:00Z |
 
 
 
