@@ -56,6 +56,10 @@ class ProfiniteCharacter(Morphism):
     def factor_extension(self) -> FiniteGaloisExtension:
         return self._factor_extension
 
+    def extension(self) -> FiniteGaloisExtension:
+        r"""Return the finite Galois extension through which this character factors."""
+        return self.factor_extension()
+
     def factorization(self):
         return self.domain().restriction_map(self._factor_extension)
 
