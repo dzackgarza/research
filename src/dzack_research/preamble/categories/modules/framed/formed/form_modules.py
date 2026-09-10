@@ -880,6 +880,32 @@ class FormModules(OwnedCategoryOverBaseRing):
             form = self.form()
             return form.gram_tensor()
 
+        def raise_index(self, tensor, slot=0):
+            r"""Raise one lower tensor index using this formed module.
+
+            The tensor owns the contraction algorithm.  This method is the
+            formed-module-facing spelling of that same construction and does
+            not introduce a second index-raising implementation.
+            """
+            return tensor.raise_index(self, slot)
+
+        def raise_index_over_fraction_field(self, tensor, slot=0):
+            r"""Raise one lower index after the canonical fraction-field extension.
+
+            This is useful when the inverse Gram tensor is not integral.  Both
+            the form and tensor are changed along the same canonical map
+            ``R -> Frac(R)`` before the ordinary index-raising operation is
+            applied.
+            """
+            ring_map = self.base_ring().fraction_field_map()
+            changed_form = self.base_change(ring_map)
+            changed_tensor = tensor.change_ring(changed_form.base_ring())
+            return changed_tensor.raise_index(changed_form, slot)
+
+        def lower_index(self, tensor, slot=0):
+            r"""Lower one upper tensor index using this formed module."""
+            return tensor.lower_index(self, slot)
+
         def twist(self, scalar):
 
             form = self.form()
