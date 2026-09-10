@@ -552,7 +552,7 @@ Editable installs point at the working tree, so a rebuilt or reinstalled Sage is
   Spike tests live in each spike's own `tests/` tree.
   `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
 
-- **`review-calibration/`** — **git submodule** (`dzackgarza/research-review-calibration`) holding a frozen lattice-spike simulacrum for **LLM review calibration**. Planted violations live in `GROUND_TRUTH.md` (never in the review packet).
+- **`review-calibration/`** — **git submodule** (`dzackgarza/review-calibration`; `research-review-calibration` is the Python package inside it) holding a frozen lattice-spike simulacrum for **LLM review calibration**. Planted violations live in `GROUND_TRUTH.md` (never in the review packet).
   Experiment issues and advisory review runs target the submodule repo, not this monorepo.
   Hill-climb prompt/context/permissions there before changing production `review-packet.tar` here.
 
