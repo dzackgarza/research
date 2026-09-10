@@ -810,6 +810,18 @@ class FormedModules(OwnedParameterizedCategory):
             r"""Return the quadratic value ``q(self)=b(self,self)``."""
             return self.parent().q(self)
 
+        def is_isotropic(self) -> bool:
+            r"""Return whether ``q(self)=0`` in the form's value module."""
+            return bool(self.q() == self.parent().value_module().zero())
+
+        def is_orthogonal_to(self, other) -> bool:
+            r"""Return whether ``b(self, other)=0``.
+
+            This is left orthogonality.  For a nonsymmetric form it need not
+            agree with ``other.is_orthogonal_to(self)``.
+            """
+            return bool(self.b(other) == self.parent().value_module().zero())
+
 
 class FormModules(OwnedCategoryOverBaseRing):
     r"""Modules over ``R`` equipped with a form."""
@@ -1076,6 +1088,14 @@ class FormModules(OwnedCategoryOverBaseRing):
         def q(self):
             r"""Return the represented quadratic/norm value of this element."""
             return self.parent().norm(self)
+
+        def is_isotropic(self) -> bool:
+            r"""Return whether this element has zero represented norm."""
+            return bool(self.q() == self.parent().value_module().zero())
+
+        def is_orthogonal_to(self, other) -> bool:
+            r"""Return whether the polar/bilinear value ``b(self, other)`` is zero."""
+            return bool(self.b(other) == self.parent().value_module().zero())
 
         def represents(self, value) -> bool:
             r"""Return whether this element has represented norm ``value``.
