@@ -993,10 +993,28 @@ nothing in the pinned Mathlib supplies it.  Both rows move to greenfield.
 
 ### Terminal against a registry corpus
 
+A row belongs here only if the supplier **exists now**: read in a clone, free of
+`sorry` in the part the node uses, and not waiting on anything.  Three rows that
+used to sit here do not meet that and have moved to *Routes that are not
+suppliers* below — the table was a list of hopes in those three places, which is
+the failure this section is supposed to catch.
+
 | Nodes | Corpus | Status |
 | --- | --- | --- |
 | F1.5 ($E_8$), F4.1 (root lattices) | [`thefundamentaltheor3m/Sphere-Packing-Lean`](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean) — Viazovska dimension-8, $E_8$ lattice | **already integrated, and the integration is a proved comparison** — read: `LeanCategoriesSpherePacking/E8/Comparison.lean` imports `SpherePacking.Basic.E8` beside the project's `Standard`, gives the explicit basis change and its inverse between the external basis and the selected simple-root basis, proves the two products are the identity, carries the external Gram matrix to the project's, and concludes that Sphere-Packing-Lean's *positive* $E_8$ is the **opposite** of the project lattice, with the sign change explicit on every pair.  Sorry-free.  `Integration/SpherePacking/` itself is only the build harness — a lakefile, a manifest and a toolchain pin |
 | Pa2–Pa5, Pa8's exceptional 2-adic case, and the $p=2$ conditions in Nk3–Nk5 | [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) — dyadic Hilbert symbol over $\mathbb{Q}_2$, Serre's evaluation formula, 2-adic square-class facts | **the layer Pa uses is proved and axiom-free**, checked in the clone: `GQ2/HilbertSymbol.lean` and `GQ2/DyadicSquares.lean` import only `Mathlib.NumberTheory.Padics.{RingHoms,Hensel}`, and `HilbertSymbolDyadic.lean` says of itself that it sits upstream of the axioms file; none of the six dyadic files contains a `sorry`.  Two things the earlier "sorry-free" verdict left out: the library declares **nine `axiom`s**, all quarantined in `GQ2/Foundations/Axioms.lean` as classical literature inputs (local reciprocity, Tate duality, the local Euler characteristic, …) under an enforced one-file rule, and four proof-position `sorry`s live in `Challenge.lean` and `ChallengePalomar.lean`, which *state the open problem* rather than leaving a gap.  Apache 2.0 |
+
+#### Routes that are not suppliers
+
+Each of these was in the table above.  None is available now, and the reason
+differs in each case — a `sorry` where the node needs a theorem, a repository
+that turned out to be about something else, and a corpus waiting on
+publication.  For F3.1, F3.2 and E2 this means **no supplier exists**, so they
+are greenfield; the `lean-categories` row keeps its nodes' verdicts, since a
+route pending publication is still the route.
+
+| Nodes | Corpus | Why it is not available |
+| --- | --- | --- |
 | F3.1, F3.2 (the local invariants under the genus) | [`mariainesdff/HassePrinciple`](https://github.com/mariainesdff/HassePrinciple) — Hilbert symbols, Hasse–Minkowski over general fields | definitions in place and **38 proof-position `sorry`s**, counted in the clone.  Eleven of them are in `HilbertSymbol/Basic.lean`, so it is the symbol's own basic properties that are open, not only a choice-independence lemma at the top; the rest are spread over `Padics/Lemmas` (9), `QuadraticForm/HasseMinkowskiInvariant` (6), `QuadraticForm/Basic` (5) and four more files.  A partial route, and further from being a supplier than the earlier verdict said |
 | E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) | **read, and it is not covering spaces.**  Its live files are winding numbers and the fundamental theorem of algebra: `ComplexPathWinding`, `RootsMathlib` (the winding number of a polynomial on a large circle, leading-term domination, `eventually_windingNumber_eq_natDegree`).  The covering-space material — `ExpCovering`, `UniquePathLifting` — is in a `Legacy/` subtree that holds the repository's only `sorry`s, next to a `SectionTwo.lean` whose content is `theorem TheoremTwo : True`.  For E2 the better route is Mathlib itself: `IsCoveringMap`, `IsEvenlyCovered` and `IsCoveringMapOn` in `Topology/Covering/Basic.lean`, with `Topology/Covering/Quotient.lean` and `Topology/Homotopy/Lifting.lean`.  Neither supplies $K3$ surfaces or the covering involution |
 | F1.10, F1.7, F2.1, F2.4–F2.5, F3.1, F4.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness`, and the root-lattice objects of `DefiniteNondegenerate` and `DRootLattice` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
@@ -1165,6 +1183,8 @@ that is what this sweep found, twice.
 | --- | --- | --- |
 | F2.3–F2.9 | Cartan–Dieudonné for an indefinite rational form, the modified Brieskorn spinor norm, $O^*(L) = \tilde O(L)\cap O_-(L)$, its index-2 relation, and surjectivity of $\tau$ on $O_-(L)$ | Mathlib's Cartan–Dieudonné is the positive-definite real case; `lean-categories` spinor-norm files are an unverified route |
 | F2.1, F2.2, F2.10, F2.11 | $\tau : O(L)\to O(G_L)$, its kernel $\tilde O(L)$, the Eichler transformation $E_{f,x}$ and the normality of $\mathcal{E}(L)$ | these were terminal against Mathlib on the strength of "group homomorphisms and explicit formulas", and the groups $\tau$ runs between do not exist.  `QuadraticMap.IsometryEquiv` has `refl`, `symm` and `trans` — the groupoid operations — and **no `Group` instance on `Q.IsometryEquiv Q`**, so neither $O(L)$ nor $O(G_L)$ is a group anywhere in the pinned tree, and a homomorphism between them cannot yet be stated.  $E_{f,x}$'s formula is direct over `BilinForm` once $O(L)$ exists to receive it |
+| F3.1, F3.2 | the genus as an equivalence class, and the local invariants that cut it out | **no supplier**, after both candidates were read: `HassePrinciple` has 38 proof-position `sorry`s with eleven in the Hilbert symbol's own basic file, and `lean-categories`' `Hasse`/`SpinorGenusAdelic`/`DyadicSymbol` are sorry-free but unpublished and their correspondence with these nodes is unverified.  `LegendreQF` settles the ternary diagonal case only |
+| E2 | Enriques surfaces and their $K3$ universal cover with the covering involution | **no supplier**: `CoveringSpacesProject` is winding numbers, not covering spaces.  Mathlib's `IsCoveringMap` (`Topology/Covering/Basic.lean`) is the language; the $K3$ double cover needs stratum E's surfaces first |
 | F2.12, F2.13 | Eichler's lemma and Proposition 3.7.3 | nothing; the corpus has no Eichler |
 | F3.3, F3.4, Nk3–Nk5, F1.11, F1.12, Ni1–Ni10 | Nikulin's existence, uniqueness and one-class-plus-surjectivity theorems; his primitive-embedding classification and the analogue of Witt's theorem; the Minkowski–Siegel weight | nothing |
 | F4.2 | Niemeier's classification of the 24 lattices | nothing |
