@@ -89,6 +89,24 @@ class _SparseFreeModuleElement(ModuleElement):
     def monomial_coefficients(self):
         return dict(self._coefficients)
 
+    def underlying_set_element(self):
+        r"""Recover ``s`` when this is the canonical free generator ``[s]``.
+
+        This is the inverse of the unit ``S -> U(F_R(S))`` on its image.  A
+        general linear combination has no distinguished underlying element of
+        ``S`` and therefore refuses rather than selecting one support label.
+        """
+        if len(self._coefficients) != 1:
+            raise ValueError(
+                "only a canonical free generator has one underlying framing element"
+            )
+        label, coefficient = next(iter(self._coefficients.items()))
+        if coefficient != self.parent().base_ring().one():
+            raise ValueError(
+                "only a canonical free generator has one underlying framing element"
+            )
+        return label
+
     def _add_(self, other):
         ring = self.parent().base_ring()
         coefficients = dict(self._coefficients)
