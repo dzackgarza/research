@@ -44,3 +44,15 @@ def test_order_five_a4_a4_glue_reconstructs_e8() -> None:
     assert target.is_even()
     assert target.is_unimodular()
     assert target.is_isometric(Lattices.E8) is True
+
+
+def test_d8_isotropic_self_glue_reconstructs_e8() -> None:
+    source = Lattices.D8
+    inclusion = source.maximal_overlattice()
+    target = inclusion.codomain()
+
+    assert inclusion.index() == 2
+    assert target.is_even()
+    assert target.is_unimodular()
+    assert target.twist(-1).enumerate_short_vectors(2).cardinality() == 120
+    assert target.is_isometric(Lattices.E8) is True
