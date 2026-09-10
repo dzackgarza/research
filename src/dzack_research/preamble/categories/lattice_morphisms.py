@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
@@ -1330,6 +1331,21 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
     def acting_group(self):
         r"""Return ``O(codomain)`` acting by postcomposition on this homset."""
         return self.codomain().Aut()
+
+    def cardinality(self):
+        r"""Return the cardinality of ``Isom(L,M)`` from its torsor structure.
+
+        An empty isometry Hom has cardinality zero.  A nonempty one is a
+        torsor under ``O(M)`` by postcomposition and therefore has the same
+        cardinality as ``O(M)``.  When emptiness is genuinely undecided, keep
+        that three-valued boundary instead of turning it into a cardinal.
+        """
+        empty = self.is_empty()
+        if empty is True:
+            return cardinal(0)
+        if empty is False:
+            return self.acting_group().cardinality()
+        return Unknown
 
     def act(self, automorphism, isometry):
         r"""Postcompose an isometry by a codomain automorphism."""
