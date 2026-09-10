@@ -35,8 +35,7 @@ public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Topology.Irreducible
 public import Mathlib.Analysis.Analytic.Constructions
-public import Mathlib.RingTheory.Localization.FractionRing
-public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.RingTheory.IntegrallyClosed
 public import Mathlib.RingTheory.KrullDimension.Basic
 
 @[expose] public section
@@ -869,19 +868,14 @@ abbrev germRing (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ) : Type :=
   (holomorphicSubring Z z) ⧸ (vanishingIdeal Z z)
 
 /-- **AF10, normality.**  An analytic subset is *normal at a point* when its germ
-ring there is integrally closed in its fraction field: every element of the
-fraction field that is integral over the germ ring already lies in it.
+ring there is integrally closed.
 
-The condition is spelled out rather than taken from `IsIntegrallyClosed`, whose
-module is present in the pinned tree as source and **not built** in this
-checkout, so importing it is not possible here; `IsIntegral` and `FractionRing`
-are built and say the same thing.  The domain hypothesis is an instance argument,
-which is the setting AF10 uses: it speaks of *irreducible* normal analytic
-spaces, and irreducibility of the germ is what makes the germ ring a domain. -/
+The domain hypothesis is an instance argument, which is the setting AF10 uses: it
+speaks of *irreducible* normal analytic spaces, and irreducibility of the germ is
+what makes the germ ring a domain. -/
 def IsNormalAtPoint (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ)
     [IsDomain (germRing Z z)] : Prop :=
-  ∀ x : FractionRing (germRing Z z),
-    IsIntegral (germRing Z z) x → ∃ r : germRing Z z, algebraMap _ _ r = x
+  IsIntegrallyClosed (germRing Z z)
 
 end Normality
 
@@ -892,9 +886,8 @@ variable {n : ℕ}
 /-- **AF10, the dimension of a germ.**  The dimension of an analytic subset at a
 point is the Krull dimension of its germ ring.
 
-`ringKrullDim` is `Order.krullDim` of the prime spectrum, and both are built in
-this checkout, so the dimension function AF10's stratification is indexed by
-needs nothing new. -/
+`ringKrullDim` is `Order.krullDim` of the prime spectrum, so the dimension
+function AF10's stratification is indexed by needs no new notion. -/
 noncomputable def germDim (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ) : WithBot ℕ∞ :=
   ringKrullDim (germRing Z z)
 
