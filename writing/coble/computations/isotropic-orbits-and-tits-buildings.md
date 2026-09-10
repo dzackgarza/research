@@ -112,7 +112,7 @@ The squares recorded in \longref{ex:dawes-u-a3} are consistent with the stated G
 
 [@Daw22] also computes the building $B(G_1)$ of a subgroup $G_1\subset G_2$ from $B(G_2)$, and specializes this to split maximal lattices of signature $(2,n)$, where the building is described directly by its isotropic lines and planes.
 Descent along a subgroup is the shape the Coble problem takes: $\Gamma_\Co$ is cut out of $\Orth(T_\En)$ as a stabilizer intersected with a centralizer ([[open-problems]]), so its building is a refinement of one already computed for a larger group.
-The paper's stated applications are the configuration of boundary components of orthogonal modular varieties and the arithmetic of orthogonal modular forms, where orbit *representatives* rather than orbit counts are what a Fourier expansion consumes.
+The paper's stated applications are the configuration of boundary components of orthogonal modular varieties and the arithmetic of orthogonal modular forms, where a Fourier expansion consumes orbit *representatives* and a multiplication is organized by them.
 :::
 
 ## The polarized Enriques computation and its lattice

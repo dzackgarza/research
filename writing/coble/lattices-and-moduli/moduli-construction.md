@@ -94,6 +94,45 @@ $$
 \Omega_T \da \ts{[v]\in \PP(T_\CC) \st v^2=0,\, v\bar v > 0}
 .
 $$
+
+::: {.Proposition #prop:type-iv-dimension}
+### Dimension of a type IV domain
+
+Let $T$ be a lattice of rank $r$ and signature $(2, r-2)$.
+Then the type IV domain $D_T$ has complex dimension $r - 2$.
+:::
+
+::: {.proof}
+
+The complexification $T_\CC$ has dimension $r$, so $\PP(T_\CC)$ has dimension
+$r-1$.
+The equation $v^2 = 0$ is a single nondegenerate quadratic equation and cuts out a
+smooth quadric hypersurface of dimension $r-2$ inside $\PP(T_\CC)$.
+The condition $v\bar v > 0$ is open, so it selects an open subset of that quadric,
+and $D_T$ is one of its connected components.
+:::
+
+::: {.Corollary #cor:m-polarized-k3-dimension}
+### Dimension of $M$-polarized K3 moduli
+
+Let $M\injects\lkt$ be a primitive embedding of a lattice of signature
+$(1, \operatorname{rank}(M) - 1)$ with orthogonal complement
+$T = M^{\perp\lkt}$.
+Then
+$$
+\dim_\CC D_T = \operatorname{rank}(T) - 2 = 20 - \operatorname{rank}(M)
+.
+$$
+For the Coble lattices $\operatorname{rank}(S_\Co) = 11$, so
+$\dim_\CC D_{T_\Co} = 9$.
+:::
+
+::: {.proof}
+
+The K3 lattice has rank $22$, so $\operatorname{rank}(T) = 22 - \operatorname{rank}(M)$,
+and $T$ has signature $(2, 20 - \operatorname{rank}(M))$; apply
+\longref{prop:type-iv-dimension}.
+:::
 Letting $E_{10} \da U \oplus E_8$, one can similarly consider the Enriques lattices $S_\En := E_{10}(2)$ with $T_\En = U \oplus E_{10}(2)$.
 Letting
 

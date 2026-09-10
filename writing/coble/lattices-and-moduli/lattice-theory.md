@@ -38,6 +38,28 @@ The discriminant is independent of the choice of generating set.
 :::
 
 ::: {.Remark}
+### Finiteness in the definite and indefinite cases
+
+Write $L[k] \da \ts{v\in L \mid v^2 = k}$ for the set of vectors of norm $k$.
+
+If $L$ is definite then $L[k]$ is finite for every $k$, since the real extension of $\pm\beta_L$ is a positive definite quadratic form on $L_\RR$ and $L$ is discrete, so a bounded region contains finitely many lattice points.
+For the same reason $\Orth(L)$ is finite: an isometry is determined by the images of a basis $e_1,\dots,e_r$, and it carries $e_i$ into the finite set $L[e_i^2]$.
+
+Neither statement survives indefiniteness.
+In $U = \ZZ e\oplus\ZZ f$ one has $U[0] = \ZZ e\cup\ZZ f$, which is infinite.
+In $L = \gens{1}\oplus\gens{-2}$ the set $L[1]$ is the solution set of the Pell equation $x^2 - 2y^2 = 1$, again infinite, and
+$$
+M = \begin{bmatrix}3&4\\2&3\end{bmatrix}
+\qquad\text{satisfies}\qquad
+M^{\mathsf T} G_L M = G_L,
+\qquad G_L = \begin{bmatrix}1&0\\0&-2\end{bmatrix}
+,
+$$
+with $M$ of infinite order, so $\Orth(L)$ is infinite.
+Enumerating a level set or an orthogonal group is therefore not by itself an available operation for the hyperbolic lattices of this monograph, and the reflection groups of the Compactifications sections are described instead by a fundamental chamber with finitely many walls.
+:::
+
+::: {.Remark}
 ### Discriminant forms
 
 The **dual lattice** to $L$ is denoted $L\dual \da \Hom_\ZZ(L, \ZZ)$, and there is an morphism
@@ -70,6 +92,26 @@ A **morphism** between two lattices is a morphism of $\ZZ$-modules $\eta: L\to L
 An **isometry** of lattices is an isomorphism, defined in the obvious way.
 We write $\Orth(L)$ for the group of lattice automorphisms of $L$, denoted the **orthogonal group** of $L$, and similarly $\Orth(q_L)$ for the $\ZZ$-module automorphisms of the discriminant group $A_L$ which preserve the quadratic form.
 There is a natural group homomorphism $\Orth(L)\to\Orth(q_L)$, the kernel is denoted $\tilde \Orth(L)$, equivalently written $\Orth(L)^*$; we call it the **stable orthogonal group**. When $L$ has signature $(2, n)$, the associated period domain $\Omega_L$ has two connected components interchanged by complex conjugation, and we write $\Orth^+(L)$ for the index-two subgroup of $\Orth(L)$ preserving each component (equivalently, preserving the orientation of the positive-definite part, i.e. those isometries of real spinor norm $+1$). We write $\Orth^+(L)^* \da \Orth^+(L)\intersect \tilde\Orth(L)$ for the intersection, which is the arithmetic group acting on a single component $D_L$.
+:::
+
+::: {.Definition #def:spinor-norm}
+### The spinor norm and the special orthogonal group
+
+Every $g\in\Orth(L_\RR)$ is a product of reflections $g = s_{w_1}\cdots s_{w_m}$ in anisotropic vectors $w_i$, where $s_w(x) = x - 2\tfrac{\beta(x, w)}{\beta(w,w)}w$.
+The **real spinor norm** of $g$ is
+$$
+\spinornorm_\RR(g) \da \prod_{i=1}^{m} \frac{-\beta(w_i, w_i)}{2}
+\ \in\ \RR^{\times}/(\RR^{\times})^2
+,
+$$
+which is independent of the chosen decomposition.
+The subgroup $\Orth^+(L_\RR)$ is the kernel of $\spinornorm_\RR$, and for a hyperbolic lattice it is the index-two subgroup preserving the positive cone.
+The **special orthogonal group** is the index-two subgroup
+$$
+\SO(L) \da \ker\bigl(\det\colon \Orth(L)\to\ts{\pm 1}\bigr)
+,
+$$
+and we write $\SO^+(L)\da\Orth^+(L)\intersect\SO(L)$ and $\widetilde{\SO}^+(L)\da\Orth^+(L)\intersect\tilde\Orth(L)\intersect\SO(L)$.
 :::
 
 ::: {.Remark}
@@ -111,9 +153,37 @@ We say that a primitive isotropic vector $e\in L$ is
 
 3. **even characteristic** if $\operatorname{div}_L(e) = 2$ and $e^*$ is characteristic.
 
-The 2-elementary hyperbolic lattices admitting a primitive embedding into $\lkt$ were classified by Nikulin in [@Nik80 §3.6.2]. An indefinite 2-elementary lattice is determined up to isometry by a triple of invariants $(r,a,\delta)$.
+The 2-elementary hyperbolic lattices admitting a primitive embedding into $\lkt$ were classified by Nikulin in [@Nik80 §3.6.2]. An indefinite **even** 2-elementary lattice is determined up to isometry by its signature together with a triple of invariants $(r,a,\delta)$.
 Here, $r\da \operatorname{rank}_\ZZ(L)$ is the rank, $a = \operatorname{rank}_{\bF_2}A_L$ is the exponent appearing in $A_L = (\ZZ/2\ZZ)^a$, and $\delta \in \ts{0, 1}$ is the **coparity**: we set $\delta = 0$ if $q_L(A_L) \subseteq \ZZ$, so $q_L(x) \equiv 0 \mod \ZZ$ for all $x\in A_L$, and $\delta=1$ otherwise.
+The evenness and indefiniteness hypotheses are both needed: the theorem is Nikulin's classification of even 2-elementary lattices, and it rests on the general uniqueness criterion for even indefinite lattices [@Nik80 Thm. 1.14.2].
 We accordingly specify such lattices using the notation $(r,a,\delta)_{n_+}$.
+:::
+
+::: {.Theorem #thm:isotropic-trichotomy}
+### Classification of primitive isotropic vectors by type
+
+Let $S$ be an even hyperbolic 2-elementary lattice with invariants $(r, a, \delta)$, let $v\in S$ be a primitive isotropic vector, and write $\overline{S}\da v^{\perp S}/v$.
+Then exactly one of the following holds, according to the type of $v$ in the sense above, and in each case $S$ splits off the indicated rank-two summand containing $v$:
+
+1. **odd**: $S \cong U\oplus\overline{S}$, with $a_{\overline{S}} = a$ and $\delta_{\overline{S}} = \delta$;
+
+2. **even ordinary**: $S \cong U(2)\oplus\overline{S}$, with $a_{\overline{S}} = a - 2$ and $\delta_{\overline{S}} = \delta$;
+
+3. **even characteristic**: $S \cong \latI_{1,1}(2)\oplus\overline{S}$, with $a_{\overline{S}} = a - 2$; this case forces $\delta = 1$ and gives $\delta_{\overline{S}} = 0$.
+
+In all three cases $\overline{S}$ is even negative definite of rank $r - 2$.
+Classifying the primitive isotropic vectors of $S$ up to isometry is therefore equivalent to classifying the even negative definite lattices with invariants $(r-2, a, \delta)$, $(r-2, a-2, \delta)$ and $(r-2, a-2, 0)$.
+:::
+
+::: {.proof}
+
+This is [@AE22 Prop. 5.5].
+:::
+
+::: {.Remark}
+
+\longref{thm:isotropic-trichotomy} is the tool by which a $0$-cusp of a type IV quotient is identified from a single numerical invariant of its isotropic vector: the divisibility, together with the characteristic-or-ordinary dichotomy, determines the invariants of the boundary lattice $\overline{S}$, and for indefinite $\overline{S}$ those invariants determine its isometry class.
+It is used in this form throughout the cusp correspondence.
 :::
 
 ::: {.Remark}

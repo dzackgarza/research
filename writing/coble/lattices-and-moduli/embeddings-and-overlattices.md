@@ -148,6 +148,40 @@ made finite, in the even unimodular case, by
 \cref{prop:embedding-finiteness}.
 :::
 
+::: {.Definition #def:embedding-vs-sublattice-equivalence}
+### Isomorphic embeddings versus isomorphic primitive sublattices
+
+Two primitive embeddings $\iota_1\colon S\injects M_1$ and
+$\iota_2\colon S\injects M_2$ can be compared in two inequivalent ways.
+
+1.  They are **isomorphic as embeddings** if there is an isometry
+    $\varphi\colon M_1\iso M_2$ with $\varphi\circ\iota_1 = \iota_2$, so that
+    $\varphi$ restricts to the *identity* of $S$.
+    This is \cref{def:embedding-equivalence}.
+
+2.  They define **isomorphic primitive sublattices** if there is an isometry
+    $\varphi\colon M_1\iso M_2$ with $\varphi(\iota_1(S)) = \iota_2(S)$, so that
+    $\varphi$ restricts to *some* automorphism of $S$, not necessarily the
+    identity.
+
+The first relation is finer than the second, and the two classifications differ by
+the action of $\Orth(S)$: the classes of the second kind are the orbits of the
+classes of the first kind under $\Orth(S)$ acting by precomposition.
+:::
+
+::: {.Remark}
+
+The distinction matters whenever $\Orth(S)$ is large, and it is the source of two
+different answers to the question of how many primitive embeddings $S\injects L$
+there are.
+Nikulin's classification of primitive embeddings [@Nik80 Prop. 1.15.1] is stated
+for the first relation, in terms of the gluing data $(H_S, H_T, \gamma)$ of
+\cref{rmk:embedding-gluing-data}; passing to the second relation divides out by
+the action of the image of $\Orth(S)$ in $\Orth(q_S)$ on those data, which is the
+extra quotient appearing in the uniqueness statement of
+\cref{thm:nikulin-gluing}.
+:::
+
 ## Overlattices and gluing
 
 ::: {.Definition #def:overlattice}
@@ -370,6 +404,86 @@ Either way $k = w^2$ is odd and $P\cong\latI_{1, 1}$.
 
 Since $P$ is unimodular, \cref{prop:unimodular-splits} gives
 $L\cong P\oplus P^{\perp L}$.
+:::
+
+## Maximal and split maximal lattices
+
+::: {.Definition #def:maximal-lattice}
+### Maximal lattices
+
+An even lattice $L'$ is **maximal** if its discriminant group contains no nonzero
+isotropic subgroup, that is if $q_{L'}$ vanishes on no nonzero subgroup of
+$A_{L'}$.
+An inclusion $L\subseteq L'$ with $L'$ maximal and $L'$ an overlattice of $L$ in
+the sense of \cref{def:overlattice} is a **maximal overlattice** of $L$.
+:::
+
+::: {.Lemma #lem:maximal-overlattice-exists}
+
+Every even lattice admits a maximal overlattice.
+A unimodular lattice is maximal.
+:::
+
+::: {.proof}
+
+By \cref{thm:nikulin-gluing} the even overlattices of $L$ correspond to the
+isotropic subgroups of $A_L$, and the discriminant form of the overlattice
+attached to $H$ is carried by $H^{\perp}/H$.
+Starting from $H = 0$ and repeatedly enlarging $H$ by an isotropic element of
+$H^{\perp}$ terminates, since $A_L$ is finite, at a subgroup for which
+$H^{\perp}/H$ has no nonzero isotropic subgroup; the corresponding overlattice is
+maximal.
+A unimodular lattice has $A_L = 0$, so the condition is vacuous.
+:::
+
+::: {.Definition #def:split-maximal}
+### Split maximal lattices
+
+A maximal lattice $L'$ of signature $(2, n)$ is **split** if it decomposes as
+$$
+L' \cong U\oplus L_1,
+\qquad
+L_1 \cong U\oplus L_0
+,
+$$
+for some lattice $L_0$; equivalently, if $L'$ contains $U^{\oplus 2}$ as an
+orthogonal direct summand.
+:::
+
+::: {.Theorem #thm:maximal-splits-for-large-n}
+### Maximal lattices of signature $(2, n)$ split for $n\geq 5$
+
+Every maximal lattice of signature $(2, n)$ with $n\geq 5$ is split.
+:::
+
+::: {.proof}
+
+This is recorded in [@Daw22 §3.1], where it is attributed to Attwell-Duval; split
+maximal lattices are also common for $n < 5$, by the criterion of
+[@Nik80 Cor. 1.13.5].
+:::
+
+::: {.Theorem #thm:split-maximal-isotropic-transitivity}
+### Transitivity on isotropic sublattices of a split maximal lattice
+
+Let $L'$ be a split maximal lattice of signature $(2, n)$.
+
+1.  For any primitive isotropic $x, y\in L'$ there exists
+    $\tau(x, y)\in\Orth^+(L')$ with $\tau(x, y)\,x = y$; in particular
+    $\Orth^+(L')$ acts transitively on primitive isotropic vectors.
+
+2.  Two primitive totally isotropic sublattices $E_1, E_2\subseteq L'$ lie in the
+    same $\Orth^+(L')$-orbit if and only if
+    $E_1^{\perp}/E_1\cong E_2^{\perp}/E_2$.
+:::
+
+::: {.proof}
+
+Both statements are in [@Daw22 §3.1]: (1) is Algorithm 3.3, which constructs
+$\tau(x,y)$ explicitly from the two hyperbolic summands of
+\longref{def:split-maximal}, and (2) is the orbit criterion of Attwell-Duval
+recorded there, together with the canonical $\ZZ$-basis $S(E)$ that a totally
+isotropic sublattice of a maximal lattice determines.
 :::
 
 ## Classification of unimodular lattices

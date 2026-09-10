@@ -33,6 +33,68 @@ $$
 The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
 :::
 
+::: {.Proposition #prop:double-cover-is-k3}
+### The branched double cover is a K3 surface
+
+Let $S$ be a smooth rational surface, let $\cL\da\OO_S(-K_S)$, and let
+$s\in H^0(S, \cL^{\tensor 2})$ have smooth divisor $B\in\abs{-2K_S}$.
+Let
+$$
+\pi\colon X \da \operatorname{Spec}_S\bigl(\OO_S\oplus\cL^{-1}\bigr)\to S
+$$
+be the double cover determined by $s$, branched along $B$.
+Then $X$ is a K3 surface, and for divisors $D, D'$ on $S$,
+$$
+\pi^{*}D\cdot\pi^{*}D' = 2\,(D\cdot D')
+.
+$$
+:::
+
+::: {.proof}
+
+The canonical bundle formula for a cyclic double cover branched along
+$B\in\abs{\cL^{\tensor 2}}$ gives
+$$
+K_X = \pi^{*}(K_S + \cL) = \pi^{*}(K_S - K_S) = 0
+,
+$$
+so $\omega_X\cong\OO_X$.
+Pushing forward, $\pi_*\OO_X = \OO_S\oplus\cL^{-1} = \OO_S\oplus\OO_S(K_S)$, and
+$\pi$ is finite, so
+$$
+H^i(X, \OO_X) = H^i(S, \OO_S)\oplus H^i(S, K_S)
+\qquad\text{for all } i
+.
+$$
+Since $S$ is rational, $h^1(\OO_S) = 0$, and Serre duality on the surface $S$
+gives $h^1(K_S) = h^1(\OO_S) = 0$; hence $h^1(\OO_X) = 0$.
+Again by Serre duality $\chi(K_S) = \chi(\OO_S) = 1$, so
+$$
+\chi(\OO_X) = \chi(\OO_S) + \chi(K_S) = 2
+,
+$$
+and combining $\chi(\OO_X) = 1 - h^1(\OO_X) + h^2(\OO_X)$ with $h^1(\OO_X) = 0$
+gives $p_g(X) = h^2(\OO_X) = 1$.
+A smooth projective surface with $\omega_X\cong\OO_X$ and $h^1(\OO_X) = 0$ is a
+K3 surface, which is the first claim.
+
+For the intersection numbers, $\pi$ is finite of degree $2$, so
+$\pi_*\pi^{*} = 2$ on divisor classes, and the projection formula gives
+$$
+\pi^{*}D\cdot\pi^{*}D' = D\cdot\pi_*\pi^{*}D' = D\cdot 2D' = 2(D\cdot D')
+.
+$$
+:::
+
+::: {.Remark}
+
+Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rational
+curve of $\abs{-2K_S}$ recorded in \cref{lem:rational_sextic_ten_nodes} and the
+surrounding discussion, \longref{prop:double-cover-is-k3} is the assertion cited from
+[@DK25 Prop. 9.1.1] in \cref{rmk:k3-cover-invariants}, and its intersection-number
+statement is the twist by $2$ used in \cref{prop:coble-invariant-lattice}.
+:::
+
 ::: {.Proposition #prop:coble-invariant-lattice}
 
 Let $f: X\to S$ be the K3 double cover of a terminal Coble surface of K3 type with $n = 1$, and let $\sigma$ be the covering involution.

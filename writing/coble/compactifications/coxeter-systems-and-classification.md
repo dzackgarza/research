@@ -53,6 +53,17 @@ which is the normalization of \longref{def:coxeter-vinberg-diagram}.
 A Coxeter matrix produces only the values $g_{st}\leq 1$; Vinberg's diagrams admit in addition the ultraparallel case $g_{st} > 1$, which corresponds to no finite $m_{st}$ and is drawn dotted.
 :::
 
+::: {.Remark #rmk:coxeter-form-values}
+### The values at small orders
+
+$$
+\begin{array}{c|cccccc}
+m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
+2\cos(\pi/m) & 0 & 1 & \sqrt2 & \dfrac{1+\sqrt5}{2} & \sqrt3 & 2
+\end{array}
+$$
+:::
+
 ::: {.Remark #rmk:gram-versus-cartan}
 ### Gram and Cartan matrices
 
@@ -65,6 +76,14 @@ A_{st} \da \frac{2\,\beta_L(\alpha_s,\alpha_t)}{\beta_L(\alpha_t,\alpha_t)}
 ,
 $$
 so that $A_{ss} = 2$ and $s_{\alpha_t}(\alpha_s) = \alpha_s - A_{st}\alpha_t$; it records the reflections and is symmetric only when all the $\alpha_s$ have equal norm.
+The two are related by a diagonal factor on the right,
+$$
+A = G\cdot\operatorname{diag}\!\left(\frac{2}{G_{11}},\dots,\frac{2}{G_{nn}}\right),
+\qquad
+G = A\cdot\operatorname{diag}\!\left(\frac{G_{11}}{2},\dots,\frac{G_{nn}}{2}\right)
+,
+$$
+so $G$ is the Cartan matrix symmetrized by the root lengths.
 In the simply-laced case, where every $\alpha_s^2 = -2$, one has $A = -G$.
 When two root lengths occur the two matrices record different data: for $\alpha_s^2 = -2$ and $\alpha_t^2 = -4$ with $\beta_L(\alpha_s,\alpha_t) = 2$, the Cartan entries are $A_{st} = 1$ and $A_{ts} = 2$.
 :::
@@ -297,6 +316,19 @@ $$
 .
 $$
 In particular $K(M) = \QQ$ exactly when $m_{st}\in\ts{2,3,\infty}$ for all $s\neq t$.
+:::
+
+::: {.Proposition #prop:gram-form-integrality}
+### When the Gram form is integral
+
+$G(M)$ has all its entries in $\ZZ$ if and only if $m_{st}\in\ts{2,3,\infty}$ for every $s\neq t$.
+Among the Coxeter matrices with every $m_{st}$ finite, these are exactly the simply-laced ones.
+:::
+
+::: {.proof}
+The entries are the values of \longref{rmk:coxeter-form-values}, and an entry lies in $\ZZ$ only if it lies in $\QQ$.
+By \longref{prop:coxeter-base-field-degree} the degree of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\ts{4,6}$, that is when $m\in\ts{2,3}$; the value at $m=\infty$ is $2$.
+The remaining orders therefore give irrational entries, and the three admissible orders give $0$, $1$ and $2$.
 :::
 
 ::: {.Example #ex:noncrystallographic-base-rings}

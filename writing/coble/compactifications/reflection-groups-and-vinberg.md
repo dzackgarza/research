@@ -82,17 +82,17 @@ For a norm $-4$ vector, integrality requires $\beta_L(v,L)\subseteq 2\ZZ$, which
 Let $L$ be an even $2$-elementary lattice and let $v\in L$ satisfy $v^2 < 0$.
 Then $s_v\in\Orth(L)$ if and only if either $v^2 = -2$, or $v^2 = -4$ and
 $\div_L(v) = 2$.
-The list of \Cref{def:2elementary-roots} is therefore exhaustive, not merely a
+The list of \longref{def:2elementary-roots} is therefore exhaustive, not merely a
 selection of two convenient cases.
 :::
 
 ::: {.proof}
 
 This is [@Ale22 §2]; that the two conditions are sufficient is
-\Cref{rmk:root-integrality}, and the content of the theorem is that no other norm
+\longref{rmk:root-integrality}, and the content of the theorem is that no other norm
 occurs.
 For $L$ $2$-elementary one has $\div_L(v)\in\ts{1, 2}$, so the integrality
-condition $2\div_L(v)/v^2\in\ZZ$ of \Cref{def:k-root} restricts $v^2$ to
+condition $2\div_L(v)/v^2\in\ZZ$ of \longref{def:k-root} restricts $v^2$ to
 $\ts{-2, -4}$, with $\div_L(v) = 2$ forced in the second case.
 :::
 
@@ -293,7 +293,7 @@ subdiagrams are elliptic but which is not itself elliptic or parabolic.
 ### A sufficient criterion for completeness
 
 Let $\Gamma$ be a Coxeter--Vinberg diagram without dotted edges, obtained from a
-run of \Cref{thm:vinberg-algorithm}.
+run of \longref{thm:vinberg-algorithm}.
 If $\Gamma$ contains no Lannér subgraph, and every connected parabolic subdiagram
 of $\Gamma$ is contained in a maximal parabolic subdiagram of maximal rank, then
 $\Gamma$ is complete: the accepted roots bound a finite-volume polytope and the
@@ -313,7 +313,7 @@ a computation that has not yet terminated: without it, the algorithm has produce
 a chamber that *might* still acquire further walls at greater height.
 It applies only in the absence of dotted edges, that is when no two walls of the
 chamber are ultra-parallel; for the diagrams on the line $r + a = 22$ this is the
-case, and \cref{thm:coxeter-built-on-complete-graphs} records the resulting
+case, and \longref{thm:coxeter-built-on-complete-graphs} records the resulting
 diagrams.
 :::
 

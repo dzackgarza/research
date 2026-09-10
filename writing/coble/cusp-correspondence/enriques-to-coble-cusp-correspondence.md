@@ -55,7 +55,9 @@ We then have $\di_{T_\En}(w_1) = 2$.
 ::: {.proof}
 
 By \cref{lem:divisibilityAlwaysTwoTco}, we have in particular that $v_1$ has divisibility 2 in $T_\Co$; moreover it is isotropic.
-Since there is a unique $\Gamma_\Co$-orbit of isotropic vectors in $T_\Co$, one can associate $v_1$ to the unique 0-cusp of $F_\Co$, so that $$(v_1)^{\perp T_\Co}/v_1 \cong (9,9,1) \cong \gens{2} \oplus E_8(2).$$
+The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them (\longref{theorem-unpolarized-cusps}, the split maximal hypothesis being \longref{prop:tco-split-maximal}), so $v_1$ represents the unique full-group $0$-cusp of $F_\Co$ and
+$$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \gens{2} \oplus E_8(2).$$
+Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
 
 Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $T_\En$, we have
 
@@ -109,7 +111,8 @@ The 1-cusp $(7,7,1)_0$ in $F_\Co$ maps to the 1-cusp $(8, 6, 0)_0$ in $F_\En$.
 
 ::: {.proof}
 
-The results follows from verifying that the unique orbit $J$ of a primitive isotropic plane in $T_\Co$ satisfies $J^{\perp T_\Co}/J \cong (7,7,1)$, and identifying the isomorphism type of its image $\tilde J^{\perp T_\En}/\tilde J$ in $T_\En$.
+The group $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$ (\longref{theorem-unpolarized-cusps} and \longref{prop:tco-split-maximal}).
+It remains to identify the isomorphism type of the image $\tilde J^{\perp T_\En}/\tilde J$ in $T_\En$.
 One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $T_\En$ respectively.
 By [@AE22 Prop. 5.5, Lem. 5.9], it suffices to show
 

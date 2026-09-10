@@ -296,6 +296,46 @@ primitive vectors of fixed norm and divisibility, and coincides with the stable
 orthogonal group up to finite index; see [@GHS08].
 :::
 
+::: {.Theorem #thm:eichler-criterion}
+### The Eichler criterion
+
+Let $L$ be a lattice containing an orthogonal direct summand isometric to
+$U^{\oplus 2}$, and let $v_1, v_2\in L$ be primitive vectors.
+Then there exists $g\in\widetilde{\SO}^+(L)$ with $g v_1 = v_2$ if and only if
+
+1.  $v_1^2 = v_2^2$, and
+
+2.  $v_1^{*}\equiv v_2^{*}$ in $A_L$, where
+    $v_i^{*}\da v_i/\operatorname{div}_L(v_i)\in L\dual$.
+
+Thus for such $L$ the $\widetilde{\SO}^+(L)$-orbit of a primitive vector is
+determined by the pair $\bigl(v^2,\ v^{*}\bmod L\bigr)$, and the classification of
+orbits becomes a finite computation in the discriminant group.
+:::
+
+::: {.proof}
+
+The criterion is due to Eichler [@Eic74]; see [@GHS08] for the formulation used
+here, where the transvections of \longref{def:eichler-group} supplied by the two
+hyperbolic planes are what move a primitive vector into normal form.
+:::
+
+::: {.Remark}
+### The hypothesis is genuine
+
+The hypothesis $U^{\oplus 2}\subseteq L$ cannot be dropped.
+A lattice all of whose pairings are even contains no copy of $U$ at all, since
+$U$ requires two vectors pairing to $1$; this is the case for every twist $M(2)$,
+and in particular for $S_\En = E_{10}(2)$, for $S_\Co = \gens{-2}\oplus E_{10}(2)$
+and for $T_\Co = \gens{2}\oplus E_{10}(2)$.
+Among the lattices of the Lattice Summary only $T_\En$ and $T_\dP$ contain a
+unimodular hyperbolic summand, and each contains exactly one.
+Orbit statements for the Coble lattices therefore have to come from elsewhere;
+the alternatives used below are the transitivity results for split maximal
+lattices and the algorithms of [@Daw22] for a subgroup prescribed by its image in
+$\Orth(q_L)$.
+:::
+
 ::: {.Theorem #thm:eichler-U-U}
 ### Eichler transvections on $U\oplus U$
 

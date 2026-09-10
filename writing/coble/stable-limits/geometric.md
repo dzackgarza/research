@@ -31,3 +31,49 @@ The polarization enters through the degree-$2$ numerically polarized Enriques pi
 A degree-$2$ numerically polarized Enriques surface is a pair $(Z, [\mathcal L_Z])$ with $[\mathcal L_Z] \in \Num(Z)$ an ample class of degree $2$; the system $\abs{\mathcal L_Z^{\otimes 2}}$ is basepoint-free and realizes $Z$ as a double cover $\rho\colon Z \to W$ of a quartic del Pezzo surface $W$ with singularities of type $4A_1$ or $A_3 + 2A_1$, branched along a divisor $B \subset W$ [@CDL25]. This is the finite analogue of the map $\phi_{ij}$ above, which in the Coble case fails to be finite.
 The ramification divisor $R_Z = \rho^{-1}(B)$ is ample, $\QQ$-Cartier, and lies in $\abs{\mathcal L_Z^{\otimes 2}}$, so $(Z, \varepsilon R_Z)$ is log canonical for small $\varepsilon > 0$ [@CDL25]. It is the Coble descent of this ramification divisor that supplies the stable-pair boundary of the KSBA stable limits.
 :::
+
+## The components of a stable degeneration
+
+::: {.Definition #def:ade-surfaces}
+### ADE surfaces
+
+The **ADE surfaces** are the irreducible components of the KSBA stable
+degenerations of K3 surfaces with a nonsymplectic involution.
+A Type III component is labelled by a Dynkin diagram $A_n$, $D_n$ or $E_n$, and a
+Type II component by an affine diagram $\widetilde{A}_n$, $\widetilde{D}_n$ or
+$\widetilde{E}_n$, matching the elliptic and parabolic subdiagrams of the Coxeter
+diagram (\longref{def:elliptic-subdiagram}).
+Each ADE surface $(X, D + \varepsilon R)$ comes with a double cover
+$\pi\colon X\to Y$ onto a del Pezzo ADE surface
+$\bigl(Y,\ C + \tfrac{1+\varepsilon}{2}B\bigr)$ of index $2$
+[@AEGS25 §6].
+:::
+
+::: {.Definition #def:bcde-surfaces}
+### BCDE surfaces and the folding labels
+
+The **BCDE surfaces** are the quotients of ADE surfaces by involutions, and they
+correspond to the foldings of the ADE Dynkin diagrams.
+Type B components are the quotients by an Enriques involution
+$\iota_\En$, acting in suitable coordinates as
+$(x, y, z)\mapsto (x^{-1}, -y, -z)$; type C components are the quotients by the
+symplectic involution $\iota_{\mathrm{Nik}}$.
+The label
+$$
+\alpha : 2 = {}_2\beta \subset \gamma
+$$
+records three types at once: $\alpha$ is the ADE type of the double cover
+$X\to Y$, $\gamma$ the ADE type of the symplectic quotient $Z'\to W$, and
+${}_2\beta$ the ABCDE type of the index-two nonsymplectic quotient $Z\to W$
+[@AEGS25 §6].
+:::
+
+::: {.Remark}
+
+The stable limits of Coble surfaces are quotients of nodal K3 surfaces by an
+involution with fixed points, so their components are read off this list in the
+same way as for Enriques degenerations, with the Coble case distinguished by the
+folding involution attached to its $0$-cusp.
+Which foldings occur, and hence which BCDE types appear in a Coble stable limit,
+is part of the *dlt*-model question recorded among the open problems.
+:::

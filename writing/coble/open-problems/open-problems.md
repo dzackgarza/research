@@ -45,7 +45,8 @@ $$
 $$
 and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as a functorial consequence of the lattice isometry (cf.
 \cref{def:folded-root}, \cref{lem:root-folding-tdp}, and the invariant/coinvariant construction of \cref{def:invariant_coinvariant_lattices}). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
-The open technical content is to *write down the $22\times 22$ matrix of $\theta$ on the standard basis of $U^{3}\oplus E_8^{2}$* and to verify the isometry classes of its $\pm 1$ eigenspaces by the $(r,a,\delta)$ comparison of \cref{prop:involution_eigenspaces}, confirming $\lkt^{+}\cong T_\Co$, $\lkt^{-}\cong S_\Co$ ($2$-elementary check), and that the induced embedding $T_\Co \injects T_\En$ is primitive.
+Existence and the eigenlattice description are settled: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding, so it extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices (\cref{prop:theta-co-exists}).
+The open technical content is to *write down the $22\times 22$ matrix of $\theta_\Co$ on the standard basis of $U^{3}\oplus E_8^{2}$*, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.
 :::
 
 ## Isotropic orbits, cusps, and reflection groups
@@ -55,12 +56,13 @@ The open technical content is to *write down the $22\times 22$ matrix of $\theta
 
 How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth(T_\Co)$, $\Orth^{*}(T_\Co)$, and the arithmetic group $\Gamma_\Co$?
 Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\operatorname{div}(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\operatorname{div}(v),\, \bar v \in A_T,\, v^2 = 0)$.
-The number of such orbits in $A_{T_\Co}$ is not yet computed.
-The open work is to:
+The finite half of this is settled: $A_{T_\Co}$ has $528$ isotropic classes, on which $\Orth(q_{T_\Co})$ acts with two orbits, of sizes $1$ and $527$ (\cref{prop:coble-q-fibers}, \cref{thm:coble-isotropic-class-orbits}), and every primitive isotropic vector of $T_\Co$ lands in the nonzero one (\cref{prop:coble-primitive-isotropic-classes}).
+Under the degree-$2$ Enriques group the same $528$ classes split as $[1, 2, 120, 135, 270]$ (\cref{thm:coble-heegner-finite-orbits}).
+The open work is the passage from these finite decompositions back to the lattice:
 
-- enumerate the isotropic vectors of $A_{T_\Co}$ and compute their orbits under $\Orth(q_{T_\Co})$;
+- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and verify that exactly one $\Orth^{*}(T)$-orbit exists in divisibility $2$, the Eichler criterion being unavailable because $T_\Co$ contains no copy of $U$ (\cref{thm:eichler-criterion} and the remark following it);
 
-- lift these orbits to $T_\Co$ using Sterk's lifting theorems and verify that exactly one $\Orth^{*}(T)$-orbit exists in divisibility $2$;
+- decide whether the four nonzero orbits of $\Gamma_{\En, 2}$-induced classes lift to four orbits of primitive isotropic vectors or to more, an integral parabolic stabilizer being permitted to have proper image in the finite one;
 
 - verify that the $\Orth(T)$-orbits coincide with the $\Gamma_\Co$-orbits, so that the Baily--Borel $0$-cusp is unique.
 
@@ -74,24 +76,59 @@ The arithmetic group governing the Coble locus is the stabilizer of the polariza
 $$
 \Gamma_\Co = \operatorname{Stab}_{\Orth(T_\En)}(h_\Co) \cap Z_{\Orth(T_\En)}(\theta),
 $$
-where in the Enriques sector $h_\En = e + f$ is the degree-$2$ polarization ($h^2 = 2$) and $h_\Co$ is induced by the hyperplane class $E_0$.
+where in the Enriques sector $h_\En = e + f\in U(2)$ is the degree-$2$ polarization vector, of square $4$ on the K3 side (\longref{prop:gamma-en-two-gluing}), and $h_\Co\in K_S^{\perp}\subseteq\Pic(S)$ is the degree-$2$ Coble polarization of \cref{def:coble-polarization-classes}, of square $2$ downstairs with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$.
+The class $h_\Co$ is not the plane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of $h_\En$.
+A source-backed candidate for $\Gamma_\Co$, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ of \cref{def:gamma-co-en}; identifying the two is part of the open work below.
 An explicit representation of $\Gamma_\Co$ by *matrix generators* is presently a stub.
 The open work is to:
 
-- compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $h_\Co$ ($h_\Co^2 = 2$);
+- compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$).
+  The involution $\theta$ itself exists as a lattice isometry without any coordinate description (\cref{prop:theta-co-exists}), and the image of the resulting group in $\Orth(q_{T_\Co})$ is already known (\cref{thm:coble-heegner-finite-orbits}); what a generating set adds is the lattice group above that finite image;
 
-- verify the *uniqueness of the $1$-cusp* by enumerating all $\Orth(T_\Co)$-orbits of primitive isotropic planes $J \subset T_\Co$, computing the negative-definite quotient $J^{\perp}/J$ for each, and confirming isometry with $A_1^{\oplus 7}$.
+- verify the *uniqueness of the $1$-cusp for $\Gamma_\Co$*.
+  For the full orthogonal group this is settled: $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ (\longref{theorem-unpolarized-cusps}, with the split maximal hypothesis supplied by \longref{prop:tco-split-maximal}).
+  The residue is the subgroup statement, which does not follow from the full-group one.
 
 This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in \cref{lem:1_cusp_correspondence}.
 :::
 
-::: {.Conjecture}
-### Open problem: uniqueness of the maximal parabolic subdiagram
+::: {.Remark}
+### The maximal parabolic subdiagrams of $S_\Co$, and what they count
 
-The reflection group $W(S_\Co)$ acts on the period domain, and the $0$-cusp $(9,9,1)_1$ is described by a maximal parabolic subdiagram of the Coxeter diagram $G_{S_\Co}$.
-The claim underlying "one $0$-cusp" is that $\widetilde{B}_7(2)$ is the *only* maximal parabolic subdiagram of the highly connected $10$-node diagram $G_{S_\Co}$.
-Establishing this requires a subdiagram search on the $10\times 10$ Gram matrix of roots to identify all maximal parabolic configurations and confirm that $\widetilde{B}_7(2)$ is unique.
-(The underlying finite root system is of type $B_7$, matching the double-edge $B$/$C$-type diagram at the $0$-cusp rather than the simply-laced $A_7$.)
+The Coxeter diagram $\Gamma_r$ of $S_\Co = (11,11,1)_1$ has $12$ roots, trivial
+automorphism group, and **two** maximal parabolic subdiagrams,
+$\widetilde{E}_8(2)\widetilde{A}_1$ and $\widetilde{B}_9(2)$, both of even
+ordinary type (\cref{thm:coble-picard-parabolics}).
+By \cref{thm:parabolic-isotropic-correspondence} these correspond to the two
+$\Orth^+(S_\Co)$-orbits of primitive isotropic vectors in $S_\Co$, and by
+\cref{thm:isotropic-trichotomy} both associated quotients $v^{\perp}/v$ have
+invariants $(9,9,1)$, so the two orbits are not separated by the invariants of the
+boundary lattice.
+
+These orbits are elliptic fibrations of the K3 cover
+(\cref{thm:elliptic-fibrations-isotropic}); they are not the $0$-cusps of the
+Coble period space, which are the orbits of primitive isotropic vectors in the
+transcendental lattice $T_\Co$ of signature $(2,9)$.
+Of the latter there is exactly one under the full orthogonal group
+(\longref{theorem-unpolarized-cusps}), by the split maximal argument of
+\longref{prop:tco-split-maximal}.
+The two lattices share the invariant triple $(11,11,1)$ but not the signature, and
+a count taken in one is not a count in the other.
+
+What remains open is the geometric identification: which of the two elliptic
+fibration classes of the K3 cover is distinguished by the Coble structure, and how
+the pair of maximal parabolic subdiagrams matches the boundary data of the
+degree-$2$ polarized moduli space.
+:::
+
+::: {.Question}
+### Open problem: the reflection group of each Sterk fundamental domain
+
+Sterk's published fundamental domains for the five cusps of $F_{\En,2}$ have $12, 10, 12, 11, 14$ walls [@Ste91], while Vinberg's algorithm applied to the corresponding hyperbolic quotients $\eta_j^{\perp}/\eta_j$ returns ten walls in each case.
+The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams.
+The open work is to identify, for each $j$, the reflection subgroup $W_j\leq W(\eta_j^{\perp}/\eta_j)$ for which the published diagram bounds a fundamental domain, to exhibit that domain as a union of chambers of the full group, and to determine the index $[W(\eta_j^{\perp}/\eta_j) : W_j]$ as a covolume ratio.
+Cusp $2$, to which the Coble $0$-cusp is claimed to correspond, is the case in which the two computations agree.
+The data and the derivation are in [[sterk-root-counts-and-computed-chambers]].
 :::
 
 ::: {.Remark}
@@ -104,6 +141,80 @@ The cusp correspondence between the Coble cusps $(9,9,1)$, $(7,7,1)$ and their E
 - use $\operatorname{div}_{T_\Co}(e)$ to pin down the unique $\Orth(T_\Co)$-orbit and verify that the quotient matches the Enriques signatures $(10,8,0)_1$ for $0$-cusps and $(8,6,0)_0$ for $1$-cusps.
 
 The residue that is genuinely open is the *orbit-uniqueness input*: the proof of \cref{lem:divisibilityTcoOne} presently *assumes* a unique $\Gamma_\Co$-orbit of isotropic vectors in $T_\Co$, which is exactly the enumeration left open above.
+:::
+
+### General questions on hyperbolic reflection groups
+
+The entries above ask for specific subdiagram and orbit computations in the Coble and Enriques lattices.
+The following are the corresponding questions asked of hyperbolic Coxeter diagrams in general; each is open, and each bears on how far the specific computations can be pushed.
+
+::: {.Question #qst:maximal-parabolic-complexity}
+### Open problem: the cost of enumerating maximal parabolic subdiagrams
+
+Given a Coxeter--Vinberg diagram $\Sigma$ on $n$ vertices, what is the cost of determining its maximal parabolic subdiagrams, equivalently the ideal vertices of the chamber (\longref{cor:ideal-vertices-are-parabolic})?
+
+Enumerating the $2^{n}$ subsets is an upper bound, and \longref{cor:subdiagram-inheritance} prunes it: a subset that fails to be elliptic can be discarded together with every subset containing it, so the search runs over the order ideal of elliptic subsets.
+No lower bound is known, and no polynomial-time algorithm is known even for the decision problem asked of the whole diagram:
+
+- decide whether a given hyperbolic Coxeter diagram has finite covolume (\longref{thm:coxeter-polytope-volume}) without enumerating its maximal parabolic subdiagrams;
+
+- exhibit a family of diagrams on which the elliptic order ideal is of exponential size, or show that it is polynomial for the diagrams of finite-covolume groups.
+
+The concrete instance in this monograph is the uniqueness of $\widetilde{B}_7(2)$ as a maximal parabolic subdiagram of the ten-node diagram $G_{S_\Co}$, stated above; the general question is whether such uniqueness claims admit an argument short of the subdiagram search.
+:::
+
+::: {.Conjecture #cnj:galois-invariance-parabolics}
+### Open problem: Galois invariance of the maximal parabolic count
+
+Let $\Sigma$ be a Coxeter--Vinberg diagram whose Gram form is defined over a totally real number field $K$, and let $\sigma\in\operatorname{Gal}(K/\QQ)$.
+The conjecture is that $\Sigma$ and its conjugate $\sigma(\Sigma)$ have the same number of maximal parabolic subdiagrams.
+
+By \longref{rmk:galois-conjugate-gram-form} the signature of $\sigma(G)$ is not determined by that of $G$, so the conjugate diagram need not be hyperbolic at all and the statement requires the hypothesis that it is.
+The open work is to determine the action of $\operatorname{Gal}(K/\QQ)$ on the set of maximal parabolic subdiagrams --- whether it permutes them, and if so with what orbits.
+The diagrams of this monograph have Gram field $\QQ$ or $\QQ(\sqrt2)$, the latter arising from the $m_{ij} = 4$ bonds of the $B$-type diagrams, so the smallest instance is the nontrivial automorphism of $\QQ(\sqrt2)$ acting on the folded Sterk diagrams.
+:::
+
+::: {.Question #qst:parabolic-count-growth}
+### Open problem: growth of the maximal parabolic count with the rank
+
+How does the number of maximal parabolic subdiagrams of a hyperbolic Coxeter diagram grow with its rank $n$?
+
+Is there a bound, exponential or otherwise, valid for all diagrams of rank $n$, and does the finite-covolume condition of \longref{thm:coxeter-polytope-volume} improve it?
+The recorded data for this monograph is the count of vertices at infinity in the CoxIter runs on the five folded Sterk diagrams and the three $0$-cusp lattices, all of rank $9$ or $10$; a family of increasing rank is needed before a growth statement can be made.
+:::
+
+::: {.Question #qst:arithmeticity}
+### Open problem: which finite-covolume reflection groups are arithmetic
+
+Which finite-covolume hyperbolic Coxeter groups are arithmetic?
+
+The datum available from the diagram is the Gram form over its base field $K$ (\longref{def:coxeter-base-field}) together with its Galois conjugates (\longref{rmk:galois-conjugate-gram-form}).
+The open work is to decide arithmeticity from that datum, and to determine how the property interacts with the maximal parabolic structure of the diagram.
+The reflection groups appearing in this monograph act on lattices defined over $\ZZ$, so they are arithmetic; the question governs whether the techniques used here extend to the non-crystallographic diagrams of \longref{ex:noncrystallographic-base-rings}.
+:::
+
+::: {.Question #qst:exact-covolume}
+### Open problem: exact covolumes of hyperbolic Coxeter polytopes
+
+Compute $\vol(P)$ exactly for a hyperbolic Coxeter polytope $P$ given by its diagram (\longref{def:covolume}).
+
+In even dimension the volume is a rational multiple of the Euler characteristic and is computable from the diagram; in odd dimension the Euler characteristic vanishes and supplies no information, which is the case for every nine-dimensional chamber recorded in the Computations section.
+The open work is:
+
+- closed-form volume formulas for specific families, through Schläfli's volume differential or through polylogarithmic values;
+
+- the relation between $\vol(P)$ and the maximal parabolic structure of $\Sigma$;
+
+- a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup, which is the quantity that would settle the discrepancy between Sterk's published fundamental domains and the computed Vinberg chambers.
+:::
+
+::: {.Question #qst:regularized-theta}
+### Open problem: theta series of indefinite lattices
+
+For a positive-definite lattice the theta series $\theta_L(q) = \sum_{v\in L} q^{v^2/2}$ converges and is a modular form.
+For an indefinite lattice each level set $L[k]$ can be infinite (see the Lattice Theory section), the series does not converge, and a regularization is required before any modular statement can be made.
+
+The open work is to define a regularized theta series for the hyperbolic lattices of this monograph, determine its transformation behaviour, and relate it to the lattice invariants --- discriminant form, genus, and the reflection group --- that the rest of this document computes.
 :::
 
 ## dlt and KSBA stable models
@@ -126,7 +237,9 @@ The open geometric content is:
 
 Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\cH}$ (surgery sizes) through the construction $B(\lambda)$ of [@AEGS25]. The open work is to:
 
-- determine the map from the transcendental polarization $h_\Co$ to the discretization $\ell$ on the dual complex;
+- determine the map from the Coble polarization to the discretization $\ell$ on the dual complex.
+  The surgery sizes are the pairings $\ell_i = h\cdot\alpha_i$ against the roots $\alpha_i$ of the relevant Coxeter diagram, so the first step is to record which polarization class is meant and in which lattice the pairing is taken: the downstairs class $h_\Co\in K_S^{\perp}$ or its K3 pullback $\tilde h_\Co\in S_\Co$ (\cref{def:coble-polarization-classes}), the roots living in the lattice of the chosen cusp.
+  An orthogonal direct-sum presentation on its own does not make $\ell = 0$;
 
 - verify the slc stability of the resulting stable pair $(Z, \varepsilon C)$ for specific surgery vectors $\ell$.
 
@@ -156,11 +269,13 @@ The problems above share a small set of concrete starting data, recorded here fo
 
 - **Isotropic vectors.** In $S_\Co$, primitive isotropic lines are represented by $v = e_0 \pm e_i$ (with $e_0^2 = 2$, $e_i^2 = -2$).
 
-- **Polarization basis.** The degree-$2$ polarization $h \in T_\En$ is $h = e + f$ in a standard $U$-basis, which must be identified in a basis compatible with $\theta$.
+- **Polarization basis.** The degree-$2$ polarization is $h = e + f\in U(2) = S_\dP\subseteq S_\En$, with $e\cdot f = 2$ and $h^2 = 4$ (\longref{prop:gamma-en-two-gluing}); it lies in the invariant lattice, not in $T_\En$, and must be identified in a basis compatible with $\theta$.
+
+- **Heegner line.** The complement realizing $T_\Co$ inside $T_\En$ is $\delta^{\perp}$ for $\delta = u - w$ in the unimodular $U$ summand, and this line is unique up to $\Gamma_{\En, 2}$ (\cref{lem:coble-heegner-vector}, \cref{thm:coble-heegner-line-unique}).
 
 - **Discriminant forms.** $q_{S_\Co} \colon (\mathbb{F}_2)^{11} \to \QQ/2\ZZ$ and $q_{T_\Co} \colon (\mathbb{F}_2)^{11} \to \QQ/2\ZZ$, with isometry of complements forcing $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
 
 - **Sterk orbit lift.** For the $2$-elementary $T_\Co$, an orbit is determined by the tuple $(\operatorname{div}(v),\, \bar v \in A_{T_\Co},\, v^2 = 0)$, reducing the search to $\mathbb{F}_2$-vector-space orbits under $\Orth(q_{T_\Co})$.
 
-- **$\Gamma_\Co$ generators.** Computed as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $h_\Co$.
+- **$\Gamma_\Co$ generators.** Computed as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co = f^{*}h_\Co$, of square $4$.
 :::

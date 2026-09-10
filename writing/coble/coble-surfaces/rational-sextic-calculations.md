@@ -73,3 +73,93 @@ $$
 noting that $K_S^2 = -1$.
 This forces $C$ to be a smooth rational curve with $C^2 = 4K_S^2 = -4$.
 :::
+
+## The configuration constraint on the ten nodes
+
+::: {.Proposition #prop:sextic-node-conditions}
+### Ten nodes impose more conditions than the linear system has
+
+The space of plane sextics is
+$$
+\dim_\CC H^0\bigl(\PP^2, \OO_{\PP^2}(6)\bigr) = \binom{8}{2} = 28
+,
+$$
+so sextic curves form a $\PP^{27}$.
+Requiring a singular point at a prescribed $p\in\PP^2$ imposes three linear
+conditions on this space.
+Ten prescribed points therefore impose $30$ conditions on a $27$-dimensional
+projective space, and for a general choice of $p_1,\dots,p_{10}$ no sextic is
+singular at all ten.
+A sextic with ten nodes exists only when the ten points are special enough that
+the thirty conditions become dependent.
+:::
+
+::: {.proof}
+
+The monomials $x^iy^jz^k$ with $i+j+k=6$ number $\binom{6+2}{2} = 28$, giving the
+stated dimension.
+For a fixed $p$, singularity of $\ts{F = 0}$ at $p$ is the vanishing of the three
+partial derivatives $\partial_x F(p)$, $\partial_y F(p)$, $\partial_z F(p)$; each
+is a linear condition on the coefficients of $F$, and $F(p) = 0$ follows from
+Euler's identity $\sum_i x_i\,\partial_i F = 6F$.
+Imposing this at ten points gives $30$ linear conditions on a space of projective
+dimension $27$, so the general such linear system has empty intersection.
+:::
+
+::: {.Remark}
+
+The dependence forced by \longref{prop:sextic-node-conditions} is what the term
+*Coble point set* names: a configuration $\Sigma$ of ten points special enough to
+support a nodal sextic.
+The count is consistent with the moduli count in the GIT discussion of the Moduli
+Spaces section, where the configuration space $(\PP^2)^{10}/\PGL_3$ has dimension
+$12$ and the Coble locus is cut out by three conditions, leaving the
+$9$-dimensional moduli of \longref{cor:m-polarized-k3-dimension}.
+:::
+
+## A criterion for a node of a plane curve
+
+::: {.Proposition #prop:hessian-rank-at-singular-point}
+### Hessian rank at a singular point
+
+Let $k$ be a field, let $F\in k[x_0, x_1, x_2]$ be homogeneous of degree $n$, and
+let $p\in k^3$ be nonzero with
+$$
+\partial_j F(p) = 0
+\qquad\text{for } j = 0, 1, 2
+.
+$$
+Then the Hessian matrix $H(F)(p) = \bigl(\partial_i\partial_j F(p)\bigr)_{ij}$
+satisfies $H(F)(p)\cdot p = 0$, and hence
+$$
+\operatorname{rank} H(F)(p) \leq 2
+.
+$$
+:::
+
+::: {.proof}
+
+Euler's identity for a homogeneous polynomial of degree $n$ reads
+$\sum_i x_i\,\partial_i F = n F$.
+Differentiating it by $\partial_j$ gives the polynomial identity
+$$
+\sum_i x_i\,\partial_j\partial_i F \;+\; \partial_j F \;=\; n\,\partial_j F
+,
+$$
+that is $\sum_i x_i\,\partial_i\partial_j F = (n-1)\,\partial_j F$.
+Evaluating at $p$, where every first partial vanishes, gives $H(F)(p)\cdot p = 0$.
+Since $p\neq 0$ the kernel of $H(F)(p)$ is nonzero, so by rank-nullity in
+dimension $3$ the rank is at most $2$.
+:::
+
+::: {.Remark}
+
+\longref{prop:hessian-rank-at-singular-point} is the vanishing half of the node test
+for the sextic $C$: at a singular point the Hessian is automatically degenerate,
+so the discriminating condition for an $A_1$ singularity as opposed to a worse one
+is that the rank is exactly $2$, the quadratic term of the local equation being
+then a nondegenerate binary quadratic form in the two directions transverse to
+$p$.
+The statement holds over any field and for any degree, so it applies unchanged to
+the equations $w^2 = F(x, y, z)$ of the K3 covers.
+:::

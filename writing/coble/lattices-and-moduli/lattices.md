@@ -5,7 +5,7 @@ We summarize the lattices that will be relevant to our discussion:
 $$
 \begin{aligned}
     \lkt &= (22, 0, 0)_3 = U^3 \oplus E_8^2 = \latII_{3, 19} &
-    E_{10} &= (10, 0, 0)_1 = U \oplus E_8 = \latI_{1, 9} \\
+    E_{10} &= (10, 0, 0)_1 = U \oplus E_8 = \latII_{1, 9} \\
     S_\En &= (10, 10, 0)_1 = E_{10}(2) &
     T_\En &= (12, 10, 0)_2 = U \oplus E_{10}(2) \\
     S_\Co &= (11, 11, 1)_1 = \gens{-2} \oplus E_{10}(2) &
