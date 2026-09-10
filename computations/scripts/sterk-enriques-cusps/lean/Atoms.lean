@@ -31,6 +31,7 @@ public import Mathlib.Data.Finsupp.Defs
 public import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
+public import Mathlib.Algebra.BigOperators.Ring.Finset
 
 @[expose] public section
 
@@ -551,5 +552,69 @@ def MilgramStatement {A : Type u} [AddCommGroup A] [Fintype A]
       Complex.exp (2 * Real.pi * Complex.I * (σ : ℂ) / 8)
 
 end DiscriminantGaussSum
+
+section MilgramSteps
+
+variable {A : Type u} [AddCommGroup A] [Fintype A]
+
+/-- One term of the Gauss sum: the circle character at a value of the form. -/
+noncomputable def gaussTerm (v : AddCircle (2 : ℚ)) : ℂ :=
+  (AddCircle.toCircle_addChar (ratCircleToRealCircle v) : ℂ)
+
+theorem discriminantGaussSum_eq_sum_gaussTerm (q : A → AddCircle (2 : ℚ)) :
+    discriminantGaussSum q = ∑ a : A, gaussTerm (q a) := rfl
+
+/-- **F1.16, step one.**  Each term of the Gauss sum has modulus one: it is a
+point of the circle group. -/
+theorem norm_gaussTerm (v : AddCircle (2 : ℚ)) : ‖gaussTerm v‖ = 1 := by
+  unfold gaussTerm
+  exact Circle.norm_coe _
+
+/-- **F1.16, step two.**  The Gauss sum times its conjugate expands over pairs.
+This is the identity Milgram's proof starts from: the next step substitutes
+`b = a + c` and uses the polar identity of F1.15 to separate the `c`-sum, which
+`AddChar.sum_eq_ite` then evaluates. -/
+theorem discriminantGaussSum_mul_conj (q : A → AddCircle (2 : ℚ)) :
+    discriminantGaussSum q * (starRingEnd ℂ) (discriminantGaussSum q)
+      = ∑ a : A, ∑ b : A, gaussTerm (q a) * (starRingEnd ℂ) (gaussTerm (q b)) := by
+  rw [discriminantGaussSum_eq_sum_gaussTerm, map_sum, Finset.sum_mul_sum]
+
+/-- **F1.16, step three.**  The character is additive, so a difference of values
+of the form contributes a single term.  This is what turns the double sum of
+step two into a sum over the difference. -/
+theorem gaussTerm_add (v w : AddCircle (2 : ℚ)) :
+    gaussTerm (v + w) = gaussTerm v * gaussTerm w := by
+  unfold gaussTerm
+  rw [map_add]
+  rw [AddChar.map_add_eq_mul]
+  push_cast
+  ring
+
+theorem gaussTerm_zero : gaussTerm (0 : AddCircle (2 : ℚ)) = 1 := by
+  unfold gaussTerm
+  rw [map_zero, AddChar.map_zero_eq_one]
+  simp
+
+/-- **F1.16, step four.**  Conjugation inverts a term, since the terms lie on the
+circle: `conj (e v) = e (-v)`.  With step three this rewrites step two's double
+sum as a sum over the difference `q a - q b`, which is where the polar identity
+of F1.15 enters. -/
+theorem conj_gaussTerm (v : AddCircle (2 : ℚ)) :
+    (starRingEnd ℂ) (gaussTerm v) = gaussTerm (-v) := by
+  have hns : Complex.normSq (gaussTerm v) = 1 := by
+    have hn : ‖gaussTerm v‖ = 1 := norm_gaussTerm v
+    rw [Complex.normSq_eq_norm_sq, hn]
+    norm_num
+  have h1 : gaussTerm v * (starRingEnd ℂ) (gaussTerm v) = 1 := by
+    rw [Complex.mul_conj, hns]; norm_num
+  have h2 : gaussTerm v * gaussTerm (-v) = 1 := by
+    rw [← gaussTerm_add]; simp [gaussTerm_zero]
+  have hne : gaussTerm v ≠ 0 := by
+    intro h
+    rw [h] at h1
+    simp at h1
+  exact mul_left_cancel₀ hne (h1.trans h2.symm)
+
+end MilgramSteps
 
 end Sterk
