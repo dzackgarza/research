@@ -93,11 +93,11 @@ The pair $(Z, \eps R_Z)$ is log-canonical for sufficiently small $\eps > 0$, and
 To put us in the setting of the main theorem, fix a basis of $\lkt$ in the decomposition above, so in coordinates we have $(u_1, u_2, u_3, \alpha_1, \alpha_2) \in U^3 \oplus E_8^2$, where each $u_i$ is in a copy of $U$ and each $\alpha_i$ is in a copy of $E_8$.
 Consider three morphisms on $\lkt$, acting on vectors $(u_1, u_2, u_3, \alpha_1, \alpha_2) \in U^3 \oplus E_8^2$ in this basis in the following way:
 
-\begin{align*}\label{three-lattice-involutions}
+\begin{align}\label{three-lattice-involutions}
     \Idp(u_1, u_2, u_3, \alpha_1, \alpha_2)        &= (-u_1, u_3, u_2, -\alpha_1, -\alpha_2) \\
-    \Ien(u_1, u_2, u_3, \alpha_1, \alpha_2)  &= (-u_1, u_3, u_2, \alpha_2, \alpha_1) \\
-    \Inik(u_1, u_2, u_3, \alpha_1, \alpha_2) &= (u_1, u_2, u_3, -\alpha_2, -\alpha_1)
-\end{align*}
+    \Ien(u_1, u_2, u_3, \alpha_1, \alpha_2)  &= (-u_1, u_3, u_2, \alpha_2, \alpha_1) \nonumber \\
+    \Inik(u_1, u_2, u_3, \alpha_1, \alpha_2) &= (u_1, u_2, u_3, -\alpha_2, -\alpha_1) \nonumber
+\end{align}
 
 These arise as the lattice involutions on $\lkt$ induced by three types of geometric involutions, $\idp, \ien$, and $\inik$ respectively, on a K3 surface $X$.
 A direct computation shows that the group $\gens{\Idp, \Ien, \Inik}$ is isomorphic to $\ZZ_2^2$, and thus these involutions mutually commute.

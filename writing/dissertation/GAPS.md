@@ -11,6 +11,20 @@ None of them blocks the build, which compiles with no LaTeX errors.
 
 - Three `\todo` markers remain, in the lattice classification section, the Scattone section, and the five-cusps section.
 
+- Five `\Cref` targets name results that exist under no label anywhere in the
+  text, so they print as bold question marks. Each needs either the statement
+  it points at, or a pointer to the statement that replaced it:
+
+  | target | referenced from |
+  | --- | --- |
+  | `def:hyperbolic-plane` | intro, the K3 and Enriques lattices |
+  | `ex:root-lattices` | intro, the K3 and Enriques lattices |
+  | `thm:complete-classification-0-cusps-fen2` | part III, main theorem statement |
+  | `lem:fent-semitoroidal-semifans-at-cusps` | part III, main theorem statement |
+  | `thm:five-semifans` | chapter 7, five cusps |
+
+  The first two were referenced by the LaTeX too, so they predate the move.
+
 ## Statements to check
 
 - `sections/2-part-moduli/4-chapter-cpt/200-toroidal.md`, the boundary lattice paragraph: it gives $\signature(I)$ and $\rank(I)$ for the isotropic sublattice $I$, but the values quoted are those of the boundary lattice $\bar T_I$.
