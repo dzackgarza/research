@@ -1135,8 +1135,13 @@ something, and if that something does not exist either then the graph has not
 bottomed out.  This section names, for every greenfield stratum, the Mathlib
 declarations its nodes are constructed from, checked against the checkout.
 
+Strata A, B, C and D have no row and need none: they are the paper's own
+results, and what they are written over is the other strata, which the
+dependency tables already say node by node.  Every stratum whose nodes are
+foundations has a row.
+
 The result is one sentence: **Mathlib supplies the primitives and none of the
-statements.**  There is no stratum here whose nodes cannot be *written* today;
+statements** — with one exception, stratum E, recorded at the end.  There is no stratum here whose nodes cannot be *written* today;
 what is missing is the mathematics, not the vocabulary to say it in.  Where a
 primitive is genuinely missing it is called out, and each of those is small.
 
@@ -1149,7 +1154,7 @@ primitive is genuinely missing it is called out, and each of those is small.
 | HS3 | `ContMDiffRiemannianMetric`, `ContinuousRiemannianMetric` (`Geometry/Manifold/VectorBundle/Riemannian.lean`) | $J$-compatibility, and the three-way equivalence of $h$, $g$, $\omega$ |
 | HS4 | `Diffeomorph`, `Isometry`, `Subgroup` | $\mathrm{Aut}(M,J,h)$ and the symmetry condition at a point |
 | HS5 | `pathELength`, `riemannianEDist` (`Geometry/Manifold/Riemannian/PathELength.lean`) | a geodesic — Mathlib has the length functional and the distance, not the curves that realize it |
-| HS8 | `LieGroup` (`Geometry/Manifold/Algebra/LieGroup.lean`), `LieAlgebra.IsSemisimple` (`Algebra/Lie/Semisimple/Defs.lean`), `killingForm` (`Algebra/Lie/Killing.lean`), `LieAlgebra.IsCartanSubalgebra` | the Cartan involution, and the adjoint-group statement |
+| HS8 | `LieGroup` (`Geometry/Manifold/Algebra/LieGroup.lean`), **`GroupLieAlgebra`** (`Geometry/Manifold/GroupLieAlgebra.lean`, the tangent space at the identity, with the bracket built from invariant vector fields and the `LieRing`/`LieAlgebra` instances on it), `LieAlgebra.IsSemisimple` (`Algebra/Lie/Semisimple/Defs.lean`), `killingForm` (`Algebra/Lie/Killing.lean`), `LieAlgebra.IsCartanSubalgebra` | the Cartan involution, and the adjoint-group statement.  The passage from the group to its Lie algebra is in place — which is what separates HS8 from AG2, where the same passage for a group *scheme* is the missing definition |
 | HS9 | `Algebra/Lie/BaseChange.lean` for $\mathfrak{g}_\mathbb{C}$, `NormedSpace.exp` (`Analysis/Normed/Algebra/Exponential.lean`), AG4 | $G_\mathbb{C}$ as a group, and the two embeddings |
 | HS16 | `ProperCone` (`Analysis/Convex/Cone/Basic.lean`), `dual` (`.../Cone/Dual.lean`), `JordanRing` (`Algebra/Jordan/Basic.lean`) | the trace form, hence Euclidean Jordan algebras and symmetric cones |
 | Ky1, Ky2 | `Complex.UnitDisc` (`Analysis/Complex/UnitDisc/Basic.lean`), `EMetricSpace`, `Metric.infDist`, `iInf` | the Kobayashi pseudo-distance as an infimum over chains of disks — **writable today** |
@@ -1190,6 +1195,34 @@ primitive is genuinely missing it is called out, and each of those is small.
 | V1–V10 | `Matrix`, `Matrix.rank`, `CoxeterMatrix`, `QuadraticForm/Signature.lean` | the $C^{\pm}$/$C^0$ conditions, Theorem 1, the affine classification |
 | V11–V13 | Lo7, `Nat.rec`, `sInf` | the algorithm as a recursion, and Proposition 4 |
 
+### Floor for BB and Bo — the paper-level statements
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| BB1–BB4 | AG4 and AG5's parabolics, `AlgebraicGeometry.IsProper`, `Subgroup.normalizer` (`Algebra/Group/Subgroup/Defs.lean`) | parabolic $k$-subgroups, the unipotent radical — `rg -i 'unipotentRadical|IsUnipotent'` over the pinned tree returns **nothing**, so this one is a definition to write over `Subgroup` and the group-scheme tree — and rational boundary components |
+| BB5–BB8 | `instTopologicalSpaceQuotient` and `TopologicalSpace.coinduced` (`Topology/Constructions.lean`, `Topology/Order.lean`), `Setoid`, `Projectivization` | the Satake topology as a topology on the disjoint union of $X$ with its rational boundary components, and Baily–Borel's Theorem 10.11 — that the quotient carries a projective structure |
+| Bo1–Bo5 | Ky1's pseudo-distance, `Complex.UnitDisc` (`Analysis/Complex/UnitDisc/Basic.lean`), `MDifferentiable` (`Geometry/Manifold/MFDeriv/Defs.lean`) over `𝓘(ℂ, E)` | holomorphic maps out of a product of punctured discs, and the extension theorem over a hyperbolically imbedded target |
+
+### Floor for the greenfield F rows, and for Ni and Nk
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| F2.3–F2.9 | **`Module.preReflection` and `Module.reflection`** (`LinearAlgebra/Reflection.lean`): $y \mapsto y - f(y)\,x$ for $x \in M$ and $f \in M^\vee$ over any `CommRing`, involutive once $f x = 2$, with `preReflection_preReflection` for conjugates.  Plus `LinearMap.BilinForm.orthogonal`, `MonoidHom.ker`, `Subgroup.index` | the factorization of an element of $O(L_\mathbb{Q})$ into reflections for an **indefinite** rational form, the Brieskorn spinor norm over it, and the index-2 relations.  The reflection itself needs no work: the file sits in the root-system neighbourhood but its definition is general, and $f$ is the correlation applied to $x$ |
+| F3.3, F3.4, Nk3–Nk5, F1.11, F1.12, Ni1–Ni10 | F1.10's discriminant form, `ZLattice`, `AddGroup.rank`, `Nat.card`, `Submodule.torsion` and `RingTheory/Flat/TorsionFree.lean` for a free quotient, `GroupTheory/FiniteAbelian/Basic.lean` for the structure of $A_q$, `Matrix.det`, and the signature file for $\mathrm{sign}\,q$ | Nikulin's existence, uniqueness, one-class-plus-surjectivity and primitive-embedding theorems.  Every hypothesis in them — $\ell(A_q)$, the sign condition mod 8, torsion-freeness of $M/S$ — is expressible in the vocabulary above; the theorems are the work |
+| F4.2, F5.1–F5.8 | `Matrix/Cartan.lean`, `ADEInequality.Admissible` (`NumberTheory/ADEInequality.lean`), injective `LinearMap` with `Submodule.map` for an embedding, `Submodule.torsion` for primitivity | Niemeier's classification, and Scattone §6.3's embeddings of $D_7$ into its members with their complements.  An embedding of root lattices is a linear map with a form condition, which is writable; that these eight admit one and that $E_8+D_{16}$ admits two are the theorems |
+
+### Floor for Pa
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| Pa6, Pa9, Pa10, Pa11 | `PadicInt`, `Padics`, `IsDiscreteValuationRing` (`RingTheory/DiscreteValuationRing/Basic.lean`), `Irreducible` for a uniformizer, `Ideal.span`, `QuadraticForm`, `legendreSym` (`NumberTheory/LegendreSymbol/`) for the square classes | the canonical decomposition and the genus corollaries.  Note what is **not** in the pinned tree: no Hilbert symbol — `rg -i hilbertSymbol` returns nothing — and no quadratic form over $\mathbb{Z}_p$ anywhere in `Mathlib/LinearAlgebra`.  Both exist outside it, the Hilbert symbol in `gq2-lean` and `HassePrinciple`, the $p$-adic lattice in `lean-categories`' `Jordan*` files, which is why Pa's verdicts point at corpora rather than at Mathlib |
+
+### Floor for E and Cl — the surfaces
+
+| Node | Written over | What must be authored |
+| --- | --- | --- |
+| E3–E13, Cl1–Cl6 | HS1 and HS3's complex-analytic floor, `Projectivization`, `AlgebraicGeometry.Scheme`, `Complex` | divisors, line bundles and the canonical bundle first — `rg -i divisor` over `Mathlib/AlgebraicGeometry` returns only elliptic-curve and function-field files, with **no Weil or Cartier divisor** — then Enriques and $K3$ surfaces, elliptic pencils with multiple fibres, Horikawa's isometry, global Torelli and the period map.  This is the deepest floor in the graph: everything above the first cell is a formalization programme |
+
 ### What this changes
 
 Nothing in the terminality verdicts: no greenfield node acquired a supplier, and
@@ -1199,25 +1232,36 @@ marked writable today — Newlander–Nirenberg's equation, the Kobayashi
 pseudo-distance, the Poincaré series, the hyperbolic metric, Lo1 and Lo3 — and
 the rest need definitions over primitives that exist, not primitives that do not.
 
-No primitive is missing anywhere in this table.  The one earlier claimed
-missing, `Commensurable` for Rt5, is `Subgroup.Commensurable` in
-`GroupTheory/Commensurable.lean`; the search that reported it absent was
-`rg "def Commensurable"`, and the declaration reads `def Subgroup.Commensurable`.
+`Commensurable` was once listed here as the single missing primitive and is
+not missing: it is `Subgroup.Commensurable` in `GroupTheory/Commensurable.lean`,
+and the search that reported it absent was `rg "def Commensurable"` against a
+declaration that reads `def Subgroup.Commensurable`.
 
-Two absences in the table are absences of a **definition**, not of a primitive,
-and the distinction is the whole point of the section.  $\mathrm{Lie}(G)$ for a
+What the enlarged table does show missing splits in two, and the split is the
+whole point of the section.
+
+**Definitions to author over primitives that exist.**  $\mathrm{Lie}(G)$ for a
 group scheme is nowhere in `Mathlib/AlgebraicGeometry`, and the bracket it would
 carry is `Derivation.instLieAlgebra`.  Galois descent of objects is nowhere, and
-the $S$-scheme and Galois vocabulary it would be stated in is in place.  Each is
-a definition to author over primitives that exist, which is the same position as
-every other row here.
+the $S$-scheme and Galois vocabulary it would be stated in is in place.  The
+unipotent radical is nowhere, over a `Subgroup` tree that is.  Each of the three
+is a short definition, and none of them is infrastructure.
 
-The honest shape of the cost is therefore **theorems, not infrastructure**.  The
-analysis in Newlander–Nirenberg, the structure theory in Borel §§20–21, the
-convergence estimates in Baily–Borel §§5–8 and Vinberg's Theorem 1 are the work;
-the tangent bundles, Lie brackets, Haar measures, Hopf algebras, simplicial
-complexes, proper morphisms, root systems, cones and hyperbolic functions they
-are written over are all in the pinned checkout.
+**One genuine gap in the infrastructure**, and it is under E and Cl: Mathlib has
+no Weil or Cartier divisor, so it has no line bundles on a surface and no
+canonical bundle.  Every statement of stratum E is about those, so E is not in
+the position of the other strata: it needs the vocabulary built first.  That is
+recorded in the E1 row and in the floor for E and Cl.
+
+So the cost has two shapes, not one.  For **AG, HS, Ky, Rt, AF, Lo, V, BB, Bo, F,
+Ni and Nk** it is **theorems, not infrastructure**: the analysis in
+Newlander–Nirenberg, the structure theory in Borel §§20–21, the convergence
+estimates in Baily–Borel §§5–8, Vinberg's Theorem 1 and Nikulin's classification
+are the work, while the tangent bundles, Lie brackets, Haar measures, Hopf
+algebras, simplicial complexes, proper morphisms, reflections, root systems,
+cones, quotient topologies and hyperbolic functions they are written over are all
+in the pinned checkout.  For **E and Cl** it is infrastructure first and theorems
+after.
 
 ## Open audit points
 

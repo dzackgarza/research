@@ -23,6 +23,14 @@ finished edge or a finished node and there is nothing behind it.
    classification was written were never swept.  The two superseded nodes in
    SUPERSEDED are exempt; a node replaced by other nodes has no supplier.
 
+5. A greenfield stratum has no row in the construction floor.  Greenfield says
+   no supplier exists, which is a claim about who has already done the work and
+   not about whether the node can be written; without a floor row the stratum
+   reads as blocked on missing foundations, which for every stratum here is
+   false.  Strata A-D in PAPER_STRATA are exempt: their nodes are the paper's
+   own results, and what they rest on is the other strata, which the dependency
+   tables already give node by node.
+
 A cell counts as naming a substrate when it says where the thing lives or that
 it is absent -- Mathlib, a registry corpus, or an explicit absence.
 
@@ -79,6 +87,47 @@ VERDICT_HEADER = "nodes"
 # supplier to name, so it carries no verdict; its dependency cell points at the
 # nodes that replaced it, and check 1 keeps that edge honest.
 SUPERSEDED: frozenset[str] = frozenset({"C1", "Nk2"})
+
+# The construction-floor tables are headed "Node" in the first column and "What
+# must be authored" in the last, which is what tells them from the dependency and
+# route tables.
+FLOOR_HEADER = "what must be authored"
+
+# Strata that are the paper's own results rather than foundations, and so need no
+# construction floor of their own.
+PAPER_STRATA: frozenset[str] = frozenset({"A", "B", "C", "D"})
+
+
+def stratum(node: str) -> str:
+    """The stratum prefix of a node id: the letters before the first digit."""
+    return node[: len(node) - len(node.lstrip("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"))] or "".join(
+        ch for ch in node if ch.isalpha() and not ch.isdigit()
+    )
+
+
+def first_column(text: str, header: str, defined: set[str]) -> set[str]:
+    """Every node named in the first column of each table with this last header."""
+    out: set[str] = set()
+    in_table = False
+    for line in text.splitlines():
+        if not line.startswith("| "):
+            in_table = False
+            continue
+        cells = [c.strip() for c in line.split("|")[1:-1]]
+        if len(cells) < 2:
+            continue
+        if not in_table:
+            in_table = cells[-1].lower() == header
+            continue
+        if set(cells[0]) <= set("- :"):
+            continue
+        out |= expand_ranges(cells[0], defined)
+    return out
+
+
+def greenfield(text: str, defined: set[str]) -> set[str]:
+    """Every node named in the first column of the greenfield table."""
+    return first_column(text, "nearest thing that exists", defined)
 
 
 def verdicted(text: str, defined: set[str]) -> set[str]:
@@ -188,9 +237,19 @@ def main(path: Path) -> int:
         for node in unverdicted:
             print(f"  {node}")
 
-    if not dangling and not undecomposed and not rootless and not unverdicted:
+    floored = {s for n in first_column(text, FLOOR_HEADER, defined) for s in [stratum(n)]}
+    unfloored = sorted(
+        {stratum(n) for n in greenfield(text, defined)} - floored - PAPER_STRATA
+    )
+    if unfloored:
+        print(f"\n{len(unfloored)} greenfield stratum/strata with no construction-floor row:")
+        for s in unfloored:
+            print(f"  {s}")
+
+    if not dangling and not undecomposed and not rootless and not unverdicted and not unfloored:
         print("\nevery node has a dependency naming a defined node or a substrate,")
-        print("and a terminality verdict saying who supplies it")
+        print("a terminality verdict saying who supplies it, and for every greenfield")
+        print("stratum a construction floor naming what its nodes are written over")
         return 0
     return 1
 
