@@ -392,6 +392,27 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
         matrix = multiplication_matrix
 
+        def norm(self):
+            r"""Return the field norm ``N_{K/QQ}(self)``.
+
+            The norm is the determinant of the owned ``QQ``-linear
+            multiplication endomorphism ``m_self : K -> K``.  This keeps the
+            archived definition on the same mathematical map already exposed
+            by :meth:`multiplication_morphism` instead of asking the private
+            number-field backend for a second value.
+            """
+
+            return self.multiplication_morphism().determinant()
+
+        def trace(self):
+            r"""Return the field trace ``Tr_{K/QQ}(self)``.
+
+            The trace is the trace of the owned ``QQ``-linear multiplication
+            endomorphism ``m_self : K -> K``.
+            """
+
+            return self.multiplication_morphism().trace()
+
         def characteristic_polynomial(self):
             r"""Return the characteristic polynomial of multiplication by ``self`` over ``QQ``.
 
