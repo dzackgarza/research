@@ -1628,6 +1628,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-k3-even-unimodular-uniqueness-20260910-1945` | archive reconciliation / K3 even unimodular lattice regrouping and uniqueness | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/lattices/test_k3_even_unimodular_uniqueness_archive.py` (write) | `HEAD` | 2026-09-10T19:45:00Z |
+
 
 
 
