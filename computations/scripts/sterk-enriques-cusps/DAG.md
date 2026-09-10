@@ -23,9 +23,13 @@ paper's own steps; **BB**, **Bo**, **Cl**, **E**, **Nk** are what its citations
 open; **AF**, **AG**, **HS**, **Ky**, **Lo**, **Ni**, **Pa**, **Rt**, **V** and
 the **F** rows are the foundations under those.
 
-`check_dag.py` reads this file and fails if a dependency cell names a node no row
-defines, names neither a node nor a substrate, or is empty.  All three are ways
-for the graph to look complete while hiding work; run it after editing a table.
+`check_dag.py` reads this file and fails on five things: a dependency cell that
+names a node no row defines, one that names neither a node nor a substrate, an
+empty one, a node in no terminality-verdict table, and a greenfield stratum with
+no construction-floor row.  Each is a way for the graph to look complete while
+hiding work — the last two because a node with no verdict is a node nobody has
+asked who supplies, and a stratum with no floor reads as blocked on foundations
+that exist.  Run it after editing a table.
 
 ## Implementation routes through lean-categories
 
@@ -1056,13 +1060,13 @@ is a node in this graph, and none of them has a formalization anywhere the regis
 | F3.3, F3.4, Nk3–Nk5, F1.11, F1.12, Ni1–Ni10 | Nikulin's existence, uniqueness and one-class-plus-surjectivity theorems; his primitive-embedding classification and the analogue of Witt's theorem; the Minkowski–Siegel weight | nothing |
 | F4.2 | Niemeier's classification of the 24 lattices | nothing |
 | V1–V13 | $C^\pm$/$C^0$ matrices, $C^-$-polyhedra, Lemmas 2–5, Theorem 1 with (L1)–(L5), Coxeter's diagram classification, Vinberg's algorithm and Proposition 4, the infinite-vertex recovery and its primitivity lemma | Mathlib has finite Cartan matrices and Coxeter groups; **no affine classification, no fundamental polyhedron**.  V10's *spherical* half — that a connected simply-laced diagram is a path or an ADE star — is `adeClassification` in `lean-categories`, proved for the root base of an even negative definite lattice; the affine diagrams $\tilde A$, $\tilde B$, $\tilde C$, $\tilde D$, $\tilde E$ that every one of C3–C7 is stated in are not classified anywhere |
-| Lo2, Lo4–Lo9 | Lobachevskii space as the rays in the negative cone, its planes and halfspaces, polyhedral angles, boundedness and finite volume, the hyperboloid metric, and reflection cells | Mathlib has quadratic forms with `sigPos`/`sigNeg` and Sylvester's law of inertia, and convex cones with duals, so Lo1 and Lo3 are within reach; there is **no hyperbolic space in any model** |
+| Lo2, Lo4–Lo9 | Lobachevskii space as the rays in the negative cone, its planes and halfspaces, polyhedral angles, boundedness and finite volume, the hyperboloid metric, and reflection cells | Mathlib has quadratic forms with `sigPos`/`sigNeg` and Sylvester's law of inertia, and convex cones with duals, so Lo1 and Lo3 are within reach.  There is **no hyperbolic $n$-space, and nothing in the hyperboloid model these nodes use** — but dimension two is not missing: `Analysis/Complex/UpperHalfPlane/Metric.lean` puts the hyperbolic metric on $\mathbb{H}$ as a `MetricSpace`, with `dist_eq` in `arsinh`, the half-distance formulas in `sinh`, `cosh` and `tanh`, and hyperbolic circles, beside `MoebiusAction`, `FixedPoints`, `ProperAction` and `Measure`.  That is the rank-one instance of what stratum Lo needs in rank $n$, in a different model |
 | BB1–BB8 | parabolic $\mathbb{Q}$-subgroups, hermitian symmetric domains, Harish-Chandra realizations, rational boundary components, the Satake topology, Baily–Borel's Theorem 10.11 | nothing — the registry has no algebraic-groups-with-parabolics corpus and no symmetric-space corpus |
 | AF1–AF13 | automorphy factors, $\mathcal{Z}(\mathfrak{g})$-finiteness, Poincaré and Poincaré–Eisenstein series, integral automorphic forms and the $\Phi$ operator, the analyticity criterion, and the projective embedding | Mathlib has universal enveloping algebras and modular forms for $\mathrm{SL}_2(\mathbb{Z})$; `CBirkbeck/ModularForms_Lean4` and `loefflerd/ModularFormDimensions` are the nearest registry entries, both rank one |
 | AG1–AG19 | $k$-structures and Galois descent, tori and $k$-split tori, Borel and parabolic subgroups, unipotent radicals and Levi decompositions, Tits systems, the relative root system and $k$-rank, the spherical Tits building and its dimension | Mathlib has affine and smooth group schemes, root systems and Coxeter groups, and nothing above them.  The nearest thing anywhere is **ATLAS's `BNPair`/`BNPairAxioms`** — the abstract Tits system and the building of its parabolics, read-checked in the third sweep — which supplies the group-theoretic layer and none of the algebraic-group input to it; `chrisflav/bruhat-tits` builds the Bruhat–Tits tree of $\mathrm{SL}_2$ over a local field |
 | HS1–HS16 | almost-complex structures and Newlander–Nirenberg, Hermitian and Kähler structures, geodesic symmetries, semisimple Lie groups with their Cartan involutions, the Harish-Chandra and Borel embeddings, boundary components and the 5-term decomposition of a normalizer, symmetric cones and Euclidean Jordan algebras | Mathlib has `IsManifold` over `𝓘(ℂ, E)`, the `LieGroup` class, and a two-file Riemannian tree (`Riemannian/Basic`, `Riemannian/PathELength`) with no geodesics; `Geometry/Manifold/Complex.lean` says of itself "There is a whole theory to develop here".  ATLAS has a smoothness-free `AlmostComplexStructure` and an `Integrable` predicate parameterized by the Nijenhuis tensor it never builds — see the third sweep |
 | Bo1–Bo5, Ky1–Ky8 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance and hyperbolic imbedding | nothing; `kebekus/ProjectVD` covers Nevanlinna theory, adjacent but not these statements |
-| Rt1–Rt10 | Iwasawa decompositions, restricted roots, Siegel domains, fundamental sets for arithmetic groups, and the finite-volume and compactness criteria | Mathlib has Haar measure on locally compact groups and no Lie structure theory to apply it to; ATLAS's `IwasawaData` is a $KAN$ factorization whose $N$ carries no condition, over a `sorry` existence theorem asserted for every topological group |
+| Rt1–Rt10 | Iwasawa decompositions, restricted roots, Siegel domains, fundamental sets for arithmetic groups, and the finite-volume and compactness criteria | Mathlib has Haar measure on locally compact groups and no Lie structure theory to apply it to; the rank-one case of the reduction theory *is* there, in `UpperHalfPlane`'s `ProperAction` and `Measure` files under `CongruenceSubgroup`.  `rg -i 'SiegelSet'` finds nothing, and every "Siegel" hit in the pinned tree is Siegel's lemma or Siegel's theorem; ATLAS's `IwasawaData` is a $KAN$ factorization whose $N$ carries no condition, over a `sorry` existence theorem asserted for every topological group |
 | E1, E3–E13 | compact complex surfaces, Enriques and $K3$ surfaces, elliptic pencils, Horikawa's isometry, global Torelli, the period map | nothing; `nullstellensatz` gives local complex-analytic geometry only |
 | F1.6 | Milnor's classification of the even indefinite unimodular lattices as sums of $H$, $E_8$ and $-E_8$ | nothing.  `E_8` arrives as an object through Sphere-Packing-Lean and F1.5; the classification over it is nowhere |
 | F5.1 | Niemeier's 24 lattices — the same theorem as F4.2 | nothing; `rg -i --no-ignore niemeier` over Mathlib and all 111 cloned repositories returns no file |
@@ -1177,7 +1181,7 @@ primitive is genuinely missing it is called out, and each of those is small.
 | --- | --- | --- |
 | Rt1 | `NormedSpace.exp`, `Algebra/Lie/Weights/` for restricted roots | the Iwasawa decomposition |
 | Rt2, Rt3 | `IsCompact`, `Set` algebra, Rt1 | the Siegel domain |
-| Rt4, Rt9 | `MeasureTheory.Measure.haar`, `IsHaarMeasure` (`MeasureTheory/Measure/Haar/Basic.lean`) | the finite-volume theorems |
+| Rt4, Rt9 | `MeasureTheory.Measure.haar`, `IsHaarMeasure` (`MeasureTheory/Measure/Haar/Basic.lean`); `Analysis/Complex/UpperHalfPlane/{ProperAction,Measure}.lean` for the rank-one case already carried out | the finite-volume theorems |
 | Rt5 | `Subgroup.Commensurable`, `Subgroup.commensurator` (`GroupTheory/Commensurable.lean`), `Subgroup.index`, `Subgroup.FG` | **nothing** — commensurability of subgroups is Mathlib's own definition, with the commensurator and its `refl`/`symm`/`trans` API |
 | AF2 | `UniversalEnvelopingAlgebra` (`Algebra/Lie/UniversalEnveloping.lean`), `Subalgebra.center` | $\mathcal{Z}(\mathfrak{g})$-finiteness |
 | AF4, AF5 | `Summable`, `tsum`, `TendstoUniformlyOn`, `MeasureTheory` convolution | the Poincaré series and its convergence — **the statement is writable today** |
@@ -1191,7 +1195,7 @@ primitive is genuinely missing it is called out, and each of those is small.
 | Lo1, Lo3 | `QuadraticForm`, `sigPos`, `sigNeg` (`LinearAlgebra/QuadraticForm/Signature.lean`) | **nothing** — these are definitions over what exists |
 | Lo2, Lo4, Lo5 | `Convex`, `Submodule`, `Set.iInter`, `IsOpen` | $\Lambda^n$ as rays in the cone, polyhedral angles, finite volume as a closure condition |
 | Lo6, Lo9 | `Matrix`, `Matrix.rank`, `Real.cos`, `Subgroup.closure` | the Gram matrix of a polyhedron, reflection cells |
-| Lo7, Lo8 | `Real.cosh`, `Real.sinh`, **`Real.arcosh` (`Analysis/SpecialFunctions/Arcosh.lean`)**, `Matrix.det` | the hyperbolic distance is $\mathrm{arcosh}\langle P,Q\rangle$ — **writable today** |
+| Lo7, Lo8 | `Real.cosh`, `Real.sinh`, **`Real.arcosh` (`Analysis/SpecialFunctions/Arcosh.lean`)**, `Matrix.det`; and `Analysis/Complex/UpperHalfPlane/Metric.lean` as the worked model, where the same shape is carried out in `arsinh` for $\mathbb{H}$ | the hyperbolic distance is $\mathrm{arcosh}\langle P,Q\rangle$ — **writable today**, and the upper-half-plane file shows how far the API around such a definition is expected to go |
 | V1–V10 | `Matrix`, `Matrix.rank`, `CoxeterMatrix`, `QuadraticForm/Signature.lean` | the $C^{\pm}$/$C^0$ conditions, Theorem 1, the affine classification |
 | V11–V13 | Lo7, `Nat.rec`, `sInf` | the algorithm as a recursion, and Proposition 4 |
 
