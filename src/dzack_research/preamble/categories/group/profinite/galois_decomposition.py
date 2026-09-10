@@ -260,6 +260,10 @@ class AbsoluteDecompositionGroup(SageObject):
     def supergroup(self):
         return self._supergroup
 
+    def ambient(self):
+        r"""Return the ambient absolute Galois group."""
+        return self.supergroup()
+
     def prime(self):
         return self._prime
 
@@ -294,6 +298,10 @@ class AbsoluteInertiaGroup(SageObject):
     def supergroup(self):
         return self._supergroup
 
+    def ambient(self):
+        r"""Return the ambient absolute Galois group."""
+        return self.supergroup()
+
     def prime(self):
         return self._prime
 
@@ -320,6 +328,10 @@ class DecompositionGroupConjugacyClass(SageObject):
 
     def supergroup(self):
         return self._supergroup
+
+    def ambient(self):
+        r"""Return the ambient absolute Galois group."""
+        return self.supergroup()
 
     def prime(self):
         return self._prime
@@ -351,6 +363,10 @@ class InertiaGroupConjugacyClass(SageObject):
 
     def supergroup(self):
         return self._supergroup
+
+    def ambient(self):
+        r"""Return the ambient absolute Galois group."""
+        return self.supergroup()
 
     def prime(self):
         return self._prime
@@ -384,6 +400,10 @@ class FrobeniusConjugacyClass(SageObject):
 
     def supergroup(self):
         return self._supergroup
+
+    def ambient(self):
+        r"""Return the ambient absolute Galois group."""
+        return self.supergroup()
 
     def prime(self):
         return self._prime
