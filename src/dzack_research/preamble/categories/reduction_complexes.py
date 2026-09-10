@@ -445,11 +445,84 @@ class MarkedReductionCell(SageObject):
                 return isometry
         return None
 
+    def stabilizer(self, group):
+        r"""Return the subgroup preserving both the cell and every labelled mark."""
+        if group.domain() is not self.lattice() or group.codomain() is not self.lattice():
+            raise ValueError("a marked-cell stabilizer acts on the ambient lattice")
+
+        def preserves_marked_cell(isometry):
+            return self.transported_by(isometry).is_equal_to(self)
+
+        return predicate_subgroup(
+            group,
+            preserves_marked_cell,
+            f"g preserves the marked reduction cell {self}",
+        )
+
+    def adjacency_to(self, other, group):
+        r"""Return the marked adjacency when one isometry transports all retained data."""
+        if not isinstance(other, MarkedReductionCell):
+            return None
+        underlying = self.cell().adjacency_to(other.cell(), group)
+        if underlying is None:
+            return None
+        transporter = self.transporter_witness_to(other, group)
+        if transporter is None:
+            return None
+        return MarkedReductionCellAdjacency(self, other, underlying, transporter)
+
     def _repr_(self):
         return (
             f"Marked {self.cell()} with {self.marked_vectors().cardinality()} "
             "labelled vectors"
         )
+
+
+class MarkedReductionCellAdjacency(SageObject):
+    r"""An oriented adjacency of marked cells with one common transporter."""
+
+    def __init__(self, source, target, cell_adjacency, transporter) -> None:
+        if not isinstance(source, MarkedReductionCell) or not isinstance(
+            target, MarkedReductionCell
+        ):
+            raise TypeError("a marked adjacency joins marked reduction cells")
+        if cell_adjacency.source() is not source.cell() or cell_adjacency.target() is not target.cell():
+            raise ValueError("the underlying adjacency joins the wrong reduction cells")
+        if not source.transported_by(transporter).is_equal_to(target):
+            raise ValueError("the retained transporter does not move the marked source to the target")
+        self._source = source
+        self._target = target
+        self._cell_adjacency = cell_adjacency
+        self._transporter = transporter
+
+    def source(self):
+        return self._source
+
+    def target(self):
+        return self._target
+
+    def lattice(self):
+        return self.source().lattice()
+
+    def underlying_adjacency(self):
+        return self._cell_adjacency
+
+    def common_face(self):
+        return self.underlying_adjacency().common_face()
+
+    def transporter(self):
+        return self._transporter
+
+    def reversed(self):
+        return MarkedReductionCellAdjacency(
+            self.target(),
+            self.source(),
+            self.underlying_adjacency().reversed(),
+            ~self.transporter(),
+        )
+
+    def _repr_(self):
+        return f"Marked reduction-cell adjacency {self.source()} -> {self.target()}"
 
 
 class RationalReductionComplexExploration(SageObject):
@@ -600,6 +673,7 @@ def lorentzian_reduction_complex(lattice, marked_vectors=None):
 
 __all__ = [
     "MarkedReductionCell",
+    "MarkedReductionCellAdjacency",
     "RationalReductionComplexExploration",
     "ReductionCellAdjacency",
     "RationalReductionCell",
