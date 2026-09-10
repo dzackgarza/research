@@ -1627,7 +1627,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-orthogonal-presentation-20260910-1020` | archive reconciliation / finite orthogonal-group presentation | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/lattices/test_orthogonal_group_presentation_archive.py` (write) | `f58297438facc278482bb847358073bd10caa516` | 2026-09-10T10:20:00Z |
 
 
 
