@@ -112,7 +112,7 @@ $$
 K_S^{\perp} \cong E_{10} = U\oplus E_8
 ,
 $$
-the Enriques lattice of \cref{def:enriques-lattice}.
+the Enriques lattice of \longref{def:enriques-lattice}.
 The Coble boundary curve has class
 $$
 C = 6H - 2\sum_{i=1}^{10} E_i = -2K_S
@@ -126,7 +126,7 @@ The expression for $K_S$ is the blowup formula, and
 $D\cdot K_S = -3a - \sum_i(-b_i)(-1)\cdot(-1)$ evaluates to $3a - \sum_i b_i$ up to
 sign, giving the stated condition.
 Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\gens{K_S}\cong\gens{-1}$ is
-unimodular, so by \cref{prop:unimodular-splits} it splits $\Pic(S)$ and its
+unimodular, so by \longref{prop:unimodular-splits} it splits $\Pic(S)$ and its
 complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
 That complement is even: for $D = aH - \sum_i b_iE_i$ with $\sum_i b_i = 3a$,
 $$
@@ -136,7 +136,7 @@ D^2 = a^2 - \sum_i b_i^2 \equiv a^2 - \sum_i b_i = a^2 - 3a \equiv a(a-1) \equiv
 $$
 using $b^2\equiv b\bmod 2$.
 An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by
-\cref{thm:indefinite-unimodular-classification}.
+\longref{thm:indefinite-unimodular-classification}.
 Finally $C = -2K_S = 6H - 2\sum_i E_i$ by the description of $K_S$.
 :::
 

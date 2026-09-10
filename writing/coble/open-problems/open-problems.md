@@ -45,7 +45,7 @@ $$
 $$
 and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as a functorial consequence of the lattice isometry (cf.
 \cref{def:folded-root}, \cref{lem:root-folding-tdp}, and the invariant/coinvariant construction of \cref{def:invariant_coinvariant_lattices}). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
-Existence and the eigenlattice description are settled: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding, so it extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices (\cref{prop:theta-co-exists}).
+Existence and the eigenlattice description are settled: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding, so it extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices (\longref{prop:theta-co-exists}).
 The open technical content is to *write down the $22\times 22$ matrix of $\theta_\Co$ on the standard basis of $U^{3}\oplus E_8^{2}$*, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.
 :::
 
@@ -56,11 +56,11 @@ The open technical content is to *write down the $22\times 22$ matrix of $\theta
 
 How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth(T_\Co)$, $\Orth^{*}(T_\Co)$, and the arithmetic group $\Gamma_\Co$?
 Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\operatorname{div}(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\operatorname{div}(v),\, \bar v \in A_T,\, v^2 = 0)$.
-The finite half of this is settled: $A_{T_\Co}$ has $528$ isotropic classes, on which $\Orth(q_{T_\Co})$ acts with two orbits, of sizes $1$ and $527$ (\cref{prop:coble-q-fibers}, \cref{thm:coble-isotropic-class-orbits}), and every primitive isotropic vector of $T_\Co$ lands in the nonzero one (\cref{prop:coble-primitive-isotropic-classes}).
-Under the degree-$2$ Enriques group the same $528$ classes split as $[1, 2, 120, 135, 270]$ (\cref{thm:coble-heegner-finite-orbits}).
+The finite half of this is settled: $A_{T_\Co}$ has $528$ isotropic classes, on which $\Orth(q_{T_\Co})$ acts with two orbits, of sizes $1$ and $527$ (\longref{prop:coble-q-fibers}, \longref{thm:coble-isotropic-class-orbits}), and every primitive isotropic vector of $T_\Co$ lands in the nonzero one (\longref{prop:coble-primitive-isotropic-classes}).
+Under the degree-$2$ Enriques group the same $528$ classes split as $[1, 2, 120, 135, 270]$ (\longref{thm:coble-heegner-finite-orbits}).
 The open work is the passage from these finite decompositions back to the lattice:
 
-- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and verify that exactly one $\Orth^{*}(T)$-orbit exists in divisibility $2$, the Eichler criterion being unavailable because $T_\Co$ contains no copy of $U$ (\cref{thm:eichler-criterion} and the remark following it);
+- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and verify that exactly one $\Orth^{*}(T)$-orbit exists in divisibility $2$, the Eichler criterion being unavailable because $T_\Co$ contains no copy of $U$ (\longref{thm:eichler-criterion} and the remark following it);
 
 - decide whether the four nonzero orbits of $\Gamma_{\En, 2}$-induced classes lift to four orbits of primitive isotropic vectors or to more, an integral parabolic stabilizer being permitted to have proper image in the finite one;
 
@@ -76,14 +76,14 @@ The arithmetic group governing the Coble locus is the stabilizer of the polariza
 $$
 \Gamma_\Co = \operatorname{Stab}_{\Orth(T_\En)}(h_\Co) \cap Z_{\Orth(T_\En)}(\theta),
 $$
-where in the Enriques sector $h_\En = e + f\in U(2)$ is the degree-$2$ polarization vector, of square $4$ on the K3 side (\longref{prop:gamma-en-two-gluing}), and $h_\Co\in K_S^{\perp}\subseteq\Pic(S)$ is the degree-$2$ Coble polarization of \cref{def:coble-polarization-classes}, of square $2$ downstairs with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$.
+where in the Enriques sector $h_\En = e + f\in U(2)$ is the degree-$2$ polarization vector, of square $4$ on the K3 side (\longref{prop:gamma-en-two-gluing}), and $h_\Co\in K_S^{\perp}\subseteq\Pic(S)$ is the degree-$2$ Coble polarization of \longref{def:coble-polarization-classes}, of square $2$ downstairs with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$.
 The class $h_\Co$ is not the plane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of $h_\En$.
-A source-backed candidate for $\Gamma_\Co$, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ of \cref{def:gamma-co-en}; identifying the two is part of the open work below.
+A source-backed candidate for $\Gamma_\Co$, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ of \longref{def:gamma-co-en}; identifying the two is part of the open work below.
 An explicit representation of $\Gamma_\Co$ by *matrix generators* is presently a stub.
 The open work is to:
 
 - compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$).
-  The involution $\theta$ itself exists as a lattice isometry without any coordinate description (\cref{prop:theta-co-exists}), and the image of the resulting group in $\Orth(q_{T_\Co})$ is already known (\cref{thm:coble-heegner-finite-orbits}); what a generating set adds is the lattice group above that finite image;
+  The involution $\theta$ itself exists as a lattice isometry without any coordinate description (\longref{prop:theta-co-exists}), and the image of the resulting group in $\Orth(q_{T_\Co})$ is already known (\longref{thm:coble-heegner-finite-orbits}); what a generating set adds is the lattice group above that finite image;
 
 - verify the *uniqueness of the $1$-cusp for $\Gamma_\Co$*.
   For the full orthogonal group this is settled: $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ (\longref{theorem-unpolarized-cusps}, with the split maximal hypothesis supplied by \longref{prop:tco-split-maximal}).
@@ -98,15 +98,15 @@ This refines, at the level of orbits and generators, the $1$-cusp correspondence
 The Coxeter diagram $\Gamma_r$ of $S_\Co = (11,11,1)_1$ has $12$ roots, trivial
 automorphism group, and **two** maximal parabolic subdiagrams,
 $\widetilde{E}_8(2)\widetilde{A}_1$ and $\widetilde{B}_9(2)$, both of even
-ordinary type (\cref{thm:coble-picard-parabolics}).
-By \cref{thm:parabolic-isotropic-correspondence} these correspond to the two
+ordinary type (\longref{thm:coble-picard-parabolics}).
+By \longref{thm:parabolic-isotropic-correspondence} these correspond to the two
 $\Orth^+(S_\Co)$-orbits of primitive isotropic vectors in $S_\Co$, and by
-\cref{thm:isotropic-trichotomy} both associated quotients $v^{\perp}/v$ have
+\longref{thm:isotropic-trichotomy} both associated quotients $v^{\perp}/v$ have
 invariants $(9,9,1)$, so the two orbits are not separated by the invariants of the
 boundary lattice.
 
 These orbits are elliptic fibrations of the K3 cover
-(\cref{thm:elliptic-fibrations-isotropic}); they are not the $0$-cusps of the
+(\longref{thm:elliptic-fibrations-isotropic}); they are not the $0$-cusps of the
 Coble period space, which are the orbits of primitive isotropic vectors in the
 transcendental lattice $T_\Co$ of signature $(2,9)$.
 Of the latter there is exactly one under the full orthogonal group
@@ -238,7 +238,7 @@ The open geometric content is:
 Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, parameterized by a monodromy invariant $\ell \in \check{\cH}$ (surgery sizes) through the construction $B(\lambda)$ of [@AEGS25]. The open work is to:
 
 - determine the map from the Coble polarization to the discretization $\ell$ on the dual complex.
-  The surgery sizes are the pairings $\ell_i = h\cdot\alpha_i$ against the roots $\alpha_i$ of the relevant Coxeter diagram, so the first step is to record which polarization class is meant and in which lattice the pairing is taken: the downstairs class $h_\Co\in K_S^{\perp}$ or its K3 pullback $\tilde h_\Co\in S_\Co$ (\cref{def:coble-polarization-classes}), the roots living in the lattice of the chosen cusp.
+  The surgery sizes are the pairings $\ell_i = h\cdot\alpha_i$ against the roots $\alpha_i$ of the relevant Coxeter diagram, so the first step is to record which polarization class is meant and in which lattice the pairing is taken: the downstairs class $h_\Co\in K_S^{\perp}$ or its K3 pullback $\tilde h_\Co\in S_\Co$ (\longref{def:coble-polarization-classes}), the roots living in the lattice of the chosen cusp.
   An orthogonal direct-sum presentation on its own does not make $\ell = 0$;
 
 - verify the slc stability of the resulting stable pair $(Z, \varepsilon C)$ for specific surgery vectors $\ell$.
@@ -271,7 +271,7 @@ The problems above share a small set of concrete starting data, recorded here fo
 
 - **Polarization basis.** The degree-$2$ polarization is $h = e + f\in U(2) = S_\dP\subseteq S_\En$, with $e\cdot f = 2$ and $h^2 = 4$ (\longref{prop:gamma-en-two-gluing}); it lies in the invariant lattice, not in $T_\En$, and must be identified in a basis compatible with $\theta$.
 
-- **Heegner line.** The complement realizing $T_\Co$ inside $T_\En$ is $\delta^{\perp}$ for $\delta = u - w$ in the unimodular $U$ summand, and this line is unique up to $\Gamma_{\En, 2}$ (\cref{lem:coble-heegner-vector}, \cref{thm:coble-heegner-line-unique}).
+- **Heegner line.** The complement realizing $T_\Co$ inside $T_\En$ is $\delta^{\perp}$ for $\delta = u - w$ in the unimodular $U$ summand, and this line is unique up to $\Gamma_{\En, 2}$ (\longref{lem:coble-heegner-vector}, \longref{thm:coble-heegner-line-unique}).
 
 - **Discriminant forms.** $q_{S_\Co} \colon (\mathbb{F}_2)^{11} \to \QQ/2\ZZ$ and $q_{T_\Co} \colon (\mathbb{F}_2)^{11} \to \QQ/2\ZZ$, with isometry of complements forcing $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
 

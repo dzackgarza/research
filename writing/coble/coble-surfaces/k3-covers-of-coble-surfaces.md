@@ -89,10 +89,10 @@ $$
 ::: {.Remark}
 
 Applied to a Coble surface $S$ with $n = 1$, where $B = C$ is the smooth rational
-curve of $\abs{-2K_S}$ recorded in \cref{lem:rational_sextic_ten_nodes} and the
+curve of $\abs{-2K_S}$ recorded in \longref{lem:rational_sextic_ten_nodes} and the
 surrounding discussion, \longref{prop:double-cover-is-k3} is the assertion cited from
-[@DK25 Prop. 9.1.1] in \cref{rmk:k3-cover-invariants}, and its intersection-number
-statement is the twist by $2$ used in \cref{prop:coble-invariant-lattice}.
+[@DK25 Prop. 9.1.1] in \longref{rmk:k3-cover-invariants}, and its intersection-number
+statement is the twist by $2$ used in \longref{prop:coble-invariant-lattice}.
 :::
 
 ::: {.Proposition #prop:coble-invariant-lattice}

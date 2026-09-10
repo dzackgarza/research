@@ -157,7 +157,7 @@ $\iota_2\colon S\injects M_2$ can be compared in two inequivalent ways.
 1.  They are **isomorphic as embeddings** if there is an isometry
     $\varphi\colon M_1\iso M_2$ with $\varphi\circ\iota_1 = \iota_2$, so that
     $\varphi$ restricts to the *identity* of $S$.
-    This is \cref{def:embedding-equivalence}.
+    This is \longref{def:embedding-equivalence}.
 
 2.  They define **isomorphic primitive sublattices** if there is an isometry
     $\varphi\colon M_1\iso M_2$ with $\varphi(\iota_1(S)) = \iota_2(S)$, so that
@@ -176,10 +176,10 @@ different answers to the question of how many primitive embeddings $S\injects L$
 there are.
 Nikulin's classification of primitive embeddings [@Nik80 Prop. 1.15.1] is stated
 for the first relation, in terms of the gluing data $(H_S, H_T, \gamma)$ of
-\cref{rmk:embedding-gluing-data}; passing to the second relation divides out by
+\longref{rmk:embedding-gluing-data}; passing to the second relation divides out by
 the action of the image of $\Orth(S)$ in $\Orth(q_S)$ on those data, which is the
 extra quotient appearing in the uniqueness statement of
-\cref{thm:nikulin-gluing}.
+\longref{thm:nikulin-gluing}.
 :::
 
 ## Overlattices and gluing
@@ -277,7 +277,10 @@ recovering, when $L$ is unimodular, the statement that
 $\abs{\operatorname{disc} T} = \abs{\operatorname{disc} S}$ and that $H_S = A_S$,
 $H_T = A_T$ so that $\gamma\colon A_S\xrightarrow{\sim} A_T$ is an isometry onto
 $A_T$ equipped with the negated form; see \cref{prop:embedding-finiteness}.
-The framework and these formulas are due to Nikulin [@Nik80 §1.4--1.5].
+The construction and these formulas are due to Nikulin [@Nik80 §1.4--1.5].
+The gluing subgroup $H$ is also what decides whether a pair of isometries of $S$
+and of $T$ assembles into an isometry of $L$; that question is settled in
+\longref{thm:automorphism-lifting-criterion}.
 :::
 
 ## Splitting of unimodular sublattices
@@ -415,7 +418,7 @@ An even lattice $L'$ is **maximal** if its discriminant group contains no nonzer
 isotropic subgroup, that is if $q_{L'}$ vanishes on no nonzero subgroup of
 $A_{L'}$.
 An inclusion $L\subseteq L'$ with $L'$ maximal and $L'$ an overlattice of $L$ in
-the sense of \cref{def:overlattice} is a **maximal overlattice** of $L$.
+the sense of \longref{def:overlattice} is a **maximal overlattice** of $L$.
 :::
 
 ::: {.Lemma #lem:maximal-overlattice-exists}
@@ -426,7 +429,7 @@ A unimodular lattice is maximal.
 
 ::: {.proof}
 
-By \cref{thm:nikulin-gluing} the even overlattices of $L$ correspond to the
+By \longref{thm:nikulin-gluing} the even overlattices of $L$ correspond to the
 isotropic subgroups of $A_L$, and the discriminant form of the overlattice
 attached to $H$ is carried by $H^{\perp}/H$.
 Starting from $H = 0$ and repeatedly enlarging $H$ by an isotropic element of

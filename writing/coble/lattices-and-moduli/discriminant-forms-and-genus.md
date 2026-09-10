@@ -480,7 +480,7 @@ the genus determines the isometry class.
 
 If $S\subseteq\Lambda$ is primitive in an even unimodular $\Lambda$ with
 complement $T = S^{\perp\Lambda}$, then $q_T\cong -q_S$ by
-\cref{rmk:embedding-gluing-data}, and applying \longref{thm:milgram} to both sides
+\longref{rmk:embedding-gluing-data}, and applying \longref{thm:milgram} to both sides
 gives the congruence
 $$
 \operatorname{sign}(S) + \operatorname{sign}(T)\equiv 0 \pmod 8
