@@ -411,6 +411,10 @@ class LiftCoset(SageObject):
     def supergroup(self):
         return self._restriction_map.domain()
 
+    def ambient(self):
+        r"""Return the ambient absolute Galois group containing this coset."""
+        return self.supergroup()
+
     def finite_automorphism(self):
         return self._element
 
