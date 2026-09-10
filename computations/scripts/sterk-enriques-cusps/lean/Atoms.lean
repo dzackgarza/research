@@ -37,6 +37,7 @@ public import Mathlib.Topology.Irreducible
 public import Mathlib.Analysis.Analytic.Constructions
 public import Mathlib.RingTheory.Localization.FractionRing
 public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
+public import Mathlib.RingTheory.KrullDimension.Basic
 
 @[expose] public section
 
@@ -883,5 +884,53 @@ def IsNormalAtPoint (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ)
     IsIntegral (germRing Z z) x → ∃ r : germRing Z z, algebraMap _ _ r = x
 
 end Normality
+
+section DimensionStratification
+
+variable {n : ℕ}
+
+/-- **AF10, the dimension of a germ.**  The dimension of an analytic subset at a
+point is the Krull dimension of its germ ring.
+
+`ringKrullDim` is `Order.krullDim` of the prime spectrum, and both are built in
+this checkout, so the dimension function AF10's stratification is indexed by
+needs nothing new. -/
+noncomputable def germDim (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ) : WithBot ℕ∞ :=
+  ringKrullDim (germRing Z z)
+
+/-- **AF10, the stratification.**  The `d`-th stratum: the points of `Z` whose
+germ has dimension at most `d`.  This is Baily–Borel's `V_(d)`. -/
+def dimStratum (Z : Set (Fin n → ℂ)) (d : ℕ) : Set (Fin n → ℂ) :=
+  {z ∈ Z | germDim Z z ≤ (d : WithBot ℕ∞)}
+
+/-- The points where the germ has dimension exactly `d`. -/
+def dimStratumExact (Z : Set (Fin n → ℂ)) (d : ℕ) : Set (Fin n → ℂ) :=
+  {z ∈ Z | germDim Z z = (d : WithBot ℕ∞)}
+
+theorem dimStratum_subset (Z : Set (Fin n → ℂ)) (d : ℕ) : dimStratum Z d ⊆ Z :=
+  fun _ hz => hz.1
+
+theorem dimStratum_mono (Z : Set (Fin n → ℂ)) {d e : ℕ} (h : d ≤ e) :
+    dimStratum Z d ⊆ dimStratum Z e := by
+  rintro z ⟨hzZ, hzd⟩
+  refine ⟨hzZ, hzd.trans ?_⟩
+  exact_mod_cast WithBot.coe_le_coe.mpr (by exact_mod_cast Nat.cast_le.mpr h)
+
+/-- **AF10, condition (i).**  Baily–Borel's first hypothesis on the
+stratification: every stratum is closed, and the top-dimensional part is dense of
+full dimension.
+
+This is a **hypothesis** of Theorem 9.2, not a conclusion, so what AF10 needed
+from this graph was the ability to *state* it — which needed the dimension
+function and the strata, and now has both. -/
+structure StratificationAdmissible (Z : Set (Fin n → ℂ)) (top : ℕ) : Prop where
+  /-- Each stratum is closed in the ambient space. -/
+  stratum_closed : ∀ d : ℕ, IsClosed (dimStratum Z d)
+  /-- The top-dimensional part is dense in the subset. -/
+  top_dense : closure (dimStratumExact Z top) ⊇ Z
+  /-- The top dimension is attained. -/
+  top_attained : (dimStratumExact Z top).Nonempty
+
+end DimensionStratification
 
 end Sterk
