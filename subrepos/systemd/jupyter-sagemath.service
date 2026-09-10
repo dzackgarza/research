@@ -6,7 +6,22 @@ After=default.target
 Type=simple
 WorkingDirectory=/home/dzack
 ExecStartPre=/home/dzack/.config/systemd/user/check-port-8888.py
-ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/sage --notebook=jupyterlab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ip=0.0.0.0 --port=8888 --no-browser
+# Start JupyterLab from Sage's own virtualenv, not through the source tree's
+# top-level ./sage script.  Two reasons, both properties of the meson-era Sage:
+#
+#   * ./sage is the classic wrapper.  It expects the SAGE_LOCAL layout that
+#     ./configure && make produced (local/var/lib/sage/venv-python3.x).  This
+#     checkout is a meson build installed into .venv and has no local/, so the
+#     wrapper runs src/bin/sage-notebook under a Python without Sage:
+#     "ModuleNotFoundError: No module named 'sage'".
+#   * sage.cli's -n/--notebook accepts no further options and calls
+#     jupyterlab.labapp.main([]), so --ip, --port and the IdentityProvider
+#     settings below could not be passed through it in any case.
+#
+# jupyter_client rewrites a kernelspec's bare "python" argv[0] to the launching
+# server's sys.executable, so running the server from .venv is also what makes
+# the sagemath kernelspec resolve Sage's interpreter.
+ExecStart=/bin/direnv exec /home/dzack /home/dzack/gitclones/sage-dev-allopts/.venv/bin/jupyter lab --IdentityProvider.password_required=False --IdentityProvider.hashed_password='' --IdentityProvider.token='' --ip=0.0.0.0 --port=8888 --no-browser
 Restart=on-failure
 RestartSec=5
 Environment=HOME=/home/dzack
