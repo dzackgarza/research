@@ -1647,7 +1647,6 @@ behavior.
 
 
 
-| `ARCHIVE-free-to-exact-hom-20260910-0118` | archive reconciliation / free algebra maps into exact-carrier algebras | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/algebras.py; tests/algebras/test_center_corestriction_archive.py` (write) | `6c539379` | 2026-09-10T01:18:00Z |
 | `ARCHIVE-vinberg-weighted-semantics-20260909-1346` | archive reconciliation / weighted Vinberg reflection semantics | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/vinberg_invariants.py; tests/lattices/test_vinberg_weighted_graph_semantics_archive.py` (write) | `90c3c5d9` | 2026-09-09T13:46:00Z |
 | `ARCHIVE-torsion-form-subobjects-20260909-1050` | archive reconciliation / generic torsion-form subobjects | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py; tests/forms/test_torsion_form_subobjects_archive.py` (write) | `HEAD` | 2026-09-09T10:50:00Z |
 | `ARCHIVE-tensor-center-20260909-0958` | archive reconciliation / center of a free tensor algebra | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/free_algebras.py; tests/algebras/test_tensor_center_archive.py` (write) | `HEAD` | 2026-09-09T09:58:00Z |
