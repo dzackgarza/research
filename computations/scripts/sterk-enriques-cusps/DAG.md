@@ -1505,6 +1505,39 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 | the **order of vanishing** of a rational function at such a point | **conditionally, and it needs a hypothesis the node did not state**: `IsDiscreteValuationRing.addVal` (`RingTheory/DiscreteValuationRing/Basic.lean`) is the valuation, and it applies once the local ring at a codimension-one point *is* a DVR, which needs normality.  That chain is now **E16** |
 | the principal divisor, and linear equivalence | over E16 and a quotient — **yes, once E16 exists** |
 
+### Where the decomposition stops, and why it stops there
+
+Eleven clauses above are content rather than substrate.  Two of them were
+composites and became nodes with dependencies of their own — Lo10, because "the
+cone has two components" is a theorem about the topology of a form of index 1,
+and E16, because "the order of vanishing" needs the local ring to be a DVR and
+so needs normality.  The other nine cannot be split again:
+
+| Atom | Its kind | Written over |
+| --- | --- | --- |
+| the deck involution of a two-sheeted covering | one definition | `IsCoveringMap`, `IsEvenlyCovered` |
+| nondecomposability of a matrix | one definition | `Equiv.Perm`, `Matrix.blockDiagonal` |
+| a normal analytic space | one definition | `Topology/Sheaves/`, `AnalyticOn` |
+| the dimension stratification $V_{(d)}$ | one definition | a dimension function on the above |
+| the sheaf of $\mathcal{Q}$-functions | one definition | `Topology/Sheaves/`, over the above |
+| the semigroup of isometry classes of $p$-adic forms | one construction, with a choice of representatives | `QuadraticMap.prod`, `IsometryEquiv`, `Fin n → ℤ_[p]` |
+| the Gram-matrix/simplicial-angle bijection | one theorem | V1, Lo2 |
+| chart-atlas and structure-sheaf complex manifolds agree | one theorem | `IsManifold` over `𝓘(ℂ, E)`, `Topology/Sheaves/` |
+| $O(L)$, $O(q)$, $\mathrm{div}$, $v^*$, the doubling, Milgram, the genus, $R_u(P)$, $\mathrm{Lie}(G)$, the descent datum, the Weil divisor | one definition each, and one theorem (Milgram) | their own nodes, F1.13–F1.16, F2.14, F3.5, E15, AG20–AG22 |
+
+Each of those is a single definition or a single theorem, stated over
+declarations read in the pinned tree.  There is nothing left to split: a
+definition is not a composite of smaller nodes, and the recursion has reached
+what must be *written* rather than what must be *found*.  That is the sense in
+which this graph now bottoms out — not that every statement is supplied, since
+no node in this graph is supplied and the project exists to prove them, but that
+no cell anywhere defers to something unlocated.
+
+The distinction worth keeping: **found** versus **written**.  Everything the four
+sweeps could find has been found, and each row says which declaration and where
+the match stops.  What is left is authorship, and the eleven atoms above plus the
+theorem nodes are its unit of work.
+
 ## Open audit points
 
 Questions about statements already in the graph, not missing nodes.
