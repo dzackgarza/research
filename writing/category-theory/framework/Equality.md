@@ -57,6 +57,38 @@ $$
 $$
 Equality thus means: there is an essentially unique $\operatorname{Aut}(C)$–$\operatorname{Aut}(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 
+## Presentation by the walking equivalence {#sec-walking-equivalence}
+
+Let $\mathcal E$ be the walking adjoint equivalence: the category presented (@def-presented-category) by two objects $0,1$, morphisms $u\colon 0\to 1$ and $v\colon 1\to 0$, and the relations making $(u,v)$ an adjoint equivalence.
+Evaluation at the two objects gives
+$$
+\operatorname{ev}_{0,1}\colon
+[\mathcal E,\mathbf{Cat}_{\infty,\infty}]_{\mathbf{Cat}_{\infty,\infty}}
+\longrightarrow
+\mathbf{Cat}_{\infty,\infty}\times\mathbf{Cat}_{\infty,\infty},
+\qquad
+F\longmapsto(F(0),F(1)),
+$$
+and the fiber of $\operatorname{ev}_{0,1}$ over $(C,D)$ is the higher category of adjoint-equivalence data from $C$ to $D$.
+Sending such data to its underlying functor $F(u)$ gives a map from that fiber to $\operatorname{Eq}(C,D)$ whose fiber over a functor is the space of adjoint-equivalence structures on it, which by [Inverse data and coherence](Identification.md#sec-inverse-data) is contractible for an equivalence and empty otherwise.
+The two presentations of $\operatorname{Eq}(C,D)$ may therefore be used interchangeably, and $\operatorname{Way}$, $Q$, and $Q^0$ may be computed from either.
+
+## Properties of the predicate {#sec-equality-properties}
+
+The predicate of @sec-equality-predicate inherits the following from the corresponding closure conditions on $\operatorname{Way}$.
+
+- $C=C$, given that $\operatorname{Way}(C,C)$ contains $\operatorname{id}_C$: the identity is a point of $Q^0(C,C)$.
+
+- $C=D$ implies $D=C$, given that $\operatorname{Way}$ is closed under inverses, which exchanges the two endpoint maps $\bar s$ and $\bar t$.
+
+- $C=D$ and $D=E$ imply $C=E$, given that $\operatorname{Way}$ is closed under composition.
+
+For the slice presentation of @sec-equality-universe all three conditions hold, since equivalences over $W$ contain the identities and are closed under composition and inverses.
+
+Equality implies equivalence, since a point of $Q^0(C,D)$ lies over a point of $\operatorname{Eq}(C,D)$.
+The converse fails: an equivalence $C\to D$ whose image under $(\bar s,\bar t)$ misses the component of $(\operatorname{id}_C,\operatorname{id}_D)$ contributes no point of $Q^0$.
+If $C$ and $D$ are both terminal objects of the same category of cones, or more generally both satisfy a universal property that determines them up to a unique isomorphism, then the comparison between them is the unique one and $Q^0(C,D)\simeq*$.
+
 ## Over an equality-bearing universe {#sec-equality-universe}
 
 Which identifications *count* is fixed by placing the objects over a higher category $W$, with $p_C \colon C \to W$ and $p_D \colon D \to W$, and taking $\operatorname{Way}(C, D)$ to be the equivalences in the slice $\mathbf{Cat}_{\infty,\infty}/W$.

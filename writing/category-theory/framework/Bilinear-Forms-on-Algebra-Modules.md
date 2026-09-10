@@ -74,18 +74,8 @@ The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and 
 
 ## Gram matrices {#sec-gram-on-algebras}
 
-::: {#prp-gram-matrix-free-module}
-## Gram matrix
-
-Let $A$ be free as an $R$-module on $E=\{e_i\}_{i\in I}$, and let $B$ be a module bilinear form on $A$.
-The *Gram matrix* of $B$ with respect to $E$ is the family $G_{ij}=B(e_i,e_j)$ indexed by $I\times I$.
-If $v=\sum_i a_i e_i$ and $w=\sum_j c_j e_j$, then
-$$
-B(v,w)=\sum_{i,j\in I} a_i\, G_{ij}\, c_j,
-$$
-a finite sum by finite support of the coordinates.
-Every family $(G_{ij})_{i,j\in I}$ in $R$ arises uniquely in this way.
-:::
+The Gram matrix of a module bilinear form on a free module is @prp-gram-matrix-free-module, and its change under a change of basis is @prp-gram-congruence.
+For an algebra $A$ free as an $R$-module on $E$, both apply to $U(A)$ with the module basis $E$.
 
 ::: {#prp-eval-via-algebra-map}
 ## Evaluation through algebra generators
@@ -133,7 +123,7 @@ Given (2), $B(xy,z)=\varepsilon((xy)z)=\varepsilon(x(yz))=B(x,yz)$.
 The identification $\varepsilon(x)=B(x,1_A)$ uses the unit of $A$.
 
 ::: {#def-frobenius-form}
-A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def-polarization: the adjoint $A\to\operatorname{Hom}_R(A,R)$ is an isomorphism [@nlab:frobenius_algebra].
+A linear form $\varepsilon\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\varepsilon(xy)$ is perfect in the sense of @def-polarization: both adjoint maps $A\to\operatorname{Hom}_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
 :::
 
 ::: {#prp-structure-constants}

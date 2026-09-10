@@ -45,6 +45,71 @@ The set $U(X)$ is the underlying set of $X$.
 Any further underlying-set construction is stated as a factorization through this functor.
 :::
 
+For a concrete category, a morphism whose underlying function is injective is monic, and one whose underlying function is surjective is epic; each converse is a separate claim about $U$.
+When $U$ is corepresented by an object $P$ as in @def-element-functor, $U(f)=\operatorname{Hom}_C(P,f)$ and $f$ is monic exactly when $U(f)$ is injective: one direction applies the definition of a monomorphism to $P$, the other uses faithfulness.
+The corresponding claim for epimorphisms fails: the inclusion $\mathbb Z\hookrightarrow\mathbb Q$ is monic and epic in $\mathbf{Ring}$, and it is neither surjective nor invertible [@Rie16, Example 1.2.10].
+Invertibility is asked of the morphism, by exhibiting a two-sided inverse in $C$.
+
+## Comma categories and universal arrows {#sec-comma}
+
+::: {#def-comma-category}
+## Comma categories
+
+Let $T\colon\mathcal E\to\mathcal C$ and $S\colon\mathcal D\to\mathcal C$ be functors.
+The *comma category* $(T\downarrow S)$ has as objects the triples $\langle e,d,f\rangle$ with $e\in\mathcal E$, $d\in\mathcal D$, and $f\colon Te\to Sd$ in $\mathcal C$, and as morphisms $\langle e,d,f\rangle\to\langle e',d',f'\rangle$ the pairs $\langle k\colon e\to e',\,h\colon d\to d'\rangle$ with
+$$
+f'\circ Tk=Sh\circ f.
+$$
+The two projections send $\langle e,d,f\rangle$ to $e$ and to $d$ [@Mac98, §II.6].
+
+Taking $T$ or $S$ to be a functor $\mathbf 1\to\mathcal C$, that is an object of $\mathcal C$, gives the coslice $(b\downarrow S)$ and the slice $(T\downarrow a)$; taking both to be $\operatorname{id}_{\mathcal C}$ gives the arrow category $(\mathcal C\downarrow\mathcal C)$, whose objects are the morphisms of $\mathcal C$; taking both to be objects $a,b$ gives the discrete category $\operatorname{Hom}_{\mathcal C}(b,a)$.
+:::
+
+For an ordinary category $C$, the arrow category is also $[[1],C]$, and evaluation at the source and target gives a functor to $C\times C$.
+Local hom-objects and walking-arrow categories in $\mathbf{Cat}_{\infty,\infty}$ are defined in @def-internal-hom and @def-mapping-spaces.
+
+::: {#def-universal-arrow}
+## Universal arrows
+
+Let $S\colon\mathcal D\to\mathcal C$ and $c\in\mathcal C$.
+A morphism $u\colon c\to Sr$ is *universal from $c$ to $S$* when, for every $d\in\mathcal D$ and every $f\colon c\to Sd$, there is a unique $g\colon r\to d$ with $Sg\circ u=f$.
+Equivalently, $\langle r,u\rangle$ is an initial object of the comma category $(c\downarrow S)$, so it is unique up to a unique isomorphism of $(c\downarrow S)$ and $r$ is unique up to isomorphism in $\mathcal D$ [@Mac98, §III.1].
+Dually, a morphism $v\colon Sr\to c$ is couniversal when $\langle r,v\rangle$ is terminal in $(S\downarrow c)$.
+:::
+
+Free constructions are of this form: the insertion of a graph into the underlying graph of the free category on it is universal from the graph to the forgetful functor $U\colon\mathbf{Cat}\to\mathbf{Grph}$ (@def-free-category).
+The corepresenting objects listed in @def-element-functor are the values of the corresponding free constructions on a one-element set, and the universal arrow is the choice of that element.
+
+## Additive and abelian categories {#sec-abelian}
+
+::: {#def-preadditive}
+## Preadditive and additive categories
+
+A *preadditive category*, or $\mathbf{Ab}$-category, is a category $\mathcal A$ in which each $\operatorname{Hom}_{\mathcal A}(b,c)$ is an abelian group and composition is bilinear.
+Its zero elements are the *zero morphisms* $0\colon b\to c$, and a composite with a zero morphism is zero.
+
+In a preadditive category an object $z$ is initial exactly when it is terminal, exactly when $1_z=0$, and exactly when $\operatorname{Hom}_{\mathcal A}(z,z)$ is the zero group; such a $z$ is a *zero object* [@Mac98, §VIII.2, Proposition 1].
+
+A *biproduct diagram* for $a,b\in\mathcal A$ consists of an object $c$ and morphisms
+$$
+i_1\colon a\to c,\quad i_2\colon b\to c,\quad p_1\colon c\to a,\quad p_2\colon c\to b
+$$
+satisfying
+$$
+p_1i_1=1_a,\qquad p_2i_2=1_b,\qquad i_1p_1+i_2p_2=1_c.
+$$
+Two objects of $\mathcal A$ have a product exactly when they have a biproduct, exactly when they have a coproduct; the biproduct object with $p_1,p_2$ is their product and with $i_1,i_2$ their coproduct, and it is written $a\oplus b$ [@Mac98, §VIII.2, Theorem 2].
+
+An *additive category* is a preadditive category with a zero object and a biproduct for each pair of objects [@Mac98, §VIII.2].
+:::
+
+::: {#def-kernel-cokernel}
+## Kernels and cokernels
+
+In a category with a zero object, the *kernel* of $f\colon a\to b$ is the equalizer of the pair $f,0\colon a\to b$: a morphism $k\colon s\to a$ with $fk=0$ through which every $h$ with $fh=0$ factors uniquely.
+The *cokernel* is the coequalizer of the same pair [@Mac98, §VIII.1].
+:::
+
 ::: {#def-abelian-category}
 ## Abelian categories
 
@@ -53,13 +118,51 @@ $$
 \operatorname{Coim}(f)\longrightarrow\operatorname{Im}(f)
 $$
 is an isomorphism [@The25, Tag 0109]. In an abelian category, a morphism is monic exactly when its kernel is zero and epic exactly when its cokernel is zero.
+
+An equivalent axiomatization asks for a zero object, binary biproducts, kernels and cokernels of every morphism, and that every monomorphism be a kernel and every epimorphism a cokernel [@Mac98, §VIII.3].
+Kernels and cokernels then supply the remaining finite limits and colimits: the equalizer of $f,g$ is the kernel of $f-g$, and biproducts are the finite products, so an abelian category is finitely complete and finitely cocomplete [@Mac98, §VIII.3].
 :::
 
-## Arrow and functor categories
+::: {#thm-canonical-factorization}
+## The canonical factorization
 
-For an ordinary category $C$, the arrow category is $[[1],C]$.
-Evaluation at the source and target gives a functor to $C\times C$.
-Local hom-objects and walking-arrow categories in $\mathbf{Cat}_{\infty,\infty}$ are defined in @def-internal-hom and @def-mapping-spaces.
+In an abelian category every morphism $f$ factors as $f=me$ with $m$ monic and $e$ epic, where
+$$
+m=\ker(\operatorname{coker}f),
+\qquad
+e=\operatorname{coker}(\ker f),
+$$
+and the factorization is functorial: a commutative square from $f$ to $f'$ induces a unique morphism between the two factorizations commuting with both halves.
+The object $\operatorname{Im}(f)$ is the domain of $m$ and $\operatorname{Coim}(f)$ the codomain of $e$ [@Mac98, §VIII.3, Proposition 1].
+:::
+
+::: {#thm-diagram-lemmas}
+## Diagram lemmas
+
+Let $\mathcal A$ be abelian.
+For a morphism $\langle f,g,h\rangle$ of short exact sequences: if $f$ and $h$ are monic then $g$ is monic, and if $f$ and $h$ are epic then $g$ is epic (short five lemma); there is a connecting morphism $\delta\colon\ker h\to\operatorname{coker}f$ making
+$$
+\ker f\to\ker g\to\ker h
+\xrightarrow{\;\delta\;}
+\operatorname{coker}f\to\operatorname{coker}g\to\operatorname{coker}h
+$$
+exact (snake lemma).
+In a commutative diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
+:::
+
+Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c$ with $gf=0$ is exact at $b$ when the monomorphism $\operatorname{Im}(f)\to b$ and the kernel of $g$ represent the same subobject of $b$ (@def-subobject-relation).
+
+## Endomorphisms and automorphisms {#sec-endomorphisms}
+
+::: {#def-endomorphism-monoid}
+## The endomorphism monoid and the automorphism group
+
+For an object $X$ of a category $\mathcal C$, composition makes $\operatorname{Hom}_{\mathcal C}(X,X)$ a monoid with unit $\operatorname{id}_X$.
+Its group of invertible elements is $\operatorname{Aut}_{\mathcal C}(X)$, the automorphism group of $X$, which is $\operatorname{Iso}_{\mathcal C}(X,X)$ in the notation of [Equivalences and witnesses](Identification.md#sec-equivalence-spaces).
+When $\mathcal C$ is preadditive, $\operatorname{Hom}_{\mathcal C}(X,X)$ is a ring under composition and the group addition, and $\operatorname{Aut}_{\mathcal C}(X)$ is its group of units.
+:::
+
+The arity-$1$ term of the endomorphism operad of @sec-operations is this monoid; the higher arities record the operations $X^{\times n}\to X$ and are not composition.
 
 ## Pseudo-pullbacks {#sec-pullback-cat}
 
@@ -94,6 +197,30 @@ The presheaf $F$ is *representable* if there is an object $X$ and a natural isom
 Under this isomorphism, $\operatorname{id}_X$ corresponds to the universal element.
 The dual convention applies to corepresentable covariant functors.
 :::
+
+::: {#thm-yoneda}
+## The Yoneda lemma
+
+Let $C$ be locally small, $F\colon C\to\mathbf{Set}$ a functor, and $c\in C$.
+Evaluation of a natural transformation at $\operatorname{id}_c$ is a bijection
+$$
+\operatorname{Nat}\bigl(\operatorname{Hom}_C(c,-),\,F\bigr)
+\;\cong\;
+F(c),
+\qquad
+\alpha\longmapsto\alpha_c(\operatorname{id}_c),
+$$
+natural in $c$ and in $F$ [@Rie16, Theorem 2.2.4; @Mac98, §III.2].
+Consequently the Yoneda embeddings
+$$
+C\hookrightarrow\mathbf{Set}^{C^{\mathrm{op}}},
+\qquad
+C^{\mathrm{op}}\hookrightarrow\mathbf{Set}^{C}
+$$
+are fully faithful: natural transformations between represented functors correspond to morphisms between the representing objects [@Rie16, Corollary 2.2.8].
+:::
+
+A representation is therefore determined by its universal element, and two representations of the same functor are related by a unique isomorphism compatible with the universal elements.
 
 ::: {#def-el-convention}
 ## The $\int_C F$ convention {#sec-el}

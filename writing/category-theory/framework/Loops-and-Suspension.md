@@ -118,3 +118,35 @@ A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to 
 Applying homotopy groups gives the long exact sequence.
 Its component-level portion is the pointed-set sequence recorded in @sec-pi0-fiber.
 :::
+
+## Extending the sequences {#sec-extended-sequences}
+
+For $f\colon X\to Y$ the fiber square of @def-fiber-cofiber may be extended to the left, since the fiber of $\operatorname{Fib}(f)\to X$ is computed by a pasted pullback square and is $\Omega Y$:
+$$
+\cdots\longrightarrow
+\Omega X\longrightarrow
+\Omega Y\longrightarrow
+\operatorname{Fib}(f)\longrightarrow
+X\xrightarrow{\;f\;}Y .
+$$
+Dually the cofiber square extends to the right,
+$$
+X\xrightarrow{\;f\;}Y\longrightarrow
+\operatorname{Cof}(f)\longrightarrow
+\Sigma X\longrightarrow
+\Sigma Y\longrightarrow\cdots,
+$$
+each stage being the fiber or cofiber of the preceding morphism [@nlab:fiber_sequence].
+
+::: {#def-homotopy-groups}
+## Homotopy groups of a pointed space
+
+Let $\mathcal S_*$ be the $\infty$-category of pointed spaces.
+For $(X,x)\in\mathcal S_*$ and $n\geq0$, set
+$$
+\pi_n(X,x):=\pi_0\bigl(\Omega^n_xX\bigr),
+$$
+where $\Omega^0_xX:=X$ and $\Omega^{n}_xX:=\Omega_x\Omega^{n-1}_xX$, each loop object taken at the basepoint supplied by the previous stage.
+For $n\geq1$ the composition of loops makes $\pi_n(X,x)$ a group, and for $n\geq2$ an abelian group.
+These are the groups appearing in the truncation conditions of @def-truncated and in the long exact sequence of a fiber sequence.
+:::

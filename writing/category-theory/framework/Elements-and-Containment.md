@@ -31,15 +31,49 @@ A factorization from the subobject represented by $i\colon N\hookrightarrow M$ t
 The assertion that some monomorphism $A\to B$ exists is a proposition.
 A construction that uses an embedding names a particular monomorphism.
 
+## Fibers of a morphism {#sec-fibers}
+
+::: {#def-fiber-over-point}
+## The fiber over a point
+
+Let $C$ have a terminal object $1$ and the relevant pullbacks, let $f\colon X\to Y$, and let $y\colon 1\to Y$ be a point.
+The *fiber of $f$ over $y$* is the apex of the cartesian square
+
+```{.tikz}
+%%| filename: fiber-over-a-point
+%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
+\begin{tikzcd}
+f^{-1}(y)
+  \arrow[r]
+  \arrow[d]
+  \arrow[dr,phantom,very near start,"\lrcorner"] &
+X \arrow[d,"f"]\\
+1 \arrow[r,"y"'] & Y
+\end{tikzcd}
+```
+
+In a concrete category whose underlying-set functor is corepresented as in @def-element-functor, its points are the elements of $X$ sent by $f$ to $y$.
+When $C$ is pointed and $y$ is the zero point, this is the fiber of @def-fiber-cofiber.
+:::
+
+For $R$-modules the fiber over $y$ is empty unless $y$ lies in the image of $f$, and a point $x_0$ of it determines an isomorphism
+$$
+\ker f\;\xrightarrow{\ \sim\ }\;f^{-1}(y),
+\qquad
+k\longmapsto x_0+k .
+$$
+The elements of $\ker f$ act freely and transitively on the elements of $f^{-1}(y)$ by translation, so the fiber is a torsor under $\ker f$ [@nlab:torsor] and has no distinguished point.
+Selecting a preimage of $y$ is therefore a choice in the sense of @sec-witnesses; the object that is choice-free is the fiber, and a construction that consumes a preimage names the one it uses.
+
 ## Comparison after a named functor
 
 Let $F\colon C\to E$ and $G\colon D\to E$.
 A comparison between $X\in C$ and $Y\in D$ is made between $F(X)$ and $G(Y)$ in $E$.
 A relation or morphism involving the images is formed in $E$ and does not identify either source object with its image.
 
-## Solution functors {#sec-generic-solutions}
+## Solution functors {#sec-solution-functors}
 
-::: {#def-generic-solution}
+::: {#def-solution-presheaf}
 Let $A,B\colon C^{\mathrm{op}}\to\mathbf{Set}$ be presheaves and let $\alpha,\beta\colon A\Rightarrow B$ be natural transformations.
 Their equalizer
 $$
@@ -49,13 +83,13 @@ is the presheaf of solutions of the corresponding equations.
 If $\operatorname{Sol}\cong\operatorname{Hom}_C(-,X)$, the identity of $X$ determines its universal solution.
 :::
 
-## Disjunction and cases {#sec-case-decomposition}
+## Disjunction and cases {#sec-disjunction-and-cases}
 
 For object properties $P$ and $Q$, the full subcategory defined by $P\lor Q$ is valid.
 A proof by cases consists of implications $P\Rightarrow R$ and $Q\Rightarrow R$ together with the hypothesis $P\lor Q$.
 For chosen structures, a coproduct or union of their domains does not automatically define a category of objects equipped with either structure; its morphisms and universal property must be specified.
 
-## Scalar extension, localization, and completion {#sec-localization}
+## Scalar extension, localization, and completion {#sec-scalar-extension}
 
 Extension of scalars along $\mathbb Z\to\mathbb Z_{(p)}$ is localization at the prime ideal $(p)$.
 Extension of scalars along $\mathbb Z\to\mathbb Z_p$ sends a $\mathbb Z$-module $L$ to $L\otimes_{\mathbb Z}\mathbb Z_p$.

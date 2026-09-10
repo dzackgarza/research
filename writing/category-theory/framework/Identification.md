@@ -15,6 +15,16 @@ These actions commute, so $\operatorname{Iso}_C(X,Y)$ is an $(\operatorname{Aut}
 
 A construction that transports data from $X$ to $Y$ therefore names the isomorphism it uses unless the relevant comparison is uniquely determined.
 
+## Inverse data and coherence {#sec-inverse-data}
+
+Let $F\colon C\to D$ be an equivalence with a chosen inverse $G$ and chosen isomorphisms $\eta\colon 1_C\cong GF$ and $\epsilon\colon FG\cong 1_D$.
+Such a triple $(G,\eta,\epsilon)$ need not satisfy the triangle identities, and any one that does not may be replaced by one that does: redefining either $\eta$ or $\epsilon$ promotes the triple to an *adjoint equivalence*, in which $\eta$ and $\epsilon$ are the unit and counit of $F\dashv G$ [@Rie16, Proposition 4.4.5].
+
+The distinction between the two kinds of datum is a difference in truncation level.
+For a map $f\colon A\to B$ of types with an inverse, the type of triples $(g,\eta,\epsilon)$ is equivalent to $\prod_{x:A}(x=x)$ [@Uni13, Lemma 4.1.1], which is not in general contractible, so such a triple is a choice.
+Adding the coherence datum relating $\eta$ and $\epsilon$ gives the type of half-adjoint equivalence data, which is inhabited whenever an inverse exists [@Uni13, Theorem 4.2.3] and is a mere proposition [@Uni13, Theorem 4.2.13].
+Being an equivalence is therefore a property of $f$, while a chosen inverse together with uncohered isomorphisms is data of the kind named in @sec-witnesses.
+
 ## Canonical comparisons {#sec-canonical-identification}
 
 A comparison is available without a new choice in either of the following situations:

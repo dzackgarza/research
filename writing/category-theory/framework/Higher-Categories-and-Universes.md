@@ -362,6 +362,28 @@ $$
 Iterating the same point and local hom-object constructions defines all higher cells.
 :::
 
+::: {#prp-iterated-hom-cells}
+## Cells of an iterated hom-object
+
+Write $[x,y]^{(1)}_C:=[x,y]_C$ and, for a choice of parallel $k$-cells $u,v$ of $C$, write $[u,v]^{(k+1)}_C$ for the local hom-object formed at the $k$-th stage of @def-cells.
+By construction the $n$-cells of $[u,v]^{(k)}_C$ are the $(n+k)$-cells of $C$ that are parallel over the chosen $u,v$; in particular its $0$-cells are the $k$-cells of $C$ between them.
+Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint direction is $B_{01}\dashv\Omega_{01}$ (@def-B01-construction).
+:::
+
+::: {#def-globular-boundary}
+## Sources and targets
+
+A $1$-cell $f\colon *\to[x,y]_C$ has *source* $x$ and *target* $y$; an $(n+1)$-cell, being a $1$-cell of an iterated hom-object $[u,v]^{(n)}_C$, has source $u$ and target $v$.
+Source and target are defined for cells of positive dimension only, and $0$-cells have neither.
+For every cell of dimension at least $2$,
+$$
+s(s(\xi))=s(t(\xi)),
+\qquad
+t(s(\xi))=t(t(\xi)),
+$$
+since $s(\xi)$ and $t(\xi)$ are parallel cells of the same iterated hom-object.
+:::
+
 ::: {#def-equivalence-of-categories}
 ## Equivalences
 
@@ -445,6 +467,33 @@ A
 \end{tikzcd}
 
 The two coprojections $*\to\Sigma A$ make $\Sigma A$ bipointed.
+:::
+
+::: {#def-spheres}
+## Spheres
+
+Define
+$$
+S^{-1}:=\varnothing,
+\qquad
+S^{n}:=\Sigma S^{n-1}\quad(n\geq0).
+$$
+Since the pushout of $*\leftarrow\varnothing\to*$ is the coproduct, $S^{0}=*\amalg*$, the bipointed object indexing the comma category of @def-B01-construction.
+:::
+
+::: {#exm-initial-terminal-cat}
+## The initial and terminal higher categories
+
+Closedness makes $-\times C$ a left adjoint (@def-internal-hom), so it preserves colimits and in particular the initial object:
+$$
+\varnothing\times C\simeq\varnothing,
+\qquad
+*\times C\simeq C,
+\qquad
+\varnothing\amalg C\simeq C.
+$$
+For hom-objects, $[\varnothing,C]\simeq*$ for every $C$, since $\varnothing$ is initial; $[C,\varnothing]\simeq\varnothing$ whenever $C$ has a point, since evaluating a point of $[C,\varnothing]$ at a point of $C$ would give a point of $\varnothing$, and a higher category with no points is $\varnothing$; and $[\varnothing,\varnothing]\simeq*$.
+The coproduct $*\amalg*$ is neither initial nor terminal, so $\mathbf{Cat}_{\infty,\infty}$ has no zero object.
 :::
 
 ::: {#def-B01-construction}
@@ -672,6 +721,14 @@ $$
 $$
 to be the full replete subcategory on the $n$-truncated objects of $[C,D]_{\mathbf{Cat}_{\infty,\infty}}$.
 These objects are the $n$-truncated morphisms $C\to D$ internal to the mapping higher category.
+:::
+
+::: {#exm-low-levels}
+## The bottom of the tower
+
+By @def-truncated the $(-2)$-truncated objects of $\mathbf{Cat}_{\infty,\infty}$ are its terminal objects, so $\mathbf{Cat}_{-2}$ is spanned by $*$ and is contractible.
+Both $\varnothing$ and $*$ are $(-1)$-truncated: $\operatorname{Map}(Y,*)$ is contractible for every $Y$, and $\operatorname{Map}(Y,\varnothing)$ is empty unless $Y\simeq\varnothing$, in which case it is contractible.
+So $\mathbf{Cat}_{-1}$ contains the two truth values $\varnothing$ and $*$, and the map $\mathbf{Cat}_{-2}\to\mathbf{Cat}_{-1}$ of the tower is the inclusion of $*$.
 :::
 
 

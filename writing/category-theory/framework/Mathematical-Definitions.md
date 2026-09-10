@@ -177,7 +177,7 @@ $$
 $$
 
 the value module being $R$ itself; over a PID, finitely generated projective means finitely generated free.
-The AG **negative-definite convention** ($A_n$ negative-definite) is a normalization on objects, not a change of category.
+The negative-definite normalization ($A_n$ negative definite) acts on the objects of $\mathbf{Lat}_R$ and leaves $\mathbf{Lat}_R$ itself unchanged: it is the twist by $-1$ of @def-form-twist, taken under the convention recorded at @def-definiteness.
 :::
 
 ::: {#def-unimodular}
