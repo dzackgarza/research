@@ -1628,7 +1628,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-number-field-norm-trace-20260910-1936` | archive reconciliation / number-field norm and trace from multiplication | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/number_fields.py; tests/rings/test_number_field_norm_trace_archive.py` (write) | `HEAD` | 2026-09-10T19:36:00Z |
 
 
 
