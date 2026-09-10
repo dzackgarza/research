@@ -1,22 +1,22 @@
+# This directory is the Quarto project root and holds nothing but build
+# machinery. The prose lives one level up in writing/; each part of the book is
+# symlinked in beside this file (index.md, category-theory, coble, data), so
+# `ls writing/.book` is the book's table of contents at the directory level.
+# The writing that is not site content -- the dissertation, which builds through
+# ~/.pandoc, plus the talks, exams and research statement -- is simply not
+# linked in, which is why no render-exclusion list appears below.
 project:
   type: book
   output-dir: _site
+  # Only single files can be listed here. A directory, with or without a glob, is
+  # collected by a walk that does not descend a symlink, and every part reaches this
+  # directory as one -- so a directory entry silently copies nothing. The resource
+  # trees are copied by the post-render step instead.
   resources:
-    - data/**
     - category-theory/lean/category-graph.html
     - category-theory/lean/category-graph.dot
-    - coble/reference/**
-    - coble/papers/**
-  # Writing that is not part of the site. The dissertation builds through
-  # ~/.pandoc, and the rest are documents rather than site content.
-  render:
-    - '*.md'
-    - category-theory/**
-    - coble/**
-    - '!dissertation/**'
-    - '!Talks/**'
-    - '!Oral Exams/**'
-    - '!Research Statement/**'
+  post-render:
+    - .assets/copy-resources.sh
 book:
   title: Writing
   repo-url: https://github.com/dzackgarza/research
@@ -108,9 +108,12 @@ book:
         - coble/tables/coble-lattices.md
         - coble/tables/dynkin-diagrams.md
         - coble/heegner-report/coble-heegner-research-report.md
+# Assets that pandoc, rather than Quarto, opens must live in .assets/ -- see the
+# note beside `filters:` below. The two Coble bibliographies need no such
+# treatment: they sit inside a symlinked part, so both tools reach them the same way.
 bibliography:
-  - references.bib
-  - refs-web.bib
+  - .assets/references.bib
+  - .assets/refs-web.bib
   - coble/coble_supplement.bib
   - coble/heegner-report/coble_references.bib
 link-citations: true
@@ -128,13 +131,26 @@ format:
     code-copy: true
     smooth-scroll: true
     css: tikz-diagrams.css
-    include-in-header: _mathjax-order.html
-    include-before-body: _mathjax-macros.html
+    include-in-header: .assets/mathjax-order.html
+    include-before-body: .assets/mathjax-macros.html
+# Quarto resolves a project-relative path against this directory, but pandoc runs
+# with its working directory at the *real* location of the input, and the parts are
+# symlinked in from writing/ -- so every such path lands one level above this
+# directory, whatever the input's depth. Two consequences, both load-bearing:
+#
+#   * Filters are named, never given as a path. A bare `*.lua` path misses by that
+#     hop; an extension filter is resolved by name and is immune, so the two local
+#     filters are packaged under _extensions/local/.
+#   * Anything pandoc itself opens (the bibliographies, the header includes) lives
+#     in .assets/, which is physically writing/.assets and reached from here through
+#     a symlink. Both tools then find it: Quarto through the symlink, pandoc at the
+#     place its relative path actually lands. Quarto-side assets such as the
+#     stylesheet need none of this and stay beside this file.
 filters:
   - book-toc
   - custom-numbered-blocks
-  - stacks-tags.lua
-  - pandoc-tikzcd.lua
+  - stacks-tags
+  - pandoc-tikzcd
   - tikz
 tikz:
   cache: true

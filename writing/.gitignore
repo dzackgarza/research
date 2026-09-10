@@ -1,2 +1,7 @@
-/.quarto/
+# Quarto's render caches. One appears at the project root, and one beside the real
+# sources, because the parts reach the project as symlinks and Quarto follows them
+# back to their true location.
+.quarto/
+
+# Quarto's notebook intermediate, written beside each source it executes.
 **/*.quarto_ipynb

@@ -35,8 +35,8 @@ semantic-types:
 
 # Refresh the docs bibliography and MathJax macro include from the shared ~/.pandoc sources (never frozen in-repo; CI fetches them from the pandoc-config repo). The macros are the generated corpus: the book defines none of its own.
 docs-assets:
-    cp --remove-destination ~/.pandoc/bib/references.bib writing/references.bib
-    cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html writing/_mathjax-macros.html
+    cp --remove-destination ~/.pandoc/bib/references.bib writing/.assets/references.bib
+    cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html writing/.assets/mathjax-macros.html
 
 # Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
 docs-check: docs-assets
@@ -44,7 +44,7 @@ docs-check: docs-assets
 
 # Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint category-theory/framework/Mathematical-Framework.md`
 docs-lint FILE: docs-assets
-    cd writing && uvx --from quarto-cli quarto render "{{FILE}}" --to html
+    cd writing/.book && uvx --from quarto-cli quarto render "{{FILE}}" --to html
 
 # Rename a docs cross-reference/anchor slug everywhere, then prove every reference still resolves. Rewrites {#slug} anchors, @slug crossrefs, and ](…#slug) link fragments in one hyphen-boundary-safe pass (a longer slug is never partially hit) and runs the docs gate. e.g. `just docs-rename-ref def-old-name def-new-name`
 docs-rename-ref OLD NEW:
@@ -53,7 +53,9 @@ docs-rename-ref OLD NEW:
     old="{{OLD}}"
     new="{{NEW}}"
     export old new
-    mapfile -t files < <(find writing -name '*.md' -not -path '*/_extensions/*')
+    # Skip the Quarto project root: every part of the book appears there a
+    # second time, as a symlink, and rewriting through both would double-apply.
+    mapfile -t files < <(find writing -name '*.md' -not -path 'writing/.book/*')
     if rg -q --pcre2 "\\{#\\Q${new}\\E(?=[ }])" "${files[@]}"; then
         echo "docs-rename-ref: refusing — {#${new}} is already a defined anchor; choose a free name" >&2
         exit 1
@@ -68,11 +70,11 @@ docs-rename-ref OLD NEW:
     if just docs-check; then
         echo "docs-rename-ref: done — every reference resolves"
     else
-        echo "docs-rename-ref: docs gate FAILED after rename; inspect the report, or 'git checkout -- docs' to revert" >&2
+        echo "docs-rename-ref: docs gate FAILED after rename; inspect the report, then revert the rewrite yourself" >&2
         exit 1
     fi
 
-# Add an nLab citation to writing/refs-web.bib by scraping its canonical /cite page
+# Add an nLab citation to writing/.assets/refs-web.bib by scraping its canonical /cite page
 cite-nlab page:
     python3 scripts/cite_add.py nlab "{{page}}"
 
@@ -80,7 +82,7 @@ cite-nlab page:
 cite-stacks tag:
     python3 scripts/cite_add.py stacks "{{tag}}"
 
-# Regenerate writing/refs-web.bib from canonical sources (re-scrapes every nLab entry; hand-edits are lost)
+# Regenerate writing/.assets/refs-web.bib from canonical sources (re-scrapes every nLab entry; hand-edits are lost)
 refs-web-refresh:
     python3 scripts/refs_web_refresh.py
 
@@ -93,8 +95,8 @@ docs-preview: docs-assets
     #!/usr/bin/env bash
     set -euo pipefail
     # ponytail: two previews on the same dir cross-trigger each other's watchers
-    # (each renders output back into writing/) → endless ~10s reload loop. Kill any
-    # stale instance first so this always replaces rather than duplicates.
+    # (each renders output back into the project) → endless ~10s reload loop. Kill
+    # any stale instance first so this always replaces rather than duplicates.
     # A preview left over from an earlier layout also holds the port, so match
     # any quarto preview rather than only one on the current directory.
     pkill -f 'quarto preview' || true
@@ -102,7 +104,8 @@ docs-preview: docs-assets
         ss -ltn 'sport = :7654' | grep -q ':7654' || break
         sleep 0.2
     done
-    uvx --from quarto-cli quarto preview writing --no-browser --port 7654
+    # The project root is writing/.book; it symlinks the prose in from writing/.
+    uvx --from quarto-cli quarto preview writing/.book --no-browser --port 7654
 
 # Survey a live session into the preamble reference, its graph JSON, and the interactive graph
 preamble-megadoc:

@@ -258,10 +258,18 @@ Do not open an issue or PR to plan, track, or hand off docs work, and do not tre
 
 ## Docs hosting surfaces
 
-The docs book ships as a Quarto site (`writing/_quarto.yml`, `project.type: book`) in three surfaces:
+The docs book ships as a Quarto site (`writing/.book/_quarto.yml`, `project.type: book`) in three surfaces.
 
-- **Local preview** — `just docs-preview` serves `writing/` at http://localhost:7654/ via `uvx --from quarto-cli quarto preview` (live reload; quarto-cli provisioned on demand, not installed system-wide).
-  A stale render also lives at `writing/_site/` from prior builds; it is not kept fresh with the working tree.
+`writing/` holds only authored prose. Every piece of Quarto machinery — the config, the
+extensions, the Lua filters, the CSS, the bibliographies, the render cache and the build
+output — lives in `writing/.book/`, which is the project root. Each part of the book is
+symlinked into that directory (`index.md`, `category-theory`, `coble`, `data`), so book
+membership is what `ls writing/.book` shows, and the writing that is not site content
+(the dissertation, talks, exams, research statement) is excluded simply by not being
+linked in. Edit the real file under `writing/`; the symlink is only how Quarto reaches it.
+
+- **Local preview** — `just docs-preview` serves `writing/.book` at http://localhost:7654/ via `uvx --from quarto-cli quarto preview` (live reload reaches edits made through the symlinks; quarto-cli provisioned on demand, not installed system-wide).
+  A stale render also lives at `writing/.book/_site/` from prior builds; it is not kept fresh with the working tree.
 
 - **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`).
 

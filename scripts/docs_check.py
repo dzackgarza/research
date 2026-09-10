@@ -18,15 +18,18 @@ import subprocess
 import sys
 from pathlib import Path
 
-DOCS = Path("writing")
-SITE = DOCS / "_site"
+DOCS = Path("writing")        # the authored markdown
+BOOK = DOCS / ".book"         # the Quarto project root: build machinery plus a symlink per part
+ASSETS = DOCS / ".assets"     # build inputs pandoc opens itself (bibliographies, includes, CSS)
+SITE = BOOK / "_site"
+REFS_WEB = ASSETS / "refs-web.bib"
 QUARTO = shlex.split(os.environ.get("QUARTO", "uvx --from quarto-cli quarto"))
 
 failures: list[str] = []
 
 # --- render, capturing warnings -------------------------------------------------
 proc = subprocess.run(
-    [*QUARTO, "render", str(DOCS)],
+    [*QUARTO, "render", str(BOOK)],
     capture_output=True, text=True,
 )
 log = proc.stdout + proc.stderr
@@ -51,8 +54,15 @@ for html in sorted(SITE.rglob("*.html")):
 # does not render: the dissertation markdown, which compiles through ~/.pandoc, plus
 # talks, exams, and agent skill files. The rendered set is exactly the markdown that
 # produced a page under _site.
+#
+# Scan the prose tree, not the project root: the parts reach Quarto as symlinks and
+# `rglob` does not descend those, so scanning BOOK would silently find nothing.
 SITE_MD = [md for md in sorted(DOCS.rglob("*.md"))
-           if (SITE / md.relative_to(DOCS).with_suffix(".html")).exists()]
+           if BOOK not in md.parents
+           and (SITE / md.relative_to(DOCS).with_suffix(".html")).exists()]
+if not SITE_MD:
+    sys.exit("docs-check: no rendered markdown found — the source scan and _site "
+             "disagree, so checks 3 and 4 below would pass without reading anything")
 
 # 3. broken cross-page anchor links
 ids = {h.stem: set(re.findall(r'id="([^"]+)"', h.read_text(encoding="utf-8", errors="replace")))
@@ -78,14 +88,15 @@ for md in SITE_MD:
             failures.append(f"{md.name}:{i}: inline citation URL {m.group(0)} bypasses the bibliography — cite via @key, [@stacks-TAG], or `just cite-nlab`")
 
 # 6. refs-web.bib holds only scraped nLab entries (no bespoke/hand-written citations)
-webbib = DOCS / "refs-web.bib"
-if webbib.exists():
-    for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", webbib.read_text(encoding="utf-8", errors="replace"), re.S):
-        key, body = m.group(2), m.group(3)
-        if not key.startswith("nlab:"):
-            failures.append(f"refs-web.bib: bespoke entry @{key} — web citations are added only via `just cite-nlab` (scraped from the canonical /cite page)")
-        elif "ncatlab.org" not in body:
-            failures.append(f"refs-web.bib: @{key} carries no ncatlab.org URL — not a scraped entry")
+if not REFS_WEB.exists():
+    sys.exit(f"docs-check: {REFS_WEB} is missing — checks 6 and 7 read it, and would "
+             "otherwise pass by having nothing to inspect")
+for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", REFS_WEB.read_text(encoding="utf-8", errors="replace"), re.S):
+    key, body = m.group(2), m.group(3)
+    if not key.startswith("nlab:"):
+        failures.append(f"refs-web.bib: bespoke entry @{key} — web citations are added only via `just cite-nlab` (scraped from the canonical /cite page)")
+    elif "ncatlab.org" not in body:
+        failures.append(f"refs-web.bib: @{key} carries no ncatlab.org URL — not a scraped entry")
 
 # 7. external links must resolve — a cited resource that 404s can't be verified to exist
 import urllib.request
@@ -94,7 +105,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 urls: set[str] = set()
 src = "\n".join(p.read_text(encoding="utf-8", errors="replace")
-                for p in SITE_MD + [DOCS / "refs-web.bib"] if p.exists())
+                for p in SITE_MD + [REFS_WEB] if p.exists())
 urls |= set(re.findall(r'https?://[^\s)\]}>"]+', src))
 # Stacks tags cited as [@stacks-XXXX] resolve to a real tag page via the filter
 urls |= {f"https://stacks.math.columbia.edu/tag/{t}" for t in re.findall(r'@stacks-([0-9A-Za-z]{4})', src)}

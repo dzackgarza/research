@@ -7,7 +7,7 @@ written up sits beside the computations and the open questions that produced it.
 is no separate "paper" tree and no separate "notes" tree.
 
 The vault is the Coble part of the Quarto site rooted at `writing/`. Pages are listed as
-chapters in `writing/_quarto.yml`; a new page is not published until it is added there.
+chapters in `writing/.book/_quarto.yml`; a new page is not published until it is added there.
 
 ```
 <topic>/            One directory per topic, kebab-case, one page per file
@@ -36,7 +36,7 @@ There is no PDF build for this work. The last dated PDF build is kept in `refere
 ## Citations
 
 Zotero is the source of truth for references. The global bibliography is exported to
-`~/.pandoc/bib/references.bib` and copied to `writing/references.bib` by the build.
+`~/.pandoc/bib/references.bib` and copied to `writing/.book/references.bib` by the build.
 
 To cite a work, use its Better BibTeX key: `@AE23`. If the work is not in Zotero, add it
 there first, by DOI or arXiv identifier, through the live local API. See the `zotero`
@@ -67,7 +67,7 @@ prefix (`def-`, `thm-`, `lem-`, `cor-`, `prp-`, `cnj-`, `exm-`, `exr-`, `fig-`, 
 
 Do not number headings by hand. Sections auto-number and are referenced by `@sec-`.
 
-The declared block classes are listed at the bottom of `writing/_quarto.yml`. Add a class
+The declared block classes are listed at the bottom of `writing/.book/_quarto.yml`. Add a class
 there before using it.
 
 ## Extracted papers

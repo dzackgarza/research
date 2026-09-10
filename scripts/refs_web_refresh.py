@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate writing/refs-web.bib from canonical sources.
+"""Regenerate writing/.assets/refs-web.bib from canonical sources.
 
 Every entry is re-scraped from its own nLab /cite page, so any hand-edit is
 overwritten and any page that has 404'd blocks (forcing an audit). This is why
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import cite_add  # sibling module
 
-BIB = Path("writing/refs-web.bib")
+BIB = Path("writing/.assets/refs-web.bib")
 HEADER = (
     "% Project-local citations scraped from canonical sources (nLab /cite, etc.).\n"
     "% Mixed with the shared ~/.pandoc bib at resolve time. Add via `just cite-nlab <url>`;\n"

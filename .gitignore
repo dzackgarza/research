@@ -14,10 +14,9 @@ node_modules/
 # source next to it, so tracking it means two copies drifting apart.
 build/
 site/
-writing/_site/
-writing/.quarto/
-writing/references.bib
-writing/_mathjax-macros.html
+writing/.book/_site/
+writing/.assets/references.bib
+writing/.assets/mathjax-macros.html
 
 # Per-run test reports: a log, not source.
 tests/.report/
