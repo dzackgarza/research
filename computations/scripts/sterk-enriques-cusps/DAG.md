@@ -998,7 +998,7 @@ nothing in the pinned Mathlib supplies it.  Both rows move to greenfield.
 | F1.5 ($E_8$), F4.1 (root lattices) | [`thefundamentaltheor3m/Sphere-Packing-Lean`](https://github.com/thefundamentaltheor3m/Sphere-Packing-Lean) — Viazovska dimension-8, $E_8$ lattice | **already integrated, and the integration is a proved comparison** — read: `LeanCategoriesSpherePacking/E8/Comparison.lean` imports `SpherePacking.Basic.E8` beside the project's `Standard`, gives the explicit basis change and its inverse between the external basis and the selected simple-root basis, proves the two products are the identity, carries the external Gram matrix to the project's, and concludes that Sphere-Packing-Lean's *positive* $E_8$ is the **opposite** of the project lattice, with the sign change explicit on every pair.  Sorry-free.  `Integration/SpherePacking/` itself is only the build harness — a lakefile, a manifest and a toolchain pin |
 | Pa2–Pa5, Pa8's exceptional 2-adic case, and the $p=2$ conditions in Nk3–Nk5 | [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) — dyadic Hilbert symbol over $\mathbb{Q}_2$, Serre's evaluation formula, 2-adic square-class facts | **the layer Pa uses is proved and axiom-free**, checked in the clone: `GQ2/HilbertSymbol.lean` and `GQ2/DyadicSquares.lean` import only `Mathlib.NumberTheory.Padics.{RingHoms,Hensel}`, and `HilbertSymbolDyadic.lean` says of itself that it sits upstream of the axioms file; none of the six dyadic files contains a `sorry`.  Two things the earlier "sorry-free" verdict left out: the library declares **nine `axiom`s**, all quarantined in `GQ2/Foundations/Axioms.lean` as classical literature inputs (local reciprocity, Tate duality, the local Euler characteristic, …) under an enforced one-file rule, and four proof-position `sorry`s live in `Challenge.lean` and `ChallengePalomar.lean`, which *state the open problem* rather than leaving a gap.  Apache 2.0 |
 | F3.1, F3.2 (the local invariants under the genus) | [`mariainesdff/HassePrinciple`](https://github.com/mariainesdff/HassePrinciple) — Hilbert symbols, Hasse–Minkowski over general fields | definitions in place and **38 proof-position `sorry`s**, counted in the clone.  Eleven of them are in `HilbertSymbol/Basic.lean`, so it is the symbol's own basic properties that are open, not only a choice-independence lemma at the top; the rest are spread over `Padics/Lemmas` (9), `QuadraticForm/HasseMinkowskiInvariant` (6), `QuadraticForm/Basic` (5) and four more files.  A partial route, and further from being a supplier than the earlier verdict said |
-| E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) — covering spaces and universal covers | partial: gives the covering-space language, not $K3$ surfaces.  **Unlike every other row here, this one has not been read**: the repository is not in the local corpus, so the claim rests on its description alone and is the weakest row in the table |
+| E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) | **read, and it is not covering spaces.**  Its live files are winding numbers and the fundamental theorem of algebra: `ComplexPathWinding`, `RootsMathlib` (the winding number of a polynomial on a large circle, leading-term domination, `eventually_windingNumber_eq_natDegree`).  The covering-space material — `ExpCovering`, `UniquePathLifting` — is in a `Legacy/` subtree that holds the repository's only `sorry`s, next to a `SectionTwo.lean` whose content is `theorem TheoremTwo : True`.  For E2 the better route is Mathlib itself: `IsCoveringMap`, `IsEvenlyCovered` and `IsCoveringMapOn` in `Topology/Covering/Basic.lean`, with `Topology/Covering/Quotient.lean` and `Topology/Homotopy/Lifting.lean`.  Neither supplies $K3$ surfaces or the covering involution |
 | F1.10, F1.7, F2.1, F2.4–F2.5, F3.1, F4.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness`, and the root-lattice objects of `DefiniteNondegenerate` and `DRootLattice` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
 
 ### Registry sweep for the strata added after the first pass
@@ -1010,15 +1010,42 @@ is the result of that sweep, with the near misses named — a repository is more
 useful recorded as *not* a supplier than left unmentioned, because the next
 reader would otherwise sweep for it again.
 
-**How far each row was checked.**  Six of the repositories named below are in the
-local corpus and were read: `physlib`, `ModularForms_Lean4`,
-`ModularFormDimensions`, `WeilConverse`, `PadicModForms` and `gq2-lean`.  Seven
-are not cloned — `bruhat-tits`, `steinberg-formalization`, `nullstellensatz`,
-`classification-of-surfaces`, `Main-theorem-of-polytopes`, `Rupert.lean` and
-`adele-ring_locally-compact` — so their rows say what their descriptions say.
-Each is a claim that a repository is *not* a supplier, which is the safe
-direction for an unread claim to point, but the distinction belongs on the
-record.
+**Every row below has now been read.**  Six of these repositories are in the
+local corpus; the other seven were cloned and read for this pass, and one of them
+changed its verdict — see the `bruhat-tits` row, which turns out to supply
+lattice theory over a discrete valuation ring rather than only a tree.  What each
+reading found, beyond the row's own cell:
+
+- `chrisflav/bruhat-tits` is **sorry-free**, and its `Lattice/` subtree is not
+  about the tree at all: `IsLattice` for $R$-submodules of $\iota\to K$ over a
+  DVR, the $K^\times$-action, and in `Lattice/Distance.lean` the **elementary
+  divisor theorem for a pair of lattices** — `exists_normal_basis_uniformizer`
+  gives bases with $b_L(i) = \varpi^{f(i)}b_M(i)$ and $f$ antitone, through a
+  Cartan decomposition, and `signature_unique` proves $f$ independent of the
+  uniformizer and of both bases.  `signature`, `dist`, and $L/\varpi L$ over the
+  residue field follow.  This is the rank-two case of the invariant factors of
+  one lattice relative to another, which is the step under Pa9 and under
+  `lean-categories`' `JordanFiltration`.  Two restrictions: rank is fixed at
+  `Fin 2` throughout, and these lattices carry **no bilinear form**, so nothing
+  here decomposes a *quadratic* lattice.
+- `BochaoKong/nullstellensatz` has a `LocalComplexGeometry/` tree with local
+  biholomorphisms and a Weierstrass-preparation bridge, one file carrying
+  `sorry`s.  It confirms the row: the local theory, and the natural floor for
+  AF10 and for stratum E's local structure.
+- `Jun2M/Main-theorem-of-polytopes` is sorry-free and bundles `Halfspace` as a
+  **norm-one dual functional plus a level**, with convexity, closedness and full
+  affine span.  That norm-one condition is exactly what ties it to the Euclidean
+  structure and away from Lo4.
+- `singerng/steinberg-formalization` is sorry-free and is `A3`, `B3Small`,
+  `B3Large` — Steinberg relations for named root systems, which is a
+  presentation, as the row says.
+- `mccorvie/classification-of-surfaces` is 681 files of Jordan curve and
+  Schoenflies theory with three `sorry` files: a serious development, and of
+  topological surfaces.
+- `dwrensha/Rupert.lean` is quaternion-to-rotation-matrix machinery and the snub
+  cube.  Sorry-free, and unrelated to anything here.
+- `smmercuri/adele-ring_locally-compact` supplies uniformizers in adic
+  completions and imports local class field theory, with one `sorry` file.
 
 | Stratum | Nearest thing in the registry | Why it is not a supplier |
 | --- | --- | --- |
@@ -1029,7 +1056,7 @@ record.
 | Lo, V | [`Jun2M/Main-theorem-of-polytopes`](https://github.com/Jun2M/Main-theorem-of-polytopes); [`dwrensha/Rupert.lean`](https://github.com/dwrensha/Rupert.lean) | convex polytopes in Euclidean space; Lo4's polyhedra live in a Lorentz space and are cut out by the light cone |
 | AF | [`CBirkbeck/ModularForms_Lean4`](https://github.com/CBirkbeck/ModularForms_Lean4), [`loefflerd/ModularFormDimensions`](https://github.com/loefflerd/ModularFormDimensions), [`CBirkbeck/WeilConverse`](https://github.com/CBirkbeck/WeilConverse), [`ANR-FALSE/PadicModForms`](https://github.com/ANR-FALSE/PadicModForms) | all rank one — forms on $\mathbb{H}$ for congruence subgroups of $\mathrm{SL}_2$.  AF is automorphic forms on a bounded symmetric domain of rank 2 |
 | Rt | — | nothing: no Iwasawa decomposition, no Siegel set, no arithmetic-group reduction theory anywhere in the registry |
-| Ni, Pa | [`smmercuri/adele-ring_locally-compact`](https://github.com/smmercuri/adele-ring_locally-compact), [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean) | `gq2-lean` supplies Pa's dyadic layer; the adele ring is a route for F3.1's adelic phrasing, not for Nikulin's theorems |
+| Ni, Pa | [`smmercuri/adele-ring_locally-compact`](https://github.com/smmercuri/adele-ring_locally-compact), [`roed-math/gq2-lean`](https://github.com/roed-math/gq2-lean), [`chrisflav/bruhat-tits`](https://github.com/chrisflav/bruhat-tits) | `gq2-lean` supplies Pa's dyadic layer; the adele ring is a route for F3.1's adelic phrasing, not for Nikulin's theorems.  **`bruhat-tits` is a partial supplier for Pa9's first step** and was missed by both earlier sweeps: the elementary divisor theorem for a pair of DVR lattices, existence and uniqueness of the antitone signature, sorry-free — in rank two only, and for lattices with no form.  Pa9 needs it in every rank and for a quadratic lattice, which is where `lean-categories`' `Jordan*` files continue |
 
 Two general observations from the sweep.  The registry's strength is
 **arithmetic**: number fields, adeles, modular forms, class field theory,
