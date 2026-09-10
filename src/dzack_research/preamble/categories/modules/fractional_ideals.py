@@ -213,6 +213,25 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         def fraction_field(self):
             return self._preamble_fraction_field
 
+        def ring(self):
+            r"""Return the coefficient ring ``R`` of this fractional ideal."""
+            return self.base_ring()
+
+        def as_submodule(self):
+            r"""Return this integral ideal as the represented submodule ``I <= R``.
+
+            Fractional ideals are represented as submodules of ``Frac(R)``;
+            only an integral ideal is a submodule of ``R`` itself.  In the
+            integral case this object already is the owned module subobject,
+            with :meth:`inclusion` landing in ``R`` viewed as its rank-one
+            module, so no second subobject is constructed.
+            """
+            if self not in Ideals(self.base_ring()):
+                raise ValueError(
+                    "a nonintegral fractional ideal is a submodule of Frac(R), not of R"
+                )
+            return self
+
         @cached_method
         def module_generators(self):
 
