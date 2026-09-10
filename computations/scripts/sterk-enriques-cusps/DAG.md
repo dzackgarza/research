@@ -16,7 +16,17 @@ Node status: **S** a numbered statement in Sterk; **U** an unnumbered
 computation in Sterk carried by a figure; **X** external, cited to another
 source; **M** requires substrate absent from Mathlib at the pinned revision;
 **LC** a known implementation route through `lean-categories`, pending its
-publication to Prove2Me (see *Implementation routes* below).
+publication to Prove2Me (see *Implementation routes* below); **R** *realized
+locally* — a definition for it is written in `lean/Atoms.lean` beside this file.
+
+**`R` is not a supplier.**  It says this project has written the statement down,
+in its own repository, unpublished, unreviewed and in no corpus the registry
+knows.  It therefore does **not** make a node terminal in the sense of
+*Terminality verdicts* below, which is a claim about work someone else has
+already done; a node can be `R` and greenfield at once, and several are.  The
+distinction matters because the whole point of the terminality classification is
+to say what this project would not have to write, and a file written by this
+project answers a different question.
 
 The strata, in the order they are read below: **A**, **B**, **C**, **D** are the
 paper's own steps; **BB**, **Bo**, **Cl**, **E**, **Nk** are what its citations
@@ -338,12 +348,12 @@ automorphic forms".  Everything under that phrase is Baily–Borel Part II and
 | AF11 | 10.1–10.2: $V^* = X^*/\Gamma$ is the disjoint union of finitely many $V_i = F_i/\Gamma(F_i)$, each an irreducible normal analytic space, so 9.1 applies; and a quotient $\omega/\omega'$ of integral automorphic forms of equal weight with $\omega'$ nonvanishing is a $\mathcal{Q}$-function | Baily–Borel 10.1, 10.2 | AF8, AF10, D6 |
 | AF12 | **Theorem 10.11 (= BB8)**: there are a weight $l$ and finitely many integral automorphic forms $E_i$ of weight $l$ whose extensions to $X^*$ never vanish simultaneously, and the associated map $V^*\to\mathbf{P}(N,\mathbb{C})$ is an isomorphism onto a **normally projective** subvariety | Baily–Borel 10.11 | AF9, AF11 |
 | AF13 | Theorem 10.14: if $G$ has no normal $\mathbb{Q}$-subgroup of dimension 3, the direct image $i_*\mathcal{Q}_\rho$ is an algebraic coherent sheaf, the space of automorphic forms of type $\tilde\xi_\rho$ is **finite dimensional**, and the ring of automorphic forms of positive weight is **finitely generated** | Baily–Borel 10.14 | AF12 |
-| AF14 | an **analytic subset** of an open $U\subseteq\mathbb{C}^n$: the common zero locus in $U$ of finitely many functions analytic on a neighbourhood of $U$ | decomposed out of AF10, whose "analytic space" had no definition under it | Mathlib `AnalyticOnNhd` (`Analysis/Analytic/Basic.lean`), `IsOpen`, `Set.inter`; realized as `Sterk.IsAnalyticSubset` |
-| AF15 | the **structure sheaf by extension**: a function on an analytic subset is holomorphic at a point when it agrees near that point with a function analytic on an ambient neighbourhood | decomposed out of AF10; this is what avoids an ideal sheaf and a sheafification | AF14; Mathlib `AnalyticOnNhd`, `IsOpen`; realized as `Sterk.HolomorphicAtOnSubset` |
-| AF16 | a **local model chart** and a locally analytic space: a homeomorphism of an open set onto an analytic subset, with the charts covering | decomposed out of AF10 | AF14; Mathlib `Homeomorph`, `IsOpen`, `TopologicalSpace`; realized as `Sterk.AnalyticChart` and `IsLocallyAnalyticSpace`.  Irreducibility is Mathlib's `IsIrreducible` |
-| AF17 | the **germ ring** at a point: the functions holomorphic there, as a subring, quotiented by the ideal of those vanishing near the point | decomposed out of AF10's normality clause, which needs a local ring | AF15; Mathlib `Subring`, `Ideal`, `Ideal.Quotient`, and `AnalyticOnNhd.add`, `.neg`, `.mul`, `.mono` for the closure proofs; realized as `Sterk.holomorphicSubring`, `vanishingIdeal`, `germRing` |
-| AF18 | **normality** at a point: the germ ring is integrally closed | decomposed out of AF10 | AF17; Mathlib `IsIntegrallyClosed` (`RingTheory/IntegrallyClosed.lean`), `IsDomain`; realized as `Sterk.IsNormalAtPoint` |
-| AF19 | the **dimension of a germ** and Baily–Borel's stratification $V_{(d)}$, with condition (i) — each stratum closed, the top-dimensional part dense — as a statable hypothesis | decomposed out of AF10, whose clause (i) this is; note (i) is a **hypothesis** of Theorem 9.2 and not a conclusion | AF17; Mathlib `ringKrullDim` (`RingTheory/KrullDimension/Basic.lean`), `Order.krullDim`, `IsClosed`, `closure`; realized as `Sterk.germDim`, `dimStratum`, `dimStratumExact`, `StratificationAdmissible` |
+| AF14 | `R` an **analytic subset** of an open $U\subseteq\mathbb{C}^n$: the common zero locus in $U$ of finitely many functions analytic on a neighbourhood of $U$ | decomposed out of AF10, whose "analytic space" had no definition under it | Mathlib `AnalyticOnNhd` (`Analysis/Analytic/Basic.lean`), `IsOpen`, `Set.inter` |
+| AF15 | `R` the **structure sheaf by extension**: a function on an analytic subset is holomorphic at a point when it agrees near that point with a function analytic on an ambient neighbourhood | decomposed out of AF10; this is what avoids an ideal sheaf and a sheafification | AF14; Mathlib `AnalyticOnNhd`, `IsOpen` |
+| AF16 | `R` a **local model chart** and a locally analytic space: a homeomorphism of an open set onto an analytic subset, with the charts covering | decomposed out of AF10 | AF14; Mathlib `Homeomorph`, `IsOpen`, `TopologicalSpace` |
+| AF17 | `R` the **germ ring** at a point: the functions holomorphic there, as a subring, quotiented by the ideal of those vanishing near the point | decomposed out of AF10's normality clause, which needs a local ring | AF15; Mathlib `Subring`, `Ideal`, `Ideal.Quotient`, and `AnalyticOnNhd.add`, `.neg`, `.mul`, `.mono` for the closure proofs |
+| AF18 | `R` **normality** at a point: the germ ring is integrally closed | decomposed out of AF10 | AF17; Mathlib `IsIntegrallyClosed` (`RingTheory/IntegrallyClosed.lean`), `IsDomain` |
+| AF19 | `R` the **dimension of a germ** and Baily–Borel's stratification $V_{(d)}$, with condition (i) — each stratum closed, the top-dimensional part dense — as a statable hypothesis | decomposed out of AF10, whose clause (i) this is; note (i) is a **hypothesis** of Theorem 9.2 and not a conclusion | AF17; Mathlib `ringKrullDim` (`RingTheory/KrullDimension/Basic.lean`), `Order.krullDim`, `IsClosed`, `closure` |
 
 **AF9 is what makes the boundary complex a compactification rather than a
 quotient.**  It is the statement that automorphic forms separate boundary
@@ -442,7 +452,7 @@ theorems actually bottom out.
 | Pa9 | **Corollary 1.9.3, the canonical decomposition**: every $p$-adic lattice (even when $p=2$) has a unique expression $K_1^{(p)}(1)^{t_p-v_p}\oplus K_{\theta_p}^{(p)}(1)^{v_p}\oplus K(q_p)$ with $0\le v_p\le1$ (three cases, according to $p$ and whether $q_2$ has a $q^{(2)}_\theta(2)$ summand); **in particular $\operatorname{rk}K_p$, $\operatorname{discr}(K_p\otimes\mathbb{Q}_p)$ and $q_{K_p}$ determine $K_p$** | Nikulin Cor. 1.9.3 | Pa8 |
 | Pa10 | **Corollary 1.9.4**: the invariants $(t_{(+)},t_{(-)},q)$ determine the **genus** of an even lattice | Nikulin Cor. 1.9.4 | Pa9 |
 | Pa11 | **Theorem 1.9.5**: an isomorphism $q_{K_p}\to q_{K'_p}$ of the discriminant forms of isomorphic $p$-adic lattices is induced by an isomorphism $K_p\to K'_p$; **Corollary 1.9.6**: $O(K_p)\to O(q_{K_p})$ is surjective; **Corollary 1.9.7**: an isomorphism between two primitive sublattices of a unimodular $p$-adic lattice extends to an automorphism of it | Nikulin Thm. 1.9.5, Cors. 1.9.6, 1.9.7 | Pa9, Ni4 |
-| Pa12 | the **semigroup of isometry classes** of $p$-adic forms: forms on `Fin n → ℤ_[p]` indexed by the rank, modulo isometry, under orthogonal sum | decomposed out of Pa1, whose semigroup ranges over a proper class until representatives are fixed | Pa1; Mathlib `PadicInt`, `QuadraticMap.prod` with `Isometry.inl`/`inr`, `QuadraticMap.IsometryEquiv`, `Setoid`, `Quotient`, `finSumFinEquiv`, `LinearEquiv.sumArrowLequivProdArrow`; realized as `Sterk.PadicForm`, `isometricSetoid`, `orthogonalSum`, `PadicFormClasses` |
+| Pa12 | `R` the **semigroup of isometry classes** of $p$-adic forms: forms on `Fin n → ℤ_[p]` indexed by the rank, modulo isometry, under orthogonal sum | decomposed out of Pa1, whose semigroup ranges over a proper class until representatives are fixed | Pa1; Mathlib `PadicInt`, `QuadraticMap.prod` with `Isometry.inl`/`inr`, `QuadraticMap.IsometryEquiv`, `Setoid`, `Quotient`, `finSumFinEquiv`, `LinearEquiv.sumArrowLequivProdArrow` |
 
 Pa5 is the computational engine: every one of Nikulin's classification proofs
 proceeds by reducing to these relations, and the graph had been carrying it as
@@ -711,7 +721,7 @@ depend on, which was previously an open node saying "locate in Sterk".
 | F2.11 | $\mathcal{E}(L)$, the subgroup generated by the $E_{f,x}$, is **normal** in $O(L)$, since $\phi E_{f,x}\phi^{-1} = E_{\phi f,\phi x}$ | Scattone §3.7 | F2.10 |
 | F2.12 | **Lemma 3.7.1 (Eichler)**: $\mathcal{E}(L)\subseteq O^*(L)$ for every even lattice $L$ | Scattone Lemma 3.7.1 | F2.11, F2.5 |
 | F2.13 | **Proposition 3.7.3** (= Sterk 2.18 = node A6): for $L$ even containing at least two hyperbolic planes and $v,w$ primitive with $(v,v)=(w,w)$, some $\phi\in\mathcal{E}(L)$ carries $v$ to $w$ **iff** $v^* = w^*$ | Scattone Prop. 3.7.3 | F2.12, F1.2 |
-| F2.14 | $O(q)$ **as a group** for a finite quadratic form: the automorphisms of the finite abelian group preserving $q$, under composition; $O(G_L)$ is this at $q = q_L$ | decomposed out of F2.1, whose $\tau$ has this as its codomain and had no definition for it | F1.9, F1.15, F1.13's construction; Mathlib `AddEquiv`, `Subgroup`, `GroupTheory/FiniteAbelian/Basic.lean` |
+| F2.14 | `R` $O(q)$ **as a group** for a finite quadratic form: the automorphisms of the finite abelian group preserving $q$, under composition; $O(G_L)$ is this at $q = q_L$ | decomposed out of F2.1, whose $\tau$ has this as its codomain and had no definition for it | F1.9, F1.15, F1.13's construction; Mathlib `AddEquiv`, `Subgroup`, `GroupTheory/FiniteAbelian/Basic.lean` |
 
 Three consequences for rows already in the graph.
 
@@ -788,10 +798,10 @@ rows that carried section titles.
 | F1.10 | for even nondegenerate $L$: $G_L = L^*/L$ is finite, and $b_L : G_L\times G_L\to\mathbb{Q}/\mathbb{Z}$, $q_L : G_L\to\mathbb{Q}/2\mathbb{Z}$ are induced by the rational extension of $b$ — the **discriminant-quadratic form** | Scattone §3.2 | F1.7, F1.9 |
 | F1.11 | Thm 3.2.1 (= Nikulin 1.10.2): an even lattice with signature $(n_+,n_-)$ and discriminant form $q$ exists iff … — **condition not transcribed**; Nk3 carries Nikulin's three | Scattone Thm 3.2.1 | F1.10, Nk3 |
 | F1.12 | Thm 3.2.2 (Nikulin): an even lattice with signature $(t_+,t_-)$ and discriminant form $q$ can be primitively embedded … — **conclusion not transcribed** | Scattone Thm 3.2.2 | F1.10, F1.8 |
-| F1.13 | $O(L)$ **as a group**: the $\mathbb{Z}$-linear automorphisms of $L$ preserving $b$, under composition, and its matrix description $\{M : {}^tM G_L M = G_L\}$ through a basis | decomposed out of F1.1, whose row asserted $O(L)$ with no definition | F1.1; Mathlib `LinearEquiv`, `Subgroup`, and `QuadraticMap.IsometryEquiv`'s `refl`/`symm`/`trans`, which are the group operations with no `Group` instance over them |
-| F1.14 | $\mathrm{div}(v)$, the positive generator of $(v,L)\subseteq\mathbb{Z}$, and $v^* = v/\mathrm{div}(v) + L \in G_L$ | decomposed out of F1.7, which states both and rests on a dual that supplies neither | F1.7, F1.10; Mathlib `Ideal.span`, `Int.gcd`, and `BilinForm.dualSubmoduleParing` for the pairing that produces the generator |
-| F1.15 | the doubling $\mathbb{Q}/\mathbb{Z}\to\mathbb{Q}/2\mathbb{Z}$, and that $q(x+y)-q(x)-q(y)$ equals $2b(x,y)$ through it | decomposed out of F1.9, whose axiom relates a $\mathbb{Q}/2\mathbb{Z}$-valued $q$ to a $\mathbb{Q}/\mathbb{Z}$-valued $b$ | F1.9; Mathlib `AddCircle (1 : ℚ)` and `AddCircle (2 : ℚ)`, `QuotientAddGroup.map` for the induced map, `QuadraticMap.polar` for the left side |
-| F1.16 | Milgram: for $L$ even unimodular, $n_+ - n_- \equiv 0 \pmod 8$; and in general the Gauss sum of $q_L$ computes $\mathrm{sign}(q_L)$ | decomposed out of F1.4, whose last clause is this theorem | F1.10, F1.15; Mathlib `gaussSum` (`NumberTheory/GaussSum.lean`) over `AddChar` and `MulChar`, `QuadraticForm/Signature.lean` |
+| F1.13 | `R` $O(L)$ **as a group**: the $\mathbb{Z}$-linear automorphisms of $L$ preserving $b$, under composition, and its matrix description $\{M : {}^tM G_L M = G_L\}$ through a basis | decomposed out of F1.1, whose row asserted $O(L)$ with no definition | F1.1; Mathlib `LinearEquiv`, `Subgroup`, and `QuadraticMap.IsometryEquiv`'s `refl`/`symm`/`trans`, which are the group operations with no `Group` instance over them |
+| F1.14 | `R` $\mathrm{div}(v)$, the positive generator of $(v,L)\subseteq\mathbb{Z}$, and $v^* = v/\mathrm{div}(v) + L \in G_L$ | decomposed out of F1.7, which states both and rests on a dual that supplies neither | F1.7, F1.10; Mathlib `Ideal.span`, `Int.gcd`, and `BilinForm.dualSubmoduleParing` for the pairing that produces the generator |
+| F1.15 | `R` the doubling $\mathbb{Q}/\mathbb{Z}\to\mathbb{Q}/2\mathbb{Z}$, and that $q(x+y)-q(x)-q(y)$ equals $2b(x,y)$ through it | decomposed out of F1.9, whose axiom relates a $\mathbb{Q}/2\mathbb{Z}$-valued $q$ to a $\mathbb{Q}/\mathbb{Z}$-valued $b$ | F1.9; Mathlib `AddCircle (1 : ℚ)` and `AddCircle (2 : ℚ)`, `QuotientAddGroup.map` for the induced map, `QuadraticMap.polar` for the left side |
+| F1.16 | `R` Milgram: for $L$ even unimodular, $n_+ - n_- \equiv 0 \pmod 8$; and in general the Gauss sum of $q_L$ computes $\mathrm{sign}(q_L)$ | decomposed out of F1.4, whose last clause is this theorem | F1.10, F1.15; Mathlib `gaussSum` (`NumberTheory/GaussSum.lean`) over `AddChar` and `MulChar`, `QuadraticForm/Signature.lean` |
 | F3.1 | for $\mathbb{Z}_p$ the $p$-adic integers with the convention $\mathbb{Z}_\infty=\mathbb{R}$, and $L_p = L\otimes\mathbb{Z}_p$: lattices $L$, $M$ are in the same **genus** when $L_p\cong M_p$ for every $p = 2,3,5,7,\dots,\infty$ | Scattone §3.3 | F1.1; $p$-adic integers |
 | F3.2 | even lattices are in the same genus **iff** they have the same signature and the same discriminant-quadratic form | Scattone §3.3; proved as Nikulin Cor. 1.9.4 | F3.1, F1.10, Pa10 |
 | F3.3 | Theorem 3.3.1 (Nikulin, = Nk5): for $L$ even nondegenerate indefinite with $\mathrm{rk}\,L > \ell(G_L)+2$, the genus of $L$ contains one class and $O(L)\to O(G_L)$ is surjective | Scattone Thm 3.3.1, citing Nikulin 1.14.2 | F3.2, Nk5 |
@@ -842,7 +852,7 @@ audit against the source.
 | V11b | **Proposition 4** (correctness): $P = \bigcap_i \Pi^-_{e_i}$, the upper limit of $i$ being the length of the sequence, **possibly infinite** | Vinberg 1972 Prop. 4 | V11, V11a |
 | V12 | §1.9: for $L$ of signature $(1,n)$ and $T \subset O'(L)$ generated by reflections, with fundamental polyhedron $P$ given by the inequalities without extras and the $e_i$ primitive — how to recover an infinite vertex $q \in P$ from its parabolic subscheme $\Sigma_q$: for each connected component $\Sigma_0$, the $e_i$ with $i \in I_0$ span a parabolic subspace $E_0$ tangent to the cone, yielding the vector $u(\Sigma_0)$ | Vinberg 1983 (`4QDSPB92`) §1.9 | V8 |
 | V13 | **Lemma (Vinberg 1983 §1.9)**: in general $u(\Sigma_0)$ **need not be a primitive element of $L$**; it is primitive when $T$ contains all 2-reflections (1-reflections) of $O(L)$ and at least one $e_i$, $i \in I_0$, is a 2-root (1-root) | Vinberg 1983 §1.9, Lemma | V12 |
-| V14 | **indecomposability** of a matrix: no re-indexing splits it into a block-diagonal matrix with both parts nonempty.  Vinberg's $C^+$-matrices are the indecomposable positive ones | decomposed out of V1, which states the condition and had no definition for it | V1; Mathlib `Matrix`, `Matrix.blockDiagonal` (`Data/Matrix/Block.lean`), `Equiv`, `Sum`; realized as `Sterk.Matrix.IsDecomposable` and `IsIndecomposable` |
+| V14 | `R` **indecomposability** of a matrix: no re-indexing splits it into a block-diagonal matrix with both parts nonempty.  Vinberg's $C^+$-matrices are the indecomposable positive ones | decomposed out of V1, which states the condition and had no definition for it | V1; Mathlib `Matrix`, `Matrix.blockDiagonal` (`Data/Matrix/Block.lean`), `Equiv`, `Sum` |
 
 **V8 is what C1 actually needs** — the correspondence between infinitely distant
 vertices of the fundamental polyhedron and principal $C^0$-submatrices of rank
@@ -874,7 +884,7 @@ V is read from, one section earlier — and from Iversen, *Hyperbolic geometry*
 | Lo7 | the hyperboloid model: in a space of Sylvester type $(-n,1)$ the vectors of norm 1 form a two-sheeted hyperboloid, $H^n$ is one sheet, $\langle P,Q\rangle\ge1$ for $P,Q\in H^n$, and $\cosh d(P,Q) = \langle P,Q\rangle$ defines a metric — the triangle inequality by the factorization $\Delta = 4\,\mathrm{sh}\,p\,\mathrm{sh}(p-a)\,\mathrm{sh}(p-b)\,\mathrm{sh}(p-c)$ of the Gram determinant | Iversen II.4.1–4.4 | Lo1 |
 | Lo8 | the tangent space at $A$ is $A^\perp$, of type $(-n,0)$; and any $B$ is $A\cosh d(A,B) + U\sinh d(A,B)$ for a unit tangent vector $U$ at $A$ | Iversen II.4.5, 4.6 | Lo7 |
 | Lo9 | for $\Gamma$ discrete and generated by finitely many reflections, the mirrors cut $\Lambda^n$ into **$\Gamma$-cells**, each a fundamental region, and the reflections in the walls of one cell generate $\Gamma$; a convex polyhedron is a $\Gamma$-cell **iff** all its dihedral angles are submultiples of $\pi$ | Vinberg 1975 §1, condition (R) | Lo4, Lo6 |
-| Lo10 | the negative cone $V=\{x:(x,x)<0\}$ of a form of negative inertial index 1 has exactly **two** connected components, interchanged by $x\mapsto -x$ | decomposed out of Lo1, whose last clause is this theorem | Lo1; Mathlib `IsConnected`, `IsPreconnected`, `Convex` and `ConnectedComponents`, over `sigNeg` |
+| Lo10 | `R` the negative cone $V=\{x:(x,x)<0\}$ of a form of negative inertial index 1 has exactly **two** connected components, interchanged by $x\mapsto -x$ | decomposed out of Lo1, whose last clause is this theorem | Lo1; Mathlib `IsConnected`, `IsPreconnected`, `Convex` and `ConnectedComponents`, over `sigNeg` |
 
 **The two sources use opposite signs**, and stratum V is stated in Vinberg's.
 Vinberg puts $\Lambda^n$ inside a form of negative inertial index 1 and takes the
@@ -1037,6 +1047,28 @@ route pending publication is still the route.
 | F3.1, F3.2 (the local invariants under the genus) | [`mariainesdff/HassePrinciple`](https://github.com/mariainesdff/HassePrinciple) — Hilbert symbols, Hasse–Minkowski over general fields | definitions in place and **38 proof-position `sorry`s**, counted in the clone.  Eleven of them are in `HilbertSymbol/Basic.lean`, so it is the symbol's own basic properties that are open, not only a choice-independence lemma at the top; the rest are spread over `Padics/Lemmas` (9), `QuadraticForm/HasseMinkowskiInvariant` (6), `QuadraticForm/Basic` (5) and four more files.  A partial route, and further from being a supplier than the earlier verdict said |
 | E2 (the $K3$ double cover as a covering space) | [`AlexKontorovich/CoveringSpacesProject`](https://github.com/AlexKontorovich/CoveringSpacesProject) | **read, and it is not covering spaces.**  Its live files are winding numbers and the fundamental theorem of algebra: `ComplexPathWinding`, `RootsMathlib` (the winding number of a polynomial on a large circle, leading-term domination, `eventually_windingNumber_eq_natDegree`).  The covering-space material — `ExpCovering`, `UniquePathLifting` — is in a `Legacy/` subtree that holds the repository's only `sorry`s, next to a `SectionTwo.lean` whose content is `theorem TheoremTwo : True`.  For E2 the better route is Mathlib itself: `IsCoveringMap`, `IsEvenlyCovered` and `IsCoveringMapOn` in `Topology/Covering/Basic.lean`, with `Topology/Covering/Quotient.lean` and `Topology/Homotopy/Lifting.lean`.  Neither supplies $K3$ surfaces or the covering involution |
 | F1.10, F1.7, F2.1, F2.4–F2.5, F3.1, F4.1 | `lean-categories` itself — `Discriminant`, `DiscriminantQuadratic`, `MetricDual`, `DiscriminantAction`, `CanonicalSpinorNorm`, `Hasse`, `DyadicSymbol`, `ClassFiniteness`, and the root-lattice objects of `DefiniteNondegenerate` and `DRootLattice` | sorry-free; **pending publication to Prove2Me**, and three of the correspondences unverified (see the routes table) |
+
+### Realized in this repository, and in no corpus
+
+Sixteen nodes carry `R`: a definition for them is written in `lean/Atoms.lean`,
+beside this file, against the pinned Mathlib.  Fourteen are definitions; Lo10 is
+proved entire; F1.16 has its object — the Gauss sum of a discriminant form — and
+the **modulus** half of Milgram, $|G(q)|^2 = |A|$, with the argument half absent
+because it is a statement about a lattice's signature and belongs with F3.2.
+
+`R` does not move a node's terminality verdict, and the reason is the point of
+the whole classification.  *Terminal* means someone else has already done the
+work, so that this project would not have to; the sweeps above answer that
+question against Mathlib, the 277 registry repositories, the 734-package
+Reservoir clone and the live index, and the answer for all sixteen is **no**.  A
+file in this repository does not change that answer — it is unpublished,
+unreviewed, in no corpus, and it is *our* work rather than found work.  Every one
+of these nodes is greenfield in the table above and stays there.
+
+What `R` is good for: it records that the statement has been written down once,
+so a reader knows where to look, and it keeps the graph from claiming the same
+absence twice.  What it must not be read as: a supplier, a citation, or evidence
+that the node is done.  None of them is proved except Lo10.
 
 ### Registry sweep for the strata added after the first pass
 
@@ -1586,12 +1618,20 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 | the **order of vanishing** of a rational function at such a point | **conditionally, and it needs a hypothesis the node did not state**: `IsDiscreteValuationRing.addVal` (`RingTheory/DiscreteValuationRing/Basic.lean`) is the valuation, and it applies once the local ring at a codimension-one point *is* a DVR, which needs normality.  That chain is now **E16** |
 | the principal divisor, and linear equivalence | over E16 and a quotient — **yes, once E16 exists** |
 
-### Every atom is written, in `lean/Atoms.lean`
+### What `lean/Atoms.lean` is, and what it is not
 
-The searching stopped where it had to: five sweeps established that these
-notions are in no indexed Lean code.  The remedy for that is to write them, and
-they are written — `lean/Atoms.lean`, beside this file, against the pinned
-Mathlib, with no `sorry` and no `axiom`.
+`lean/Atoms.lean` sits beside this file and holds a definition for each of the
+sixteen `R` nodes, written against the pinned Mathlib with no `sorry` and no
+`axiom`.  It exists because the sweeps found these notions in no indexed Lean
+code and the statements were then written here rather than found.
+
+**It is not part of the terminality answer.**  This file's job is to say, node by
+node, what someone else has already formalized, so that the project knows what it
+must write; a file the project wrote answers a different question and cannot make
+a node terminal.  Every `R` node is greenfield in the tables above and stays
+there.  What the file gives is a place to look and a guarantee that the statement
+type-checks; what it does not give is a supplier, a citation, or a proof — Lo10 is
+the only one proved, and F1.16 only in its modulus half.
 
 Every declaration each atom is written over was read in the pinned source, the
 same standard the rest of this file holds itself to.  Elaboration is a separate
@@ -1835,8 +1875,8 @@ rows.
 | E11 | Kodaira's projectivity criterion (= node Cl5): a surface carrying a line bundle of positive self-intersection is projective | BPV Chap. IV Thm 5.2 | E1 |
 | E12 | Hodge structures of weight 2 on $H^2$, and the period point | BPV Chap. I; Horikawa I §7 | E1 |
 | E13 | the period map for Enriques surfaces and its domain $\Omega_-$ | Horikawa I §7, Horikawa II | E12, E6 |
-| E14 | a **degree-two covering with its deck involution**: a covering map whose fibres have two elements, the nontrivial automorphism over the base, and that it is an involution | decomposed out of E2, whose covering claim had no supplier once `CoveringSpacesProject` was read | Mathlib `IsCoveringMap`, `IsEvenlyCovered` (`Topology/Covering/Basic.lean`), `Topology/Covering/Quotient.lean`, `Topology/Homotopy/Lifting.lean`; deck transformations are **not** in that tree and are the content here |
-| E15 | a **Weil divisor** on an integral scheme: the free abelian group on the codimension-one points, the principal divisor of a rational function, and linear equivalence | decomposed out of E1, whose row asks for divisors, line bundles and the canonical bundle with nothing under them | Mathlib `Finsupp` for the free group, `Order.height` (`Order/KrullDimension.lean`) for codimension, `Scheme.functionField` and `Scheme.germToFunctionField_injective` (`AlgebraicGeometry/FunctionField.lean`) for the rational functions.  `rg -i 'WeilDivisor\|Chow\|algebraicCycle'` over the pinned tree returns **nothing**, so this is the deepest greenfield node in the graph and everything in E and Cl sits on it |
+| E14 | `R` a **degree-two covering with its deck involution**: a covering map whose fibres have two elements, the nontrivial automorphism over the base, and that it is an involution | decomposed out of E2, whose covering claim had no supplier once `CoveringSpacesProject` was read | Mathlib `IsCoveringMap`, `IsEvenlyCovered` (`Topology/Covering/Basic.lean`), `Topology/Covering/Quotient.lean`, `Topology/Homotopy/Lifting.lean`; deck transformations are **not** in that tree and are the content here |
+| E15 | `R` a **Weil divisor** on an integral scheme: the free abelian group on the codimension-one points, the principal divisor of a rational function, and linear equivalence | decomposed out of E1, whose row asks for divisors, line bundles and the canonical bundle with nothing under them | Mathlib `Finsupp` for the free group, `Order.height` (`Order/KrullDimension.lean`) for codimension, `Scheme.functionField` and `Scheme.germToFunctionField_injective` (`AlgebraicGeometry/FunctionField.lean`) for the rational functions.  `rg -i 'WeilDivisor\|Chow\|algebraicCycle'` over the pinned tree returns **nothing**, so this is the deepest greenfield node in the graph and everything in E and Cl sits on it |
 | E16 | the **order of vanishing** at a codimension-one point: that the local ring there is a discrete valuation ring, and the resulting valuation on the function field | decomposed out of E15, whose principal-divisor clause needs it and whose row did not state the hypothesis | E15; Mathlib `IsDiscreteValuationRing` with `IsDiscreteValuationRing.addVal` (`RingTheory/DiscreteValuationRing/Basic.lean`), `IsIntegrallyClosed`, `Order.height`.  The DVR property at a height-one prime needs **normality**, which is the hypothesis E15 was missing |
 
 **E6 is the load-bearing node of this stratum**, and note what it actually says:
