@@ -157,3 +157,34 @@ def test_archive_scalars_enter_each_free_construction_through_its_unit() -> None
         assert structure(QQ(3)) == QQ(3) * algebra.one()
         assert structure(QQ(3)) * x == QQ(3) * x
         assert x * structure(QQ(3)) == QQ(3) * x
+
+
+def test_archive_graded_piece_is_a_submodule_with_its_actual_inclusion() -> None:
+    algebra = TensorAlgebraOn(QQ, _two_labels())
+    piece = algebra.graded_piece(2)
+    inclusion = piece.inclusion()
+    x = algebra.algebra_generator("x")
+    y = algebra.algebra_generator("y")
+
+    assert inclusion.codomain() is algebra
+    assert piece.module_rank() == 4
+    assert x * y in piece
+    assert x not in piece
+
+
+def test_archive_degree_two_pieces_remain_countable_on_countably_many_generators() -> None:
+    from dzack_research.preamble.all import Sets, aleph0
+
+    labels = Sets.Δ[aleph0]
+    for algebra in (
+        TensorAlgebraOn(QQ, labels),
+        SymmetricAlgebraOn(QQ, labels),
+        AlternatingAlgebraOn(QQ, labels),
+        DividedPowerAlgebraOn(QQ, labels),
+    ):
+        piece = algebra.graded_piece(2)
+        assert piece.module_generating_set() in Sets().Countable().Infinite()
+        generator = next(iter(piece.module_generators()))
+        image = piece.inclusion()(generator)
+        assert image in algebra
+        assert image.degree() == 2
