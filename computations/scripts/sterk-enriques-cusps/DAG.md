@@ -925,7 +925,10 @@ revision with `git -C <tree> log -1` before believing an absence.
 
 Registry surfaces swept: the Mathlib subtrees table; *Quadratic forms, lattices,
 sphere packing*; *Algebra, number theory, algebraic geometry*; *Analysis,
-probability, geometry, dynamics*; *Category theory, higher structures*.
+probability, geometry, dynamics*; *Category theory, higher structures*.  The
+third sweep below then read the registry **as cloned source** in
+`~/gitclones/lean-reference-corpus`, which is where the two repositories the
+first two sweeps never mentioned turned up.
 
 ### Terminal against Mathlib
 
@@ -986,10 +989,13 @@ reader would otherwise sweep for it again.
 
 Two general observations from the sweep.  The registry's strength is
 **arithmetic**: number fields, adeles, modular forms, class field theory,
-$p$-adic analysis.  Its weakness is exactly this graph's upper half — Lie theory,
-algebraic groups, symmetric spaces and complex geometry.  The second is that the
-near misses cluster one level below what is needed: an affine building instead of
-a spherical one, local analytic geometry instead of analytic spaces, rank-one
+$p$-adic analysis.  Its weakness is this graph's upper half — Lie theory,
+algebraic groups, symmetric spaces and complex geometry — with one qualification
+the third sweep adds: ATLAS covers a great deal of that ground in *statement
+shape*, sorry-laden and under-specified, so the weakness is in proved
+mathematics rather than in vocabulary.  The second is that the near misses
+cluster one level below what is needed: an affine building instead of a
+spherical one, local analytic geometry instead of analytic spaces, rank-one
 automorphic forms instead of rank two, topological surfaces instead of complex
 ones.  That is what a frontier looks like from underneath.
 
