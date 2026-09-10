@@ -1,0 +1,70 @@
+r"""Archive reconciliation for the hyperbolic triangle TDD specimens.
+
+The source assertions are
+``archives/preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage``:
+the compact triangle ``[3,7]`` is Lannér, while ``[3,infinity]`` is
+quasi-Lannér.  They are stated here through the live Coxeter/Vinberg owners,
+with exact Coxeter bonds and subdiagram types rather than a numerical Gram
+approximation.
+"""
+
+from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+from sage.rings.infinity import Infinity
+
+from dzack_research.preamble.all import CoxeterDiagrams
+
+
+def _triangle(first, second, third):
+    entries = (
+        (1, first, third),
+        (first, 1, second),
+        (third, second, 1),
+    )
+    engine_entries = tuple(
+        tuple(-1 if entry is Infinity else entry for entry in row)
+        for row in entries
+    )
+    return CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(engine_entries))
+
+
+def test_two_three_seven_triangle_is_lanner_not_quasi_lanner() -> None:
+    r"""The ``(2,3,7)`` reflection triangle is compact hyperbolic."""
+    diagram = _triangle(3, 7, 2)
+    invariants = diagram.vinberg_invariant_matrix()
+
+    assert invariants.coxeter_entry(0, 1) == 3
+    assert invariants.coxeter_entry(1, 2) == 7
+    assert invariants.coxeter_entry(0, 2) == 2
+    assert not invariants.is_crystallographic()
+    assert invariants.is_hyperbolic()
+    assert invariants.is_compact_hyperbolic()
+    assert not invariants.is_paracompact_hyperbolic()
+
+    vertices = tuple(diagram.index_set())
+    for omitted in vertices:
+        subdiagram = diagram.induced_subdiagram(
+            tuple(vertex for vertex in vertices if vertex != omitted)
+        )
+        assert subdiagram.is_elliptic()
+
+
+def test_three_infinity_triangle_is_quasi_lanner_not_lanner() -> None:
+    r"""The ``[3,infinity]`` triangle has one ideal vertex and finite volume."""
+    diagram = _triangle(3, Infinity, 2)
+    invariants = diagram.vinberg_invariant_matrix()
+
+    assert invariants.coxeter_entry(0, 1) == 3
+    assert invariants.coxeter_entry(1, 2) is Infinity
+    assert invariants.coxeter_entry(0, 2) == 2
+    assert invariants.is_hyperbolic()
+    assert invariants.is_paracompact_hyperbolic()
+    assert not invariants.is_compact_hyperbolic()
+
+    ideal_vertex = diagram.induced_subdiagram((1, 2))
+    assert ideal_vertex.is_parabolic()
+    vertices = tuple(diagram.index_set())
+    for omitted in vertices:
+        subdiagram = diagram.induced_subdiagram(
+            tuple(vertex for vertex in vertices if vertex != omitted)
+        )
+        assert subdiagram.is_elliptic() or subdiagram.is_parabolic()
