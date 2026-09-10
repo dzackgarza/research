@@ -1627,6 +1627,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-arithmetic-group-finite-generation-20260910-1012` | archive reconciliation / arithmetic matrix-group finite generation | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/groups/test_arithmetic_finite_generation_archive.py` (write) | `815962d2e67c6eeacbcc0d097b1f3157f3a4ed4d` | 2026-09-10T10:12:00Z |
+
 
 
 
