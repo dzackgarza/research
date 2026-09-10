@@ -2,7 +2,13 @@ r"""Archive reconciliation for corestriction of algebra maps to the centre."""
 
 import pytest
 
-from dzack_research.preamble.all import AlternatingAlgebraOn, MatrixSpace, QQ
+from dzack_research.preamble.all import (
+    AlternatingAlgebraOn,
+    FreeAlgebraOn,
+    MatrixSpace,
+    OwnedRings,
+    QQ,
+)
 from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
@@ -20,6 +26,34 @@ def test_exterior_algebra_center_is_the_archived_predicate_subring() -> None:
     assert first not in center
     assert center.ambient_ring() is exterior
     assert center.inclusion()(first * second) == first * second
+    assert center in OwnedRings().Commutative()
+
+
+def test_archived_free_algebra_map_corestricts_to_the_exterior_center() -> None:
+    exterior = AlternatingAlgebraOn(QQ, finite_ordered_set(("e1", "e2")))
+    first = exterior.algebra_generator("e1")
+    second = exterior.algebra_generator("e2")
+    source = FreeAlgebraOn(QQ, finite_ordered_set(("t",)))
+    morphism = source.Mor(exterior)({"t": first * second})
+
+    factor = morphism.corestrict_to_center()
+    center = exterior.ring_center()
+    variable = source.algebra_generator("t")
+
+    assert factor.domain() is source
+    assert factor.codomain() is center
+    assert factor(variable) == first * second
+    assert center.inclusion()(factor(variable)) == morphism(variable)
+
+
+def test_archived_noncentral_free_algebra_map_refuses_corestriction() -> None:
+    exterior = AlternatingAlgebraOn(QQ, finite_ordered_set(("e1", "e2")))
+    first = exterior.algebra_generator("e1")
+    source = FreeAlgebraOn(QQ, finite_ordered_set(("t",)))
+    morphism = source.Mor(exterior)({"t": first})
+
+    with pytest.raises(ValueError, match="not central"):
+        morphism.corestrict_to_center()
 
 
 def test_central_algebra_map_corestricts_through_the_actual_center() -> None:

@@ -202,7 +202,7 @@ class AlgebraHomCategoryConstruction(HomCategoryConstruction):
     """
 
     def fixed_category_class_for(self, domain, codomain):
-        if _has_exact_algebra_carrier(domain) or _has_exact_algebra_carrier(codomain):
+        if _has_exact_algebra_carrier(domain):
             return UnitalMultiplicativeAlgebraHomset
         return domain._algebra_homset_class()
 
