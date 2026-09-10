@@ -976,6 +976,16 @@ is the result of that sweep, with the near misses named — a repository is more
 useful recorded as *not* a supplier than left unmentioned, because the next
 reader would otherwise sweep for it again.
 
+**How far each row was checked.**  Six of the repositories named below are in the
+local corpus and were read: `physlib`, `ModularForms_Lean4`,
+`ModularFormDimensions`, `WeilConverse`, `PadicModForms` and `gq2-lean`.  Seven
+are not cloned — `bruhat-tits`, `steinberg-formalization`, `nullstellensatz`,
+`classification-of-surfaces`, `Main-theorem-of-polytopes`, `Rupert.lean` and
+`adele-ring_locally-compact` — so their rows say what their descriptions say.
+Each is a claim that a repository is *not* a supplier, which is the safe
+direction for an unread claim to point, but the distinction belongs on the
+record.
+
 | Stratum | Nearest thing in the registry | Why it is not a supplier |
 | --- | --- | --- |
 | AG | [`chrisflav/bruhat-tits`](https://github.com/chrisflav/bruhat-tits); [`singerng/steinberg-formalization`](https://github.com/singerng/steinberg-formalization) | the Bruhat–Tits **tree** of $\mathrm{SL}_2$ over a local field is an affine building for one group, not the spherical building of AG16; Steinberg groups are a presentation, not the parabolic structure theory |
