@@ -971,6 +971,58 @@ is what "greenfield" means.  It does not mean the statements cannot be written:
 the primitives they are written over are almost all in the pinned Mathlib, and
 *The construction floor* below names them node by node.
 
+### Third sweep: the local reference corpus
+
+Both earlier sweeps read the registry as a list of links.  `~/gitclones/lean-reference-corpus`
+is that registry **cloned** — 111 repositories, 3,894 `.lean` files outside Mathlib — so the
+claims below are grep-and-read against source, not against a description.
+
+Two of those repositories were never swept at all, and one of them changes verdicts.
+
+**A search trap first, because it produced the omission.**  `rg` honours ignore rules inside
+these clones and silently returns nothing; `rg -i "root lattice" -g '*.lean' .` finds zero
+files where `rg -i --no-ignore` finds many.  Every search in this subsection used
+`--no-ignore`.  A negative result obtained without it is not a negative result.
+
+#### ATLAS — [`facebookresearch/atlas-lean`](https://github.com/facebookresearch/atlas-lean)
+
+Textbook mathematics autoformalized by LLMs (companion paper arXiv:2605.29955), 2,654 files,
+with whole books on exactly this graph's upper half: `Atlas/Buildings/` (331 files),
+`Atlas/LieGroups/` (107), `Atlas/GeometryOfManifolds/` (83).  Its provenance passes the
+registry's check — Meta Platforms, Apache-licensed, published pipeline — but its declarations
+are machine-written, so a name in it is worth even less than a name elsewhere.  Each row
+below was read.
+
+| Node | What ATLAS has | Why it is not a supplier |
+| --- | --- | --- |
+| AG6 | `BNPair G M` and `BNPairAxioms` (`Buildings/code/BNPair/Basic.lean`) — a faithful Tits system over Mathlib's `CoxeterMatrix`/`CoxeterSystem`: $B$, $N$, $T = B\cap N$, $\pi : N \twoheadrightarrow W$ with kernel $T$, $\langle B\cup N\rangle = G$, and the cell rules $C(w)C(s)\subseteq C(ws)$, $\subseteq C(ws)\cup C(w)$ with the non-normality condition.  Bruhat cells are `BNPair.bruhatCell`.  The `BNPair` subtree carries 3 `sorry`s, all in `BNPair/Generalized/Defs.lean` | a **route located, and a real one**: this is the abstract Tits system, which AG6 states.  What is missing is the input — that $G(\mathbb{Q})$ with its parabolic $\mathbb{Q}$-subgroups *is* a BN-pair.  That is AG4–AG7's algebraic-group content and nothing here touches it |
+| AG16 | `poset_isomorphism_specialSubsets_properParabolics` and `BuildingAxiomsFromBNPairs` (`Buildings/code/BNPair/`) — the building of a BN-pair, as the poset of parabolics, with the building axioms derived | the abstract form of AG16's construction.  AG16 needs it for the parabolic $\mathbb{Q}$-subgroups of a reductive $\mathbb{Q}$-group; the group-theoretic half is supplied, the algebraic-group half is not |
+| HS1 | `AlmostComplexStructure` (`GeometryOfManifolds/code/AlmostComplexManifolds.lean`): `J : ∀ x : M, TangentSpace I x →L[ℝ] TangentSpace I x` with `J x (J x v) = -v` | the docstring says "a smooth field of fiberwise endomorphisms"; the structure **imposes no smoothness**.  It is the pointwise algebra of HS1 and not its analytic content — which is why the floor still routes HS1 through `ContMDiffSection` |
+| HS2 | `Integrable` in the same file | it takes the Nijenhuis tensor `N` as a **parameter** and asserts `N x u v = 0`.  `N` is never constructed from `J`, so the declaration says nothing about `J` and the Newlander–Nirenberg content is absent |
+| Rt1 | `IwasawaData` and `CartanDecomposition` (`LieGroups/code/IwasawaDecomposition.lean`) — $K$ compact, $A$ commutative, $N$, with existence and uniqueness of $g = kan$; `CartanDecomposition` has $\mathfrak{k}\oplus\mathfrak{p}$ with both bracket rules | $N$ carries **no condition at all** — not nilpotent, not unipotent — $A$ only commutativity, and nothing relates either to the Cartan decomposition or to restricted roots.  `iwasawa_decomposition_exists` asserts the decomposition for *every* topological group and is `sorry`.  The definition is under-specified, so the statement it would satisfy is not Rt1 |
+
+The pattern is uniform and worth stating once: ATLAS supplies **statement shapes** typed against
+Mathlib, frequently under-specified against the theorem they are named for, and its proofs are
+`sorry` wherever the mathematics is hard.  It is a drafting aid for the greenfield strata and a
+supplier for none of them.  AG6 and AG16 are the closest, and what they are close to is the
+abstract Tits-system layer rather than the algebraic groups underneath it.
+
+#### `jonhanke/quadratic_forms_in_lean` — a skeleton
+
+The name is the strongest candidate in the corpus for F3 and Pa, and the repository is empty
+of them: `Basic.lean` holds 8 declarations, and `Isometry.lean`, `HilbertSymbol.lean`,
+`Hyperbolic.lean`, `LocalTheory.lean` and `LocalGlobalHassePrinciple.lean` are 8-to-10-line
+files with a namespace, a comment naming the intended content, and no declaration at all.
+Recorded so the next reader does not sweep it twice.
+
+#### Absent from the whole local corpus
+
+Searched with `--no-ignore` across all 3,894 non-Mathlib `.lean` files: Niemeier's
+classification, the Kobayashi pseudo-distance, Poincaré and Poincaré–Eisenstein series, Siegel
+sets, hyperbolic space in any model, normal analytic spaces, $K3$ and Enriques surfaces, the
+canonical decomposition of a $p$-adic lattice, and the genus of a lattice.  Every one of those
+is a node in this graph, and none of them has a formalization anywhere the registry reaches.
+
 ### Greenfield — no formalization in Mathlib or the registry
 
 | Nodes | What must be authored | Nearest thing that exists |
@@ -983,10 +1035,10 @@ the primitives they are written over are almost all in the pinned Mathlib, and
 | Lo2, Lo4–Lo9 | Lobachevskii space as the rays in the negative cone, its planes and halfspaces, polyhedral angles, boundedness and finite volume, the hyperboloid metric, and reflection cells | Mathlib has quadratic forms with `sigPos`/`sigNeg` and Sylvester's law of inertia, and convex cones with duals, so Lo1 and Lo3 are within reach; there is **no hyperbolic space in any model** |
 | BB1–BB8 | parabolic $\mathbb{Q}$-subgroups, hermitian symmetric domains, Harish-Chandra realizations, rational boundary components, the Satake topology, Baily–Borel's Theorem 10.11 | nothing — the registry has no algebraic-groups-with-parabolics corpus and no symmetric-space corpus |
 | AF1–AF13 | automorphy factors, $\mathcal{Z}(\mathfrak{g})$-finiteness, Poincaré and Poincaré–Eisenstein series, integral automorphic forms and the $\Phi$ operator, the analyticity criterion, and the projective embedding | Mathlib has universal enveloping algebras and modular forms for $\mathrm{SL}_2(\mathbb{Z})$; `CBirkbeck/ModularForms_Lean4` and `loefflerd/ModularFormDimensions` are the nearest registry entries, both rank one |
-| AG1–AG19 | $k$-structures and Galois descent, tori and $k$-split tori, Borel and parabolic subgroups, unipotent radicals and Levi decompositions, Tits systems, the relative root system and $k$-rank, the spherical Tits building and its dimension | Mathlib has affine and smooth group schemes, root systems and Coxeter groups, and nothing above them; `chrisflav/bruhat-tits` is the nearest registry entry and builds the Bruhat–Tits tree of $\mathrm{SL}_2$ over a local field |
-| HS1–HS16 | almost-complex structures and Newlander–Nirenberg, Hermitian and Kähler structures, geodesic symmetries, semisimple Lie groups with their Cartan involutions, the Harish-Chandra and Borel embeddings, boundary components and the 5-term decomposition of a normalizer, symmetric cones and Euclidean Jordan algebras | Mathlib has `IsManifold` over `𝓘(ℂ, E)`, the `LieGroup` class, and a two-file Riemannian tree (`Riemannian/Basic`, `Riemannian/PathELength`) with no geodesics; `Geometry/Manifold/Complex.lean` says of itself "There is a whole theory to develop here" |
+| AG1–AG19 | $k$-structures and Galois descent, tori and $k$-split tori, Borel and parabolic subgroups, unipotent radicals and Levi decompositions, Tits systems, the relative root system and $k$-rank, the spherical Tits building and its dimension | Mathlib has affine and smooth group schemes, root systems and Coxeter groups, and nothing above them.  The nearest thing anywhere is **ATLAS's `BNPair`/`BNPairAxioms`** — the abstract Tits system and the building of its parabolics, read-checked in the third sweep — which supplies the group-theoretic layer and none of the algebraic-group input to it; `chrisflav/bruhat-tits` builds the Bruhat–Tits tree of $\mathrm{SL}_2$ over a local field |
+| HS1–HS16 | almost-complex structures and Newlander–Nirenberg, Hermitian and Kähler structures, geodesic symmetries, semisimple Lie groups with their Cartan involutions, the Harish-Chandra and Borel embeddings, boundary components and the 5-term decomposition of a normalizer, symmetric cones and Euclidean Jordan algebras | Mathlib has `IsManifold` over `𝓘(ℂ, E)`, the `LieGroup` class, and a two-file Riemannian tree (`Riemannian/Basic`, `Riemannian/PathELength`) with no geodesics; `Geometry/Manifold/Complex.lean` says of itself "There is a whole theory to develop here".  ATLAS has a smoothness-free `AlmostComplexStructure` and an `Integrable` predicate parameterized by the Nijenhuis tensor it never builds — see the third sweep |
 | Bo1–Bo5, Ky1–Ky8 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance and hyperbolic imbedding | nothing; `kebekus/ProjectVD` covers Nevanlinna theory, adjacent but not these statements |
-| Rt1–Rt10 | Iwasawa decompositions, restricted roots, Siegel domains, fundamental sets for arithmetic groups, and the finite-volume and compactness criteria | Mathlib has Haar measure on locally compact groups and no Lie structure theory to apply it to |
+| Rt1–Rt10 | Iwasawa decompositions, restricted roots, Siegel domains, fundamental sets for arithmetic groups, and the finite-volume and compactness criteria | Mathlib has Haar measure on locally compact groups and no Lie structure theory to apply it to; ATLAS's `IwasawaData` is a $KAN$ factorization whose $N$ carries no condition, over a `sorry` existence theorem asserted for every topological group |
 | E1, E3–E13 | compact complex surfaces, Enriques and $K3$ surfaces, elliptic pencils, Horikawa's isometry, global Torelli, the period map | nothing; `nullstellensatz` gives local complex-analytic geometry only |
 | A0–A7, B1–B8, C3–C12, D1–D7, Cl1–Cl6 | the paper's own content | by construction |
 
