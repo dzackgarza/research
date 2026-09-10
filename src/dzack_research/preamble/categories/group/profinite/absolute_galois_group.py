@@ -450,6 +450,19 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
 
     geometric_point = base_embedding
 
+    def choice_data(self):
+        r"""Return the explicit realization data retained by this parent.
+
+        The live realization records the chosen algebraic closure and base
+        embedding.  Later finite-stage embeddings and prolongations are
+        supplied as explicit mathematical data at their constructors rather
+        than being selected by a hidden global choice policy.
+        """
+        return {
+            "closure": self.algebraic_closure(),
+            "embedding": self.base_embedding(),
+        }
+
     def has_canonical_realization(self) -> bool:
         r"""Return whether this realized absolute Galois group is canonical.
 
