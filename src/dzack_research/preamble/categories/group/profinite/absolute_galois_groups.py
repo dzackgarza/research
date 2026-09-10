@@ -1,8 +1,8 @@
 r"""Owned categories for absolute Galois groups."""
 
-from sage.categories.category_singleton import Category_singleton
 from sage.misc.unknown import Unknown
 
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.groups import OwnedAbelianGroups
 from dzack_research.preamble.categories.group.profinite.profinite_groups import (
     ProfiniteGroups,
@@ -14,8 +14,24 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 
 
-class AbsoluteGaloisGroups(Category_singleton):
+def _finite_field_absolute_galois_group():
+    r"""Return the selected finite-field specimen used by these categories."""
+    from sage.rings.finite_rings.finite_field_constructor import GF as SageGF
+
+    from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+        AbsoluteGaloisGroup,
+    )
+    from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+
+    return AbsoluteGaloisGroup(_own_ring(SageGF(2)))
+
+
+class AbsoluteGaloisGroups(OwnedCategory):
     r"""Groups (G_K=\operatorname{Aut}_K(\bar K)) with a chosen base point."""
+
+    def an_object(self):
+        r"""The absolute Galois group of ``GF(2)`` with its canonical realization."""
+        return _finite_field_absolute_galois_group()
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -48,8 +64,12 @@ class AbsoluteGaloisGroups(Category_singleton):
             return False
 
 
-class AbsoluteGaloisGroupsOfFiniteFields(Category_singleton):
+class AbsoluteGaloisGroupsOfFiniteFields(OwnedCategory):
     r"""The procyclic absolute Galois groups of finite fields."""
+
+    def an_object(self):
+        r"""The procyclic absolute Galois group of ``GF(2)``."""
+        return _finite_field_absolute_galois_group()
 
     @classmethod
     def _repr_object_names(cls) -> str:
@@ -89,8 +109,13 @@ class AbsoluteGaloisGroupsOfFiniteFields(Category_singleton):
             return self.topological_group_generators()
 
 
-class OpenAbsoluteGaloisSubgroups(Category_singleton):
+class OpenAbsoluteGaloisSubgroups(OwnedCategory):
     r"""Open subgroups (G_E\subseteq G_K) carrying the embedding (E\to\bar K)."""
+
+    def an_object(self):
+        r"""The index-two open subgroup of ``G_GF(2)``."""
+        group = _finite_field_absolute_galois_group()
+        return group.open_subgroup(group.finite_extension(2))
 
     @classmethod
     def _repr_object_names(cls) -> str:
