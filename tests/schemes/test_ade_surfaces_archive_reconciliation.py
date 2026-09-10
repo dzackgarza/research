@@ -18,6 +18,10 @@ def test_archived_polygon_and_blue_divisor_names_are_the_live_owned_objects() ->
 
     assert pair.p_star() is pair.distinguished_point()
     assert pair.polarizing_polytope() is pair.polygon()
+    assert pair.vertices() is pair.vertices()
+    assert pair.vertices() == pair.polygon().vertices()
+    assert pair.vertices().cardinality() == pair.polygon().vertices().cardinality()
+    assert all(vertex.parent() is pair.polygon().ambient_lattice() for vertex in pair.vertices())
     assert pair.blue_line_divisor() == pair.blue_divisor()
     assert pair.log_scheme().polarizing_polytope() is pair.polarizing_polytope()
 

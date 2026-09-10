@@ -319,6 +319,11 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             r"""The integral ADE polygon ``Q``."""
             return self._preamble_polygon
 
+        @cached_method
+        def vertices(self):
+            r"""Return the vertices of ``Q`` as the polygon's owned finite set."""
+            return self.polygon().vertices()
+
         def distinguished_point(self):
             r"""The distinguished rational point ``p*`` on the boundary of ``Q``."""
             return self._preamble_distinguished_point
