@@ -1082,63 +1082,54 @@ class _CoordinateTensor(ModuleElement, Tensor):
         return self.parent().tensor_valence()
 
     def __call__(self, *args):
-        r"""Contract every covariant slot against the given vectors.
+        r"""Feed vectors into the covariant slots, from left to right.
 
-        For $T$ of type $(p, q)$ and $q$ vectors $v_1, \ldots, v_q$, the value
-        is the type-$(p, 0)$ tensor
-
-        .. math::
-
-            T(v_1, \ldots, v_q)^{i_1 \ldots i_p}
-                = \sum_{j_1 \ldots j_q} T^{i_1 \ldots i_p}{}_{j_1 \ldots j_q}
-                  (v_1)^{j_1} \cdots (v_q)^{j_q}.
-
-        When $p = 0$ no index remains and the value is an element of the base
-        ring; that special case is the pairing of a covector with a vector and
-        the evaluation of a bilinear form on two vectors.
+        For a type-$(p,q)$ tensor, supplying $k\leq q$ vectors returns a
+        type-$(p,q-k)$ tensor.  Only when every slot is consumed and $p=0$
+        does evaluation return a scalar.
         """
         from itertools import product as _index_tuples
 
         _contravariant, covariant = self.tensor_valence()
-        # `args` is a Python tuple from `*args`, so its length is a Python
-        # count; lift it into NN once rather than crossing the slot count out.
-        if NN(len(args)) != covariant:
+        if NN(len(args)) > covariant:
             raise TypeError(
-                f"a type-{self.tensor_valence()} tensor takes "
-                f"{covariant} vector arguments, got {len(args)}"
+                f"a type-{self.tensor_valence()} tensor has only "
+                f"{covariant} covariant slots, got {len(args)} arguments"
             )
+        if not args:
+            return self
         ring = self.base_ring()
         upper = self._upper_index_ranks()
         lower = self._lower_index_ranks()
+        consumed = lower[: len(args)]
+        remaining = lower[len(args) :]
         for position, vector in enumerate(args):
-            slot = TensorModule(ring, (lower[position],), ())
+            slot = TensorModule(ring, (consumed[position],), ())
             if vector not in slot:
                 raise TypeError(
                     f"argument {position} must be an owned vector in {slot}, "
                     f"the contravariant module paired with covariant slot {position}"
                 )
 
-        def contracted(upper_index):
+        def contracted(output_index):
+            upper_index = output_index[: len(upper)]
+            remaining_index = output_index[len(upper) :]
             total = ring.zero()
-            for lower_index in _index_tuples(*(range(int(rank)) for rank in lower)):
-                term = self[upper_index + lower_index]
-                for position, index in enumerate(lower_index):
+            for eaten in _index_tuples(*(range(int(rank)) for rank in consumed)):
+                term = self[upper_index + eaten + remaining_index]
+                for position, index in enumerate(eaten):
                     term = term * args[position][index]
                 total = total + term
             return total
 
-        if not upper:
+        result_ranks = upper + remaining
+        if not result_ranks:
             return contracted(())
-
-        def components(prefix):
-            if len(prefix) == len(upper):
-                return contracted(prefix)
-            return [
-                components(prefix + (index,))
-                for index in range(int(upper[len(prefix)]))
-            ]
-
-        return tensor(ring, upper, (), components(()))
+        values = tuple(
+            contracted(index)
+            for index in _index_tuples(*(range(int(rank)) for rank in result_ranks))
+        )
+        return tensor(ring, upper, remaining, _nested(values, result_ranks))
 
     def _latex_(self) -> str:
         from sage.matrix.constructor import matrix as sage_matrix

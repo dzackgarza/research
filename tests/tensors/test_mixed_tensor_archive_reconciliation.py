@@ -48,3 +48,33 @@ def test_trace_can_leave_a_mixed_tensor() -> None:
     traced = tensor_three.trace(slot=1, other_slot=0)
     assert traced.tensor_valence() == (1, 0)
     assert traced.list() == [1, 1]
+
+
+def test_archive_tensor_evaluation_is_partial_in_covariant_slots() -> None:
+    multiplication = tensor(
+        ZZ,
+        (2,),
+        (2, 2),
+        [
+            [[1, 0], [0, 1]],
+            [[0, 1], [1, 0]],
+        ],
+    )
+    vector = tensor.vector(ZZ, [2, 3])
+
+    partially_evaluated = multiplication(vector)
+    assert partially_evaluated.tensor_valence() == (1, 1)
+    assert multiplication() is multiplication
+
+    fully_evaluated = partially_evaluated(vector)
+    assert fully_evaluated.tensor_valence() == (1, 0)
+    assert fully_evaluated == multiplication(vector, vector)
+
+
+def test_archive_covariant_partial_evaluation_stays_a_covector() -> None:
+    form = tensor(ZZ, (), (2, 2), [[1, 2], [3, 4]])
+    vector = tensor.vector(ZZ, [5, 7])
+
+    covector = form(vector)
+    assert covector.tensor_valence() == (0, 1)
+    assert covector(vector) == form(vector, vector)
