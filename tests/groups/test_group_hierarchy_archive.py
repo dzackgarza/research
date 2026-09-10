@@ -1,0 +1,67 @@
+r"""Archive reconciliation for the remaining generic group-hierarchy semantics."""
+
+from dzack_research.preamble.all import GF, Groups
+from dzack_research.preamble.categories.group.groups import (
+    GroupsWithChosenFiniteGeneratingSet,
+    OwnedFiniteGroups,
+    OwnedFinitelyGeneratedGroups,
+    OwnedFinitelyPresentedGroups,
+)
+
+
+def test_generating_set_is_distinct_from_presenting_free_group() -> None:
+    free = Groups.Free(2)
+    generators = tuple(free.group_generators())
+    trivial = free.quotient_by_relators(generators)
+
+    assert trivial.group_generators().cardinality() == 0
+    assert trivial.presenting_free_group().group_generators().cardinality() == 2
+    assert all(generator in trivial for generator in trivial.group_generators())
+
+
+def test_finite_generation_is_the_finiteness_of_the_selected_generating_family() -> None:
+    cyclic = Groups.C(5)
+
+    assert cyclic in OwnedFinitelyGeneratedGroups()
+    assert cyclic in GroupsWithChosenFiniteGeneratingSet()
+    assert cyclic.group_generators().cardinality() == 1
+    assert cyclic.number_of_group_generators() == 1
+
+
+def test_four_realizations_of_c2_retain_the_one_generator_square_relation() -> None:
+    free = Groups.Free(1)
+    generator = tuple(free.group_generators())[0]
+    realizations = (
+        free.quotient_by_relators((generator * generator,)),
+        Groups.C(2),
+        Groups.S(2),
+        Groups.Abelian([2]),
+    )
+
+    for group in realizations:
+        assert group in OwnedFinitelyPresentedGroups()
+        assert group.presenting_free_group().group_generators().cardinality() == 1
+        relators = tuple(relation.Tietze() for relation in group.defining_relations())
+        assert relators == ((1, 1),)
+
+
+def test_flat_group_catalogue_constructs_standard_finite_and_infinite_families() -> None:
+    finite_groups = (
+        (Groups.C(5), 5),
+        (Groups.S(4), 24),
+        (Groups.A(4), 12),
+        (Groups.D(5), 10),
+        (Groups.Q(), 8),
+        (Groups.V4(), 4),
+        (Groups.GL(2, GF(3)), 48),
+        (Groups.SL(2, GF(3)), 24),
+        (Groups.Sp(2, GF(3)), 24),
+    )
+
+    for group, order in finite_groups:
+        assert group in Groups()
+        assert group in OwnedFiniteGroups()
+        assert group.order() == order
+
+    assert Groups.Free(2) in Groups()
+    assert Groups.Braid(4) in Groups()
