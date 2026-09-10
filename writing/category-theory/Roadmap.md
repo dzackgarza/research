@@ -9,7 +9,7 @@ The base implementation reproduces Sage's mathematical behavior category by cate
 Each parity pass compares public operations, normalizations, morphisms, and return values with the corresponding Sage implementation.
 The lattice pass supplies the base required by the extension track.
 
-The generated [Sage category framework reference](sage/Sage-Category-Framework-Inventory.md) and [class catalogue](sage/Sage-Category-Classes.md) record the reference surface used by these comparisons.
+The generated [Sage category framework reference](sage/Sage-Category-Framework-Inventory.md) and [per-class inventory](sage/inventory/index.md) record the reference surface used by these comparisons.
 
 ## Mathematical extensions
 

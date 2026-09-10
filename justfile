@@ -90,6 +90,10 @@ refs-web-refresh:
 graph:
     python3 scripts/build_graph.py
 
+# Regenerate the Sage category inventory pages from the tracked audit data under writing/data/. Rewrites writing/category-theory/sage/inventory/ wholesale; edit the data or the generator, never the pages.
+sage-inventory:
+    python3 scripts/build_sage_inventory_site.py
+
 # Serve the docs site locally with live reload (quarto provisioned via uvx)
 docs-preview: docs-assets
     #!/usr/bin/env bash
