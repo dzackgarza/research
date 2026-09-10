@@ -615,6 +615,46 @@ theorem conj_gaussTerm (v : AddCircle (2 : ℚ)) :
     simp at h1
   exact mul_left_cancel₀ hne (h1.trans h2.symm)
 
+
+/-- **F1.16, step five.**  A difference of values contributes one term. -/
+theorem gaussTerm_sub (v w : AddCircle (2 : ℚ)) :
+    gaussTerm (v - w) = gaussTerm v * (starRingEnd ℂ) (gaussTerm w) := by
+  rw [sub_eq_add_neg, gaussTerm_add, conj_gaussTerm]
+
+/-- **F1.16, step six.**  The inner sum is reindexed by `b = a + c`. -/
+theorem sum_gaussTerm_reindex (q : A → AddCircle (2 : ℚ)) (a : A) :
+    ∑ c : A, gaussTerm (q a - q (a + c)) = ∑ b : A, gaussTerm (q a - q b) :=
+  Fintype.sum_equiv (Equiv.addLeft a) _ _ (fun _ => rfl)
+
+/-- **F1.16, step seven.**  Steps two, five and six together: the squared modulus
+of the Gauss sum is a double sum over a point and a *difference*.  This is the
+form Milgram's proof factors. -/
+theorem discriminantGaussSum_mul_conj_eq_sum_diff (q : A → AddCircle (2 : ℚ)) :
+    discriminantGaussSum q * (starRingEnd ℂ) (discriminantGaussSum q)
+      = ∑ a : A, ∑ c : A, gaussTerm (q a - q (a + c)) := by
+  rw [discriminantGaussSum_mul_conj]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  rw [sum_gaussTerm_reindex q a]
+  exact Finset.sum_congr rfl fun b _ => (gaussTerm_sub (q a) (q b)).symm
+
+/-- **F1.16, step eight.**  Under the polar identity — which is exactly what
+F1.15's doubling map makes sayable — the `a`-sum factors: the term depending on
+`c` alone comes out, and what is left is a character sum in `a`.
+
+The polar identity is a hypothesis here rather than an assumption about `q`,
+so this step is exactly as strong as its input. -/
+theorem sum_gaussTerm_diff_factor (q : A → AddCircle (2 : ℚ))
+    (pol : A → A → AddCircle (2 : ℚ))
+    (hpol : ∀ x y, q (x + y) = q x + q y + pol x y) (c : A) :
+    ∑ a : A, gaussTerm (q a - q (a + c))
+      = gaussTerm (-q c) * ∑ a : A, gaussTerm (-(pol a c)) := by
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun a _ => ?_
+  have hval : q a - q (a + c) = -q c + -(pol a c) := by
+    rw [hpol a c]; abel
+  rw [hval, gaussTerm_add]
+
+
 end MilgramSteps
 
 end Sterk
