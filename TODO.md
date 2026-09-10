@@ -1627,6 +1627,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-weyl-orders-20260910-1140` | archive reconciliation / Humphreys finite Weyl-group orders | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/groups/test_weyl_orders_archive.py` (write) | `f305168b` | 2026-09-10T11:40:00Z |
+
 
 
 
