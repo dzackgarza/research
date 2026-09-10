@@ -4462,7 +4462,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
-- **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its priorities, remediation, mathematical requirements, organization findings, and work coordination.
+- **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `writing/category-theory/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its priorities, remediation, mathematical requirements, organization findings, and work coordination.
   Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; if the generated document may be stale, run `just preamble-megadoc` and then read the generated output.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
@@ -5858,12 +5858,12 @@ lemmas about it.
 
 For in-depth guides and stylistic standards, see the documentation book:
 
-- **Contribution Workflow**: [`docs/contributing/Contribution-Guidelines.md`](docs/contributing/Contribution-Guidelines.md)
+- **Contribution Workflow**: [`writing/category-theory/contributing/Contribution-Guidelines.md`](writing/category-theory/contributing/Contribution-Guidelines.md)
 
-- **Categorical Principles**: [`docs/contributing/Categorical-Presentation-Principles.md`](docs/contributing/Categorical-Presentation-Principles.md)
+- **Categorical Principles**: [`writing/category-theory/contributing/Categorical-Presentation-Principles.md`](writing/category-theory/contributing/Categorical-Presentation-Principles.md)
 
-- **Mathematical Style Guide**: [`docs/contributing/Mathematical-Language-Style-Guide.md`](docs/contributing/Mathematical-Language-Style-Guide.md)
+- **Mathematical Style Guide**: [`writing/category-theory/contributing/Mathematical-Language-Style-Guide.md`](writing/category-theory/contributing/Mathematical-Language-Style-Guide.md)
 
-- **Design Hazards Ledger**: [`docs/contributing/Design-Hazard-Ledger.md`](docs/contributing/Design-Hazard-Ledger.md)
+- **Design Hazards Ledger**: [`writing/category-theory/contributing/Design-Hazard-Ledger.md`](writing/category-theory/contributing/Design-Hazard-Ledger.md)
 
-- **Mathematical Lexicon**: [`docs/contributing/Mathematical-Lexicon.md`](docs/contributing/Mathematical-Lexicon.md)
+- **Mathematical Lexicon**: [`writing/category-theory/contributing/Mathematical-Lexicon.md`](writing/category-theory/contributing/Mathematical-Lexicon.md)

@@ -1,5 +1,0 @@
-{
-  "not-carried-over": { "file": "lattice-and-diagram-conventions", "md": "Not carried over", "reflabel": "Remark", "refnumber": "2" },
-  "the-row-that-matters-here": { "file": "lattice-and-diagram-conventions", "md": "The row that matters here", "reflabel": "Remark", "refnumber": "1" },
-  "why-these-belong-in-this-project": { "file": "lattice-and-diagram-conventions", "md": "Why these belong in this project", "reflabel": "Remark", "refnumber": "3" }
-}

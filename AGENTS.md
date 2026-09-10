@@ -47,9 +47,9 @@ Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasonin
 The [TODO workstream table](TODO.md#workstreams) records the DAG task scores and their reasons.
 Apply the guide to the responsibility actually assigned, including any shared contract design or orchestration it requires.
 
-Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. If the generated megadoc may be stale relative to the live source tree, regenerate it with `just preamble-megadoc` and then read the generated `docs/preamble-megadoc.md`.
+Also read the generated preamble megadoc output at `writing/category-theory/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. If the generated megadoc may be stale relative to the live source tree, regenerate it with `just preamble-megadoc` and then read the generated `writing/category-theory/preamble-megadoc.md`.
 
-`just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
+`just preamble-megadoc` surveys a live session, so it also writes `writing/category-theory/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `writing/category-theory/preamble-graph.dot` with the rendered `writing/category-theory/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
 
@@ -231,7 +231,7 @@ Full catalogue: `.agents/references/terminology-dictionary.md`; code-shape patte
 
 # Docs prose policy (always-on)
 
-Prose in the docs book is governed by the writing guide, `docs/_writing-guide.md` — a non-rendered (leading `_`, so Quarto ignores it), citable policy index of banned prose patterns in three kinds, each with a concrete example and remediation for one-shot learning:
+Prose in the docs book is governed by the writing guide, `writing/category-theory/_writing-guide.md` — a non-rendered (leading `_`, so Quarto ignores it), citable policy index of banned prose patterns in three kinds, each with a concrete example and remediation for one-shot learning:
 
 - **Prose tells (`PR-*`)** — bad prose on its own terms; the fix is a rewrite.
 
@@ -253,23 +253,23 @@ This rule overrides any pressure to "just write it" — an unverified definition
 
 # Docs workflow (always-on)
 
-Documentation work — the docs book under `docs/` — is **never externalized to GitHub issues or PRs**. It is developed directly: interactive work with the user and/or autonomous research, iterative refinement committed as each unit settles, and pushes typically **held until the user approves**. That approval normally follows an interactive pass rather than a PR review lifecycle — organization and coherence audits, re-readings, reviews, and reorganization of the accreted material, plus basic intelligent coherence checks.
+Documentation work — the docs book under `writing/` — is **never externalized to GitHub issues or PRs**. It is developed directly: interactive work with the user and/or autonomous research, iterative refinement committed as each unit settles, and pushes typically **held until the user approves**. That approval normally follows an interactive pass rather than a PR review lifecycle — organization and coherence audits, re-readings, reviews, and reorganization of the accreted material, plus basic intelligent coherence checks.
 Do not open an issue or PR to plan, track, or hand off docs work, and do not treat the PR completion gate as applying to it; the issue-tree and milestone policy below governs implementation and research work, not the book.
 
 ## Docs hosting surfaces
 
-The docs book ships as a Quarto site (`docs/_quarto.yml`, `project.type: book`) in three surfaces:
+The docs book ships as a Quarto site (`writing/_quarto.yml`, `project.type: book`) in three surfaces:
 
-- **Local preview** — `just docs-preview` serves `docs/` at http://localhost:7654/ via `uvx --from quarto-cli quarto preview` (live reload; quarto-cli provisioned on demand, not installed system-wide).
-  A stale render also lives at `docs/_site/` from prior builds; it is not kept fresh with the working tree.
+- **Local preview** — `just docs-preview` serves `writing/` at http://localhost:7654/ via `uvx --from quarto-cli quarto preview` (live reload; quarto-cli provisioned on demand, not installed system-wide).
+  A stale render also lives at `writing/_site/` from prior builds; it is not kept fresh with the working tree.
 
 - **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`).
 
 - **GitHub wiki** — the repo's native GitHub wiki is **disabled** (no `wiki/` ref exists; `hasWiki: true` in API but no commits).
   Do not conflate "the wiki" (historical name for the docs book, migrated via PR #272 "wiki-book-migration") with the GitHub wiki feature.
-  The book under `docs/` is the wiki's successor.
+  The book under `writing/` is the wiki's successor.
 
-A push of `main` that changes `docs/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
+A push of `main` that changes `writing/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
 
 ## Annotation feedback loop
 
@@ -302,7 +302,7 @@ One cycle:
    For mathematical feedback, establish the correct theory and the source that states it before proposing prose.
    Do not make a reflexive local correction from the quoted span or from memory: confirm that the proposed change fits the document's global mathematical story.
 
-   Each entry's `uri` (`localhost:7654/Roadmap.html`) plus the normalized `TextQuoteSelector.exact` pin the exact source span → map to `docs/Roadmap.md` and apply the edit.
+   Each entry's `uri` (`localhost:7654/category-theory/Roadmap.html`) plus the normalized `TextQuoteSelector.exact` pin the exact source span → map to `writing/category-theory/Roadmap.md` and apply the edit.
    Hot-reload re-renders each touched page live: the tight edit → one reload → look cycle.
 
 6. **Resolve** — `annotate resolve` tags the batch acted via the Hypothesis API, dropping it from the open set (`annotate status` shows open vs. acted).
@@ -612,7 +612,7 @@ When a discussion is still moving, do not manufacture an issue to make it look t
 
 **Hooks check the code you are checking in.  A commit that stages no code is committed with `--no-verify` — always, with no adjudication and no asking.**
 
-`git diff --cached --name-only` is the entire test.  If that list holds no `.py`, `.sage`, or other executable source, then ruff, mypy, vulture and pytest have nothing to say about the commit, and the gate's verdict — pass or fail — carries no information about it.  Documentation, `docs/` book pages, policy files, TODOs, plans, READMEs, and every other prose-only change commit this way.
+`git diff --cached --name-only` is the entire test.  If that list holds no `.py`, `.sage`, or other executable source, then ruff, mypy, vulture and pytest have nothing to say about the commit, and the gate's verdict — pass or fail — carries no information about it.  Documentation, `writing/` book pages, policy files, TODOs, plans, READMEs, and every other prose-only change commit this way.
 
 The gate is whole-repo, so one red tree freezes every commit in every worktree.  Prose never waits for someone else's refactor to go green.
 

@@ -1,113 +1,82 @@
-# Coble Paper Project - Agent Instructions
+# Coble project — agent instructions
 
-## Required Reading on Every Session Start
+## What this directory is
 
-**READ THESE IN ORDER before taking any actions:**
+One vault for the Coble surfaces work. Every page is one topic. The mathematics that is
+written up sits beside the computations and the open questions that produced it. There
+is no separate "paper" tree and no separate "notes" tree.
 
-1. **This file (AGENTS.md)** - You're reading it now
-
-2. **justfile** - Contains ALL project workflows and recipes
-
-3. **Project structure** (via `tree -L 2`)
-
-## Critical Project Structure
+The vault is the Coble part of the Quarto site rooted at `writing/`. Pages are listed as
+chapters in `writing/_quarto.yml`; a new page is not published until it is added there.
 
 ```
-content_latex/       LaTeX source for the paper (has inline bibliography)
-content_pandoc/      Pandoc/markdown source (alternative format)
-knowledge/
-  ├── papers/        Full paper extractions (50KB-300KB markdown files)
-  ├── meta/          Project metadata and reference lists
-  └── [sections]/    Organized knowledge by topic
-resources/bib/       Bibliography artifacts
-global.bib          Symlink to ~/zotero_global.bib
+<topic>/            One directory per topic, kebab-case, one page per file
+index.md            The part landing page
+summary.md          Project status: what is proven, what is blocked
+papers/             Extracted third-party sources, one directory per citation key
+reference/          Source PDFs and the last built version of the paper
+scripts/            The computational toolchain
+tables/             Generated lattice and diagram tables
+heegner-report/     A standalone research report and its own bibliography
+coble_supplement.bib  Project-local entries not yet in the global bibliography
 ```
 
-## Reference Management Workflow
+## Building
 
-**When asked to "add a reference" or "add a paper":**
+The site builds from the repository root, not from here.
 
-1. The justfile has `sync-refs` showing the pattern:
-   ```bash
-   just pandoc::download-arxiv ARXIV_ID BIBKEY
-   ```
+```bash
+just docs-preview                # serve the site locally with live reload
+just docs-lint coble/<page>.md   # render one page, in seconds
+just docs-check                  # render, then fail on any citation, cross-ref, or link defect
+```
 
-2. This downloads the paper and extracts it to `knowledge/papers/BIBKEY.md`
+There is no PDF build for this work. The last dated PDF build is kept in `reference/`.
 
-3. **DO NOT**:
+## Citations
 
-   - Create stub markdown files manually
+Zotero is the source of truth for references. The global bibliography is exported to
+`~/.pandoc/bib/references.bib` and copied to `writing/references.bib` by the build.
 
-   - Add to Zotero first (user handles that separately)
+To cite a work, use its Better BibTeX key: `@AE23`. If the work is not in Zotero, add it
+there first, by DOI or arXiv identifier, through the live local API. See the `zotero`
+skill.
 
-   - Edit the inline LaTeX bibliography (it's maintained separately)
+`coble_supplement.bib` holds only entries that have no global counterpart yet. Adding an
+entry there is a stopgap; the work still belongs in Zotero.
 
-4. **File verification**: Papers in `knowledge/papers/` are 50KB-300KB (full extractions), not stubs
+Never write a citation as an inline URL to arXiv, a DOI, or nLab. The docs gate rejects
+it.
 
-## Common Failure Modes to Avoid
+## Writing conventions
 
-1. **Reading one example and generalizing** - Check multiple files and file sizes
+Numbered environments go through the `custom-numbered-blocks` filter:
 
-2. **Acting before understanding** - Read the justfile, understand the workflow
+```markdown
+::: {.Theorem #thm:coble-cusps}
+### Cusps of the Coble moduli space
 
-3. **Ignoring obvious patterns** - File sizes, naming conventions, directory structure
+...
+:::
+```
 
-4. **Assuming tools instead of checking** - The justfile tells you what tools exist
+Reference it as `\ref{thm:coble-cusps}`, or `\longref{thm:coble-cusps}` for
+"Theorem 2.9". Labels use colon separators. Do not start a label with a Quarto-reserved
+prefix (`def-`, `thm-`, `lem-`, `cor-`, `prp-`, `cnj-`, `exm-`, `exr-`, `fig-`, `tbl-`,
+`eq-`, `sec-`, `lst-`); Quarto hijacks those for its own crossrefs and the render fails.
 
-5. **Creating files manually when recipes exist** - Always check for `just` recipes first
+Do not number headings by hand. Sections auto-number and are referenced by `@sec-`.
 
-## Project-Specific Commands
+The declared block classes are listed at the bottom of `writing/_quarto.yml`. Add a class
+there before using it.
 
-- `just sync-refs` - Sync known references from arXiv
+## Extracted papers
 
-- `just compile-reference DIR FILE` - Extract a reference LaTeX file to markdown
+`papers/<KEY>/` holds a source archive for a third-party paper: its LaTeX, its figures,
+and where available a readable extraction. These are read-only reference material.
 
-- `just compile-tex` - Compile LaTeX source
+The extraction pipeline resolves `\cite{}` to `?` and `\ref{}` to `[0]`. Read an
+extraction for its mathematics, never for its citations or its internal numbering; go to
+the PDF for those.
 
-- `just compile-pandoc` - Compile Pandoc source
-
-- `just preview FILE FORMAT` - Live preview a markdown file
-
-## When In Doubt
-
-1. Run `just --list` to see all available recipes
-
-2. Check `knowledge/papers/` file sizes to understand what "extraction" means
-
-3. Read multiple example files before creating new ones
-
-4. The justfile is the source of truth for project workflows
-
-## TODO: Known Pipeline Issues
-
-### Paper Extraction Quality (`pandoc::extract-ref`)
-
-The LaTeX → Markdown extraction pipeline has known issues:
-
-1. **Citations broken**: All `\cite{}` commands convert to "?" instead of proper citations
-
-   - Affects ~100+ citations per paper
-
-   - Citations need manual lookup if needed
-
-   - TODO: Investigate if biblatex/natbib processing can be enabled
-
-2. **Internal references broken**: Cross-references show as `[0]` instead of section numbers
-
-   - `\ref{}` commands not resolving
-
-   - TODO: Check if tex4ht can preserve LaTeX references or if post-processing needed
-
-3. **Unicode handling**: make4ht throws Unicode character errors (e.g., U+25FB)
-
-   - Errors are suppressed with `|| true` but may cause data loss
-
-   - TODO: Verify no content is actually lost, add proper Unicode support to tex4ht config
-
-4. **Build artifacts**: Extraction leaves many intermediate files in paper directories
-
-   - `.aux`, `.dvi`, `.html`, `.log`, etc.
-
-   - TODO: Add cleanup step to `extract-ref` recipe or `.gitignore` patterns
-
-These issues don't prevent reading/understanding papers but limit their utility for precise citation work.
+Do not commit LaTeX build intermediates alongside an extraction.

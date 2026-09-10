@@ -1,6 +1,0 @@
-{
-  "cnb-1-Remark": { "file": "000-introduction", "md": "", "reflabel": "Remark", "refnumber": "1" },
-  "cnb-2-Remark": { "file": "000-introduction", "md": "", "reflabel": "Remark", "refnumber": "2" },
-  "cnb-4-Remark": { "file": "000-introduction", "md": "", "reflabel": "Remark", "refnumber": "4" },
-  "thm:main": { "file": "000-introduction", "md": "", "reflabel": "Theorem", "refnumber": "3" }
-}

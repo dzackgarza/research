@@ -29,3 +29,17 @@ tests/.report/
 .sage-tmp/
 tags
 .hypothesis/
+
+# Per-directory render cache written by the book-toc filter on every Quarto render.
+._htmlbook_xref.json
+
+# LaTeX/tex4ht build intermediates from extracted reference papers.
+writing/coble/papers/**/*.aux
+writing/coble/papers/**/*.dvi
+writing/coble/papers/**/*.log
+writing/coble/papers/**/*.idv
+writing/coble/papers/**/*.lg
+writing/coble/papers/**/*.tmp
+writing/coble/papers/**/*.xref
+writing/coble/papers/**/*.4ct
+writing/coble/papers/**/*.4tc

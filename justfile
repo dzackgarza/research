@@ -42,7 +42,7 @@ docs-assets:
 docs-check: docs-assets
     python3 scripts/docs_check.py
 
-# Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint framework/Mathematical-Framework.md`
+# Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint category-theory/framework/Mathematical-Framework.md`
 docs-lint FILE: docs-assets
     cd writing && uvx --from quarto-cli quarto render "{{FILE}}" --to html
 

@@ -4,7 +4,7 @@ name: docs
     branches:
       - main
     paths:
-      - docs/**
+      - writing/**
       - scripts/**
       - .github/workflows/docs.yml
   workflow_dispatch: null
@@ -35,8 +35,8 @@ jobs:
         # takes them from ~/.pandoc. Fetching the bib over raw.githubusercontent
         # instead let CI read a different revision than the filters beside it.
         run: |
-          cp "$HOME/.pandoc/bib/references.bib" docs/references.bib
-          cp "$HOME/.pandoc/templates/css/mathjax-macros.html" docs/_mathjax-macros.html
+          cp "$HOME/.pandoc/bib/references.bib" writing/references.bib
+          cp "$HOME/.pandoc/templates/css/mathjax-macros.html" writing/_mathjax-macros.html
       - run: python3 scripts/docs_check.py
         name: Render + integrity gate
         # The runner has no uv, and quarto-actions already provisioned quarto.
@@ -48,7 +48,7 @@ jobs:
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
-          path: docs/_site
+          path: writing/_site
   deploy:
     needs: build
     runs-on: ubuntu-latest

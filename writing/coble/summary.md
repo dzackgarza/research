@@ -10,7 +10,7 @@ tags:
 
 # Coble Moduli Project — Current State Summary
 
-**Last Updated:** May 16, 2026 **Based on:** May 11, 2026 NotebookLM self-audit (knowledge/INBOX/)
+**Last Updated:** May 16, 2026 **Based on:** May 11, 2026 NotebookLM self-audit
 
 ## Executive Summary
 
@@ -97,7 +97,7 @@ Section 7 (polarized) mixes proven lattice-theoretic setup with conjectural/comp
 
 ## Outstanding Computational Tasks
 
-From `knowledge/meta/computational_hurdles.md`:
+The computational tasks that stand between the conjectures above and verification:
 
 1. **Explicit Coble curve equations** — construct the rational sextics explicitly
 
@@ -119,7 +119,7 @@ From `knowledge/meta/computational_hurdles.md`:
 
 ### YZZ25 Paper (Added May 16, 2026)
 
-**Reference:** Yang-Yin-Zhang, "Moduli spaces of sextic curves with simple singularities" (arXiv:2505.16727) **Extracted to:** `knowledge/papers/YZZ25.md`
+**Reference:** Yang-Yin-Zhang, "Moduli spaces of sextic curves with simple singularities" (arXiv:2505.16727) **Extracted to:** `papers/YZZ25/`
 
 **Relevance:** Coble surfaces arise from plane sextics with 10 nodes (ADE singularities).
 The YZZ25 paper studies:
@@ -154,28 +154,11 @@ The YZZ25 paper studies:
 
 **Section 7 cannot be published in current form** until at least obstacles #1-#3 are resolved.
 
-## Repository Structure
+## Where this sits
 
-- **knowledge/**: Research knowledge base
+The mathematics is the vault under `coble/`, published as the Coble part of the Quarto
+site. Each obstacle above has a page there: the open problems page states them as
+problems, and the computations pages hold what has been computed against them.
 
-  - **INBOX/**: May 11, 2026 NotebookLM audit (9 markdown files)
-
-  - **papers/**: Extracted papers (YZZ25, others)
-
-  - **meta/**: Original SUMMARY.md, AUDIT.md, computational_hurdles.md, mathematical_gaps.md
-
-  - **MOC.md**: Map of content
-
-  - **Narrative MOC.md**: Section completion status
-
-- **content_latex/**: LaTeX source for the paper
-
-- **content_pandoc/**: Pandoc markdown source
-
-## Document History
-
-- **June 2024**: Original `knowledge/meta/SUMMARY.md` created (pre-audit state)
-
-- **May 11, 2026**: NotebookLM self-audit identified 5 major blockers and reclassified numerical claims as conjectures
-
-- **May 16, 2026**: This top-level SUMMARY.md created to reflect post-audit state
+`papers/` holds the extracted third-party sources, `reference/` the source PDFs and the
+last built version of the paper, and `scripts/` the computational toolchain.
