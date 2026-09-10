@@ -42,3 +42,17 @@ def test_session_load_restores_owned_ring_bindings_after_sage_import(tmp_path: P
     assert session["ZZ"] is integers
     assert session["ZZ"]**3 is before
     assert session["ZZ"] is not SageZZ
+
+
+def test_session_lattice_retains_owned_base_ring_and_form_data() -> None:
+    session = _session()
+    integers = session["ZZ"]
+    lattice = session["Lattices"](integers)("A2")
+    first, second = tuple(lattice.module_generators())
+
+    assert lattice.module_rank() == 2
+    assert lattice.base_ring() is integers
+    assert lattice.is_even()
+    assert lattice.is_nondegenerate()
+    assert lattice.gram_matrix().determinant() == 3
+    assert abs(lattice.b(first, second)) == 1
