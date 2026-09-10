@@ -34,6 +34,9 @@ public import Mathlib.Analysis.SpecialFunctions.Complex.CircleAddChar
 public import Mathlib.Algebra.BigOperators.Ring.Finset
 public import Mathlib.Analysis.Analytic.Basic
 public import Mathlib.Topology.Irreducible
+public import Mathlib.Analysis.Analytic.Constructions
+public import Mathlib.RingTheory.Localization.FractionRing
+public import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 
 @[expose] public section
 
@@ -803,5 +806,82 @@ def IsLocallyAnalyticSpace (X : Type u) [TopologicalSpace X] : Prop :=
   ∀ x : X, ∃ c : AnalyticChart X, x ∈ c.source
 
 end AnalyticSets
+
+section Normality
+
+variable {n : ℕ}
+
+/-- **AF10, the local ring.**  The functions holomorphic at `z` on `Z` form a
+subring of all `ℂ`-valued functions: sums and products of functions that extend
+holomorphically extend holomorphically, on the intersection of the two
+neighbourhoods. -/
+def holomorphicSubring (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ) :
+    Subring ((Fin n → ℂ) → ℂ) where
+  carrier := {g | HolomorphicAtOnSubset Z g z}
+  one_mem' := ⟨Set.univ, isOpen_univ, Set.mem_univ z, 1, analyticOnNhd_const, fun _ _ => rfl⟩
+  zero_mem' := ⟨Set.univ, isOpen_univ, Set.mem_univ z, 0, analyticOnNhd_const, fun _ _ => rfl⟩
+  add_mem' := by
+    rintro g h ⟨V, hV, hzV, G, hG, hgG⟩ ⟨W, hW, hzW, H, hH, hhH⟩
+    refine ⟨V ∩ W, hV.inter hW, ⟨hzV, hzW⟩, G + H,
+      (hG.mono Set.inter_subset_left).add (hH.mono Set.inter_subset_right), ?_⟩
+    rintro w ⟨hwZ, hwV, hwW⟩
+    simp only [Pi.add_apply]
+    rw [hgG w ⟨hwZ, hwV⟩, hhH w ⟨hwZ, hwW⟩]
+  neg_mem' := by
+    rintro g ⟨V, hV, hzV, G, hG, hgG⟩
+    refine ⟨V, hV, hzV, -G, hG.neg, ?_⟩
+    intro w hw
+    simp only [Pi.neg_apply]
+    rw [hgG w hw]
+  mul_mem' := by
+    rintro g h ⟨V, hV, hzV, G, hG, hgG⟩ ⟨W, hW, hzW, H, hH, hhH⟩
+    refine ⟨V ∩ W, hV.inter hW, ⟨hzV, hzW⟩, G * H,
+      (hG.mono Set.inter_subset_left).mul (hH.mono Set.inter_subset_right), ?_⟩
+    rintro w ⟨hwZ, hwV, hwW⟩
+    simp only [Pi.mul_apply]
+    rw [hgG w ⟨hwZ, hwV⟩, hhH w ⟨hwZ, hwW⟩]
+
+/-- **AF10, the local ring.**  The functions vanishing on a neighbourhood of `z`
+in `Z` form an ideal of the above.  Quotienting by it is what makes germs germs,
+and it replaces the sheafification a sheaf-theoretic construction would need. -/
+def vanishingIdeal (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ) :
+    Ideal (holomorphicSubring Z z) where
+  carrier := {g | ∃ V : Set (Fin n → ℂ), IsOpen V ∧ z ∈ V ∧ ∀ w ∈ Z ∩ V, (g : (Fin n → ℂ) → ℂ) w = 0}
+  zero_mem' := ⟨Set.univ, isOpen_univ, Set.mem_univ z, fun _ _ => rfl⟩
+  add_mem' := by
+    rintro g h ⟨V, hV, hzV, hg⟩ ⟨W, hW, hzW, hh⟩
+    refine ⟨V ∩ W, hV.inter hW, ⟨hzV, hzW⟩, ?_⟩
+    rintro w ⟨hwZ, hwV, hwW⟩
+    have : ((g + h : holomorphicSubring Z z) : (Fin n → ℂ) → ℂ) w
+        = (g : (Fin n → ℂ) → ℂ) w + (h : (Fin n → ℂ) → ℂ) w := rfl
+    rw [this, hg w ⟨hwZ, hwV⟩, hh w ⟨hwZ, hwW⟩, add_zero]
+  smul_mem' := by
+    rintro r g ⟨V, hV, hzV, hg⟩
+    refine ⟨V, hV, hzV, ?_⟩
+    intro w hw
+    have : ((r • g : holomorphicSubring Z z) : (Fin n → ℂ) → ℂ) w
+        = (r : (Fin n → ℂ) → ℂ) w * (g : (Fin n → ℂ) → ℂ) w := rfl
+    rw [this, hg w hw, mul_zero]
+
+/-- **AF10.**  The local ring of germs at a point of an analytic subset. -/
+abbrev germRing (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ) : Type :=
+  (holomorphicSubring Z z) ⧸ (vanishingIdeal Z z)
+
+/-- **AF10, normality.**  An analytic subset is *normal at a point* when its germ
+ring there is integrally closed in its fraction field: every element of the
+fraction field that is integral over the germ ring already lies in it.
+
+The condition is spelled out rather than taken from `IsIntegrallyClosed`, whose
+module is present in the pinned tree as source and **not built** in this
+checkout, so importing it is not possible here; `IsIntegral` and `FractionRing`
+are built and say the same thing.  The domain hypothesis is an instance argument,
+which is the setting AF10 uses: it speaks of *irreducible* normal analytic
+spaces, and irreducibility of the germ is what makes the germ ring a domain. -/
+def IsNormalAtPoint (Z : Set (Fin n → ℂ)) (z : Fin n → ℂ)
+    [IsDomain (germRing Z z)] : Prop :=
+  ∀ x : FractionRing (germRing Z z),
+    IsIntegral (germRing Z z) x → ∃ r : germRing Z z, algebraMap _ _ r = x
+
+end Normality
 
 end Sterk
