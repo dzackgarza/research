@@ -415,6 +415,18 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             target_ring = base_change_codomain(self, ring_map)
             return FreshFreeModuleOn(target_ring, self.module_generating_set())
 
+        @cached_method
+        def vector_space(self):
+            r"""Return ``M tensor_R Frac(R)`` along the canonical fraction-field map.
+
+            This is the archived ``vector_space`` construction: rationalization
+            is scalar extension, not a separately presented copy.  Structured
+            refinements such as formed modules inherit this method and dispatch
+            through their own ``base_change``, so the carried structure is
+            transported by the same canonical ring map.
+            """
+            return self.base_change(self.base_ring().fraction_field_map())
+
 
 class _SparseFramedFreeModules(OwnedCategoryOverBaseRing):
     r"""The private sparse-coordinate realization of a framed free module."""
