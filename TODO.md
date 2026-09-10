@@ -1627,7 +1627,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-group-hierarchy-20260910-0955` | archive reconciliation / owned group hierarchy semantics | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/groups/test_group_hierarchy_archive.py` (write) | `c40500b5cb418368af399990aec4a27fe988f781` | 2026-09-10T09:55:00Z |
 
 
 
