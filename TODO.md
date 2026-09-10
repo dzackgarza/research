@@ -1628,7 +1628,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-rank-one-2adic-orthogonal-groups-20260910-1940` | archive reconciliation / rank-one 2-adic quadratic versus bilinear orthogonal groups | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/forms/test_rank_one_2adic_orthogonal_groups_archive.py` (write) | `HEAD` | 2026-09-10T19:40:00Z |
 
 
 
