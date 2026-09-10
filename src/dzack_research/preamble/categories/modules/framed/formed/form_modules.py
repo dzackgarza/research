@@ -1077,6 +1077,16 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the represented quadratic/norm value of this element."""
             return self.parent().norm(self)
 
+        def represents(self, value) -> bool:
+            r"""Return whether this element has represented norm ``value``.
+
+            This is the elementwise statement ``q(self)=value``.  It does not
+            answer the distinct existential question whether the whole formed
+            module represents a selected value.
+            """
+            parent = self.parent()
+            return bool(self.q() == parent.value_module()(value))
+
 
 class BilinearFormModules(OwnedCategoryOverBaseRing):
     def an_object(self):
