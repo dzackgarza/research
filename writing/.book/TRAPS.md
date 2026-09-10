@@ -33,20 +33,24 @@ both produce an empty result and no warning. Single named files still work and
 stay in `_quarto.yml`; the resource trees are copied by `.assets/copy-resources.sh`
 as a post-render step.
 
-## Only `book.chapters` renders; `render:` entries are ignored
+## A book renders exactly `book.chapters`, and nothing else
 
-Behind a symlink, Quarto renders exactly the files `book.chapters` names. A page
-listed in `project: render:` is skipped with no page and no error, and a glob
-there matches nothing. There is therefore **no way to have a page that renders and
-is searchable but stays out of the sidebar** for anything under a symlinked part.
+`project: type: book` publishes the files `book.chapters` names. Nothing else
+reaches the site: not a file discovered in the project directory, not one named
+explicitly in `project: render:`, not one matched by a glob there. The skip is
+silent — the render reports success and the page simply does not exist.
 
-Measured in an isolated two-page project: with `render:` naming `index.md`,
-`gen/alpha.md` and `gen/beta.md`, and only `index.md` in `chapters:`, the render
-reported success and produced `index.html` alone.
+**This has nothing to do with symlinks.** Measured twice in isolated projects, once
+with the extra pages behind a symlink and once with them in a real directory inside
+the project root: in both, `render:` named four files, `chapters:` named two, and
+exactly the two chapters were produced.
 
-This is why the generated inventory lives at `.book/inventory/`, a real directory
-inside this project root, where globs, render lists and discovery all behave
-normally. Generated pages go there; authored prose never does.
+So there is **no way to have a page that renders and is searchable but stays out of
+the sidebar** in a book project. A page is a chapter or it is not published. The
+alternatives are to list it, or to generate standalone HTML the way
+`category-theory/lean/category-graph.html` does and link to it from a chapter.
+
+(A `website` project does render discovered files. A book does not.)
 
 ## Two Quarto processes on one project corrupt each other
 
@@ -69,3 +73,13 @@ If a symlink here is replaced by a real copy — which a rename-into-place write
 will do — the book renders perfectly from the copy while the copy and the prose
 drift apart. `docs_check.py` checks every linked part before rendering, for that
 reason.
+
+## `ruamel.yaml` does not round-trip `_quarto.yml`
+
+Loading and dumping this file with the obvious comment-preserving YAML library
+reattaches comment blocks across item boundaries, truncates the item they were
+attached to, and reindents every list in the file. Edit `_quarto.yml` by line and
+parse it afterwards to check the structure, rather than round-tripping it.
+
+Reported by a parallel session that hit it while merging chapter entries; the
+damage was caught before it was committed.

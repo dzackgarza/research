@@ -53,10 +53,11 @@ book:
         - category-theory/lean/Lean-Sage-Integration-Model.md
         - category-theory/lean/Category-Graph.md
         - category-theory/sage/Sage-Category-Framework-Inventory.md
-        # The per-entity pages under inventory/ are rendered and searchable but stay
-        # out of this list: 292 sidebar entries would bury the chapters. Regenerate
-        # them with `just sage-inventory`.
-        - category-theory/sage/inventory/index.md
+        # Only the index is a chapter. The 292 per-entity pages beside it are found
+        # by ordinary discovery and render without entering the sidebar, which works
+        # because inventory/ is a real directory in this project root rather than a
+        # symlinked part -- see TRAPS.md. Regenerate with `just sage-inventory`.
+        - inventory/index.md
         - category-theory/lean/Categorical-DSL.md
         - category-theory/contributing/Mathematical-Language-Style-Guide.md
         - category-theory/framework/Mathematical-Sources.md
