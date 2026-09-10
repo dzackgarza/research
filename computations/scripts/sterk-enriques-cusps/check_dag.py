@@ -128,7 +128,7 @@ def first_column(text: str, header: str, defined: set[str]) -> set[str]:
         if not line.startswith("| "):
             in_table = False
             continue
-        cells = [c.strip() for c in line.split("|")[1:-1]]
+        cells = cells_of(line)
         if len(cells) < 2:
             continue
         if not in_table:
@@ -145,6 +145,33 @@ def greenfield(text: str, defined: set[str]) -> set[str]:
     return first_column(text, "nearest thing that exists", defined)
 
 
+def cells_of(line: str) -> list[str]:
+    """The cells of a markdown table row, splitting on unescaped pipes only.
+
+    A cell may contain a literal pipe as `\\|`, which markdown renders and a naive
+    `line.split("|")` does not: it silently turns one cell into two and moves the
+    last column, so a dependency cell that mentions `rg -i 'a\\|b'` reads as a
+    dependency of "b'" and its real content is lost.  Six such cells existed when
+    this function was written.
+    """
+    out, cur, i = [], [], 0
+    while i < len(line):
+        ch = line[i]
+        if ch == "\\" and i + 1 < len(line) and line[i + 1] == "|":
+            cur.append("|")
+            i += 2
+            continue
+        if ch == "|":
+            out.append("".join(cur))
+            cur = []
+            i += 1
+            continue
+        cur.append(ch)
+        i += 1
+    out.append("".join(cur))
+    return [c.strip() for c in out[1:-1]]
+
+
 def verdicted(text: str, defined: set[str]) -> set[str]:
     """Every node named in the first column of a terminality-verdict table."""
     out: set[str] = set()
@@ -153,7 +180,7 @@ def verdicted(text: str, defined: set[str]) -> set[str]:
         if not line.startswith("| "):
             in_verdict_table = False
             continue
-        cells = [c.strip() for c in line.split("|")[1:-1]]
+        cells = cells_of(line)
         if len(cells) < 2:
             continue
         if not in_verdict_table:
@@ -189,7 +216,7 @@ def rows(text: str) -> list[tuple[int, str, str]]:
         if not line.startswith("| "):
             in_dependency_table = False
             continue
-        cells = [c.strip() for c in line.split("|")[1:-1]]
+        cells = cells_of(line)
         if len(cells) < 2:
             continue
         if not in_dependency_table:
