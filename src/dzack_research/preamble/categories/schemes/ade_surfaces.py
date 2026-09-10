@@ -41,6 +41,10 @@ from dzack_research.preamble.categories.schemes.polytopes import (
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.owned_category import object_of
@@ -330,6 +334,42 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def side_decorations(self):
             r"""The decorations of the sides of ``Q`` incident to ``p*``."""
             return self._preamble_side_decorations
+
+        @cached_method
+        def integral_invariants(self):
+            r"""Return the archived integral polygon invariants as an owned family.
+
+            The archive stored these values in a Python ``NamedTuple``.  Here
+            their labels are the index set and the values retain their actual
+            owned scalar/cardinal parents: the Euclidean volume is rational,
+            normalized volume and dimension are integral, and lattice-point
+            counts are cardinals.
+            """
+            polygon = self.polarizing_polytope()
+            integers = _own_ring(SageZZ)
+            labels = finite_ordered_set(
+                (
+                    "dimension",
+                    "volume",
+                    "normalized_volume",
+                    "n_integral_points",
+                    "n_interior_points",
+                    "n_boundary_points",
+                )
+            )
+            values = {
+                "dimension": integers(self.toric_scheme().relative_dimension()),
+                "volume": polygon.volume(),
+                "normalized_volume": polygon.normalized_volume(),
+                "n_integral_points": polygon.n_integral_points(),
+                "n_interior_points": polygon.n_interior_points(),
+                "n_boundary_points": polygon.n_boundary_points(),
+            }
+            return finite_indexed_family(
+                labels,
+                values.__getitem__,
+                name=f"Integral invariants of {polygon}",
+            )
 
         def _blue_rays(self):
             polygon = self.polygon()

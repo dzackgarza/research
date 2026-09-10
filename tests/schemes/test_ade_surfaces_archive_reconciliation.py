@@ -57,3 +57,25 @@ def test_archived_affine_dynkin_diagram_uses_the_affine_cartan_type() -> None:
     assert diagram is pair.coxeter_diagram()
     assert diagram.cardinality() == 4
     assert diagram.is_parabolic()
+
+
+def test_archived_integral_polygon_invariants_are_an_owned_labelled_family() -> None:
+    pair = ADELogPair("D", 4, QQ)
+    invariants = pair.integral_invariants()
+
+    assert invariants is pair.integral_invariants()
+    assert tuple(invariants.index_set()) == (
+        "dimension",
+        "volume",
+        "normalized_volume",
+        "n_integral_points",
+        "n_interior_points",
+        "n_boundary_points",
+    )
+    assert invariants["dimension"].parent() is pair.dynkin_rank().parent()
+    assert invariants["volume"].parent() is QQ
+    assert invariants["normalized_volume"].parent() is pair.dynkin_rank().parent()
+    assert (
+        invariants["n_boundary_points"] + invariants["n_interior_points"]
+        == invariants["n_integral_points"]
+    )
