@@ -910,9 +910,11 @@ probability, geometry, dynamics*; *Category theory, higher structures*.
 | F2.1, F2.2, F2.10, F2.11 | group homomorphisms and explicit formulas over the above |
 | F4.1 | `LinearAlgebra/RootSystem/`, `Matrix/Cartan.lean` (finite types through $E_8$) |
 | F1.3, and the inertial index in Lo1 | `LinearAlgebra/QuadraticForm/Signature.lean` — `sigPos`, `sigNeg`, and Sylvester's law of inertia |
+| Lo3 | the trichotomy of a subspace by its induced product, over `QuadraticMap.restrict` (`QuadraticForm/Basic.lean`), `BilinForm.restrict`, `LinearMap.BilinForm.orthogonal` for the complement (`BilinearForm/Orthogonal.lean`), `Nondegenerate` (`SesquilinearForm/Basic.lean`) and the same signature file.  Lo1 and Lo3 are the two nodes of stratum Lo that are definitions over what exists, which the floor already records |
 | AG4's completeness | `AlgebraicGeometry/Morphisms/Proper.lean`, `.../UniversallyClosed.lean` |
 | D8 | `UpperHalfPlane`, `CongruenceSubgroup.Gamma0`/`Gamma1` |
 | Pa1 | `Padics`, `PadicInt`, `QuadraticForm` |
+| Nk1, Pa7 | `AddGroup.rank` (`GroupTheory/Rank.lean`) is exactly $\ell(A)$ — "the minimum size of a generating set", `to_additive` from `Group.rank`, defined for `FG` groups — and $\lvert A\rvert$ is `Nat.card`; the form on $A_q$ is the F1.9/F1.10 substrate |
 
 **F2.3 and F2.4 were in this table and do not belong here.**  The row read
 "reflections and Cartan–Dieudonné live in `LinearAlgebra/QuadraticForm/`".
@@ -1040,7 +1042,23 @@ is a node in this graph, and none of them has a formalization anywhere the regis
 | Bo1–Bo5, Ky1–Ky8 | Borel's extension theorem, Kwack's theorem, the Kobayashi pseudo-distance and hyperbolic imbedding | nothing; `kebekus/ProjectVD` covers Nevanlinna theory, adjacent but not these statements |
 | Rt1–Rt10 | Iwasawa decompositions, restricted roots, Siegel domains, fundamental sets for arithmetic groups, and the finite-volume and compactness criteria | Mathlib has Haar measure on locally compact groups and no Lie structure theory to apply it to; ATLAS's `IwasawaData` is a $KAN$ factorization whose $N$ carries no condition, over a `sorry` existence theorem asserted for every topological group |
 | E1, E3–E13 | compact complex surfaces, Enriques and $K3$ surfaces, elliptic pencils, Horikawa's isometry, global Torelli, the period map | nothing; `nullstellensatz` gives local complex-analytic geometry only |
+| F1.6 | Milnor's classification of the even indefinite unimodular lattices as sums of $H$, $E_8$ and $-E_8$ | nothing.  `E_8` arrives as an object through Sphere-Packing-Lean and F1.5; the classification over it is nowhere |
+| F5.1 | Niemeier's 24 lattices — the same theorem as F4.2 | nothing; `rg -i --no-ignore niemeier` over Mathlib and all 111 cloned repositories returns no file |
+| F5.2, F5.8 | Scattone's Remark 5.1.4 and Corollary 5.6.10, both statements about a **genus** | nothing: the genus of a lattice has no formalization anywhere the registry reaches.  `HassePrinciple` supplies Hilbert symbols with its key proofs `sorry`, which is below these |
+| F5.3–F5.7 | Scattone Prop. 6.1.2 and §6.3: $N\cong D_7$, its embeddings into the members of $\mathcal{U}^{24}$, the eight that admit one, the uniqueness failure at $E_8+D_{16}$, and the nine complements | the root lattices $A_n$, $D_n$, $E_6$, $E_7$, $E_8$ are objects in `lean-categories` (`DefiniteNondegenerate`, `DRootLattice`), which is what F4.1 records.  Not one **embedding** statement between root lattices exists there or anywhere else |
+| Pa6, Pa9, Pa10, Pa11 | Nikulin §1.8–1.9: Props. 1.8.1 and 1.8.3, the canonical decomposition of a $p$-adic lattice, that $(t_{(+)},t_{(-)},q)$ determines the genus, and the surjectivity and extension corollaries | nothing.  `gq2-lean` supplies the dyadic Hilbert symbol and 2-adic square classes, which is the layer Pa2–Pa5 and Pa8 sit on and stops strictly below a decomposition theorem for $p$-adic lattices.  Its one occurrence of "Jordan" is Jordan-block concavity in a freeness bound, not a Jordan splitting |
+| A1a, A6a, A8, B0, C2, D0 | the paper's own content, in the rows the earlier passes added after this table was written: the 2.11 caveat, the (2.15) special sets, 2.21, the ambient $\Lambda$ and $K$ of 3.3.14–3.3.16, the isotropic vector of Vinberg §1.9, and the crossing of 3.2.4 from orbits to strata | by construction |
+| V9a, V11a, V11b | the vertex/edge correspondence in Vinberg's polyhedron, the quantity his algorithm minimizes, and Proposition 4 | with the rest of stratum V: Mathlib has finite Cartan matrices and Coxeter groups, no affine classification and no fundamental polyhedron |
 | A0–A7, B1–B8, C3–C12, D1–D7, Cl1–Cl6 | the paper's own content | by construction |
+
+### The two nodes that carry no verdict, and why
+
+`C1` and `Nk2` are marked *superseded* in their own rows: C1's content was
+decomposed into stratum V, Nk2's into stratum Pa.  Asking who supplies a node
+that has been replaced by other nodes is a question about nothing, so neither
+appears in the three tables above, and `check_dag.py` exempts exactly these two.
+Their dependency cells point at the nodes that replaced them, which is what makes
+the decomposition checkable: if V or Pa lost a node, the edge would dangle.
 
 ### What the classification says
 
