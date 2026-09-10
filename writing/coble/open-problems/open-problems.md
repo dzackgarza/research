@@ -13,13 +13,13 @@ None of the statements below is claimed to be settled; several cross-reference p
 ::: {.Remark}
 ### Open problem: isometry class and genus of the Coble lattices
 
-The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\operatorname{diag}(2,-2,\dots,-2)$, equivalently $\gens{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in the Coble lattice table (\cref{tbl:coble-lattices}), and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
+The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\operatorname{diag}(2,-2,\dots,-2)$, equivalently $\gens{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in the Coble lattice table (\longref{tbl:coble-lattices}), and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
 What is not yet formally established is the *isometry-class verification* and the *genus decomposition*: whether the genus of $T_\Co$ contains a unique isometry class.
 Concretely:
 
 - compute the Gram matrices of $S_\Co$ and $T_\Co$ and verify their $(r,a,\delta)$ invariants and genus cardinality via Nikulin's classification (the $r > a$ check for a $2$-elementary lattice) [@Nik80];
 
-- confirm that $r > a$ forces a unique class in the genus, so that the reduction of isotropic-orbit questions to the discriminant form $q_{T_\Co}$ (\cref{thm:sterk-orbit}) is justified.
+- confirm that $r > a$ forces a unique class in the genus, so that the reduction of isotropic-orbit questions to the discriminant form $q_{T_\Co}$ (\longref{thm:sterk-orbit}) is justified.
 :::
 
 ::: {.Remark}
@@ -29,7 +29,7 @@ The chain of primitive embeddings
 $$
 T_\Co \injects T_\En \injects T_\dP \injects \lkt
 $$
-is used throughout (\cref{lem:sequence_of_embeddings}, \cref{lem:primitive_embedding_eta}), and Nikulin's apparatus [@Nik80 Prop. 1.14.4, 1.15.2] is the intended tool for the uniqueness of the primitive embedding $T_\Co \injects T_\En$ and for the surjectivity of $\Orth(L) \to \Orth(T_\Co)$.
+is used throughout (\longref{lem:sequence_of_embeddings}, \longref{lem:primitive_embedding_eta}), and Nikulin's apparatus [@Nik80 Prop. 1.14.4, 1.15.2] is the intended tool for the uniqueness of the primitive embedding $T_\Co \injects T_\En$ and for the surjectivity of $\Orth(L) \to \Orth(T_\Co)$.
 What remains is to *exhibit the embedding matrices in coordinate bases*: derive the explicit primitive-embedding matrices realizing the chain above, and verify their primitivity directly rather than by invocation.
 The same coordinate deficit affects the derivation of the explicit equations for $C$ and $X$ (below): the invariants are listed, but the primitivity of the lattice embeddings lacks a rigorous derivation in terms of coordinate bases.
 :::
@@ -44,7 +44,7 @@ $$
 \lkt^{-\theta} \cong S_\Co,
 $$
 and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as a functorial consequence of the lattice isometry (cf.
-\cref{def:folded-root}, \cref{lem:root-folding-tdp}, and the invariant/coinvariant construction of \cref{def:invariant_coinvariant_lattices}). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
+\longref{def:folded-root}, \longref{lem:root-folding-tdp}, and the invariant/coinvariant construction of \longref{def:invariant_coinvariant_lattices}). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
 Existence and the eigenlattice description are settled: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding, so it extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices (\longref{prop:theta-co-exists}).
 The open technical content is to *write down the $22\times 22$ matrix of $\theta_\Co$ on the standard basis of $U^{3}\oplus E_8^{2}$*, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.
 :::
@@ -66,7 +66,7 @@ The open work is the passage from these finite decompositions back to the lattic
 
 - verify that the $\Orth(T)$-orbits coincide with the $\Gamma_\Co$-orbits, so that the Baily--Borel $0$-cusp is unique.
 
-That every primitive isotropic $v \in T_\Co$ has $\operatorname{div}_{T_\Co}(v) = 2$ is already known (\cref{lem:divisibilityAlwaysTwoTco}), which fixes the divisibility datum but not the orbit count.
+That every primitive isotropic $v \in T_\Co$ has $\operatorname{div}_{T_\Co}(v) = 2$ is already known (\longref{lem:divisibilityAlwaysTwoTco}), which fixes the divisibility datum but not the orbit count.
 :::
 
 ::: {.Remark}
@@ -89,7 +89,7 @@ The open work is to:
   For the full orthogonal group this is settled: $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes and $J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$ (\longref{theorem-unpolarized-cusps}, with the split maximal hypothesis supplied by \longref{prop:tco-split-maximal}).
   The residue is the subgroup statement, which does not follow from the full-group one.
 
-This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in \cref{lem:1_cusp_correspondence}.
+This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in \longref{lem:1_cusp_correspondence}.
 :::
 
 ::: {.Remark}
@@ -134,13 +134,13 @@ The data and the derivation are in [[sterk-root-counts-and-computed-chambers]].
 ::: {.Remark}
 ### Open problem: hyperbolic-quotient derivation of the cusp correspondence
 
-The cusp correspondence between the Coble cusps $(9,9,1)$, $(7,7,1)$ and their Enriques predecessors is established in \cref{thm:cusp_correspondence} (via the divisibility computations of \cref{lem:w1_perp_calculation} and \cref{lem:1_cusp_correspondence}). The migrated notes propose an independent *hyperbolic-quotient* derivation that would place the correspondence on a self-contained lattice footing rather than resting on the alignment of invariants:
+The cusp correspondence between the Coble cusps $(9,9,1)$, $(7,7,1)$ and their Enriques predecessors is established in \longref{thm:cusp_correspondence} (via the divisibility computations of \longref{lem:w1_perp_calculation} and \longref{lem:1_cusp_correspondence}). The migrated notes propose an independent *hyperbolic-quotient* derivation that would place the correspondence on a self-contained lattice footing rather than resting on the alignment of invariants:
 
 - compute the isometry type of the hyperbolic quotient $e^{\perp}/e$ directly for a primitive isotropic $e \in T_\Co$;
 
 - use $\operatorname{div}_{T_\Co}(e)$ to pin down the unique $\Orth(T_\Co)$-orbit and verify that the quotient matches the Enriques signatures $(10,8,0)_1$ for $0$-cusps and $(8,6,0)_0$ for $1$-cusps.
 
-The residue that is genuinely open is the *orbit-uniqueness input*: the proof of \cref{lem:divisibilityTcoOne} presently *assumes* a unique $\Gamma_\Co$-orbit of isotropic vectors in $T_\Co$, which is exactly the enumeration left open above.
+The residue that is genuinely open is the *orbit-uniqueness input*: the proof of \longref{lem:divisibilityTcoOne} presently *assumes* a unique $\Gamma_\Co$-orbit of isotropic vectors in $T_\Co$, which is exactly the enumeration left open above.
 :::
 
 ### General questions on hyperbolic reflection groups
@@ -226,8 +226,8 @@ The degree-$2$ Enriques program modernizes Morrison's flowerpots [@Mor81] into *
 The open geometric content is:
 
 - **Coble pot geometry.** Define the explicit stable pair $(\mathcal V, \mathcal D)$ whose "Pot" component is a rational Coble surface, carrying a $\tfrac14(1,1)$ cyclic quotient singularity corresponding to the nodes of the rational sextic $C$.
-  This is the local singularity package already conjectured for the stable quotient in \cref{conj:coble_quarter_singularity}, seen here on the *dlt* model (cf.
-  \cref{def:dlt-involution-pair}, \cref{def:divisor-model}).
+  This is the local singularity package already conjectured for the stable quotient in \longref{conj:coble_quarter_singularity}, seen here on the *dlt* model (cf.
+  \longref{def:dlt-involution-pair}, \longref{def:divisor-model}).
 
 - **Stalk assembly.** Describe the transition of the stalk assembly and the integral-affine configuration as the Enriques surface log-collapses onto the discriminant divisor $\Delta$, where the K3 cover becomes nodal.
 :::
@@ -243,7 +243,7 @@ Stable limits of Coble surfaces arise as $S_2$-quotients of nodal K3 surfaces, p
 
 - verify the slc stability of the resulting stable pair $(Z, \varepsilon C)$ for specific surgery vectors $\ell$.
 
-This is the discrete-datum side of the KSBA program whose stability obligations are recorded in \cref{conj:coble_quarter_singularity} and the surrounding KSBA discussion.
+This is the discrete-datum side of the KSBA program whose stability obligations are recorded in \longref{conj:coble_quarter_singularity} and the surrounding KSBA discussion.
 :::
 
 ## Foundational equations and computational verification
@@ -258,7 +258,7 @@ C = \ts{ F(x,y,z) = 0 },
 F(x,y,z) = \sum_{i+j+k=6} a_{ijk}\, x^i y^j z^k,
 $$
 subject to the nodal conditions $F(p_m) = \partial_x F(p_m) = \partial_y F(p_m) = \partial_z F(p_m) = 0$ at the ten special positions $p_1,\dots,p_{10} \in \PP^2$; the moduli space of such sextics is $9$-dimensional, and explicit models may be sought from the Steiner sextic or from index-$2$ Halphen pencils (cf.
-\cref{lem:coble_halphen_blowdown}, \cref{lem:rational_sextic_ten_nodes}). The K3 cover is the double cover $X \xrightarrow{2:1} S$ of $\PP^2$ branched along $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$, whose ten $A_1$ nodes lie above the positions $p_m$ (at $w = 0$, $[x:y:z] = p_m$). What is missing is a *worked instance*: derive an explicit equation $F(x,y,z) = 0$ for a rational sextic with ten nodes together with the corresponding cover $w^2 = F$, realizing $C$ as the image of $\PP^1$ under a degree-$6$ map $(s:t) \mapsto [f_0 : f_1 : f_2]$.
+\longref{lem:coble_halphen_blowdown}, \longref{lem:rational_sextic_ten_nodes}). The K3 cover is the double cover $X \xrightarrow{2:1} S$ of $\PP^2$ branched along $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$, whose ten $A_1$ nodes lie above the positions $p_m$ (at $w = 0$, $[x:y:z] = p_m$). What is missing is a *worked instance*: derive an explicit equation $F(x,y,z) = 0$ for a rational sextic with ten nodes together with the corresponding cover $w^2 = F$, realizing $C$ as the image of $\PP^1$ under a degree-$6$ map $(s:t) \mapsto [f_0 : f_1 : f_2]$.
 Such an instance would anchor the coordinate derivations demanded by the lattice-embedding and involution problems above.
 :::
 

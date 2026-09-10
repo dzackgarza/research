@@ -73,7 +73,7 @@ nonzero $n\in\ZZ$, i.e. when $v\in\operatorname{Sat}_L(S)$.
 Thus $L/S$ is torsionfree if and only if $\operatorname{Sat}_L(S) = S$.
 
 $(2)\iff(3)$: This is the second description of the saturation recorded in
-\cref{def:saturation}.
+\longref{def:saturation}.
 If $v\in S_\QQ\intersect L$, then $v = \sum_i (a_i/n) s_i$ with $s_i\in S$,
 $a_i\in\ZZ$, and $n\in\ZZ\setminus\ts{0}$, so $nv\in S$ and
 $v\in\operatorname{Sat}_L(S)$; conversely if $nv\in S$ then
@@ -145,7 +145,7 @@ $\Orth(L)$-orbits of primitive sublattices of $L$ isometric to $S$, together
 with the choice of isometry onto each such sublattice.
 This is the object controlled by the gluing theory of the next subsection and
 made finite, in the even unimodular case, by
-\cref{prop:embedding-finiteness}.
+\longref{prop:embedding-finiteness}.
 :::
 
 ::: {.Definition #def:embedding-vs-sublattice-equivalence}
@@ -257,7 +257,7 @@ attached to its image.
 
 ::: {.Remark #rmk:embedding-gluing-data}
 
-The correspondence of \cref{thm:nikulin-gluing} is the engine behind the
+The correspondence of \longref{thm:nikulin-gluing} is the engine behind the
 classification of primitive embeddings.
 A primitive embedding $S\injects L$ with orthogonal complement $T\da S^{\perp L}$
 realizes $L$ as an even overlattice of the orthogonal direct sum $S\oplus T$,
@@ -276,7 +276,7 @@ $$
 recovering, when $L$ is unimodular, the statement that
 $\abs{\operatorname{disc} T} = \abs{\operatorname{disc} S}$ and that $H_S = A_S$,
 $H_T = A_T$ so that $\gamma\colon A_S\xrightarrow{\sim} A_T$ is an isometry onto
-$A_T$ equipped with the negated form; see \cref{prop:embedding-finiteness}.
+$A_T$ equipped with the negated form; see \longref{prop:embedding-finiteness}.
 The construction and these formulas are due to Nikulin [@Nik80 §1.4--1.5].
 The gluing subgroup $H$ is also what decides whether a pair of isometries of $S$
 and of $T$ assembles into an isometry of $L$; that question is settled in
@@ -292,7 +292,7 @@ Let $S\injects L$ be a primitive embedding with orthogonal complement
 $T\da S^{\perp L}$.
 We say $S$ **splits** $L$ if $L = S\oplus T$; equivalently, if $L$ is the
 trivial index-$1$ overlattice of $S\oplus T$, i.e. the isotropic subgroup
-$H_L\le A_{S\oplus T}$ of \cref{thm:nikulin-gluing} is the zero group.
+$H_L\le A_{S\oplus T}$ of \longref{thm:nikulin-gluing} is the zero group.
 :::
 
 ::: {.Proposition #prop:unimodular-splits}
@@ -346,7 +346,7 @@ In particular $\operatorname{div}_L(v) = 1$ for every primitive vector $v\in L$.
 Since $L$ is unimodular, the canonical map $L\to L\dual$ is an isomorphism, so
 every functional in $L\dual = \Hom_\ZZ(L, \ZZ)$ has the form
 $\beta_L(u,\,\cdot\,)$ for a unique $u\in L$.
-Because $v$ is primitive, by \cref{prop:primitive-characterization} it extends to
+Because $v$ is primitive, by \longref{prop:primitive-characterization} it extends to
 a $\ZZ$-basis $e_1 = v, e_2,\ldots,e_n$ of $L$.
 Let $\varphi\colon L\to\ZZ$ be the dual-basis functional with $\varphi(v) = 1$
 and $\varphi(e_j) = 0$ for $j > 1$.
@@ -376,12 +376,12 @@ $$
 ::: {.proof}
 
 Let $e\in L$ be a primitive isotropic vector.
-By \cref{lem:unimodular-divisibility} choose $w\in L$ with
+By \longref{lem:unimodular-divisibility} choose $w\in L$ with
 $\beta_L(e, w) = 1$, and set $k\da w^2$.
 The sublattice $P\da\gens{e, w}$ has Gram matrix
 $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ of determinant $-1$, hence
 $P$ is a rank-$2$ unimodular sublattice, and it is primitive since a unimodular
-sublattice is saturated by \cref{prop:primitive-characterization}.
+sublattice is saturated by \longref{prop:primitive-characterization}.
 The isometry type of $P$ is governed by the parity of $k = w^2$: the Gram
 matrix $\begin{bmatrix}0 & 1\\ 1 & k\end{bmatrix}$ gives $P\cong U$ when $k$ is
 even and $P\cong\latI_{1, 1}$ (the odd rank-$2$ unimodular hyperbolic lattice)
@@ -405,7 +405,7 @@ of odd norm; in the latter case replace $w$ by $w + u$, which preserves
 $\beta_L(e, w) = 1$ and gives $(w + u)^2 = w^2 + 2\beta_L(w, u) + u^2$ odd.
 Either way $k = w^2$ is odd and $P\cong\latI_{1, 1}$.
 
-Since $P$ is unimodular, \cref{prop:unimodular-splits} gives
+Since $P$ is unimodular, \longref{prop:unimodular-splits} gives
 $L\cong P\oplus P^{\perp L}$.
 :::
 
@@ -542,7 +542,7 @@ $\operatorname{Emb}(S, L)$ is a finite set.
 
 ::: {.proof}
 
-By \cref{prop:unimodular-splits} and \cref{rmk:embedding-gluing-data}, a
+By \longref{prop:unimodular-splits} and \longref{rmk:embedding-gluing-data}, a
 primitive embedding $S\injects L$ into an even unimodular $L$ is equivalent to
 the data of its orthogonal complement $T\da S^{\perp L}$ together with an
 isometry
@@ -561,10 +561,10 @@ The discriminant groups $A_S$ and $A_T$ are finite abelian groups, so the set
 $\operatorname{Isom}(A_S, A_T(-1))$ of discriminant-form isometries and the
 group $\Orth(q_T)$ are finite.
 The isometry class of $T$ is constrained to a fixed genus in the sense of
-\cref{def:genus} (its signature is $\operatorname{sign} L - \operatorname{sign} S$
+\longref{def:genus} (its signature is $\operatorname{sign} L - \operatorname{sign} S$
 and its discriminant form is $-q_S$), and a genus of lattices contains only
 finitely many isometry classes; equivalently, the class group
-$\operatorname{cl}(T)$ of \cref{def:genus} is finite.
+$\operatorname{cl}(T)$ of \longref{def:genus} is finite.
 A finite union of finite sets of $\Orth(q_T)$-orbits is finite, so
 $\operatorname{Emb}(S, L)$ is finite.
 :::
@@ -637,10 +637,10 @@ $\Orth^*(q_L) = 0$, whenever $L$ is indefinite and
 $$
 \ell(A_L) + 2 \le \operatorname{rank} L,
 $$
-where $\ell(A_L)$ is the length of \cref{def:discriminant-forms}, i.e. the
+where $\ell(A_L)$ is the length of \longref{def:discriminant-forms}, i.e. the
 minimal number of generators of $A_L$ [@Nik80 Cor.\ 1.5.2, Thm.\ 1.14.2].
 For a unimodular lattice such as $U$ or $E_8$ the discriminant group is trivial,
 so $\Orth(q_L) = 0$ and $\tilde\Orth(L) = \Orth(L)$; the same triviality
 underlies the surjectivity statement invoked for $\lkt$ in
-\cref{lem:sequence_of_embeddings}.
+\longref{lem:sequence_of_embeddings}.
 :::

@@ -22,7 +22,7 @@ so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical
 divisor classes $\Num(Z)$.
 Under the intersection pairing this free part is the even unimodular lattice of
 signature $(1, 9)$, i.e. the Enriques lattice $E_{10}$ of
-\cref{def:enriques-lattice} [@CDL25]; the numerical polarization $[h]$ is thus
+\longref{def:enriques-lattice} [@CDL25]; the numerical polarization $[h]$ is thus
 an ample class in $\Num(Z)\iso E_{10}$.
 :::
 
@@ -68,7 +68,7 @@ S_{\mathrm{En}} = E_{10}(2) = U(2)\oplus E_8(2)
 ,
 $$
 the rank-$10$, $2$-elementary, signature-$(1,9)$ lattice of type $(10,10,0)$
-(see \cref{def:enriques-lattice} and the Special Lattices section).
+(see \longref{def:enriques-lattice} and the Special Lattices section).
 The appearance of these extra invariant classes in $\NS$ is what cuts out the
 locus.
 :::

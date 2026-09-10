@@ -22,13 +22,13 @@ F_{\Nod, 2} &= ???
 \end{aligned}
 $$
 
-where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \cref{lem:primitive_embedding_eta}.
+where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \longref{lem:primitive_embedding_eta}.
 \todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth^+(T_\En)^*$.
 
 ![The tower of moduli spaces relating the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}, F_{\En,2}$, their unpolarized quotients $F_\Co, F_\En$, and the degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)} \injects F_4$. The map $F_{\Co,2} \to F_\Co$ marked $?$ is not yet determined (cf. the remark on $\Gamma_{\Co,2}$ above).](rendered/fig_moduli_tower.png){#fig:moduli-tower}
 
-\todo{\Cref{fig:moduli-tower} is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.}
+\todo{\longref{fig:moduli-tower} is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.}
 
 # GIT Discussion
 
@@ -142,7 +142,7 @@ $$
 $$
 
 be the union of the hyperplane sections cut out by the vectors $\delta$ of norm
-$-2d$, as in \cref{fig:period-domain-hyperplanes}, one can thus present
+$-2d$, as in \longref{fig:period-domain-hyperplanes}, one can thus present
 
 $$
 \begin{aligned}
@@ -182,7 +182,7 @@ We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\C
 
 ::: {.Remark}
 
-By \cref{lem:locally_closed_embedding_BB}, there are morphisms
+By \longref{lem:locally_closed_embedding_BB}, there are morphisms
 $\overline{F_{\Co}}^{\bb} \to \overline{F_{\En}}^{\bb}$ and
 $\overline{F_{\Co}}^{\bb} \to \overline{F_{(2,2,0)}}^{\bb}$ which induce
 correspondences between the boundary cusps.

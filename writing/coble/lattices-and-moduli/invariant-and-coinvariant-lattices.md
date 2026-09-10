@@ -3,7 +3,7 @@
 ::: {.Remark}
 
 We record the lattice-theoretic constructions attached to a group of isometries of a lattice, and specialize them to the case of an involution.
-This apparatus underpins the lattice theory of the K3-cover / Enriques-cover picture used throughout: the $2$-elementary lattices $S_\Co$ and $T_\Co$ arise as the invariant and coinvariant lattices of the nonsymplectic involution on the K3 cover of a Coble surface, and it is these lattices that enter the chain of primitive embeddings of \cref{lem:sequence_of_embeddings}.
+This apparatus underpins the lattice theory of the K3-cover / Enriques-cover picture used throughout: the $2$-elementary lattices $S_\Co$ and $T_\Co$ arise as the invariant and coinvariant lattices of the nonsymplectic involution on the K3 cover of a Coble surface, and it is these lattices that enter the chain of primitive embeddings of \longref{lem:sequence_of_embeddings}.
 :::
 
 ::: {.Definition #def:invariant_coinvariant_lattices}
@@ -65,7 +65,7 @@ $$
 
 ::: {.proof}
 
-Orthogonality and primitivity are the case $G = \gens{I}$ of \cref{prop:invariant_coinvariant_primitive}, and $L_G = (L^G)^{\perp L}$ is orthogonal to $L^G$ by definition.
+Orthogonality and primitivity are the case $G = \gens{I}$ of \longref{prop:invariant_coinvariant_primitive}, and $L_G = (L^G)^{\perp L}$ is orthogonal to $L^G$ by definition.
 For the decomposition, fix $v\in L$ and set $v_+ \da v + I(v)$ and $v_- \da v - I(v)$, both of which lie in $L$.
 Applying $I$ and using $I^2 = \id$,
 $$
@@ -74,7 +74,7 @@ I(v_+) = I(v) + I^2(v) = I(v) + v = v_+,
 I(v_-) = I(v) - v = -v_-
 ,
 $$
-so $v_+$ is fixed by $I$ and hence $v_+\in L^G$, while $v_-$ lies in the $-1$ eigenspace of $I$ and hence, by \cref{prop:involution_eigenspaces}, in $(L_G)_\QQ\cap L = L_G$.
+so $v_+$ is fixed by $I$ and hence $v_+\in L^G$, while $v_-$ lies in the $-1$ eigenspace of $I$ and hence, by \longref{prop:involution_eigenspaces}, in $(L_G)_\QQ\cap L = L_G$.
 Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogonal since $v_+\in L^G$ and $v_-\in L_G = (L^G)^{\perp L}$.
 :::
 

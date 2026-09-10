@@ -79,8 +79,14 @@ E_{10} \injects \gens{-1}\oplus E_{10}
 .
 $$
 
-This embedding is unique since one can write the codomain as
-$E_{10}^\perp \oplus E_{10}$.
+This embedding is unique because $E_{10} = U \oplus E_8$ is unimodular.
+A primitively embedded unimodular sublattice splits its ambient lattice
+(\longref{prop:unimodular-splits}), so the codomain of any primitive embedding of
+$E_{10}$ is $E_{10}\oplus E_{10}^{\perp}$.
+The gluing datum of such an embedding is the graph of an isometry between a
+subgroup of $A_{E_{10}}$ and a subgroup of $A_{E_{10}^\perp}$
+(\longref{rmk:embedding-gluing-data}), and $A_{E_{10}} = 0$, so that datum is
+trivial and the embedding is determined by the isometry class of the complement.
 Similarly, by [@Nik80 Cor. 1.5.2, Thm.
 3.6.3], the homomorphism $\Orth(\lkt)\to \Orth(T_\Co)$ is surjective.
 :::
@@ -123,3 +129,34 @@ The stabilizer statement follows from...
 \todo[inline]{I don't know how to prove this. Maybe one should embed into $T_{\dP}$ instead to get the stabilizer statement? Finiteness is still unclear. Maybe one can use finite $\iff$ proper and finite fibers, using Stacks tag 02LS. This can be checked Zariski locally?}
 
 \todo[inline]{Maybe this can be proved using Zariski's main theorem: a birational morphism to a normal variety with finite fibers is an isomorphism onto an open subset. Is this morphism birational? What are the fibers, and how can we tell if they are finite?}
+
+::: {.Remark #rmk:descent-of-an-equivariant-inclusion}
+### What the stabilizer statement has to supply
+
+The stabilizer step of \longref{thm:normalization} is one instance of a general
+criterion for descending a map to a pair of quotients.
+Let $f\colon A\injects B$ be an inclusion of sets, and let $G_A$ and $G_B$ be
+groups acting on $A$ and on $B$.
+Then $f$ descends to a map of orbit spaces
+$$
+\bar f\colon G_A\backslash A \to G_B\backslash B
+$$
+precisely when every element of $G_A$ acts on $A$ as the restriction of some
+element of $G_B$ preserving $f(A)$, that is when
+$$
+\im\bigl(G_A\to\Aut(A)\bigr)
+\;\subseteq\;
+\im\bigl(\Stab_{G_B}(f(A))\to\Aut(f(A))\bigr)
+.
+$$
+For the case at hand, $A = D(T_\Co)$ with $G_A = \Orth^+(T_\Co)^*$ and
+$B = D(T_\En)$ with $G_B = \Orth^+(T_\En)^*$, so what is needed is that every
+isometry of $T_\Co$ in $G_A$ extends to an isometry of $T_\En$ preserving
+$T_\Co$.
+The criterion is a containment, not an equality: the stabilizer of $T_\Co$ in
+$\Orth(T_\En)$ may restrict to a group strictly larger than $\Orth(T_\Co)$
+without obstructing the descent.
+What a strictly larger restriction can cost is injectivity, since two
+$G_A$-orbits may then be identified in $G_B\backslash B$; that is the separate
+burden carried by the generic injectivity in the proof above.
+:::

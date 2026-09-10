@@ -5,7 +5,7 @@
 
 This section collects the general definitions of the compactification types used throughout the monograph -- toroidal, semitoroidal, and KSBA compactifications, together with generalized Coxeter semifans and recognizable divisors.
 The material here is background and vocabulary: it fixes the constructions in their natural generality.
-The Coble-specific application of these constructions -- the KSBA stable pair, the restricted ramification semifan, and the comparison between the two compactifications -- is developed in the Stable Limits section; see in particular \Cref{conj:restricted_ramification_semifan} and \Cref{conj:ksba_semitoroidal_comparison}.
+The Coble-specific application of these constructions -- the KSBA stable pair, the restricted ramification semifan, and the comparison between the two compactifications -- is developed in the Stable Limits section; see in particular \longref{conj:restricted_ramification_semifan} and \longref{conj:ksba_semitoroidal_comparison}.
 :::
 
 ## Toroidal compactifications
@@ -49,7 +49,7 @@ $$
 \overline{F_\Gamma}^{\mathcal{F}_\bullet} \longrightarrow
 \overline{F_\Gamma}^{\operatorname{BB}}
 $$
-as in \cref{def:semitoroidal-compactification} is isomorphic to a semitoroidal compactification [@AE23, Thm. 1].
+as in \longref{def:semitoroidal-compactification} is isomorphic to a semitoroidal compactification [@AE23, Thm. 1].
 :::
 
 ::: {.Remark}
@@ -57,7 +57,7 @@ as in \cref{def:semitoroidal-compactification} is isomorphic to a semitoroidal c
 
 The polarized Coble compactification program does not build a new semifan from scratch; it uses a Coble-specific restriction of the Enriques ramification semifan.
 Concretely, one takes the **trace** of the Enriques ramification semifan on a Coble hyperplane, together with an admissibility condition selecting which restricted walls survive.
-This is the semitoroidal side of the Coble comparison problem, recorded here as \Cref{conj:restricted_ramification_semifan}; the trace identity is not yet proved, and is kept explicitly conjectural.
+This is the semitoroidal side of the Coble comparison problem, recorded here as \longref{conj:restricted_ramification_semifan}; the trace identity is not yet proved, and is kept explicitly conjectural.
 :::
 
 ## Generalized Coxeter semifans
@@ -90,7 +90,7 @@ The distinction between toroidal and strictly semitoroidal behavior depends on t
 ### Polarized Coble trace picture
 
 For the polarized Coble program, the generalized Coxeter semifan of the Enriques cusp is restricted to a Coble hyperplane: one asks for the trace of the Enriques ramification semifan on that hyperplane, together with an admissibility condition determining which restricted walls survive.
-Under the proposed restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant; see \Cref{conj:restricted_ramification_semifan}.
+Under the proposed restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant; see \longref{conj:restricted_ramification_semifan}.
 :::
 
 ## KSBA compactifications
@@ -118,7 +118,7 @@ The KSBA moduli space $\overline{F}_\Gamma$ provides a modular, proper, algebrai
 ### Polarized Coble application
 
 The Coble-specific stable-pair package extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
-The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see \Cref{conj:ksba_semitoroidal_comparison}.
+The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see \longref{conj:ksba_semitoroidal_comparison}.
 :::
 
 ## Recognizable divisors

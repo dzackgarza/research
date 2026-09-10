@@ -12,7 +12,7 @@ total charge $24$.
 The additional data of an integral affine polarization
 $R_{\mathrm{IA}} \subset \Gamma(\cX_0)$ describes the KSBA stable limit of a
 degeneration $(\cX^*, \varepsilon \cR^*)$.
-The geometry of such a degeneration is depicted in \cref{fig:moduli-degeneration}:
+The geometry of such a degeneration is depicted in \longref{fig:moduli-degeneration}:
 the family $\cX$ is fibred over a curve $C$ in the moduli space $\cM$, and the
 stable limit is the fiber over the point where $C$ meets the boundary.
 For Enriques (and hence Coble) surfaces, we take the corresponding dlt models
@@ -127,7 +127,7 @@ matching the folding involution of Sterk $2$; the Coble boundary is expected to
 produce disc-type integral affine structures rather than sphere- or
 $\mathbf{RP}^2$-type limits, in agreement with the flowerpot degenerations of
 Morrison [@Mor81; @AEGS25].
-The combinatorial disc-type model of \cref{fig:ias-sterk2-kulikov-model} and the
-integral affine structure for Sterk $2$ of \cref{fig:sterk2-ias} illustrate this
+The combinatorial disc-type model of \longref{fig:ias-sterk2-kulikov-model} and the
+integral affine structure for Sterk $2$ of \longref{fig:sterk2-ias} illustrate this
 case.
 :::

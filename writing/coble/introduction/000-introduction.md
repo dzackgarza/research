@@ -66,7 +66,7 @@ projective variety.
 For $F_{2d}$ and related lattice-polarized moduli spaces $F_S$ of K3 surfaces,
 the boundary of the compactification consists of a configuration of 0-cusps
 (points) and 1-cusps (curves), see [@Sca87].
-See \cref{fig:baily-borel-schematic}.
+See \longref{fig:baily-borel-schematic}.
 By [@AMRT10], there additionally exist infinitely many toroidal
 compactifications described by a choice of fans at each cuspidal point of the
 Baily-Borel compactification.
@@ -102,7 +102,7 @@ is determined by a single $\Gamma_\Co\dash$invariant semifan associated to a
 lattice at $p_0$.
 A canonical choice one can take is the Coxeter fan, formed by a fundamental
 domain of the action of the lattice's Weyl group, along with its reflections;
-see \cref{fig:coxeter-fan-cone}.
+see \longref{fig:coxeter-fan-cone}.
 Perhaps more naturally, one can also search for a semifan $\cF$ such that the
 resulting compactification $\overline{F_\Co}^{\cF}$ is isomorphic to the KSBA
 compactification $\overline{F_\Co}$ for a suitably chosen divisor, and indeed

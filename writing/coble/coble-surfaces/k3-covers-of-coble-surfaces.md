@@ -119,7 +119,7 @@ $$
 .
 $$
 Applied to the orthogonal basis $H, E_1, \ldots, E_{10}$, this shows that $f^*H, f^*E_1, \ldots, f^*E_{10}$ have Gram matrix $\operatorname{diag}(2, -2, \ldots, -2)$, so that $S_\Co \cong \gens{2}\oplus\gens{-2}^{10} = \latI_{1, 10}(2)$, of signature $(1, 10)$.
-This recovers, by the projection formula, the twist-by-$2$ described geometrically in \cref{rmk:k3-cover-twist}.
+This recovers, by the projection formula, the twist-by-$2$ described geometrically in \longref{rmk:k3-cover-twist}.
 
 **Rank of the invariant lattice via Lefschetz.** The lattice $S_\Co$ is $\sigma$-invariant, so $S_\Co\subseteq H^2(X, \bZ)^\sigma$.
 The fixed locus $\mathrm{Fix}(\sigma) = R$ is a single smooth rational curve (the case $n = 1$), so $\chi(R) = 2$.
@@ -130,7 +130,7 @@ $$
 $$
 Since $\chi(R) = 2$, we obtain $\operatorname{tr}(\sigma^* \mid H^2(X, \bZ)) = 0$.
 As $H^2(X, \bZ)$ has rank $22$ and $\sigma^*$ is an involution, the invariant lattice has rank $\tfrac{1}{2}(22 + 0) = 11$ and the coinvariant lattice rank $\tfrac{1}{2}(22 - 0) = 11$, so that $11 + 11 = 22$; cf.
-\cref{prop:involution_eigenspaces}. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
+\longref{prop:involution_eigenspaces}. Hence $S_\Co$, of rank $11$, is a finite-index sublattice of $H^2(X, \bZ)^\sigma$.
 
 **The Nikulin invariants and equality.** The lattice $S_\Co \cong \gens{2}\oplus\gens{-2}^{10}$ has
 $$
@@ -144,8 +144,8 @@ $$
 so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 For a nonsymplectic involution whose fixed locus is a single rational curve, the fixed-locus formula assigns the invariant lattice these same invariants $(r, a, \delta) = (11, 11, 1)$ [@CDL25 Def. 5.4.3, Eqn. 5.3.1], so $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
-Since $S_\Co \subseteq H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by \cref{prop:invariant_coinvariant_primitive} the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
-That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in \cref{rmk:k3-cover-invariants}.
+Since $S_\Co \subseteq H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by \longref{prop:invariant_coinvariant_primitive} the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
+That the invariants $(11, 11, 1)_1$ determine the isometry class $\gens{2}\oplus\gens{-2}^{10}\cong\gens{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80]. This derivation makes explicit the invariants stated by citation in \longref{rmk:k3-cover-invariants}.
 :::
 
 ::: {.Remark #rmk:k3-cover-twist}

@@ -4,8 +4,8 @@
 ### Orientation
 
 This section records the degree-$2$ Enriques side of the KSBA--semitoroidal comparison: the compactification of $F_{\En, 2}$, the moduli space of degree-$2$ numerically polarized Enriques surfaces.
-Here the comparison is a theorem, obtained by reducing to the recognizable-divisor machinery of Alexeev--Engel (\cref{thm:recognizable-semitoroidal}, \cref{thm:tower-semitoroidal}); the ambient degree-$2$ Enriques KSBA compactification is itself settled [@AEGS25; @CDL25].
-This is the established counterpart of the polarized *Coble* comparison, which remains an open program: see \cref{conj:ksba_semitoroidal_comparison} for the Coble isomorphism target and \cref{conj:restricted_ramification_semifan} for the Coble semifan-restriction analogue of the descent below.
+Here the comparison is a theorem, obtained by reducing to the recognizable-divisor machinery of Alexeev--Engel (\longref{thm:recognizable-semitoroidal}, \longref{thm:tower-semitoroidal}); the ambient degree-$2$ Enriques KSBA compactification is itself settled [@AEGS25; @CDL25].
+This is the established counterpart of the polarized *Coble* comparison, which remains an open program: see \longref{conj:ksba_semitoroidal_comparison} for the Coble isomorphism target and \longref{conj:restricted_ramification_semifan} for the Coble semifan-restriction analogue of the descent below.
 
 :::
 
@@ -34,17 +34,17 @@ of semifans, one for each $0$-cusp of the Baily--Borel compactification $\overli
 ### Fan versus strict-semifan bookkeeping
 
 The five cusps of $\overline{F_{\En, 2}}^{\operatorname{BB}}$ match Sterk's five $0$-cusps of the Enriques period space [@Ste91], one semifan per cusp.
-Among the entries of $\mathcal{F}_{\bullet}$, the even-indexed entries $\Sigma_2, \Sigma_4$ are honest fans, while the odd-indexed entries $\mathcal{F}_1, \mathcal{F}_3, \mathcal{F}_5$ are strict semifans (in the sense of \cref{def:generalized-coxeter-semifan}, i.e.\ with infinite irrelevant subgroup, so not locally finite).
+Among the entries of $\mathcal{F}_{\bullet}$, the even-indexed entries $\Sigma_2, \Sigma_4$ are honest fans, while the odd-indexed entries $\mathcal{F}_1, \mathcal{F}_3, \mathcal{F}_5$ are strict semifans (in the sense of \longref{def:generalized-coxeter-semifan}, i.e.\ with infinite irrelevant subgroup, so not locally finite).
 
 :::
 
 ::: {.proof}
 
-The proof reduces to the recognizable-divisor theorem of Alexeev--Engel [@AE23]: for a recognizable divisor $R$, the normalization of the KSBA compactification of stable K3 pairs $(X, \varepsilon R)$ is isomorphic to a semitoroidal compactification (\cref{thm:recognizable-semitoroidal}, and the more general tower criterion of \cref{thm:tower-semitoroidal}).
-The relevant polarizing divisor here is the ramification divisor $R_\iota$ of the nonsymplectic Enriques involution, which is recognizable (\cref{ex:recognizable-divisors}).
+The proof reduces to the recognizable-divisor theorem of Alexeev--Engel [@AE23]: for a recognizable divisor $R$, the normalization of the KSBA compactification of stable K3 pairs $(X, \varepsilon R)$ is isomorphic to a semitoroidal compactification (\longref{thm:recognizable-semitoroidal}, and the more general tower criterion of \longref{thm:tower-semitoroidal}).
+The relevant polarizing divisor here is the ramification divisor $R_\iota$ of the nonsymplectic Enriques involution, which is recognizable (\longref{ex:recognizable-divisors}).
 Applying the theorem produces a semitoroidal compactification on the normalization of $\overline{F_{\En, 2}}$, and identifying the resulting semifan cusp-by-cusp gives the explicit collection $\mathcal{F}_\bullet$, one semifan per $0$-cusp.
-The passage from the ambient K3 picture to the Enriques space is the descent of \cref{conj:descent_semitoroidal_data_En2}, which supplies the folded semifans $\mathcal{F}_k$ and their boundary stratification.
-\todo{The source note states the reduction to Alexeev--Engel but does not carry out the cusp-by-cusp identification of $\mathcal{F}_\bullet$ nor the descent of the semifan; these are recorded here (the descent as \cref{conj:descent_semitoroidal_data_En2}) rather than proved in full.}
+The passage from the ambient K3 picture to the Enriques space is the descent of \longref{conj:descent_semitoroidal_data_En2}, which supplies the folded semifans $\mathcal{F}_k$ and their boundary stratification.
+\todo{The source note states the reduction to Alexeev--Engel but does not carry out the cusp-by-cusp identification of $\mathcal{F}_\bullet$ nor the descent of the semifan; these are recorded here (the descent as \longref{conj:descent_semitoroidal_data_En2}) rather than proved in full.}
 
 :::
 
@@ -70,8 +70,8 @@ Imposing the involution constraints on this restricted structure produces a coll
 ::: {.Remark}
 ### Folded semifans and the boundary stratification
 
-The folded semifans $\mathcal{F}_k$ determine the semitoroidal compactification $\overline{F_{\En, 2}}^{\mathcal{F}_\bullet}$ appearing in \cref{thm:ksba_semitoroidal_En2}, and they define the combinatorial stratification of its boundary, which maps directly onto the KSBA strata.
-The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter through the stable-pair family and the locally closed embeddings of \cref{lem:locally_closed_embedding_BB}; the descent here is the Enriques (involution-quotient) analogue of the Coble semifan restriction of \cref{conj:restricted_ramification_semifan}.
+The folded semifans $\mathcal{F}_k$ determine the semitoroidal compactification $\overline{F_{\En, 2}}^{\mathcal{F}_\bullet}$ appearing in \longref{thm:ksba_semitoroidal_En2}, and they define the combinatorial stratification of its boundary, which maps directly onto the KSBA strata.
+The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter through the stable-pair family and the locally closed embeddings of \longref{lem:locally_closed_embedding_BB}; the descent here is the Enriques (involution-quotient) analogue of the Coble semifan restriction of \longref{conj:restricted_ramification_semifan}.
 \todo{The source note is tagged as a proposition but reproduces no proof or proof reference for the descent/restriction itself (that $\mathcal{F}_{\operatorname{ram}}$ restricts to $B^\nu$ and folds to the $\mathcal{F}_k$); it is recorded here as a conjecture pending that argument. Within the settled degree-$2$ Enriques package [@AEGS25] this descent is expected to hold, and the statement may be upgraded to a proposition once the restriction-and-folding argument is written or cited.}
 
 :::
@@ -80,7 +80,7 @@ The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter t
 
 ::: {.Remark}
 
-The polarized Coble compactification records the same comparison as an open program rather than a theorem: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan (\cref{conj:ksba_semitoroidal_comparison}, \cref{conj:restricted_ramification_semifan}).
-Its extra difficulties are exactly the ones absent from the Enriques theorem above: branchwise root data, the ramification-semifan restriction identity, and the no-moduli-loss problem (\cref{conj:no_moduli_loss}).
+The polarized Coble compactification records the same comparison as an open program rather than a theorem: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan (\longref{conj:ksba_semitoroidal_comparison}, \longref{conj:restricted_ramification_semifan}).
+Its extra difficulties are exactly the ones absent from the Enriques theorem above: branchwise root data, the ramification-semifan restriction identity, and the no-moduli-loss problem (\longref{conj:no_moduli_loss}).
 
 :::

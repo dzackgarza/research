@@ -4,7 +4,7 @@
 ### Orientation
 
 This section collects the folding constructions that produce non-simply-laced root systems from simply-laced ones by summing the roots in each orbit of a diagram automorphism, together with the specific root-folding criterion governing the involution $I = -I_\En$ on $T_\dP$ and the *mirror moves* used to navigate the pyramid of $2$-elementary lattices.
-As in the root systems material we work in the algebraic-geometry sign convention: root lattices are negative definite and roots have norm $-2$ (see \cref{def:root-lattice}).
+As in the root systems material we work in the algebraic-geometry sign convention: root lattices are negative definite and roots have norm $-2$ (see \longref{def:root-lattice}).
 :::
 
 ## Foldings of simply-laced diagrams
@@ -26,7 +26,7 @@ Classical examples of foldings of simply-laced Dynkin diagrams include:
 - $E_6 \to F_4$ via $S_2$ (horizontal reflection).
 
 These arise as the fixed-point subalgebras $\mathfrak{g}^\sigma$.
-The orbit-sum construction of \Cref{def:folded-root} instead produces the **Langlands-dual** root system in types $B$/$C$; accordingly the explicit foldings computed below yield $B_n$ from $A_{2n-1}$ and $C_n$ from $D_{n+1}$ (types $F_4$ and $G_2$ are self-dual and unaffected).
+The orbit-sum construction of \longref{def:folded-root} instead produces the **Langlands-dual** root system in types $B$/$C$; accordingly the explicit foldings computed below yield $B_n$ from $A_{2n-1}$ and $C_n$ from $D_{n+1}$ (types $F_4$ and $G_2$ are self-dual and unaffected).
 :::
 
 ## Folded roots and folded root systems
@@ -55,7 +55,7 @@ For an involution $I$, $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i) \in L^G$.
 ### Examples of classical foldings
 
 Folding produces scaled root systems in the invariant lattice $L^G$.
-Explicit examples computed via \cref{def:folded-root}:
+Explicit examples computed via \longref{def:folded-root}:
 
 - **$A_5 \to B_3(2)$**: under horizontal reflection ($G = S_2$), $\Phi(A_5^G)$ has Gram matrix $G_{B_3(2)} = 2 \cdot G_{B_3} = \begin{pmatrix} 4 & -2 & 0 \\ -2 & 4 & -2 \\ 0 & -2 & 2 \end{pmatrix}$ (norms $4, 4, 2$: two long, one short).
 
@@ -66,7 +66,7 @@ Explicit examples computed via \cref{def:folded-root}:
 - **$E_6 \to F_4(2)$**: under horizontal reflection ($G = S_2$), $\Phi(E_6^G)$ has Gram matrix equal to $G_{F_4(2)}$.
 
 Here the scaling notation $B_3(2)$ and $F_4(2)$ records that the invariant-lattice Gram matrix equals the corresponding root-system Gram matrix rescaled by $2$.
-(These Gram matrices are written in the standard positive-definite normalization; negate for the AG convention of \Cref{def:root-lattice}.)
+(These Gram matrices are written in the standard positive-definite normalization; negate for the AG convention of \longref{def:root-lattice}.)
 :::
 
 ## The root-folding criterion for $T_\dP$

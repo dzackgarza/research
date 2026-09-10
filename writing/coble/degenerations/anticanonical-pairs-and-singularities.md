@@ -45,8 +45,8 @@ The charge behaves as follows under blowups of an anticanonical pair:
 \todo{cite: reference for the charge formula and its blowup behaviour (Friedman/Engel--Friedman on anticanonical pairs); the migrated note gives no citation.}
 :::
 
-::: {.Theorem #thm:friedman-morrison-charge}
-### Friedman--Morrison charge theorem
+::: {.Theorem #thm:friedman-miranda-charge}
+### Friedman--Miranda charge theorem
 
 Let $\cX \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber
 $$
@@ -65,8 +65,7 @@ $$
 .
 $$
 This imposes severe constraints on the possible combinatorial types of degenerations.
-
-\todo{cite: Friedman--Morrison charge theorem; the migrated note names the result but supplies no citation key.}
+The identity is [@FM83 Prop. 3.7], proved there in the setting of the dual complex of a Kulikov degeneration.
 :::
 
 ## Singularities in the minimal model program
@@ -83,7 +82,7 @@ $$
 
 ::: {.Definition #def:mmp-singularities}
 
-With discrepancies as in \cref{def:discrepancy}, the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
+With discrepancies as in \longref{def:discrepancy}, the pair $(X, D)$ has the following classes of singularities, according to the values taken by $a(E, X, D)$ over all divisors $E$ over $X$:
 
 - **Terminal**: $a(E, X, D) > 0$.
 

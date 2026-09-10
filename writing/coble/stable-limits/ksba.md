@@ -74,7 +74,7 @@ In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@H
 
 ::: {.Remark}
 
-The local singularity package of \cref{conj:coble_quarter_singularity} is central to the program, but it is currently a migrated research claim rather than a proven statement; it is precisely the input awaited by the slc and ampleness verifications above.
+The local singularity package of \longref{conj:coble_quarter_singularity} is central to the program, but it is currently a migrated research claim rather than a proven statement; it is precisely the input awaited by the slc and ampleness verifications above.
 :::
 
 ## The restricted ramification semifan
@@ -94,7 +94,7 @@ Proving that this restriction defines the semitoroidal fan requires showing that
 
 ::: {.Remark}
 
-The KSBA stable limits sit inside the K3 stable-pair family of the degree-$(2,2,0)$ problem via the embeddings of \cref{lem:locally_closed_embedding_BB}. The proposed comparison proceeds by restricting the universal K3 stable-pair family over $F_{(2,2,0)}$ to the Coble Noether-Lefschetz locus $\bD(r^\perp)$, extending the Enriques involution over the stable limits by uniqueness of KSBA limits, descending the ramification divisor, and matching the induced boundary stratification against the restricted ramification semifan of \cref{conj:restricted_ramification_semifan}.
+The KSBA stable limits sit inside the K3 stable-pair family of the degree-$(2,2,0)$ problem via the embeddings of \longref{lem:locally_closed_embedding_BB}. The proposed comparison proceeds by restricting the universal K3 stable-pair family over $F_{(2,2,0)}$ to the Coble Noether-Lefschetz locus $\bD(r^\perp)$, extending the Enriques involution over the stable limits by uniqueness of KSBA limits, descending the ramification divisor, and matching the induced boundary stratification against the restricted ramification semifan of \longref{conj:restricted_ramification_semifan}.
 :::
 
 ::: {.Conjecture #conj:ksba_semitoroidal_comparison}
@@ -105,13 +105,13 @@ After normalization, the KSBA compactification of the polarized Coble locus agre
 ::: {.Conjecture #conj:no_moduli_loss}
 
 The stable quotient remembers the marked Coble root.
-Geometrically, this memory is carried by the $\frac{1}{4}(1,1)$ singularity of \cref{conj:coble_quarter_singularity} -- equivalently, by the contracted anti-bicanonical $(-4)$-curve on the resolution -- so that degenerations differing only by their marked root are not identified.
-Without this memory the restricted semifan would be too fine for the actual KSBA boundary, and the comparison of \cref{conj:ksba_semitoroidal_comparison} would fail.
+Geometrically, this memory is carried by the $\frac{1}{4}(1,1)$ singularity of \longref{conj:coble_quarter_singularity} -- equivalently, by the contracted anti-bicanonical $(-4)$-curve on the resolution -- so that degenerations differing only by their marked root are not identified.
+Without this memory the restricted semifan would be too fine for the actual KSBA boundary, and the comparison of \longref{conj:ksba_semitoroidal_comparison} would fail.
 :::
 
 ::: {.Remark}
 
-\cref{conj:ksba_semitoroidal_comparison} remains open on four counts: root-orbit uniqueness (\cref{que:coble_root_orbit_uniqueness}), the ramification-semifan restriction identity (\cref{conj:restricted_ramification_semifan}), the no-moduli-loss statement (\cref{conj:no_moduli_loss}), and the exact cusp enumeration.
+\longref{conj:ksba_semitoroidal_comparison} remains open on four counts: root-orbit uniqueness (\longref{que:coble_root_orbit_uniqueness}), the ramification-semifan restriction identity (\longref{conj:restricted_ramification_semifan}), the no-moduli-loss statement (\longref{conj:no_moduli_loss}), and the exact cusp enumeration.
 The boundary dictionaries and cusp tables appearing in preliminary work remain unverified pending the restriction theorem and an explicit cusp computation.
 :::
 
@@ -133,6 +133,6 @@ Sterk cusps $3$ and $5$ are the delicate cases where additional reflection data 
 ::: {.Remark}
 
 Any actual cusp count must reduce to explicit lattice-orbit work -- through Sterk's representatives (five $0$-cusps and nine $1$-cusps for the Enriques space [@Ste91]) together with their stabilizers, or direct period-domain enumeration -- and discriminant-form shortcuts suggest candidates but do not by themselves prove the cusp diagram.
-One durable exclusion is nonetheless available: since primitive isotropic vectors of $T_\Co$ pair evenly in the ambient Enriques lattice, they have divisibility $2$ (\cref{lem:divisibilityAlwaysTwoTco}), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only the divisibility-two Sterk cusps $2$--$5$ are in play.
-This is consistent with the cusp correspondence of \cref{thm:cusp_correspondence}, under which the unique Coble $0$-cusp corresponds to a divisibility-two Enriques cusp.
+One durable exclusion is nonetheless available: since primitive isotropic vectors of $T_\Co$ pair evenly in the ambient Enriques lattice, they have divisibility $2$ (\longref{lem:divisibilityAlwaysTwoTco}), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only the divisibility-two Sterk cusps $2$--$5$ are in play.
+This is consistent with the cusp correspondence of \longref{thm:cusp_correspondence}, under which the unique Coble $0$-cusp corresponds to a divisibility-two Enriques cusp.
 :::

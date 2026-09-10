@@ -57,7 +57,7 @@ q_\beta(v) \da \beta(v, v)
 $$
 and $q_\beta$ depends only on the symmetric part of $\beta$.
 Conversely, every $\QQ$-valued quadratic module $(L, q)$ determines a symmetric
-bilinear module $(L, \beta_q)$ via its polar form of \cref{def:quadratic-form}.
+bilinear module $(L, \beta_q)$ via its polar form of \longref{def:quadratic-form}.
 :::
 
 ::: {.Lemma #lem:even-lattice-bijection}
@@ -75,7 +75,7 @@ $q(v) \da \tfrac{1}{2}\beta(v, v)$, and a quadratic form $q$ is sent to its
 polar form $\beta_q$.
 Note that this forward map $\beta\mapsto\tfrac{1}{2}\beta(v,v)$ differs by the
 factor $\tfrac{1}{2}$ from the map $\beta\mapsto q_\beta(v) = \beta(v,v)$ of
-\cref{lem:bilinear-quadratic-correspondence}, so this bijection is a distinct
+\longref{lem:bilinear-quadratic-correspondence}, so this bijection is a distinct
 construction rather than a restriction of that lemma; only the backward
 (polar-form) direction is shared.
 Concretely, the polar form of any integral quadratic form is an even
@@ -294,7 +294,7 @@ comparatively rare.
 ::: {.Proposition #prop:scattone-bound}
 
 If $\operatorname{rank}(L) > 16 + \ell(L)$, where $\ell(L)$ is the length of
-\cref{def:discriminant-forms}, then the class number satisfies
+\longref{def:discriminant-forms}, then the class number satisfies
 $\abs{\operatorname{cl}(L)} \geq 2$.
 :::
 

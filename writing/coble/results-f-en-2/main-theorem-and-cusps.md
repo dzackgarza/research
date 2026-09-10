@@ -1,7 +1,7 @@
 # The moduli space $F_{\En,2}$: main results
 
 Here we collect the principal structural results for the KSBA compactification $\overline{F_{\En, 2}}$ of the moduli space $F_{\En, 2}$ of degree-$2$ numerically polarized Enriques surfaces: the identification of the normalized compactification with a semitoroidal model, the realization of $F_{\En, 2}$ as a normalization inside the degree-$(2,2,0)$ K3 moduli space, and the enumeration of the five $0$-cusps together with their folded Coxeter data.
-These describe the *ambient* degree-$2$ Enriques picture, into which the polarized Coble locus is later cut by an admissible root (cf. \cref{conj:restricted_ramification_semifan}).
+These describe the *ambient* degree-$2$ Enriques picture, into which the polarized Coble locus is later cut by an admissible root (cf. \longref{conj:restricted_ramification_semifan}).
 
 ## The main theorem
 
@@ -18,12 +18,12 @@ Let $\mathcal{F}_\bullet = \ts{\mathcal{F}_k}_{k=1}^5$ be the collection of fold
 3. The isomorphism is established via an intermediate normalization $B^\nu$ of the Zariski closure of the Noether--Lefschetz locus inside the K3 compactification $\overline{F_{(2,2,0)}}$ [@AEGS25 Sec. 6].
 :::
 
-\todo{Part 2 as migrated says "cusp 35", read alongside cusps 2 and 4. This is inconsistent with the five-cusp enumeration of \cref{ex:fen2_five_cusps}, where cusps $3$ and $5$ are recorded as strictly semitoroidal (only cusps $2$ and $4$ are toroidal). "cusp 35" is reproduced verbatim from the source note; resolve whether it is a typo for "cusps $3$, $5$", a distinct $1$-cusp label, or a mis-transcription, and reconcile with the toroidal/semitoroidal split of the cusp enumeration.}
+\todo{Part 2 as migrated says "cusp 35", read alongside cusps 2 and 4. This is inconsistent with the five-cusp enumeration of \longref{ex:fen2_five_cusps}, where cusps $3$ and $5$ are recorded as strictly semitoroidal (only cusps $2$ and $4$ are toroidal). "cusp 35" is reproduced verbatim from the source note; resolve whether it is a typo for "cusps $3$, $5$", a distinct $1$-cusp label, or a mis-transcription, and reconcile with the toroidal/semitoroidal split of the cusp enumeration.}
 
 ::: {.Remark}
 
 This theorem records the settled ambient degree-$2$ Enriques picture: the normalized KSBA compactification of $F_{\En, 2}$ coincides with an explicit semitoroidal model built from five folded semifans, one per $0$-cusp.
-The proof runs through the K3 moduli space $F_{(2,2,0)}$ of the degree-$(2,2,0)$ problem, identifying $\overline{F_{\En, 2}}^\nu$ with a normalization of the closure of the relevant Noether--Lefschetz locus; see \cref{lem:fen2_normalization} for the corresponding period-domain statement.
+The proof runs through the K3 moduli space $F_{(2,2,0)}$ of the degree-$(2,2,0)$ problem, identifying $\overline{F_{\En, 2}}^\nu$ with a normalization of the closure of the relevant Noether--Lefschetz locus; see \longref{lem:fen2_normalization} for the corresponding period-domain statement.
 :::
 
 ## Normalization inside $F_{(2,2,0)}$
@@ -49,7 +49,7 @@ Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational
 
 ![The induced correspondence of Baily--Borel boundaries under $\Psi\colon F_{\En, 2}\to F_{(2,2,0)}$: the cusps of $\overline{F_{\En, 2}}^{\bb}$ (top) map to the cusps of $\overline{F_{(2,2,0)}}^{\bb}$ (bottom).](rendered/fig_bb_boundary_correspondence.png){#fig:bb-boundary-correspondence}
 
-\todo{\Cref{fig:bb-boundary-correspondence} is migrated as a raster talk figure; its cusp labels ($2,12,13,14,245$ and $2,12\mathrm{A},12\mathrm{B},1\mathrm{A},1\mathrm{B}$) are Sterk's talk numbering and should be reconciled with the five-cusp enumeration of \cref{ex:fen2_five_cusps} and redrawn as a native TikZ figure.}
+\todo{\longref{fig:bb-boundary-correspondence} is migrated as a raster talk figure; its cusp labels ($2,12,13,14,245$ and $2,12\mathrm{A},12\mathrm{B},1\mathrm{A},1\mathrm{B}$) are Sterk's talk numbering and should be reconciled with the five-cusp enumeration of \longref{ex:fen2_five_cusps} and redrawn as a native TikZ figure.}
 
 ## The five $0$-cusps
 
@@ -84,8 +84,8 @@ For each $0$-cusp we record the topological type of the reduced dual complex $\G
 
 ::: {.Remark}
 
-This enumeration is the boundary data underlying the folded semifans $\mathcal{F}_\bullet$ of \cref{thm:fen2_main}: each $0$-cusp carries a reduced dual complex, a partition of its rays into the Type II (adjacent $1$-cusp) and Type III (deeper) strata, and the involution of its integral affine structure that folds the covering K3 data onto the Enriques data.
-The precise per-cusp ray counts and IAS involutions are migrated from the working notes and, as with the cusp tables discussed in \cref{conj:ksba_semitoroidal_comparison}, should be regarded as provisional pending an independent cusp computation.
+This enumeration is the boundary data underlying the folded semifans $\mathcal{F}_\bullet$ of \longref{thm:fen2_main}: each $0$-cusp carries a reduced dual complex, a partition of its rays into the Type II (adjacent $1$-cusp) and Type III (deeper) strata, and the involution of its integral affine structure that folds the covering K3 data onto the Enriques data.
+The precise per-cusp ray counts and IAS involutions are migrated from the working notes and, as with the cusp tables discussed in \longref{conj:ksba_semitoroidal_comparison}, should be regarded as provisional pending an independent cusp computation.
 :::
 
 ## Folded Coxeter diagrams of the five cusps
@@ -93,7 +93,7 @@ The precise per-cusp ray counts and IAS involutions are migrated from the workin
 ::: {.Remark #rmk:fen2_folded_coxeter}
 ### Folded Coxeter diagrams of $F_{\En, 2}$
 
-The five $0$-cusps of $F_{\En, 2}$ are expected to correspond to five distinct orbits of primitive isotropic vectors in $T_\En$, each realized as a folded image of a Coxeter diagram for $F_{(2,2,0)}$ under the involution $I = -I_\En$ (the root-folding criterion of \cref{lem:root-folding-tdp}, in the sense of \cref{def:folded-root}):
+The five $0$-cusps of $F_{\En, 2}$ are expected to correspond to five distinct orbits of primitive isotropic vectors in $T_\En$, each realized as a folded image of a Coxeter diagram for $F_{(2,2,0)}$ under the involution $I = -I_\En$ (the root-folding criterion of \longref{lem:root-folding-tdp}, in the sense of \longref{def:folded-root}):
 
 1. **$\eta_1$**: Divisibility $1$, derived from $\tilde\eta_1$ via $180^\circ$ rotation.
    (Boundary lattice: $U(2) \oplus E_8(2)$.)
@@ -113,8 +113,8 @@ The five $0$-cusps of $F_{\En, 2}$ are expected to correspond to five distinct o
 
 ::: {.Remark}
 
-The folded chamber $\mathfrak{C}^I = \mathfrak{C} \cap \overline{T}_{\eta, \mathbf{R}}^{I = 1}$ has walls defined by the roots descending from the covering domain (cf. the classical foldings of \cref{ex:classical-foldings}).
+The folded chamber $\mathfrak{C}^I = \mathfrak{C} \cap \overline{T}_{\eta, \mathbf{R}}^{I = 1}$ has walls defined by the roots descending from the covering domain (cf. the classical foldings of \longref{ex:classical-foldings}).
 
 The polarized Coble boundary problem uses this folded Enriques data only as ambient input.
-The extra marked-root refinement -- the admissibility test for Coble roots at a cusp and the restriction of the ramification semifan to the polarized Coble locus -- is recorded separately in \cref{que:coble_cusp_admissibility} and \cref{conj:restricted_ramification_semifan}.
+The extra marked-root refinement -- the admissibility test for Coble roots at a cusp and the restriction of the ramification semifan to the polarized Coble locus -- is recorded separately in \longref{que:coble_cusp_admissibility} and \longref{conj:restricted_ramification_semifan}.
 :::
