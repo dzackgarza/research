@@ -1627,6 +1627,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-galois-choice-data-20260910-0022` | archive reconciliation / explicit absolute-Galois realization data | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py; tests/groups/test_galois_choice_data_archive.py` (write) | `366855f3be60bfeb1c213daa0b02547478e8eab4` | 2026-09-10T00:22:00Z |
+
 
 
 
