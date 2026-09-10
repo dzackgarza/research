@@ -3037,6 +3037,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 | `FRD-*` | fraud precursors in formalization work, and their observable signs |
 | `FSC-*` | formalization scale, calibration, and the scaffold that holds project state |
 | `FSV-*` | semantic verification of formal statements; the review surface and its audit |
+| `FSA-*` | formalization search and acquisition; found versus owned mathematics, and the provenance of a definition |
 
 ### 1. Mathematical Architecture & Ownership (`ARC-*`)
 
@@ -5509,6 +5510,145 @@ Formalization*, arXiv:2604.16347 (2026).
 - **Rule**: Each node carries its own recorded status: semantic-verification state, who verified it, proof progress, and `sorry` status.  Status lives with the node in the graph, never in a session or a summary.
 
 - **Rationale**: Semantic correctness is a property of individual declarations, so a project-level claim of faithfulness is meaningless unless it is the conjunction of recorded per-node states.  `FSC-05` owns the same requirement for structural state.
+
+* * *
+
+### 20. Formalization Search & Acquisition (`FSA-*`)
+
+`FDC-03` and `FDC-11` require every leaf to be audited against the library by
+search.  This family governs *how* that search is conducted, what makes its
+negative result admissible, and what may be done when the answer is genuinely
+absent.  Its subject is the boundary between **found** mathematics and **owned**
+mathematics, and the standing bias is toward found: a found declaration is
+reviewed, maintained, composable with everything else built on it, and free,
+while an owned one is a permanent maintenance surface that owes a comparison
+theorem the day the library acquires its own version.
+
+#### `FSA-01`: Search Is the Instrument; Authoring Is the Last Resort
+
+- **Rule**: The response to a missing dependency is to search for it, and to keep searching until the named surfaces of `FSA-02` are exhausted.  Authoring the missing notion is the final option, taken after the search has failed and been recorded, not the first.
+
+- **Rationale**: The two acts have opposite cost profiles.  Finding a declaration costs minutes and yields an object the whole library already composes with; writing one costs a session of compile cycles and yields an object that composes with nothing, must be maintained, and will later require a comparison theorem or be discarded along with whatever was built on it.  Searching also compounds — a hit teaches the file, its neighbours and the vocabulary that corner of the library is phrased in, which makes the next twenty lookups cheaper — while authoring anti-compounds, since every owned line is a tax on future work.  This is the same principle as the registry's own first instruction to minimise owned lines, stated as an order of operations.
+
+- **Violation Example**: on finding that Mathlib has no orthogonal group of a bilinear form, writing one; on finding no Weil divisor, writing one; closing a graph's open rows by authoring sixteen definitions in a session.
+
+- **Correct Example**: reporting that the notion is absent, with the searches that establish it and the declarations a future definition would rest on, and stopping there.
+
+#### `FSA-02`: Exhaust the Named Surfaces Before Any Absence Claim
+
+- **Rule**: "This does not exist" is admissible only after all of: the pinned library searched by path *and* by semantic query; the registry's linked repositories; the package index as cloned; the index refreshed against its live source; the project-tracker and coverage lists; and the community forum, which the registry names explicitly as the place to search before concluding nonexistence.  A surface not searched is named in the claim.
+
+- **Rationale**: Each surface fails differently.  A path search misses a notion under another name; a semantic search misses one nobody has phrased that way; a cloned index misses what was published since; the forum catches work in progress that exists nowhere else yet.  An absence claim is load-bearing — it is the premise on which authoring becomes permissible — so it must be the best-supported claim in the document, not the weakest.
+
+- **Violation Example**: concluding that almost-complex structures, analytic spaces and Weil divisors exist in no Lean code anywhere, on the strength of identifier greps for guessed names, with the semantic search tools available and unused and the forum never opened.
+
+#### `FSA-03`: An Identifier Grep Is Not a Search
+
+- **Rule**: Search for the *notion*, not for a spelling you predicted.  Use type-pattern and natural-language search over the library before any grep, and when grepping, search for the mathematical words and the neighbourhood, never only for the identifier you expect.
+
+- **Rationale**: Declarations are namespaced, renamed, deprecated behind aliases, and phrased in vocabulary a reader would not guess.  A grep for a predicted name tests your prediction, not the library, and it fails in the direction that licenses the most expensive action.
+
+- **Violation Example**: `rg "def Commensurable"` returning nothing, and the absence recorded as a missing primitive, when the declaration is `def Subgroup.Commensurable`; citing `JordanRing` on the strength of a file name when the class is `IsJordan`.
+
+- **Correct Example**: a natural-language query for "commensurable subgroups", a type-pattern query for the shape of the statement, then a grep for the word `commensurab` over the tree, and only then a conclusion.
+
+#### `FSA-04`: A Negative Result Names Its Instrument, Surface and Revision
+
+- **Rule**: Every recorded absence states what was searched, with what tool, over which revision or snapshot, and what the search does **not** cover.
+
+- **Rationale**: A negative result is a claim about the world made from a partial view, and its value to a later reader is exactly the part that says where the view ended.  Without the instrument named, a reader cannot tell a thorough search from a guessed grep, and will either redo it or trust it — both wrong.
+
+- **Correct Example**: "searched 94,764 `.lean` files in 734 packages, the index as cloned on a stated date, by identifier and word search, no build; does not cover packages added since, a formalization under a name none of these searches guessed, or unpublished work."
+
+#### `FSA-05`: Tooling Silently Falsifies Searches; Defeat It Explicitly
+
+- **Rule**: Assume the search tool is lying by default.  Disable ignore rules over vendored and cloned trees; distinguish matches in prose from matches in code; and never treat a build artifact's absence as a declaration's absence.
+
+- **Rationale**: Three independent mechanisms produce empty results over full trees: ignore files suppress whole clones, a word match counts documentation that says the opposite of what is being looked for, and a partial build means a module that exists cannot be elaborated.  Each of them produces the same output as genuine absence, and each of them was mistaken for genuine absence in practice.
+
+- **Violation Example**: a search over cloned repositories returning zero files because ignore rules applied; counting occurrences of `sorry` and finding files whose text reads "no `sorry` in this file"; recording a notion as unavailable because its module had no compiled artifact locally.
+
+#### `FSA-06`: A Definition Is Transcribed From a Source Open at the Time
+
+- **Rule**: Write no definition, and no citation key, from memory.  Open the source — the library declaration, the paper, the textbook, the repository's own defining occurrence — and transcribe.  `FRM-02` requires the citation; this rule requires the reading that makes it true.
+
+- **Rationale**: A definition recalled is a definition generated, and the generated one is fluent, idiomatic and plausible whether or not it is right.  There is no internal signal separating the two cases, so the only available discipline is procedural: the source is open, or the definition is not written.
+
+- **Violation Example**: writing a normal analytic space, a Weil divisor, a germ ring and the statement of Milgram's theorem in one sitting without opening a text, and afterwards being unable to say whose definition was written.
+
+#### `FSA-07`: A Model-Authored Definition Requires Explicit Approval Before It Lands
+
+- **Rule**: A definition produced by a language model is a proposal, not a contribution.  It is presented for approval with its source and its alternatives, and it does not enter a durable file, a shared document, or another agent's dependency chain until a human has accepted it.  The default deliverable for a discovered gap is the gap, its locators, and the declarations a definition would rest on.
+
+- **Rationale**: A model's output reproduces the surface features by which a reader judges care — naming, structure, a confident docstring, apparent generality — decoupled from correctness, so the usual signals of trustworthiness are not merely absent but counterfeited.  The failure mode is the confident near-miss, and it is invisible at the point of use: proofs built on a wrong definition remain valid and become useless, and nothing downstream detects it.  Verification also costs the reviewer what writing it themselves would cost, so an unapproved definition is not labour saved but labour transferred, with the risk that the check is skipped because the artifact looks finished.
+
+- **Violation Example**: sixteen definitions landing in a repository in one session, each with a docstring asserting what it means, none reviewed, several chosen for tooling convenience, and a design document then citing them as substrate.
+
+#### `FSA-08`: Definitions Cannot Fail; Prefer the Theorem, and Anchor the Definition
+
+- **Rule**: Prefer work whose product can be wrong in a way the machine detects.  Where a definition must be written, land beside it a theorem that would fail if the definition were wrong, and prefer stating the theorem the definition exists to serve over elaborating the definition further.
+
+- **Rationale**: The kernel checks proofs against statements; nothing checks statements against mathematics.  A definition therefore type-checks whether or not it names the intended notion, which makes definitional work the activity with the highest ratio of apparent progress to verifiable content available.  A theorem beside it converts some of that unfalsifiable content into content the machine can refute.
+
+- **Correct Example**: a proved statement about the object — that the negative cone of an index-one form has exactly two components, or that the Gauss sum of the zero form is the group's order — landing with the definition it exercises.
+
+#### `FSA-09`: The Environment Never Chooses the Mathematics
+
+- **Rule**: A definition says what the mathematics says.  Local build state, a missing artifact, tactic friction, or elaboration cost may never select between formulations, and an obstacle of that kind is fixed, worked around locally, or reported — never accommodated by restating a notion.
+
+- **Rationale**: Selecting the formulation that is cheapest for the current tooling is a selection rule anti-correlated with correctness: it picks whichever spelling is easiest right now, which has no relationship to which one is right or which composes with the rest of the program.  It is also self-concealing, because the accommodation compiles and therefore reads as progress.
+
+- **Violation Example**: spelling normality out as an unfolded integral-closure condition instead of the library's `IsIntegrallyClosed` because that module had no compiled artifact in the working checkout.
+
+- **Correct Example**: using the library's declaration, verified by reading its source, and building the missing artifact — or leaving it unbuilt and saying so outside the mathematics.
+
+#### `FSA-10`: Environment State Never Enters a Durable Document
+
+- **Rule**: What a particular machine has compiled, installed, cached or configured is not recorded in a design document, a docstring, a policy file, or a verdict about what exists.
+
+- **Rationale**: Durable documents are read by people and agents on other machines and at other times, for whom such a statement is false or meaningless, and it is read as a fact about the mathematics because that is what surrounds it.
+
+- **Violation Example**: a design document recording that a library module is "present as source and not built in this checkout" as though that were a property of the library.
+
+#### `FSA-11`: Owned Code Is Never a Supplier
+
+- **Rule**: Keep three provenance categories distinct and never let one stand for another: **found** — it exists in the library or a corpus, verified by reading; **owned** — this project wrote it; **absent** — nobody has it.  A locally authored file never appears as substrate in a dependency cell, never satisfies an availability verdict, and never changes an absence claim.
+
+- **Rationale**: The purpose of an availability audit is to say what the project would not have to write.  A file the project wrote answers a different question, and counting it collapses the only distinction the audit exists to draw.  The pressure to collapse it is structural, not accidental: any locally written definition sits in the repository looking exactly like substrate.
+
+- **Violation Example**: a dependency cell reading "realized as `Sterk.WeilDivisor`"; a node's greenfield verdict softened because a local definition now exists.
+
+- **Correct Example**: a separate status marker meaning "a definition for this is written here", defined at the point of use as explicitly not a supplier, with the availability verdict left untouched.
+
+#### `FSA-12`: A Foundational Definition Passes the Architecture Gate
+
+- **Rule**: What an object *is* — which formulation, which generality, which categorical placement — is an architectural decision, discussed and decided with the user before it is written, not chosen while writing.
+
+- **Rationale**: Every theorem above a definition inherits its formulation, so the cost of choosing wrong is paid across the whole subtree and paid late.  A choice made in minutes, alone, while optimising for something else is the worst available process for the decision with the longest reach.
+
+- **Violation Example**: choosing between a locally-ringed-space presentation of an analytic space, a chart presentation, and a reduced-only presentation on the basis of which one avoided needing a sheaf quotient.
+
+#### `FSA-13`: Under Completion Pressure, Search — Never Produce
+
+- **Rule**: When a checker, a stop condition, a reviewer or a deadline reports the work unfinished, the admissible responses are to search further, to state what the condition requires and why it is or is not satisfiable, and to report.  Producing new owned artifacts in response to that pressure is not among them.
+
+- **Rationale**: Production is the activity with unbounded cost, no compounding return and a silent failure mode, so pressure that selects for it selects for the worst use of the remaining budget.  A condition that asks for work already done by others is an instruction to search; reading it as an instruction to write inverts it.
+
+- **Violation Example**: a stop condition requiring leaves to rest on pre-existing code, answered by authoring the code — which cannot satisfy it by construction, as the author had already observed.
+
+#### `FSA-14`: Genuinely Absent Notions Go Upstream, or Carry a Decision Record
+
+- **Rule**: Where a notion is absent from the library and the project genuinely needs it, the first option is to contribute it upstream, where it is reviewed and becomes everyone's.  Local ownership is the fallback and carries a decision record: the source its definition is transcribed from, why upstreaming was not taken, and the condition under which the local copy is retired.
+
+- **Rationale**: An upstreamed definition acquires review, downstream users that pin its meaning, and maintenance by others; a local one acquires none of these and silently becomes load-bearing.  The decision record is what makes the local copy retirable later instead of permanent by default.
+
+#### `FSA-15`: Report the Neighbourhood, Not Only the Hit
+
+- **Rule**: A search that succeeds reports what else is there: the file, the adjacent declarations, the vocabulary the area is phrased in, and what the area does *not* contain.
+
+- **Rationale**: This is where the compounding lives.  The value of finding a declaration is mostly in what the finding teaches about the region, which is what makes the next search cheap and what tells a later reader whether a nearby gap is real.  A bare hit throws that away and the region has to be learned again.
+
+- **Correct Example**: reporting not just that a lemma exists but that its subtree also holds a sorry-free classification, seven files of decomposition machinery, and no analogue of the notion actually wanted.
 
 * * *
 
