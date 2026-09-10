@@ -281,4 +281,78 @@ noncomputable def WeilDivisor.single {X : Scheme} (x : codimOnePoints X) : WeilD
 
 end WeilDivisor
 
+section LorentzCone
+
+/-- **Lo1, Lo10.**  The standard Lorentzian form on `Fin (n+1) → ℝ`: minus the
+square of the zeroth coordinate plus the squares of the rest.  This is Vinberg's
+`E^{n,1}`, the form of negative inertial index one his §3 works in. -/
+def lorentz {n : ℕ} (x : Fin (n + 1) → ℝ) : ℝ :=
+  -(x 0) ^ 2 + ∑ i ∈ Finset.univ.erase 0, (x i) ^ 2
+
+/-- **Lo1.**  The negative cone `V = {x : (x,x) < 0}`. -/
+def negativeCone (n : ℕ) : Set (Fin (n + 1) → ℝ) := {x | lorentz x < 0}
+
+/-- The upper sheet `V₊`. -/
+def negativeCone.upper (n : ℕ) : Set (Fin (n + 1) → ℝ) :=
+  {x | lorentz x < 0 ∧ 0 < x 0}
+
+/-- The lower sheet `V₋`. -/
+def negativeCone.lower (n : ℕ) : Set (Fin (n + 1) → ℝ) :=
+  {x | lorentz x < 0 ∧ x 0 < 0}
+
+theorem lorentz_continuous {n : ℕ} : Continuous (lorentz (n := n)) := by
+  unfold lorentz
+  fun_prop
+
+/-- On the negative cone the zeroth coordinate never vanishes: if it did, the
+form would be a sum of squares there. -/
+theorem ne_zero_of_mem_negativeCone {n : ℕ} {x : Fin (n + 1) → ℝ}
+    (hx : x ∈ negativeCone n) : x 0 ≠ 0 := by
+  intro h0
+  have hsum : 0 ≤ ∑ i ∈ Finset.univ.erase (0 : Fin (n + 1)), (x i) ^ 2 :=
+    Finset.sum_nonneg fun i _ => sq_nonneg _
+  have hval : lorentz x = ∑ i ∈ Finset.univ.erase (0 : Fin (n + 1)), (x i) ^ 2 := by
+    unfold lorentz; rw [h0]; ring
+  have hlt : lorentz x < 0 := hx
+  rw [hval] at hlt
+  exact absurd hlt (not_lt.mpr hsum)
+
+/-- **Lo10, the separation half.**  The two sheets are disjoint, open, and cover
+the cone, so the cone is disconnected by the sign of the zeroth coordinate.
+
+The remaining half of Lo10 — that each sheet is *connected*, so that there are
+exactly two components — is the convexity of a Lorentzian half-cone and is not
+proved here. -/
+theorem negativeCone_eq_union (n : ℕ) :
+    negativeCone n = negativeCone.upper n ∪ negativeCone.lower n := by
+  ext x
+  constructor
+  · intro hx
+    rcases lt_or_gt_of_ne (ne_zero_of_mem_negativeCone hx) with h | h
+    · exact Or.inr ⟨hx, h⟩
+    · exact Or.inl ⟨hx, h⟩
+  · rintro (⟨hx, _⟩ | ⟨hx, _⟩) <;> exact hx
+
+theorem negativeCone.upper_disjoint_lower (n : ℕ) :
+    Disjoint (negativeCone.upper n) (negativeCone.lower n) := by
+  rw [Set.disjoint_left]
+  rintro x ⟨-, hpos⟩ ⟨-, hneg⟩
+  exact absurd hpos (not_lt.mpr hneg.le)
+
+theorem negativeCone.isOpen_upper (n : ℕ) : IsOpen (negativeCone.upper n) := by
+  have h1 : IsOpen {x : Fin (n + 1) → ℝ | lorentz x < 0} :=
+    isOpen_lt lorentz_continuous continuous_const
+  have h2 : IsOpen {x : Fin (n + 1) → ℝ | 0 < x 0} :=
+    isOpen_lt continuous_const ((continuous_apply 0))
+  exact h1.inter h2
+
+theorem negativeCone.isOpen_lower (n : ℕ) : IsOpen (negativeCone.lower n) := by
+  have h1 : IsOpen {x : Fin (n + 1) → ℝ | lorentz x < 0} :=
+    isOpen_lt lorentz_continuous continuous_const
+  have h2 : IsOpen {x : Fin (n + 1) → ℝ | x 0 < 0} :=
+    isOpen_lt ((continuous_apply 0)) continuous_const
+  exact h1.inter h2
+
+end LorentzCone
+
 end Sterk
