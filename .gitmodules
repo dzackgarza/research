@@ -7,3 +7,6 @@
 [submodule "subrepos/jupyter-assistant-api"]
 	path = subrepos/jupyter-assistant-api
 	url = https://github.com/dzackgarza/jupyter-mcp-server.git
+[submodule "formalization/prove2me_workspace"]
+	path = formalization/prove2me_workspace
+	url = git@github.com:prove2me/prove2me_workspace

@@ -14,12 +14,12 @@
 # runs it, so the check does not have to be remembered per node.
 #
 # Usage: verification/check_axioms.sh [workspace]
-#   workspace defaults to $HOME/prove2me_workspace
+#   workspace defaults to the repo's formalization/prove2me_workspace
 
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-workspace="${1:-$HOME/prove2me_workspace}"
+workspace="${1:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../prove2me_workspace" && pwd)}"
 
 if [ ! -d "$workspace/.lake" ]; then
   echo "no built Lean workspace at $workspace — run lake build there first" >&2

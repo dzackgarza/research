@@ -32,8 +32,8 @@ cites, so the dependency edges are machine-extractable and cannot drift from the
 graph.
 
 These files are authored here, under version control, and symlinked into
-`$HOME/prove2me_workspace` for building — the workspace is a clone of someone
-else's repository and nothing authored may live only there.
+`../prove2me_workspace` for building — the workspace is a submodule tracking
+someone else's repository and nothing authored may live only there.
 
 ## The graph
 

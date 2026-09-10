@@ -375,7 +375,7 @@ review-packet:
 
 # Sterk formalization: link authored files into the Prove2Me workspace and check
 # that every proved solution rests on Lean's three standard axioms.
-sterk-link workspace=(env('HOME') / "prove2me_workspace"):
+sterk-link workspace=(justfile_directory() / "formalization/prove2me_workspace"):
     #!/usr/bin/env bash
     set -euo pipefail
     src="{{justfile_directory()}}/formalization/sterk-enriques"
@@ -388,5 +388,5 @@ sterk-link workspace=(env('HOME') / "prove2me_workspace"):
     done
     echo "linked into {{workspace}}"
 
-sterk-check workspace=(env('HOME') / "prove2me_workspace"):
+sterk-check workspace=(justfile_directory() / "formalization/prove2me_workspace"):
     @formalization/sterk-enriques/verification/check_axioms.sh {{workspace}}
