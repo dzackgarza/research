@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     first_exact_embedding,
 )
 from dzack_research.preamble.categories.group.profinite.galois_quotient import (
+    FiniteExtensionAutomorphismGroup,
     FiniteGaloisAutomorphism,
     FiniteGaloisExtension,
     FiniteGaloisQuotient,
@@ -975,6 +976,16 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
             base_embedding=base_embedding,
         )
         return self._supergroup.open_subgroup(stage)
+
+    def normalizer_quotient(self):
+        r"""Return ``N_{G_K}(G_E)/G_E = Aut_K(E)`` as exact field maps.
+
+        The infinite normalizer itself is not materialized.  The quotient is
+        the finite group of exact ``K``-automorphisms of the fixed extension,
+        which is canonically isomorphic to the normalizer quotient under the
+        Galois correspondence.
+        """
+        return FiniteExtensionAutomorphismGroup(self.fixed_extension())
 
     def __le__(self, other) -> bool:
         if (

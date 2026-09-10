@@ -349,6 +349,50 @@ class FiniteGaloisQuotient(Parent):
         return f"Gal({self.top_field()} / {self.base_field()})"
 
 
+class FiniteExtensionAutomorphismGroup(FiniteGaloisQuotient):
+    r"""The finite group ``Aut_K(E)`` of one represented separable extension.
+
+    Unlike :class:`FiniteGaloisQuotient`, this group does not require
+    ``E/K`` to be Galois.  It enumerates all exact self-embeddings of ``E``
+    fixing ``K`` and reuses the same owned finite-group operations on those
+    exact field maps.
+    """
+
+    def __init__(self, extension: FiniteGaloisExtension) -> None:
+        if not isinstance(extension, FiniteGaloisExtension):
+            raise TypeError(
+                "a finite extension automorphism group requires represented extension data"
+            )
+        self._extension = extension
+        base_generators = field_generators(extension.base_field())
+        self._automorphisms = finite_ordered_set(
+            tuple(
+                candidate
+                for candidate in exact_embeddings(extension.field(), extension.field())
+                if all(
+                    candidate(extension.base_embedding()(generator))
+                    == extension.base_embedding()(generator)
+                    for generator in base_generators
+                )
+            )
+        )
+        self._signatures = {
+            _morphism_signature(automorphism): index
+            for index, automorphism in enumerate(self._automorphisms)
+        }
+        identity_signature = tuple(field_generators(extension.field()))
+        try:
+            self._identity_index = self._signatures[identity_signature]
+        except KeyError as error:
+            raise ValueError(
+                "the exact K-automorphisms omit the identity"
+            ) from error
+        Parent.__init__(self, category=OwnedFiniteGroups())
+
+    def _repr_(self) -> str:
+        return f"Aut_{self.base_field()}({self.top_field()})"
+
+
 class ContinuousGroupHomset(Homset):
     def __init__(self, domain, codomain) -> None:
         Homset.__init__(self, domain, codomain, category=SageGroups())
@@ -491,6 +535,7 @@ __all__ = [
     "FiniteGaloisAutomorphism",
     "FiniteGaloisExtension",
     "FiniteGaloisQuotient",
+    "FiniteExtensionAutomorphismGroup",
     "GaloisRestrictionMap",
     "LiftCoset",
     "continuous_group_homset",
