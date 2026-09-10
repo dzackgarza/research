@@ -90,9 +90,18 @@ graph:
 
 # Serve the docs site locally with live reload (quarto provisioned via uvx)
 docs-preview: docs-assets
+    #!/usr/bin/env bash
+    set -euo pipefail
     # ponytail: two previews on the same dir cross-trigger each other's watchers
     # (each renders output back into writing/) → endless ~10s reload loop. Kill any
     # stale instance first so this always replaces rather than duplicates.
+    # A preview left over from an earlier layout also holds the port, so match
+    # any quarto preview rather than only one on the current directory.
+    pkill -f 'quarto preview' || true
+    for _ in $(seq 25); do
+        ss -ltn 'sport = :7654' | grep -q ':7654' || break
+        sleep 0.2
+    done
     uvx --from quarto-cli quarto preview writing --no-browser --port 7654
 
 # Survey a live session into the preamble reference, its graph JSON, and the interactive graph
