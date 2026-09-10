@@ -3163,22 +3163,3 @@ Replace the initial source-assessment references with inspected implementation c
 | N | Notebook work is independently owned by file and kernel. | Consume released operations; record missing ones at their mathematical owner. | Unclaimed |
 | F | Upstream `e59ab4f` supplies `AbelianBimoduleTensor(R)`: tensor on represented bimodules, its action on maps, the regular unit, associator, and unit comparisons. The existing abelian tensor now accepts free and mixed Smith presentations. Committed consumers use these constructions in Magmas and Monoids; assertions remain unverified. | Complete arbitrary-Ab realization, the remaining framework specifications, and full-dependency transfers. Coordinate the separately active upstream Cat/kernel writer before claiming those paths. | Relative bimodule tensor source released: `e59ab4f`; broader F remains open |
 | O | Existing arithmetic implementations and remaining PORT requirements. | Select after the general geometry required by research is usable. | Unclaimed |
-
-## Docs-site issues
-
-### MathJax does not re-typeset the TOC after preview-mode SPA navigation
-
-**Scope:** `writing/` Quarto book, preview mode only (`quarto preview`).
-
-**Symptom:** Math in the right-side page TOC and left sidebar renders correctly on full page loads (including the published GitHub Pages site), but appears as raw `\(D_8^+ \cong E_8\)` after clicking a link in preview mode.
-
-**Cause:** `quarto-preview.js` intercepts link clicks, fetches the new page, and swaps DOM content (including `#quarto-margin-sidebar` and `#quarto-sidebar`). The page defines `window.Quarto.typesetMath` which calls `MathJax.typeset([el])`, but it is only invoked for tippy hover popups (bibliography references), never on the TOC or sidebar after a content swap. MathJax v4 auto-typesets on initial startup, so the first page load renders; subsequent SPA navigations bypass it.
-
-**Evidence:** Verified against Quarto v1.10.18 source — `sidebaritem.ejs` line `<% isCollapsed = collapse <= depth && !item.expanded %>`, `website-navigation.ts` `expandedSidebar()` and `typesetMath` call sites, and the served HTML at `http://localhost:7654/coble/lattices-and-moduli/root-systems.html` (line 848: raw `<span class="math inline">\(D_8^+ \cong E_8\)</span>` in the TOC). No GitHub issue or discussion documents this specific preview-mode gap.
-
-**Impact:** Local editing experience only. The published site at `https://dzackgarza.github.io/research/` is unaffected — every navigation is a full HTTP page load there.
-
-**Candidate fixes (not yet applied):**
-1. Custom `include-in-header` script that hooks Quarto's preview navigation event and calls `window.Quarto.typesetMath(document.getElementById('quarto-margin-sidebar'))` after content swaps.
-2. Custom MathJax startup config via `include-in-header` with a `MutationObserver` on the TOC containers that re-typesets on content change.
-3. File an upstream issue at `quarto-dev/quarto-cli` — the preview JS should call `typesetMath` on replaced TOC/sidebar content.

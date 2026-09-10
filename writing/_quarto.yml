@@ -128,6 +128,7 @@ format:
     code-copy: true
     smooth-scroll: true
     css: tikz-diagrams.css
+    include-in-header: _mathjax-order.html
     include-before-body: _mathjax-macros.html
 filters:
   - book-toc
