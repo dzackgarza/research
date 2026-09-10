@@ -1,0 +1,12 @@
+{
+  "canonical-class-of-cobles": { "file": "rational-sextic-calculations", "md": "Canonical class of Cobles", "reflabel": "Remark", "refnumber": "3" },
+  "cobles-as-blowups": { "file": "coble-surface-basics", "reflabel": "Remark", "refnumber": "2" },
+  "invariants-of-antibicanonical-curves": { "file": "rational-sextic-calculations", "md": "Invariants of antibicanonical curves", "reflabel": "Remark", "refnumber": "4" },
+  "lem:rational_sextic_ten_nodes": { "file": "rational-sextic-calculations", "md": "", "reflabel": "Lemma", "refnumber": "1" },
+  "on-defining-cobles": { "file": "coble-surface-basics", "reflabel": "Remark", "refnumber": "1" },
+  "on-the-importance-of-cobles": { "file": "coble-surface-basics", "reflabel": "Remark", "refnumber": "3" },
+  "prop:coble-invariant-lattice": { "file": "k3-covers-of-coble-surfaces", "reflabel": "Proposition", "refnumber": "2" },
+  "rmk:k3-cover-invariants": { "file": "k3-covers-of-coble-surfaces", "reflabel": "Remark", "refnumber": "1" },
+  "rmk:k3-cover-twist": { "file": "k3-covers-of-coble-surfaces", "reflabel": "Remark", "refnumber": "3" },
+  "rmk:severi-sextics": { "file": "rational-sextic-calculations", "md": "Severi varieties and degenerate sextics", "reflabel": "Remark", "refnumber": "2" }
+}

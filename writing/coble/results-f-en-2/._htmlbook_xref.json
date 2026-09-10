@@ -1,0 +1,27 @@
+{
+  "cnb-2-Remark": { "file": "main-theorem-and-cusps", "reflabel": "Remark", "refnumber": "2" },
+  "cnb-5-Remark": { "file": "main-theorem-and-cusps", "reflabel": "Remark", "refnumber": "5" },
+  "cnb-7-Remark": { "file": "classifying-map-and-involution", "md": "", "reflabel": "Remark", "refnumber": "7" },
+  "conj:classifying_map_finite": { "file": "classifying-map-and-involution", "md": "Finiteness of the classifying map", "reflabel": "Conjecture", "refnumber": "4" },
+  "conj:classifying_map_isomorphism": { "file": "classifying-map-and-involution", "md": "The classifying map is an isomorphism", "reflabel": "Conjecture", "refnumber": "8" },
+  "conj:descent_semitoroidal_data_En2": { "file": "ksba-semitoroidal-comparison", "reflabel": "Conjecture", "refnumber": "5" },
+  "conj:enriques_involution_extension": {
+    "file": "classifying-map-and-involution",
+    "md": "Global extension of the Enriques involution",
+    "reflabel": "Conjecture",
+    "refnumber": "2"
+  },
+  "ex:fen2_five_cusps": { "file": "main-theorem-and-cusps", "reflabel": "Example", "refnumber": "4" },
+  "fan-versus-strict-semifan-bookkeeping": { "file": "ksba-semitoroidal-comparison", "reflabel": "Remark", "refnumber": "3" },
+  "folded-semifans-and-the-boundary-stratification": { "file": "ksba-semitoroidal-comparison", "reflabel": "Remark", "refnumber": "6" },
+  "intended-mechanism": { "file": "classifying-map-and-involution", "md": "Intended mechanism", "reflabel": "Remark", "refnumber": "3" },
+  "lem:fen2_normalization": { "file": "main-theorem-and-cusps", "reflabel": "Lemma", "refnumber": "3" },
+  "orientation": { "file": "classifying-map-and-involution", "md": "Orientation", "reflabel": "Remark", "refnumber": "1" },
+  "proposed-combinatorial-argument": { "file": "classifying-map-and-involution", "md": "Proposed combinatorial argument", "reflabel": "Remark", "refnumber": "5" },
+  "rmk:fen2_folded_coxeter": { "file": "main-theorem-and-cusps", "reflabel": "Remark", "refnumber": "6" },
+  "role-of-the-normalization": { "file": "ksba-semitoroidal-comparison", "reflabel": "Remark", "refnumber": "4" },
+  "status-of-the-hypotheses": { "file": "classifying-map-and-involution", "md": "Status of the hypotheses", "reflabel": "Remark", "refnumber": "9" },
+  "thm:fen2_main": { "file": "main-theorem-and-cusps", "reflabel": "Theorem", "refnumber": "1" },
+  "thm:ksba_semitoroidal_En2": { "file": "ksba-semitoroidal-comparison", "reflabel": "Theorem", "refnumber": "2" },
+  "thm:zariski_main_theorem": { "file": "classifying-map-and-involution", "md": "Zariski’s Main Theorem (classical)", "reflabel": "Theorem", "refnumber": "6" }
+}

@@ -1,0 +1,188 @@
+project:
+  type: book
+  output-dir: _site
+  resources:
+    - data/**
+    - category-theory/lean/category-graph.html
+    - category-theory/lean/category-graph.dot
+    - coble/reference/**
+    - coble/papers/**
+  # Writing that is not part of the site. The dissertation builds through
+  # ~/.pandoc, and the rest are documents rather than site content.
+  render:
+    - '*.md'
+    - category-theory/**
+    - coble/**
+    - '!dissertation/**'
+    - '!Talks/**'
+    - '!Oral Exams/**'
+    - '!Research Statement/**'
+book:
+  title: Writing
+  repo-url: https://github.com/dzackgarza/research
+  site-url: https://dzackgarza.github.io/research/
+  search: true
+  chapters:
+    - index.md
+    - part: category-theory/index.md
+      chapters:
+        - category-theory/framework/Higher-Categories-and-Universes.md
+        - category-theory/framework/Categorical-Foundations.md
+        - category-theory/framework/Loops-and-Suspension.md
+        - category-theory/framework/Identification.md
+        - category-theory/framework/Truncation-and-Classifiers.md
+        - category-theory/framework/Mathematical-Framework.md
+        - category-theory/framework/Modules-and-Forms.md
+        - category-theory/framework/Joins-Meets-and-Closure.md
+        - category-theory/framework/Distinguished-Functors.md
+        - category-theory/framework/Elements-and-Containment.md
+        - category-theory/framework/Bilinear-and-Quadratic-Forms.md
+        - category-theory/framework/Bilinear-Forms-on-Algebra-Modules.md
+        - category-theory/framework/Lattices-and-Discriminant-Forms.md
+        - category-theory/framework/Isometries-and-Arithmetic-Invariants.md
+        - category-theory/lean/Lean-Sage-Integration-Model.md
+        - category-theory/lean/Category-Graph.md
+        - category-theory/sage/Sage-Category-Framework-Inventory.md
+        - category-theory/sage/Sage-Category-Classes.md
+        - category-theory/lean/Categorical-DSL.md
+        - category-theory/contributing/Mathematical-Language-Style-Guide.md
+        - category-theory/framework/Mathematical-Sources.md
+        - category-theory/Roadmap.md
+    - part: coble/index.md
+      chapters:
+        - coble/introduction/000-introduction.md
+        - coble/surfaces-and-moduli/surface-types.md
+        - coble/surfaces-and-moduli/k3-covers-and-involutions.md
+        - coble/surfaces-and-moduli/polarizations-and-loci.md
+        - coble/coble-surfaces/coble-surface-basics.md
+        - coble/coble-surfaces/k3-covers-of-coble-surfaces.md
+        - coble/coble-surfaces/rational-sextic-calculations.md
+        - coble/lattices-and-moduli/lattice-theory.md
+        - coble/lattices-and-moduli/root-systems.md
+        - coble/lattices-and-moduli/discriminant-forms-and-genus.md
+        - coble/lattices-and-moduli/embeddings-and-overlattices.md
+        - coble/lattices-and-moduli/special-lattices.md
+        - coble/lattices-and-moduli/invariant-and-coinvariant-lattices.md
+        - coble/lattices-and-moduli/lattices.md
+        - coble/lattices-and-moduli/coble-lattice-table.md
+        - coble/lattices-and-moduli/nodal-enriques-lattices.md
+        - coble/lattices-and-moduli/coble-moduli-basics.md
+        - coble/lattices-and-moduli/moduli-construction.md
+        - coble/compactifications/reflection-groups-and-vinberg.md
+        - coble/compactifications/dynkin-foldings.md
+        - coble/compactifications/toroidal-and-semitoroidal.md
+        - coble/compactifications/scattone-cusp-method.md
+        - coble/degenerations/kulikov-models.md
+        - coble/degenerations/anticanonical-pairs-and-singularities.md
+        - coble/degenerations/divisor-and-dlt-models.md
+        - coble/degenerations/halphen-surfaces.md
+        - coble/degenerations/morrison-flowerpot-degenerations.md
+        - coble/cusp-correspondence/cusp-diagram-calculations.md
+        - coble/cusp-correspondence/coble-surface-cusps.md
+        - coble/cusp-correspondence/enriques-surface-cusps.md
+        - coble/cusp-correspondence/sterk-cusp-divisibilities.md
+        - coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md
+        - coble/stable-limits/geometric.md
+        - coble/stable-limits/ias.md
+        - coble/stable-limits/ksba.md
+        - coble/results-f-en-2/main-theorem-and-cusps.md
+        - coble/results-f-en-2/ksba-semitoroidal-comparison.md
+        - coble/results-f-en-2/classifying-map-and-involution.md
+        - coble/open-problems/open-problems.md
+        - coble/appendix-reference/adjunction-and-ramification-formulae.md
+        - coble/appendix-reference/coxeter-and-dynkin-diagrams.md
+        - coble/extracted-references/extracted-references.md
+        - coble/adjacent-programs/halphen-index-2-moduli-program.md
+        - coble/adjacent-programs/nodal-enriques-moduli-program.md
+        - coble/coble-moduli/coble-families-research-program.md
+        - coble/coble-moduli/coble-surface-structure-and-classification.md
+        - coble/coble-moduli/cusp-correspondence-morphism-chain.md
+        - coble/computations/coble-lattice-isotropic-candidates.md
+        - coble/computations/computational-toolchain-and-recipe.md
+        - coble/computations/coxiter-results-for-cusp-lattices.md
+        - coble/computations/root-vectors-and-folded-sterk-diagrams.md
+        - coble/computations/sterk-integral-affine-data.md
+        - coble/reference-tables/lattice-and-diagram-conventions.md
+        - coble/tables/coble-lattices.md
+        - coble/tables/dynkin-diagrams.md
+        - coble/heegner-report/coble-heegner-research-report.md
+bibliography:
+  - references.bib
+  - refs-web.bib
+  - coble/coble_supplement.bib
+  - coble/heegner-report/coble_references.bib
+link-citations: true
+number-sections: true
+crossref:
+  chapters: true
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    html-math-method: mathjax
+    code-copy: true
+    smooth-scroll: true
+    css: tikz-diagrams.css
+    include-before-body: _mathjax-macros.html
+filters:
+  - book-toc
+  - custom-numbered-blocks
+  - stacks-tags.lua
+  - pandoc-tikzcd.lua
+  - tikz
+tikz:
+  cache: true
+  svg-engine: pdftocairo
+# Numbered amsthm-style environments (ute/custom-numbered-blocks).
+# One shared per-chapter counter (all kinds in group 'blocks') -> a block is 'Kind N.M' in one sequence;
+# quartothmlike appearance mimics native Quarto theorems.
+# Author: ::: {.Warning #w-foo}\n### Optional title\n... :::   Reference: \ref{w-foo} -> '2.9', \longref{w-foo} -> 'Warning 2.9'.
+# CONSTRAINT: labels must NOT start with Quarto-reserved prefixes (def- thm- lem- cor- prp- cnj- exm- exr- fig- tbl- eq- sec- lst-);
+# Quarto would hijack them. The Coble part uses colon-separated ids (def:foo, thm:bar), which are not reserved.
+custom-numbered-blocks:
+  appearances:
+    thmlike:
+      container: quartothmlike
+  groups:
+    blocks:
+      appearance: thmlike
+  classes:
+    Theorem:
+      group: blocks
+    Lemma:
+      group: blocks
+    Corollary:
+      group: blocks
+    Proposition:
+      group: blocks
+    Conjecture:
+      group: blocks
+    Definition:
+      group: blocks
+    Example:
+      group: blocks
+    Construction:
+      group: blocks
+    Notation:
+      group: blocks
+    Convention:
+      group: blocks
+    Exercise:
+      group: blocks
+    Problem:
+      group: blocks
+    Question:
+      group: blocks
+    Remark:
+      group: blocks
+    Warning:
+      group: blocks
+    Observation:
+      group: blocks
+    Note:
+      group: blocks
+    Claim:
+      group: blocks

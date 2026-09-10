@@ -11,7 +11,7 @@ ai_review_ci_release_channel := "main"
 ai_review_ci_workflow_template_version := "1"
 ai_review_ci_local_delegation := "global-justfile"
 ai_review_ci_default_branch := "main"
-preamble_megadoc_file := "docs/preamble-megadoc.md"
+preamble_megadoc_file := "writing/category-theory/preamble-megadoc.md"
 
 # List available recipes
 default:
@@ -35,8 +35,8 @@ semantic-types:
 
 # Refresh the docs bibliography and MathJax macro include from the shared ~/.pandoc sources (never frozen in-repo; CI fetches them from the pandoc-config repo). The macros are the generated corpus: the book defines none of its own.
 docs-assets:
-    cp --remove-destination ~/.pandoc/bib/references.bib docs/references.bib
-    cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html docs/_mathjax-macros.html
+    cp --remove-destination ~/.pandoc/bib/references.bib writing/references.bib
+    cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html writing/_mathjax-macros.html
 
 # Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
 docs-check: docs-assets
@@ -44,7 +44,7 @@ docs-check: docs-assets
 
 # Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint framework/Mathematical-Framework.md`
 docs-lint FILE: docs-assets
-    cd docs && uvx --from quarto-cli quarto render "{{FILE}}" --to html
+    cd writing && uvx --from quarto-cli quarto render "{{FILE}}" --to html
 
 # Rename a docs cross-reference/anchor slug everywhere, then prove every reference still resolves. Rewrites {#slug} anchors, @slug crossrefs, and ](…#slug) link fragments in one hyphen-boundary-safe pass (a longer slug is never partially hit) and runs the docs gate. e.g. `just docs-rename-ref def-old-name def-new-name`
 docs-rename-ref OLD NEW:
@@ -53,7 +53,7 @@ docs-rename-ref OLD NEW:
     old="{{OLD}}"
     new="{{NEW}}"
     export old new
-    mapfile -t files < <(find docs -name '*.md' -not -path '*/_extensions/*')
+    mapfile -t files < <(find writing -name '*.md' -not -path '*/_extensions/*')
     if rg -q --pcre2 "\\{#\\Q${new}\\E(?=[ }])" "${files[@]}"; then
         echo "docs-rename-ref: refusing — {#${new}} is already a defined anchor; choose a free name" >&2
         exit 1
@@ -72,7 +72,7 @@ docs-rename-ref OLD NEW:
         exit 1
     fi
 
-# Add an nLab citation to docs/refs-web.bib by scraping its canonical /cite page
+# Add an nLab citation to writing/refs-web.bib by scraping its canonical /cite page
 cite-nlab page:
     python3 scripts/cite_add.py nlab "{{page}}"
 
@@ -80,20 +80,20 @@ cite-nlab page:
 cite-stacks tag:
     python3 scripts/cite_add.py stacks "{{tag}}"
 
-# Regenerate docs/refs-web.bib from canonical sources (re-scrapes every nLab entry; hand-edits are lost)
+# Regenerate writing/refs-web.bib from canonical sources (re-scrapes every nLab entry; hand-edits are lost)
 refs-web-refresh:
     python3 scripts/refs_web_refresh.py
 
-# Regenerate the interactive category graph from its DOT manifest (docs/lean/category-graph.dot)
+# Regenerate the interactive category graph from its DOT manifest (writing/category-theory/lean/category-graph.dot)
 graph:
     python3 scripts/build_graph.py
 
 # Serve the docs site locally with live reload (quarto provisioned via uvx)
 docs-preview: docs-assets
     # ponytail: two previews on the same dir cross-trigger each other's watchers
-    # (each renders output back into docs/) → endless ~10s reload loop. Kill any
+    # (each renders output back into writing/) → endless ~10s reload loop. Kill any
     # stale instance first so this always replaces rather than duplicates.
-    uvx --from quarto-cli quarto preview docs --no-browser --port 7654
+    uvx --from quarto-cli quarto preview writing --no-browser --port 7654
 
 # Survey a live session into the preamble reference, its graph JSON, and the interactive graph
 preamble-megadoc:

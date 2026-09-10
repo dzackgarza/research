@@ -4,9 +4,9 @@
 import subprocess
 from pathlib import Path
 
-DOT = Path("docs/lean/category-graph.dot")
-TEMPLATE = Path("docs/lean/_category-graph-template.html")
-OUT = Path("docs/lean/category-graph.html")
+DOT = Path("writing/category-theory/lean/category-graph.dot")
+TEMPLATE = Path("writing/category-theory/lean/_category-graph-template.html")
+OUT = Path("writing/category-theory/lean/category-graph.html")
 
 svg = subprocess.run(
     ["dot", "-Tsvg", str(DOT)],

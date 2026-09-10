@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Add a web citation to docs/refs-web.bib by scraping its canonical source.
+"""Add a web citation to writing/refs-web.bib by scraping its canonical source.
 
 Citations can't be hallucinated: the BibTeX comes from the publisher's own
 /cite page, never from the model.
@@ -8,7 +8,7 @@ Citations can't be hallucinated: the BibTeX comes from the publisher's own
   cite_add.py stacks 0A8C                       # validates the tag exists
 
 nLab: scrapes <page>/cite, extracts the canonical `@misc{nlab:...}` entry, and
-appends it to docs/refs-web.bib (deduped). Cite it as [@nlab:<slug>].
+appends it to writing/refs-web.bib (deduped). Cite it as [@nlab:<slug>].
 Stacks: one global entry (The25); this only verifies the tag resolves. Cite it
 as [@stacks-<tag>] — the stacks-tags.lua filter links it to the tag page.
 """
@@ -17,7 +17,7 @@ import sys
 import urllib.request
 from pathlib import Path
 
-BIB = Path("docs/refs-web.bib")
+BIB = Path("writing/refs-web.bib")
 UA = {"User-Agent": "Mozilla/5.0 (docs cite_add)"}
 
 

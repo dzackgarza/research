@@ -1,0 +1,16 @@
+{
+  "cnb-1-Remark": { "file": "sterk-cusp-divisibilities", "reflabel": "Remark", "refnumber": "1" },
+  "cnb-10-Remark": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Remark", "refnumber": "10" },
+  "cnb-11-Remark": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Remark", "refnumber": "11" },
+  "cnb-2-Remark": { "file": "sterk-cusp-divisibilities", "reflabel": "Remark", "refnumber": "2" },
+  "cnb-3-Remark": { "file": "cusp-diagram-calculations", "reflabel": "Remark", "refnumber": "3" },
+  "cnb-6-Remark": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Remark", "refnumber": "6" },
+  "cnb-7-Remark": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Remark", "refnumber": "7" },
+  "conj:rank_16_cusp_E8": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Conjecture", "refnumber": "9" },
+  "lem:1_cusp_correspondence": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Lemma", "refnumber": "5" },
+  "lem:cusp_map_dP": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Lemma", "refnumber": "8" },
+  "lem:divisibilityAlwaysTwoTco": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Lemma", "refnumber": "2" },
+  "lem:divisibilityTcoOne": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Lemma", "refnumber": "3" },
+  "lem:w1_perp_calculation": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Lemma", "refnumber": "4" },
+  "thm:cusp_correspondence": { "file": "enriques-to-coble-cusp-correspondence", "md": "", "reflabel": "Theorem", "refnumber": "1" }
+}

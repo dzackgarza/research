@@ -18,7 +18,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-DOCS = Path("docs")
+DOCS = Path("writing")
 SITE = DOCS / "_site"
 QUARTO = shlex.split(os.environ.get("QUARTO", "uvx --from quarto-cli quarto"))
 

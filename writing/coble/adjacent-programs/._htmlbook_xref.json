@@ -1,0 +1,22 @@
+{
+  "baily-borel-boundary-by-the-same-techniques": {
+    "file": "nodal-enriques-moduli-program",
+    "md": "Baily-Borel boundary by the same techniques",
+    "reflabel": "Conjecture",
+    "refnumber": "3"
+  },
+  "discrepancy-to-reconcile-two-forms-of-the-embedding": {
+    "file": "nodal-enriques-moduli-program",
+    "md": "Discrepancy to reconcile: two forms of the embedding",
+    "reflabel": "Remark",
+    "refnumber": "2"
+  },
+  "index-halphen-pencil-halphen-surface": { "file": "halphen-index-2-moduli-program", "reflabel": "Definition", "refnumber": "1" },
+  "nodal-and-unnodal": { "file": "nodal-enriques-moduli-program", "md": "Nodal and unnodal", "reflabel": "Definition", "refnumber": "1" },
+  "period-domains-and-ksba-compactifications-for-m_h2k": { "file": "halphen-index-2-moduli-program", "reflabel": "Conjecture", "refnumber": "4" },
+  "the-multiple-fiber-as-the-recognizable-divisor": { "file": "halphen-index-2-moduli-program", "reflabel": "Conjecture", "refnumber": "5" },
+  "what-is-already-constructed-in-the-literature": { "file": "halphen-index-2-moduli-program", "reflabel": "Remark", "refnumber": "2" },
+  "where-the-coble-lattices-reappear": { "file": "halphen-index-2-moduli-program", "reflabel": "Remark", "refnumber": "3" },
+  "why-the-program-is-stated-as-worth-doing": { "file": "halphen-index-2-moduli-program", "reflabel": "Remark", "refnumber": "6" },
+  "why-this-needs-genuinely-new-machinery": { "file": "nodal-enriques-moduli-program", "md": "Why this needs genuinely new machinery", "reflabel": "Remark", "refnumber": "4" }
+}
