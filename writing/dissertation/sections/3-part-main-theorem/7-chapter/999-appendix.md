@@ -2,7 +2,6 @@
 
 #### Examples of Specific Root Systems {#root-systems}
 
-
 ##### $A_4$
 
 The relevant Euclidean space is $\EE_{A_4} = \{ x \in \RR^5 : x_1+x_2+x_3+x_4+x_5=0 \}$ with
@@ -388,7 +387,6 @@ G_{E_6} =
   \dynkin[mark=o, labels={\alpha_1,\alpha_2,\alpha_3,\alpha_4,\alpha_5,\alpha_6}, label directions={below,above,below,below,below,below}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] E6  \hspace{12em} \\[1em]
 \end{align*}
 
-
 #### Type E
 
 \begin{align*}
@@ -480,6 +478,3 @@ G_{G_2} &=\begin{pmatrix}
 & \hspace{-8em}
 \raisebox{0.75em}{$G_2$:\,\,}\dynkin[arrows=false, labels={\alpha_1,\alpha_2}, label directions={above,above}, scale=4, text style/.style={scale=1.2}, label distance=0.3em] G{*o}
 \end{align*}
-
-
-

@@ -10,7 +10,8 @@ I also extend my thanks to Brian Boe, Dan Nakano, Pete Clark, Akram Alishahi, an
 
 I thank Kelly Black, Jennifer Royal, Toyin Alli, and Maury Leblanc for their constant support with respect to teaching responsibilities, as well as their patience and all of the work they have put into the undergraduate curriculum at UGA.
 
-For many stimulating mathematical discussions, I also thank Sasha Shmakov, Haiyang Wang, Peter Lambert Cole, Daniel Litt, Dino Lorenzini, Daniel Hartman, Alex Tepper, Han Lou, Paco Adajar, and Scott Larson. I am additionally grateful to Peter Woolfitt and Paul Pollack for numerous insightful non-mathematical conversations, as well as Nicole Song for treating my cat very well when I traveled.
+For many stimulating mathematical discussions, I also thank Sasha Shmakov, Haiyang Wang, Peter Lambert Cole, Daniel Litt, Dino Lorenzini, Daniel Hartman, Alex Tepper, Han Lou, Paco Adajar, and Scott Larson.
+I am additionally grateful to Peter Woolfitt and Paul Pollack for numerous insightful non-mathematical conversations, as well as Nicole Song for treating my cat very well when I traveled.
 
 I would like to thank Sarah Blackwell and Julie Rasmussen for being wonderful co-organizers of various conferences, seminars, and colloquia over the years.
 I would also like to thank James McClung and the UGA at Oxford program for supporting me personally and professionally in my research goals over the course of several semesters.
