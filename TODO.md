@@ -1628,7 +1628,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-lattice-endomorphism-ring-20260910-1948` | archive reconciliation / lattice endomorphism ring identity and composition | Chat continuation 2026-09-10; `/home/dzack/research` | `tests/lattices/test_lattice_endomorphism_ring_archive.py` (write) | `HEAD` | 2026-09-10T19:48:00Z |
 
 
 
