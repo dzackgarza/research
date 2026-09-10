@@ -1563,13 +1563,13 @@ statements with their own dependencies and became nodes, Lo10 and E16.
 | the **order of vanishing** of a rational function at such a point | **conditionally, and it needs a hypothesis the node did not state**: `IsDiscreteValuationRing.addVal` (`RingTheory/DiscreteValuationRing/Basic.lean`) is the valuation, and it applies once the local ring at a codimension-one point *is* a DVR, which needs normality.  That chain is now **E16** |
 | the principal divisor, and linear equivalence | over E16 and a quotient — **yes, once E16 exists** |
 
-### Six atoms now exist, in `lean/Atoms.lean`
+### Eight atoms now exist, in `lean/Atoms.lean`
 
 The searching stopped where it had to: five sweeps established that these
 notions are in no indexed Lean code.  The remedy for that is to write them, and
-six are written — `lean/Atoms.lean`, beside this file, **192 lines, compiled
-against the pinned Mathlib** with `lake env lean` from the `lean-categories`
-checkout, no error, no warning, no `sorry` and no `axiom`.
+eight are written — `lean/Atoms.lean`, beside this file, compiled against the
+pinned Mathlib with `lake env lean` from the `lean-categories` checkout, no
+error, no warning, no `sorry` and no `axiom`.
 
 | Node or clause | Declaration |
 | --- | --- |
@@ -1579,6 +1579,8 @@ checkout, no error, no warning, no `sorry` and no `axiom`.
 | F1.15, the doubling $\mathbb{Q}/\mathbb{Z}\to\mathbb{Q}/2\mathbb{Z}$ | `Sterk.doubling : AddCircle (1 : ℚ) →+ AddCircle (2 : ℚ)`, through `QuotientAddGroup.map` on `AddMonoidHom.mulLeft 2` |
 | E14's deck involution | `Sterk.DeckTransformation (f : E → X)` — a homeomorphism of the total space with `over_base` — its `CoeFun`, `id`, `IsInvolution`, and `IsInvolution.symm_apply` |
 | V1's nondecomposability | `Sterk.Matrix.IsDecomposable` and `IsIndecomposable`: a re-indexing $n \simeq \iota \oplus \kappa$ with both parts nonempty and the off-diagonal blocks zero |
+| Pa1's semigroup of classes | `Sterk.PadicForm` (a rank and a form on `Fin rank → ℤ_[p]`, which is the choice of representatives that makes the collection a set), `Isometric` with its refl/symm/trans, `isometricSetoid`, `orthogonalSum` — `QuadraticMap.prod` carried along `finSumFinEquiv` and `sumArrowLequivProdArrow` — and `PadicFormClasses` as the quotient |
+| E15's Weil divisors | `Sterk.codimOnePoints` and `Sterk.WeilDivisor (X : Scheme) := codimOnePoints X →₀ ℤ` with its `AddCommGroup` instance and `WeilDivisor.single`.  **The order convention is the substance here**: Mathlib's `specializationPreorder` has $x \le y \iff y \leadsto x$, so a generic point is a *greatest* element and codimension is `Order.coheight`, not `Order.height` — the floor row for E15 had named `height`, which is the wrong end |
 
 These are **definitions**, and that is the point: each was a clause a leaf
 asserted with nothing under it, and each now resolves to a declaration that
@@ -1587,13 +1589,20 @@ does not prove Sterk 2.13, and `DeckTransformation` does not produce the $K3$
 double cover.  A definition existing is exactly what "bottoms out" can mean for
 a node nobody has proved.
 
-Three of the nine remain unwritten, and each is larger than a definition over
-existing primitives: a **normal analytic space** with its dimension
-stratification and $\mathcal{Q}$-functions (AF10), a **Weil divisor** on an
-integral scheme (E15, over E16's valuation), and the **semigroup of isometry
-classes** of $p$-adic forms with its choice of representatives (Pa1).  Lo10's
-two-component theorem and F1.16's Milgram congruence are theorems, not
-definitions, and belong with them.
+**One definition remains, and it is a programme rather than a declaration.**
+AF10's normal analytic space needs a local model — the zero set of finitely many
+holomorphic functions with the quotient of the structure sheaf — and the chain
+under it is: the structure sheaf and its locally-ringed packaging **exist**
+(`ChartedSpace.locallyRingedSpace`, `Mathlib/Geometry/Manifold/Sheaf/LocallyRingedSpace.lean`,
+with the stalks proved local, and `smoothSheaf` in `Sheaf/Smooth.lean`); the ideal
+sheaf and its quotient do **not**, though `CategoryTheory.Sites.Sheafification`
+supplies the machine for the quotient.  So the definition is reachable and is
+several files of work, not ten lines, and writing it badly — a definition whose
+class of models is empty — would be worse than leaving it named.  The dimension
+stratification and the $\mathcal{Q}$-functions sit above it.
+
+Two theorems remain with it: Lo10, that the negative cone of a form of index one
+has two components, and F1.16, Milgram's congruence.  Those are proofs.
 
 ### Where the decomposition stops, and why it stops there
 

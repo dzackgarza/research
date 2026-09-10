@@ -20,6 +20,14 @@ public import Mathlib.Logic.Equiv.Basic
 public import Mathlib.Topology.Instances.AddCircle.Defs
 public import Mathlib.Topology.Covering.Basic
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
+public import Mathlib.LinearAlgebra.QuadraticForm.Prod
+public import Mathlib.LinearAlgebra.QuadraticForm.IsometryEquiv
+public import Mathlib.LinearAlgebra.Pi
+public import Mathlib.Logic.Equiv.Fin.Basic
+public import Mathlib.NumberTheory.Padics.PadicIntegers
+public import Mathlib.AlgebraicGeometry.Scheme
+public import Mathlib.Order.KrullDimension
+public import Mathlib.Data.Finsupp.Defs
 
 @[expose] public section
 
@@ -188,5 +196,89 @@ def HasDivisorOne (B : LinearMap.BilinForm R M) (v : M) : Prop :=
   divisorIdeal B v = ⊤
 
 end Divisor
+
+section PadicSemigroup
+
+variable (p : ℕ) [Fact p.Prime]
+
+/-- **Pa1.**  A `p`-adic quadratic form, on a *chosen* free module of finite
+rank.
+
+Nikulin's `qu(ℤ_p)` ranges over forms on all finitely generated `ℤ_p`-modules,
+which is not a set.  Fixing the underlying module to `Fin n → ℤ_[p]` makes it
+one, and that choice is the content of this definition. -/
+structure PadicForm where
+  /-- The rank of the underlying free module. -/
+  rank : ℕ
+  /-- The form itself. -/
+  form : QuadraticMap ℤ_[p] (Fin rank → ℤ_[p]) ℤ_[p]
+
+namespace PadicForm
+
+/-- Isometry of `p`-adic forms of possibly different ranks. -/
+def Isometric (A B : PadicForm p) : Prop :=
+  Nonempty (A.form.IsometryEquiv B.form)
+
+theorem Isometric.refl (A : PadicForm p) : Isometric p A A :=
+  ⟨QuadraticMap.IsometryEquiv.refl A.form⟩
+
+theorem Isometric.symm {A B : PadicForm p} (h : Isometric p A B) : Isometric p B A :=
+  ⟨h.some.symm⟩
+
+theorem Isometric.trans {A B C : PadicForm p} (h : Isometric p A B) (h' : Isometric p B C) :
+    Isometric p A C :=
+  ⟨h.some.trans h'.some⟩
+
+/-- Isometry is an equivalence relation on `p`-adic forms. -/
+def isometricSetoid : Setoid (PadicForm p) where
+  r := Isometric p
+  iseqv := ⟨Isometric.refl p, Isometric.symm p, Isometric.trans p⟩
+
+/-- The orthogonal sum of two `p`-adic forms: `QuadraticMap.prod` carried onto a
+module of the summed rank along `finSumFinEquiv`. -/
+noncomputable def orthogonalSum (A B : PadicForm p) : PadicForm p where
+  rank := A.rank + B.rank
+  form := (A.form.prod B.form).comp <|
+    ((LinearEquiv.funCongrLeft ℤ_[p] ℤ_[p] (finSumFinEquiv (m := A.rank) (n := B.rank))).trans
+      (LinearEquiv.sumArrowLequivProdArrow (Fin A.rank) (Fin B.rank) ℤ_[p] ℤ_[p])).toLinearMap
+
+end PadicForm
+
+/-- **Pa1.**  `qu(ℤ_p)`: the isometry classes of `p`-adic quadratic forms.  The
+semigroup operation is `PadicForm.orthogonalSum` on representatives. -/
+def PadicFormClasses : Type _ := Quotient (PadicForm.isometricSetoid p)
+
+end PadicSemigroup
+
+section WeilDivisor
+
+open AlgebraicGeometry
+
+/-- **E15.**  The codimension-one points of a scheme.
+
+Mathlib's `specializationPreorder` has `x ≤ y ↔ y ⤳ x`, so a generic point is a
+greatest element and codimension is measured **upwards**: the codimension of `x`
+is the length of the longest chain of specializations from `x` towards the
+generic point, which is `Order.coheight` in that preorder and not
+`Order.height`. -/
+def codimOnePoints (X : Scheme) : Set X :=
+  {x | @Order.coheight X (specializationPreorder X) x = 1}
+
+/-- **E15.**  The Weil divisors of a scheme: the free abelian group on its
+codimension-one points.
+
+`rg -i 'WeilDivisor|CartierDivisor|Chow|algebraicCycle'` finds nothing in the
+pinned Mathlib, in the 277 repositories the registry links, or in the
+734-package Reservoir clone. -/
+def WeilDivisor (X : Scheme) : Type _ := (codimOnePoints X) →₀ ℤ
+
+noncomputable instance (X : Scheme) : AddCommGroup (WeilDivisor X) :=
+  inferInstanceAs (AddCommGroup ((codimOnePoints X) →₀ ℤ))
+
+/-- The divisor of a single codimension-one point, with multiplicity one. -/
+noncomputable def WeilDivisor.single {X : Scheme} (x : codimOnePoints X) : WeilDivisor X :=
+  Finsupp.single x 1
+
+end WeilDivisor
 
 end Sterk
