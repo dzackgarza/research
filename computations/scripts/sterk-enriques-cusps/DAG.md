@@ -1187,6 +1187,53 @@ would buy nothing.  If a stratum later needs a capability this graph has not
 named, the registry list is the place to look before concluding it is absent —
 that is what this sweep found, twice.
 
+### Fifth sweep: every public Lake package, for the nine atoms
+
+The registry's own first instruction is to search [Reservoir](https://reservoir.lean-lang.org/)
+before any general GitHub search, and Reservoir is cloned here too:
+`~/gitclones/lean-reference-corpus/reservoir-sources` holds **734 packages,
+94,764 `.lean` files, 3.1 GB**, cloned 2025-08-15.  The four earlier sweeps never
+touched it.  It is the widest surface available for the question the nine atoms
+raise — whether the thing is absent, or merely absent from the places already
+looked.
+
+Searched with `rg -l --no-ignore -g '*.lean'` across all 734 packages:
+
+| Sought | Result |
+| --- | --- |
+| `AlmostComplex` | **no file, in any package** |
+| `AnalyticSpace` | **no file** |
+| `WeilDivisor`, `CartierDivisor` | **no file** |
+| `DeckTransformation` | **no file** |
+| `Niemeier` | **no file** |
+| the genus of a lattice | **no file** |
+| Eichler | **no file** |
+| Siegel sets, fundamental domains for arithmetic groups | **no file** |
+| bounded symmetric domains | two false friends: a Putnam solution and a linguistics library |
+| `HyperbolicSpace`, `LorentzianMetric`, `MinkowskiSpace` | `physicslib__physicslib4`'s AQFT tree only — `StandardMinkowskiSpacetime` as the base of a Haag–Kastler net, not a form of signature $(n,1)$ |
+| "divisor" as a word | unrelated: SU(2) matter content in `seiberg-witten`, hyperreals in `hyper-lean`, competition problems |
+
+**Positive control.** The same search finds `QuadraticForm` in 66 packages, so the
+method reaches the corpus rather than silently failing — which is the trap
+recorded above, where ignore rules made every search return nothing.
+
+**Scope of these negatives, stated exactly.**  What was searched: 94,764 `.lean`
+files in 734 packages, the Reservoir index as cloned on 2025-08-15.  How:
+identifier and word search, case-insensitive where noted, no build.  What this
+does **not** cover: a package added to Reservoir since that clone; a
+formalization under a name none of these searches guessed; work in progress on a
+branch, in a Zulip thread, or unpublished.  The registry's own refresh
+instruction — sweep the Reservoir index, Lean Pool and the community projects
+page — is the procedure for the first of those, and it has not been re-run here.
+
+**What this settles.**  The nine atoms are not absent from the places already
+looked; they are absent from every public Lean package this machine can see, and
+so from Mathlib, from the 277 registry repositories, and from Reservoir.  A leaf
+of this graph cannot bottom out in existing external code for the same reason:
+for these notions there is no existing external code, anywhere, to bottom out in.
+That is a fact about the state of formalization, not about this file, and the
+right response to it is to write the nine.
+
 ### Greenfield — no formalization in Mathlib or the registry
 
 | Nodes | What must be authored | Nearest thing that exists |
