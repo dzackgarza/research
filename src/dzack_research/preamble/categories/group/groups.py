@@ -1880,6 +1880,71 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                     )
                 )
 
+            def character(self, values):
+                r"""Return the ordinary character with the stated class values.
+
+                Values are indexed by this group's selected conjugacy-class
+                representatives and live in the same cyclotomic coefficient
+                field as :meth:`irreducible_characters`.  The public result is
+                the owned character object; the finite class-function carrier
+                remains the existing private representation boundary.
+                """
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
+                )
+                from dzack_research.preamble.categories.group.characters import (
+                    character_from_class_function,
+                )
+                from dzack_research.preamble.categories.rings.number_fields import (
+                    CyclotomicField,
+                )
+
+                gap_group = _gap_model(self)
+                field = CyclotomicField(int(gap_group.Exponent()))
+                representatives = self.conjugacy_classes_representatives()
+                supplied = tuple(values)
+                if len(supplied) != int(representatives.cardinality()):
+                    raise ValueError(
+                        "a character requires one value for each conjugacy class"
+                    )
+                candidate = character_from_class_function(
+                    finite_group_class_function(
+                        self,
+                        field,
+                        tuple(field(value) for value in supplied),
+                        representatives=representatives,
+                    )
+                )
+                integers = _own_ring(ZZ)
+                irreducibles = self.irreducible_characters()
+                multiplicities = []
+                for irreducible in irreducibles:
+                    coefficient = candidate._inner_product(irreducible)
+                    try:
+                        multiplicity = integers(coefficient)
+                    except (TypeError, ValueError) as error:
+                        raise ValueError(
+                            "the supplied class values do not define an ordinary character"
+                        ) from error
+                    if multiplicity < integers.zero():
+                        raise ValueError(
+                            "the supplied class values do not define an ordinary character"
+                        )
+                    multiplicities.append(multiplicity)
+                for representative, expected in zip(
+                    representatives, supplied, strict=True
+                ):
+                    reconstructed = field.zero()
+                    for multiplicity, irreducible in zip(
+                        multiplicities, irreducibles, strict=True
+                    ):
+                        reconstructed += multiplicity * irreducible(representative)
+                    if reconstructed != field(expected):
+                        raise ValueError(
+                            "the supplied class values do not define an ordinary character"
+                        )
+                return candidate
+
             @cached_method
             def trivial_character(self):
                 r"""Return the degree-one trivial ordinary character of ``self``.
