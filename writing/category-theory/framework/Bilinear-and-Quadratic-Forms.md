@@ -178,6 +178,40 @@ $$
 and two Gram matrices present isomorphic forms exactly when they are congruent in this sense [@MH73, I §2.3].
 :::
 
+::: {#def-cartan-matrix}
+## The Cartan matrix
+
+Let $b$ be a symmetric bilinear form on $M$ with values in $R$, and let $\alpha_1,\dots,\alpha_\ell$ be an ordered family in $M$ with each $b(\alpha_j,\alpha_j)$ invertible in $R$.
+The *Cartan matrix* of the family is
+$$
+A_{ij}=\frac{2\,b(\alpha_i,\alpha_j)}{b(\alpha_j,\alpha_j)} ,
+$$
+normalized by the second index.
+For the simple roots of a root system these entries are the *Cartan integers* [@Hum72, §11.1].
+
+Write $G$ for the Gram matrix of the family, as in @prp-gram-matrix-free-module, and put $d_j=b(\alpha_j,\alpha_j)/2$.
+Then
+$$
+A=G\cdot\operatorname{diag}\!\left(\tfrac{2}{G_{jj}}\right),
+\qquad
+G_{ij}=d_j\,A_{ij}.
+$$
+
+Normalizing by the first index instead produces the transpose of $A$, and the second identity then reads $G_{ij}=d_iA_{ij}$.
+The two conventions give transposed matrices and different symmetrization indices; this book uses the one displayed above.
+
+$G$ is symmetric, while $A$ need not be, so a Cartan matrix with $d_i\neq d_j$ is not a Gram matrix.
+Take $\ell=2$ with
+$$
+G=\begin{pmatrix}-2&2\\2&-4\end{pmatrix},
+\qquad
+d=(-1,-2),
+\qquad
+A=\begin{pmatrix}2&-1\\-2&2\end{pmatrix}.
+$$
+Here $d_2A_{12}=(-2)(-1)=2=G_{12}$, whereas $d_1A_{12}=(-1)(-1)=1$, so only the second index recovers $G$ from $A$.
+:::
+
 ::: {#def-determinant-class}
 ## The determinant
 

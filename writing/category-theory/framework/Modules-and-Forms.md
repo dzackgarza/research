@@ -86,4 +86,7 @@ Sending $\bigl((N,f),\varphi\bigr)$ to the basis $\varphi f\in\operatorname{Bas}
 
 By @def-property-structure-stuff a faithful functor with discrete fibres presents structure: a basis is a chosen object of the fibre, while freeness of @def-module-subcategories is the property that the fibre be nonempty for some $I$.
 The simply transitive $\operatorname{Aut}_R(R^{(I)})$-action above is the action on that fibre, and a construction defined on a based module is stated together with its transformation rule under that action.
+
+Dropping the requirement that $e$ be an isomorphism and asking only that it be surjective gives the generating frames of @def-generating-frame, for which the same argument runs and reaches the same conclusion by @prp-generating-frame-is-structure.
+A basis is the case of a generating frame whose structure map is an isomorphism.
 :::

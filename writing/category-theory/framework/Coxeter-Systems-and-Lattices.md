@@ -18,11 +18,43 @@ Its Gram matrix in the basis $\{\alpha_s\}$ is $G$ with $G_{st}=2\cos(\pi/m(s,t)
 The source [@Hum90, §5.3] uses $B(\alpha_s,\alpha_t)=-\cos(\pi/m(s,t))$, so $B(\alpha_s,\alpha_s)=1$ and $b=-2B$.
 Every definiteness statement quoted from that source is therefore read here with the sign reversed, in the convention of @def-definiteness.
 
+The data are those of a *Coxeter graph*: a finite undirected graph on $S$ whose edges are labelled by integers at least $3$ or by $\infty$, with $m(s,t)=2$ for distinct vertices joined by no edge and $m(s,s)=1$ [@Hum90, §2.3].
+
 For each $s$ the reflection
 $$
 \sigma_s(\lambda)=\lambda-\frac{2\,b(\alpha_s,\lambda)}{b(\alpha_s,\alpha_s)}\,\alpha_s
 $$
 has order $2$, fixes the hyperplane $b$-orthogonal to $\alpha_s$, sends $\alpha_s$ to $-\alpha_s$, and preserves $b$; the assignment $s\mapsto\sigma_s$ extends to a homomorphism $W\to O(V,b)$ [@Hum90, §5.3].
+:::
+
+::: {#prp-coxeter-gram-entries}
+## Entries of the Gram matrix, and a base ring
+
+The off-diagonal entry $2\cos(\pi/m)$ takes the value $0$ at $m=2$, the value $1$ at $m=3$, and the value $2$ at $m=\infty$, and these are the only integer values it takes.
+So $G$ has entries in $\mathbb Z$ exactly when every $m(s,t)$ lies in $\{2,3,\infty\}$.
+
+For the remaining labels the entries are real algebraic integers and $G$ has entries in $\mathbb Z[2\cos(\pi/m)]$ for a single label $m$.
+At $m=5$ this ring is $\mathbb Z[\varphi]$ with $\varphi=(1+\sqrt5)/2$: writing $\theta=\pi/5$ and $x=\cos\theta$, the identity $3\theta=\pi-2\theta$ gives $\cos3\theta=-\cos2\theta$, hence
+$$
+4x^{3}+2x^{2}-3x-1=(x+1)(4x^{2}-2x-1)=0,
+$$
+and the root $x=(1+\sqrt5)/4$ gives $2\cos(\pi/5)=\varphi$.
+The diagrams $H_3$ and $H_4$ have off-diagonal labels in $\{2,3,5\}$, so both have Gram matrices over the one ring $\mathbb Z[\varphi]$, and this is the ring over which their root spans are lattices.
+:::
+
+::: {#prp-canonical-form-cartan-matrix}
+## The canonical form and the Cartan matrix
+
+The canonical form of @def-coxeter-form has $b(\alpha_s,\alpha_s)=-2$ for every $s$, so in the notation of @def-cartan-matrix every $d_j$ equals $-1$ and
+$$
+A=-G
+$$
+unconditionally, with $A$ symmetric.
+
+The canonical form records the angles between the simple roots and gives them all the same length.
+A root system with roots of two lengths has $d_i\neq d_j$ and a Cartan matrix that is not symmetric, so its Cartan matrix arises from no canonical form; the diagrams $B_n$, $C_n$, $F_4$ and $G_2$ are of this kind.
+The specimen in @def-cartan-matrix is the $m(s,t)=4$ case, where the two roots have squares $-2$ and $-4$.
+What connects the two matrices in general is the symmetrization $G_{ij}=d_jA_{ij}$ of @def-cartan-matrix.
 :::
 
 ::: {#thm-coxeter-signature-type}
