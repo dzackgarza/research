@@ -1628,6 +1628,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-profinite-character-hom-20260910-1234` | archive reconciliation / continuous profinite character Hom owner | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/galois_quotient.py; tests/groups/test_profinite_character_hom_archive.py` (write) | `9df6e2db818d4bb1582b139cc457dfa16bf2b019` | 2026-09-10T12:34:00Z |
+
 
 
 
