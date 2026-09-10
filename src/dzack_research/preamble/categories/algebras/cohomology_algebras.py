@@ -16,10 +16,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    CommutativeDifferentialGradedAlgebras,
     DifferentialGradedAlgebras,
+    StrictlyCommutativeDifferentialGradedAlgebras,
     dga_homset,
 )
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
+    GradedCommutativeAlgebras,
+    StrictlyGradedCommutativeAlgebras,
+)
 
 
 class CohomologyAlgebraHomCategoryConstruction(HomCategoryConstruction):
@@ -61,8 +67,7 @@ class CohomologyAlgebras(OwnedCategoryOverBaseRing):
         return "cohomology algebras"
 
     def super_categories(self):
-
-        return [StrictlyGradedCommutativeAlgebras(self.base_ring())]
+        return [GradedAlgebras(self.base_ring())]
 
     _HomCategory = CohomologyAlgebraHomCategoryConstruction
 
@@ -82,12 +87,17 @@ class _CohomologyAlgebra(GradedDirectSumModule):
     def __init__(self, dga) -> None:
         self._preamble_cohomology_source_dga = dga
         self._preamble_algebra_base_ring = dga.base_ring()
+        extra_categories = [CohomologyAlgebras(dga.base_ring())]
+        if dga in CommutativeDifferentialGradedAlgebras(dga.base_ring()):
+            extra_categories.append(GradedCommutativeAlgebras(dga.base_ring()))
+        if dga in StrictlyCommutativeDifferentialGradedAlgebras(dga.base_ring()):
+            extra_categories.append(StrictlyGradedCommutativeAlgebras(dga.base_ring()))
         GradedDirectSumModule.__init__(
             self,
             dga.base_ring(),
             lambda degree: Cohomology(dga, degree),
             name=f"H^*({dga})",
-            extra_categories=(CohomologyAlgebras(dga.base_ring()),),
+            extra_categories=tuple(extra_categories),
         )
 
     def source_dga(self):
