@@ -1217,3 +1217,27 @@ functor (hence $K_0 = \pi_0\circ K\colon\mathbf{SymMonCat}\to\mathbf{Ab}$
 is a functor)." State the source, the target, and the functor. If the
 object was defined as a functor, functoriality is not an additional
 property to be asserted in prose.
+
+### `PR-15`: Prose paraphrase of a precise categorical statement
+
+A precise categorical statement — a factorization through a quotient or
+$\pi_0$, a functor with source and target, a commutative diagram, a tuple
+with its constituents, a natural transformation with its naturality square
+— is paraphrased in loose English instead of being stated precisely. The
+prose is simultaneously wordier and less precise: it names no domain, no
+codomain, no diagram, and the reader cannot reconstruct the precise
+statement. State the precise statement.
+
+**Banned:** "is an invariant of isomorphism classes and is functorial for
+symmetric monoidal functors"; "relating $\gamma$ to $\alpha$"; "commuting
+with the projections"; "is what licenses the notation
+$a_1\otimes\cdots\otimes a_n$ without parentheses."
+
+**Preferred:** "factors through $\pi_0\colon S\mapsto\pi_0(S^\simeq)$";
+"$K\colon\mathbf{SymMonCat}\to\mathbf{Spectra}$ is a functor"; draw the
+hexagon diagrams; state the tuple
+$(\mathcal{C},\otimes,\mathbf{1},\alpha,\lambda,\varrho)$; "any two
+parenthesizations are connected by a unique composite of associators."
+PR-13, PR-14, EV-8, AX-1, and PR-7 are instances of this general pattern:
+a precise statement was replaced by a loose English description that is
+longer and carries less information.
