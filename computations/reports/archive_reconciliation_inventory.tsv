@@ -2925,39 +2925,39 @@ preamble/owned_category.py	OwnedParent.element_class	method	598	0		src/dzack_res
 preamble/owned_category.py	OwnedCategoryObject	class	635	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
 preamble/owned_category.py	the	class	645	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
 preamble/owned_category.py	OwnedCategoryObject.category	method	692	0		src/dzack_research/preamble/owned_category.py	reconciled-live-owner
-preamble/owned_category_bases.py	<module>	module	1	0			unreviewed
-preamble/owned_category_bases.py	Category	class	185	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	CategoryWithParameters	class	203	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	Category_singleton	class	213	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	CategoryWithAxiom	class	227	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	CategoryWithAxiom_singleton	class	237	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	CategoryWithAxiom_over_base_ring	class	254	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	Category_over_base	class	264	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	Category_over_base_ring	class	274	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	Category_module	class	284	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	Category_ideal	class	294	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	HomCategoryConstruction	class	304	2			unreviewed
-preamble/owned_category_bases.py	HomCategoryConstruction.extra_super_categories	method	317	0			unreviewed
-preamble/owned_category_bases.py	HomCategoryConstruction.Of	method	339	0			unreviewed
-preamble/owned_category_bases.py	FunctorialConstructionCategory	class	395	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	CovariantConstructionCategory	class	415	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	RegressiveCovariantConstructionCategory	class	428	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	SubobjectsCategory	class	443	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	SubobjectsCategory.default_super_categories	method	449	0			unreviewed
-preamble/owned_category_bases.py	SubobjectsCategory.ParentMethods	class	460	0			unreviewed
-preamble/owned_category_bases.py	SubobjectsCategory.ParentMethods.inclusion	method	471	0			unreviewed
-preamble/owned_category_bases.py	SubobjectsCategory.ParentMethods.lift	method	476	0			unreviewed
-preamble/owned_category_bases.py	QuotientsCategory	class	481	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	SubquotientsCategory	class	491	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	IsomorphicObjectsCategory	class	501	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	RealizationsCategory	class	511	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	WithRealizationsCategory	class	521	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	DualObjectsCategory	class	531	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	TensorProductsCategory	class	541	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	AlgebrasCategory	class	551	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	FilteredModulesCategory	class	561	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	GradedModulesCategory	class	571	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
-preamble/owned_category_bases.py	SuperModulesCategory	class	581	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
+preamble/owned_category_bases.py	<module>	module	1	0		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	Category	class	185	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	CategoryWithParameters	class	203	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	Category_singleton	class	213	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	CategoryWithAxiom	class	227	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	CategoryWithAxiom_singleton	class	237	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	CategoryWithAxiom_over_base_ring	class	254	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	Category_over_base	class	264	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	Category_over_base_ring	class	274	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	Category_module	class	284	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	Category_ideal	class	294	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	HomCategoryConstruction	class	304	2		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	HomCategoryConstruction.extra_super_categories	method	317	0		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	HomCategoryConstruction.Of	method	339	0		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	FunctorialConstructionCategory	class	395	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	CovariantConstructionCategory	class	415	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	RegressiveCovariantConstructionCategory	class	428	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	SubobjectsCategory	class	443	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	SubobjectsCategory.default_super_categories	method	449	0		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	SubobjectsCategory.ParentMethods	class	460	0		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	SubobjectsCategory.ParentMethods.inclusion	method	471	0		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	SubobjectsCategory.ParentMethods.lift	method	476	0		src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	QuotientsCategory	class	481	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	SubquotientsCategory	class	491	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	IsomorphicObjectsCategory	class	501	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	RealizationsCategory	class	511	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	WithRealizationsCategory	class	521	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	DualObjectsCategory	class	531	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	TensorProductsCategory	class	541	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	AlgebrasCategory	class	551	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	FilteredModulesCategory	class	561	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	GradedModulesCategory	class	571	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
+preamble/owned_category_bases.py	SuperModulesCategory	class	581	1	src/dzack_research/preamble/owned_category_bases.py	src/dzack_research/preamble/owned_category_bases.py	reconciled-live-owner
 preamble/refine.sage	<module>	module	1	0		src/dzack_research/preamble/refine.py	reconciled-live-owner
 preamble/refine.sage	refine	function	505	1	src/dzack_research/preamble/refine.py	src/dzack_research/preamble/refine.py	reconciled-live-owner
 preamble/refine.sage	hook_post_init	function	566	0		src/dzack_research/preamble/refine.py	reconciled-live-owner

@@ -12,17 +12,28 @@ type without changing category identity.
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category_bases import (
+    Category as OwnedCategoryBase,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.owned_category import (
     OwnedCategoryObject,
     declared_implementation_types,
     object_of,
 )
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/owned_category.py",
-    "live_owner": "src/dzack_research/preamble/owned_category.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/owned_category.py",
+        "live_owner": "src/dzack_research/preamble/owned_category.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/owned_category_bases.py",
+        "live_owner": "src/dzack_research/preamble/owned_category_bases.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 class _DeclarationBase:
@@ -74,3 +85,13 @@ def test_object_of_constructs_the_category_object_type_with_literal_identity() -
     assert isinstance(obj, category.ObjectType)
     assert obj.category() is category
     assert obj.archive_value() == 7
+
+
+def test_owned_category_base_shapes_remain_in_the_owned_cat_graph() -> None:
+    sets = Sets()
+    hom_category = sets.HomCategory()
+
+    assert isinstance(sets, OwnedCategoryBase)
+    assert isinstance(hom_category, HomCategoryConstruction)
+    assert sets.category() is Cat()
+    assert hom_category.category() is Cat()
