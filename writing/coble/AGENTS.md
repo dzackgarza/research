@@ -91,20 +91,11 @@ written:
 
 The Coble part uses the numbered-block filter above. The category-theory part uses
 Quarto's own crossrefs, `::: {#def-x}` referenced as `@def-x`. Neither resolver sees the
-other's registry, and there is no cross-part reference anywhere in the book.
+other's registry, and there is no cross-part reference anywhere in the book, so a
+reference written from one part to a label in the other resolves to nothing.
 
-So "state it once and cite it from the other part" is not available, and proposing it
-produces references that resolve to nothing. When a notion is needed on both sides:
-
-1. One defining occurrence **per part**, never two within a part.
-2. A notion appears in a part only if that part's own results use it. Do not import a
-   notion because the other part has it.
-3. Where both parts state it, the statements must agree — same convention, same formula,
-   each independently correct.
-
-The canonical form of a Coxeter system is stated in both parts for this reason, and the
-two agree character for character. That is permitted; a second occurrence inside one
-part is not.
+A notion both parts need is therefore stated in both, and the two statements must agree.
+The canonical form of a Coxeter system is stated twice for this reason.
 
 ## What is not part of this book
 
