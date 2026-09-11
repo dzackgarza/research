@@ -280,27 +280,7 @@ Paths in this section are relative to
 
 ### Completion objects and finite approximations
 
-- [ ] **`completion-maps`**. **Needs:** none.
-  Put completion maps and ideals on the correct rings.
-  **Owner:** completion parent, ring Hom, and ideal-submodule operations.
-  **Decision:** distinguish the source ideal `I <= A`, its extension in
-  `A_hat`, and its images in finite quotients; retain their extension maps.
-  The completion source map is not automatically injective, and a completion
-  along an arbitrary ideal is not automatically a local ring.
-  Establish Noetherian, local, complete, separated, and flat properties only
-  with the hypotheses supplying each claim.
-  **Deliver:** continuous maps induced by compatible ring maps, quotient
-  projections, identity/composition, residue comparisons, and the supported
-  complete-local maximal ideal through the existing ring/Hom owners.
-  **Acceptance:** nonmaximal-adic and maximal-adic examples remain distinct;
-  `I=0`, a nilpotent ideal, and a non-separated source are handled by their
-  mathematics, not by one blanket parent refinement.
-  A method naming every `A/I^n` an Artin quotient must require the
-  finite-length hypothesis rather than infer it from the word truncation.
-
-### Module completion and comparisons
-
-- [ ] **`module-completion`**. **Needs:** `completion-maps`.
+- [ ] **`module-completion`**. **Needs:** none.
   Make finite-module completion consume the corrected ring completion and
   construct its functorial maps.
   **Owner:** `modules/framed/finitely_generated/finitely_presented_modules.py`,
@@ -1003,7 +983,7 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   **Acceptance:** a sourced family with nonidentity monodromy and a singular
   fiber; maps preserve the applicable pairing and action.
 
-- [ ] **`singularity-classification`**. **Needs:** `normalization`, `local-module-maps`, `completion-maps`.
+- [ ] **`singularity-classification`**. **Needs:** `normalization`, `local-module-maps`.
   Extend local singularity classification beyond selected coordinate
   normal-form recognition.
   **Owners:** `categories/schemes/singularities.py`, pointed local rings,
