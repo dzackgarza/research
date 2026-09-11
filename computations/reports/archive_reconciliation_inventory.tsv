@@ -3529,20 +3529,20 @@ preamble/tests/test_subobject_lll.sage	<module>	module	1	0		src/dzack_research/p
 preamble/tests/test_subobject_lll.sage	test_the_reduced_framing_is_the_one_reduction_defines	specimen	46	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_subobject_lll.sage	test_reduction_keeps_the_submodule_and_shortens_its_generators	specimen	58	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_subobject_lll.sage	test_reduction_agrees_on_the_negative_definite_target	specimen	71	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
-preamble/tests/test_tensor_and_direct_sum.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_sum_of_a_list_is_the_orthogonal_direct_sum	specimen	48	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_satisfies_the_biproduct_identity	specimen	57	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_direct_summands_are_orthogonal_and_keep_their_own_form	specimen	91	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_determinant_is_the_product_of_the_summand_determinants	specimen	116	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_rank_is_the_product_of_the_ranks	specimen	125	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_gram_is_the_kronecker_product	specimen	135	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_determinant_follows_the_kronecker_rule	specimen	150	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_is_a_cocone_under_the_cartesian_product	specimen	166	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_the_universal_map_is_bilinear_not_linear	specimen	187	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_the_universal_property_factors_a_bilinear_map	specimen	205	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_the_factorization_through_tensor_is_unique	specimen	228	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_the_form_on_a_triple_tensor_is_the_product_of_the_three_pairings	specimen	251	0			unreviewed
-preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_distributes_over_tensor	specimen	283	0			unreviewed
+preamble/tests/test_tensor_and_direct_sum.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_sum_of_a_list_is_the_orthogonal_direct_sum	specimen	48	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_satisfies_the_biproduct_identity	specimen	57	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_direct_summands_are_orthogonal_and_keep_their_own_form	specimen	91	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_determinant_is_the_product_of_the_summand_determinants	specimen	116	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_rank_is_the_product_of_the_ranks	specimen	125	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_gram_is_the_kronecker_product	specimen	135	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_determinant_follows_the_kronecker_rule	specimen	150	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_tensor_is_a_cocone_under_the_cartesian_product	specimen	166	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_the_universal_map_is_bilinear_not_linear	specimen	187	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_the_universal_property_factors_a_bilinear_map	specimen	205	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_the_factorization_through_tensor_is_unique	specimen	228	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_the_form_on_a_triple_tensor_is_the_product_of_the_three_pairings	specimen	251	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_distributes_over_tensor	specimen	283	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_tensors.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_tensors.sage	test_a_gram_matrix_is_a_twice_covariant_tensor	specimen	37	0			unreviewed
 preamble/tests/test_tensors.sage	test_the_nesting_says_how_many_slots_and_covariance_is_the_default	specimen	51	0			unreviewed
