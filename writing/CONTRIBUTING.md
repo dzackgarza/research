@@ -1836,6 +1836,106 @@ quantifiers hidden in prose.
 torsion if $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$;
 torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$."
 
+### `DEF-27`: Distinguished object introduced only in the title
+
+A block titled `{#def-distinguished-factorization}` defines "a
+factorization of $F\colon\mathcal{C}\to\mathcal{E}$ through $\mathcal{D}$"
+but never defines what "distinguished" means. The title is not the
+definition. A distinguished, canonical, or standard object is a chosen
+object in its category — here a chosen factorization
+$(H_{\mathrm{dist}},G_{\mathrm{dist}},\alpha_{\mathrm{dist}})$ among all
+factorizations of $F$ through $\mathcal{D}$ — with its construction and
+the universal property or comparison that makes it distinguished stated
+explicitly.
+
+Concrete standard: for $R$ an associative ($\mathbb{E}_1$) ring spectrum,
+the distinguished underlying-set functor is the composite of forgetful
+functors
+$$
+\mathbf{LMod}_R \xrightarrow{U_{R/\mathbf{Ab}}}
+\mathbf{Ab}\xrightarrow{U_{\mathbf{Ab}/\mathbf{Grp}}}
+\mathbf{Grp}\xrightarrow{U_{\mathbf{Grp}/\mathbf{Sets}}}
+\mathbf{Sets},
+$$
+each $U$ with its left adjoint $F$ (free $R$-module, free abelian group,
+free group), and the factorization is distinguished among factorizations
+of $U_{\mathbf{LMod}_R/\mathbf{Sets}}$ (see @def-factorization).
+
+**Banned:** "::: {#def-distinguished-factorization} A factorization of
+$F\colon\mathcal{C}\to\mathcal{E}$ through $\mathcal{D}$ consists of …
+The underlying-set functor of an $R$-module is the composite
+$R\text{-}\mathbf{Mod}\to\mathbf{Ab}\to\mathbf{Grp}\to\mathbf{Set}$. :::"
+— the distinguished composite is asserted inside the general definition and
+never defined as the distinguished object.
+
+**Preferred:** separate blocks: "::: {#def-factorization} ## Factorization
+— A factorization of $F\colon\mathcal{C}\to\mathcal{E}$ through
+$\mathcal{D}$ is a tuple $(H,G,\alpha)$ with $H\colon\mathcal{C}\to
+\mathcal{D}$, $G\colon\mathcal{D}\to\mathcal{E}$, and a specified natural
+equivalence $\alpha\colon F\simeq G\circ H$. :::" and "::: 
+{#exm-distinguished-underlying-set} ## Distinguished underlying-set
+factorization — The distinguished factorization of
+$U_{\mathbf{LMod}_R/\mathbf{Sets}}$ is
+$(U_{\mathbf{LMod}_R/\mathbf{Ab}},U_{\mathbf{Ab}/\mathbf{Grp}}\circ
+U_{\mathbf{Grp}/\mathbf{Sets}},\operatorname{id})$ as above. :::"
+
+### `STR-4`: Strict equality versus specified natural equivalence for a factorization
+
+A factorization is described as "an equality $F=G\circ H$ or a specified
+natural isomorphism $F\Rightarrow G\circ H$" as alternatives, conflating a
+property (strict equality, which does not exist in the book's
+$\infty$-categorical default where $\mathbf{Cat}:=\mathbf{Cat}_\infty$)
+with extra structure (a specified $2$-cell). In $\mathbf{Cat}_\infty$ a
+factorization is always a tuple $(H,G,\alpha)$ with $\alpha$ a specified
+natural equivalence.
+
+**Banned:** "together with an equality $F=G\circ H$ or a specified natural
+isomorphism $F\Rightarrow G\circ H$."
+
+**Preferred:** "together with a specified natural equivalence
+$\alpha\colon F\simeq G\circ H$." If the $1$-categorical strict case is
+meant, state it as the truncation "$F=G\circ H$ on the nose, i.e.
+$\alpha=\operatorname{id}$ in $\mathbf{Cat}_1$," not as an alternative to
+the $\infty$-categorical structure.
+
+### `PR-23`: "Accompanied by its comparison" for a specified $2$-cell
+
+An alternative factorization's comparison with the distinguished one is
+described as "is accompanied by its comparison with this composite"
+instead of naming the natural transformation or equivalence and its source
+and target. "Is accompanied by" is the "carries"/"transports" metaphor
+(EV-7) for an unnamed $2$-cell and hides whether the comparison is a
+morphism of factorizations, a natural transformation, or an equivalence.
+
+**Banned:** "An alternative forgetful functor is accompanied by its
+comparison with this composite."
+
+**Preferred:** "An alternative factorization
+$(H',G',\alpha')$ of the same $F$ comes with a specified comparison
+$2$-cell $\gamma\colon(H',G',\alpha')\Rightarrow
+(H_{\mathrm{dist}},G_{\mathrm{dist}},\alpha_{\mathrm{dist}})$ in
+$\mathbf{Fact}_D(F)$, i.e. natural equivalences
+$H'\simeq H_{\mathrm{dist}}$ and $G'\simeq G_{\mathrm{dist}}$ compatible
+with $\alpha',\alpha$." Name the $2$-cell, its source, and its target.
+
+### `DEF-28`: Example and remark inside a definition block
+
+A general definition, its example (the underlying-set functor as the
+composite through $\mathbf{Ab}$ and $\mathbf{Grp}$), and a remark about
+alternative factorizations are in one fenced `{#def-...}`. Each has its
+own block: the general notion has a definition block, the composite has
+an example block that cites the definition, and the comparison of
+alternative factorizations has a remark.
+
+**Banned:** the quoted `{#def-distinguished-factorization}` block that
+contains both the general factorization definition and the two paragraphs
+about $R\text{-}\mathbf{Mod}\to\mathbf{Ab}\to\mathbf{Grp}\to\mathbf{Set}$.
+
+**Preferred:** close the definition after the tuple
+$(H,G,\alpha)$, then "::: {.Example}" for the distinguished composite,
+then "::: {.Remark}" for alternative factorizations and their comparison
+$2$-cells.
+
 ### `DEF-23`: Specialized notion without scaffolding from general notions
 
 A specialized notion — a basis, a based module — is defined without first
