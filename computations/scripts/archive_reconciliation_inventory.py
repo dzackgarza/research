@@ -80,8 +80,11 @@ def scan_module(path: Path, root: Path) -> list[Notion]:
             continue
 
         # Public module-level named values are part of the source surface too.
-        if line and not line[0].isspace():
-            assignment = ASSIGNMENT.match(line)
+        # Sage modules commonly put their build body under an import guard, so
+        # indentation alone does not distinguish module scope from function/class
+        # scope.  The scope stacks above do.
+        if not function_indents and not class_stack:
+            assignment = ASSIGNMENT.match(line.lstrip())
             if assignment and public(assignment.group("name")):
                 notions.append(
                     Notion(relative, assignment.group("name"), "binding", line_number)
