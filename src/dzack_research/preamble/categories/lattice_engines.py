@@ -16,7 +16,9 @@ from py_polyhedral.binaries import (
     indefinite_form_test_equivalence,
     indefinite_form_test_equivalence_isotropic_k_plane,
     indefinite_form_test_equivalence_vector,
+    lorentzian_perfect_domain_traversal,
 )
+from sage.libs.gap.libgap import libgap
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -719,6 +721,61 @@ _POLYHEDRAL_BUILD = (
     "programs with `make -C src_indefinite`, and link them into a directory on PATH"
 )
 
+_POLYHEDRAL_LORENTZIAN_BUILD = (
+    "clone github.com/MathieuDutSik/polyhedral_common, build "
+    "LORENTZ_MPI_PerfectLorentzian from src_lorentzian, and expose the binary on PATH"
+)
+
+
+def _lorentzian_perfect_domain_records(gram, option="total"):
+    r"""Cross polyhedral_common's GAP traversal records to plain exact data."""
+    output = lorentzian_perfect_domain_traversal(gram, option)
+    expression = output.strip()
+    if expression.startswith("return "):
+        expression = expression[len("return ") :]
+    if expression.endswith(";"):
+        expression = expression[:-1]
+    records = libgap.eval(expression)
+    result = []
+    for record in records:
+        obj = record["x"]
+        ext = obj["EXT"].sage()
+        group = obj["GRP"]
+        degree = len(ext)
+        permutations = []
+        for generator in group.GeneratorsOfGroup():
+            permutations.append(
+                [
+                    int(libgap.OnPoints(point, generator).sage()) - 1
+                    for point in range(1, degree + 1)
+                ]
+            )
+        adjacencies = []
+        for adjacency in record["ListAdj"]:
+            data = adjacency["x"]
+            selected_face_positions = {
+                int(position) for position in data["eInc"].sage()
+            }
+            adjacencies.append(
+                {
+                    "x": {
+                        "eInc": [
+                            int(position in selected_face_positions)
+                            for position in range(1, degree + 1)
+                        ],
+                        "eBigMat": data["eBigMat"].sage(),
+                    },
+                    "iOrb": int(adjacency["iOrb"].sage()),
+                }
+            )
+        result.append(
+            {
+                "x": {"EXT": ext, "GRP": permutations},
+                "ListAdj": adjacencies,
+            }
+        )
+    return tuple(result)
+
 
 def _polyhedral_no_program(kernel):
     r"""State that this operation has no program, and where it comes from instead.
@@ -782,6 +839,12 @@ _POLYHEDRAL_REALIZATIONS = (
         "INDEF_FORM_TestEquivalenceIsotropicKplane",
         indefinite_form_test_equivalence_isotropic_k_plane,
         _polyhedral_no_program("INDEF_FORM_Equivalence_IsotropicKplane"),
+    ),
+    (
+        "lattice.lorentzian_perfect_domain_traversal",
+        "LORENTZ_MPI_PerfectLorentzian",
+        _lorentzian_perfect_domain_records,
+        _POLYHEDRAL_LORENTZIAN_BUILD,
     ),
 )
 

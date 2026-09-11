@@ -302,6 +302,54 @@ def lorentzian_reflective_edgewalk(M):
     return run_and_check([binary_path, "gmp", input_file])
 
 
+def lorentzian_perfect_domain_traversal(M, option="total"):
+    """Return GAP full-adjacency output for all Lorentzian perfect domains.
+
+    This is the Python bridge to ``LORENTZ_MPI_PerfectLorentzian``.  The
+    executable itself owns the complete adjacency traversal; this wrapper only
+    serializes its documented namelist input and requests
+    ``ObjectFullAdjacencyGAP``.  The GAP format is intentional: upstream's
+    group object has a native GAP serializer, whereas crossing that group into
+    Sage/libGAP belongs at the Sage engine boundary.  A zero runtime bound
+    means the executable returns data only after enumeration has completed.
+    """
+    if option not in ("total", "isotropic"):
+        raise ValueError("a Lorentzian perfect-domain traversal is total or isotropic")
+    binary_path = get_binary_path("LORENTZ_MPI_PerfectLorentzian")
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        matrix_file = os.path.join(temporary_directory, "lorentzian.gram")
+        output_file = os.path.join(temporary_directory, "perfect-domains.out")
+        namelist_file = os.path.join(temporary_directory, "perfect-domains.nml")
+        storage_prefix = os.path.join(temporary_directory, "storage")
+        write_matrix_file(matrix_file, M)
+        with open(namelist_file, "w", encoding="utf-8") as stream:
+            stream.write(
+                "&DATA\n"
+                "  arithmetic = \"gmp\"\n"
+                f"  LorMatFile = \"{matrix_file}\"\n"
+                f"  Option = \"{option}\"\n"
+                "  FileDualDescription = \"unset\"\n"
+                "/\n\n"
+                "&SYSTEM\n"
+                "  Saving = F\n"
+                f"  Prefix = \"{storage_prefix}\"\n"
+                "  max_runtime_second = 0\n"
+                "  OutFormat = \"ObjectFullAdjacencyGAP\"\n"
+                f"  OutFile = \"{output_file}\"\n"
+                "/\n"
+            )
+        result = subprocess.run(
+            [binary_path, namelist_file],
+            capture_output=True,
+            text=True,
+        )
+        assert result.returncode == 0, (
+            "LORENTZ_MPI_PerfectLorentzian failed: " + result.stderr[:500]
+        )
+        with open(output_file, "r", encoding="utf-8") as stream:
+            return stream.read()
+
+
 def polytope_face_lattice(EXT, GRP, LevSearch):
     binary_path = get_binary_path("POLY_DirectFaceLattice")
     arr_inpEXT = tempfile.NamedTemporaryFile()

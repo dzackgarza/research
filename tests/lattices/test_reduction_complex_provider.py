@@ -1,0 +1,76 @@
+from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.categories.reduction_complexes import (
+    _perfect_domain_traversal_from_records,
+)
+from dzack_research.preamble.categories import lattice_engines
+
+
+def test_full_adjacency_records_cross_to_cells_stabilizers_and_transporters() -> None:
+    lattice = Lattices(ZZ)(ZZ**2)
+    records = (
+        {
+            "x": {
+                "EXT": [[1, 0], [0, 1]],
+                "GRP": [[1, 0]],
+            },
+            "ListAdj": [
+                {
+                    "x": {
+                        "eInc": [0, 1],
+                        "eBigMat": [[0, 1], [-1, 0]],
+                    },
+                    "iOrb": 0,
+                }
+            ],
+        },
+    )
+
+    traversal = _perfect_domain_traversal_from_records(lattice, records)
+    assert traversal.is_complete()
+    assert traversal.cells().cardinality() == 1
+    assert traversal.adjacencies().cardinality() == 1
+
+    cell = traversal.cells()[0]
+    stabilizers = traversal.cell_stabilizer_generators(cell)
+    assert stabilizers.cardinality() == 1
+    swap = stabilizers[0]
+    e0 = lattice.module_generator(0)
+    e1 = lattice.module_generator(1)
+    assert swap(e0) == e1
+    assert swap(e1) == e0
+    assert cell.transported_by(swap).is_equal_to(cell)
+
+    adjacency = traversal.adjacencies()[0]
+    assert adjacency.source() is cell
+    assert adjacency.target_representative() is cell
+    assert adjacency.common_face().dimension() == 1
+    assert adjacency.common_face().is_face_of(adjacency.source())
+    assert adjacency.common_face().is_face_of(adjacency.neighbor())
+    assert cell.transported_by(adjacency.target_to_neighbor()).is_equal_to(
+        adjacency.neighbor()
+    )
+    assert adjacency.neighbor().transported_by(adjacency.neighbor_to_target()).is_equal_to(
+        cell
+    )
+    assert traversal.group_generators().cardinality() == 2
+
+
+def test_gap_face_indices_are_normalized_to_an_incidence_vector(monkeypatch) -> None:
+    gap_output = """return [rec(
+        x:=rec(EXT:=[[1,0],[0,1]], GRP:=Group([(1,2)])),
+        ListAdj:=[rec(
+            x:=rec(eInc:=[2], eBigMat:=[[0,1],[-1,0]]),
+            iOrb:=0
+        )]
+    )];"""
+    monkeypatch.setattr(
+        lattice_engines,
+        "lorentzian_perfect_domain_traversal",
+        lambda _gram, _option: gap_output,
+    )
+    records = lattice_engines._lorentzian_perfect_domain_records(
+        [[1, 0], [0, 1]],
+        "total",
+    )
+    assert records[0]["x"]["GRP"] == [[1, 0]]
+    assert records[0]["ListAdj"][0]["x"]["eInc"] == [0, 1]
