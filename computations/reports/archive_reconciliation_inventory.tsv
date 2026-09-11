@@ -661,9 +661,9 @@ preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras	class	304	1
 preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.super_categories	method	316	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.ParentMethods	class	324	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.ParentMethods.ideal_generators_in_degree	method	325	0			unreviewed
-preamble/categories/algebras/graded_algebras.sage	<module>	module	1	0			unreviewed
-preamble/categories/algebras/graded_algebras.sage	GradedAlgebras	class	11	1	src/dzack_research/preamble/categories/algebras/graded_algebras.py		unreviewed
-preamble/categories/algebras/graded_algebras.sage	GradedAlgebras.super_categories	method	24	0			unreviewed
+preamble/categories/algebras/graded_algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
+preamble/categories/algebras/graded_algebras.sage	GradedAlgebras	class	11	1	src/dzack_research/preamble/categories/algebras/graded_algebras.py	src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
+preamble/categories/algebras/graded_algebras.sage	GradedAlgebras.super_categories	method	24	0		src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
 preamble/categories/algebras/number_fields.sage	<module>	module	1	0			unreviewed
 preamble/categories/algebras/number_fields.sage	PresentingAlgebraParent	class	58	0			unreviewed
 preamble/categories/algebras/number_fields.sage	PresentingAlgebraParent.number_of_algebra_generators	method	66	0			unreviewed

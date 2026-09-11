@@ -184,7 +184,7 @@ def reconciliation_metadata(test_root: Path) -> dict[str, dict[str, object]]:
     result: dict[str, dict[str, object]] = {}
     if not test_root.exists():
         return result
-    for path in sorted(test_root.rglob("test_*archive_reconciliation.py")):
+    for path in sorted(test_root.rglob("test_*.py")):
         source = path.read_text()
         if "ARCHIVE_RECONCILIATION" not in source:
             continue
