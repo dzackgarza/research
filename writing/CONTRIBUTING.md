@@ -2135,6 +2135,41 @@ $T$ is a morphism $T\to X$." One clause, "Recall" signals this is not the
 defining occurrence but a reminder that cites it, and the parenthetical
 `\ref` is the link.
 
+### `PR-24`: Self-referential meta-prose about the text's structure, notation, or theorems
+
+A professional mathematics text extremely rarely is self-referential,
+describes its own structure, notation, or what its theorems do or do not
+do. If ever such things are included, they are at best very small
+footnotes, but should be avoided altogether. Prose that talks about the
+text — "is defined in @def-…; it is …" (where the definition lives),
+"This theorem does not redefine $F$ or $D_P$" (what the theorem does not
+do), "Their mere existence supplies no order relation" (what existence
+does not do), "is what licenses the notation $a_1\otimes\cdots\otimes a_n$"
+(what the theorem does for notation), "A construction whose value happens
+to agree on underlying sets … names the functor" and "If no comparison is
+specified, $F$ and $G$ remain distinct" (writing requirements as closing
+morals), "is additional data; it does not follow merely from notation"
+(what notation does not do, with strawman) — is meta-prose, not
+mathematics. The text states the mathematics via fenced units and links;
+it does not describe its own structure.
+
+Concrete standard: Hartshorne, EGA, Lurie *Higher Topos Theory* and
+*Higher Algebra*, Riehl *Category Theory in Context* state definitions,
+theorems, and examples with fenced units and parenthetical `\ref`s; they
+do not narrate where a definition lives, what a theorem does not
+redefine, or what notation does not imply. Cross-references via
+`\ref`/`\longref`/`@` are not self-reference; they are citations.
+
+**Banned:** all of the above meta-sentences as running prose inside
+mathematical $\S$'s.
+
+**Preferred:** state the mathematics — a fenced `::: {#def-...}` with the
+term bold, a Proposition with proof exhibiting the factorization, an
+Example, a Remark attached to its primary unit — and link with
+`(\ref{def-...})` or "Recall that … (\ref{def-...})". If a notational
+clarification is truly needed, put it in a footnote `[^1]` and keep it to
+one clause, but prefer to avoid it by stating the mathematics precisely.
+
 ### `DEF-27`: Distinguished object introduced only in the title
 
 A block titled `{#def-distinguished-factorization}` defines "a
