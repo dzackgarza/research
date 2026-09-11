@@ -266,6 +266,10 @@ class ElementConjugacyClass(SageObject):
     def supergroup(self):
         return self._supergroup
 
+    def ambient(self):
+        r"""Return the ambient absolute Galois group ``G_K``."""
+        return self.supergroup()
+
     def representative(self):
         return self._representative
 
