@@ -1044,3 +1044,30 @@ $K(\mathbf{Var}_{/k})$ via an $S_\bullet$-type construction with
 liftings of motivic measures to the spectrum. A reader trained on the
 modern definition can access the generality the functor to spectra
 provides; a reader trained on the superseded one cannot.
+
+### `DEF-9`: Classical structure presented where the modern framework gives a richer object
+
+A construction carries additional structure in the modern framework that
+the classical presentation suppresses entirely. The classical version
+describes a shadow — $\pi_0$ of a richer object — and the reader has no
+access to the structure the modern framework provides at higher levels.
+Present the richer object; derive the classical structure as a
+consequence.
+
+**Banned:** "the group completion inherits a multiplication from it …
+$K_0(R)$ is a commutative ring with unit $[R]$." A second symmetric
+monoidal product distributing over the first makes $K(S)$ an
+$\mathbb{E}_\infty$-ring spectrum, not just $K_0$ a commutative ring.
+The ring structure on $K_0$ is $\pi_0$ of the ring spectrum; the higher
+$K$-groups are modules over $K_0$; the unit spectrum's $\pi_0$ is $[R]$.
+All of this is invisible.
+
+**Preferred:** "A second symmetric monoidal product on $S$ that
+distributes over the first makes $K(S)$ an $\mathbb{E}_\infty$-ring
+spectrum; in particular $K_0(S)$ is a commutative ring and $K_n(S)$ are
+modules over it." The ring spectrum is constructed from the multiplicative
+monoidal structure via an $\mathbb{E}_\infty$-operad action
+[@EKMM07, @HA]; for $\operatorname{Proj}(R)$ with $\oplus$ and
+$\otimes$, $K(R)$ is an $\mathbb{E}_\infty$-ring spectrum whose $\pi_0$
+is the classical $K_0(R)$ [@Wei13, §II.2]. State the ring spectrum;
+derive the ring on $\pi_0$ from it.
