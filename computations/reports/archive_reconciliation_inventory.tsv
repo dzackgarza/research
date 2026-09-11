@@ -3284,7 +3284,7 @@ preamble/tests/test_known_mathematics.sage	test_quadratic_character_uses_the_qua
 preamble/tests/test_known_mathematics.sage	MOVES_THE_SUBFIELD_GENERATOR	binding	595	0			unreviewed
 preamble/tests/test_known_mathematics.sage	test_restriction_to_a_subfield_is_the_arithmetic_of_that_subfield	specimen	604	0			unreviewed
 preamble/tests/test_known_mathematics.sage	test_restriction_to_a_subfield_is_a_group_homomorphism	specimen	633	0			unreviewed
-preamble/tests/test_known_mathematics.sage	test_the_extensions_of_an_automorphism_form_a_coset_of_the_open_subgroup	specimen	653	0			unreviewed
+preamble/tests/test_known_mathematics.sage	test_the_extensions_of_an_automorphism_form_a_coset_of_the_open_subgroup	specimen	653	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/tests/test_known_mathematics.sage	CAPTURED_BY_THE_PREAMBLE	binding	716	0			unreviewed
 preamble/tests/test_known_mathematics.sage	test_the_preamble_captures_sages_answer	specimen	730	0			unreviewed
 preamble/tests/test_known_mathematics.sage	test_the_base_ring_is_the_owned_ring_and_captures_sages_answer	specimen	746	0			unreviewed
