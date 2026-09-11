@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+from sage.matrix.constructor import matrix as engine_matrix
+from sage.modules.free_module_element import vector as engine_vector
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA
@@ -26,6 +28,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.polytopes import ConvexPolytope
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
 from dzack_research.preamble.rings.real import RR
 
 
@@ -478,6 +483,69 @@ def closest_vector(lattice, target):
     return _element_from_coordinates(lattice, best_coordinates)
 
 
+def close_vectors(lattice, target, square_bound):
+    r"""Return the lattice vectors within the stated quadratic bound of ``target``.
+
+    The target is a point of ``L tensor QQ`` in the selected lattice frame.
+    For a positive-definite lattice this returns the ``x in L`` with
+    ``q(x-target) <= square_bound``; for a negative-definite lattice the same
+    statement uses the lattice's own negative form, so ``square_bound`` is
+    negative and ``q(x-target) >= square_bound``.  The values of the returned
+    indexed family are the exact signed squares ``q(x-target)`` in the
+    fraction field of the base ring.
+
+    PARI's ``qfcvp`` supplies the finite candidate set for the positive metric
+    ``sign*q``.  Because its radius interface passes through a floating bound,
+    every candidate is filtered again against the exact rational quadratic
+    form before it crosses back into the owned lattice.
+    """
+    point = _target_coordinates(lattice, target)
+    sign, positive_gram = _positive_gram(lattice)
+    ring = lattice.base_ring()
+    rationals = ring.fraction_field()
+    bound = rationals(square_bound)
+    positive_bound = rationals(sign) * bound
+    if positive_bound < rationals.zero():
+        raise ValueError(
+            "a close-vector bound has the sign of the definite lattice form"
+        )
+
+    engine_gram = _engine_component_matrix(positive_gram)
+    engine_point = engine_vector(
+        SageQQ,
+        tuple(_engine_element(rationals, coordinate) for coordinate in point),
+    )
+    _count, _largest, raw_coordinates = engine_gram.__pari__().qfcvp(
+        engine_point.__pari__().Col(),
+        _engine_element(rationals, positive_bound) + SageQQ(1) / 2,
+    )
+    positive_gram_q = engine_gram.change_ring(SageQQ)
+    candidates = {}
+    for column in engine_matrix(SageQQ, raw_coordinates).columns():
+        displacement = column - engine_point
+        positive_square = displacement * positive_gram_q * displacement
+        if positive_square > _engine_element(rationals, positive_bound):
+            continue
+        coordinates = tuple(ring(int(entry)) for entry in column)
+        vector = _element_from_coordinates(lattice, coordinates)
+        signed_square = rationals._from_engine_element(
+            SageQQ(_engine_element(ring, sign)) * positive_square
+        )
+        candidates[tuple(vector.to_tuple())] = (vector, signed_square)
+
+    vectors = finite_ordered_set(
+        tuple(vector for vector, _square in candidates.values())
+    )
+    by_coordinates = {
+        coordinates: square for coordinates, (_vector, square) in candidates.items()
+    }
+    return finite_indexed_family(
+        vectors,
+        lambda vector: by_coordinates[tuple(vector.to_tuple())],
+        name=f"Vectors of {lattice} close to {point}",
+    )
+
+
 def babai(lattice, target):
     r"""Return Babai's LLL nearest-plane approximation."""
     point = _target_coordinates(lattice, target)
@@ -824,6 +892,7 @@ __all__ = [
     "babai",
     "bkz_reduction",
     "center_density",
+    "close_vectors",
     "closest_vector",
     "contact_polytope",
     "covering_radius",
