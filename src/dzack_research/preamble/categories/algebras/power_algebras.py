@@ -42,6 +42,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring as _engine_ring,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
     _owned_ring,
     predicate_subring,
     ring_morphism,
@@ -223,6 +224,7 @@ class PowerAlgebra(GradedDirectSumModule):
             self,
             self.is_central,
             "z commutes with every element",
+            OwnedRings().Commutative(),
         )
 
     def _repr_(self):
