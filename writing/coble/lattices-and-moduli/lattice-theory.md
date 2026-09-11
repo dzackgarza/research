@@ -220,7 +220,7 @@ Any Dynkin diagram of type $A_n, D_n, E_6, E_7, E_8$ corresponds to a root latti
 By convention, we take the negative definite twists of these lattices.
 Of particular importance to us is the $E_8$ lattice associated to the following Dynkin diagram:
 
-![The Dynkin diagram $E_{8}$.](rendered/e8_coxeter_diagram.svg){#fig:e8-coxeter-diagram}
+![The Dynkin diagram $E_{8}$.](rendered/e8_coxeter_diagram.svg){#fig-e8-coxeter-diagram}
 :::
 
 ::: {.Remark}

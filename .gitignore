@@ -49,3 +49,8 @@ writing/coble/papers/**/*.4tc
 # category-theory/lean/ are the generated category graph, listed in _quarto.yml
 # as a project resource, so they are named rather than covered by this rule.
 writing/coble/**/*.html
+
+# Figures the book cites, staged from the pandoc-config clone by
+# `scripts/docs_figures.py`. Authored and rendered there, collected here at build
+# time like the bibliography and the MathJax macros.
+writing/.book/rendered/

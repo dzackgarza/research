@@ -4,7 +4,7 @@
 
 We recall Sterk's cusp diagram for $F_{\En, 2}$:
 
-![Sterk's cusp diagram for $F_{\En, 2}$.](rendered/sterk_cusp_diagram.svg){#fig:sterk-cusp-diagram}
+![Sterk's cusp diagram for $F_{\En, 2}$.](rendered/sterk_cusp_diagram.svg){#fig-sterk-cusp-diagram}
 
 We have the following divisibilities in various lattices:
 
@@ -23,5 +23,5 @@ We have the following divisibilities in various lattices:
 
 We recall the cusp diagram for $F_{(2,2,0)}$:
 
-![Cusp diagram for $F_{(2,2,0)}$.](rendered/fig_Cusp_Diagram_220.svg){#fig:220-cusp-diagram}
+![Cusp diagram for $F_{(2,2,0)}$.](rendered/fig_Cusp_Diagram_220.svg){#fig-220-cusp-diagram}
 :::

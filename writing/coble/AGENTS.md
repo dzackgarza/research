@@ -128,10 +128,19 @@ Both are load-bearing: `writing/.book/TRAPS.md` records what breaks without them
 
 A target that is not a numbered block still resolves to nothing however it is written:
 
-- sections, `\longref{sec:lattice-theory}` — write the section's name in prose instead;
-- figures and tables, `\longref{fig:coble-cusps}` — an anchor like `{#fig:x width=70%}`
-  or a `\label{tbl:x}` is not a numbered block;
+- sections, `\longref{sec:lattice-theory}` — link to the section instead, the way the
+  category-theory part does: `[Lattice Theory](lattice-theory.md#sec:lattice-theory)`;
+- tables, `\label{tbl:x}` — a table carries no number here; link to the page that
+  holds it;
 - more than one target, `\longref{a,b}` — the resolver matches a single id.
+
+**Figures use Quarto's own numbering, not this filter.** Anchor a figure `{#fig-x}`,
+with a hyphen, and reference it `@fig-x`. Quarto then numbers it within its chapter
+(Figure 65.1) and resolves the reference across the book. The reserved-prefix warning
+above is about numbered blocks: for a figure the prefix is what makes it work. The
+image itself lives in the shared pandoc-config repo and is staged into the book by
+`scripts/docs_figures.py`; citing a figure that is not there fails the build rather
+than rendering a broken image.
 
 ## The two parts cannot reference each other
 

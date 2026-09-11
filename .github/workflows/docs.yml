@@ -40,6 +40,7 @@ jobs:
         run: |
           cp "$HOME/.pandoc/bib/references.bib" writing/.assets/references.bib
           cp "$HOME/.pandoc/templates/css/mathjax-macros.html" writing/.assets/mathjax-macros.html
+          python3 scripts/docs_figures.py
       - run: python3 scripts/docs_check.py
         name: Render + integrity gate
         # The runner has no uv, and quarto-actions already provisioned quarto.

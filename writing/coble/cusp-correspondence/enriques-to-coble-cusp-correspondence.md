@@ -2,10 +2,10 @@
 
 ::: {.Theorem #thm:cusp_correspondence}
 
-The embedding $\eta: F_\Co\to F_\En$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in \longref{fig:enriques-coble-correspondence}.
+The embedding $\eta: F_\Co\to F_\En$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in @fig-enriques-coble-correspondence.
 :::
 
-![Cusp correspondence $F_\Co \to F_\En$.](rendered/fig_Cusp_Correspondence_Co_En.svg){#fig:enriques-coble-correspondence}
+![Cusp correspondence $F_\Co \to F_\En$.](rendered/fig_Cusp_Correspondence_Co_En.svg){#fig-enriques-coble-correspondence}
 
 We prove the cusp correspondence by comparing divisibilities of isotropic vectors at the corresponding 0-cusps and 1-cusps in both moduli spaces.
 

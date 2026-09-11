@@ -37,6 +37,7 @@ semantic-types:
 docs-assets:
     cp --remove-destination ~/.pandoc/bib/references.bib writing/.assets/references.bib
     cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html writing/.assets/mathjax-macros.html
+    python3 scripts/docs_figures.py
 
 # Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
 docs-check: docs-assets

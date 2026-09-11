@@ -26,9 +26,9 @@ where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embed
 \todo[inline]{Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.}
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth^+(T_\En)^*$.
 
-![The tower of moduli spaces relating the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}, F_{\En,2}$, their unpolarized quotients $F_\Co, F_\En$, and the degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)} \injects F_4$. The map $F_{\Co,2} \to F_\Co$ marked $?$ is not yet determined (cf. the remark on $\Gamma_{\Co,2}$ above).](rendered/fig_moduli_tower.png){#fig:moduli-tower}
+![The tower of moduli spaces relating the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}, F_{\En,2}$, their unpolarized quotients $F_\Co, F_\En$, and the degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)} \injects F_4$. The map $F_{\Co,2} \to F_\Co$ marked $?$ is not yet determined (cf. the remark on $\Gamma_{\Co,2}$ above).](rendered/fig_moduli_tower.png){#fig-moduli-tower}
 
-\todo{\longref{fig:moduli-tower} is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.}
+\todo{@fig-moduli-tower is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.}
 
 ## The GIT construction
 
@@ -142,7 +142,7 @@ $$
 $$
 
 be the union of the hyperplane sections cut out by the vectors $\delta$ of norm
-$-2d$, as in \longref{fig:period-domain-hyperplanes}, one can thus present
+$-2d$, as in @fig-period-domain-hyperplanes, one can thus present
 
 $$
 \begin{aligned}
@@ -154,7 +154,7 @@ $$
 
 where surfaces along the divisor $\cH_{-2}$ in $F_\En$ correspond precisely to Coble surfaces and those along $\cH_{-4}\setminus \cH_{-2}$ correspond to Enriques surfaces with $A_1$ singularities.
 
-![The period domain $D_{T_\En}$ together with the hyperplanes $v_i^{\perp}$ cut out by vectors $v_i$ of fixed negative norm. The Coble surfaces are precisely the periods lying on the hyperplanes of $\cH_{-2}$.](rendered/fig_type_iv_hsd.svg){#fig:period-domain-hyperplanes width=45%}
+![The period domain $D_{T_\En}$ together with the hyperplanes $v_i^{\perp}$ cut out by vectors $v_i$ of fixed negative norm. The Coble surfaces are precisely the periods lying on the hyperplanes of $\cH_{-2}$.](rendered/fig_type_iv_hsd.svg){#fig-period-domain-hyperplanes width=45%}
 
 Alternatively, one can construct the period domain for $F_\Co$ directly.
 Following [@DK13 Prop. 3.1] almost verbatim, let $S$ be the blowup of $\PP^2$ along 10 $A_1$ singularities of a rational sextic curve $C$.

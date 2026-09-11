@@ -5,7 +5,7 @@
 We recall the mirror move algorithm from [@AE22].
 We have Nikulin's 2-elementary diagram:
 
-![White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 1,2$.](rendered/nikulin_2elementary_table.svg){#fig:nikulin_table}
+![White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 1,2$.](rendered/nikulin_2elementary_table.svg){#fig-nikulin-table}
 :::
 
 ### Mirror moves {#sec:mirror-moves}
@@ -13,7 +13,7 @@ We have Nikulin's 2-elementary diagram:
 Having identified the 2-elementary lattice $S_\Co = (11, 11, 1)_1$, one can apply the mirror move algorithm of [@AE22 Thm. 5.10] to determine the 0-cusps and 1-cusps of $F_\Co$.
 The outcome of the algorithm is summarized by the following tree:
 
-![Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mirror moves.](rendered/fig_Mirror_Move_Co_Lattices.svg){#fig:mirror-moves-coble}
+![Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mirror moves.](rendered/fig_Mirror_Move_Co_Lattices.svg){#fig-mirror-moves-coble}
 
 Thus $F_\Co$ has one 0-cusp corresponding to an isotropic vector $v_0$ with
 
@@ -30,7 +30,7 @@ $$
 where $v_1 \in v_0^{\perp T_{\Co}}/\gens{v_0}$.
 In the diagrammatic language of [@AE22 Fig. 1, Thm. 5.10], this corresponds to a $U^2$ move and can be summarized in the following mirror move diagram as a composition of two even ordinary $U(2)$-type moves:
 
-![The mirror moves for $S_{\Co} = (11,11,1)_1$.](rendered/mirror_moves_coble_simplified.svg){#fig:mirror-moves-coble-simplified}
+![The mirror moves for $S_{\Co} = (11,11,1)_1$.](rendered/mirror_moves_coble_simplified.svg){#fig-mirror-moves-coble-simplified}
 
 Note that $v_0$ corresponds to a Type $\rm{III}$ boundary, while $C_0$ corresponds to a type $\rm{II}$ boundary.
 It is easily verified that the Coxeter diagram $G_{(9,9,1)_1}$ at $v_0$ has precisely one maximal parabolic subdiagram, corresponding to a finite-index root lattice of type $B_7$.
@@ -79,5 +79,5 @@ As further proof that the cusp diagram of $F_{\Co}$ is correct, we can use the t
 Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice $e^{\perp L}/\gens{e}$ is a hyperbolic lattice equipped with a root system $R_e$ with a Coxeter diagram $G_e$.
 Generally, when $e$ corresponds to a 0-cusp in a Baily-Borel compactification, the adjacent 1-cusps correspond precisely to maximal parabolic subdiagrams of $G_e$.
 The cusp diagram of $F_{\Co}$ suggests that the 0-cusp $v_0$ should have a Coxeter diagram $G_{v_0}$ with precisely one maximal parabolic subdiagram.
-One can run Vinberg's algorithm to determine the Coxeter diagram for $v_0$, and it is a straightforward check to determine that there is indeed a unique maximal parabolic subdiagram of the form $\tilde B_7(2)$; see \longref{fig:coble-cusp-9-9-1-parabolics}.
+One can run Vinberg's algorithm to determine the Coxeter diagram for $v_0$, and it is a straightforward check to determine that there is indeed a unique maximal parabolic subdiagram of the form $\tilde B_7(2)$; see @fig-coble-cusp-9-9-1-parabolics.
 :::

@@ -31,9 +31,14 @@ failures: list[str] = []
 # Quarto renders each input to a sibling .html beside the source and then moves it
 # into _site. A preview doing the same thing on the same paths steals this render's
 # intermediates, and the failure reads as a missing file on an arbitrary chapter.
-if subprocess.run(["ss", "-ltn", "sport = :7654"],
-                  capture_output=True, text=True).stdout.count(":7654"):
-    sys.exit("docs-check: a preview is serving on :7654. It renders the same "
+# The port alone is not the test: a preview binds :7654 only after its first render
+# finishes, so during that render the port is free, this gate starts, and the two
+# renders move each other's intermediates out from under themselves. The failure
+# surfaces as `NotFound ... rename '<chapter>.html'` on an arbitrary chapter. Look for
+# the process instead, which exists for the whole of that window.
+if subprocess.run(["pgrep", "-f", r"quarto\.js preview"],
+                  capture_output=True, text=True).returncode == 0:
+    sys.exit("docs-check: a preview is running on this project. It renders the same "
              "intermediate paths as this gate and they corrupt each other — stop it "
              "first. Nothing is wrong with the book.")
 
@@ -68,6 +73,17 @@ for name in CHAPTERS:
                  "edits to it would not reach the prose the book owns.")
     if not entry.resolve().is_file():
         sys.exit(f"docs-check: chapter {entry} links to {entry.resolve()}, which does not exist")
+
+# --- clear intermediates a previous render left behind ---------------------------
+# Quarto writes each chapter's html beside the project file and then moves it into
+# _site. A render that aborts leaves one behind, and the next render fails moving a
+# *different* chapter, so one interrupted run keeps every later run red until the
+# stray file goes. Only a file whose chapter is in the book is removed, so nothing
+# authored can be caught by this.
+for stray in sorted(BOOK.glob("*.html")):
+    if stray.with_suffix(".md").name in CHAPTERS:
+        stray.unlink()
+        print(f"docs-check: cleared {stray}, left by an interrupted render")
 
 # --- render twice, capturing warnings -------------------------------------------
 # custom-numbered-blocks resolves \ref and \longref against a registry it builds as
