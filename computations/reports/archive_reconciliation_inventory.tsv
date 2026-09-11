@@ -3512,11 +3512,11 @@ preamble/tests/test_ring_quotient_value_modules.sage	test_the_countable_framing_
 preamble/tests/test_ring_quotient_value_modules.sage	test_the_quotient_framing_is_the_fraction_field_framing_projected	specimen	123	0			unreviewed
 preamble/tests/test_ring_quotient_value_modules.sage	test_the_A2_discriminant_bilinear_scale_is_the_subgroup_of_order_three	specimen	136	0			unreviewed
 preamble/tests/test_ring_quotient_value_modules.sage	test_the_A2_discriminant_quadratic_scale_lives_in_Q_mod_2Z	specimen	151	0			unreviewed
-preamble/tests/test_sage_symbols.py	<module>	module	1	0			unreviewed
-preamble/tests/test_sage_symbols.py	test_generated_imports_support_a_polynomial_matrix_identity	specimen	8	0			unreviewed
-preamble/tests/test_sage_symbols.py	ring	binding	16	0			unreviewed
-preamble/tests/test_sage_symbols.py	x	binding	17	0			unreviewed
-preamble/tests/test_sage_symbols.py	square	binding	18	0			unreviewed
+preamble/tests/test_sage_symbols.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_sage_symbols.py	test_generated_imports_support_a_polynomial_matrix_identity	specimen	8	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_sage_symbols.py	ring	binding	16	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_sage_symbols.py	x	binding	17	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_sage_symbols.py	square	binding	18	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/test_session_namespace.sage	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/test_session_namespace.sage	session	function	18	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/test_session_namespace.sage	test_a_session_ring_is_the_ring_and_not_the_engine	specimen	25	0		src/dzack_research/preamble/all.py	reconciled-live-owner
