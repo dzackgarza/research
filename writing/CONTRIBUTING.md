@@ -845,3 +845,19 @@ is.
 **Preferred:** "$\mu\colon A\otimes_{\mathbb{Z}}A\to A$ is a homomorphism;
 the corresponding bilinear map $A\times A\to A$ is the multiplication."
 Declare the map, then name its role.
+
+### `SYM-3`: "Classified by" for an adjunction correspondence
+
+"Classified by" has a specific meaning: a classifying object represents a
+functor, and a map into it classifies a family. Using "classified by" for a
+routine adjunction correspondence — the tensor-hom adjunction, a
+currying/uncurrying bijection, or any other natural bijection — misuses a
+word with precise categorical meaning. State the actual correspondence: the
+map corresponds under the adjunction, or is the transpose under the
+adjunction.
+
+**Banned:** "the bilinear map classified by $\mu$."
+
+**Preferred:** "the bilinear map $A\times A\to A$ corresponding to $\mu$
+under the tensor-hom adjunction." Name the adjunction and the direction of
+the correspondence.
