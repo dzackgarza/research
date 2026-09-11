@@ -813,17 +813,26 @@ information. A tagline removes none.
 
 ### `SYM-1`: A symbol used without being bound
 
-A passage uses $\mu$, $\eta$, or another symbol without introducing the
-object it names. No underlying object is stated, no domain or codomain is
-given, and the reader cannot determine what the symbol refers to without
-external knowledge. State the data first: name the object, its type, and the
-map's domain and codomain. Then use the symbol.
+A passage uses a symbol — $\mu$, $\eta$, $\otimes$, $\mathbf{1}$ — without
+introducing the object it names. This includes both maps and the
+constituent data of a structure. Stating the type of a structure ("let $S$
+be a symmetric monoidal category") does not bind the symbols for its
+constituents ($\otimes$, $\mathbf{1}$, $\alpha$, $\lambda$, $\varrho$,
+$\gamma$); those are bound by stating the tuple
+$(\mathcal{S},\otimes,\mathbf{1},\ldots)$. State the data first: name the
+object or tuple, its type, and each map's domain and codomain. Then use
+the symbols.
 
 **Banned:** "A monoid in $(\mathbf{Ab},\otimes_{\mathbb Z},\mathbb Z)$ is a
 ring, its multiplication being the bilinear map classified by $\mu$ and its
 unit the image of $1$ under $\eta$." The symbols $\mu$ and $\eta$ are used
 without being introduced; no abelian group $A$ is named; no domains or
 codomains are stated.
+
+**Banned:** "Let $S$ be a symmetric monoidal category. … Then $\otimes$
+makes $S^{\mathrm{iso}}$ an abelian monoid." The tensor $\otimes$ is used
+without being bound — stating the type "symmetric monoidal category" does
+not introduce the symbol $\otimes$.
 
 **Preferred:** "A monoid object in
 $(\mathbf{Ab},\otimes_{\mathbb{Z}},\mathbb{Z})$ is a triple
