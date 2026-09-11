@@ -1037,39 +1037,39 @@ preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGalo
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.fixed_field	method	154	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.index	method	157	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.representative	method	161	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
-preamble/categories/group/profinite/absolute_galois_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	G_K	binding	4	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	sage	binding	22	5			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent	class	56	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.base_field	method	61	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.finite_quotient	method	63	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.restriction_map	method	64	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.lift	method	65	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups	class	68	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.super_categories	method	77	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods	class	83	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.characteristic	method	84	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.is_profinite	method	89	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.is_abelian	method	93	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.is_finitely_generated	method	97	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.group_generators_are_computable	method	115	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.has_computed_group_generators	method	126	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.finite_quotient	method	132	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.restriction_map	method	143	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.open_subgroup	method	151	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.open_subgroup_class	method	166	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.cyclotomic_character	method	178	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.quadratic_character	method	189	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.decomposition_group	method	207	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.decomposition_group_class	method	216	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.inertia_group	method	225	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.inertia_group_class	method	234	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.frobenius	method	243	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.frobenius_class	method	252	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.lift	method	261	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.lifts	method	270	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.topological_generating_family	method	277	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_groups.sage	absolute_galois_group_factory	function	300	0			unreviewed
+preamble/categories/group/profinite/absolute_galois_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	G_K	binding	4	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	sage	binding	22	5		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent	class	56	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.base_field	method	61	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.finite_quotient	method	63	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.restriction_map	method	64	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroupParent.lift	method	65	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups	class	68	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.super_categories	method	77	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods	class	83	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.characteristic	method	84	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.is_profinite	method	89	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.is_abelian	method	93	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.is_finitely_generated	method	97	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.group_generators_are_computable	method	115	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.has_computed_group_generators	method	126	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.finite_quotient	method	132	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.restriction_map	method	143	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.open_subgroup	method	151	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.open_subgroup_class	method	166	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.cyclotomic_character	method	178	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.quadratic_character	method	189	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.decomposition_group	method	207	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.decomposition_group_class	method	216	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.inertia_group	method	225	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.inertia_group_class	method	234	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.frobenius	method	243	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.frobenius_class	method	252	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.lift	method	261	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.lifts	method	270	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.topological_generating_family	method	277	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_groups.sage	absolute_galois_group_factory	function	300	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_characters.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets	class	47	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.super_categories	method	50	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
