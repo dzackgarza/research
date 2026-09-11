@@ -13,6 +13,26 @@ from dzack_research.preamble.categories.group.profinite.profinite_groups import 
     ProfiniteGroups,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/absolute_galois_group.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py",
+    "owner_overrides": {
+        "AbsoluteGaloisGroupsOfFiniteFields": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+        "AbsoluteGaloisGroupsOfFiniteFields.super_categories": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+        "AbsoluteGaloisGroupsOfFiniteFields.ParentMethods": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+        "AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.frobenius": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+        "AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.topological_group_generators": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+        "AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.is_abelian": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+        "AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.has_canonical_realization": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+        "LiftCoset": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "LiftCoset.ambient": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "LiftCoset.representative": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "LiftCoset.extension": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "absolute_galois_group_category": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_realized_absolute_galois_group_retains_basepoint_coslice_data() -> None:
     field = GF(5)

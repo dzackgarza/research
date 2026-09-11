@@ -982,34 +982,34 @@ preamble/categories/group/predicate_subgroups.sage	is_predicate_subgroup	functio
 preamble/categories/group/predicate_subgroups.sage	predicate_subgroup_category	function	140	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
 preamble/categories/group/predicate_subgroups.sage	predicate_subgroup	function	149	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py	src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
 preamble/categories/group/predicate_subgroups.sage	centralizer	function	163	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py	src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
-preamble/categories/group/profinite/absolute_galois_group.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	FrobeniusElement	class	51	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups	class	83	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.super_categories	method	107	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods	class	113	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.finite_quotient	method	117	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.base_field	method	150	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.algebraic_closure	method	154	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.base_embedding	method	158	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.choice_policy	method	162	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.choice_data	method	166	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.has_canonical_realization	method	174	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.geometric_point	method	183	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.one	method	192	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.an_element	method	196	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields	class	250	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.super_categories	method	267	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods	class	270	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.frobenius	method	271	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.topological_group_generators	method	275	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.is_abelian	method	279	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.has_canonical_realization	method	283	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset	class	288	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.ambient	method	307	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.representative	method	310	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.extension	method	313	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	absolute_galois_group_category	function	330	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group.sage	absolute_galois_group	function	344	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
+preamble/categories/group/profinite/absolute_galois_group.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	FrobeniusElement	class	51	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups	class	83	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.super_categories	method	107	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods	class	113	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.finite_quotient	method	117	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.base_field	method	150	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.algebraic_closure	method	154	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.base_embedding	method	158	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.choice_policy	method	162	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.choice_data	method	166	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.has_canonical_realization	method	174	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.geometric_point	method	183	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.one	method	192	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups.ParentMethods.an_element	method	196	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields	class	250	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.super_categories	method	267	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods	class	270	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.frobenius	method	271	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.topological_group_generators	method	275	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.is_abelian	method	279	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	AbsoluteGaloisGroupsOfFiniteFields.ParentMethods.has_canonical_realization	method	283	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset	class	288	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.ambient	method	307	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.representative	method	310	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.extension	method	313	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	absolute_galois_group_category	function	330	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group.sage	absolute_galois_group	function	344	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/absolute_galois_group_element.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement	class	37	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.parent	method	61	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
