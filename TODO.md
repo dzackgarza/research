@@ -37,6 +37,34 @@ Read the generated `docs/preamble-megadoc.md` before preamble implementation
 under the governing `AGENTS.md` prerequisites. This queue does not authorize
 running preamble tests, QC, Sage, or notebooks before terminal T.
 
+### Take a ready node that nobody is on before extending the one you are on
+
+Fourteen open nodes currently have every prerequisite satisfied, and eleven of those are
+not optional: `localization`, `normalization`, `local-module-maps`,
+`universal-constructions`, `constructor-convergence`, `complexes`, `framework-transfer`
+and `archive-reconciliation` need nothing at all; `category-boundaries`, `sheaf-operations`
+and `reduction-complexes` need only delivered nodes. (`optional-display`,
+`optional-database` and `optional-engine` are the other three.) Thirty-eight nodes are
+blocked behind them, and `acceptance` is behind all of it.
+
+Between 2026-09-10 and 2026-09-11 every authored hour went into one of those fourteen and
+the node count did not move: sixty-three nodes, eleven delivered, at both ends of the day.
+The work was real — forty-six new archive reconciliations landed in that window — but it
+was all inside a single node, so nothing closed and nothing became available.
+
+Check this list against the graph before selecting, since it changes as nodes deliver:
+
+```sh
+grep -nE '^- \[[ x]\] \*\*`[a-z0-9-]+`\*\*\. \*\*Needs:\*\*' TODO.md
+```
+
+Two consequences for selection. First, prefer a ready node with no active claim over
+further breadth inside a node you already hold — a node that closes unblocks its
+dependents, and a node that merely grows does not. Second, these eleven are mutually
+independent by construction, so concurrent streams can hold them at once under the
+existing claim protocol without contending for the same owners. When this queue is worked
+by one stream, the other ten are idle capacity rather than scheduled work.
+
 ### Contents
 
 - [Execution decisions](#execution-decisions-for-every-item)
@@ -1485,6 +1513,18 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   merely because it is already written (`OWN-01`, `OWN-08`, `DEV-56`).
   **Acceptance:** source-backed reconciliation for every required notion.
   Record completed dispositions in commits, not a historical table here.
+  **Enumerate the required notions before reconciling more of them.** This node has
+  no denominator: its scope is "every archived public mathematical notion" across 190
+  archived `.sage`/`.py` files, 104 of them under `categories/`, and 191 reconciliation
+  specimens now exist against no list of what was required. Nothing can therefore say
+  how much remains, the node cannot close on evidence, and a second stream cannot take
+  a disjoint part of it. The enumeration is itself the next unit of work here: one
+  generated inventory of the required notions per archived module, each row carrying
+  its live owner if it has one and its disposition once settled, written where it can
+  be regenerated rather than hand-maintained. Reconciled notions then leave it the way
+  a solved card leaves a queue. Partition by archived module once the inventory exists;
+  the modules are independent, so concurrent streams need no further coordination
+  beyond the existing claim protocol.
 
 ## Final verification
 
@@ -1515,6 +1555,26 @@ review until every downstream consumer has copied the same bypass.
   new concrete repair work at its owner, not a documentation rewrite declaring
   the weaker implementation acceptable. Do not turn this comparison into a
   source-policing test or a count of engine imports.
+
+- [ ] **`runtime-available-at-t`**. **Needs:** none.
+  Make the declared Sage runtime reachable from the repository's tracked
+  configuration, so terminal T is not the moment this is discovered.
+  **Observed 2026-09-11:** the tracked `.envrc` exports
+  `SAGE_BIN="${SAGE_BIN:-/home/dzack/gitclones/sage-dev-allopts/.venv/bin/sage}"`.
+  That checkout exists; that path does not. Any commit whose staged paths make the
+  Sage QC preflight applicable fails with
+  `ERROR: SAGE_BIN is unset or not executable`, and the whole preamble programme is
+  currently invisible to this because `DEV-58` defers execution and prose commits take
+  the sanctioned `--no-verify` route. A working `sage` is on `PATH` at
+  `/home/dzack/.local/bin/sage`; whether that is the interpreter this repository
+  intends is the question to settle, not something to paper over by repointing the
+  variable at whatever is nearest.
+  **Deliver:** a tracked default that resolves to the Sage this repository actually
+  targets on this host, or a recorded decision naming the required interpreter and
+  what must be provisioned to supply it.
+  **Acceptance:** the Sage QC preflight passes on a commit that touches a preamble
+  path, from a shell that has only sourced the tracked `.envrc`. This is a
+  configuration repair, not permission to start executing suites before T.
 
 - [ ] **`terminal-execution`**. **Needs:** `terminal-reference`.
   Execute the prescribed public-construction and mathematical suites in the
