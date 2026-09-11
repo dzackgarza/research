@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-galois-characters-20260911-0750` | archive reconciliation / continuous finite-quotient Galois characters | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/groups/test_profinite_character_hom_archive.py; tests/groups/test_galois_character_extension_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:50:00Z |
 
 
 
