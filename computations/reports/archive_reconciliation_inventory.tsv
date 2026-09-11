@@ -1953,28 +1953,28 @@ preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQu
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods.projection_from_fraction_field	method	207	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods.subobject_on	method	226	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	install_fraction_field_quotients	function	327	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	GeneratorAssignment	binding	58	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent	class	60	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.base_ring	method	65	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.module_generating_set	method	66	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.module_generator_morphism	method	67	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.Hom	method	68	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules	class	83	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py		unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.super_categories	method	90	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods	class	103	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods.parent	method	114	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods.coefficients	method	138	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods.underlying_set_element	method	188	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods	class	209	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generating_set	method	268	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.framing_morphism	method	272	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.zero	method	286	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generators	method	307	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generator_morphism	method	327	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.hom	method	335	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.is_torsion_free	method	358	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleOn	function	361	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py		unreviewed
+preamble/categories/modules/framed/framed_free_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	GeneratorAssignment	binding	58	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent	class	60	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.base_ring	method	65	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.module_generating_set	method	66	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.module_generator_morphism	method	67	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.Hom	method	68	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules	class	83	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.super_categories	method	90	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods	class	103	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods.parent	method	114	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods.coefficients	method	138	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ElementMethods.underlying_set_element	method	188	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods	class	209	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generating_set	method	268	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.framing_morphism	method	272	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.zero	method	286	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generators	method	307	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generator_morphism	method	327	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.hom	method	335	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.is_torsion_free	method	358	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleOn	function	361	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/framed_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent	class	98	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.base_ring	method	103	0			unreviewed
