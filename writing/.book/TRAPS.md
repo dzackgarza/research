@@ -103,3 +103,40 @@ parse it afterwards to check the structure, rather than round-tripping it.
 
 Reported by a parallel session that hit it while merging chapter entries; the
 damage was caught before it was committed.
+
+## The numbered-block registry is per directory, so most cross-references render as nothing
+
+`custom-numbered-blocks` resolves `\ref` and `\longref` through a registry it writes
+to disk, `._htmlbook_xref.json`. The filename is a bare relative name, hard-coded in
+`cnb-1-init-chapters.lua`, so it lands in **pandoc's working directory** — and pandoc
+runs with its working directory at the real location of the input, which in this book
+is the chapter's own source directory.
+
+The registry is therefore not one book-wide table. It is one table per source
+directory, and there are twenty of them. `\longref{thm:x}` resolves only when the
+block declaring `#thm:x` sits in the *same directory* as the page referring to it.
+Every other reference renders as **nothing at all** — pandoc drops the unmatched raw
+LaTeX rather than printing it, so the sentence closes over the hole:
+
+> The presentation $T_{\mathrm{Co}}\cong \mathrm{I}_{2,9}(2)$ is the one recorded in ,
+> and it is the form in which the divisibility computation of is carried out.
+
+Measured on the Coble part: of 525 references to numbered blocks, 310 resolve and 215
+render as nothing — 188 because the target is in another directory, 27 because no such
+block is declared anywhere.
+
+Two things follow.
+
+**`docs-check` cannot see it.** Check 2 looks for Quarto's `quarto-unresolved-ref`
+marker in the rendered HTML, and a dropped reference never became a Quarto crossref.
+The gate reports "cross-refs all resolve" over a book where two in five do not. The
+check that would see it is a source-side one: the target's declaring file must be in
+the same directory as the referring file.
+
+**A clean build is worse than a local one.** The registry file is never cleared, so a
+second render in the same tree reads the previous pass's table and resolves references
+the first pass could not. CI clones fresh and renders once, so the published site loses
+references that the local preview shows.
+
+The extension assumes the standard flat Quarto book, every chapter in the project root.
+This book puts chapters in topic directories, which is what breaks the assumption.

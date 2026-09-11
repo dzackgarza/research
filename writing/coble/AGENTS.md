@@ -120,9 +120,14 @@ chain $W_0 \subset W_1 \subset W_2 \subset W_3$ of ." That is how 390 of them
 accumulated unnoticed. `docs-check` now scans the sources for them, because there is
 nothing in the rendered HTML to find.
 
-**`\longref` reaches numbered blocks only.** The resolver keeps a registry of the blocks
-it has processed, so a target that is not one of them resolves to nothing however it is
-written:
+**`\longref` reaches numbered blocks in the same directory only.** The resolver's
+registry is written to `._htmlbook_xref.json` in pandoc's working directory, which is
+the chapter's own source directory — so there is one registry per topic directory, not
+one per book, and a reference across directories finds nothing. Two in five references
+in this part currently render as nothing for that reason;
+`writing/.book/TRAPS.md` has the mechanism and the measurement.
+
+A target that is not a numbered block resolves to nothing however it is written:
 
 - sections, `\longref{sec:lattice-theory}` — write the section's name in prose instead;
 - figures and tables, `\longref{fig:coble-cusps}` — an anchor like `{#fig:x width=70%}`
