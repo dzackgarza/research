@@ -22,6 +22,9 @@ from dzack_research.preamble.categories.algebras.framed_free_algebras import (
     SymmetricAlgebraOn,
     TensorAlgebraOf,
 )
+from dzack_research.preamble.categories.functors.cohomology import (
+    cohomology_algebra_functor,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.refine import refine
@@ -109,7 +112,11 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
     swap = dga_homset(dga, dga)(swap_algebra)
 
     cohomology = CohomologyAlgebra(dga)
-    induced = cohomology_algebra_homset(cohomology, cohomology)(swap)
+    functor = cohomology_algebra_functor(ZZ)
+    assert functor.domain() is DifferentialGradedAlgebras(ZZ)
+    assert functor(dga) is cohomology
+    induced = functor(swap)
+    direct = cohomology_algebra_homset(cohomology, cohomology)(swap)
     x_class = cohomology.from_component(
         1,
         cohomology.graded_piece(1).class_of_cycle(x.homogeneous_component(1)),
@@ -121,6 +128,7 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
 
     assert induced(x_class) == y_class
     assert induced(y_class) == x_class
+    assert induced(x_class) == direct(x_class)
     assert induced(x_class * y_class) == y_class * x_class
     assert (induced * induced)(x_class) == x_class
     assert (induced * induced)(y_class) == y_class

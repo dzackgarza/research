@@ -19,7 +19,10 @@ from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebras,
     cohomology_algebra_homset,
 )
-from dzack_research.preamble.categories.algebras.differential_graded_algebras import StrictlyCommutativeDifferentialGradedAlgebras
+from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
+    DifferentialGradedAlgebras,
+    StrictlyCommutativeDifferentialGradedAlgebras,
+)
 from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
 
 
@@ -96,13 +99,13 @@ class DeRhamCohomologyFunctor(CompositeFunctor):
 
 
 class CohomologyAlgebraFunctor(Functor):
-    r"""The graded cohomology-algebra functor ``H^*`` on strict CDGAs."""
+    r"""The graded cohomology-algebra functor ``H^*`` on represented DGAs."""
 
     def __init__(self, base_ring) -> None:
 
         self._base_ring = _owned_ring(base_ring)
         super().__init__(
-            StrictlyCommutativeDifferentialGradedAlgebras(self._base_ring),
+            DifferentialGradedAlgebras(self._base_ring),
             CohomologyAlgebras(self._base_ring),
         )
 
