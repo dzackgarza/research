@@ -1663,6 +1663,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-profinite-groups-20260911-0745` | archive reconciliation / profinite group topology and generators | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/groups/test_profinite_groups_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:45:00Z |
+
 
 
 
