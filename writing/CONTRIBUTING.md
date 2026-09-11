@@ -802,3 +802,46 @@ violations: "provided", "up to isomorphism", "without loss of generality", a
 genuine sign or normalization convention, and a Remark that explains a real
 subtlety in context. The test is whether removing the phrase removes
 information. A tagline removes none.
+
+## Symbols and binding (`SYM-*`)
+
+### `SYM-1`: A symbol used without being bound
+
+A passage uses $\mu$, $\eta$, or another symbol without introducing the
+object it names. No underlying object is stated, no domain or codomain is
+given, and the reader cannot determine what the symbol refers to without
+external knowledge. State the data first: name the object, its type, and the
+map's domain and codomain. Then use the symbol.
+
+**Banned:** "A monoid in $(\mathbf{Ab},\otimes_{\mathbb Z},\mathbb Z)$ is a
+ring, its multiplication being the bilinear map classified by $\mu$ and its
+unit the image of $1$ under $\eta$." The symbols $\mu$ and $\eta$ are used
+without being introduced; no abelian group $A$ is named; no domains or
+codomains are stated.
+
+**Preferred:** "A monoid object in
+$(\mathbf{Ab},\otimes_{\mathbb{Z}},\mathbb{Z})$ is a triple
+$(A,\mu,\eta)$ where $A$ is an abelian group,
+$\mu\colon A\otimes_{\mathbb{Z}}A\to A$ is a homomorphism, and
+$\eta\colon\mathbb{Z}\to A$ is a homomorphism. The bilinear multiplication
+$A\times A\to A$ is the map corresponding to $\mu$ under the tensor-hom
+adjunction, and the unit element is $\eta(1)$." Name the data, then use the
+symbols.
+
+### `SYM-2`: Data referenced by role instead of by declaration
+
+A passage refers to "the multiplication", "the unit", "the associator", or
+"the classifying map" without first declaring the object that plays that
+role. The role name presupposes the data without stating it. Declare the
+data — the map, its domain, its codomain — then refer to it by name. A role
+description is a comment on data that has been stated, not a substitute for
+stating it.
+
+**Banned:** "its multiplication being the bilinear map classified by $\mu$"
+— "the multiplication" is a role; $\mu$ is undeclared; "the bilinear map
+classified by $\mu$" describes what $\mu$ does without stating what $\mu$
+is.
+
+**Preferred:** "$\mu\colon A\otimes_{\mathbb{Z}}A\to A$ is a homomorphism;
+the corresponding bilinear map $A\times A\to A$ is the multiplication."
+Declare the map, then name its role.
