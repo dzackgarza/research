@@ -82,5 +82,7 @@ Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogon
 
 Let $L$ be a $2$-elementary lattice and let $I\in\Orth^*(L)$ be an involution lying in the stable orthogonal group $\Orth^*(L) = \tilde\Orth(L)$.
 Then both the invariant lattice $L^I$ and the coinvariant lattice $L_I$ are again $2$-elementary.
-\todo{cite: 2-elementarity of the invariant and coinvariant lattices $L^I, L_I$ of an involution $I \in \Orth^*(L)$ of a 2-elementary lattice $L$}
+::: {.Warning}
+cite: 2-elementarity of the invariant and coinvariant lattices $L^I, L_I$ of an involution $I \in \Orth^*(L)$ of a 2-elementary lattice $L$
+:::
 :::

@@ -42,7 +42,9 @@ The charge behaves as follows under blowups of an anticanonical pair:
 
 - **Interior blowups**, at smooth points of $D$ (points lying on a single component of $D$), increase the charge by $1$.
 
-\todo{cite: reference for the charge formula and its blowup behaviour (Friedman/Engel--Friedman on anticanonical pairs); the migrated note gives no citation.}
+::: {.Warning}
+cite: reference for the charge formula and its blowup behaviour (Friedman/Engel--Friedman on anticanonical pairs); the migrated note gives no citation.
+:::
 :::
 
 ::: {.Theorem #thm:friedman-miranda-charge}
@@ -107,4 +109,6 @@ For non-normal varieties one has the following notions.
 Being slc is the condition required for limits in KSBA moduli spaces.
 :::
 
-\todo{The migrated note lists "dlt" among its aliases but its body gives no definition of dlt (divisorial log terminal); definition omitted here rather than invented.}
+::: {.Warning}
+The migrated note lists "dlt" among its aliases but its body gives no definition of dlt (divisorial log terminal); definition omitted here rather than invented.
+:::

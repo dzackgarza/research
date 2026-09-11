@@ -18,7 +18,26 @@ Let $\mathcal{F}_\bullet = \ts{\mathcal{F}_k}_{k=1}^5$ be the collection of fold
 3. The isomorphism is established via an intermediate normalization $B^\nu$ of the Zariski closure of the Noether--Lefschetz locus inside the K3 compactification $\overline{F_{(2,2,0)}}$ [@AEGS25 Sec. 6].
 :::
 
-\todo{Part 2 as migrated says "cusp 35", read alongside cusps 2 and 4. This is inconsistent with the five-cusp enumeration of \longref{ex:fen2_five_cusps}, where cusps $3$ and $5$ are recorded as strictly semitoroidal (only cusps $2$ and $4$ are toroidal). "cusp 35" is reproduced verbatim from the source note; resolve whether it is a typo for "cusps $3$, $5$", a distinct $1$-cusp label, or a mis-transcription, and reconcile with the toroidal/semitoroidal split of the cusp enumeration.}
+::: {.Notation #not:sterk-cusp-labels}
+### Two indexings of the boundary
+
+The $0$-cusps are numbered $1,\dots,5$, as in \longref{ex:fen2_five_cusps}. The
+$1$-cusps carry a different label: the set of $0$-cusps they are incident to, written as
+a digit string. In the AEGS numbering the Enriques $1$-cusps are
+$$
+12,\quad 13,\quad 14,\quad 15,\quad 245,\quad 34,\quad 35,\quad 45,\quad 55 ,
+$$
+so that $245$ is the $1$-cusp incident to the $0$-cusps $2$, $4$ and $5$.
+The two indexings share digits and must not be read as one sequence.
+:::
+
+::: {.Remark}
+"Cusp $35$" in part 2 is therefore the $1$-cusp incident to the $0$-cusps $3$ and $5$, not
+the pair of $0$-cusps $3$ and $5$: the compactification is toroidal over the $0$-cusps $2$
+and $4$, over the $1$-cusps adjacent to them, and over the one further $1$-cusp $35$.
+This is consistent with \longref{ex:fen2_five_cusps}, where the $0$-cusps $3$ and $5$ are
+strictly semitoroidal.
+:::
 
 ::: {.Remark}
 
@@ -49,7 +68,9 @@ Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational
 
 ![The induced correspondence of Baily--Borel boundaries under $\Psi\colon F_{\En, 2}\to F_{(2,2,0)}$: the cusps of $\overline{F_{\En, 2}}^{\bb}$ (top) map to the cusps of $\overline{F_{(2,2,0)}}^{\bb}$ (bottom).](rendered/fig_bb_boundary_correspondence.png){#fig-bb-boundary-correspondence}
 
-\todo{@fig-bb-boundary-correspondence is migrated as a raster talk figure; its cusp labels ($2,12,13,14,245$ and $2,12\mathrm{A},12\mathrm{B},1\mathrm{A},1\mathrm{B}$) are Sterk's talk numbering and should be reconciled with the five-cusp enumeration of \longref{ex:fen2_five_cusps} and redrawn as a native TikZ figure.}
+::: {.Warning}
+@fig-bb-boundary-correspondence is migrated as a raster talk figure; its cusp labels ($2,12,13,14,245$ and $2,12\mathrm{A},12\mathrm{B},1\mathrm{A},1\mathrm{B}$) are Sterk's talk numbering and should be reconciled with the five-cusp enumeration of \longref{ex:fen2_five_cusps} and redrawn as a native TikZ figure.
+:::
 
 ## The five $0$-cusps
 
@@ -80,7 +101,25 @@ For each $0$-cusp we record the topological type of the reduced dual complex $\G
    $3$ Type II rays, $0$ Type III. IAS involution: flip hemispheres.
 :::
 
-\todo{The header records "27 rays" in total, but the per-cusp counts sum to $2 + 9 + 9 + 11 + 3 = 34$ Type II$+$Type III rays. The discrepancy is plausibly explained by Type II rays being shared between adjacent $0$-cusps (they correspond to $1$-cusps, each incident to several $0$-cusps), so that the total of $27$ counts distinct rays while the per-cusp sum double-counts shared Type II rays; confirm the intended bookkeeping.}
+::: {.Question #q:fen2-ray-bookkeeping}
+### What does the total of $27$ rays count?
+
+The per-cusp counts above give $0 + 7 + 7 + 7 + 0 = 21$ Type III rays and
+$2 + 2 + 2 + 4 + 3 = 13$ Type II rays, so $34$ in all, against the $27$ recorded in the
+header.
+
+Type III rays are deeper strata and belong to one $0$-cusp each, so they are not shared;
+Type II rays correspond to adjacent $1$-cusps and are shared between the $0$-cusps a
+$1$-cusp meets. Counting distinct rays would then give $21$ plus the number of distinct
+$1$-cusps, and $27$ would force that number to be $6$. The AEGS numbering of
+\longref{not:sterk-cusp-labels} lists nine Enriques $1$-cusps, so sharing alone does not
+reconcile the two figures, and one of the two data sets is wrong: either the per-cusp
+Type II counts, or the total.
+
+Both are migrated from working notes, and the remark below already records the per-cusp
+counts as provisional pending an independent cusp computation. That computation settles
+this question.
+:::
 
 ::: {.Remark}
 

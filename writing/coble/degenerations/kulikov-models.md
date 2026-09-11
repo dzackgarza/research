@@ -124,5 +124,7 @@ $\mathrm{III}$, which is of Hodge--Tate type.
 ::: {.Remark}
 ### Source notes carried no citations
 
-\todo{The two migrated research notes (Kulikov Models; Limiting Mixed Hodge Structure and Degenerations) contained no inline citations. The attributions above (Kul77, PP81, Sch73, FS86) were supplied from verified bibliography keys as standard attributions of the concepts the notes name; the author should confirm the intended primary sources. The notes contained no Clemens--Schmid statement, no explicit semistable-reduction theorem, and no $N^k$ nilpotent-orbit computation beyond the trichotomy reproduced above.}
+::: {.Warning}
+The two migrated research notes (Kulikov Models; Limiting Mixed Hodge Structure and Degenerations) contained no inline citations. The attributions above (Kul77, PP81, Sch73, FS86) were supplied from verified bibliography keys as standard attributions of the concepts the notes name; the author should confirm the intended primary sources. The notes contained no Clemens--Schmid statement, no explicit semistable-reduction theorem, and no $N^k$ nilpotent-orbit computation beyond the trichotomy reproduced above.
+:::
 :::

@@ -10,15 +10,19 @@ quotient.
 The three are related: a half-divisor model is the quotient of a divisor model
 by an involution, and the dlt models supply the birational models on whose
 strata the associated combinatorial data live.
-\todo{The source notes describe the relationship of these models to the KSBA
+::: {.Question}
+The source notes describe the relationship of these models to the KSBA
 program (below); they do not discuss the relationship to Kulikov models
-explicitly. If a Kulikov comparison is intended here, supply it.}
+explicitly. If a Kulikov comparison is intended here, supply it.
+:::
 
-\todo{The migrated notes carry no citations. The dlt/divisor/half-divisor
+::: {.Warning}
+The migrated notes carry no citations. The dlt/divisor/half-divisor
 apparatus tracks the Alexeev--Engel--Garza--Schaffler degree-$2$ Enriques
 program (cf. the use of the dlt models of [@AEGS25] in the Morrison
 degenerations section); attach the intended references once confirmed rather
-than asserting them here.}
+than asserting them here.
+:::
 :::
 
 ## dlt models and involution pairs

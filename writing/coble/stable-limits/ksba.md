@@ -10,7 +10,9 @@ We describe the KSBA stable limits of Coble surfaces.
 We give an example of an integral affine structure for a degeneration of Coble surfaces.
 :::
 
-\todo[inline]{Both sections above are outlines: the KSBA stable limits and the worked integral affine example remain to be written.}
+::: {.Warning}
+Both sections above are outlines: the KSBA stable limits and the worked integral affine example remain to be written.
+:::
 
 ## The polarized Coble locus and its branches
 
@@ -30,14 +32,35 @@ $$
 $$
 equivariant.
 Since $T_\Co \cong \delta^{\perp T_\En}$ for a $(-2)$-vector $\delta$ [@DK13], this refines the arithmetic group $\Gamma_{\Co, 2}$ of the moduli summary, and the two descriptions agree exactly when the polarized root orbit is unique.
-\todo{note-vs-section discrepancy: the branchwise notes define $\Gamma_{\Co,2}$ as the stabilizer-image of a marked Coble root in $\Gamma_{\En,2}$, whereas the moduli summary defines it as $\mathrm{Stab}_{\Orth(T_\En)}(T_\Co)$; these should be reconciled through $T_\Co \cong \delta^{\perp T_\En}$.}
+::: {.Remark #rmk:gamma-co-2-two-definitions}
+### The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors
+
+The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\Gamma_{\En, 2}$ of the
+stabilizer of a marked Coble root $\delta$; [Constructions of the moduli space](moduli-construction.md)
+defines it as $\mathrm{Stab}_{\Orth(T_\En)}(T_\Co)$. These agree,
+and the bridge is $T_\Co \cong \delta^{\perp T_\En}$ above.
+
+An isometry of $T_\En$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so
+$\mathrm{Stab}(\delta) \subseteq \mathrm{Stab}(T_\Co)$. Conversely an isometry
+preserving $T_\Co$ preserves its orthogonal complement in $T_\En$, which is the rank-one
+lattice $\gens{\delta}$, so it sends $\delta \mapsto \pm\delta$. Hence
+$$
+\mathrm{Stab}_{\Orth(T_\En)}(T_\Co) \;=\; \mathrm{Stab}_{\Orth(T_\En)}(\gens{\delta})
+\;\supseteq\; \mathrm{Stab}_{\Orth(T_\En)}(\delta)
+$$
+with index at most $2$, the two differing exactly by whether $-1$ on $\gens{\delta}$ is
+admitted. The stabilizer of the *line* is the right object: it is what acts on the period
+domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
+:::
 :::
 
 ::: {.Question #que:coble_root_orbit_uniqueness}
 
 Is the orbit of admissible Coble roots under $\Gamma_{\En, 2}$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
 Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\Gamma_{\En, 2}$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
-\todo{cite: Namikawa's root-orbit uniqueness, which is stated only modulo the full Enriques group $\Gamma_\En$ and does not settle the finite-index subgroup $\Gamma_{\En,2}$.}
+::: {.Warning}
+cite: Namikawa's root-orbit uniqueness, which is stated only modulo the full Enriques group $\Gamma_\En$ and does not settle the finite-index subgroup $\Gamma_{\En,2}$.
+:::
 :::
 
 ## The KSBA stable pair

@@ -73,7 +73,9 @@ The following is a combinatorial representation of a Kulikov model for Sterk 2.
 
 ## The Sterk 2 integral affine structure
 
-\todo[inline]{The figures below were drawn for this construction but their accompanying text has not been written; they are collected here so that the artwork is not orphaned. Each caption states only what the picture shows.}
+::: {.Warning}
+The figures below were drawn for this construction but their accompanying text has not been written; they are collected here so that the artwork is not orphaned. Each caption states only what the picture shows.
+:::
 
 ![An integral affine structure for Sterk 2 drawn in the plane: five integral affine singularities are marked $\times$, solid segments carry the triangulation and dashed segments the boundary of the region.](rendered/sterk2_ias_singularities.svg){#fig-sterk2-ias width=52%}
 
