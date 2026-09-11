@@ -1,6 +1,5 @@
 """Algebras over an owned base ring, with identities represented as refinements."""
 
-from sage.categories.category import Category
 from sage.categories.commutative_algebras import (
     CommutativeAlgebras as SageCommutativeAlgebras,
 )
@@ -25,6 +24,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     _category_homset,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
     _two_factors_of,
@@ -2307,7 +2307,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             self,
             engine,
             base=base,
-            category=Category.join(tuple(placement)),
+            category=Cat().meet(tuple(placement)),
         )
         self._preamble_structure_map = _default_structure_map(base, self) if structure_map is None else structure_map
         if labels is None:
