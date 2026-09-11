@@ -3228,22 +3228,22 @@ preamble/tests/test_functor_codomains.sage	test_forgetful_module_functor_lands_i
 preamble/tests/test_functor_codomains.sage	test_group_ring_over_many_base_rings	specimen	160	0			unreviewed
 preamble/tests/test_functor_codomains.sage	test_group_ring_is_noncommutative_exactly_when_the_group_is	specimen	204	0			unreviewed
 preamble/tests/test_functor_codomains.sage	test_free_module_functor_carries_morphisms	specimen	225	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_groups_refine_on_witnesses_only	specimen	30	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_every_subgroup_has_its_inclusion_homomorphism	specimen	61	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_endomorphisms_of_an_abelian_group_form_a_ring	specimen	85	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_endomorphisms_of_a_nonabelian_group_are_refused	specimen	115	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_every_abelian_group_is_a_module_over_the_integers	specimen	137	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_finite_torsion_modules_are_finite_abelian_groups	specimen	168	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_a_module_presentation_uses_the_presentation_matrix_relations	specimen	191	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_trivial_action_is_a_functor_into_group_lattices	specimen	229	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_trivial_action_carries_lattice_maps_to_equivariant_ones	specimen	250	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_invariants_is_right_adjoint_to_the_trivial_action	specimen	267	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_a_group_generating_set_is_the_images_of_the_generating_morphism	specimen	305	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_finite_generation_is_what_makes_the_generating_set_finite	specimen	330	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_four_realizations_of_c2_expose_their_presentations_directly	specimen	352	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_standard_finite_groups_are_finitely_presented	specimen	373	0			unreviewed
-preamble/tests/test_group_hierarchy.sage	test_groups_is_the_flat_catalogue_of_standard_groups	specimen	388	0			unreviewed
+preamble/tests/test_group_hierarchy.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_groups_refine_on_witnesses_only	specimen	30	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_every_subgroup_has_its_inclusion_homomorphism	specimen	61	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_endomorphisms_of_an_abelian_group_form_a_ring	specimen	85	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_endomorphisms_of_a_nonabelian_group_are_refused	specimen	115	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_every_abelian_group_is_a_module_over_the_integers	specimen	137	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_finite_torsion_modules_are_finite_abelian_groups	specimen	168	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_a_module_presentation_uses_the_presentation_matrix_relations	specimen	191	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_trivial_action_is_a_functor_into_group_lattices	specimen	229	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_trivial_action_carries_lattice_maps_to_equivariant_ones	specimen	250	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_invariants_is_right_adjoint_to_the_trivial_action	specimen	267	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_a_group_generating_set_is_the_images_of_the_generating_morphism	specimen	305	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_finite_generation_is_what_makes_the_generating_set_finite	specimen	330	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_four_realizations_of_c2_expose_their_presentations_directly	specimen	352	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_standard_finite_groups_are_finitely_presented	specimen	373	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/tests/test_group_hierarchy.sage	test_groups_is_the_flat_catalogue_of_standard_groups	specimen	388	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/tests/test_infinite_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/tests/test_infinite_modules.sage	test_a_countably_framed_free_module_is_constructible	specimen	40	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/tests/test_infinite_modules.sage	test_its_generators_are_a_set_that_need_not_be_counted	specimen	51	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner

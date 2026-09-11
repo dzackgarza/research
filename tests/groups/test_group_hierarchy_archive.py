@@ -9,6 +9,18 @@ from dzack_research.preamble.categories.group.groups import (
 )
 
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_group_hierarchy.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/groups.py",
+    "owner_overrides": {
+        "test_trivial_action_is_a_functor_into_group_lattices": "src/dzack_research/preamble/categories/functors/group_actions.py",
+        "test_trivial_action_carries_lattice_maps_to_equivariant_ones": "src/dzack_research/preamble/categories/functors/group_actions.py",
+        "test_invariants_is_right_adjoint_to_the_trivial_action": "src/dzack_research/preamble/categories/functors/group_actions.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
+
 def test_generating_set_is_distinct_from_presenting_free_group() -> None:
     free = Groups.Free(2)
     generators = tuple(free.group_generators())
