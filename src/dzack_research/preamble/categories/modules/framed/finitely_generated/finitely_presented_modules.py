@@ -294,6 +294,13 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return NotImplemented
             if self.base_ring() in PrincipalIdealDomains():
                 return _pid_presentation_kernel(morphism)
+            ring = self.base_ring()
+            try:
+                variable_names = tuple(ring.variable_names())
+            except (AttributeError, TypeError):
+                variable_names = ()
+            if variable_names and ring.base_ring() is _owned_ring(SageZZ):
+                return _cap_presentation_kernel(morphism)
             return _singular_presentation_kernel(morphism)
 
         def _represented_cokernel_of_morphism(self, morphism):
@@ -1745,6 +1752,102 @@ def _relation_element(module, row):
         module.zero(),
     )
 
+
+
+def _cap_presentation_kernel(morphism):
+    r"""Return ``ker(morphism)`` through CAP over a polynomial ring over ``ZZ``.
+
+    ``ModulePresentationsForCAP`` owns the categorical kernel computation.
+    The private adapter crosses only selected relation, morphism, kernel and
+    lift matrices; the returned object is the ordinary owned finitely
+    presented module with its actual inclusion into ``morphism.domain()``.
+    """
+    from dzack_research.preamble.categories.modules.cap_presented_modules import (
+        kernel_presentation,
+    )
+
+    domain = morphism.domain()
+    codomain = morphism.codomain()
+    ring = _owned_ring(domain.base_ring())
+    if _owned_ring(codomain.base_ring()) is not ring:
+        raise ValueError("a kernel presentation requires one coefficient ring")
+    variable_names = tuple(ring.variable_names())
+    if not variable_names or ring.base_ring() is not _owned_ring(SageZZ):
+        raise NotImplementedError(
+            "the CAP kernel provider is selected here for polynomial rings over ZZ"
+        )
+
+    source_labels = tuple(domain.module_generating_set())
+    target_labels = tuple(codomain.module_generating_set())
+    source_relations = tuple(_matrix_coordinate_rows(_presentation_matrix(domain)))
+    target_relations = tuple(_matrix_coordinate_rows(_presentation_matrix(codomain)))
+    morphism_rows = tuple(
+        tuple(
+            module_coefficients(
+                morphism(domain.module_generator(source_label)),
+                codomain,
+            ).get(target_label, ring.zero())
+            for target_label in target_labels
+        )
+        for source_label in source_labels
+    )
+    native = kernel_presentation(
+        variable_names=variable_names,
+        owned_ring=ring,
+        source_rank=len(source_labels),
+        target_rank=len(target_labels),
+        source_relation_rows=source_relations,
+        target_relation_rows=target_relations,
+        morphism_rows=morphism_rows,
+    )
+    inclusion_rows = native.inclusion_rows()
+    kernel_count = len(inclusion_rows)
+    kernel_labels = Sets.Δ[kernel_count - 1]
+    relation_rows = native.relation_rows()
+    relation_labels = Sets.Δ[len(relation_rows) - 1]
+    relation_matrix = _matrix_space_like(
+        domain, len(relation_rows), kernel_count
+    ).from_rows(relation_rows)
+    presentation = _presentation_from_relation_rows(
+        ring, kernel_labels, relation_labels, relation_matrix
+    )
+    generator_images = {
+        label: domain.linear_combination(
+            {
+                source_label: coefficient
+                for source_label, coefficient in zip(
+                    source_labels, inclusion_rows[int(label)], strict=True
+                )
+                if coefficient
+            }
+        )
+        for label in kernel_labels
+    }
+
+    def lift_from_domain(kernel, element):
+        if element.parent() is not domain:
+            element = domain(element)
+        if morphism(element) != codomain.zero():
+            raise ValueError("the element does not lie in the represented kernel")
+        coordinates = module_coefficients(element, domain)
+        source_row = tuple(
+            coordinates.get(label, ring.zero()) for label in source_labels
+        )
+        lifted = native.lift_row(source_row)
+        return kernel.linear_combination(
+            {
+                label: lifted[int(label)]
+                for label in kernel_labels
+                if lifted[int(label)] != ring.zero()
+            }
+        )
+
+    return FinitelyPresentedModule(
+        presentation,
+        _subobject_ambient=domain,
+        _subobject_generator_images=generator_images,
+        _subobject_lift=lift_from_domain,
+    )
 
 def _pid_presentation_kernel(morphism):
     r"""Return ``ker(morphism)`` from selected finite presentations over a PID.
