@@ -1,1 +1,0 @@
-coble/cusp-correspondence/coble-surface-cusps.md

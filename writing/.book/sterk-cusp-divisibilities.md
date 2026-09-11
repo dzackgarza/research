@@ -1,1 +1,0 @@
-coble/cusp-correspondence/sterk-cusp-divisibilities.md

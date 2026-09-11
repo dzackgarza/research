@@ -129,14 +129,13 @@ book:
         - divisor-and-dlt-models.md
         - halphen-surfaces.md
         - morrison-flowerpot-degenerations.md
-    # Enriques first: the Coble diagram is obtained from it by mirror moves, and
-    # the correspondence chapter runs in that direction too.
+    # The algorithm, then the diagrams it produces for each moduli space, then the
+    # correspondence between them -- which runs Enriques to Coble, the direction the
+    # mirror moves go.
     - part: The cusp correspondence
       chapters:
         - cusp-diagram-calculations.md
-        - enriques-surface-cusps.md
-        - coble-surface-cusps.md
-        - sterk-cusp-divisibilities.md
+        - cusp-diagrams-by-moduli-space.md
         - enriques-to-coble-cusp-correspondence.md
     - part: Stable limits
       chapters:

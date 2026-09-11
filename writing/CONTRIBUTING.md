@@ -675,3 +675,130 @@ a substitute.
 **Preferred:** draw both hexagon diagrams, or cite the reference where both
 are written. The reader does not need to be told there are two; the reader
 needs to see them.
+
+## Terminology (`TERM-*`)
+
+Use established mathematical terms in their standard meanings. Do not coin a
+name for a notion that already has one. Do not import a term from another
+field where the book owes a standard mathematical object. Do not overload a
+standard word with a project-management or implementation meaning.
+
+Terminology failures have three recurring forms:
+
+- **Foreign-discipline substitution.** A technical term from another field is
+  used where the book owes a standard mathematical object and definition.
+- **Project coinage.** An undefined word is made to do mathematical work.
+- **Colliding overload.** A standard word such as "kernel", "core", or
+  "fiber" is reused with a project-management or implementation meaning.
+
+The citation-backed recurring inventory lives in
+`.agents/references/terminology-dictionary.md`. The following replacements
+apply to this book:
+
+| Term to avoid | Required mathematical statement |
+| --- | --- |
+| ontology | a specified functor, strict 2-functor, or pseudofunctor into $\mathbf{Cat}$; say *presentation of a category or 2-category by generators and relations* only after specifying those generators, relations, and closure operations |
+| project lexicon | the defined categories, functors, predicates, and constructions, each with its type |
+| corpus, when used for a generated object | the generated sub-2-category |
+| graph or tree, when used for the whole object | a specified functor $I\to\mathbf{Cat}$, or a specified strict 2-functor or pseudofunctor $\mathcal I\to\mathbf{Cat}$; for a finite indexing poset $I$, say *tree-shaped* only when its undirected Hasse diagram is connected and acyclic |
+| node | category or object, whichever is meant |
+| edge | functor or morphism, whichever is meant |
+| seed | generator |
+| constructor | the named categorical construction or 2-functor |
+| cut or axiom cut | a replete full subcategory defined by an object property, or a specified forgetful functor from structured objects |
+| cut owner | the category whose objects satisfy the property, or the domain of the forgetful functor |
+| cut instantiation | for $F\colon\mathcal D\to\mathcal C$ and a full subcategory $\mathcal C_P\hookrightarrow\mathcal C$, the full subcategory of $\mathcal D$ on objects $D$ satisfying $P(FD)$; or the pullback of $p\colon E\to B$ along a named map $f\colon X\to B$ |
+| implication edge | the inclusion induced by a stated implication, with its proof |
+| generation rule or square | the pullback of a replete full subcategory along a functor |
+| minimal graph | an inclusion-minimal generating subdiagram relative to stated targets, permitted closure operations, and a specified equivalence relation on the class of presentations; uniqueness is a separate claim |
+| Level-0 generic | the general construction and the parameter choice producing the instance |
+| operation home | the domain, codomain, and type of the functor, natural transformation, object property, invariant, or operation |
+| route | a composite or factorization of functors |
+| preferred route or preferred functor | a distinguished functor or factorization with comparison maps, or an implementation dispatch policy confined to an implementation page |
+| routing diamond | a commutative square, strictly or up to a specified natural isomorphism |
+| tether or alignment | the specified equality, isomorphism, equivalence, natural isomorphism, or factorization |
+| realization functor | the actual functor with source and target; use *forgetful functor* only when structure is forgotten and *realization* only for a defined realization construction |
+| witness-level datum | the chosen basis, enumeration, presentation, section, or other auxiliary datum |
+| free or torsion fiber | for a named functor $F\colon\mathcal D\to\mathcal C$, the full subcategory of $\mathcal D$ on objects mapped into the specified free or torsion full subcategory of $\mathcal C$; add finiteness only when it is a hypothesis |
+| unified O | for an ordinary category $\mathcal C$, $\operatorname{Aut}\colon\mathcal C^{\simeq}\to\mathbf{Grp}$, with $O(X):=\operatorname{Aut}(X)$ as an instance |
+| homsets-as-parents | the hom-bifunctor, the core groupoid, or $\operatorname{Iso}_{\mathcal C}(X,Y)$, which is a bitorsor under $\operatorname{Aut}(Y)$ on the left and $\operatorname{Aut}(X)$ on the right when $X\cong Y$ |
+| residue | the missing definition or unformalized theorem |
+| gap row | a documented missing formalization; this already has a precise implementation meaning |
+| Synthetic layer | a provisional axiomatization, with its axioms and conjectures declared |
+| base of an axiom | the property or structure and the category whose objects satisfy or support it; for a classifying fibration, its domain, codomain, and universal property |
+| transport of an axiom | the pullback of the specified family along the named functor, when that family and its universal property have been defined |
+| owned at or ownership, when used mathematically | the property of objects of the named category, or a chosen structured object in the fiber of a specified forgetful functor |
+
+### `TERM-1`: Retired substitutions
+
+These terms survived one round of editing and are withdrawn.
+
+**Banned:** "multi-sorted signature"; "semantic interpretation"; "executable
+interpretation"; Mathlib identifiers used as prose nouns.
+
+**Preferred:** state the actual categories, functors, predicates, and
+constructions. Name the mathematical functor or the implementation operation
+actually meant. Restrict Mathlib identifiers to code-formatted implementation
+anchors.
+
+## Parentheticals (`PAR-*`)
+
+A semantic parenthetical is a compression. Prefer expansion over compression:
+expanding into explicit mathematics is reversible, whereas a compression is
+lossy and usually smuggles an undefined term or an unstated theorem.
+
+### `PAR-1`: Compression artifact
+
+Terse to the point of inscrutability, standing in for a notion that needs
+spelling out.
+
+**Banned:** "weak homotopy equivalence (holds; inverts/ignores
+directionality) versus categorical equivalence (fails; preserves it)."
+
+**Preferred:** expand into prose or a definition that states the
+distinction.
+
+### `PAR-2`: Smuggled theorem or equivalence
+
+"(equivalently, $X$)", an "iff" asserted in a parenthesis, often over
+undefined terms.
+
+**Banned:** "full and faithful (equivalently, a replete full subcategory)"
+— a functor is identified with its essential image and an equivalence is
+asserted aside.
+
+**Preferred:** "If $F\colon\mathcal C\to\mathcal D$ is fully faithful, then
+$F$ induces an equivalence from $\mathcal C$ to its replete full essential
+image in $\mathcal D$." Cite the result and define any term not already
+established. The expanded statement can later be demoted to a remark, cited
+theorem, or footnote.
+
+### `PAR-3`: Smuggled example
+
+"(e.g. …)" carrying a genuine example.
+
+**Banned:** "several distinct lifts (e.g. several monoidal structures on one
+category)."
+
+**Preferred:** promote to a first-class example block.
+
+### `PAR-4`: Legitimate qualification
+
+A small, correct, load-bearing modifier. Keep inline.
+
+**Fine as is:** "fibers are (possibly nontrivial) groupoids."
+
+### `PAR-5`: Padding or tangent
+
+Carries no load.
+
+**Preferred:** delete. A parenthetical is usually wrong when it is a
+tangent.
+
+## Not flags
+
+Standard mathematical hedging and signposting that carry real content are not
+violations: "provided", "up to isomorphism", "without loss of generality", a
+genuine sign or normalization convention, and a Remark that explains a real
+subtlety in context. The test is whether removing the phrase removes
+information. A tagline removes none.
