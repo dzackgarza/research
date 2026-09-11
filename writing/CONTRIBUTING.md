@@ -2135,6 +2135,69 @@ $T$ is a morphism $T\to X$." One clause, "Recall" signals this is not the
 defining occurrence but a reminder that cites it, and the parenthetical
 `\ref` is the link.
 
+### `DEF-30`: Circular definition via diagram label
+
+The definiendum appears as a label in the diagram that is supposed to
+define it — the square's apex is already labeled $f^{-1}(y)$ and then the
+text says "the fiber of $f$ over $y$ is the apex." The diagram
+presupposes the notation being defined. Label the apex neutrally (e.g.
+$P$) in the diagram that defines it; introduce the notation
+$f^{-1}(y):=P$ after the universal property is stated.
+
+**Banned:** the quoted square with apex $f^{-1}(y)$ and the sentence
+"The fiber of $f$ over $y$ is the apex of the cartesian square" — the
+apex is already called $f^{-1}(y)$.
+
+**Preferred:** "The **fiber** $f^{-1}(y)$ is the pullback $X\times_Y 1$,
+i.e. an object $f^{-1}(y)$ equipped with projections
+$p_1\colon f^{-1}(y)\to X$, $p_2\colon f^{-1}(y)\to1$ and a specified
+equivalence $f\circ p_1\simeq y\circ p_2$ exhibiting the square as
+(homotopy) cartesian. In the diagram write the apex as $X\times_Y 1$ or
+$P$, then put $f^{-1}(y):=X\times_Y 1$."
+
+### `DEF-31`: "The relevant pullbacks" as a hypothesis
+
+A definition assumes "let $\mathcal{C}$ have a terminal object $1$ and
+the relevant pullbacks" without stating which pullbacks are assumed to
+exist. "The relevant" names no class of diagrams and the reader cannot
+determine whether the particular pullback needed for the definition
+exists. State the hypothesis: either "$\mathcal{C}$ has all pullbacks"
+or "assume the pullback of $f$ along $y$ exists."
+
+**Banned:** "Let $\mathcal{C}$ have a terminal object $1$ and the
+relevant pullbacks, let $f\colon X\to Y$, and let $y\colon1\to Y$ be a
+point."
+
+**Preferred:** "Let $\mathcal{C}$ be an $\infty$-category with terminal
+object $1$ and assume the pullback of $f\colon X\to Y$ along
+$y\colon1\to Y$ exists" or "Let $\mathcal{C}$ be an $\infty$-category
+with all pullbacks, terminal object $1$, $f\colon X\to Y$, and
+$y\colon1\to Y$."
+
+### `DEF-32`: Fiber as apex alone, without its projections and homotopy
+
+The fiber is defined as "the apex of the cartesian square," naming only
+the object $f^{-1}(y)$. The fiber is the object *equipped with* its
+projections $f^{-1}(y)\to X$, $f^{-1}(y)\to1$ and the specified
+equivalence $f\circ\mathrm{pr}_X\simeq y\circ\mathrm{pr}_1$ that exhibits
+the square as cartesian. In the book's default
+$\mathcal{C}:=\mathbf{Cat}_\infty$ the square is a homotopy pullback,
+unique up to a contractible space of equivalences, not a strict pullback
+with a unique apex on the nose.
+
+Concrete standard: for $f\colon X\to Y$ and $y\colon1\to Y$ in an
+$\infty$-category with pullbacks, the **fiber** is the homotopy pullback
+$f^{-1}(y):=X\times_Y 1$ with its projections and the specified
+$2$-cell $f\circ p_1\Rightarrow y\circ p_2$ (marked $\lrcorner$).
+
+**Banned:** "The fiber of $f$ over $y$ is the apex of the cartesian
+square" with the square's two projections and $2$-cell unstated.
+
+**Preferred:** "The **fiber** of $f$ over $y$ is the homotopy pullback
+$X\times_Y 1$, i.e. the object $f^{-1}(y)$ with $p_1\colon f^{-1}(y)\to X$,
+$p_2\colon f^{-1}(y)\to1$, and $\alpha\colon f\circ p_1\simeq y\circ p_2$
+exhibiting the square as cartesian."
+
 ### `PR-24`: Self-referential meta-prose about the text's structure, notation, or theorems
 
 A professional mathematics text extremely rarely is self-referential,
