@@ -21,12 +21,27 @@ conversion." State the content; do not characterize the text.
 
 ### `PR-2`: Reflexive negative parallelism
 
-A notion is characterized by contrast with the alternative it rejects.
+A notion is characterized by contrast with the alternative it rejects:
+"X, not Y" / "is X, never Y" / "not just X but Y" / "X rather than Y"
+— including manufactured negative parallelism of the form "their mere
+existence supplies no $X$," which negates an expectation no one held.
+Existence of objects never supplies an order, a comparison, or extra
+structure unless one is defined; stating that it does not is true by
+default and adds no claim to the skeleton (SEC-6). The contrast sounds
+substantive while carrying no content, and it wastes the reader's
+attention on a strawman.
 
-**Banned:** "$a = b$ is a theorem, never a definitional identity."
+**Banned:** "$a = b$ is a theorem, never a definitional identity";
+"Their mere existence supplies no order relation among them" — when
+several targets are available, the comparison data are either a chosen
+target or a functor comparing the targets; that existence alone supplies
+no order is the default and states nothing.
 
-**Preferred:** state the positive claim and stop. If the contrast carries
-information, make it a Remark and explain it in context.
+**Preferred:** state the positive claim and stop. "When several targets
+are available, the comparison data are either a chosen target or a
+functor comparing the targets." If the contrast carries information
+(e.g. a genuine non-example where an expected order fails), make it a
+Remark and explain the precise obstruction in context.
 
 ### `PR-3`: Self-certification
 
