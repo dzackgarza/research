@@ -422,7 +422,6 @@ from dzack_research.preamble.categories.functors.hom_packets import (
     induced_hom_functor,
 )
 from dzack_research.preamble.categories.functors.module_localization import (
-    ModuleLocalizationFunctor,
     module_localization_functor,
 )
 from dzack_research.preamble.categories.group import (  # noqa: F401

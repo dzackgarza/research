@@ -1,6 +1,5 @@
 r"""Localization of modules as scalar extension along a ring localization."""
 
-from sage.misc.cachefunc import cached_function
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.functors.scalar_change import (
@@ -311,15 +310,14 @@ class LocalizationKernelComparison(SageObject):
         )
 
 
-@cached_function
 def module_localization_functor(localization_ring):
-    return ModuleLocalizationFunctor(localization_ring)
+    r"""Compatibility spelling for the localization ring's canonical functor."""
+    return localization_ring.localization_functor()
 
 
 __all__ = [
     "LocalizationCokernelComparison",
     "LocalizationKernelComparison",
     "LocalizedModules",
-    "ModuleLocalizationFunctor",
     "module_localization_functor",
 ]

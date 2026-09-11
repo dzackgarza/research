@@ -35,9 +35,6 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""``S^{-1}(R^2)`` for ``S^{-1}R`` this category's ring."""
-        from dzack_research.preamble.categories.functors.module_localization import (
-            ModuleLocalizationFunctor,
-        )
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
         from dzack_research.preamble.categories.rings.commutative_algebra import LocalizationRings
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
@@ -50,7 +47,7 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         source = BasedFreeModule(
             localization_ring.localization_source(), finite_ordinal_set(2)
         )
-        return ModuleLocalizationFunctor(localization_ring)(source)
+        return localization_ring.localize_module(source)
 
     def super_categories(self):
 

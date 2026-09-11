@@ -521,16 +521,21 @@ class LocalizationRings(OwnedCategory):
                 raise NotImplementedError("this localization has no selected computation realization")
             return engine
 
+        @cached_method
+        def localization_functor(self):
+            r"""Return the canonical module-localization functor along this ring localization."""
+            from dzack_research.preamble.categories.functors.module_localization import (
+                ModuleLocalizationFunctor,
+            )
+
+            return ModuleLocalizationFunctor(self)
+
         def localize_module(self, module):
-            r"""Return ``S^{-1}M`` through the module-localization theory."""
+            r"""Return ``S^{-1}M`` through this localization's canonical functor."""
 
             if module.base_ring() is not self.localization_source():
                 raise ValueError("the module has the wrong source ring for this localization")
-            from dzack_research.preamble.categories.functors.module_localization import (
-                module_localization_functor,
-            )
-
-            return module_localization_functor(self)(module)
+            return self.localization_functor()(module)
 
         def _valid_denominator(self, denominator) -> bool:
             try:
