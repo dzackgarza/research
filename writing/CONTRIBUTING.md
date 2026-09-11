@@ -1914,3 +1914,19 @@ $\mathbf{BMod}_R\to\mathbf{LMod}_R$, $(M,e)\mapsto M$, and
 $\mathbf{BMod}_R\to\mathbf{Sets}$, $(M,e)\mapsto I$, are part of the
 data. Then put $\operatorname{Bas}_I(M):=\operatorname{Iso}(F(I),M)$,
 which is a torsor under $\operatorname{Aut}(F(I))$ when nonempty.
+
+### `DEF-26`: Bold the term being defined
+
+In a definition, the term being defined is bold at its first
+introduction. This marks the definiendum for the reader and for
+cross-referencing. The surrounding text states the quantifiers and
+conditions; the bold names which word is being introduced.
+
+**Banned:** "An $R$-module $M$ is torsion when …" — the term "torsion"
+is not marked.
+
+**Preferred:** "An $R$-module $M$ is **torsion** if
+$\operatorname{Ann}_R(m)\neq0$ for every $m\in M$." Similarly, "A family
+$(m_i)_{i\in I}$ in $M$ is a **basis** if …," "A **based module** is a
+pair $(M,e)$ …," "A $t$-structure is **hereditary** if …" Bold the term;
+do not bold surrounding prose.
