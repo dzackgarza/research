@@ -2843,10 +2843,10 @@ preamble/coble.sage	Coble.isotropic_vectors_in_TEn	method	103	0		src/dzack_resea
 preamble/coble.sage	Coble.isotropic_vectors_in_TdP	method	116	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
 preamble/coble.sage	Coble.rank_ten_coxeter_roots	method	130	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
 preamble/coble.sage	Coble.rank_ten_diagram	method	190	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
-preamble/display.py	<module>	module	1	0			unreviewed
-preamble/display.py	typesets_itself	function	35	0			unreviewed
-preamble/display.py	latex_if_typesettable	function	52	0			unreviewed
-preamble/display.py	install_implicit_typesetting	function	59	0			unreviewed
+preamble/display.py	<module>	module	1	0		src/dzack_research/preamble/categories/_lattice.py	reconciled-live-owner
+preamble/display.py	typesets_itself	function	35	0		src/dzack_research/preamble/categories/_lattice.py	reconciled-live-owner
+preamble/display.py	latex_if_typesettable	function	52	0		src/dzack_research/preamble/categories/_lattice.py	reconciled-live-owner
+preamble/display.py	install_implicit_typesetting	function	59	0		src/dzack_research/preamble/categories/_lattice.py	reconciled-live-owner
 preamble/init.sage	<module>	module	1	0			unreviewed
 preamble/install.sage	<module>	module	1	0			unreviewed
 preamble/install.sage	install_preamble	function	32	0			unreviewed
