@@ -1688,6 +1688,8 @@ behavior.
 
 ### Active claims
 
+| `RUNTIME-sage-bin-20260911-0637` | runtime-available-at-t / tracked Sage development launcher | M0 continuation; `/home/dzack/research` | `.envrc; TODO.md` (write) | `0150f9d2` | 2026-09-11T06:37:00Z |
+
 
 
 
