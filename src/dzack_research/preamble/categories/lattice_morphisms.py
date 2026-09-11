@@ -2,7 +2,6 @@ r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
-from sage.categories.category import Category
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
@@ -16,6 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     category_packet,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
 from dzack_research.preamble.categories.group.groups import (
@@ -1229,7 +1229,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             hom_family,
             domain,
             codomain,
-            category=Category.join(tuple(categories)) if categories else None,
+            category=Cat().meet(tuple(categories)) if categories else None,
         )
 
     def _element_constructor_(self, images):
