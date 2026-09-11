@@ -5,11 +5,18 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from sage.rings.integer_ring import ZZ as SageZZ
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/modules/pure/free_modules.sage",
-    "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/categories/modules/pure/free_modules.sage",
+        "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/test_infinite_modules.sage",
+        "live_owner": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def _countable_labels():
@@ -48,3 +55,12 @@ def test_countable_free_module_operations_do_not_require_a_finite_basis() -> Non
     assert x + module.zero() == x
     assert (x + y) - y == x
     assert integers(2) * x == x + x
+
+
+def test_finiteness_remains_a_property_of_the_framing_not_of_every_free_module() -> None:
+    integers = _own_ring(SageZZ)
+    infinite = FreeModuleOn(integers, _countable_labels())
+    finite = FreeModuleOn(integers, Sets.Δ[2])
+
+    assert finite.module_generating_set() in Sets().Finite()
+    assert infinite.module_generating_set() not in Sets().Finite()

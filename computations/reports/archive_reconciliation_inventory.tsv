@@ -3244,11 +3244,11 @@ preamble/tests/test_group_hierarchy.sage	test_finite_generation_is_what_makes_th
 preamble/tests/test_group_hierarchy.sage	test_four_realizations_of_c2_expose_their_presentations_directly	specimen	352	0			unreviewed
 preamble/tests/test_group_hierarchy.sage	test_standard_finite_groups_are_finitely_presented	specimen	373	0			unreviewed
 preamble/tests/test_group_hierarchy.sage	test_groups_is_the_flat_catalogue_of_standard_groups	specimen	388	0			unreviewed
-preamble/tests/test_infinite_modules.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_infinite_modules.sage	test_a_countably_framed_free_module_is_constructible	specimen	40	0			unreviewed
-preamble/tests/test_infinite_modules.sage	test_its_generators_are_a_set_that_need_not_be_counted	specimen	51	0			unreviewed
-preamble/tests/test_infinite_modules.sage	test_elements_add_and_scale_without_a_finite_basis	specimen	67	0			unreviewed
-preamble/tests/test_infinite_modules.sage	test_finiteness_is_an_axiom_the_module_does_not_claim	specimen	79	0			unreviewed
+preamble/tests/test_infinite_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/tests/test_infinite_modules.sage	test_a_countably_framed_free_module_is_constructible	specimen	40	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/tests/test_infinite_modules.sage	test_its_generators_are_a_set_that_need_not_be_counted	specimen	51	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/tests/test_infinite_modules.sage	test_elements_add_and_scale_without_a_finite_basis	specimen	67	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/tests/test_infinite_modules.sage	test_finiteness_is_an_axiom_the_module_does_not_claim	specimen	79	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/tests/test_known_mathematics.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_known_mathematics.sage	Out	binding	33	0			unreviewed
 preamble/tests/test_known_mathematics.sage	FINITELY_GENERATED	binding	95	0			unreviewed
