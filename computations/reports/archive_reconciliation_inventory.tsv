@@ -3490,19 +3490,19 @@ preamble/tests/test_preamble_refine.sage	test_a_module_takes_zero_to_its_own_zer
 preamble/tests/test_preamble_refine.sage	test_a_polynomial_ring_is_the_free_algebra_the_notebook_receives	specimen	269	0			unreviewed
 preamble/tests/test_preamble_refine.sage	test_real_roots_come_from_the_algebraic_closure	specimen	304	0			unreviewed
 preamble/tests/test_preamble_refine.sage	test_the_noncrystallographic_coxeter_groups_have_their_orders	specimen	343	0			unreviewed
-preamble/tests/test_ring_centers.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_a_commutative_ring_is_its_own_centre	specimen	52	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_the_even_part_of_a_wedge_is_central_and_a_generator_is_not	specimen	63	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_the_centre_of_a_wedge_is_a_subring_one_can_ask_about	specimen	79	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_the_centre_of_a_wedge_is_commutative	specimen	98	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_a_ring_that_cannot_name_generators_declines	specimen	109	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_an_infinite_generating_set_is_not_a_finite_check	specimen	124	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_an_algebra_map_corestricts_to_the_centre_when_the_generators_are_central	specimen	139	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_a_map_whose_generators_leave_the_centre_does_not_corestrict	specimen	160	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_the_core_of_a_category_has_the_same_objects	specimen	173	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_a_category_performs_its_constructions_as_an_object_of_Cat	specimen	184	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_the_centre_functor_transports_an_isomorphism	specimen	204	0			unreviewed
-preamble/tests/test_ring_centers.sage	test_the_centre_functor_refuses_an_arrow_that_is_not_invertible	specimen	220	0			unreviewed
+preamble/tests/test_ring_centers.sage	<module>	module	1	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_a_commutative_ring_is_its_own_centre	specimen	52	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_the_even_part_of_a_wedge_is_central_and_a_generator_is_not	specimen	63	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_the_centre_of_a_wedge_is_a_subring_one_can_ask_about	specimen	79	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_the_centre_of_a_wedge_is_commutative	specimen	98	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_a_ring_that_cannot_name_generators_declines	specimen	109	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_an_infinite_generating_set_is_not_a_finite_check	specimen	124	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_an_algebra_map_corestricts_to_the_centre_when_the_generators_are_central	specimen	139	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_a_map_whose_generators_leave_the_centre_does_not_corestrict	specimen	160	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_the_core_of_a_category_has_the_same_objects	specimen	173	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_a_category_performs_its_constructions_as_an_object_of_Cat	specimen	184	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_the_centre_functor_transports_an_isomorphism	specimen	204	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/tests/test_ring_centers.sage	test_the_centre_functor_refuses_an_arrow_that_is_not_invertible	specimen	220	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/tests/test_ring_quotient_value_modules.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_ring_quotient_value_modules.sage	test_the_session_names_Q_mod_Z_and_lands_it_in_the_owned_category	specimen	28	0			unreviewed
 preamble/tests/test_ring_quotient_value_modules.sage	test_a_finitely_generated_submodule_of_Q_mod_Z_is_cyclic	specimen	49	0			unreviewed
