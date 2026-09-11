@@ -1509,6 +1509,19 @@ class OwnedFields(OwnedCategory):
         def residue_map(self):
             return ring_homset(self, self).identity()
 
+        def absolute_galois_group(self):
+            r"""Return the absolute Galois group ``G_K`` of this field ``K``.
+
+            The group is the existing profinite owner; this field method is
+            only the mathematical construction site and creates no parallel
+            realization.
+            """
+            from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
+                AbsoluteGaloisGroup,
+            )
+
+            return AbsoluteGaloisGroup(self)
+
 
 class OwnedOrders(OwnedCategory):
     r"""Orders in number fields as a ring-theoretic property category."""
