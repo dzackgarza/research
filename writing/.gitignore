@@ -5,3 +5,10 @@
 
 # Quarto's notebook intermediate, written beside each source it executes.
 **/*.quarto_ipynb
+
+# Quarto renders each input to a sibling of the source and then moves the result
+# into _site, so these appear under writing/ rather than in the project root: the
+# intermediate page, the directory of assets that belongs to it, and the
+# cross-reference index. A killed or overlapping render leaves them behind.
+**/*_files/
+**/._htmlbook_xref.json

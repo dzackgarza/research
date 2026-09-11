@@ -52,6 +52,26 @@ alternatives are to list it, or to generate standalone HTML the way
 
 (A `website` project does render discovered files. A book does not.)
 
+## A book sidebar has exactly two levels, and the book type is not optional
+
+`book.chapters` takes parts, and a part takes chapters. That is the whole depth.
+A `part:` nested inside a part's `chapters:` is rejected by the schema — and the
+message blames the *outer* part, so it reads as though parts were never allowed.
+`book.sidebar.contents`, which in a website project accepts arbitrary `section:`
+nesting, is accepted by the book schema and then ignored: the rendered sidebar is
+built from `chapters:` regardless, one level deep.
+
+So a readable tree has to be spent on the parts. Ninety chapters under two parts
+put a ninety-row flat list on every page; the same chapters under nineteen parts
+are nineteen collapsed rows. Grouping costs nothing else as long as each part is a
+*contiguous run* of the existing order — chapter numbers are positional, so a
+regrouping that moves no chapter changes no number and no cross-reference.
+
+Note what this rules out. The obvious escape — move to a `website` project, which
+does nest — would break every cross-file crossref, and the category-theory part
+has 173 of them (against 78 that stay inside one file). Cross-file `@ref` is a
+book feature. The book type is load-bearing, not a default someone picked.
+
 ## Two Quarto processes on one project corrupt each other
 
 Quarto renders each input to a sibling `.html` beside the source, then moves it

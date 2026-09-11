@@ -29,7 +29,7 @@ from pathlib import Path
 DATA = Path("writing/data")
 AUDIT = DATA / "sage-source-audit-10.9/sagemath-10.9-category-inventory.json"
 RUNTIME = DATA / "sage-runtime-10.10.beta0/sagemath-10.10.beta0-runtime-inventory.json"
-OUT = Path("writing/.book/inventory")
+OUT = Path("writing/category-theory/sage/inventory")
 
 SEP = "; "          # every multi-valued audit field except `bases`
 BASE_SEP = ","      # `bases` alone
@@ -47,6 +47,25 @@ def write(path: Path, title: str, body: list[str]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     page = [f"# {title}", ""] + body
     path.write_text("\n".join(page).rstrip() + "\n", encoding="utf-8")
+
+
+def anchor(prefix: str, name: str) -> str:
+    """A heading id for one entity.
+
+    Quarto derives an id from the heading text, which mangles a name like
+    `MonoidAlgebras(base_ring)`, so every entity section states its own. The
+    prefixes are short and none of them is one Quarto reserves for a crossref
+    (def- thm- lem- cor- prp- cnj- exm- exr- fig- tbl- eq- sec- lst-).
+    """
+    slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in name).strip("-")
+    while "--" in slug:
+        slug = slug.replace("--", "-")
+    return f"{prefix}-{slug}"
+
+
+def section(prefix: str, name: str, body: list[str]) -> list[str]:
+    """One entity as a section of its catalogue page."""
+    return [f"## {name} {{#{anchor(prefix, name)}}}", ""] + body
 
 
 def table(header: list[str], rows: list[list[str]]) -> list[str]:
@@ -73,26 +92,32 @@ declarations = audit["feature_declarations"]
 aliases = audit["aliases"]
 
 # --- the link table -------------------------------------------------------------
-# A name links only when its page exists. Seven `functorial construction` feature
+# An entity is a section of its catalogue page, not a page of its own: a Quarto book
+# publishes exactly the files `book.chapters` names, so 290 per-entity pages would
+# have to be 290 sidebar rows to reach a reader at all (writing/.book/TRAPS.md).
+# Every target is therefore `<catalogue>.md#<anchor>`, and the pages sit flat in OUT
+# so one spelling works from all of them.
+#
+# A name links only when its entity exists. Seven `functorial construction` feature
 # names (Complex, DualCategory, Endsets, FinitelyGenerated, Lie, Morphism, Semisimple)
 # name no registered construction, and a link for them would point at nothing.
-CATEGORY_PAGE = {c["constructor"]: f"categories/{c['constructor']}.md" for c in categories}
+CATEGORY_PAGE = {c["constructor"]: f"categories.md#{anchor('cat', c['constructor'])}"
+                 for c in categories}
 CONSTRUCTOR_OF = {c["category_id"]: c["constructor"] for c in categories}
-AXIOM_PAGE = {a["axiom"]: f"axioms/{a['axiom']}.md" for a in axioms}
-CONSTRUCTION_PAGE = {c["construction"]: f"constructions/{c['construction']}.md"
+AXIOM_PAGE = {a["axiom"]: f"axioms.md#{anchor('ax', a['axiom'])}" for a in axioms}
+CONSTRUCTION_PAGE = {c["construction"]: f"constructions.md#{anchor('con', c['construction'])}"
                      for c in constructions}
 
 
-def link(name: str, pages: dict[str, str], depth: int) -> str:
-    """Link `name` into `pages` from a page `depth` directories below OUT."""
+def link(name: str, pages: dict[str, str]) -> str:
     target = pages.get(name)
     if target is None:
         return code(name)
-    return f"[{code(name)}]({'../' * depth}{target})"
+    return f"[{code(name)}]({target})"
 
 
-def link_all(value: str, pages: dict[str, str], depth: int, sep: str = SEP) -> str:
-    return ", ".join(link(part, pages, depth) for part in split(value, sep))
+def link_all(value: str, pages: dict[str, str], sep: str = SEP) -> str:
+    return ", ".join(link(part, pages) for part in split(value, sep))
 
 
 # --- runtime facts, attributed to the source class that owns them ------------------
@@ -128,8 +153,9 @@ placed: set[int] = set()   # id() of every input row rendered onto some page
 if OUT.exists():
     shutil.rmtree(OUT)
 
-# --- one page per category --------------------------------------------------------
-for cat in categories:
+# --- the category catalogue -------------------------------------------------------
+catalogue: list[str] = []
+for cat in sorted(categories, key=lambda c: c["constructor"]):
     name = cat["constructor"]
     body: list[str] = []
     body += fields([
@@ -137,11 +163,11 @@ for cat in categories:
         ("role", cat["role"]),
         ("implementation", cat["implementation_kind"]),
         ("defined by", cat["defining_relation"]),
-        ("direct defining axiom", link_all(cat["direct_defining_axiom"], AXIOM_PAGE, 2)),
-        ("syntactic axiom chain", link_all(cat["syntactic_defining_axiom_chain"], AXIOM_PAGE, 2)),
-        ("defining construction", link_all(cat["defining_functorial_construction"], CONSTRUCTION_PAGE, 2)),
+        ("direct defining axiom", link_all(cat["direct_defining_axiom"], AXIOM_PAGE)),
+        ("syntactic axiom chain", link_all(cat["syntactic_defining_axiom_chain"], AXIOM_PAGE)),
+        ("defining construction", link_all(cat["defining_functorial_construction"], CONSTRUCTION_PAGE)),
         ("bound as", code(cat["bound_as"]) if cat["bound_as"] else ""),
-        ("bases", link_all(cat["bases"], CATEGORY_PAGE, 2, BASE_SEP)),
+        ("bases", link_all(cat["bases"], CATEGORY_PAGE, BASE_SEP)),
         ("source", f"[{code(cat['source'])}]({cat['source_url']})"),
         ("loads at 10.10", "yes" if loaded.get(cat["category_id"]) else "no"),
         ("notes", cat["notes"]),
@@ -155,16 +181,16 @@ for cat in categories:
     ):
         paths = split(cat[field])
         if paths:
-            body += [f"## {label}", ""]
+            body += [f"### {label}", ""]
             body += [f"- {code(p)}" for p in paths] + [""]
 
     own = declared_by.get(cat["category_id"], [])
     if own:
-        body += [f"## Declared features ({len(own)})", ""]
+        body += [f"### Declared features ({len(own)})", ""]
         body += table(
             ["feature", "type", "declaration", "target or expansion", "source"],
             [[link(d["feature_name"],
-                   AXIOM_PAGE if d["feature_type"] == "axiom" else CONSTRUCTION_PAGE, 2),
+                   AXIOM_PAGE if d["feature_type"] == "axiom" else CONSTRUCTION_PAGE),
               d["feature_type"], d["declaration_kind"],
               code(d["target_or_expansion"]) if d["target_or_expansion"] else "",
               f"[{code(d['source'])}]({d['source_url']})"] for d in own])
@@ -175,21 +201,24 @@ for cat in categories:
         ("Construction-generated classes", construction_generated.get(name, []), "construction"),
     ):
         if entries:
-            body += [f"## {label} at 10.10 ({len(entries)})", ""]
+            body += [f"### {label} at 10.10 ({len(entries)})", ""]
             body += table(["class", "module", column],
                           [[code(e["qualname"]), code(e["module"]), code(e[column])]
                            for e in entries])
             placed.update(id(e) for e in entries)
 
-    write(OUT / "categories" / f"{name}.md", name, body)
+    catalogue += section("cat", name, body)
 
-# --- one page per axiom -----------------------------------------------------------
-for ax in axioms:
+write(OUT / "categories.md", "Sage categories", catalogue)
+
+# --- the axiom catalogue ----------------------------------------------------------
+catalogue = []
+for ax in sorted(axioms, key=lambda a: a["axiom"]):
     name = ax["axiom"]
     body = fields([
         ("status", ax["status"]),
         ("registry entry", f"[{code(ax['registry_source'])}]({ax['registry_source_url']})"),
-        ("defining categories", link_all(ax["defining_named_categories"], CATEGORY_PAGE, 2)),
+        ("defining categories", link_all(ax["defining_named_categories"], CATEGORY_PAGE)),
         ("interface declarations", code(ax["interface_declarations"]) if ax["interface_declarations"] else ""),
         ("implementation or binding", code(ax["implementation_or_binding_declarations"]) if ax["implementation_or_binding_declarations"] else ""),
         ("method expansions", code(ax["method_expansions"]) if ax["method_expansions"] else ""),
@@ -198,22 +227,25 @@ for ax in axioms:
 
     where = axiom_declared_in.get(name, [])
     if where:
-        body += [f"## Declared in ({len(where)})", ""]
+        body += [f"### Declared in ({len(where)})", ""]
         body += table(["category", "declaration", "source"],
-                      [[link(CONSTRUCTOR_OF[d["category_id"]], CATEGORY_PAGE, 2),
+                      [[link(CONSTRUCTOR_OF[d["category_id"]], CATEGORY_PAGE),
                         d["declaration_kind"], f"[{code(d['source'])}]({d['source_url']})"]
                        for d in where])
 
     generated = [e for entries in axiom_generated.values() for e in entries if e["axiom"] == name]
     if generated:
-        body += [f"## Classes the framework generates at 10.10 ({len(generated)})", ""]
+        body += [f"### Classes the framework generates at 10.10 ({len(generated)})", ""]
         body += table(["class", "module"],
                       [[code(e["qualname"]), code(e["module"])] for e in generated])
 
-    write(OUT / "axioms" / f"{name}.md", name, body)
+    catalogue += section("ax", name, body)
 
-# --- one page per functorial construction -----------------------------------------
-for con in constructions:
+write(OUT / "axioms.md", "Sage axioms", catalogue)
+
+# --- the functorial construction catalogue ----------------------------------------
+catalogue = []
+for con in sorted(constructions, key=lambda c: c["construction"]):
     name = con["construction"]
     body = fields([
         ("flavor", con["flavor"]),
@@ -228,26 +260,28 @@ for con in constructions:
 
     where = construction_declared_in.get(name, [])
     if where:
-        body += [f"## Declared in ({len(where)})", ""]
+        body += [f"### Declared in ({len(where)})", ""]
         body += table(["category", "declaration", "source"],
-                      [[link(CONSTRUCTOR_OF[d["category_id"]], CATEGORY_PAGE, 2),
+                      [[link(CONSTRUCTOR_OF[d["category_id"]], CATEGORY_PAGE),
                         d["declaration_kind"], f"[{code(d['source'])}]({d['source_url']})"]
                        for d in where])
 
     generated = [e for entries in construction_generated.values()
                  for e in entries if e["construction"] == name]
     if generated:
-        body += [f"## Classes the framework generates at 10.10 ({len(generated)})", ""]
+        body += [f"### Classes the framework generates at 10.10 ({len(generated)})", ""]
         body += table(["class", "module"],
                       [[code(e["qualname"]), code(e["module"])] for e in generated])
 
-    write(OUT / "constructions" / f"{name}.md", name, body)
+    catalogue += section("con", name, body)
+
+write(OUT / "constructions.md", "Sage functorial constructions", catalogue)
 
 # --- aliases ----------------------------------------------------------------------
 write(OUT / "aliases.md", "Category aliases",
       ["Names kept for backward compatibility, each resolving to a canonical category.", ""]
       + table(["alias", "canonical", "status", "source"],
-              [[code(a["alias"]), link(a["canonical"], CATEGORY_PAGE, 1), a["status"],
+              [[code(a["alias"]), link(a["canonical"], CATEGORY_PAGE), a["status"],
                 f"[{code(a['source'])}]({a['source_url']})"] for a in aliases]))
 placed.update(id(a) for a in aliases)
 
@@ -292,8 +326,9 @@ for cat in categories:
     by_role[cat["role"]].append(cat)
 
 body = [
-    "Every category class, axiom and functorial construction Sage declares, each on "
-    "its own page, generated from the tracked audit data. Two measurements feed it.",
+    "Every category class, axiom and functorial construction Sage declares, each a "
+    "section of its catalogue below, generated from the tracked audit data. Two "
+    "measurements feed it.",
     "",
     f"**Source axis.** An AST audit of the SageMath {meta['sage_version']} distribution "
     f"at commit [`{meta['sage_commit'][:7]}`](https://github.com/sagemath/sage/commit/{meta['sage_commit']}), "
@@ -303,25 +338,25 @@ body = [
     f"measured {runtime['metadata']['measured']}, recording which of those classes load "
     "and what the framework generates from them.",
     "",
-    "The narrative reading of both is [the framework reference](../category-theory/sage/Sage-Category-Framework-Inventory.md).",
+    "The narrative reading of both is [the framework reference](../Sage-Category-Framework-Inventory.md).",
     "",
 ]
 body += table(["catalogue", "entries"], [
-    ["[Categories](#categories)", str(len(categories))],
-    ["[Axioms](#axioms)", str(len(axioms))],
-    ["[Functorial constructions](#functorial-constructions)", str(len(constructions))],
+    ["[Categories](categories.md)", str(len(categories))],
+    ["[Axioms](axioms.md)", str(len(axioms))],
+    ["[Functorial constructions](constructions.md)", str(len(constructions))],
     ["[Aliases](aliases.md)", str(len(aliases))],
     ["[Runtime enumeration](runtime.md)", f"{counts['total']} instances, {counts['joins']} joins"],
 ])
-body += ["## Categories", ""]
+body += ["## Categories by role", ""]
 for role in sorted(by_role, key=lambda r: -len(by_role[r])):
     entries = sorted(by_role[role], key=lambda c: c["constructor"])
     body += [f"### {role.capitalize()} ({len(entries)})", ""]
-    body += [", ".join(link(c["constructor"], CATEGORY_PAGE, 0) for c in entries), ""]
+    body += [", ".join(link(c["constructor"], CATEGORY_PAGE) for c in entries), ""]
 body += ["## Axioms", "",
-         ", ".join(link(a["axiom"], AXIOM_PAGE, 0) for a in sorted(axioms, key=lambda a: a["axiom"])), ""]
+         ", ".join(link(a["axiom"], AXIOM_PAGE) for a in sorted(axioms, key=lambda a: a["axiom"])), ""]
 body += ["## Functorial constructions", "",
-         ", ".join(link(c["construction"], CONSTRUCTION_PAGE, 0)
+         ", ".join(link(c["construction"], CONSTRUCTION_PAGE)
                    for c in sorted(constructions, key=lambda c: c["construction"])), ""]
 
 write(OUT / "index.md", "Sage category inventory", body)

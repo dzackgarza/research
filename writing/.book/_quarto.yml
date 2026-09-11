@@ -67,9 +67,15 @@ book:
         - category-theory/lean/Lean-Sage-Integration-Model.md
         - category-theory/lean/Category-Graph.md
         - category-theory/sage/Sage-Category-Framework-Inventory.md
-        # Only the index is a chapter; the 292 per-entity pages beside it reach no
-        # reader yet. Regenerate with `just sage-inventory`.
-        - inventory/index.md
+        # Generated wholesale by `just sage-inventory`; every entity is a section of
+        # the catalogue it belongs to, because a chapter is the only thing a book
+        # publishes and 290 entity pages would be 290 sidebar rows.
+        - category-theory/sage/inventory/index.md
+        - category-theory/sage/inventory/categories.md
+        - category-theory/sage/inventory/axioms.md
+        - category-theory/sage/inventory/constructions.md
+        - category-theory/sage/inventory/aliases.md
+        - category-theory/sage/inventory/runtime.md
         - category-theory/lean/Categorical-DSL.md
     - part: Authoring and reference
       chapters:
