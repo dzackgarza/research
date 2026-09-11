@@ -17,7 +17,13 @@ from dzack_research.preamble.categories.sets.indexed_families import IndexedFami
 def _common_category(*objects: Parent) -> Category:
     if not objects:
         raise ValueError("a categorical construction requires at least one object")
-    return Category.meet([obj.category() for obj in objects])
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    # In the owned inclusion order we need the *join*: the smallest category
+    # containing every input object.  Sage names the corresponding backend
+    # operation ``Category.meet`` because its internal order is the opposite
+    # one.  Keep that naming inversion confined to Cat.join().
+    return Cat().join(tuple(obj.category() for obj in objects))
 
 
 def TensorProduct(left: Parent, right: Parent) -> Parent:
