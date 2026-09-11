@@ -9,6 +9,17 @@ the current ``VectorPrimitiveExtension`` object.
 
 from dzack_research.preamble.all import Lattices, ZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage",
+    "live_owner": "src/dzack_research/preamble/categories/vector_orbits.py",
+    "owner_overrides": {
+        "orthogonal_group_vector_equivalence_witness": "src/dzack_research/preamble/categories/lattice_morphisms.py",
+        "orthogonal_group_vector_stabilizer_generators": "src/dzack_research/preamble/categories/lattice_morphisms.py",
+        "vector_primitive_extension": "src/dzack_research/preamble/categories/lattices.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_a2_vector_extension_has_the_expected_nontrivial_gluing() -> None:
     lattice = Lattices(ZZ)("A2")

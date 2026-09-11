@@ -1687,19 +1687,19 @@ preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobj
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.embedded_module_generators	method	240	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.isotropic_reduction	method	257	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobject	function	334	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	forms	binding	42	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	orthogonal_group_vector_equivalence_witness	function	137	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	orthogonal_group_vector_stabilizer_generators	function	170	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension	class	200	1	src/dzack_research/preamble/categories/vector_orbits.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension.representative_of	method	387	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension.class_of_representative	method	401	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension.complement_is_definite	method	414	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	vector_primitive_extension	function	432	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	definite_complement_extensions	function	442	1	src/dzack_research/preamble/categories/vector_orbits.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	gluing_route_discriminant_classes	function	511	1	src/dzack_research/preamble/categories/vector_orbits.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	is	class	524	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	stable_complement_root_reflections	function	647	1	src/dzack_research/preamble/categories/vector_orbits.py		unreviewed
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	<module>	module	1	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	forms	binding	42	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	orthogonal_group_vector_equivalence_witness	function	137	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	orthogonal_group_vector_stabilizer_generators	function	170	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension	class	200	1	src/dzack_research/preamble/categories/vector_orbits.py	src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension.representative_of	method	387	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension.class_of_representative	method	401	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	VectorPrimitiveExtension.complement_is_definite	method	414	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	vector_primitive_extension	function	432	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	definite_complement_extensions	function	442	1	src/dzack_research/preamble/categories/vector_orbits.py	src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	gluing_route_discriminant_classes	function	511	1	src/dzack_research/preamble/categories/vector_orbits.py	src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	is	class	524	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	stable_complement_root_reflections	function	647	1	src/dzack_research/preamble/categories/vector_orbits.py	src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	VertexLabel	binding	113	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectivePointDatum	binding	117	0			unreviewed
