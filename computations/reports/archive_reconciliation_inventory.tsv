@@ -2912,19 +2912,19 @@ preamble/lexicon/interop.py	SageParent	reexport	1	2			unreviewed
 preamble/lexicon/interop.py	SageQmodnZ	reexport	1	1	src/dzack_research/preamble/lexicon/interop.py		unreviewed
 preamble/lexicon/interop.py	SageQuadraticForm	reexport	1	1	src/dzack_research/preamble/lexicon/interop.py		unreviewed
 preamble/lexicon/interop.py	SageUniqueRepresentation	reexport	1	2			unreviewed
-preamble/owned_category.py	<module>	module	1	0			unreviewed
-preamble/owned_category.py	classes	binding	15	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	itself	class	17	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	CatConstructionsMixin	class	193	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	declared_implementation_types	function	310	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	graph	class	327	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	OwnedCategoryMixin	class	360	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	object_of	function	544	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	OwnedParent	class	580	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	OwnedParent.element_class	method	598	0			unreviewed
-preamble/owned_category.py	OwnedCategoryObject	class	635	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	the	class	645	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/owned_category.py	OwnedCategoryObject.category	method	692	0			unreviewed
+preamble/owned_category.py	<module>	module	1	0		src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	classes	binding	15	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	itself	class	17	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	CatConstructionsMixin	class	193	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	declared_implementation_types	function	310	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	graph	class	327	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	OwnedCategoryMixin	class	360	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	object_of	function	544	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	OwnedParent	class	580	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	OwnedParent.element_class	method	598	0		src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	OwnedCategoryObject	class	635	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	the	class	645	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/owned_category.py	reconciled-live-owner
+preamble/owned_category.py	OwnedCategoryObject.category	method	692	0		src/dzack_research/preamble/owned_category.py	reconciled-live-owner
 preamble/owned_category_bases.py	<module>	module	1	0			unreviewed
 preamble/owned_category_bases.py	Category	class	185	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
 preamble/owned_category_bases.py	CategoryWithParameters	class	203	1	src/dzack_research/preamble/owned_category_bases.py		unreviewed
