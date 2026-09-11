@@ -11,8 +11,11 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
+    ColimitsOfCategory,
     ConeCategory,
+    FiniteSequenceDiagram,
     InverseSystem,
+    LimitsOfCategory,
     restrict_diagram,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -248,3 +251,44 @@ def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> 
     from_initial = coproduct.factor(coproduct_cocone).apex_map()
     assert from_initial.domain() is coproduct.object()
     assert from_initial.codomain() is probe
+
+
+def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() -> None:
+    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    probe = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
+    e = line.module_generator("e")
+    t = probe.module_generator("t")
+    twice = module_homset(line, line)({"e": 2 * e})
+    thrice = module_homset(line, line)({"e": 3 * e})
+    diagram = FiniteSequenceDiagram((line, line, line), (twice, thrice), line.category())
+
+    limit = LimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
+    shape = diagram.domain()
+    assert diagram(shape.Mor(shape(0), shape(2)).unique()) == thrice * twice
+    assert twice * limit.structure_morphism(shape(0)) == limit.structure_morphism(shape(1))
+    assert thrice * limit.structure_morphism(shape(1)) == limit.structure_morphism(shape(2))
+
+    to_zero = module_homset(probe, line)({"t": e})
+    to_one = twice * to_zero
+    to_two = thrice * to_one
+    cone = ConeCategory(diagram).cone(
+        probe,
+        lambda index: (to_zero, to_one, to_two)[index.position()],
+    )
+    into_limit = limit.factor(cone).apex_map()
+    assert limit.structure_morphism(shape(0)) * into_limit == to_zero
+    assert limit.structure_morphism(shape(2)) * into_limit == to_two
+
+    colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
+    from_zero = module_homset(line, probe)({"e": 6 * t})
+    from_one = module_homset(line, probe)({"e": 3 * t})
+    from_two = module_homset(line, probe)({"e": t})
+    assert colimit.costructure_morphism(shape(1)) * twice == colimit.costructure_morphism(shape(0))
+    assert colimit.costructure_morphism(shape(2)) * thrice == colimit.costructure_morphism(shape(1))
+    cocone = CoconeCategory(diagram).cocone(
+        probe,
+        lambda index: (from_zero, from_one, from_two)[index.position()],
+    )
+    from_colimit = colimit.factor(cocone).apex_map()
+    assert from_colimit * colimit.costructure_morphism(shape(0)) == from_zero
+    assert from_colimit * colimit.costructure_morphism(shape(2)) == from_two

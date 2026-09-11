@@ -76,6 +76,176 @@ class InverseSystem(DiagramCategory):
         return self._base_index_category
 
 
+class FiniteOrdinalMorphism(Morphism):
+    r"""The unique arrow ``i -> j`` in a finite ordinal category when ``i <= j``."""
+
+    def __init__(self, parent) -> None:
+        Morphism.__init__(self, parent)
+
+    def __mul__(self, other):
+        if not isinstance(other, FiniteOrdinalMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return self.parent().ordinal_category().Mor(other.domain(), self.codomain()).unique()
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, FiniteOrdinalMorphism) and other.parent() is self.parent()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
+
+class FiniteOrdinalHomset(CategoricalHomset):
+    Element = FiniteOrdinalMorphism
+
+    def ordinal_category(self):
+        return self.base_category()
+
+    def cardinality(self):
+        return cardinal(1 if self.domain().position() <= self.codomain().position() else 0)
+
+    @cached_method
+    def unique(self):
+        if self.cardinality() != cardinal(1):
+            raise ValueError("there is no arrow in the decreasing direction of a finite ordinal")
+        return FiniteOrdinalMorphism(self)
+
+    def _element_constructor_(self, value=None):
+        if value is not None and value is not self.unique():
+            raise ValueError("a finite-ordinal Hom-set has at most one arrow")
+        return self.unique()
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one object")
+        return self.unique()
+
+
+class FiniteOrdinalHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = FiniteOrdinalHomset
+
+
+class FiniteOrdinalCategory(OwnedCategory):
+    r"""The category attached to the finite total order ``0 < ... < n-1``."""
+
+    _HomCategory = FiniteOrdinalHomCategoryConstruction
+
+    @staticmethod
+    @cached_function(key=lambda cls, size: (cls, int(size)))
+    def __classcall__(cls, size):
+        if isinstance(cls, DynamicMetaclass):
+            return cls.__base__(size)
+        return typecall(cls, size)
+
+    class ParentMethods:
+        def __init__(self, position, **rest) -> None:
+            self._position = int(position)
+            super().__init__(**rest)
+
+        def position(self) -> int:
+            return self._position
+
+        def _repr_(self) -> str:
+            return str(self.position())
+
+    def __init__(self, size) -> None:
+        size = int(size)
+        if size < 0:
+            raise ValueError("a finite ordinal category has nonnegative size")
+        self._object_set = Sets.Δ[size - 1]
+        self._objects = indexed_family(
+            self._object_set,
+            lambda position: object_of(self, position=int(position)),
+            name="Objects of a finite ordinal category",
+        )
+        super().__init__()
+
+    def super_categories(self):
+        return [OwnedObjects()]
+
+    def object_set(self):
+        return self._object_set
+
+    def objects(self):
+        return self._objects
+
+    def __call__(self, position):
+        return self._objects(self._object_set(position))
+
+    def __contains__(self, candidate) -> bool:
+        return getattr(candidate, "category", lambda: None)() is self
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a finite-ordinal Hom requires objects of this category")
+        return self.HomCategory().Of(domain, codomain)
+
+    def identity(self, obj):
+        return self.Mor(obj, obj).identity()
+
+    @cached_method
+    def arrows(self):
+        return finite_ordered_set(
+            tuple(
+                self.Mor(self(i), self(j)).unique()
+                for i in self.object_set()
+                for j in self.object_set()
+                if int(i) <= int(j)
+            )
+        )
+
+
+class FiniteSequenceDiagram(Functor):
+    r"""A finite composable sequence, with all composites derived from its transitions."""
+
+    def __init__(self, objects, transitions, target_category: Category) -> None:
+        self._objects = tuple(objects)
+        self._transitions = tuple(transitions)
+        if len(self._transitions) != max(0, len(self._objects) - 1):
+            raise ValueError("a finite sequence has one transition between consecutive objects")
+        if any(obj not in target_category for obj in self._objects):
+            raise TypeError("every finite-sequence object must lie in the target category")
+        for position, transition in enumerate(self._transitions):
+            if (
+                transition.domain() is not self._objects[position]
+                or transition.codomain() is not self._objects[position + 1]
+            ):
+                raise ValueError("a finite-sequence transition has the wrong consecutive endpoints")
+        self._shape = FiniteOrdinalCategory(len(self._objects))
+        super().__init__(self._shape, target_category)
+
+    def objects(self):
+        return indexed_family(
+            self.domain().object_set(),
+            lambda position: self._objects[int(position)],
+            name="Objects of a finite sequence diagram",
+        )
+
+    def transitions(self):
+        labels = Sets.Δ[len(self._transitions) - 1]
+        return indexed_family(
+            labels,
+            lambda position: self._transitions[int(position)],
+            name="Transitions of a finite sequence diagram",
+        )
+
+    def _apply_object(self, obj):
+        return self._objects[obj.position()]
+
+    def _apply_morphism(self, morphism):
+        source = morphism.domain().position()
+        target = morphism.codomain().position()
+        if source == target:
+            image = self._objects[source]
+            return _category_homset(self.codomain(), image, image).identity()
+        composite = self._transitions[source]
+        for position in range(source + 1, target):
+            composite = self._transitions[position] * composite
+        return composite
+
+
 class ParallelPairMorphism(Morphism):
     r"""One arrow of the walking parallel-pair category ``0 ⇉ 1``."""
 
@@ -851,12 +1021,214 @@ class LimitsOfCategory(Category):
     def _make_named_class_key(self, name):
         return self._index_category, self._target_category
 
+    def index_category(self):
+        return self._index_category
+
+    def target_category(self):
+        return self._target_category
+
     def super_categories(self):
         return [OwnedObjects()]
 
+    def _finite_shape_data(self, diagram):
+        if diagram.domain() is not self.index_category():
+            raise ValueError("a selected limit diagram has the wrong indexing category")
+        if diagram.codomain() is not self.target_category():
+            raise ValueError("a selected limit diagram has the wrong target category")
+        shape = self.index_category()
+        try:
+            object_set = shape.object_set()
+            objects = shape.objects()
+            arrows = shape.arrows()
+        except AttributeError as error:
+            raise NotImplementedError(
+                "the theorem-backed realization currently requires an indexing category "
+                "with represented finite object and arrow sets"
+            ) from error
+        if not cardinal(object_set.cardinality()).is_finite():
+            raise NotImplementedError(
+                "the current product/equalizer realization enumerates only a finite represented shape"
+            )
+        if not cardinal(arrows.cardinality()).is_finite():
+            raise NotImplementedError(
+                "the current product/equalizer realization enumerates only a finite represented arrow set"
+            )
+        return object_set, objects, arrows
+
+    def construction(self, diagram):
+        r"""Return the selected limit, using products and an equalizer on finite represented shapes."""
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            EqualizerConstruction,
+            ProductConstruction,
+        )
+
+        object_set, objects, arrows = self._finite_shape_data(diagram)
+        target = self.target_category()
+        object_factors = indexed_family(
+            object_set,
+            lambda label: diagram(objects.value(label)),
+            name="Object factors of a finite limit",
+        )
+        product_objects = ProductConstruction(
+            object_factors,
+            target_category=target,
+        )
+        arrow_factors = indexed_family(
+            arrows,
+            lambda arrow: diagram(arrow.codomain()),
+            name="Arrow-target factors of a finite limit",
+        )
+        product_arrows = ProductConstruction(
+            arrow_factors,
+            target_category=target,
+        )
+
+        def object_label(obj):
+            for label in object_set:
+                if objects.value(label) is obj:
+                    return label
+            raise ValueError("an arrow endpoint is not one of the indexing category's objects")
+
+        p_shape = product_objects.diagram().domain()
+        q_shape = product_arrows.diagram().domain()
+
+        def compatibility_map(use_diagram_arrow):
+            cone = ConeCategory(product_arrows.diagram()).cone(
+                product_objects.object(),
+                lambda q_index: (
+                    diagram(q_index.value())
+                    * product_objects.structure_morphism(
+                        p_shape(object_label(q_index.value().domain()))
+                    )
+                    if use_diagram_arrow
+                    else product_objects.structure_morphism(
+                        p_shape(object_label(q_index.value().codomain()))
+                    )
+                ),
+            )
+            return product_arrows.factor(cone).apex_map()
+
+        target_projection = compatibility_map(False)
+        arrow_projection = compatibility_map(True)
+        equalizer = EqualizerConstruction(target_projection, arrow_projection)
+        equalizer_shape = equalizer.diagram().domain()
+        into_product = equalizer.structure_morphism(equalizer_shape.source())
+        universal_cone = ConeCategory(diagram).cone(
+            equalizer.object(),
+            lambda index: (
+                product_objects.structure_morphism(p_shape(object_label(index)))
+                * into_product
+            ),
+        )
+
+        def factorizer(cone):
+            product_cone = ConeCategory(product_objects.diagram()).cone(
+                cone.apex(),
+                lambda index: cone.structure_morphism(objects.value(index.value())),
+            )
+            into_product_from_apex = product_objects.factor(product_cone).apex_map()
+            equalizer_cone = ConeCategory(equalizer.diagram()).cone(
+                cone.apex(),
+                lambda index: (
+                    into_product_from_apex
+                    if index is equalizer_shape.source()
+                    else target_projection * into_product_from_apex
+                ),
+            )
+            return equalizer.factor(equalizer_cone).apex_map()
+
+        return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+    def object(self, diagram):
+        return self.construction(diagram).object()
+
 
 class ColimitsOfCategory(LimitsOfCategory):
-    pass
+    def construction(self, diagram):
+        r"""Return the selected colimit, using coproducts and a coequalizer on finite shapes."""
+        from dzack_research.preamble.categories.abstract_categories.constructions import (
+            CoequalizerConstruction,
+            CoproductConstruction,
+        )
+
+        object_set, objects, arrows = self._finite_shape_data(diagram)
+        target = self.target_category()
+        object_cofactors = indexed_family(
+            object_set,
+            lambda label: diagram(objects.value(label)),
+            name="Object cofactors of a finite colimit",
+        )
+        coproduct_objects = CoproductConstruction(
+            object_cofactors,
+            target_category=target,
+        )
+        arrow_cofactors = indexed_family(
+            arrows,
+            lambda arrow: diagram(arrow.domain()),
+            name="Arrow-source cofactors of a finite colimit",
+        )
+        coproduct_arrows = CoproductConstruction(
+            arrow_cofactors,
+            target_category=target,
+        )
+
+        def object_label(obj):
+            for label in object_set:
+                if objects.value(label) is obj:
+                    return label
+            raise ValueError("an arrow endpoint is not one of the indexing category's objects")
+
+        a_shape = coproduct_arrows.diagram().domain()
+        b_shape = coproduct_objects.diagram().domain()
+
+        def compatibility_map(use_diagram_arrow):
+            cocone = CoconeCategory(coproduct_arrows.diagram()).cocone(
+                coproduct_objects.object(),
+                lambda a_index: (
+                    coproduct_objects.costructure_morphism(
+                        b_shape(object_label(a_index.value().codomain()))
+                    )
+                    * diagram(a_index.value())
+                    if use_diagram_arrow
+                    else coproduct_objects.costructure_morphism(
+                        b_shape(object_label(a_index.value().domain()))
+                    )
+                ),
+            )
+            return coproduct_arrows.factor(cocone).apex_map()
+
+        source_injection = compatibility_map(False)
+        arrow_injection = compatibility_map(True)
+        coequalizer = CoequalizerConstruction(source_injection, arrow_injection)
+        coequalizer_shape = coequalizer.diagram().domain()
+        from_coproduct = coequalizer.costructure_morphism(coequalizer_shape.target())
+        universal_cocone = CoconeCategory(diagram).cocone(
+            coequalizer.object(),
+            lambda index: (
+                from_coproduct
+                * coproduct_objects.costructure_morphism(
+                    b_shape(object_label(index))
+                )
+            ),
+        )
+
+        def factorizer(cocone):
+            object_cocone = CoconeCategory(coproduct_objects.diagram()).cocone(
+                cocone.apex(),
+                lambda index: cocone.costructure_morphism(objects.value(index.value())),
+            )
+            from_objects = coproduct_objects.factor(object_cocone).apex_map()
+            coequalizer_cocone = CoconeCategory(coequalizer.diagram()).cocone(
+                cocone.apex(),
+                lambda index: (
+                    from_objects * source_injection
+                    if index is coequalizer_shape.source()
+                    else from_objects
+                ),
+            )
+            return coequalizer.factor(coequalizer_cocone).apex_map()
+
+        return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
 
 class ProductsOfCategory(LimitsOfCategory):
@@ -1028,6 +1400,8 @@ __all__ = [
     "DiagramCategory",
     "DirectSumCategory",
     "DirectedSystem",
+    "FiniteOrdinalCategory",
+    "FiniteSequenceDiagram",
     "InverseSystem",
     "LimitsOfCategory",
     "ParallelPairCategory",
