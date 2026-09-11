@@ -86,6 +86,9 @@ book:
         - coble/lattices-and-moduli/root-systems.md
         - coble/lattices-and-moduli/discriminant-forms-and-genus.md
         - coble/lattices-and-moduli/embeddings-and-overlattices.md
+        - coble/lattices-and-moduli/automorphism-lifting-through-a-gluing.md
+        - coble/lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md
+        - coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md
         - coble/lattices-and-moduli/special-lattices.md
         - coble/lattices-and-moduli/invariant-and-coinvariant-lattices.md
         - coble/lattices-and-moduli/lattices.md
@@ -96,6 +99,9 @@ book:
     - part: Compactifications
       chapters:
         - coble/compactifications/reflection-groups-and-vinberg.md
+        - coble/compactifications/coxeter-systems-and-classification.md
+        - coble/compactifications/hyperbolic-coxeter-polytopes.md
+        - coble/compactifications/reflective-two-elementary-lattices.md
         - coble/compactifications/dynkin-foldings.md
         - coble/compactifications/toroidal-and-semitoroidal.md
         - coble/compactifications/scattone-cusp-method.md
@@ -147,6 +153,11 @@ book:
         - coble/computations/coxiter-results-for-cusp-lattices.md
         - coble/computations/root-vectors-and-folded-sterk-diagrams.md
         - coble/computations/sterk-integral-affine-data.md
+        - coble/computations/sterk-root-counts-and-computed-chambers.md
+        - coble/computations/fundamental-chamber-polyhedra.md
+        - coble/computations/lattice-algorithms-by-signature.md
+        - coble/computations/isotropic-orbits-and-tits-buildings.md
+        - coble/computations/periods-and-local-monodromy.md
     - part: Reference tables
       chapters:
         - coble/reference-tables/lattice-and-diagram-conventions.md

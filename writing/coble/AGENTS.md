@@ -21,6 +21,12 @@ heegner-report/     A standalone research report and its own bibliography
 coble_supplement.bib  Project-local entries not yet in the global bibliography
 ```
 
+A page that is not listed in `writing/.book/_quarto.yml` does not render at all. Check
+that in **both directions** after adding pages: every entry in the chapter list has a
+file, *and* every prose file is either listed or deliberately unlisted. The first check
+alone passes while a page you just wrote is invisible, which is how eleven chapters of
+absorbed mathematics came to be committed and unpublished.
+
 ## Building
 
 The site builds from the repository root, not from here.
