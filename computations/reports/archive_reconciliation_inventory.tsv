@@ -956,21 +956,21 @@ preamble/categories/group/groups.sage	OwnedFiniteAbelianGroups	class	1086	1	src/
 preamble/categories/group/groups.sage	OwnedFiniteAbelianGroups.super_categories	method	1093	0			unreviewed
 preamble/categories/group/groups.sage	refine_group	function	1115	0			unreviewed
 preamble/categories/group/groups.sage	install_groups	function	1217	0			unreviewed
-preamble/categories/group/magmas.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/magmas.sage	Magmas	class	32	1	src/dzack_research/preamble/categories/group/magmas.py		unreviewed
-preamble/categories/group/magmas.sage	Magmas.super_categories	method	47	0			unreviewed
-preamble/categories/group/magmas.sage	Semigroups	class	55	1	src/dzack_research/preamble/categories/group/magmas.py		unreviewed
-preamble/categories/group/magmas.sage	Semigroups.super_categories	method	62	0			unreviewed
-preamble/categories/group/magmas.sage	Monoids	class	66	1	src/dzack_research/preamble/categories/group/magmas.py		unreviewed
-preamble/categories/group/magmas.sage	Monoids.super_categories	method	76	0			unreviewed
-preamble/categories/group/magmas.sage	AdditiveMagmas	class	80	1	src/dzack_research/preamble/categories/group/magmas.py		unreviewed
-preamble/categories/group/magmas.sage	AdditiveMagmas.super_categories	method	93	0			unreviewed
-preamble/categories/group/magmas.sage	AdditiveSemigroups	class	100	1	src/dzack_research/preamble/categories/group/magmas.py		unreviewed
-preamble/categories/group/magmas.sage	AdditiveSemigroups.super_categories	method	107	0			unreviewed
-preamble/categories/group/magmas.sage	AdditiveMonoids	class	111	1	src/dzack_research/preamble/categories/group/magmas.py		unreviewed
-preamble/categories/group/magmas.sage	AdditiveMonoids.super_categories	method	118	0			unreviewed
-preamble/categories/group/magmas.sage	AdditiveGroups	class	122	1	src/dzack_research/preamble/categories/group/magmas.py		unreviewed
-preamble/categories/group/magmas.sage	AdditiveGroups.super_categories	method	129	0			unreviewed
+preamble/categories/group/magmas.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	Magmas	class	32	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	Magmas.super_categories	method	47	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	Semigroups	class	55	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	Semigroups.super_categories	method	62	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	Monoids	class	66	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	Monoids.super_categories	method	76	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveMagmas	class	80	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveMagmas.super_categories	method	93	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveSemigroups	class	100	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveSemigroups.super_categories	method	107	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveMonoids	class	111	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveMonoids.super_categories	method	118	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveGroups	class	122	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
+preamble/categories/group/magmas.sage	AdditiveGroups.super_categories	method	129	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
 preamble/categories/group/predicate_subgroups.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups	class	38	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py		unreviewed
 preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.super_categories	method	56	0			unreviewed

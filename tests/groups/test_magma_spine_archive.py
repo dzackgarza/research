@@ -12,6 +12,12 @@ from dzack_research.preamble.categories.group.magmas import (
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/magmas.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/magmas.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_owned_groups_flow_through_the_multiplicative_operation_spine() -> None:
     group = OwnedGroups().C(5)
