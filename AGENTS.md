@@ -397,6 +397,28 @@ to recognize mathematical compression.  A deep correction can change which
 work exists at all.  Preserving the old implementation with a cheap
 workaround preserves the misunderstanding that created the work.
 
+# Search the formalization corpus first (always-on)
+
+`lean-reference-corpus` — checked out here as `~/gitclones/formalization-corpus` — checks out and
+indexes the pinned Mathlib, every registered Lean formalization repository, the Reservoir packages,
+and the Rocq and Agda port sources as one searchable tree. One query asks the whole formal
+literature: *has this been stated, and where?*
+
+```sh
+just -f ~/gitclones/formalization-corpus/justfile search 'IsometryEquiv'
+```
+
+**It is the first approximation for mathematical work of every kind here, not only Lean.** Sage
+code, preamble categories, notebooks and prose all state mathematics that somebody has probably
+already written down precisely, and a formal statement is the most precise form the literature
+has: it fixes the hypotheses, the codomain, and the generality that a paper leaves to context.
+Search it before deciding what a definition says, before adopting a name, before concluding a
+notion is this project's to invent, and before writing a proof of something standard.
+
+A miss is a dated, scoped result — *not found in the corpus at the index it currently holds* —
+and never the claim that nobody has formalized this. Widen to upstream Mathlib, Loogle, LeanSearch
+and GitHub before recording a negative, the way the reuse gate in `lean-categories` does.
+
 # Work-selection discipline (always-on)
 
 An output that cannot fail carries no information.
