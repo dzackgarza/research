@@ -58,12 +58,13 @@ Check this list against the graph before selecting, since it changes as nodes de
 grep -nE '^- \[[ x]\] \*\*`[a-z0-9-]+`\*\*\. \*\*Needs:\*\*' TODO.md
 ```
 
-Two consequences for selection. First, prefer a ready node with no active claim over
-further breadth inside a node you already hold — a node that closes unblocks its
-dependents, and a node that merely grows does not. Second, these eleven are mutually
-independent by construction, so concurrent streams can hold them at once under the
-existing claim protocol without contending for the same owners. When this queue is worked
-by one stream, the other ten are idle capacity rather than scheduled work.
+Two consequences for selection. First, take the ready frontier in dependency order and
+carry each selected node through delivery before moving on — a node that closes unblocks
+its dependents, and a node that merely grows does not. Second, this repository is currently
+worked by one stream: an active claim records that stream's in-progress ownership and must
+not make another ready node appear unavailable to the same stream. Stale claims from an
+earlier turn must be released before frontier selection; do not infer concurrent ownership
+from a claim row unless another live worker actually exists.
 
 ### Contents
 
@@ -1525,5 +1526,3 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `RING-completion-arithmetic-20260911-2248` | completion arithmetic / exact-vs-finite precision semantics | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; tests/rings/test_completion_arithmetic.py; tests/rings/test_completion_inverse_system.py` (write) | `a3281c07` | 2026-09-11T22:48:00Z |
-| `SCHEME-relative-spec-general-20260911-2330` | relative Spec / general algebra descent | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/algebras.py; src/dzack_research/preamble/categories/schemes/gluing.py; src/dzack_research/preamble/categories/schemes/relative_spec.py; src/dzack_research/preamble/categories/schemes/cyclic_covers.py; src/dzack_research/preamble/categories/algebras/cyclic_cover_algebras.py; tests/schemes/test_relative_spec_general.py` (write) | `c3f4930c` | 2026-09-11T23:30:00Z |
