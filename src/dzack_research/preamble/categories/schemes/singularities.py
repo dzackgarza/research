@@ -301,9 +301,13 @@ class IsolatedHypersurfaceSingularity:
         singular_lib("normal.lib")
         conductor_engine = singular_function("normalConductor")(equation_ideal, ring=engine)
         conductor = _from_engine_ideal(ring, conductor_engine)
-        origin = ring.ideal(*generators)
-        local_ring = ring.localize_at_prime(origin)
-        return conductor.extension_to_localization(local_ring)
+        curve = FinitelyPresentedAlgebra(ring, (self.equation(),))
+        curve_conductor = curve.ideal(
+            *(curve(generator) for generator in conductor.ideal_generators())
+        )
+        origin = curve.ideal(*(curve(generator) for generator in generators))
+        local_ring = curve.localize_at_prime(origin)
+        return curve_conductor.extension_to_localization(local_ring)
 
 
 __all__ = ["IsolatedHypersurfaceSingularity"]

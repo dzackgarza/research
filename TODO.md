@@ -439,29 +439,6 @@ Paths in this section are relative to
 
 ### Local algebra extensions
 
-- [ ] **`normalization`**. **Needs:** none.
-  Extend normalization and local-length operations beyond the represented
-  integral affine and selected plane-curve regimes needed below.
-  **Owners:** `rings/commutative_algebra.py`, `rings/commutative_ideals.py`,
-  their normalization adapter, and `schemes/singularities.py`.
-  **Deliver:** total quotient rings for supported reduced rings, regular-element
-  tests, normalization maps componentwise when required, conductor ideals,
-  height-one valuations, and finite local lengths with residue-field degree
-  accounted for. Preserve minimal primes, components, and support.
-  **Decision:** normalization is a ring/scheme map, not a selected polynomial
-  normal form; a list of normalized components is not yet the glued
-  normalization. Local invariants name a point; global delta cannot be
-  substituted for delta at that point.
-  **Acceptance:** a reducible reduced curve, a singular integral curve, and
-  a nonrational closed point exercise the required maps and local lengths.
-  Reuse the existing integral normalization and local `deltaLoc` operations.
-  **Capability question:** which operation in the existing Singular normalization
-  adapter supplies the reduced/componentwise case, conductor, and comparison
-  maps? Inspect the corresponding OSCAR/Macaulay2 operations only for obligations
-  the current adapter cannot discharge. Retain that choice at the adapter; extend
-  its raising of ideals, components, and maps rather than implementing local
-  normalization, factorization, or length algorithms in the scheme consumer.
-
 - [ ] **`local-module-maps`**. **Needs:** none.
   Extend local homomorphisms and local-module operations only at their shared
   owners when these consumers require a new supported coefficient regime.
@@ -1665,5 +1642,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `RING-normalization-20260911-2217` | normalization / reduced components, conductor, local lengths | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/rings/commutative_ideals.py; src/dzack_research/preamble/categories/rings/ring_foundation.py; src/dzack_research/preamble/categories/schemes/singularities.py; tests/rings/test_curve_normalization.py; tests/rings/test_regular_elements_and_total_quotients.py; tests/rings/test_reduced_normalization.py` (write) | `c9cbd8a8` | 2026-09-11T22:17:00Z |
 | `UNIV-module-eq-coeq-20260911-2038` | universal-constructions / module equalizer-coequalizer universal data | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/abstract_categories/products.py; src/dzack_research/preamble/categories/abstract_categories/constructions.py; src/dzack_research/preamble/categories/abstract_categories/cat.py; src/dzack_research/preamble/categories/abstract_categories/__init__.py; src/dzack_research/preamble/categories/abstract_categories/functors.py; src/dzack_research/preamble/categories/modules/pure/modules.py; src/dzack_research/preamble/categories/sets/set_categories.py; tests/categories/test_module_universal_constructions.py` (write) | `3905ce14+cleanup` | 2026-09-11T20:38:00Z |

@@ -54,6 +54,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
     PartiallyOrderedSets,
@@ -112,6 +114,66 @@ class PrimeSpectra(OwnedCategory):
             recomposed from it.
             """
             return self.local_ring().source_residue_map()
+
+        @cached_method
+        def residue_degree(self):
+            r"""Return ``[kappa(p):k]`` in the supported affine field case."""
+            ring = self.parent().ring()
+            source = ring.quotient_source() if ring in QuotientRings() else ring
+            base = source.base_ring()
+            if not bool(_engine_ring(base).is_field()):
+                raise NotImplementedError(
+                    "residue degree is currently represented for affine algebras over a field"
+                )
+            point_engine = _engine_ideal(ring, self.ideal())
+            if ring in QuotientRings():
+                point_engine = _engine_quotient_cover_ideal(ring, point_engine)
+            try:
+                degree = int(point_engine.vector_space_dimension())
+            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+                raise NotImplementedError(
+                    "the selected point is not represented as a finite residue-field extension"
+                ) from error
+            return _own_ring(SageZZ)(degree)
+
+        def local_length(self, ideal):
+            r"""Return ``length_{R_p}((R/I)_p)`` for a finite local quotient.
+
+            If ``Q`` is the primary component supported at ``p``, then
+            ``dim_k(R/Q) = length(R_p/Q_p) [kappa(p):k]``.  The residue-degree
+            factor is therefore divided out explicitly, which is essential at
+            a nonrational closed point.
+            """
+            ring = self.parent().ring()
+            source = ring.quotient_source() if ring in QuotientRings() else ring
+            if not bool(_engine_ring(source.base_ring()).is_field()):
+                raise NotImplementedError(
+                    "finite local length is currently represented for affine algebras over a field"
+                )
+            ideal_engine = _engine_ideal(ring, ideal)
+            point_engine = _engine_ideal(ring, self.ideal())
+            if ring in QuotientRings():
+                ideal_engine = _engine_quotient_cover_ideal(ring, ideal_engine)
+                point_engine = _engine_quotient_cover_ideal(ring, point_engine)
+            matching = tuple(
+                component
+                for component in ideal_engine.primary_decomposition()
+                if component.radical() == point_engine
+            )
+            if not matching:
+                return _own_ring(SageZZ).zero()
+            total_dimension = 0
+            for component in matching:
+                dimension = component.vector_space_dimension()
+                if dimension not in SageZZ:
+                    raise ValueError("the selected local quotient does not have finite length")
+                total_dimension += int(dimension)
+            residue_degree = int(self.residue_degree())
+            if total_dimension % residue_degree:
+                raise ArithmeticError(
+                    "local vector-space dimension is not divisible by the residue-field degree"
+                )
+            return _own_ring(SageZZ)(total_dimension // residue_degree)
 
         @cached_method
         def height(self):
@@ -710,7 +772,7 @@ class QuotientRings(OwnedCategory):
 
         @cached_method
         def _affine_normalization_data(self):
-            r"""Return the selected exact normalization data for this affine domain.
+            r"""Return the selected exact normalization data for this reduced affine ring.
 
             The public object remains an owned quotient ring.  Singular's
             ``normal.lib`` is only the private engine computing an affine
@@ -718,17 +780,106 @@ class QuotientRings(OwnedCategory):
             conductor, and delta invariant.  No Singular ring, ideal, or map
             crosses this boundary.
             """
-            return _affine_integral_quotient_normalization_data(self)
+            return _affine_reduced_quotient_normalization_data(self)
 
         @cached_method
         def normalization(self):
-            r"""Return the integral closure of this affine domain in its fraction field."""
+            r"""Return the integral closure of this reduced affine ring in its total quotient ring."""
             return self._affine_normalization_data().normalization
 
         @cached_method
         def normalization_map(self):
             r"""Return the canonical finite birational map ``A -> A^nu``."""
             return self._affine_normalization_data().normalization_map
+
+        def normalization_components(self):
+            r"""Return the normalized irreducible components with their maps."""
+            return self._affine_normalization_data().components
+
+        def is_reduced(self) -> bool:
+            defining = _engine_ideal(self.quotient_source(), self.defining_ideal())
+            return defining.radical() == defining
+
+        @cached_method
+        def _presentation_minimal_primes(self):
+            r"""Return the minimal primes upstairs in the chosen presentation ring."""
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                _from_engine_ideal,
+            )
+
+            source = self.quotient_source()
+            defining = _engine_ideal(source, self.defining_ideal())
+            return finite_ordered_set(
+                tuple(
+                    _from_engine_ideal(source, prime)
+                    for prime in defining.minimal_associated_primes()
+                )
+            )
+
+        @cached_method
+        def minimal_primes(self):
+            r"""Return the minimal prime ideals of this quotient ring."""
+            return finite_ordered_set(
+                tuple(
+                    self.ideal(
+                        *(self(generator) for generator in prime.ideal_generators())
+                    )
+                    for prime in self._presentation_minimal_primes()
+                )
+            )
+
+        @cached_method
+        def irreducible_components(self):
+            r"""Return the component domains ``R/p`` for the minimal primes ``p``."""
+            if not self.is_reduced():
+                raise ValueError("irreducible components here require a reduced quotient ring")
+            return finite_ordered_set(
+                tuple(
+                    QuotientRing(self.quotient_source(), prime)
+                    for prime in self._presentation_minimal_primes()
+                )
+            )
+
+        @cached_method
+        def total_quotient_ring(self):
+            r"""Return the total quotient ring of this supported reduced affine quotient."""
+            if self in OwnedIntegralDomains():
+                return self.fraction_field()
+            if not self.is_reduced():
+                raise NotImplementedError(
+                    "the represented total quotient construction currently supports reduced affine quotients"
+                )
+            fields = tuple(
+                component.fraction_field() for component in self.irreducible_components()
+            )
+            return _finite_product_ring(fields)
+
+        @cached_method
+        def total_quotient_map(self):
+            r"""Return the canonical injection ``A -> Q(A)`` in the supported reduced case."""
+            if self in OwnedIntegralDomains():
+                return self.fraction_field_map()
+            components = tuple(self.irreducible_components())
+            fields = tuple(component.fraction_field() for component in components)
+            field_maps = tuple(component.fraction_field_map() for component in components)
+            target = self.total_quotient_ring()
+            target_engine = _engine_ring(target)
+
+            def image(element):
+                lift = element.lift()
+                values = tuple(
+                    field_map(component(lift))
+                    for component, field_map in zip(components, field_maps, strict=True)
+                )
+                backend = target_engine(
+                    tuple(
+                        _engine_element(field, value)
+                        for field, value in zip(fields, values, strict=True)
+                    )
+                )
+                return target._from_engine_element(backend)
+
+            return ring_morphism(self, target, image)
 
         @cached_method
         def conductor_ideal(self):
@@ -750,7 +901,7 @@ class QuotientRings(OwnedCategory):
         return [OwnedRings().Commutative()]
 
 
-class _AffineIntegralQuotientNormalizationData(SageObject):
+class _AffineReducedQuotientNormalizationData(SageObject):
     r"""Owned-boundary data returned by the private affine-normalization engine."""
 
     def __init__(
@@ -760,29 +911,41 @@ class _AffineIntegralQuotientNormalizationData(SageObject):
         conductor,
         delta,
         is_normal,
+        components,
     ) -> None:
         self.normalization = normalization
         self.normalization_map = normalization_map
         self.conductor = conductor
         self.delta = int(delta)
         self.is_normal = bool(is_normal)
+        self.components = components
 
 
-def _affine_integral_quotient_normalization_data(quotient):
+def _finite_product_ring(factors):
+    factors = tuple(factors)
+    if not factors:
+        raise ValueError("a finite product ring requires at least one factor")
+    if len(factors) == 1:
+        return factors[0]
+    engines = tuple(_engine_ring(factor) for factor in factors)
+    return _own_ring(engines[0].cartesian_product(*engines[1:]))
+
+
+def _affine_reduced_quotient_normalization_data(quotient):
     r"""Cross Singular ``normal.lib`` output back into owned affine algebra data.
 
     This adapter intentionally uses Sage's persistent Singular interface rather
     than an ad-hoc process or textual file protocol.  ``normal.lib`` computes
-    the normalization of a prime affine quotient, the generator images of the
-    normalization map, the conductor, and ``delta`` in one exact computation.
+    the normalization componentwise for a reduced affine quotient, the
+    generator images of every normalization map, the conductor, and ``delta``
+    in one exact computation.
     The returned Singular ring is converted by Sage's own ``sage()`` crossing,
     then reconstructed through :func:`QuotientRing` and :func:`ring_morphism`.
     """
     source = quotient.quotient_source()
     source_engine = _engine_ring(source)
-    quotient_engine = _engine_ring(quotient)
-    if not bool(quotient_engine.is_integral_domain()):
-        raise ValueError("normalization here requires an integral affine quotient")
+    if not quotient.is_reduced():
+        raise ValueError("normalization here requires a reduced affine quotient")
     if not hasattr(source_engine, "_singular_"):
         raise NotImplementedError(
             "affine normalization currently requires a polynomial presentation supported by Singular"
@@ -796,13 +959,9 @@ def _affine_integral_quotient_normalization_data(quotient):
         source_engine._singular_(singular).set_ring()
         singular.lib("normal.lib")
         defining_singular = defining_engine._singular_(singular)
-        normal_data = defining_singular.normal("withRing", "withDelta", "isPrim")
+        normal_data = defining_singular.normal("useRing", "withDelta", "prim")
 
         normal_rings = normal_data[1]
-        if len(normal_rings) != 1:
-            raise ArithmeticError(
-                "the normalization of an integral affine domain must have one component"
-            )
 
         # The conductor is an ideal in the original polynomial presentation.
         source_engine._singular_(singular).set_ring()
@@ -817,51 +976,94 @@ def _affine_integral_quotient_normalization_data(quotient):
 
         total_delta = int(normal_data[3][2].sage())
 
-        # ``Ri`` contains named ``norid`` and ``normap``.  After selecting it,
-        # Sage can convert the ring and both ideals without any custom parser.
-        normal_ring_singular = normal_rings[1]
-        normal_ring_singular.set_ring()
-        normal_cover_engine = normal_ring_singular.sage()
-        normal_ideal_engine = singular("norid").sage(normal_cover_engine)
-        normal_map_images_engine = singular("normap").sage(normal_cover_engine)
-
-        normal_cover = _own_ring(normal_cover_engine)
-        normal_ideal = normal_cover.ideal(
-            *(
-                normal_cover._from_engine_element(normal_cover_engine(generator))
-                for generator in normal_ideal_engine.gens()
-            )
-        )
-        normalization = QuotientRing(normal_cover, normal_ideal)
-        target_engine = _engine_ring(normalization)
         source_quotient_engine = _engine_ring(quotient)
-        target_images = tuple(
-            target_engine(normal_cover_engine(generator))
-            for generator in normal_map_images_engine.gens()
-        )
-        if len(target_images) != source_engine.ngens():
-            raise ArithmeticError(
-                "Singular's normalization map did not return one image per source generator"
-            )
-        engine_normalization_map = source_quotient_engine.hom(
-            target_images,
-            target_engine,
-        )
-        normalization_map = ring_morphism(
-            quotient,
-            normalization,
-            lambda element: normalization._from_engine_element(
-                engine_normalization_map(_engine_element(quotient, element))
-            ),
-            engine_morphism=engine_normalization_map,
+        normalizations = []
+        normalization_maps = []
+        component_primes = []
+        from dzack_research.preamble.categories.rings.commutative_ideals import (
+            _from_engine_ideal,
         )
 
-        return _AffineIntegralQuotientNormalizationData(
+        for position in range(1, len(normal_rings) + 1):
+            normal_ring_singular = normal_rings[position]
+            normal_ring_singular.set_ring()
+            normal_cover_engine = normal_ring_singular.sage()
+            normal_ideal_engine = singular("norid").sage(normal_cover_engine)
+            normal_map_images_engine = singular("normap").sage(normal_cover_engine)
+            normal_cover = _own_ring(normal_cover_engine)
+            normal_ideal = normal_cover.ideal(
+                *(
+                    normal_cover._from_engine_element(normal_cover_engine(generator))
+                    for generator in normal_ideal_engine.gens()
+                )
+            )
+            component = QuotientRing(normal_cover, normal_ideal)
+            target_engine = _engine_ring(component)
+            target_images = tuple(
+                target_engine(normal_cover_engine(generator))
+                for generator in normal_map_images_engine.gens()
+            )
+            if len(target_images) != source_engine.ngens():
+                raise ArithmeticError(
+                    "Singular's normalization map did not return one image per source generator"
+                )
+            source_component_map = source_engine.hom(target_images, target_engine)
+            source_prime = _from_engine_ideal(source, source_component_map.kernel())
+            component_prime = quotient.ideal(
+                *(quotient(generator) for generator in source_prime.ideal_generators())
+            )
+            engine_component_map = source_quotient_engine.hom(target_images, target_engine)
+            component_map = ring_morphism(
+                quotient,
+                component,
+                lambda element, component=component, engine_component_map=engine_component_map: component._from_engine_element(
+                    engine_component_map(_engine_element(quotient, element))
+                ),
+                engine_morphism=engine_component_map,
+            )
+            normalizations.append(component)
+            normalization_maps.append(component_map)
+            component_primes.append(component_prime)
+
+        normalizations = tuple(normalizations)
+        normalization_maps = tuple(normalization_maps)
+        component_primes = tuple(component_primes)
+        normalization = _finite_product_ring(normalizations)
+        if len(normalizations) == 1:
+            normalization_map = normalization_maps[0]
+        else:
+            product_engine = _engine_ring(normalization)
+
+            def into_product(element):
+                values = tuple(map_(element) for map_ in normalization_maps)
+                backend = product_engine(
+                    tuple(
+                        _engine_element(component, value)
+                        for component, value in zip(normalizations, values, strict=True)
+                    )
+                )
+                return normalization._from_engine_element(backend)
+
+            normalization_map = ring_morphism(quotient, normalization, into_product)
+
+        component_indices = finite_ordered_set(range(len(normalizations)))
+        components = finite_indexed_family(
+            component_indices,
+            lambda position: (
+                component_primes[int(position)],
+                normalizations[int(position)],
+                normalization_maps[int(position)],
+            ),
+            name=f"Normalized components of {quotient}",
+        )
+
+        return _AffineReducedQuotientNormalizationData(
             normalization,
             normalization_map,
             quotient.ideal(*(quotient(generator) for generator in conductor.ideal_generators())),
             total_delta,
             total_delta == 0,
+            components,
         )
     finally:
         try:
