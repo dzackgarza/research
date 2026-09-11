@@ -13,7 +13,9 @@ from __future__ import annotations
 
 import argparse
 import csv
+import io
 import re
+import tokenize
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -31,8 +33,56 @@ class Notion:
     line: int
 
 
-def indentation(prefix: str) -> int:
-    return len(prefix.expandtabs(8))
+def semantic_scopes(text: str) -> dict[int, tuple[tuple[str, str], ...]]:
+    """Return enclosing class/function scopes at each token-bearing source line.
+
+    Python's tokenizer is lexical rather than grammatical, so it handles Sage
+    syntax such as ``R.<x> = ...`` while still supplying exact INDENT/DEDENT
+    tokens.  Control-flow indentation is deliberately not a semantic scope:
+    only class/function suites affect whether a name is module-public.
+    """
+    scopes: list[tuple[int, str, str]] = []
+    pending: tuple[str, str] | None = None
+    pending_kind: str | None = None
+    depth = 0
+    result: dict[int, tuple[tuple[str, str], ...]] = {}
+    tokens = tokenize.generate_tokens(io.StringIO(text).readline)
+    try:
+        for token in tokens:
+            token_type, value, start, _end, _line = token
+            if token_type == tokenize.DEDENT:
+                depth -= 1
+                while scopes and scopes[-1][0] > depth:
+                    scopes.pop()
+                continue
+            if token_type == tokenize.INDENT:
+                depth += 1
+                if pending is not None:
+                    kind, name = pending
+                    scopes.append((depth, kind, name))
+                    pending = None
+                continue
+            if token_type in {
+                tokenize.ENCODING,
+                tokenize.NL,
+                tokenize.NEWLINE,
+                tokenize.COMMENT,
+                tokenize.ENDMARKER,
+            }:
+                continue
+            result.setdefault(start[0], tuple((kind, name) for _d, kind, name in scopes))
+            if token_type == tokenize.NAME and value in {"class", "def"}:
+                pending_kind = value
+                continue
+            if pending_kind is not None and token_type == tokenize.NAME:
+                pending = (pending_kind, value)
+                pending_kind = None
+    except (IndentationError, tokenize.TokenError):
+        # The inventory must still name the module even if an archived source is
+        # lexically incomplete.  Definitions before the lexical failure remain
+        # available in ``result``.
+        pass
+    return result
 
 
 def public(name: str) -> bool:
@@ -42,48 +92,32 @@ def public(name: str) -> bool:
 def scan_module(path: Path, root: Path) -> list[Notion]:
     relative = path.relative_to(root.parent).as_posix()
     notions = [Notion(relative, "<module>", "module", 1)]
-    class_stack: list[tuple[int, str]] = []
-    function_indents: list[int] = []
+    text = path.read_text(errors="replace")
+    scopes_by_line = semantic_scopes(text)
 
-    for line_number, line in enumerate(path.read_text(errors="replace").splitlines(), 1):
+    for line_number, line in enumerate(text.splitlines(), 1):
+        scopes = scopes_by_line.get(line_number, ())
+        functions = tuple(name for kind, name in scopes if kind == "def")
+        classes = tuple(name for kind, name in scopes if kind == "class")
         match = DEFINITION.match(line)
         if match:
-            level = indentation(match.group("indent"))
-            while class_stack and level <= class_stack[-1][0]:
-                class_stack.pop()
-            while function_indents and level <= function_indents[-1]:
-                function_indents.pop()
-
             kind = match.group("kind")
             name = match.group("name")
-            if kind == "class":
-                if public(name) and not function_indents:
-                    prefix = ".".join(item[1] for item in class_stack)
-                    qualified = f"{prefix}.{name}" if prefix else name
-                    notions.append(Notion(relative, qualified, "class", line_number))
-                class_stack.append((level, name))
-                continue
-
-            # A function nested inside another function is an implementation
-            # detail.  Top-level functions and methods of public classes are
-            # part of the archived mathematical surface.
-            if public(name) and not function_indents:
-                public_classes = [item[1] for item in class_stack if public(item[1])]
-                if len(public_classes) == len(class_stack):
-                    prefix = ".".join(public_classes)
-                    qualified = f"{prefix}.{name}" if prefix else name
+            if public(name) and not functions and all(public(item) for item in classes):
+                prefix = ".".join(classes)
+                qualified = f"{prefix}.{name}" if prefix else name
+                if kind == "class":
+                    kind_name = "class"
+                elif name.startswith("test_"):
+                    kind_name = "specimen"
+                else:
                     kind_name = "method" if prefix else "function"
-                    if name.startswith("test_"):
-                        kind_name = "specimen"
-                    notions.append(Notion(relative, qualified, kind_name, line_number))
-            function_indents.append(level)
+                notions.append(Notion(relative, qualified, kind_name, line_number))
             continue
 
-        # Public module-level named values are part of the source surface too.
-        # Sage modules commonly put their build body under an import guard, so
-        # indentation alone does not distinguish module scope from function/class
-        # scope.  The scope stacks above do.
-        if not function_indents and not class_stack:
+        # Module-level control-flow guards do not hide mathematical bindings;
+        # class and function scopes do.
+        if not scopes:
             assignment = ASSIGNMENT.match(line.lstrip())
             if assignment and public(assignment.group("name")):
                 notions.append(
