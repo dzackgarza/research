@@ -1597,7 +1597,7 @@ review until every downstream consumer has copied the same bypass.
 
 These are not prerequisites for the required mathematics or terminal T.
 
-- [ ] **`optional-display`**. **Needs:** none.
+- [x] **`optional-display`**. **Needs:** none.
   Add further notebook/rich-display examples only for a named research
   question using live objects. Use existing polygon, Three.js, and diagram
   rendering owners; do not install implicit global display hooks.
@@ -1662,7 +1662,6 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
-| `DISPLAY-enriques-boundary-20260911-1715` | optional-display / Enriques cusp reductions and Tits incidence | Chat continuation 2026-09-11; `/home/dzack/research` | `computations/notebooks/lattices/enriques_boundary_display.py` (write) | `HEAD` | 2026-09-11T17:15:00Z |
 
 
 
