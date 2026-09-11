@@ -328,7 +328,7 @@ A lattice all of whose pairings are even contains no copy of $U$ at all, since
 $U$ requires two vectors pairing to $1$; this is the case for every twist $M(2)$,
 and in particular for $S_\En = E_{10}(2)$, for $S_\Co = \gens{-2}\oplus E_{10}(2)$
 and for $T_\Co = \gens{2}\oplus E_{10}(2)$.
-Among the lattices of the Lattice Summary only $T_\En$ and $T_\dP$ contain a
+Among the lattices of [Period domain embeddings and normalization](lattices.md) only $T_\En$ and $T_\dP$ contain a
 unimodular hyperbolic summand, and each contains exactly one.
 Orbit statements for the Coble lattices therefore have to come from elsewhere;
 the alternatives used below are the transitivity results for split maximal

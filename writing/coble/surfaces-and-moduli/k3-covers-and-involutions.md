@@ -84,7 +84,7 @@ The lattice involutions satisfy the following.
 - The transcendental lattices $T_Z$ of the Enriques surfaces $Z$ primitively embed into these invariant sublattices.
 :::
 
-The isometry classes of the invariant and coinvariant sublattices of the three involutions, together with their $2$-elementary invariants $(r,a,\delta)_n$ (where $n = n_+$ is the number of positive eigenvalues) and discriminant groups $A_L$, are collected in \longref{tbl:k3-cover-coinvariant-lattices}. For the del Pezzo and Enriques involutions these lattices also appear in the Lattice Summary alongside the chain of primitive embeddings of \longref{lem:sequence_of_embeddings}. The Enriques (co)invariant lattices are built from the twist $E_{10}(2) = U(2)\oplus E_8(2)$ ($S_{\En} = E_{10}(2)$, $T_{\En} = U\oplus E_{10}(2)$), whereas the del Pezzo lattices $S_{\dP} = U(2)$, $T_{\dP} = U\oplus U(2)\oplus E_8^2$ retain an untwisted $E_8^2$.
+The isometry classes of the invariant and coinvariant sublattices of the three involutions, together with their $2$-elementary invariants $(r,a,\delta)_n$ (where $n = n_+$ is the number of positive eigenvalues) and discriminant groups $A_L$, are collected in @tbl-k3-cover-coinvariant-lattices. For the del Pezzo and Enriques involutions these lattices also appear in [Period domain embeddings and normalization](lattices.md) alongside the chain of primitive embeddings of \longref{lem:sequence_of_embeddings}. The Enriques (co)invariant lattices are built from the twist $E_{10}(2) = U(2)\oplus E_8(2)$ ($S_{\En} = E_{10}(2)$, $T_{\En} = U\oplus E_{10}(2)$), whereas the del Pezzo lattices $S_{\dP} = U(2)$, $T_{\dP} = U\oplus U(2)\oplus E_8^2$ retain an untwisted $E_8^2$.
 The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of \longref{prop:coinvariant_involution_2elementary}, and their classification is Nikulin's [@Nik80].
 
 | $L$ | Isometry class | $\operatorname{rank}_\ZZ(L)$ | $\operatorname{sig}(L)$ | $(r,a,\delta)_n$ | $A_L$ |
@@ -100,4 +100,4 @@ The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of \longref{
 del Pezzo, Enriques, and Nikulin involutions on $\lkt = U^3 \oplus E_8^2$. For
 the Nikulin involution the invariant and coinvariant lattices are written
 $L_{\mathrm{Nik}}^{+}$ and $L_{\mathrm{Nik}}^{-}$; each complementary pair has
-ranks summing to $22 = \operatorname{rank}\lkt$.\label{tbl:k3-cover-coinvariant-lattices}
+ranks summing to $22 = \operatorname{rank}\lkt$. {#tbl-k3-cover-coinvariant-lattices}

@@ -296,7 +296,7 @@ $\Aut\Gamma_r$, are the following.
 | $(15,13,1)$ | 46 | 10 |
 | $(16,14,1)$ | 115 | 14 |
 
-: Maximal parabolic subdiagram counts\label{tbl:maximal-parabolic-counts}
+: Maximal parabolic subdiagram counts {#tbl-maximal-parabolic-counts}
 :::
 
 ::: {.proof}
@@ -411,7 +411,7 @@ tree with three legs of lengths $p$, $q$, $r$.
 | $(18,4,0)$ | $S_2\ltimes(S_4\times S_4)$ | diagram on $24$ vertices |
 | $(20,2,1)$ | $S_5$ | $K_5$ with bold edges |
 
-: Long-root subdiagrams $\Gamma_4$\label{tbl:long-root-subdiagrams}
+: Long-root subdiagrams $\Gamma_4$ {#tbl-long-root-subdiagrams}
 :::
 
 ::: {.proof}

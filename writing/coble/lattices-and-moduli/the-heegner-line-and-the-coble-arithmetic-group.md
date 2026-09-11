@@ -10,8 +10,8 @@ vector.
 This section fixes that choice explicitly, shows it is unique up to the
 degree-$2$ Enriques arithmetic group, and describes the subgroup of
 $\Orth(T_\Co)$ that the choice produces.
-The lattices are those of the Lattice Summary and the arithmetic groups those of
-the Moduli Spaces Summary.
+The lattices are those of [Period domain embeddings and normalization](lattices.md),
+and the arithmetic groups those of [Constructions of the moduli space](moduli-construction.md).
 :::
 
 ## The Heegner vector inside $T_\En$
