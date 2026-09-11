@@ -50,6 +50,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FinitelyPresentedBilinearFormModules,
     FinitelyPresentedQuadraticFormModules,
     FormModule,
+    form_embedding,
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
@@ -343,6 +344,114 @@ def _torsion_form_modules(base_ring, *, quadratic: bool):
     if quadratic:
         return TorsionQuadraticFormModules(base_ring)
     return TorsionBilinearFormModules(base_ring)
+
+
+def _torsion_form_subobject_on(form, generators, *, quadratic: bool):
+    r"""Return the finite torsion submodule spanned by ``generators`` with restricted form."""
+
+    generators = tuple(form(generator) for generator in generators)
+    unformed = form.unformed_module()
+    forget = form.forget_form_morphism()
+    unformed_generators = tuple(forget(generator) for generator in generators)
+    underlying_subobject = unformed.subobject_on(unformed_generators)
+    underlying_inclusion = underlying_subobject.inclusion()
+
+    def ambient_image(label):
+        underlying_generator = underlying_subobject.module_generator(label)
+        in_unformed = underlying_inclusion(underlying_generator)
+        return form.equip_form_morphism()(in_unformed)
+
+    selected = tuple(
+        ambient_image(label)
+        for label in underlying_subobject.module_generating_set()
+    )
+    gram = _form_gram_on(form, selected, quadratic=quadratic)
+    category = _torsion_form_modules(form.base_ring(), quadratic=quadratic)
+
+    def inclusion_factory(source):
+        return form_embedding(source, form, ambient_image, quadratic=quadratic)
+
+    def lift_from_ambient(source, element):
+        element = element if element.parent() is form else form(element)
+        unformed_element = forget(element)
+        lifted = underlying_inclusion.lift(unformed_element)
+        return source.equip_form_morphism()(lifted)
+
+    return category.from_module(
+        underlying_subobject,
+        gram,
+        form.value_module(),
+        _subobject_ambient=form,
+        _subobject_generator_images=ambient_image,
+        _subobject_lift=lift_from_ambient,
+        _subobject_inclusion_factory=inclusion_factory,
+    )
+
+
+def _torsion_form_primary_part(form, prime, *, quadratic: bool):
+    r"""Return the ``prime``-primary form-bearing subobject."""
+
+    prime = form.base_ring()(prime)
+    generators = []
+    for generator in form.smith_form_module_generators():
+        order = generator.additive_order()
+        valuation = int(order.valuation(prime))
+        if valuation:
+            primary_order = prime**valuation
+            generators.append(form.scalar_multiple(order // primary_order, generator))
+    return _torsion_form_subobject_on(form, generators, quadratic=quadratic)
+
+
+def _embedded_elements(subobject):
+    inclusion = subobject.inclusion()
+    return frozenset(inclusion(element) for element in subobject.elements())
+
+
+def _torsion_form_isotropic_subobjects(form, *, quadratic: bool):
+    r"""Return all form-bearing subobjects on which the selected form vanishes."""
+
+    zero = form.zero()
+    zero_subobject = _torsion_form_subobject_on(form, (), quadratic=quadratic)
+    zero_elements = _embedded_elements(zero_subobject)
+    seen = {zero_elements}
+    frontier = [zero_subobject]
+    isotropic = [zero_subobject]
+    candidates = tuple(
+        element
+        for element in form.elements()
+        if element != zero and form.form_vanishes_on((element,))
+    )
+    while frontier:
+        current = frontier.pop()
+        selected_generators = tuple(current.embedded_module_generators())
+        current_elements = _embedded_elements(current)
+        for element in candidates:
+            if element in current_elements:
+                continue
+            candidate = _torsion_form_subobject_on(
+                form,
+                selected_generators + (element,),
+                quadratic=quadratic,
+            )
+            elements = _embedded_elements(candidate)
+            if elements in seen or not form.form_vanishes_on(elements):
+                continue
+            seen.add(elements)
+            frontier.append(candidate)
+            isotropic.append(candidate)
+    return finite_ordered_set(tuple(isotropic))
+
+
+def _torsion_form_maximal_isotropic_subobjects(form, *, quadratic: bool):
+    isotropic = _torsion_form_isotropic_subobjects(form, quadratic=quadratic)
+    by_elements = tuple((subobject, _embedded_elements(subobject)) for subobject in isotropic)
+    return finite_ordered_set(
+        tuple(
+            subobject
+            for subobject, elements in by_elements
+            if not any(elements < larger for _other, larger in by_elements)
+        )
+    )
 
 
 def _form_gram_on(form, generators, *, quadratic: bool):
@@ -1289,6 +1398,24 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         return TorsionFormTwistFunctor(self, scalar, quadratic=False)
 
     class ParentMethods:
+        def subobject_generated_by(self, generators):
+            r"""Return the span as a bilinear-form-bearing subobject."""
+            return _torsion_form_subobject_on(self, generators, quadratic=False)
+
+        def primary_part(self, prime):
+            r"""Return the ``prime``-primary bilinear-form-bearing subobject."""
+            return _torsion_form_primary_part(self, prime, quadratic=False)
+
+        @cached_method
+        def isotropic_subobjects(self):
+            r"""Return all subobjects on which the bilinear form vanishes."""
+            return _torsion_form_isotropic_subobjects(self, quadratic=False)
+
+        @cached_method
+        def maximal_isotropic_subobjects(self):
+            r"""Return the bilinear-isotropic subobjects maximal by inclusion."""
+            return _torsion_form_maximal_isotropic_subobjects(self, quadratic=False)
+
         def form_vanishes_on(self, elements) -> bool:
             elements = tuple(elements)
             return all(self.b(left, right) == self.value_module().zero() for left in elements for right in elements)
@@ -1444,6 +1571,24 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         return TorsionFormTwistFunctor(self, scalar, quadratic=True)
 
     class ParentMethods:
+        def subobject_generated_by(self, generators):
+            r"""Return the span as a quadratic-form-bearing subobject."""
+            return _torsion_form_subobject_on(self, generators, quadratic=True)
+
+        def primary_part(self, prime):
+            r"""Return the ``prime``-primary quadratic-form-bearing subobject."""
+            return _torsion_form_primary_part(self, prime, quadratic=True)
+
+        @cached_method
+        def isotropic_subobjects(self):
+            r"""Return all subobjects on which the quadratic form vanishes."""
+            return _torsion_form_isotropic_subobjects(self, quadratic=True)
+
+        @cached_method
+        def maximal_isotropic_subobjects(self):
+            r"""Return the quadratic-isotropic subobjects maximal by inclusion."""
+            return _torsion_form_maximal_isotropic_subobjects(self, quadratic=True)
+
         def form_vanishes_on(self, elements) -> bool:
             return all(self.q(element) == self.value_module().zero() for element in elements)
 
