@@ -1302,12 +1302,12 @@ preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFre
 preamble/categories/modules/framed/formed/form_modules.sage	FormModule	function	1300	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	is_form_morphism	function	1372	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	correlation_of	function	1386	0			unreviewed
-preamble/categories/modules/framed/formed/free_lattices.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices	class	29	0			unreviewed
-preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.super_categories	method	36	0			unreviewed
-preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.ParentMethods	class	42	0			unreviewed
-preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.ParentMethods.gram_matrix	method	47	0			unreviewed
-preamble/categories/modules/framed/formed/free_lattices.sage	FreeLatticeOfRank	function	85	0			unreviewed
+preamble/categories/modules/framed/formed/free_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices	class	29	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.super_categories	method	36	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.ParentMethods	class	42	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.ParentMethods.gram_matrix	method	47	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/free_lattices.sage	FreeLatticeOfRank	function	85	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams	class	79	1	src/dzack_research/preamble/categories/coxeter_diagrams.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.super_categories	method	91	0			unreviewed
