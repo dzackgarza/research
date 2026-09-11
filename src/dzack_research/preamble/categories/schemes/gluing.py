@@ -1893,6 +1893,18 @@ class FiniteAtlasModuleGluingDatum(SageObject):
     def morphism_to(self, target, local_maps):
         return FiniteAtlasModuleGluingMorphism(self, target, local_maps)
 
+    def identity_morphism(self):
+        r"""Return the identity morphism of this finite-atlas descent datum."""
+        return self.morphism_to(
+            self,
+            {
+                index: module_homset(
+                    self.local_module(index), self.local_module(index)
+                ).identity()
+                for index in self.chart_indices()
+            },
+        )
+
     def sheaf(self):
         r"""Return the quasi-coherent module sheaf represented by this descent datum."""
         if self._sheaf is None:
@@ -1997,6 +2009,33 @@ class FiniteAtlasModuleGluingMorphism(SageObject):
     def local_map(self, index):
         index = self.source().gluing_datum().normalize_chart_index(index)
         return self.local_maps()[index]
+
+    def __mul__(self, other):
+        if not isinstance(other, FiniteAtlasModuleGluingMorphism):
+            return NotImplemented
+        if other.target() is not self.source():
+            return NotImplemented
+        return other.source().morphism_to(
+            self.target(),
+            {
+                index: self.local_map(index) * other.local_map(index)
+                for index in other.source().chart_indices()
+            },
+        )
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, FiniteAtlasModuleGluingMorphism)
+            and other.source() is self.source()
+            and other.target() is self.target()
+            and all(
+                other.local_map(index) == self.local_map(index)
+                for index in self.source().chart_indices()
+            )
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
 
     @staticmethod
     def _base_changed_map(local_map, ring_map, source, target):
@@ -3668,6 +3707,180 @@ class FiniteAtlasGluedModuleSheaf(SageObject):
         return f"Finite-atlas module sheaf on {self.scheme()}"
 
 
+
+class FiniteAtlasInverseImageModuleSheaf(SageObject):
+    r"""The inverse image ``f^{-1} F`` before extension to ``O_X``-modules.
+
+    The object lives on the fine atlas but retains the coarse local modules and
+    the structural scalar maps ``O_Y(U_i) -> O_X(V_a)`` separately.  In
+    particular it is not represented as an ``O_X``-module sheaf: that extra
+    scalar extension is :meth:`module_pullback`.
+    """
+
+    def __init__(self, refinement, source_sheaf, pullback_functor) -> None:
+        if not isinstance(refinement, FiniteAtlasRefinement):
+            raise TypeError("finite-atlas inverse image requires a represented refinement")
+        if not isinstance(source_sheaf, FiniteAtlasGluedModuleSheaf):
+            raise TypeError("finite-atlas inverse image requires a represented module sheaf")
+        if source_sheaf.atlas_datum() is not refinement.coarse_datum():
+            raise ValueError("the inverse-image sheaf belongs to the refinement's coarse atlas")
+        self._refinement = refinement
+        self._source_sheaf = source_sheaf
+        self._pullback_functor = pullback_functor
+
+    def source_sheaf(self):
+        return self._source_sheaf
+
+    def refinement(self):
+        return self._refinement
+
+    def scheme_morphism(self):
+        return self.refinement().comparison_morphism()
+
+    def ringed_space(self):
+        return self.refinement().fine_scheme()
+
+    scheme = ringed_space
+
+    def coarse_index(self, fine_index):
+        return self.refinement().coarse_index(fine_index)
+
+    def source_local_module(self, fine_index):
+        return self.source_sheaf().sections_on_chart(self.coarse_index(fine_index))
+
+    def structural_ring_map(self, fine_index):
+        return self.refinement().chart_map(
+            fine_index
+        ).coordinate_algebra_morphism()
+
+    def module_pullback(self):
+        r"""Return ``O_X tensor_{f^{-1}O_Y} f^{-1}F`` as an ``O_X``-module sheaf."""
+        return self._pullback_functor.on_object(self.source_sheaf())
+
+
+class FiniteAtlasInverseImageModuleMorphism(SageObject):
+    r"""Inverse image of one finite-atlas module-sheaf morphism."""
+
+    def __init__(self, source, target, source_morphism) -> None:
+        if not isinstance(source, FiniteAtlasInverseImageModuleSheaf) or not isinstance(
+            target, FiniteAtlasInverseImageModuleSheaf
+        ):
+            raise TypeError("inverse-image module morphisms connect inverse-image sheaves")
+        if source.refinement() is not target.refinement():
+            raise ValueError("inverse-image module morphisms use one represented refinement")
+        if source_morphism.source().sheaf() is not source.source_sheaf():
+            raise ValueError("the source inverse image has the wrong original sheaf")
+        if source_morphism.target().sheaf() is not target.source_sheaf():
+            raise ValueError("the target inverse image has the wrong original sheaf")
+        self._source = source
+        self._target = target
+        self._source_morphism = source_morphism
+
+    def source(self):
+        return self._source
+
+    domain = source
+
+    def target(self):
+        return self._target
+
+    codomain = target
+
+    def source_morphism(self):
+        return self._source_morphism
+
+    def local_map(self, fine_index):
+        return self.source_morphism().local_map(
+            self.source().coarse_index(fine_index)
+        )
+
+    def __mul__(self, other):
+        if not isinstance(other, FiniteAtlasInverseImageModuleMorphism):
+            return NotImplemented
+        if other.target() is not self.source():
+            return NotImplemented
+        return FiniteAtlasInverseImageModuleMorphism(
+            other.source(),
+            self.target(),
+            self.source_morphism() * other.source_morphism(),
+        )
+
+
+class FiniteAtlasModulePullbackFunctor(SageObject):
+    r"""Module pullback along one represented finite-atlas refinement ``f:X->Y``."""
+
+    def __init__(self, refinement) -> None:
+        if not isinstance(refinement, FiniteAtlasRefinement):
+            raise TypeError("finite-atlas module pullback requires a represented refinement")
+        self._refinement = refinement
+        self._datum_images = []
+        self._inverse_images = []
+
+    def refinement(self):
+        return self._refinement
+
+    def scheme_morphism(self):
+        return self.refinement().comparison_morphism()
+
+    def inverse_image(self, sheaf):
+        if not isinstance(sheaf, FiniteAtlasGluedModuleSheaf):
+            raise TypeError("finite-atlas inverse image acts on represented module sheaves")
+        if sheaf.atlas_datum() is not self.refinement().coarse_datum():
+            raise ValueError("the sheaf belongs to the wrong coarse atlas")
+        for cached_sheaf, cached in self._inverse_images:
+            if cached_sheaf is sheaf:
+                return cached
+        result = FiniteAtlasInverseImageModuleSheaf(self.refinement(), sheaf, self)
+        self._inverse_images.append((sheaf, result))
+        return result
+
+    def _datum_image(self, datum):
+        for source, target in self._datum_images:
+            if source is datum:
+                return target
+        target = self.refinement().pullback_module_datum(datum)
+        self._datum_images.append((datum, target))
+        return target
+
+    def on_object(self, sheaf):
+        if not isinstance(sheaf, FiniteAtlasGluedModuleSheaf):
+            raise TypeError("finite-atlas module pullback acts on represented module sheaves")
+        if sheaf.atlas_datum() is not self.refinement().coarse_datum():
+            raise ValueError("the sheaf belongs to the wrong coarse atlas")
+        return self._datum_image(sheaf.gluing_datum()).sheaf()
+
+    def on_morphism(self, morphism):
+        if not isinstance(morphism, FiniteAtlasModuleGluingMorphism):
+            raise TypeError("finite-atlas module pullback acts on represented sheaf morphisms")
+        if morphism.source().gluing_datum() is not self.refinement().coarse_datum():
+            raise ValueError("the sheaf morphism belongs to the wrong coarse atlas")
+        source = self._datum_image(morphism.source())
+        target = self._datum_image(morphism.target())
+        local_maps = {}
+        for fine_index in self.refinement().fine_datum().chart_indices():
+            coarse_index = self.refinement().coarse_index(fine_index)
+            ring_map = self.refinement().chart_map(
+                fine_index
+            ).coordinate_algebra_morphism()
+            local_maps[fine_index] = FiniteAtlasModuleGluingMorphism._base_changed_map(
+                morphism.local_map(coarse_index),
+                ring_map,
+                source.local_module(fine_index),
+                target.local_module(fine_index),
+            )
+        return source.morphism_to(target, local_maps)
+
+    def inverse_image_morphism(self, morphism):
+        source = self.inverse_image(morphism.source().sheaf())
+        target = self.inverse_image(morphism.target().sheaf())
+        return FiniteAtlasInverseImageModuleMorphism(source, target, morphism)
+
+
+def finite_atlas_module_pullback_functor(refinement):
+    r"""Return module pullback along the comparison morphism of ``refinement``."""
+    return FiniteAtlasModulePullbackFunctor(refinement)
+
+
 class GluedAlgebraSheaf(SageObject):
     r"""The algebra sheaf represented by finite affine algebra descent data."""
 
@@ -3739,6 +3952,9 @@ __all__ = [
     "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
     "FiniteAtlasInvertibleSheafRefinement",
+    "FiniteAtlasModulePullbackFunctor",
+    "FiniteAtlasInverseImageModuleSheaf",
+    "FiniteAtlasInverseImageModuleMorphism",
     "FiniteAtlasRefinement",
     "FiniteAtlasModuleGluingDatum",
     "FiniteAtlasModuleGluingMorphism",
@@ -3752,4 +3968,5 @@ __all__ = [
     "ModuleGluingMorphism",
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
+    "finite_atlas_module_pullback_functor",
 ]
