@@ -8,7 +8,6 @@ engine is read through the selected-presentation backend method ``_smith_engine`
 and every Smith-form computation is an explicit crossing into it.
 """
 
-from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -19,6 +18,7 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     ArrowCategory,
     Isomorphism,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.base_change import base_change_scalar
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
@@ -1662,7 +1662,7 @@ def _new_presented_module(
     categories.extend(extra_categories)
     if extra_construction_data is not None:
         data.update(extra_construction_data)
-    return object_of(Category.join(tuple(categories)), **data)
+    return object_of(Cat().meet(tuple(categories)), **data)
 
 
 def _resolution_over_degrees(module, terms, differentials, augmentation, zero):

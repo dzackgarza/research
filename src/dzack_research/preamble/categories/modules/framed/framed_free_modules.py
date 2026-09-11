@@ -2,7 +2,6 @@
 
 from itertools import islice
 
-from sage.categories.category import Category
 from sage.combinat.free_module import CombinatorialFreeModule
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
@@ -22,6 +21,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
@@ -496,7 +496,7 @@ def _new_sparse_free_module(
     categories.extend(extra_categories)
     if extra_construction_data is not None:
         data.update(extra_construction_data)
-    return object_of(Category.join(tuple(categories)), **data)
+    return object_of(Cat().meet(tuple(categories)), **data)
 
 
 
