@@ -1663,6 +1663,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-form-adjunction-20260911-0810` | archive reconciliation / form-forgetful adjunctions | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/forms/test_form_forgetful_adjunction_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T08:10:00Z |
+
 
 
 
