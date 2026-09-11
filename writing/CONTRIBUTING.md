@@ -299,13 +299,19 @@ throughout the book.
 ### `MA-5`: Borrowed technical term without a definition
 
 A word that carries a specific technical meaning (character, spectrum, kernel,
-index, module) is used loosely and left undefined.
+index, module, classified by) is used loosely to describe something that has
+a different, standard name. A mathematician reads it as the technical term
+and finds no matching definition — the word signals precision and delivers
+none.
 
 **Banned:** "the character of an axiom" (read as a group/representation
-character; no such notion is defined).
+character; no such notion is defined); "the bilinear map classified by
+$\mu$" (classified by means a classifying object represents a functor;
+the correspondence is the tensor-hom adjunction).
 
-**Preferred:** state the truncation level of the homotopy fibers of the
-specified functor, or name the defined object property actually meant.
+**Preferred:** state the actual correspondence or property. "The bilinear
+map $A\times A\to A$ corresponding to $\mu$ under the tensor-hom
+adjunction." Use the standard name for the standard notion.
 
 ### `MA-6`: Cardinality label for an incidental count
 
@@ -845,19 +851,3 @@ is.
 **Preferred:** "$\mu\colon A\otimes_{\mathbb{Z}}A\to A$ is a homomorphism;
 the corresponding bilinear map $A\times A\to A$ is the multiplication."
 Declare the map, then name its role.
-
-### `SYM-3`: "Classified by" for an adjunction correspondence
-
-"Classified by" has a specific meaning: a classifying object represents a
-functor, and a map into it classifies a family. Using "classified by" for a
-routine adjunction correspondence — the tensor-hom adjunction, a
-currying/uncurrying bijection, or any other natural bijection — misuses a
-word with precise categorical meaning. State the actual correspondence: the
-map corresponds under the adjunction, or is the transpose under the
-adjunction.
-
-**Banned:** "the bilinear map classified by $\mu$."
-
-**Preferred:** "the bilinear map $A\times A\to A$ corresponding to $\mu$
-under the tensor-hom adjunction." Name the adjunction and the direction of
-the correspondence.
