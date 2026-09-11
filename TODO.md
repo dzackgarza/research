@@ -885,7 +885,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 
 ### Shared complex and DGA integration
 
-- [ ] **`complexes`**. **Needs:** none.
+- [x] **`complexes`**. **Needs:** none.
   Complete the remaining coefficient-ring computation boundary without replacing
   the owned cycle/boundary quotient by an abstract homology group.
   **Owners:** module kernels/images/cokernels and the common cochain/cohomology
@@ -1716,7 +1716,6 @@ behavior.
 
 | `CORE-sparse-free-algebra-category-boundary-20260911-0310` | category-boundaries / sparse free-algebra placement through owned Cat meet | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py; tests/algebras/test_sparse_free_algebra_category_boundary.py` (write) | `fb0ab682` | 2026-09-11T03:10:00Z |
 | `ARCHIVE-functor-image-homs-20260910-0125` | archive reconciliation / functor-image Hom composition and underlying codomain Hom | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/abstract_categories/functor_images.py; tests/categories/test_functor_images_archive.py` (write) | `e20e5840` | 2026-09-10T01:25:00Z |
-| `COMPLEX-cap-zx-kernel-20260911-1230` | complexes / CAP kernel provider over ZZ[x] | Chat continuation 2026-09-11; `/home/dzack/research` | `.gap-packages.g; src/dzack_research/preamble/categories/modules/cap_presented_modules.py; src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py; tests/modules/test_cap_complexes_zx.py` (write) | HEAD | 2026-09-11T12:30:00Z |
 | `ARCHIVE-vinberg-weighted-semantics-20260909-1346` | archive reconciliation / weighted Vinberg reflection semantics | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/vinberg_invariants.py; tests/lattices/test_vinberg_weighted_graph_semantics_archive.py` (write) | `90c3c5d9` | 2026-09-09T13:46:00Z |
 | `ARCHIVE-torsion-form-subobjects-20260909-1050` | archive reconciliation / generic torsion-form subobjects | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py; tests/forms/test_torsion_form_subobjects_archive.py` (write) | `HEAD` | 2026-09-09T10:50:00Z |
 | `ARCHIVE-power-algebra-extensions-20260911-0605` | archive reconciliation / alternating and divided-power universal extensions | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/power_algebras.py; tests/algebras/test_power_algebra_extensions_archive.py` (write) | `HEAD` | 2026-09-11T06:05:00Z |
