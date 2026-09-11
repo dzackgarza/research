@@ -1663,7 +1663,7 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-graded-algebras-20260911-0720` | archive reconciliation / graded algebra category and inherited structure | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/algebras/test_graded_algebras_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:20:00Z |
+| `ARCHIVE-graded-algebras-20260911-0720` | archive reconciliation / graded algebra category, inherited structure, and metadata discovery | Chat continuation 2026-09-11; `/home/dzack/research` | `computations/scripts/archive_reconciliation_inventory.py; computations/reports/archive_reconciliation_inventory.tsv; tests/algebras/test_graded_algebras_archive.py` (write) | `HEAD` | 2026-09-11T07:20:00Z |
 
 
 
