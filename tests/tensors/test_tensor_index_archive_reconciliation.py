@@ -30,3 +30,15 @@ def test_archive_index_change_preserves_unselected_slot_order() -> None:
     assert raised.tensor_valence() == (2, 1)
     lowered = raised.lower_index(plane, 1)
     assert lowered == mixed
+
+
+def test_archive_nondegenerate_form_raises_after_fraction_field_base_change() -> None:
+    a2 = Lattices(ZZ)("A2")
+    fraction_map = a2.base_ring().fraction_field_map()
+    rationalized = a2.base_change(fraction_map)
+    raised = a2.raise_index_over_fraction_field(a2.gram_tensor(), 0)
+
+    assert raised.base_ring() is rationalized.base_ring()
+    assert raised.tensor_valence() == (1, 1)
+    assert raised.components() == [[1, 0], [0, 1]]
+    assert rationalized.lower_index(raised, 0) == rationalized.gram_tensor()
