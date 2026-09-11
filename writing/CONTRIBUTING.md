@@ -1008,3 +1008,26 @@ between $K$-theories of the same category with different monoidal
 structures, name the monoidal structure in the argument:
 $K_0(S,\otimes)$, or use distinct symbols for the distinct monoidal
 categories.
+
+### `DEF-8`: A definition anchored in a superseded framework
+
+A definition or construction is presented using a framework the field has
+replaced, when a modern framework exists and is standard. The superseded
+framework is not wrong — it is a theorem under the modern one — but
+presenting it as the definition teaches the reader a picture that the
+field has moved past. The modern framework governs the superseded one,
+not the reverse. Anchor definitions in the current understanding of the
+subject; present the historical formulation as a theorem or remark if it
+is still useful.
+
+**Banned:** defining $K_0(S)$ as the group completion of
+$\pi_0(S^\simeq)$ without mentioning the $K$-theory spectrum. The group
+completion is the pre-spectral (1970s) presentation; the modern
+definition is $K_0(S) = \pi_0 K(S)$, and the group completion is a
+theorem identifying $\pi_0 K(S)$ with the group completion of the monoid.
+
+**Preferred:** define $K_0(S) = \pi_0 K(S)$ where $K(S)$ is the
+$K$-theory spectrum. State the group completion theorem as a theorem.
+A reader trained on the modern definition can access $K_n$, the
+spectrum-level structure, and the methods the field actually uses; a
+reader trained on the superseded one cannot.
