@@ -123,3 +123,15 @@ def test_integral_pairing_is_symmetric_and_bilinear_on_archived_specimens() -> N
     assert abs(form(x, x2) - form(x2, x)) < 1e-9
     assert abs(form(2 * x, x2) - 2 * form(x, x2)) < 1e-9
     assert abs(form(x + x2, x) - form(x, x) - form(x2, x)) < 1e-9
+
+
+def test_l2_certifies_zero_and_polynomial_multiples_of_a_gaussian() -> None:
+    x = var("x")
+    l2 = square_integrable_functions(RR)
+
+    zero = l2(SR(0))
+    weighted_gaussian = l2(x * exp(-x**2))
+
+    assert zero(7) == 0
+    assert weighted_gaussian(2) == 2 * exp(-4)
+    assert _square_integrability(x * exp(-x**2), x) == _MEMBER
