@@ -14,7 +14,6 @@ calling that category.
 """
 
 from sage.arith.misc import gcd
-from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
@@ -156,6 +155,7 @@ def nikulin_invariants(rank, discriminant_length, delta):
     r"""Return \((r,a,\delta)\) as a point of \(\mathbb N^3\)."""
 
     return (NN**3)((int(rank), int(discriminant_length), int(delta)))
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     HomCategoryConstruction,
     IsoCategoryConstruction,
@@ -3742,8 +3742,12 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             return lifted
 
 
-class RootLattices(Category):
+class RootLattices(OwnedCategory):
     r"""Negative-definite ADE root lattices with a chosen simple-root framing."""
+
+    def an_object(self):
+        r"""Return the canonical ``A2`` root lattice as an inhabitant."""
+        return Lattices(_own_ring(SageZZ))("A2")
 
     @classmethod
     def _repr_object_names(cls):
