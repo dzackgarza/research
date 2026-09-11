@@ -1071,3 +1071,79 @@ monoidal structure via an $\mathbb{E}_\infty$-operad action
 $\otimes$, $K(R)$ is an $\mathbb{E}_\infty$-ring spectrum whose $\pi_0$
 is the classical $K_0(R)$ [@Wei13, §II.2]. State the ring spectrum;
 derive the ring on $\pi_0$ from it.
+
+### `DEF-10`: Working truncated while the modern theory is derived and spectral
+
+Modern theory is derived and spectral by default: the objects are
+$\infty$-categories, derived stacks, $\mathbb{E}_\infty$-ring spectra, and
+module spectra, and the classical objects — ordinary categories, schemes,
+commutative rings, abelian groups — are truncations. A passage that
+discusses a modern construction entirely in classical terms — rings
+instead of $\mathbb{E}_\infty$-ring spectra, abelian groups instead of
+spectra, ordinary categories instead of $\infty$-categories — works
+truncated without saying so, and the reader cannot recover the derived
+structure. Work in the derived and $\infty$-categorical framework
+throughout; state classical objects as truncations when the construction
+truly requires them, and make the extraction explicit.
+
+**Banned:** "Let $R$ be a commutative ring" — used where $HR$ (the
+Eilenberg–Mac Lane $\mathbb{E}_\infty$-ring spectrum of $R$) is the
+governing object, without saying whether $R$ is $\pi_0 HR$ or an
+$\mathbb{E}_\infty$-ring. "Let $G$ be a group" — used where $BG$ (its
+classifying $\infty$-groupoid) is the governing object.
+
+**Preferred:** "Let $R$ be an $\mathbb{E}_\infty$-ring spectrum; write
+$\pi_0 R$ for its underlying classical ring when the classical
+construction is needed: $R = H(\pi_0 R)$ when $R$ is discrete." State the
+derived object; extract the classical shadow explicitly when it is the
+object under study, e.g. in the statement of a classical theorem.
+
+### `DEF-11`: Truncation extraction named explicitly
+
+Passing from a derived or spectral object to its classical shadow is a
+specific construction, not a silent identification: $\pi_0 HR$ extracts the
+classical ring $R$ from the Eilenberg–Mac Lane $\mathbb{E}_\infty$-ring
+spectrum; $\Omega BG$ recovers the group $G$ from its classifying
+$\infty$-groupoid; the underlying abelian group of an
+$\mathbb{E}_\infty$-module spectrum is a further forgetful image. Each
+extraction names the functor that performs it. A passage that uses the
+classical object without naming the extraction hides the truncation.
+
+**Banned:** "a commutative ring $R$ and its modules" — used where
+$\mathbb{E}_\infty$-modules over $HR$ are the governing objects, with no
+statement of the truncation.
+
+**Preferred:** "an $\mathbb{E}_\infty$-ring spectrum $R$ and its module
+spectra; its $\pi_0$ is the classical commutative ring, and the
+heart of the t-structure recovers the classical module category." Name
+the derived objects; state the truncation that yields the classical
+ones. Do not belabour the extraction at every mention, but make it
+explicit where the book first passes from derived to classical.
+
+### `DEF-12`: Level of abstraction calibrated to modern courses and literature
+
+The standard for how much $\infty$-categorical and spectral machinery the
+book uses is not the classical textbook from which the author learned
+the material, but the level at which the subject is currently taught and
+practiced: undergraduate and graduate courses at Harvard, MIT, and
+Princeton, and the work of Lurie, Scholze, Gaitsgory, and Haynes Miller.
+When in doubt about whether a derived or $\infty$-categorical
+presentation is warranted, survey how the notion is presented in those
+courses and in that literature, and match their level. A construction
+that Lurie's lectures present as a functor between $\infty$-categories
+is not presented here as a functor between ordinary categories; a notion
+that Scholze's course formulates via derived stacks is not formulated
+here via classical schemes. This does not mean every detail is
+re-derived — a construction is stated at the modern level, and classical
+consequences are extracted — but it means the book does not implicitly
+assume everything is truncated everywhere.
+
+**Banned:** presenting a construction at the classical level because the
+classical case is "simpler" or "more familiar", when the field's standard
+presentation is derived or $\infty$-categorical.
+
+**Preferred:** survey the modern courses and literature (e.g. Lurie's
+*Higher Topos Theory* [@Lur09HTT] and *Higher Algebra* [@HA], Gaitsgory–
+Rozenblyum, Scholze's courses and the Berkeley lectures, Haynes Miller's
+spectral sequences courses) and match their level of abstraction and
+presentation.
