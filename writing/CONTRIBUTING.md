@@ -1313,3 +1313,34 @@ merely needs data, when the default is non-existence.
 $\mathbf{LMod}_R\simeq\mathbf{RMod}_R$; an equivalence, when it exists,
 is equivalent to …" State the theorem, not commentary on what notation
 does not do.
+
+### `PR-18`: Patronizing dialectic for a sophisticated audience
+
+The book's reader is the audience of DEF-12 and DEF-13: comfortable with
+$\infty$-categories, $\mathbb{E}_1$- and $\mathbb{E}_\infty$-ring spectra,
+$\mathbf{LMod}_R$ versus $\mathbf{RMod}_R$, derived stacks, and
+homotopy types. That reader already distinguishes $\mathbb{E}_1$ from
+$\mathbb{E}_\infty$ and left modules from right modules. A passage that
+manufactures a naive reader — "you might think $R$ on the left versus on
+the right gives an equivalence, but it does not follow merely from
+notation" — and then corrects that reader is patronizing. Even if the
+premise were coherent, the corrective "you might think $X$, but you would
+be wrong" positions the author above a reader who needs to be warned not
+to confuse notation with mathematics. A mathematician does not need that
+warning; the precise statement already trusts the reader to understand it.
+
+**Banned:** "it does not follow merely from notation that …" — lectures a
+reader who already knows $\mathbf{LMod}_R\neq\mathbf{RMod}_R$ as
+$\infty$-categories over a general $\mathbb{E}_1$-ring. "For a general
+ring, one might expect left and right modules to coincide, but this
+requires additional data."
+
+**Preferred:** state the precise theorem and trust the reader:
+"there is no canonical equivalence
+$\mathbf{LMod}_R\simeq\mathbf{RMod}_R$ for a general
+$\mathbb{E}_1$-ring spectrum $R$." Do not manufacture a naive position to
+knock down; do not explain what notation does not do. The book assumes
+the sophistication of its intended audience (modern graduate courses at
+Harvard, MIT, and Princeton; Lurie, Scholze, Gaitsgory, Haynes Miller)
+and does not rehearse warnings appropriate to a first encounter with the
+distinction.
