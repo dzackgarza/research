@@ -2847,9 +2847,9 @@ preamble/display.py	<module>	module	1	0		src/dzack_research/preamble/categories/
 preamble/display.py	typesets_itself	function	35	0		src/dzack_research/preamble/categories/_lattice.py	reconciled-live-owner
 preamble/display.py	latex_if_typesettable	function	52	0		src/dzack_research/preamble/categories/_lattice.py	reconciled-live-owner
 preamble/display.py	install_implicit_typesetting	function	59	0		src/dzack_research/preamble/categories/_lattice.py	reconciled-live-owner
-preamble/init.sage	<module>	module	1	0			unreviewed
-preamble/install.sage	<module>	module	1	0			unreviewed
-preamble/install.sage	install_preamble	function	32	0			unreviewed
+preamble/init.sage	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/install.sage	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/install.sage	install_preamble	function	32	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/lexicon/__init__.py	<module>	module	1	0		src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/__init__.py	CartanType	reexport	1	2		src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/__init__.py	GramMatrix	reexport	1	2		src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
