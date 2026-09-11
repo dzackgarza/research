@@ -1,11 +1,10 @@
 """The owned operation spine below groups."""
 
-from sage.categories.category import Category
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
     HomCategoryConstruction,
 )
 
@@ -26,6 +25,13 @@ class Magmas(OwnedCategory):
             return self._with_axiom("Commutative")
 
 
+class MonoidHomCategoryConstruction(HomCategoryConstruction):
+    r"""The fixed-endpoint Hom categories of owned monoids."""
+
+    def fixed_category_class(self):
+        return MonoidHomset
+
+
 class Semigroups(OwnedCategory):
     def super_categories(self):
         return [Magmas()]
@@ -42,10 +48,12 @@ class Monoids(OwnedCategory):
 
             return generic_power(self, exponent)
 
+    _HomCategory = MonoidHomCategoryConstruction
+
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a monoid Hom requires two monoids")
-        return MonoidHomset(domain, codomain)
+        return self.HomCategory().Of(domain, codomain)
 
 
 
@@ -113,20 +121,17 @@ class MonoidMorphism(Morphism):
     def __mul__(self, other):
         if not isinstance(other, MonoidMorphism) or other.codomain() is not self.domain():
             return NotImplemented
-        return MonoidHomset(other.domain(), self.codomain())(
-            lambda element: self(other(element))
-        )
+        hom = self.parent().hom_family().Of(other.domain(), self.codomain())
+        return hom(lambda element: self(other(element)))
 
 
-class MonoidHomset(Homset):
-    """The owned set ``Hom_Mon(A,B)``."""
+class MonoidHomset(CategoricalHomset):
+    r"""The owned fixed Hom category ``Mor_Mon(A,B)``."""
 
     Element = MonoidMorphism
 
-    def __init__(self, domain, codomain) -> None:
-        from dzack_research.preamble.categories.sets.set_categories import Sets
-
-        Homset.__init__(self, domain, codomain, category=Sets())
+    def __init__(self, family, domain, codomain) -> None:
+        super().__init__(family, domain, codomain)
 
     def __call__(self, function):
         if isinstance(function, MonoidMorphism):
