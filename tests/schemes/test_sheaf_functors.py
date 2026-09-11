@@ -8,9 +8,13 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
+from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+    FiniteAtlasInvertibleSheaf,
+)
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
     FiniteAtlasRefinement,
+    compare_finite_atlas_line_bundle_pullback,
     finite_atlas_module_pullback_functor,
 )
 
@@ -159,3 +163,30 @@ def test_inverse_image_functor_preserves_composition_before_scalar_extension() -
 
     for fine_index in refinement.fine_datum().chart_indices():
         assert composed.local_map(fine_index) == inverse_composite.local_map(fine_index)
+
+
+def test_generic_module_pullback_agrees_with_transition_unit_line_bundle_pullback() -> None:
+    coarse, fine, refinement = _projective_line_refinement()
+    source_overlap = coarse.overlap(0, 1)
+    ratio = source_overlap.inclusion().coordinate_algebra_morphism()(
+        coarse.chart(0).coordinate_algebra().algebra_generator("x1_over_x0")
+    )
+    bundle = FiniteAtlasInvertibleSheaf(coarse, {(0, 1): ratio})
+    comparison = compare_finite_atlas_line_bundle_pullback(refinement, bundle)
+    generic = comparison.generic_pullback().gluing_datum()
+    specialized = comparison.specialized_module_sheaf().gluing_datum()
+
+    assert comparison.line_bundle() is bundle
+    assert comparison.line_bundle_refinement().refined_bundle().gluing_datum() is fine
+    assert comparison.inverse() * comparison.forward() == generic.identity_morphism()
+    assert comparison.forward() * comparison.inverse() == specialized.identity_morphism()
+
+    for fine_index in fine.chart_indices():
+        forward = comparison.forward().local_map(fine_index)
+        assert forward.domain() is generic.local_module(fine_index)
+        assert forward.codomain() is specialized.local_module(fine_index)
+
+    refined_bundle = comparison.line_bundle_refinement().refined_bundle()
+    assert refined_bundle.transition_unit(0, 1) == refinement.overlap_map(
+        0, 1
+    ).coordinate_algebra_morphism()(bundle.transition_unit(0, 1))

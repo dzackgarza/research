@@ -3881,6 +3881,138 @@ def finite_atlas_module_pullback_functor(refinement):
     return FiniteAtlasModulePullbackFunctor(refinement)
 
 
+def _line_bundle_transition_images(line_bundle, source_index, target_index):
+    unit = line_bundle.transition_unit(source_index, target_index)
+
+    def images(label, domain, codomain):
+        position = int(domain.module_generating_set().ranking_map()(label))
+        target_label = codomain.module_generating_set()[position]
+        return codomain.scalar_multiple(
+            codomain.base_ring()(unit),
+            codomain.module_generator(target_label),
+        )
+
+    return images
+
+
+def finite_atlas_line_bundle_module_sheaf(line_bundle):
+    r"""Return the rank-one module sheaf underlying a finite-atlas line bundle."""
+    from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+        FiniteAtlasInvertibleSheaf,
+    )
+
+    if not isinstance(line_bundle, FiniteAtlasInvertibleSheaf):
+        raise TypeError("the selected line bundle is not finite-atlas descent data")
+    datum = line_bundle.gluing_datum()
+    local_modules = {
+        index: line_bundle.local_module(index)
+        for index in datum.chart_indices()
+    }
+    transitions = {
+        (source_index, target_index): (
+            _line_bundle_transition_images(
+                line_bundle, source_index, target_index
+            ),
+            _line_bundle_transition_images(
+                line_bundle, target_index, source_index
+            ),
+        )
+        for source_index, target_index in datum.transition_index_set()
+    }
+    return FiniteAtlasModuleGluingDatum(
+        datum, local_modules, transitions
+    ).sheaf()
+
+
+class FiniteAtlasLineBundlePullbackComparison(SageObject):
+    r"""Compare generic module pullback with transition-unit line-bundle pullback."""
+
+    def __init__(self, refinement, line_bundle) -> None:
+        self._refinement = refinement
+        self._line_bundle = line_bundle
+        self._pullback_functor = finite_atlas_module_pullback_functor(refinement)
+        coarse_module_sheaf = finite_atlas_line_bundle_module_sheaf(line_bundle)
+        self._generic_pullback = self._pullback_functor.on_object(
+            coarse_module_sheaf
+        )
+        self._line_bundle_refinement = refinement.pullback_invertible_sheaf(
+            line_bundle
+        )
+        self._specialized_module_sheaf = finite_atlas_line_bundle_module_sheaf(
+            self._line_bundle_refinement.refined_bundle()
+        )
+        generic = self._generic_pullback.gluing_datum()
+        specialized = self._specialized_module_sheaf.gluing_datum()
+
+        forward_maps = {}
+        inverse_maps = {}
+        for index in refinement.fine_datum().chart_indices():
+            generic_module = generic.local_module(index)
+            specialized_module = specialized.local_module(index)
+            generic_labels = tuple(generic_module.module_generating_set())
+            specialized_labels = tuple(specialized_module.module_generating_set())
+            if len(generic_labels) != len(specialized_labels):
+                raise ArithmeticError(
+                    "generic and specialized line-bundle pullbacks have different local ranks"
+                )
+            forward_maps[index] = module_homset(
+                generic_module, specialized_module
+            )(
+                {
+                    source_label: specialized_module.module_generator(target_label)
+                    for source_label, target_label in zip(
+                        generic_labels, specialized_labels, strict=True
+                    )
+                }
+            )
+            inverse_maps[index] = module_homset(
+                specialized_module, generic_module
+            )(
+                {
+                    target_label: generic_module.module_generator(source_label)
+                    for source_label, target_label in zip(
+                        generic_labels, specialized_labels, strict=True
+                    )
+                }
+            )
+        self._forward = generic.morphism_to(specialized, forward_maps)
+        self._inverse = specialized.morphism_to(generic, inverse_maps)
+        if self._inverse * self._forward != generic.identity_morphism():
+            raise ArithmeticError(
+                "the line-bundle pullback comparison is not left-invertible"
+            )
+        if self._forward * self._inverse != specialized.identity_morphism():
+            raise ArithmeticError(
+                "the line-bundle pullback comparison is not right-invertible"
+            )
+
+    def refinement(self):
+        return self._refinement
+
+    def line_bundle(self):
+        return self._line_bundle
+
+    def generic_pullback(self):
+        return self._generic_pullback
+
+    def line_bundle_refinement(self):
+        return self._line_bundle_refinement
+
+    def specialized_module_sheaf(self):
+        return self._specialized_module_sheaf
+
+    def forward(self):
+        return self._forward
+
+    def inverse(self):
+        return self._inverse
+
+
+def compare_finite_atlas_line_bundle_pullback(refinement, line_bundle):
+    r"""Return the comparison between generic and specialized pullback."""
+    return FiniteAtlasLineBundlePullbackComparison(refinement, line_bundle)
+
+
 class GluedAlgebraSheaf(SageObject):
     r"""The algebra sheaf represented by finite affine algebra descent data."""
 
@@ -3952,6 +4084,7 @@ __all__ = [
     "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
     "FiniteAtlasInvertibleSheafRefinement",
+    "FiniteAtlasLineBundlePullbackComparison",
     "FiniteAtlasModulePullbackFunctor",
     "FiniteAtlasInverseImageModuleSheaf",
     "FiniteAtlasInverseImageModuleMorphism",
@@ -3969,4 +4102,6 @@ __all__ = [
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
     "finite_atlas_module_pullback_functor",
+    "finite_atlas_line_bundle_module_sheaf",
+    "compare_finite_atlas_line_bundle_pullback",
 ]
