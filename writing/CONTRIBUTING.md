@@ -1609,3 +1609,111 @@ $b\colon M\otimes_A M\to W$ in $\mathbf{LMod}_A$" (or
 $b\colon M\otimes_A^L M\to W$ for the derived product). The single
 morphism out of the tensor product replaces the map out of the product
 plus the English "bilinear."
+
+### `DEF-19`: Unconditional, conditional, and meta-remark mixed in one definition block
+
+A definition block mixes notions with different logical status: unconditional
+replete full subcategories (finitely generated, projective, free), properties
+defined only under a hypothesis (torsion and torsion-free over an integral
+domain), and a meta-remark about usage over a general ring. Each status has
+its own block: unconditional notions have unconditional blocks; a notion
+defined only under a hypothesis states the hypothesis in its block; a usage
+rule is a Remark. Do not list them as parallel bullets under "The following
+isomorphism-invariant properties define replete full subcategories" when the
+list is not uniform.
+
+Concrete standard (establishing the conventions named above): for an
+associative ($\mathbb{E}_1$) ring spectrum $R$, $\mathbf{LMod}_R$ is the
+presentable stable $\infty$-category of left $R$-module spectra.
+$M\in\mathbf{LMod}_R$ is finitely generated if there exists a finite set
+$I$ and an effective epimorphism $\bigoplus_{i\in I}R\twoheadrightarrow M$;
+projective if $M$ is a retract of a free module
+$\bigoplus_{i\in I}R$ for some set $I$; free if $M\simeq\bigoplus_{i\in
+I}R$ for some set $I$; finitely generated projective if both hold, i.e.
+$\mathbf{LMod}_R^{\mathrm{fg,proj}}=
+\mathbf{LMod}_R^{\mathrm{fg}}\cap\mathbf{Proj}_R$, each replete full.
+Torsion and torsion-free as stated below are defined only over an
+integral domain $R$ (classical, i.e. $R=\pi_0 HR$ discrete): $M$ is
+torsion if $\forall m\in M\,\exists\,0\neq r\in R$ with $r\cdot m=0$,
+torsion-free if $\forall\,0\neq r\in R$, $r\cdot\colon M\to M$ is
+injective. Over a general $\mathbb{E}_1$-ring spectrum a torsion
+subcategory is not a property but a torsion theory — a hereditary torsion
+pair, a $t$-structure — and is used only after that extra structure has
+been specified (DEF-20).
+
+**Banned:** "::: {#def-module-subcategories} The following
+isomorphism-invariant properties define replete full subcategories of
+$R\text{-}\mathbf{Mod}$: [four bullets] If $R$ is an integral domain, $M$
+is torsion when … Over a general ring, a torsion subcategory is used
+only after a torsion theory has been specified. :::"
+
+**Preferred:** separate blocks: "::: {#def-fg-modules} ## Finitely
+generated modules — Let $R$ be an $\mathbb{E}_1$-ring spectrum and
+$M\in\mathbf{LMod}_R$. $M$ is finitely generated if … :::" and
+"::: {#def-torsion-modules} ## Torsion modules (integral domain) — Let
+$R$ be an integral domain (discrete) and $M\in\mathbf{LMod}_R$. $M$ is
+torsion if … :::" and a separate Remark for the general $\mathbb{E}_1$
+usage rule.
+
+### `SYM-13`: Classical module notation for $\infty$-categorical modules
+
+Classical notation $R\text{-}\mathbf{Mod}$, $R^{(I)}$, and $R^n$ for
+modules is the truncation to the heart. The book's default is
+$\mathbf{LMod}_R$, $\mathbf{RMod}_R$, ${}_A\mathbf{Bimod}_B$ (or
+${}_A\mathbf{BiMod}_B$) for presentable stable $\infty$-categories of
+module spectra, and $\bigoplus_{i\in I}R$ (coproduct in
+$\mathbf{LMod}_R$) for the free module on a set $I$. $R^{(I)}$ and the
+surjection $R^n\twoheadrightarrow M$ are the classical shadows; they are
+correct only after truncating to $\pi_0$ or to discrete $R$.
+
+**Banned:** "$R\text{-}\mathbf{Mod}$ for the $\infty$-category;
+$R^{(I)}$ for the free module spectrum; $R^n\twoheadrightarrow M$ for an
+effective epimorphism in $\mathbf{LMod}_R$ without marking the
+truncation."
+
+**Preferred:** "$\mathbf{LMod}_R$ (resp. $\mathbf{RMod}_R$,
+${}_A\mathbf{BiMod}_B$) for $\infty$-categories;
+$\bigoplus_{i\in I}R\twoheadrightarrow M$ as an effective epimorphism for
+finitely generated; $M\simeq\bigoplus_{i\in I}R$ for free." State the
+$\infty$-categorical object; note when passage to $\pi_0$ recovers the
+classical notation.
+
+### `PR-21`: Definition missing "is … if …" and quantifier, redundant qualifier
+
+A property is defined as "finitely generated: some $R^n\twoheadrightarrow
+M$ is surjective" — no "M is … if …", no quantifier for $M$ or $n$, and
+redundant "is surjective" after $\twoheadrightarrow$ (which already means
+surjective). A property that defines a replete full subcategory is stated
+as "$M$ is $P$ if …" with $M$ bound and the quantifiers explicit; the
+surjection is written $R^n\to M$ or declared surjective without doubling
+the word.
+
+**Banned:** "finitely generated: some $R^n\twoheadrightarrow M$ is
+surjective" — $M$ unbound, no "is … if …", redundant "is surjective."
+
+**Preferred:** "$M\in\mathbf{LMod}_R$ is finitely generated if there
+exists a finite set $I$ and an effective epimorphism
+$\bigoplus_{i\in I}R\twoheadrightarrow M$." Bind $M$, state the
+quantifiers, and do not double the surjectivity marker.
+
+### `DEF-20`: Torsion over a general ring is a torsion theory, not a property
+
+Over an integral domain $R$ (discrete), torsion and torsion-free are
+properties of an $R$-module $M$ as above. Over a general
+($\mathbb{E}_1$) ring spectrum $R$, a "torsion subcategory" is not a
+property of $M$ but extra structure: a hereditary torsion pair, a
+$t$-structure, or a localizing subcategory with the corresponding
+torsion functor. The passage "Over a general ring, a torsion subcategory
+is used only after a torsion theory has been specified" is correct in
+intent but inside a definition block it is a prose usage rule with no
+construction. State the torsion theory and cite its definition; put the
+usage rule in a Remark, not in the definition of finitely generated
+projective modules.
+
+**Banned:** the last sentence of {#def-module-subcategories} as part of
+the definition of $R\text{-}\mathbf{Mod}$ subcategories.
+
+**Preferred:** "::: {.Remark} Over a general $\mathbb{E}_1$-ring spectrum
+$R$, a torsion subcategory means a hereditary torsion theory
+$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-theory)
+and is used only after that theory has been specified. :::"
