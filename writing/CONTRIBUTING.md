@@ -1241,3 +1241,46 @@ parenthesizations are connected by a unique composite of associators."
 PR-13, PR-14, EV-8, AX-1, and PR-7 are instances of this general pattern:
 a precise statement was replaced by a loose English description that is
 longer and carries less information.
+
+### `DEF-14`: "General ring" without specifying the $\mathbb{E}_n$ level
+
+"Ring" in this book is an $\mathbb{E}_\infty$-ring spectrum by default
+(DEF-13). For an $\mathbb{E}_\infty$-ring spectrum $R$,
+$\mathbf{LMod}_R\simeq\mathbf{RMod}_R$ canonically via the symmetry. For a
+general associative ($\mathbb{E}_1$) ring spectrum the two
+$\infty$-categories $\mathbf{LMod}_R$ and $\mathbf{RMod}_R$ (equivalently
+$\mathbf{LMod}_R$ and $\mathbf{RMod}_{R^{\mathrm{op}}}$ for a classical
+noncommutative ring) are distinct. A passage that says "for a general
+ring, left and right module categories are not canonically equivalent"
+without stating the $\mathbb{E}_n$ level is ambiguous on the book's
+default reading — and false if read as $\mathbb{E}_\infty$.
+
+**Banned:** "For a general ring, an equivalence between left and right
+module categories is additional data."
+
+**Preferred:** "For a general associative ($\mathbb{E}_1$) ring spectrum
+$R$, there is no canonical equivalence
+$\mathbf{LMod}_R\simeq\mathbf{RMod}_R$." If the $\mathbb{E}_\infty$ case
+is meant, state that the symmetry gives the canonical identification, so
+the distinction is only for $\mathbb{E}_1$.
+
+### `PR-16`: "Additional data" for a precise moduli of equivalences
+
+A passage states that a comparison "is additional data" or "does not
+follow merely from notation" instead of stating what the extra structure
+is and what classifies it. The phrase names no data and no moduli. State
+the structure: there is no canonical equivalence; an equivalence is
+equivalent to the data of an invertible bimodule, a Morita equivalence,
+an $\mathbb{E}_1$-equivalence $R\simeq R^{\mathrm{op}}$, or whichever
+structure is relevant, and state the universal property that classifies
+it.
+
+**Banned:** "an equivalence between left and right module categories is
+additional data; it does not follow merely from notation."
+
+**Preferred:** "there is no canonical equivalence
+$\mathbf{LMod}_R\simeq\mathbf{RMod}_R$; such an equivalence is equivalent
+to the data of an invertible $(R,R)$-bimodule, and in particular to an
+$\mathbb{E}_1$-equivalence $R\simeq R^{\mathrm{op}}$ when it is induced
+by an anti-automorphism." Name the data and the classification; do not
+paraphrase existence of structure as English about notation.
