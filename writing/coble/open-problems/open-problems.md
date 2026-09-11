@@ -217,6 +217,64 @@ For an indefinite lattice each level set $L[k]$ can be infinite (see the Lattice
 The open work is to define a regularized theta series for the hyperbolic lattices of this monograph, determine its transformation behaviour, and relate it to the lattice invariants --- discriminant form, genus, and the reflection group --- that the rest of this document computes.
 :::
 
+## The GIT and Looijenga models of the Coble moduli space
+
+::: {.Question #que:coble-arrangement-empty}
+### Open problem: is the Coble arrangement $\cH^{*}_{10A_1}$ empty?
+
+The GIT compactification of the moduli of ten-nodal sextics is the Looijenga
+compactification of $\Gamma_{10A_1}\backslash(D(T_\Co) - \cH^{*}_{10A_1})$, for
+the arrangement
+$$
+\cH^{*}_{10A_1} = \cH_\infty \cap D(T_\Co)
+$$
+cut out by the divisibility-two roots of $\Lambda_1 = H^{\perp\lkt}$
+(\longref{thm:git-equals-looijenga}).
+Whether that arrangement is empty decides the shape of the compactification:
+
+- if $\cH^{*}_{10A_1} = \varnothing$, the Looijenga construction returns the
+  Baily--Borel compactification (\longref{def:looijenga-compactification}), so the
+  GIT boundary of the ten-nodal sextics consists of the $0$-cusp point and the
+  $1$-cusp curve and nothing else;
+
+- if $\cH^{*}_{10A_1} \neq \varnothing$, the GIT compactification carries a
+  boundary divisor for each $\Gamma_{10A_1}$-orbit in the arrangement, and is a
+  proper semitoroidal model strictly between Baily--Borel and toroidal.
+
+The question is a lattice computation in $\Lambda_1$: is there a divisibility-two
+root of $\Lambda_1$ whose orthogonal hyperplane meets $D(T_\Co)$ in a proper
+hyperplane section?
+It is *not* answered by \longref{lem:divisibilityAlwaysTwoTco}, which computes
+divisibility inside $T_\Co$ and says nothing about divisibility inside the larger
+lattice $\Lambda_1$.
+One reduction is available: every root of the root lattice $L$ has divisibility
+$1$ in $\Lambda_1$ [@YZZ25 §4.2], so no root arising from a node of the sextic
+contributes, which is why $\cH^{*}_{10A_1}$ is contained in the larger
+arrangement $\cH_{10A_1}$ of \longref{thm:occult-period-map-sextics}.
+:::
+
+::: {.Question #que:semifan-poset-position}
+### Open problem: the position of the three semifans
+
+The Coxeter, KSBA, and Looijenga semifans of the Coble period domain are
+determined by three unrelated inputs, and no one of them constrains another
+(\longref{def:looijenga-compactification} and the remark following it).
+Once $\cH^{*}_{10A_1}$ is computed, three questions remain:
+
+- is the resulting Looijenga semifan the Coxeter semifan of a reflection group,
+  as it would be if the traces of $\cH^{*}_{10A_1}$ on a cusp boundary were the
+  walls of a chamber?
+
+- does the Looijenga semifan refine the KSBA semifan, coarsen it, or is it
+  incomparable?
+
+- which sextic degenerations lie over which cusp?
+  Shah's classification of the semistable sextics is explicit [@Sha80], and the
+  cusp correspondence of \longref{thm:cusp_correspondence} is known, so tracing a
+  named degeneration such as a double cubic to the $0$-cusp $(9,9,1)_1$ or the
+  $1$-cusp $(7,7,1)_0$ is a finite computation rather than a new theory.
+:::
+
 ## dlt and KSBA stable models
 
 ::: {.Remark}

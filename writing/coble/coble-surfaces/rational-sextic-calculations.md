@@ -117,6 +117,25 @@ $12$ and the Coble locus is cut out by three conditions, leaving the
 $9$-dimensional moduli of \longref{cor:m-polarized-k3-dimension}.
 :::
 
+::: {.Remark}
+### How many of the thirty conditions are independent
+
+\longref{prop:sextic-node-conditions} says the thirty conditions must be
+dependent but not by how much.
+The count is settled by the equisingular deformation theory of plane curves: for a
+curve of degree $d$ with singularities whose root lattices are $R_i$, the space of
+such curves has expected dimension
+$$
+\binom{d+2}{2} - 1 - \sum_i \rank(R_i)
+,
+$$
+and for sextics this expected dimension is attained [@YZZ25 §2.1].
+For ten nodes, $\sum_i\rank(R_i) = 10$, so the Severi variety $V_{6,10}$ of
+\longref{rmk:severi-sextics} has dimension $27 - 10 = 17$: exactly ten of the
+thirty conditions are independent, one per node.
+Quotienting by the $8$-dimensional group $\PGL_3$ leaves the nine moduli again.
+:::
+
 ## A criterion for a node of a plane curve
 
 ::: {.Proposition #prop:hessian-rank-at-singular-point}

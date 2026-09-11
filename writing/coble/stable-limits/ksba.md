@@ -115,6 +115,18 @@ Without this memory the restricted semifan would be too fine for the actual KSBA
 The boundary dictionaries and cusp tables appearing in preliminary work remain unverified pending the restriction theorem and an explicit cusp computation.
 :::
 
+::: {.Remark}
+
+A second semitoroidal model of the *unpolarized* Coble period domain is available
+and is not an input to any of the four: the GIT compactification of the moduli of
+ten-nodal sextics is a Looijenga compactification
+(\longref{thm:git-equals-looijenga}), whose semifan is determined by an
+arrangement of hyperplanes rather than by degenerations of stable pairs.
+Its semifan and the restricted ramification semifan of
+\longref{conj:restricted_ramification_semifan} are computed from unrelated data,
+so neither determines the other.
+:::
+
 ## Boundary cusp data
 
 ::: {.Remark}

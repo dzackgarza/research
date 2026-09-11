@@ -3,7 +3,7 @@
 ::: {.Remark}
 ### Orientation
 
-This section collects the general definitions of the compactification types used throughout the monograph -- toroidal, semitoroidal, and KSBA compactifications, together with generalized Coxeter semifans and recognizable divisors.
+This section collects the general definitions of the compactification types used throughout the monograph -- toroidal, semitoroidal, KSBA, and Looijenga compactifications, together with generalized Coxeter semifans and recognizable divisors.
 The material here is background and vocabulary: it fixes the constructions in their natural generality.
 The Coble-specific application of these constructions -- the KSBA stable pair, the restricted ramification semifan, and the comparison between the two compactifications -- is developed in the Stable Limits section; see in particular \longref{conj:restricted_ramification_semifan} and \longref{conj:ksba_semitoroidal_comparison}.
 :::
@@ -26,7 +26,7 @@ There is a proper $\Gamma$-equivariant morphism $\overline{F_\Gamma}^{\Sigma_\bu
 
 ::: {.Definition #def:semitoroidal-compactification}
 
-Introduced by Looijenga [@Loo03], a **semitoroidal compactification** $\overline{F_\Gamma}^{\mathcal{F}_\bullet}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mathcal{F}_I$.
+Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\overline{F_\Gamma}^{\mathcal{F}_\bullet}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mathcal{F}_I$.
 
 A semifan relaxes the conditions of a fan by not requiring local finiteness or full support.
 This allows "partial" toroidalization at selected cusps while leaving others untouched or less refined.
@@ -119,6 +119,46 @@ The KSBA moduli space $\overline{F}_\Gamma$ provides a modular, proper, algebrai
 
 The Coble-specific stable-pair package extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
 The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see \longref{conj:ksba_semitoroidal_comparison}.
+:::
+
+## Looijenga compactifications
+
+::: {.Definition #def:looijenga-compactification}
+
+Let $\cH$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period
+domain $D$.
+The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\cH}$ is the
+compactification of the arrangement complement $\Gamma\backslash(D - \cH)$
+determined by $\cH$ [@Loo02].
+It is a semitoroidal compactification in the sense of
+\longref{def:semitoroidal-compactification}, so it sits in the same tower over the
+Baily--Borel compactification; the semifan it defines at a $0$-cusp is read off
+the traces of the hyperplanes of $\cH$ on the boundary of that cusp.
+When $\cH$ is empty the construction returns the Baily--Borel compactification.
+:::
+
+::: {.Remark}
+### Three semifans, independently determined
+
+Three semifans are in play for a single period domain, and they are produced by
+three unrelated inputs:
+
+- the **Coxeter semifan** of a $0$-cusp, cut out by the walls of a fundamental
+  chamber of the reflection group of the cusp lattice
+  (\longref{def:generalized-coxeter-semifan});
+
+- the **KSBA semifan**, determined by which degenerations of stable pairs occur
+  (\longref{def:ksba-compactification}), and in the cases treated here a
+  coarsening of the Coxeter semifan obtained by deleting irrelevant walls;
+
+- the **Looijenga semifan** of an arrangement $\cH$, determined by the arithmetic
+  of $\cH$ alone.
+
+The identification of a GIT compactification with a Looijenga compactification
+therefore carries no information about the KSBA semifan: the two are computed from
+different data, and knowing one does not constrain the other.
+Where the three sit relative to one another in the refinement order is a question
+in its own right, recorded among the open problems.
 :::
 
 ## Recognizable divisors

@@ -178,6 +178,199 @@ $$
 Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@AE22 Thm. 5.10] applied to $S_\Co =(11, 11, 1)_1$.
 We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\Co)^*$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
+# The sextic moduli construction
+
+::: {.Remark}
+### Orientation
+
+The constructions above start from the surface: from the Coble surface $S$ and
+its K3 cover, or from the Enriques period domain in which the Coble locus is a
+Heegner divisor.
+A third route starts from the *branch curve* and never mentions $S$: one takes the
+moduli space of plane sextics of a fixed singularity type, and maps it to an
+arithmetic quotient by the periods of the associated K3.
+Yu--Zheng--Zhong carry this out for every singular type $T$ of plane sextic with
+simple singularities [@YZZ25], and the Coble case is the type $T = 10A_1$.
+What this route supplies that the two above do not is a compactification of the
+open moduli space by geometry of the curves, namely the geometric invariant theory
+quotient, together with an identification of that compactification in arithmetic
+terms.
+:::
+
+::: {.Notation #not:sextic-singular-type}
+### Moduli of sextics of a fixed singular type
+
+For a singular type $T$ with root lattice $R$, write $\cV_T$ for the space of
+sextic curves $Z\subset\PP^2$ with singularities exactly of type $T$, and
+$$
+\cM_T \da \PP\cV_T \modmod \SL_3
+$$
+for the moduli space of such curves, the quotient being taken in the sense of
+geometric invariant theory [@YZZ25 §2.1].
+Let $\widehat X$ be the double cover of $\PP^2$ branched along $Z$, let $X$ be its
+minimal resolution --- a K3 surface --- and let $H\in\Pic(X)$ be the pullback of
+the line class, so $H^2 = 2$.
+The exceptional curves of $X\to\widehat X$ span a copy $L\subseteq\Pic(X)$ of the
+root lattice $R$, with the exceptional classes as a base $\Delta$.
+Write $P$ for the primitive hull of $\gens H\oplus L$ in $H^2(X;\ZZ)$ and
+$Q \da P^{\perp}$, of signatures $(1,\rank R)$ and $(2, 19 - \rank R)$
+[@YZZ25 §2.3].
+For a general member of $\cV_T$ one has $\Pic(X) = P$ [@YZZ25 §3.3].
+:::
+
+::: {.Proposition #prop:coble-is-the-ten-nodal-sextic-type}
+### The Coble lattices are the lattices of the type $10A_1$
+
+Let $Z$ be an irreducible sextic of type $T = 10A_1$, so that $Z$ is rational by
+\longref{lem:rational_sextic_ten_nodes}, and $X$ is the K3 cover of the Coble
+surface $S = X/\iota$.
+Then
+$$
+P = \gens{H}\oplus A_1^{\oplus 10} \cong \latI_{1,10}(2) = S_\Co,
+\qquad
+Q = P^{\perp\lkt} = T_\Co
+.
+$$
+In particular $\dim D(Q) = 9$.
+:::
+
+::: {.proof}
+
+The saturation of $\gens H\oplus L$ inside $H^2(X;\ZZ)$ is
+$(\ZZ/2)^{l'-1}$, where $l'$ is the number of irreducible components of $Z$
+[@YZZ25 §5.3]; for an irreducible sextic $l' = 1$, so no saturation occurs and
+$P = \gens H\oplus L$.
+With $H^2 = 2$ and $L = A_1^{\oplus 10} = \gens{-2}^{\oplus 10}$ this is
+$\gens 2\oplus\gens{-2}^{\oplus 10} = \latI_{1,10}(2)$, which is $S_\Co$ by
+\longref{prop:coble-invariant-lattice}.
+Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and
+\longref{cor:m-polarized-k3-dimension} gives the dimension.
+:::
+
+::: {.Remark}
+### The involution acts trivially on the root lattice
+
+For a general singular type the covering involution $\iota$ acts on $L$ by
+$-w_0(L)$, where $w_0$ is the longest element of $W(L)$ [@YZZ25 §5.2], and this
+action folds the root lattice.
+For $L$ of type $A_1$ one has $-w_0 = \id$, so in the type $10A_1$ the involution
+fixes $L$ pointwise and no folding occurs; the sublattice of $H^2(S;\ZZ)$ spanned
+by the exceptional classes of $S\to\PP^2$ then becomes $L$ after scaling by $2$
+[@YZZ25 §5.3].
+That is the same twist by $2$ recorded geometrically in
+\longref{rmk:k3-cover-twist}: the Coble Picard lattice is the blowup lattice
+$\latI_{1,10}$ scaled by $2$, with no folding correction.
+:::
+
+::: {.Theorem #thm:occult-period-map-sextics}
+### The occult period map and its image
+
+Let $\Gamma_T$ be the image of
+$$
+\Orth\bigl(H^2(X;\ZZ),\, \Delta,\, H\bigr) \longrightarrow \Orth(Q)
+,
+$$
+restricted to the subgroup preserving a chosen component $D(Q)$; it is arithmetic
+of finite index in $\Orth(Q)$, and contains every isometry of $Q$ acting trivially
+on $A_Q$ [@YZZ25 §3.1].
+The **occult period map**
+$$
+\mathscr P_T\colon \cM_T \longrightarrow \Gamma_T\backslash D(Q)
+$$
+is an algebraic open embedding with image
+$\Gamma_T\backslash\bigl(D(Q) - \cH_T\bigr)$, where $\cH_T$ is the arrangement of
+hyperplanes $r^{\perp}$ for roots $r$ orthogonal to $H$ and not lying in $L$.
+When $T$ is a nodal type, $\mathscr P_T$ is moreover an isomorphism of orbifolds
+onto $P\Gamma_T\backslash(D(Q) - \cH_T)$
+[@YZZ25 §1, §3.2, §3.3, §6.2].
+The description of the image restates, at the level of moduli spaces, the
+equisingular deformation theory of Urabe [@Ura88].
+:::
+
+::: {.Theorem #thm:git-equals-looijenga}
+### The GIT compactification is a Looijenga compactification
+
+Let $\Lambda_1 \da H^{\perp\lkt}$, of signature $(2,19)$ with
+$A_{\Lambda_1}\cong\ZZ/2$, and let $\Gamma_1$ be the arithmetic group of the
+degree-$2$ K3 moduli space $\Gamma_1\backslash D(\Lambda_1)$.
+The roots of $\Lambda_1$ fall into two $\Gamma_1$-orbits, of divisibility $1$ and
+$2$, cutting out arrangements $\cH_\Delta$ and $\cH_\infty$; the roots of $L$ all
+have divisibility $1$, so they contribute to $\cH_\Delta$ only [@YZZ25 §4.1, §4.2].
+Set
+$$
+\cH^{*}_T \da \cH_\infty \cap D(Q) \subseteq \cH_T
+.
+$$
+Then $\mathscr P_T$ extends to an isomorphism
+$$
+\widehat{\cM}_T \;\cong\; \overline{\Gamma_T\backslash D(Q)}^{\,\cH^{*}_T}
+$$
+between the GIT compactification of $\cM_T$ and the Looijenga compactification
+(\longref{def:looijenga-compactification}) of
+$\Gamma_T\backslash(D(Q) - \cH^{*}_T)$, compatibly with the corresponding
+statement of Shah and Looijenga for the whole space of sextics,
+$\overline{\cM}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\cH_\infty}$
+[@Sha80; @Loo02]; the two vertical maps of the resulting square are
+normalizations onto their images [@YZZ25 §4.2].
+:::
+
+::: {.Remark}
+### The arithmetic group as a normalizer
+
+$\Gamma_T$ admits a second description: it is the restriction to $Q$ of the
+normalizer of the Weyl group $W(L)$ inside $\Gamma_1$ [@YZZ25 §4.2].
+For $T = 10A_1$ this reads
+$$
+W(L) = \ts{\pm 1}^{10},
+\qquad
+\Gamma_{10A_1} = \Gamma_W|_{Q},
+\qquad
+\Gamma_W = N_{\Gamma_1}\bigl(\ts{\pm1}^{10}\bigr)
+,
+$$
+and the normalizer contains the permutations of the ten nodes, so the induced
+action on $A_P\cong(\ZZ/2)^{11}$ is through $\mathfrak S_{10}$.
+This is a description of an arithmetic group acting on $D(T_\Co)$ obtained from
+the ambient degree-$2$ K3 group rather than from the Enriques side, and it is
+therefore independent of the description of $\Gamma_\Co$ as a stabilizer and
+centralizer inside $\Orth(T_\En)$ recorded in the Open Problems section.
+:::
+
+::: {.Question #que:sextic-group-comparison}
+### Which quotient of $D(T_\Co)$ is $F_\Co$?
+
+$F_\Co$ is defined above as an open subset of $D(T_\Co)/\Orth^+(T_\Co)^*$, a
+quotient by the stable orthogonal group, whereas $\cM_{10A_1}$ is a quotient by
+$\Gamma_{10A_1}$, which contains $\Orth^+(T_\Co)^*$ and may be strictly larger.
+Identifying the two constructions of the Coble moduli space therefore requires the
+comparison
+$$
+\Orth^+(T_\Co)^* \;\subseteq\; \Gamma_{10A_1} \;\subseteq\; \Orth(T_\Co)
+,
+$$
+together with the comparison of both against the polarized group
+$\Gamma_{\Co,2}$.
+Until the first inclusion is shown to be an equality, $\cM_{10A_1}$ and $F_\Co$ are
+two arithmetic quotients of the same period domain by two different groups, not
+the same space under two names.
+:::
+
+::: {.Remark}
+### The other singular types
+
+The same theorems hold for every singular type of plane sextic with simple
+singularities, of which the root lattices have been classified by Urabe
+[@Ura88] and Yang [@Yan96]: the maximal rank is $19$, and the number of root
+lattices of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$
+respectively [@YZZ25 §1].
+Each such type therefore carries both an arithmetic model of its moduli space and
+a Looijenga model of its GIT compactification.
+The Coble families with $n$ boundary components are indexed by the number of
+irreducible components of the branch sextic (\longref{tbl:coble-lattices}) rather
+than by its singular type, so which type $T$ carries which family is a question
+this section does not settle.
+:::
+
 # KSBA Spaces
 
 ::: {.Remark}
