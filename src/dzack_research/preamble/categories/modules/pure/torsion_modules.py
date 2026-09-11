@@ -1,6 +1,12 @@
 """Torsion modules and the finitely-presented torsion specialization."""
 
+from itertools import product
+
+from sage.categories.commutative_additive_groups import CommutativeAdditiveGroups
+from sage.categories.groups import Groups as SageGroups
+from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
+from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -14,6 +20,9 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     MatrixSpace,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.module_morphisms.morphism_matrices import (
+    row_normal_form,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     MatrixSpaces,
@@ -121,6 +130,79 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             )
         )
         return _torsion_module_presented_by_matrix(relations, base_ring=ring)
+
+    def from_abelian_group(self, group):
+        r"""Return a finite abelian group as a torsion ``ZZ``-module presentation.
+
+        The selected group generators remain the module-generator labels.  In
+        particular a represented ``C_2 x C_3`` remains a two-generator object;
+        it is not silently replaced by an isomorphic one-generator ``C_6``.
+        Relations are the complete kernel of the map from the free abelian
+        group on those selected generators, found inside the finite box cut out
+        by their individual orders and reduced to Hermite row normal form.
+        """
+        if _engine_ring(self.base_ring()) is not SageZZ:
+            raise NotImplementedError(
+                "finite abelian groups are currently crossed to ZZ-torsion modules"
+            )
+        if not group.is_finite():
+            raise ValueError("a torsion-module crossing requires a finite group")
+        additive = group.category().is_subcategory(CommutativeAdditiveGroups())
+        if not additive:
+            commutative = group.category().is_subcategory(SageGroups().Commutative())
+            if not commutative and not bool(group.is_abelian()):
+                raise ValueError("a ZZ-module crossing requires an abelian group")
+
+        generators = tuple(group.group_generators())
+        ring = self.base_ring()
+        if not generators:
+            return _torsion_module_presented_by_matrix(
+                engine_matrix(SageZZ, 0, 0),
+                finite_ordered_set(()),
+                base_ring=ring,
+            )
+        orders = tuple(int(generator.order()) for generator in generators)
+        search_size = prod(orders)
+        if search_size > 10**6:
+            raise NotImplementedError(
+                "the selected generator-order box is too large for exact relation enumeration; "
+                "supply a finite presentation instead"
+            )
+
+        if additive:
+            identity = group.zero()
+
+            def combine(exponents):
+                return sum(
+                    (exponent * generator for exponent, generator in zip(exponents, generators, strict=True)),
+                    identity,
+                )
+        else:
+            identity = group.one()
+
+            def combine(exponents):
+                return prod(
+                    (generator**exponent for exponent, generator in zip(exponents, generators, strict=True)),
+                    identity,
+                )
+
+        relation_rows = [
+            exponents
+            for exponents in product(*(range(order) for order in orders))
+            if combine(exponents) == identity
+        ]
+        relation_rows.extend(
+            tuple(order if row == column else 0 for column in range(len(orders)))
+            for row, order in enumerate(orders)
+        )
+        relations = engine_matrix(SageZZ, relation_rows)
+        reduced = row_normal_form(relations, include_zero_rows=True)
+        full_rank_rows = reduced.matrix_from_rows(tuple(range(len(generators))))
+        return _torsion_module_presented_by_matrix(
+            full_rank_rows,
+            finite_ordered_set(generators),
+            base_ring=ring,
+        )
 
 
 def _torsion_module_presented_by_matrix(
