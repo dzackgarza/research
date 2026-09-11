@@ -9,6 +9,12 @@ import pytest
 
 from dzack_research.preamble.all import PredicateSubrings, QQ, ZZ, predicate_subring
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/rings/predicate_subrings.sage",
+    "live_owner": "src/dzack_research/preamble/categories/rings/ring_foundation.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_predicate_subring_retains_ambient_ring_predicate_and_inclusion() -> None:
     integers_in_rationals = predicate_subring(

@@ -10,6 +10,12 @@ from dzack_research.preamble.all import (
     continuum,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/sets/cardinals.py",
+    "live_owner": "src/dzack_research/preamble/categories/sets/cardinals.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_matrix_ring_cardinality_tracks_the_coefficient_ring() -> None:
     rational_matrices = MatrixSpace(QQ, 2)

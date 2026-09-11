@@ -1641,29 +1641,29 @@ preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sag
 preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sage	LatticeIsometrySubgroups.super_categories	method	1065	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sage	LatticeIsometrySubgroups.ParentMethods	class	1074	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sage	LatticeIsometrySubgroup	function	1142	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeElement	class	32	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	refine_root_lattice	function	36	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices	class	51	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.super_categories	method	64	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods	class	73	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.cartan_type	method	78	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.twist	method	82	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.simple_roots	method	102	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.coxeter_number	method	113	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.highest_root	method	129	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.simple_reflections	method	162	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.fundamental_weights	method	174	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods	class	198	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.is_root	method	205	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.is_positive_root	method	216	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.is_negative_root	method	228	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.height	method	232	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.coroot	method	241	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries	class	262	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.super_categories	method	269	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.ParentMethods	class	274	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.ParentMethods.domain	method	277	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeElement	class	32	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	refine_root_lattice	function	36	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices	class	51	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.super_categories	method	64	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods	class	73	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.cartan_type	method	78	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.twist	method	82	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.simple_roots	method	102	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.coxeter_number	method	113	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.highest_root	method	129	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.simple_reflections	method	162	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ParentMethods.fundamental_weights	method	174	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods	class	198	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.is_root	method	205	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.is_positive_root	method	216	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.is_negative_root	method	228	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.height	method	232	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLattices.ElementMethods.coroot	method	241	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries	class	262	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.super_categories	method	269	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.ParentMethods	class	274	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.ParentMethods.domain	method	277	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent	class	40	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.structure_morphism	method	51	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
@@ -1779,19 +1779,19 @@ preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sag
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.to_vinberg_matrix	method	1112	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.underlying_digraph	method	1116	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	projective_weighted_digraph	function	1135	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices	class	57	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices.extra_super_categories	method	74	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	IntegralValuedLattices	class	89	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	IntegralValuedLattices.ParentMethods	class	107	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	IntegralValuedLattices.ParentMethods.is_integral	method	109	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	NondegenerateLattices	class	114	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	NondegenerateLattices.ParentMethods	class	132	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	NondegenerateLattices.ParentMethods.is_nondegenerate	method	134	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices	class	139	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices.extra_super_categories	method	158	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices.ParentMethods	class	168	0			unreviewed
-preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices.ParentMethods.is_even	method	170	0			unreviewed
+preamble/categories/modules/framed/formed/lattice_axioms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices	class	57	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices.extra_super_categories	method	74	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	IntegralValuedLattices	class	89	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	IntegralValuedLattices.ParentMethods	class	107	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	IntegralValuedLattices.ParentMethods.is_integral	method	109	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	NondegenerateLattices	class	114	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	NondegenerateLattices.ParentMethods	class	132	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	NondegenerateLattices.ParentMethods.is_nondegenerate	method	134	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices	class	139	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices.extra_super_categories	method	158	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices.ParentMethods	class	168	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/lattice_axioms.sage	EvenLattices.ParentMethods.is_even	method	170	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/lattices.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/lattices.sage	LatticeSpecification	binding	63	0			unreviewed
 preamble/categories/modules/framed/formed/lattices.sage	Lattices	class	78	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
@@ -2299,16 +2299,16 @@ preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.vale
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.homogeneous_component	method	1057	0			unreviewed
 preamble/categories/modules/tensors.sage	MixedTensorAlgebra	function	1111	2			unreviewed
 preamble/categories/modules/tensors.sage	tensor	function	1119	2			unreviewed
-preamble/categories/rings/predicate_subrings.sage	<module>	module	1	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings	class	45	2			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.super_categories	method	57	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods	class	60	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.ambient_ring	method	86	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.defining_predicate	method	90	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.one	method	102	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.zero	method	105	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.inclusion	method	108	0			unreviewed
-preamble/categories/rings/predicate_subrings.sage	predicate_subring	function	129	2			unreviewed
+preamble/categories/rings/predicate_subrings.sage	<module>	module	1	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings	class	45	2		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.super_categories	method	57	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods	class	60	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.ambient_ring	method	86	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.defining_predicate	method	90	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.one	method	102	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.zero	method	105	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.inclusion	method	108	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/rings/predicate_subrings.sage	predicate_subring	function	129	2		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/rings/rings.sage	<module>	module	1	0			unreviewed
 preamble/categories/rings/rings.sage	BaseRingParent	class	38	0			unreviewed
 preamble/categories/rings/rings.sage	BaseRingParent.base	method	42	0			unreviewed
@@ -2499,28 +2499,28 @@ preamble/categories/schemes/polytopes.sage	ConvexPolytope	function	719	2			unrev
 preamble/categories/schemes/polytopes.sage	ConvexPolygon	function	733	2			unreviewed
 preamble/categories/schemes/polytopes.sage	LatticePolytope	function	748	2			unreviewed
 preamble/categories/schemes/polytopes.sage	LatticePolygon	function	762	2			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	<module>	module	1	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces	class	37	2			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.LocallyRinged	method	44	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.super_categories	method	50	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.SubcategoryMethods	class	54	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ParentMethods	class	59	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ParentMethods.structure_sheaf	method	77	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ParentMethods.underlying_space	method	81	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ElementMethods	class	85	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.MorphismMethods	class	88	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces	class	97	2			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.super_categories	method	104	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.ParentMethods	class	108	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.ParentMethods.stalk	method	111	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.ElementMethods	class	115	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.MorphismMethods	class	118	0			unreviewed
-preamble/categories/schemes/ringed_spaces.sage	install_ringed_spaces	function	122	0			unreviewed
-preamble/categories/schemes/scheme_points.sage	<module>	module	1	0			unreviewed
-preamble/categories/schemes/scheme_points.sage	SchemePoint	class	20	0			unreviewed
-preamble/categories/schemes/scheme_points.sage	SchemePoint.domain	method	32	0			unreviewed
-preamble/categories/schemes/scheme_points.sage	SchemePoint.codomain	method	36	0			unreviewed
-preamble/categories/schemes/scheme_points.sage	install_scheme_points	function	41	0			unreviewed
+preamble/categories/schemes/ringed_spaces.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces	class	37	2		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.LocallyRinged	method	44	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.super_categories	method	50	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.SubcategoryMethods	class	54	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ParentMethods	class	59	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ParentMethods.structure_sheaf	method	77	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ParentMethods.underlying_space	method	81	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.ElementMethods	class	85	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.MorphismMethods	class	88	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces	class	97	2		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.super_categories	method	104	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.ParentMethods	class	108	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.ParentMethods.stalk	method	111	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.ElementMethods	class	115	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	LocallyRingedSpaces.MorphismMethods	class	118	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/ringed_spaces.sage	install_ringed_spaces	function	122	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
+preamble/categories/schemes/scheme_points.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
+preamble/categories/schemes/scheme_points.sage	SchemePoint	class	20	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
+preamble/categories/schemes/scheme_points.sage	SchemePoint.domain	method	32	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
+preamble/categories/schemes/scheme_points.sage	SchemePoint.codomain	method	36	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
+preamble/categories/schemes/scheme_points.sage	install_scheme_points	function	41	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
 preamble/categories/schemes/schemes.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/schemes.sage	SchemeParent	class	50	0			unreviewed
 preamble/categories/schemes/schemes.sage	SchemeParent.base_ring	method	54	0			unreviewed
@@ -2602,71 +2602,71 @@ preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.
 preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.standard_identification_latex	method	110	0			unreviewed
 preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.to_native_toric_variety	method	198	0			unreviewed
 preamble/categories/schemes/toric/toric_schemes.sage	ToricScheme	function	208	0			unreviewed
-preamble/categories/schemes/varieties.sage	<module>	module	1	0			unreviewed
-preamble/categories/schemes/varieties.sage	Varieties	class	49	2			unreviewed
-preamble/categories/schemes/varieties.sage	Varieties.super_categories	method	55	0			unreviewed
-preamble/categories/schemes/varieties.sage	Varieties.SubcategoryMethods	class	59	0			unreviewed
-preamble/categories/schemes/varieties.sage	Varieties.ParentMethods	class	68	0			unreviewed
-preamble/categories/schemes/varieties.sage	Varieties.ElementMethods	class	71	0			unreviewed
-preamble/categories/schemes/varieties.sage	Varieties.MorphismMethods	class	74	0			unreviewed
-preamble/categories/schemes/varieties.sage	ToricVariety	function	83	3			unreviewed
-preamble/categories/schemes/varieties.sage	Curve	function	104	2			unreviewed
-preamble/categories/schemes/varieties.sage	Curves	class	118	2			unreviewed
-preamble/categories/schemes/varieties.sage	Curves.super_categories	method	124	0			unreviewed
-preamble/categories/schemes/varieties.sage	Curves.ParentMethods	class	128	0			unreviewed
-preamble/categories/schemes/varieties.sage	Curves.ParentMethods.dimension	method	131	0			unreviewed
-preamble/categories/schemes/varieties.sage	Curves.ElementMethods	class	135	0			unreviewed
-preamble/categories/schemes/varieties.sage	Curves.MorphismMethods	class	138	0			unreviewed
-preamble/categories/schemes/varieties.sage	Surfaces	class	147	2			unreviewed
-preamble/categories/schemes/varieties.sage	Surfaces.super_categories	method	153	0			unreviewed
-preamble/categories/schemes/varieties.sage	Surfaces.ParentMethods	class	157	0			unreviewed
-preamble/categories/schemes/varieties.sage	Surfaces.ParentMethods.dimension	method	160	0			unreviewed
-preamble/categories/schemes/varieties.sage	Surfaces.ElementMethods	class	164	0			unreviewed
-preamble/categories/schemes/varieties.sage	Surfaces.MorphismMethods	class	167	0			unreviewed
-preamble/categories/schemes/varieties.sage	install_varieties	function	171	0			unreviewed
-preamble/categories/sets/cardinals.py	<module>	module	1	0			unreviewed
-preamble/categories/sets/cardinals.py	CardinalComparison	class	95	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities	class	106	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.super_categories	method	109	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.zero	method	186	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.one	method	190	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.sum	method	194	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.product	method	211	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.indexed_sum	method	230	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.indexed_product	method	243	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.power	method	256	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.sum_morphism	method	316	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.product_morphism	method	325	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.power_morphism	method	334	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.supremum	method	353	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.le	method	381	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.lt	method	439	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ge	method	480	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.gt	method	487	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.compare	method	494	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.are_incomparable	method	514	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods	class	521	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.cardinality	method	534	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.expression	method	543	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.sort_key	method	546	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_finite	method	656	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_infinite	method	667	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_aleph	method	670	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_continuum	method	673	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_countable	method	681	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_uncountable	method	684	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_countably_infinite	method	699	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_uncountably_infinite	method	706	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.aleph_index	method	709	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.initial_ordinal	method	716	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.finite_value	method	722	0			unreviewed
-preamble/categories/sets/cardinals.py	Cardinal	binding	755	0			unreviewed
-preamble/categories/sets/cardinals.py	CardinalityHomCategory	binding	763	0			unreviewed
-preamble/categories/sets/cardinals.py	CardinalityMorphism	binding	766	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/cardinals.py	cardinal	function	782	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/cardinals.py	aleph	function	810	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/cardinals.py	aleph0	binding	817	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/cardinals.py	continuum	binding	820	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
+preamble/categories/schemes/varieties.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Varieties	class	49	2		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Varieties.super_categories	method	55	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Varieties.SubcategoryMethods	class	59	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Varieties.ParentMethods	class	68	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Varieties.ElementMethods	class	71	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Varieties.MorphismMethods	class	74	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	ToricVariety	function	83	3		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Curve	function	104	2		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Curves	class	118	2		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Curves.super_categories	method	124	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Curves.ParentMethods	class	128	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Curves.ParentMethods.dimension	method	131	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Curves.ElementMethods	class	135	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Curves.MorphismMethods	class	138	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Surfaces	class	147	2		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Surfaces.super_categories	method	153	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Surfaces.ParentMethods	class	157	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Surfaces.ParentMethods.dimension	method	160	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Surfaces.ElementMethods	class	164	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	Surfaces.MorphismMethods	class	167	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/schemes/varieties.sage	install_varieties	function	171	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	<module>	module	1	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	CardinalComparison	class	95	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities	class	106	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.super_categories	method	109	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.zero	method	186	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.one	method	190	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.sum	method	194	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.product	method	211	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.indexed_sum	method	230	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.indexed_product	method	243	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.power	method	256	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.sum_morphism	method	316	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.product_morphism	method	325	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.power_morphism	method	334	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.supremum	method	353	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.le	method	381	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.lt	method	439	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ge	method	480	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.gt	method	487	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.compare	method	494	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.are_incomparable	method	514	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods	class	521	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.cardinality	method	534	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.expression	method	543	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.sort_key	method	546	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_finite	method	656	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_infinite	method	667	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_aleph	method	670	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_continuum	method	673	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_countable	method	681	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_uncountable	method	684	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_countably_infinite	method	699	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.is_uncountably_infinite	method	706	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.aleph_index	method	709	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.initial_ordinal	method	716	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinalities.ParentMethods.finite_value	method	722	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	Cardinal	binding	755	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	CardinalityHomCategory	binding	763	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	CardinalityMorphism	binding	766	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	cardinal	function	782	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	aleph	function	810	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	aleph0	binding	817	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/cardinals.py	continuum	binding	820	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
 preamble/categories/sets/ordinals.py	<module>	module	1	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
 preamble/categories/sets/ordinals.py	OrdinalSemirings	class	87	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
 preamble/categories/sets/ordinals.py	OrdinalSemirings.super_categories	method	96	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner

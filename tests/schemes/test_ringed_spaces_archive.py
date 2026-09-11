@@ -8,6 +8,12 @@ from dzack_research.preamble.all import (
     RingedSpaces,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/ringed_spaces.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/ringed_spaces.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_ringed_space_structure_is_live_on_affine_schemes() -> None:
     line = AffineSpace(1, QQ, names=("x",))

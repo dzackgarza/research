@@ -8,6 +8,12 @@ from dzack_research.preamble.all import (
     ZZ,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/lattice_axioms.sage",
+    "live_owner": "src/dzack_research/preamble/categories/lattices.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_integral_valued_is_the_base_lattice_contract() -> None:
     lattice = Lattices(ZZ)([[1, 2], [2, 3]])

@@ -2,6 +2,12 @@
 
 from dzack_research.preamble.all import AffineSpace, QQ, Schemes, Spec
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/scheme_points.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/schemes.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_scheme_point_is_an_actual_scheme_morphism() -> None:
     plane = AffineSpace(2, QQ, names=("x", "y"))

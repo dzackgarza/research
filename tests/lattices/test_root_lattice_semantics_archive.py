@@ -9,6 +9,12 @@ mere root enumeration.
 
 from dzack_research.preamble.all import Lattices, ZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage",
+    "live_owner": "src/dzack_research/preamble/categories/lattices.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_a2_selected_simple_system_and_highest_root_are_live() -> None:
     lattice = Lattices(ZZ)("A2")

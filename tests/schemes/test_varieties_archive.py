@@ -9,6 +9,12 @@ from dzack_research.preamble.all import (
     Varieties,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/varieties.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/varieties.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_dimension_subtrees_are_live_full_subcategories() -> None:
     affine_line = AffineSpace(1, QQ, names=("t",))
