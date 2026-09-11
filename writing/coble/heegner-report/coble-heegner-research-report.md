@@ -7,7 +7,6 @@ lang: en
 toc: true
 toc-depth: 4
 number-sections: true
-bibliography: coble/heegner-report/coble_references.bib
 link-citations: true
 citeproc: true
 crossrefYaml: pandoc-crossref.yaml
@@ -2330,7 +2329,7 @@ The purpose of this appendix is not to add new mathematics, but to make explicit
 | Is abstract lattice isometry distinguished from labeled embedding rigidity? | Yes; see @sec-labeled-lattice-data and \ref{warn-isometry-rigidity}. |
 | Are period-domain inclusions distinguished from maps of arithmetic quotients? | Yes; see @sec-period-diagram and \ref{warn-domain-quotient}. |
 | Is the direct K3 construction required to factor through the Enriques construction? | Yes; this is Target theorem B in @sec-heegner-target. |
-| Is an $O(A)$ orbit computation used as an integral cusp theorem? | No; see @sec-finite-shadow and \ref{warn-finite-shadow}. |
+| Is an $O(A)$ orbit computation used as an integral cusp theorem? | No; see @sec-finite-shadow and \longref{warning-finite-shadow}. |
 | Are the possible Enriques Type II cusp images read with the correct single/double rectangle convention? | Yes; see @sec-possible-cusp-images and \ref{warn-rectangles}. |
 | Are wall slices called Coxeter diagrams? | No; see @sec-wall-slices and \ref{warn-wall-slice}. |
 | Is the corrected thick edge $\alpha_{20}$--$\alpha_{21}$ recorded? | Yes; see @sec-gram-correction. |

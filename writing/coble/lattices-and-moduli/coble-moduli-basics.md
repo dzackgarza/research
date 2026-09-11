@@ -20,7 +20,7 @@ Let $\Sigma$ be a sufficiently general Coble point set in $\PP^2$.
 There are 10 irreducible families of K3s obtained as the double cover of $S$ branched over $C$, where the fixed locus of the deck transformation is comprised of $n$ smooth rational curves.
 Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - \abs{\Sigma}$.
 
-See \longref{tbl:coble-lattices}.
+See [the Coble lattice table](coble-lattice-table.md).
 
 The case of interest to us is $n=1$, and thus the lattice $M = (11, 11, 1) = A_1 \oplus E_{10}(2)$ and its complement $N$ in the K3 lattice will be used to construct a period domain quotiented by an appropriate arithmetic subgroup, producing the coarse moduli space of interest.
 ::::

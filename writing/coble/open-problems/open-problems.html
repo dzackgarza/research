@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>open-problems</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="open-problems_files/libs/clipboard/clipboard.min.js"></script>
+<script src="open-problems_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="open-problems_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="open-problems_files/libs/quarto-html/popper.min.js"></script>
+<script src="open-problems_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="open-problems_files/libs/quarto-html/anchor.min.js"></script>
+<link href="open-problems_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="open-problems_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="open-problems_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="open-problems_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="open-problems_files/libs/bootstrap/bootstrap-c92553454d4aa349010d3c085563d5b8.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+
+
+
+<section id="open-problems-and-technical-gaps" class="level1">
+<h1>Open problems and technical gaps</h1>
+<section id="orientation" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="orientation">Orientation</h3>
+<p>This section records the known open problems and computational obstacles of the Coble moduli program. Each entry is a genuine gap between the results established elsewhere in this document and the fully rigorous, coordinate-explicit statements one would want for parity with the Enriques degree-<span class="math inline">\(2\)</span> program of <span class="citation" data-cites="AEGS25">[@AEGS25]</span>. The problems are grouped by theme: lattice-theoretic verifications, the enumeration of isotropic orbits and cusps together with the reflection-group combinatorics, the <em>dlt</em> and KSBA stable models, and the foundational equations and computational checks. None of the statements below is claimed to be settled; several cross-reference partial results already in the text, and in each case the <em>residue</em> that remains open is stated explicitly.</p>
+</section>
+<section id="lattice-theoretic-gaps" class="level2">
+<h2 class="anchored" data-anchor-id="lattice-theoretic-gaps">Lattice-theoretic gaps</h2>
+<section id="open-problem-isometry-class-and-genus-of-the-coble-lattices" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="open-problem-isometry-class-and-genus-of-the-coble-lattices">Open problem: isometry class and genus of the Coble lattices</h3>
+<p>The invariants <span class="math inline">\((r,a,\delta)\)</span> of the geometric lattice <span class="math inline">\(S_\Co \cong (11,11,1)_1\)</span> (signature <span class="math inline">\((1,10)\)</span>, Gram matrix <span class="math inline">\(\operatorname{diag}(2,-2,\dots,-2)\)</span>, equivalently <span class="math inline">\(\gens{-2}\oplus E_{10}(2)\)</span>) and of the transcendental lattice <span class="math inline">\(T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2\)</span> (signature <span class="math inline">\((2,9)\)</span>) are recorded in <a href="coble-lattice-table.md">the Coble lattice table</a>, and both satisfy <span class="math inline">\(q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}\)</span> with <span class="math inline">\(q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ\)</span>. What is not yet formally established is the <em>isometry-class verification</em> and the <em>genus decomposition</em>: whether the genus of <span class="math inline">\(T_\Co\)</span> contains a unique isometry class. Concretely:</p>
+<ul>
+<li><p>compute the Gram matrices of <span class="math inline">\(S_\Co\)</span> and <span class="math inline">\(T_\Co\)</span> and verify their <span class="math inline">\((r,a,\delta)\)</span> invariants and genus cardinality via Nikulin’s classification (the <span class="math inline">\(r &gt; a\)</span> check for a <span class="math inline">\(2\)</span>-elementary lattice) <span class="citation" data-cites="Nik80">[@Nik80]</span>;</p></li>
+<li><p>confirm that <span class="math inline">\(r &gt; a\)</span> forces a unique class in the genus, so that the reduction of isotropic-orbit questions to the discriminant form <span class="math inline">\(q_{T_\Co}\)</span> () is justified.</p></li>
+</ul>
+</section>
+<section id="open-problem-explicit-primitive-embedding-matrices" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="open-problem-explicit-primitive-embedding-matrices">Open problem: explicit primitive embedding matrices</h3>
+<p>The chain of primitive embeddings <span class="math display">\[
+T_\Co \injects T_\En \injects T_\dP \injects \lkt
+\]</span> is used throughout (, ), and Nikulin’s apparatus <span class="citation" data-cites="Nik80">[@Nik80 Prop. 1.14.4, 1.15.2]</span> is the intended tool for the uniqueness of the primitive embedding <span class="math inline">\(T_\Co \injects T_\En\)</span> and for the surjectivity of <span class="math inline">\(\Orth(L) \to \Orth(T_\Co)\)</span>. What remains is to <em>exhibit the embedding matrices in coordinate bases</em>: derive the explicit primitive-embedding matrices realizing the chain above, and verify their primitivity directly rather than by invocation. The same coordinate deficit affects the derivation of the explicit equations for <span class="math inline">\(C\)</span> and <span class="math inline">\(X\)</span> (below): the invariants are listed, but the primitivity of the lattice embeddings lacks a rigorous derivation in terms of coordinate bases.</p>
+</section>
+<section id="open-problem-the-horizontal-folding-involution-and-its-eigenspaces" class="level3 Conjecture">
+<h3 class="anchored" data-anchor-id="open-problem-the-horizontal-folding-involution-and-its-eigenspaces">Open problem: the horizontal folding involution and its eigenspaces</h3>
+<p>There is an orthogonal involution <span class="math inline">\(\theta\)</span> on the K3 lattice <span class="math inline">\(\lkt \cong U^{3}\oplus E_8^{2}\)</span> whose invariant and coinvariant sublattices are <span class="math display">\[
+\lkt^{\theta} \cong T_\Co,
+\qquad
+\lkt^{-\theta} \cong S_\Co,
+\]</span> and whose action on roots induces the <em>horizontal folding</em> of the <span class="math inline">\((18,0,0)_1\)</span> Coxeter diagram, as a functorial consequence of the lattice isometry (cf. , , and the invariant/coinvariant construction of ). The involution should swap the polarization generators between sectors, <span class="math inline">\(h_\En \leftrightarrow h_\Co\)</span>. Existence and the eigenlattice description are settled: the pair <span class="math inline">\((-\id_{S_\Co}, \id_{T_\Co})\)</span> preserves the gluing graph of the Coble primitive embedding, so it extends to an isometry <span class="math inline">\(\theta_\Co\)</span> of <span class="math inline">\(\lkt\)</span> with the stated eigenlattices (). The open technical content is to <em>write down the <span class="math inline">\(22\times 22\)</span> matrix of <span class="math inline">\(\theta_\Co\)</span> on the standard basis of <span class="math inline">\(U^{3}\oplus E_8^{2}\)</span></em>, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.</p>
+</section>
+</section>
+<section id="isotropic-orbits-cusps-and-reflection-groups" class="level2">
+<h2 class="anchored" data-anchor-id="isotropic-orbits-cusps-and-reflection-groups">Isotropic orbits, cusps, and reflection groups</h2>
+<section id="open-problem-enumeration-of-isotropic-orbits-by-sterks-technique" class="level3 Question">
+<h3 class="anchored" data-anchor-id="open-problem-enumeration-of-isotropic-orbits-by-sterks-technique">Open problem: enumeration of isotropic orbits by Sterk’s technique</h3>
+<p>How many orbits of primitive isotropic vectors does <span class="math inline">\(T_\Co\)</span> have under <span class="math inline">\(\Orth(T_\Co)\)</span>, <span class="math inline">\(\Orth^{*}(T_\Co)\)</span>, and the arithmetic group <span class="math inline">\(\Gamma_\Co\)</span>? Sterk’s technique <span class="citation" data-cites="Ste91">[@Ste91]</span> determines these by analyzing the orbits of the images (lifts) in the discriminant group <span class="math inline">\(A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}\)</span> under <span class="math inline">\(\Orth(q_{T_\Co})\)</span>: for a <span class="math inline">\(2\)</span>-elementary lattice with <span class="math inline">\(r &gt; a\)</span> the genus contains a unique class and <span class="math inline">\(\Orth(T) \to \Orth(q_T)\)</span> is surjective <span class="citation" data-cites="Nik80">[@Nik80]</span>, so a primitive isotropic vector <span class="math inline">\(v\)</span> with <span class="math inline">\(\operatorname{div}(v)=d\)</span> is determined up to <span class="math inline">\(\Orth(T)\)</span> by the tuple <span class="math inline">\((\operatorname{div}(v),\, \bar v \in A_T,\, v^2 = 0)\)</span>. The finite half of this is settled: <span class="math inline">\(A_{T_\Co}\)</span> has <span class="math inline">\(528\)</span> isotropic classes, on which <span class="math inline">\(\Orth(q_{T_\Co})\)</span> acts with two orbits, of sizes <span class="math inline">\(1\)</span> and <span class="math inline">\(527\)</span> (, ), and every primitive isotropic vector of <span class="math inline">\(T_\Co\)</span> lands in the nonzero one (). Under the degree-<span class="math inline">\(2\)</span> Enriques group the same <span class="math inline">\(528\)</span> classes split as <span class="math inline">\([1, 2, 120, 135, 270]\)</span> (). The open work is the passage from these finite decompositions back to the lattice:</p>
+<ul>
+<li><p>lift the <span class="math inline">\(\Orth(q_{T_\Co})\)</span>-orbits to <span class="math inline">\(T_\Co\)</span> and verify that exactly one <span class="math inline">\(\Orth^{*}(T)\)</span>-orbit exists in divisibility <span class="math inline">\(2\)</span>, the Eichler criterion being unavailable because <span class="math inline">\(T_\Co\)</span> contains no copy of <span class="math inline">\(U\)</span> ( and the remark following it);</p></li>
+<li><p>decide whether the four nonzero orbits of <span class="math inline">\(\Gamma_{\En, 2}\)</span>-induced classes lift to four orbits of primitive isotropic vectors or to more, an integral parabolic stabilizer being permitted to have proper image in the finite one;</p></li>
+<li><p>verify that the <span class="math inline">\(\Orth(T)\)</span>-orbits coincide with the <span class="math inline">\(\Gamma_\Co\)</span>-orbits, so that the Baily–Borel <span class="math inline">\(0\)</span>-cusp is unique.</p></li>
+</ul>
+<p>That every primitive isotropic <span class="math inline">\(v \in T_\Co\)</span> has <span class="math inline">\(\operatorname{div}_{T_\Co}(v) = 2\)</span> is already known (), which fixes the divisibility datum but not the orbit count.</p>
+</section>
+<section id="open-problem-explicit-generators-of-gamma_co-and-uniqueness-of-the-1-cusp" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="open-problem-explicit-generators-of-gamma_co-and-uniqueness-of-the-1-cusp">Open problem: explicit generators of <span class="math inline">\(\Gamma_\Co\)</span> and uniqueness of the 1-cusp</h3>
+<p>The arithmetic group governing the Coble locus is the stabilizer of the polarization <span class="math inline">\(h_\Co\)</span> inside <span class="math inline">\(\Orth(T_\En)\)</span>, cut further by the horizontal folding involution <span class="math inline">\(\theta\)</span>, <span class="math display">\[
+\Gamma_\Co = \operatorname{Stab}_{\Orth(T_\En)}(h_\Co) \cap Z_{\Orth(T_\En)}(\theta),
+\]</span> where in the Enriques sector <span class="math inline">\(h_\En = e + f\in U(2)\)</span> is the degree-<span class="math inline">\(2\)</span> polarization vector, of square <span class="math inline">\(4\)</span> on the K3 side (), and <span class="math inline">\(h_\Co\in K_S^{\perp}\subseteq\Pic(S)\)</span> is the degree-<span class="math inline">\(2\)</span> Coble polarization of , of square <span class="math inline">\(2\)</span> downstairs with K3 pullback <span class="math inline">\(\tilde h_\Co = f^{*}h_\Co\)</span> of square <span class="math inline">\(4\)</span>. The class <span class="math inline">\(h_\Co\)</span> is not the plane class <span class="math inline">\(H\)</span>, whose K3 pullback <span class="math inline">\(e_0 = f^{*}H\)</span> has square <span class="math inline">\(2\)</span>; the two must be kept apart, and it is <span class="math inline">\(h_\Co\)</span> that is the analogue of <span class="math inline">\(h_\En\)</span>. A source-backed candidate for <span class="math inline">\(\Gamma_\Co\)</span>, defined from the Enriques side by the Heegner line rather than by <span class="math inline">\(\theta\)</span>, is <span class="math inline">\(\Gamma_\Co^\En(\delta)\)</span> of ; identifying the two is part of the open work below. An explicit representation of <span class="math inline">\(\Gamma_\Co\)</span> by <em>matrix generators</em> is presently a stub. The open work is to:</p>
+<ul>
+<li><p>compute the stabilizer/centralizer intersection in the Enriques (equivalently <span class="math inline">\(\lkt\)</span>) lattice to produce a minimal set of matrix generators for <span class="math inline">\(\Gamma_\Co\)</span>, as the intersection of the reflection group <span class="math inline">\(W(T)\)</span> with the centralizer <span class="math inline">\(Z(\theta)\)</span> and the stabilizer of the primitive vector <span class="math inline">\(\tilde h_\Co\)</span> (<span class="math inline">\(\tilde h_\Co^2 = 4\)</span>). The involution <span class="math inline">\(\theta\)</span> itself exists as a lattice isometry without any coordinate description (), and the image of the resulting group in <span class="math inline">\(\Orth(q_{T_\Co})\)</span> is already known (); what a generating set adds is the lattice group above that finite image;</p></li>
+<li><p>verify the <em>uniqueness of the <span class="math inline">\(1\)</span>-cusp for <span class="math inline">\(\Gamma_\Co\)</span></em>. For the full orthogonal group this is settled: <span class="math inline">\(\Orth^+(T_\Co)\)</span> is transitive on primitive isotropic planes and <span class="math inline">\(J^{\perp}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}\)</span> (, with the split maximal hypothesis supplied by ). The residue is the subgroup statement, which does not follow from the full-group one.</p></li>
+</ul>
+<p>This refines, at the level of orbits and generators, the <span class="math inline">\(1\)</span>-cusp correspondence <span class="math inline">\((7,7,1)_0 \mapsto (8,6,0)_0\)</span> established in .</p>
+</section>
+<section id="the-maximal-parabolic-subdiagrams-of-s_co-and-what-they-count" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="the-maximal-parabolic-subdiagrams-of-s_co-and-what-they-count">The maximal parabolic subdiagrams of <span class="math inline">\(S_\Co\)</span>, and what they count</h3>
+<p>The Coxeter diagram <span class="math inline">\(\Gamma_r\)</span> of <span class="math inline">\(S_\Co = (11,11,1)_1\)</span> has <span class="math inline">\(12\)</span> roots, trivial automorphism group, and <strong>two</strong> maximal parabolic subdiagrams, <span class="math inline">\(\widetilde{E}_8(2)\widetilde{A}_1\)</span> and <span class="math inline">\(\widetilde{B}_9(2)\)</span>, both of even ordinary type (). By these correspond to the two <span class="math inline">\(\Orth^+(S_\Co)\)</span>-orbits of primitive isotropic vectors in <span class="math inline">\(S_\Co\)</span>, and by both associated quotients <span class="math inline">\(v^{\perp}/v\)</span> have invariants <span class="math inline">\((9,9,1)\)</span>, so the two orbits are not separated by the invariants of the boundary lattice.</p>
+<p>These orbits are elliptic fibrations of the K3 cover (); they are not the <span class="math inline">\(0\)</span>-cusps of the Coble period space, which are the orbits of primitive isotropic vectors in the transcendental lattice <span class="math inline">\(T_\Co\)</span> of signature <span class="math inline">\((2,9)\)</span>. Of the latter there is exactly one under the full orthogonal group (), by the split maximal argument of . The two lattices share the invariant triple <span class="math inline">\((11,11,1)\)</span> but not the signature, and a count taken in one is not a count in the other.</p>
+<p>What remains open is the geometric identification: which of the two elliptic fibration classes of the K3 cover is distinguished by the Coble structure, and how the pair of maximal parabolic subdiagrams matches the boundary data of the degree-<span class="math inline">\(2\)</span> polarized moduli space.</p>
+</section>
+<section id="open-problem-the-reflection-group-of-each-sterk-fundamental-domain" class="level3 Question">
+<h3 class="anchored" data-anchor-id="open-problem-the-reflection-group-of-each-sterk-fundamental-domain">Open problem: the reflection group of each Sterk fundamental domain</h3>
+<p>Sterk’s published fundamental domains for the five cusps of <span class="math inline">\(F_{\En,2}\)</span> have <span class="math inline">\(12, 10, 12, 11, 14\)</span> walls <span class="citation" data-cites="Ste91">[@Ste91]</span>, while Vinberg’s algorithm applied to the corresponding hyperbolic quotients <span class="math inline">\(\eta_j^{\perp}/\eta_j\)</span> returns ten walls in each case. The quotients for <span class="math inline">\(j = 2,3,4,5\)</span> are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams. The open work is to identify, for each <span class="math inline">\(j\)</span>, the reflection subgroup <span class="math inline">\(W_j\leq W(\eta_j^{\perp}/\eta_j)\)</span> for which the published diagram bounds a fundamental domain, to exhibit that domain as a union of chambers of the full group, and to determine the index <span class="math inline">\([W(\eta_j^{\perp}/\eta_j) : W_j]\)</span> as a covolume ratio. Cusp <span class="math inline">\(2\)</span>, to which the Coble <span class="math inline">\(0\)</span>-cusp is claimed to correspond, is the case in which the two computations agree. The data and the derivation are in [[sterk-root-counts-and-computed-chambers]].</p>
+</section>
+<section id="open-problem-hyperbolic-quotient-derivation-of-the-cusp-correspondence" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="open-problem-hyperbolic-quotient-derivation-of-the-cusp-correspondence">Open problem: hyperbolic-quotient derivation of the cusp correspondence</h3>
+<p>The cusp correspondence between the Coble cusps <span class="math inline">\((9,9,1)\)</span>, <span class="math inline">\((7,7,1)\)</span> and their Enriques predecessors is established in (via the divisibility computations of and ). The migrated notes propose an independent <em>hyperbolic-quotient</em> derivation that would place the correspondence on a self-contained lattice footing rather than resting on the alignment of invariants:</p>
+<ul>
+<li><p>compute the isometry type of the hyperbolic quotient <span class="math inline">\(e^{\perp}/e\)</span> directly for a primitive isotropic <span class="math inline">\(e \in T_\Co\)</span>;</p></li>
+<li><p>use <span class="math inline">\(\operatorname{div}_{T_\Co}(e)\)</span> to pin down the unique <span class="math inline">\(\Orth(T_\Co)\)</span>-orbit and verify that the quotient matches the Enriques signatures <span class="math inline">\((10,8,0)_1\)</span> for <span class="math inline">\(0\)</span>-cusps and <span class="math inline">\((8,6,0)_0\)</span> for <span class="math inline">\(1\)</span>-cusps.</p></li>
+</ul>
+<p>The residue that is genuinely open is the <em>orbit-uniqueness input</em>: the proof of presently <em>assumes</em> a unique <span class="math inline">\(\Gamma_\Co\)</span>-orbit of isotropic vectors in <span class="math inline">\(T_\Co\)</span>, which is exactly the enumeration left open above.</p>
+</section>
+<section id="general-questions-on-hyperbolic-reflection-groups" class="level3">
+<h3 class="anchored" data-anchor-id="general-questions-on-hyperbolic-reflection-groups">General questions on hyperbolic reflection groups</h3>
+<p>The entries above ask for specific subdiagram and orbit computations in the Coble and Enriques lattices. The following are the corresponding questions asked of hyperbolic Coxeter diagrams in general; each is open, and each bears on how far the specific computations can be pushed.</p>
+</section>
+<div id="qst:maximal-parabolic-complexity" class="Question">
+<section id="open-problem-the-cost-of-enumerating-maximal-parabolic-subdiagrams" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-the-cost-of-enumerating-maximal-parabolic-subdiagrams">Open problem: the cost of enumerating maximal parabolic subdiagrams</h3>
+<p>Given a Coxeter–Vinberg diagram <span class="math inline">\(\Sigma\)</span> on <span class="math inline">\(n\)</span> vertices, what is the cost of determining its maximal parabolic subdiagrams, equivalently the ideal vertices of the chamber ()?</p>
+<p>Enumerating the <span class="math inline">\(2^{n}\)</span> subsets is an upper bound, and prunes it: a subset that fails to be elliptic can be discarded together with every subset containing it, so the search runs over the order ideal of elliptic subsets. No lower bound is known, and no polynomial-time algorithm is known even for the decision problem asked of the whole diagram:</p>
+<ul>
+<li><p>decide whether a given hyperbolic Coxeter diagram has finite covolume () without enumerating its maximal parabolic subdiagrams;</p></li>
+<li><p>exhibit a family of diagrams on which the elliptic order ideal is of exponential size, or show that it is polynomial for the diagrams of finite-covolume groups.</p></li>
+</ul>
+<p>The concrete instance in this monograph is the uniqueness of <span class="math inline">\(\widetilde{B}_7(2)\)</span> as a maximal parabolic subdiagram of the ten-node diagram <span class="math inline">\(G_{S_\Co}\)</span>, stated above; the general question is whether such uniqueness claims admit an argument short of the subdiagram search.</p>
+</section>
+</div>
+<div id="cnj:galois-invariance-parabolics" class="Conjecture">
+<section id="open-problem-galois-invariance-of-the-maximal-parabolic-count" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-galois-invariance-of-the-maximal-parabolic-count">Open problem: Galois invariance of the maximal parabolic count</h3>
+<p>Let <span class="math inline">\(\Sigma\)</span> be a Coxeter–Vinberg diagram whose Gram form is defined over a totally real number field <span class="math inline">\(K\)</span>, and let <span class="math inline">\(\sigma\in\operatorname{Gal}(K/\QQ)\)</span>. The conjecture is that <span class="math inline">\(\Sigma\)</span> and its conjugate <span class="math inline">\(\sigma(\Sigma)\)</span> have the same number of maximal parabolic subdiagrams.</p>
+<p>By the signature of <span class="math inline">\(\sigma(G)\)</span> is not determined by that of <span class="math inline">\(G\)</span>, so the conjugate diagram need not be hyperbolic at all and the statement requires the hypothesis that it is. The open work is to determine the action of <span class="math inline">\(\operatorname{Gal}(K/\QQ)\)</span> on the set of maximal parabolic subdiagrams — whether it permutes them, and if so with what orbits. The diagrams of this monograph have Gram field <span class="math inline">\(\QQ\)</span> or <span class="math inline">\(\QQ(\sqrt2)\)</span>, the latter arising from the <span class="math inline">\(m_{ij} = 4\)</span> bonds of the <span class="math inline">\(B\)</span>-type diagrams, so the smallest instance is the nontrivial automorphism of <span class="math inline">\(\QQ(\sqrt2)\)</span> acting on the folded Sterk diagrams.</p>
+</section>
+</div>
+<div id="qst:parabolic-count-growth" class="Question">
+<section id="open-problem-growth-of-the-maximal-parabolic-count-with-the-rank" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-growth-of-the-maximal-parabolic-count-with-the-rank">Open problem: growth of the maximal parabolic count with the rank</h3>
+<p>How does the number of maximal parabolic subdiagrams of a hyperbolic Coxeter diagram grow with its rank <span class="math inline">\(n\)</span>?</p>
+<p>Is there a bound, exponential or otherwise, valid for all diagrams of rank <span class="math inline">\(n\)</span>, and does the finite-covolume condition of improve it? The recorded data for this monograph is the count of vertices at infinity in the CoxIter runs on the five folded Sterk diagrams and the three <span class="math inline">\(0\)</span>-cusp lattices, all of rank <span class="math inline">\(9\)</span> or <span class="math inline">\(10\)</span>; a family of increasing rank is needed before a growth statement can be made.</p>
+</section>
+</div>
+<div id="qst:arithmeticity" class="Question">
+<section id="open-problem-which-finite-covolume-reflection-groups-are-arithmetic" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-which-finite-covolume-reflection-groups-are-arithmetic">Open problem: which finite-covolume reflection groups are arithmetic</h3>
+<p>Which finite-covolume hyperbolic Coxeter groups are arithmetic?</p>
+<p>The datum available from the diagram is the Gram form over its base field <span class="math inline">\(K\)</span> () together with its Galois conjugates (). The open work is to decide arithmeticity from that datum, and to determine how the property interacts with the maximal parabolic structure of the diagram. The reflection groups appearing in this monograph act on lattices defined over <span class="math inline">\(\ZZ\)</span>, so they are arithmetic; the question governs whether the techniques used here extend to the non-crystallographic diagrams of .</p>
+</section>
+</div>
+<div id="qst:exact-covolume" class="Question">
+<section id="open-problem-exact-covolumes-of-hyperbolic-coxeter-polytopes" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-exact-covolumes-of-hyperbolic-coxeter-polytopes">Open problem: exact covolumes of hyperbolic Coxeter polytopes</h3>
+<p>Compute <span class="math inline">\(\vol(P)\)</span> exactly for a hyperbolic Coxeter polytope <span class="math inline">\(P\)</span> given by its diagram ().</p>
+<p>In even dimension the volume is a rational multiple of the Euler characteristic and is computable from the diagram; in odd dimension the Euler characteristic vanishes and supplies no information, which is the case for every nine-dimensional chamber recorded in the Computations section. The open work is:</p>
+<ul>
+<li><p>closed-form volume formulas for specific families, through Schläfli’s volume differential or through polylogarithmic values;</p></li>
+<li><p>the relation between <span class="math inline">\(\vol(P)\)</span> and the maximal parabolic structure of <span class="math inline">\(\Sigma\)</span>;</p></li>
+<li><p>a covolume computation sharp enough to decide the index <span class="math inline">\([W : W_j]\)</span> of a reflection subgroup, which is the quantity that would settle the discrepancy between Sterk’s published fundamental domains and the computed Vinberg chambers.</p></li>
+</ul>
+</section>
+</div>
+<div id="qst:regularized-theta" class="Question">
+<section id="open-problem-theta-series-of-indefinite-lattices" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-theta-series-of-indefinite-lattices">Open problem: theta series of indefinite lattices</h3>
+<p>For a positive-definite lattice the theta series <span class="math inline">\(\theta_L(q) = \sum_{v\in L} q^{v^2/2}\)</span> converges and is a modular form. For an indefinite lattice each level set <span class="math inline">\(L[k]\)</span> can be infinite (see the Lattice Theory section), the series does not converge, and a regularization is required before any modular statement can be made.</p>
+<p>The open work is to define a regularized theta series for the hyperbolic lattices of this monograph, determine its transformation behaviour, and relate it to the lattice invariants — discriminant form, genus, and the reflection group — that the rest of this document computes.</p>
+</section>
+</div>
+</section>
+<section id="the-git-and-looijenga-models-of-the-coble-moduli-space" class="level2">
+<h2 class="anchored" data-anchor-id="the-git-and-looijenga-models-of-the-coble-moduli-space">The GIT and Looijenga models of the Coble moduli space</h2>
+<div id="que:coble-arrangement-empty" class="Question">
+<section id="open-problem-is-the-coble-arrangement-ch_10a_1-empty" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-is-the-coble-arrangement-ch_10a_1-empty">Open problem: is the Coble arrangement <span class="math inline">\(\cH^{*}_{10A_1}\)</span> empty?</h3>
+<p>The GIT compactification of the moduli of ten-nodal sextics is the Looijenga compactification of <span class="math inline">\(\Gamma_{10A_1}\backslash(D(T_\Co) - \cH^{*}_{10A_1})\)</span>, for the arrangement <span class="math display">\[
+\cH^{*}_{10A_1} = \cH_\infty \cap D(T_\Co)
+\]</span> cut out by the divisibility-two roots of <span class="math inline">\(\Lambda_1 = H^{\perp\lkt}\)</span> (). Whether that arrangement is empty decides the shape of the compactification:</p>
+<ul>
+<li><p>if <span class="math inline">\(\cH^{*}_{10A_1} = \varnothing\)</span>, the Looijenga construction returns the Baily–Borel compactification (), so the GIT boundary of the ten-nodal sextics consists of the <span class="math inline">\(0\)</span>-cusp point and the <span class="math inline">\(1\)</span>-cusp curve and nothing else;</p></li>
+<li><p>if <span class="math inline">\(\cH^{*}_{10A_1} \neq \varnothing\)</span>, the GIT compactification carries a boundary divisor for each <span class="math inline">\(\Gamma_{10A_1}\)</span>-orbit in the arrangement, and is a proper semitoroidal model strictly between Baily–Borel and toroidal.</p></li>
+</ul>
+<p>The question is a lattice computation in <span class="math inline">\(\Lambda_1\)</span>: is there a divisibility-two root of <span class="math inline">\(\Lambda_1\)</span> whose orthogonal hyperplane meets <span class="math inline">\(D(T_\Co)\)</span> in a proper hyperplane section? It is <em>not</em> answered by , which computes divisibility inside <span class="math inline">\(T_\Co\)</span> and says nothing about divisibility inside the larger lattice <span class="math inline">\(\Lambda_1\)</span>. One reduction is available: every root of the root lattice <span class="math inline">\(L\)</span> has divisibility <span class="math inline">\(1\)</span> in <span class="math inline">\(\Lambda_1\)</span> <span class="citation" data-cites="YZZ25">[@YZZ25 §4.2]</span>, so no root arising from a node of the sextic contributes, which is why <span class="math inline">\(\cH^{*}_{10A_1}\)</span> is contained in the larger arrangement <span class="math inline">\(\cH_{10A_1}\)</span> of .</p>
+</section>
+</div>
+<div id="que:semifan-poset-position" class="Question">
+<section id="open-problem-the-position-of-the-three-semifans" class="level3">
+<h3 class="anchored" data-anchor-id="open-problem-the-position-of-the-three-semifans">Open problem: the position of the three semifans</h3>
+<p>The Coxeter, KSBA, and Looijenga semifans of the Coble period domain are determined by three unrelated inputs, and no one of them constrains another ( and the remark following it). Once <span class="math inline">\(\cH^{*}_{10A_1}\)</span> is computed, three questions remain:</p>
+<ul>
+<li><p>is the resulting Looijenga semifan the Coxeter semifan of a reflection group, as it would be if the traces of <span class="math inline">\(\cH^{*}_{10A_1}\)</span> on a cusp boundary were the walls of a chamber?</p></li>
+<li><p>does the Looijenga semifan refine the KSBA semifan, coarsen it, or is it incomparable?</p></li>
+<li><p>which sextic degenerations lie over which cusp? Shah’s classification of the semistable sextics is explicit <span class="citation" data-cites="Sha80">[@Sha80]</span>, and the cusp correspondence of is known, so tracing a named degeneration such as a double cubic to the <span class="math inline">\(0\)</span>-cusp <span class="math inline">\((9,9,1)_1\)</span> or the <span class="math inline">\(1\)</span>-cusp <span class="math inline">\((7,7,1)_0\)</span> is a finite computation rather than a new theory.</p></li>
+</ul>
+</section>
+</div>
+</section>
+<section id="dlt-and-ksba-stable-models" class="level2">
+<h2 class="anchored" data-anchor-id="dlt-and-ksba-stable-models">dlt and KSBA stable models</h2>
+<section id="open-problem-coble-specific-dlt-models-and-pot-geometry" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="open-problem-coble-specific-dlt-models-and-pot-geometry">Open problem: Coble-specific dlt models and pot geometry</h3>
+<p>The degree-<span class="math inline">\(2\)</span> Enriques program modernizes Morrison’s flowerpots <span class="citation" data-cites="Mor81">[@Mor81]</span> into <em>dlt</em> stable pairs, but the <em>Coble-specific dlt models</em> are not yet detailed. The open geometric content is:</p>
+<ul>
+<li><p><strong>Coble pot geometry.</strong> Define the explicit stable pair <span class="math inline">\((\mathcal V, \mathcal D)\)</span> whose “Pot” component is a rational Coble surface, carrying a <span class="math inline">\(\tfrac14(1,1)\)</span> cyclic quotient singularity corresponding to the nodes of the rational sextic <span class="math inline">\(C\)</span>. This is the local singularity package already conjectured for the stable quotient in , seen here on the <em>dlt</em> model (cf. , ).</p></li>
+<li><p><strong>Stalk assembly.</strong> Describe the transition of the stalk assembly and the integral-affine configuration as the Enriques surface log-collapses onto the discriminant divisor <span class="math inline">\(\Delta\)</span>, where the K3 cover becomes nodal.</p></li>
+</ul>
+</section>
+<section id="open-problem-monodromy-invariants-and-stable-models-blambda" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="open-problem-monodromy-invariants-and-stable-models-blambda">Open problem: monodromy invariants and stable models <span class="math inline">\(B(\lambda)\)</span></h3>
+<p>Stable limits of Coble surfaces arise as <span class="math inline">\(S_2\)</span>-quotients of nodal K3 surfaces, parameterized by a monodromy invariant <span class="math inline">\(\ell \in \check{\cH}\)</span> (surgery sizes) through the construction <span class="math inline">\(B(\lambda)\)</span> of <span class="citation" data-cites="AEGS25">[@AEGS25]</span>. The open work is to:</p>
+<ul>
+<li><p>determine the map from the Coble polarization to the discretization <span class="math inline">\(\ell\)</span> on the dual complex. The surgery sizes are the pairings <span class="math inline">\(\ell_i = h\cdot\alpha_i\)</span> against the roots <span class="math inline">\(\alpha_i\)</span> of the relevant Coxeter diagram, so the first step is to record which polarization class is meant and in which lattice the pairing is taken: the downstairs class <span class="math inline">\(h_\Co\in K_S^{\perp}\)</span> or its K3 pullback <span class="math inline">\(\tilde h_\Co\in S_\Co\)</span> (), the roots living in the lattice of the chosen cusp. An orthogonal direct-sum presentation on its own does not make <span class="math inline">\(\ell = 0\)</span>;</p></li>
+<li><p>verify the slc stability of the resulting stable pair <span class="math inline">\((Z, \varepsilon C)\)</span> for specific surgery vectors <span class="math inline">\(\ell\)</span>.</p></li>
+</ul>
+<p>This is the discrete-datum side of the KSBA program whose stability obligations are recorded in and the surrounding KSBA discussion.</p>
+</section>
+</section>
+<section id="foundational-equations-and-computational-verification" class="level2">
+<h2 class="anchored" data-anchor-id="foundational-equations-and-computational-verification">Foundational equations and computational verification</h2>
+<section id="open-problem-explicit-equations-for-the-coble-curve-and-its-k3-cover" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="open-problem-explicit-equations-for-the-coble-curve-and-its-k3-cover">Open problem: explicit equations for the Coble curve and its K3 cover</h3>
+<p>A Coble surface <span class="math inline">\(S\)</span> is the blowup of <span class="math inline">\(\PP^2\)</span> at the ten <span class="math inline">\(A_1\)</span> nodes of an irreducible rational plane sextic <span class="math display">\[
+C = \ts{ F(x,y,z) = 0 },
+\qquad
+F(x,y,z) = \sum_{i+j+k=6} a_{ijk}\, x^i y^j z^k,
+\]</span> subject to the nodal conditions <span class="math inline">\(F(p_m) = \partial_x F(p_m) = \partial_y F(p_m) = \partial_z F(p_m) = 0\)</span> at the ten special positions <span class="math inline">\(p_1,\dots,p_{10} \in \PP^2\)</span>; the moduli space of such sextics is <span class="math inline">\(9\)</span>-dimensional, and explicit models may be sought from the Steiner sextic or from index-<span class="math inline">\(2\)</span> Halphen pencils (cf. , ). The K3 cover is the double cover <span class="math inline">\(X \xrightarrow{2:1} S\)</span> of <span class="math inline">\(\PP^2\)</span> branched along <span class="math inline">\(C\)</span>, with equation <span class="math inline">\(w^2 = F(x,y,z)\)</span> in <span class="math inline">\(\PP(1,1,1,3)\)</span>, whose ten <span class="math inline">\(A_1\)</span> nodes lie above the positions <span class="math inline">\(p_m\)</span> (at <span class="math inline">\(w = 0\)</span>, <span class="math inline">\([x:y:z] = p_m\)</span>). What is missing is a <em>worked instance</em>: derive an explicit equation <span class="math inline">\(F(x,y,z) = 0\)</span> for a rational sextic with ten nodes together with the corresponding cover <span class="math inline">\(w^2 = F\)</span>, realizing <span class="math inline">\(C\)</span> as the image of <span class="math inline">\(\PP^1\)</span> under a degree-<span class="math inline">\(6\)</span> map <span class="math inline">\((s:t) \mapsto [f_0 : f_1 : f_2]\)</span>. Such an instance would anchor the coordinate derivations demanded by the lattice-embedding and involution problems above.</p>
+</section>
+<section id="lattice-and-orbit-anchors-for-the-computations" class="level3 Remark">
+<h3 class="anchored" data-anchor-id="lattice-and-orbit-anchors-for-the-computations">Lattice and orbit anchors for the computations</h3>
+<p>The problems above share a small set of concrete starting data, recorded here for reference:</p>
+<ul>
+<li><p><strong>Isotropic vectors.</strong> In <span class="math inline">\(S_\Co\)</span>, primitive isotropic lines are represented by <span class="math inline">\(v = e_0 \pm e_i\)</span> (with <span class="math inline">\(e_0^2 = 2\)</span>, <span class="math inline">\(e_i^2 = -2\)</span>).</p></li>
+<li><p><strong>Polarization basis.</strong> The degree-<span class="math inline">\(2\)</span> polarization is <span class="math inline">\(h = e + f\in U(2) = S_\dP\subseteq S_\En\)</span>, with <span class="math inline">\(e\cdot f = 2\)</span> and <span class="math inline">\(h^2 = 4\)</span> (); it lies in the invariant lattice, not in <span class="math inline">\(T_\En\)</span>, and must be identified in a basis compatible with <span class="math inline">\(\theta\)</span>.</p></li>
+<li><p><strong>Heegner line.</strong> The complement realizing <span class="math inline">\(T_\Co\)</span> inside <span class="math inline">\(T_\En\)</span> is <span class="math inline">\(\delta^{\perp}\)</span> for <span class="math inline">\(\delta = u - w\)</span> in the unimodular <span class="math inline">\(U\)</span> summand, and this line is unique up to <span class="math inline">\(\Gamma_{\En, 2}\)</span> (, ).</p></li>
+<li><p><strong>Discriminant forms.</strong> <span class="math inline">\(q_{S_\Co} \colon (\mathbb{F}_2)^{11} \to \QQ/2\ZZ\)</span> and <span class="math inline">\(q_{T_\Co} \colon (\mathbb{F}_2)^{11} \to \QQ/2\ZZ\)</span>, with isometry of complements forcing <span class="math inline">\(q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ\)</span>.</p></li>
+<li><p><strong>Sterk orbit lift.</strong> For the <span class="math inline">\(2\)</span>-elementary <span class="math inline">\(T_\Co\)</span>, an orbit is determined by the tuple <span class="math inline">\((\operatorname{div}(v),\, \bar v \in A_{T_\Co},\, v^2 = 0)\)</span>, reducing the search to <span class="math inline">\(\mathbb{F}_2\)</span>-vector-space orbits under <span class="math inline">\(\Orth(q_{T_\Co})\)</span>.</p></li>
+<li><p><strong><span class="math inline">\(\Gamma_\Co\)</span> generators.</strong> Computed as the intersection of the reflection group <span class="math inline">\(W(T)\)</span> with the centralizer <span class="math inline">\(Z(\theta)\)</span> and the stabilizer of the primitive vector <span class="math inline">\(\tilde h_\Co = f^{*}h_\Co\)</span>, of square <span class="math inline">\(4\)</span>.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

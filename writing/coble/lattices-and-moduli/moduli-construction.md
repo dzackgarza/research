@@ -366,7 +366,7 @@ respectively [@YZZ25 §1].
 Each such type therefore carries both an arithmetic model of its moduli space and
 a Looijenga model of its GIT compactification.
 The Coble families with $n$ boundary components are indexed by the number of
-irreducible components of the branch sextic (\longref{tbl:coble-lattices}) rather
+irreducible components of the branch sextic ([the Coble lattice table](coble-lattice-table.md)) rather
 than by its singular type, so which type $T$ carries which family is a question
 this section does not settle.
 :::

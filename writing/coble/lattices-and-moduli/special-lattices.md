@@ -189,7 +189,7 @@ In the invariant notation of the Lattice Theory section it has $2$-elementary
 type $(r, a, \delta) = (10, 10, 0)$.
 This is the lattice denoted $S_\En = E_{10}(2)$ in the lattice summary, and it
 recurs throughout the Coble tables as the base summand $E_{10}(2)$ appearing
-alongside $U(2)$ and the root lattices; compare \longref{tbl:coble-lattices}.
+alongside $U(2)$ and the root lattices; compare [the Coble lattice table](coble-lattice-table.md).
 :::
 
 ## Degree $2d$ K3 lattices
@@ -426,7 +426,7 @@ This building-block list is drawn from Nikulin's study of the even
 $2$-elementary hyperbolic lattices embedding into $\lkt$ [@Nik80], the same
 theory that underlies the invariant triple $(r, a, \delta)$ of the Lattice
 Theory section.
-The Coble lattices of \longref{tbl:coble-lattices} are exactly of this form: each
+The Coble lattices of [that table](coble-lattice-table.md) are exactly of this form: each
 $2$-elementary lattice $M$ appearing there is assembled from these blocks --- for
 example $M = E_8(2)\oplus U\oplus A_1^{\oplus 2}$ at $n = 2$ and
 $M = E_8\oplus D_8\oplus U(2)$ at $n = 8$ --- so the table is a concrete census

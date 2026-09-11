@@ -58,7 +58,7 @@ with $n$ boundary components and the various moduli spaces of index 2 Halphen
 pencils on the $g=0$ line of Nikulin's triangle diagram of 2-elementary
 lattices.
 Regarding the coarse spaces as period domains attached to lattices, the lattices
-match up precisely; see \longref{tbl:coble-lattices}.
+match up precisely; see [the Coble lattice table](coble-lattice-table.md).
 Applications of mirror moves indicate that the cusp diagrams would
 correspondingly coincide as well.
 :::

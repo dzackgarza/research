@@ -8,7 +8,7 @@ Conventions:
 
 ### Classical and affine Dynkin diagrams
 
-Table \ref{tab:dynkin-diagrams-table} is a table of (labeled) classical and affine Dynkin diagrams.
+The table below lists the labelled classical and affine Dynkin diagrams.
 
 ```include
 coble/tables/dynkin-diagrams.md

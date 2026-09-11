@@ -3,7 +3,7 @@
 ::: {.Remark}
 ### Orientation
 
-Every lattice in the Coble table (\longref{tbl:coble-lattices}) satisfies
+Every lattice in [the Coble table](coble-lattice-table.md) satisfies
 $r + a = 22$: the row indexed by $n$ has $r = 10 + n$ and $a = 12 - n$.
 The line $r + a = 22$ is exactly the range in which Alexeev classifies the
 reflective even hyperbolic $2$-elementary lattices and computes their Coxeter
