@@ -62,6 +62,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
     category_packet,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
@@ -520,7 +521,7 @@ def _owned_group_category(engine) -> Category:
         categories.append(GroupsWithChosenFreeBasis())
     if isinstance(engine, PermutationGroup_generic):
         categories.append(PermutationGroups())
-    return Category.join(tuple(categories))
+    return Cat().meet(tuple(categories))
 
 
 class _OwnedGroupElement(MultiplicativeGroupElement):
@@ -690,7 +691,7 @@ class _TransportedGroupSubobject(Parent):
         Parent.__init__(
             self,
             facade=supergroup,
-            category=Category.join((_owned_group_category(engine_subgroup), Subgroups(supergroup))),
+            category=Cat().meet((_owned_group_category(engine_subgroup), Subgroups(supergroup))),
         )
         realize_owned_category(self)
 
@@ -1207,7 +1208,7 @@ class GroupHomset(GroupHomset_libgap, CategoricalHomset):
         if category is not None:
             placement.append(category)
         if placement:
-            CategoryObject._refine_category_(self, Category.join(tuple(placement)))
+            CategoryObject._refine_category_(self, Cat().meet(tuple(placement)))
             realize_owned_category(self)
 
     def _element_constructor_(self, images, check=True, **_options):
@@ -1362,7 +1363,7 @@ class GroupAutomorphismGroup(GroupHomset):
             hom_family,
             group,
             group,
-            category=Category.join(tuple(categories)),
+            category=Cat().meet(tuple(categories)),
         )
 
     def super_categories(self):
