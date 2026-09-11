@@ -1722,6 +1722,19 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return True
             return Unknown
 
+        def number_of_group_generators(self):
+            r"""Return the size of the chosen generating family, or ``Unknown``.
+
+            A group need not come with a selected finite generating family.
+            The question is nevertheless total at the group owner: the
+            category-specific implementation on
+            :class:`GroupsWithChosenFiniteGeneratingSet` returns the exact
+            cardinality, while every other represented group answers
+            ``Unknown`` rather than forcing callers into attribute/exception
+            probing.
+            """
+            return Unknown
+
         def is_finitely_presented(self):
             return True if self in OwnedFinitelyPresentedGroups() else Unknown
 
