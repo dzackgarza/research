@@ -280,37 +280,7 @@ Paths in this section are relative to
 
 ### Completion objects and finite approximations
 
-- [ ] **`completion-arithmetic`**. **Needs:** `completion`.
-  Establish precision-aware element arithmetic at the shared completion
-  boundary, including principal/p-adic and multivariable routes.
-  **Decision:** exact elements retain exact defining data or a supported exact
-  expression/algorithm. Finite approximations retain their modulus of
-  agreement. Equality modulo `I^n` is a statement in the finite quotient,
-  not equality of completed elements.
-  A difference detected at finite precision proves inequality; agreement at
-  one precision alone never proves exact equality.
-  Use the repository's assertion-gated computational frontier when an exact
-  equality question cannot be decided; do not return a guessed boolean or
-  silently replace the exact codomain with a soft knowledge value.
-  **Deliver:** compatible addition/multiplication, precision propagation,
-  refinement where the underlying data permits it, and exact zero/unit/
-  inversion behavior in the supported cases. A finite residue alone cannot
-  manufacture higher-precision coefficients.
-  **Computation decision:** inspect the selected upstream series/p-adic element
-  contracts for exact inputs, precision propagation, inversion, and refinement.
-  Adapt those operations; do not build coefficient recurrences, a local expression
-  evaluator, or a new equality procedure merely to pass these specimens. Lazy
-  representation does not imply decidable exact equality. Keep unsupported exact
-  questions at the declared frontier, including hashing and membership.
-  **Specimens:** a series agreeing with zero to the initial precision but
-  having a later nonzero coefficient; an actual zero; a polynomial image;
-  an inverse of `1-x` whose product is exactly one; and a genuine nilpotent
-  in the completion of `QQ[x,y]/(x^2)`.
-  **Acceptance:** genuine nilpotence survives, truncation artifacts do not.
-  Element comparison, truthiness, hashing where defined, and ideal membership
-  use compatible equality semantics. Mutable precision must not corrupt caches.
-
-- [ ] **`completion-maps`**. **Needs:** `completion-arithmetic`.
+- [ ] **`completion-maps`**. **Needs:** none.
   Put completion maps and ideals on the correct rings.
   **Owner:** completion parent, ring Hom, and ideal-submodule operations.
   **Decision:** distinguish the source ideal `I <= A`, its extension in
