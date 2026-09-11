@@ -900,3 +900,33 @@ $\delta\colon c\to c\times c$ is the diagonal."
 **Preferred:** "Let $\delta\colon c\to c\times c$ be the diagonal and
 $!_c\colon c\to\mathbf{1}$ the unique map. Then …" — state the maps,
 then write the equations.
+
+### `SYM-7`: A monoidal category named in prose instead of as a tuple
+
+A monoid object lives in a monoidal category. The standard way to name
+that category is as a tuple $(\mathcal{C},\otimes,\mathbf{1})$, mirroring
+how a monoidal category was defined. Naming it in prose — "a monoid for
+the cartesian structure", "a monoid with respect to the product" — makes
+the reader assemble the monoidal category from English instead of
+recognizing the tuple. State the monoidal category as a tuple.
+
+**Banned:** "a monoid $\langle c,\mu,\eta\rangle$ for the cartesian
+structure."
+
+**Preferred:** "a monoid object $(c,\mu,\eta)$ in
+$(\mathcal{C},\times,\mathbf{1})$." Name the monoidal category the same
+way it was defined.
+
+### `SYM-8`: A mathematical object named by a prose qualifier instead of by its type
+
+"A monoid for the cartesian structure", "a group for the product", "a
+comonoid with respect to the coproduct" — each names the object by an
+English phrase instead of by its mathematical type. A monoid object is a
+monoid object in a specified monoidal category; a group object is a group
+object in a specified category with finite products. State the type and
+the category; do not qualify a bare noun with a prose preposition.
+
+**Banned:** "a monoid for the cartesian structure."
+
+**Preferred:** "a monoid object in $(\mathcal{C},\times,\mathbf{1})$."
+The type is "monoid object"; the category is the tuple.
