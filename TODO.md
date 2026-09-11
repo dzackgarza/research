@@ -1663,6 +1663,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-morphism-matrices-20260911-0700` | archive reconciliation / framed-morphism matrix helpers | M0 continuation; `/home/dzack/research` | `archives/preamble/categories/modules/module_morphisms/morphism_matrices.py` (read); `src/dzack_research/preamble/categories/modules/module_morphisms/morphism_matrices.py; tests/modules/test_morphism_matrices_archive_reconciliation.py; computations/scripts/archive_reconciliation_inventory.py; computations/reports/archive_reconciliation_inventory.tsv; TODO.md` (write) | `c0d2bdf0` | 2026-09-11T07:00:00Z |
+
 
 
 
