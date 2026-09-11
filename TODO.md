@@ -1663,6 +1663,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-function-modules-20260911-0755` | archive reconciliation / function modules to general real-function spaces | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/functions/test_function_modules_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:55:00Z |
+
 
 
 
