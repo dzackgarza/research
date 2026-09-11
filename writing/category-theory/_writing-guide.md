@@ -208,12 +208,12 @@ constructs an object and verifies its required properties, hiding the logical st
 reader needs to follow. *Banned:* "A category with finite products is monoidal with
 $a\otimes b$ a chosen product $a\times b$ and $e$ a terminal object, the three isomorphisms
 being the unique ones commuting with the projections; this is the cartesian monoidal
-structure." *Fix:* separate the construction from the verification. "Choose a product
-$a \times b$ for each pair of objects and a terminal object $e$. Set $\otimes = \times$ and
-take $e$ as the unit. The associator $\alpha_{a,b,c}$ and the unitors $\lambda_a$,
-$\varrho_a$ are the unique isomorphisms supplied by the universal property of the product."
-A reader follows construction, then verification; a semicolon-joined sentence conflates
-them.
+structure." *Fix:* separate the construction from the verification. "The product
+functor $\times\colon\mathcal{C}\times\mathcal{C}\to\mathcal{C}$, together with a
+terminal object $\mathbf{1}$ and the canonical associator and unitors, defines a
+monoidal structure on $\mathcal{C}$. The associator $\alpha_{a,b,c}$ and the unitors
+$\lambda_a$, $\varrho_a$ are the unique isomorphisms supplied by the universal property
+of the product."
 
 **PR-10 — Undue emphasis.** `**bold**` used for emphasis or to mark a defined term in running
 prose. *Fix:* *italic* for a term at its definition; **bold** only as a run-in label at the
@@ -401,6 +401,19 @@ to as "the three isomorphisms" or "the $n$ maps" instead of by name. The reader 
 which maps from context. *Banned:* "the three isomorphisms being the unique ones commuting
 with the projections." *Fix:* "the associator $\alpha_{a,b,c}$ and the unitors
 $\lambda_a$, $\varrho_a$." Name the maps. The count carries no mathematical information.
+
+**MA-13 — A structure described pointwise instead of as a structure.** A functor is a
+functor: source, target, name. A natural transformation is a natural transformation: its
+components and the naturality square. A monoidal structure is a tuple
+$(\mathcal{C}, \otimes, \mathbf{1}, \alpha, \lambda, \varrho)$ with axioms. Each of these
+is a mathematical object with a type and constituent data. A pointwise description — "a
+choice of $a \otimes b$ for every $a$, $b$" — replaces the structure with a recipe for its
+output on inputs, the way a programmer describes a function by what it returns. State the
+structure; its pointwise behavior may follow. *Banned:* "choose a product $a \times b$ for
+each pair of objects and set $\otimes = \times$." *Fix:* "the product functor
+$\times\colon\mathcal{C}\times\mathcal{C}\to\mathcal{C}$, together with a terminal object
+$\mathbf{1}$ and the canonical associator and unitors, defines a monoidal structure on
+$\mathcal{C}$."
 
 ---
 
