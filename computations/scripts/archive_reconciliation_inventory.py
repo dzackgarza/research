@@ -12,6 +12,7 @@ mathematics is compared at the live owner.
 from __future__ import annotations
 
 import argparse
+import ast
 import csv
 import io
 import re
@@ -167,6 +168,30 @@ def live_name_index(live_root: Path) -> dict[str, set[str]]:
     return result
 
 
+def reconciliation_metadata(test_root: Path) -> dict[str, dict[str, object]]:
+    r"""Read archive dispositions from source-backed reconciliation specimens."""
+    result: dict[str, dict[str, object]] = {}
+    if not test_root.exists():
+        return result
+    for path in sorted(test_root.rglob("test_*archive_reconciliation.py")):
+        source = path.read_text()
+        if "ARCHIVE_RECONCILIATION" not in source:
+            continue
+        tree = ast.parse(source, filename=str(path))
+        for node in tree.body:
+            if not isinstance(node, (ast.Assign, ast.AnnAssign)):
+                continue
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            if not any(isinstance(target, ast.Name) and target.id == "ARCHIVE_RECONCILIATION" for target in targets):
+                continue
+            value = ast.literal_eval(node.value)
+            module = value["archive_module"]
+            if module in result and result[module] != value:
+                raise ValueError(f"conflicting archive reconciliation metadata for {module}")
+            result[module] = value
+    return result
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--archive-root", type=Path, default=Path("archives/preamble"))
@@ -180,6 +205,7 @@ def main() -> None:
         type=Path,
         default=Path("computations/reports/archive_reconciliation_inventory.tsv"),
     )
+    parser.add_argument("--test-root", type=Path, default=Path("tests"))
     args = parser.parse_args()
 
     modules = sorted(
@@ -193,6 +219,7 @@ def main() -> None:
         for notion in scan_module(module, args.archive_root)
     ]
     live = live_name_index(args.live_root)
+    reconciled = reconciliation_metadata(args.test_root)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("w", newline="") as handle:
@@ -213,6 +240,15 @@ def main() -> None:
             short_name = notion.qualified_name.rsplit(".", 1)[-1]
             candidates = () if short_name == "<module>" else tuple(sorted(live.get(short_name, ())))
             unique_hint = candidates[0] if len(candidates) == 1 else ""
+            metadata = reconciled.get(notion.module)
+            if metadata is None:
+                live_owner, disposition = "", "unreviewed"
+            else:
+                overrides = metadata.get("owner_overrides", {})
+                live_owner = overrides.get(
+                    notion.qualified_name, metadata["live_owner"]
+                )
+                disposition = metadata["disposition"]
             writer.writerow(
                 (
                     notion.module,
@@ -221,8 +257,8 @@ def main() -> None:
                     notion.line,
                     len(candidates),
                     unique_hint,
-                    "",
-                    "unreviewed",
+                    live_owner,
+                    disposition,
                 )
             )
 

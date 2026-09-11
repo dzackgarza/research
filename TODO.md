@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-catalogue-20260911-0650` | archive reconciliation / catalogue mathematical surface | M0 continuation; `/home/dzack/research` | `archives/preamble/catalogue.sage` (read); `src/dzack_research/preamble/catalogue.py; tests/lattices/test_catalogue_archive_reconciliation.py; computations/scripts/archive_reconciliation_inventory.py; computations/reports/archive_reconciliation_inventory.tsv; TODO.md` (write) | `e953b42d` | 2026-09-11T06:52:00Z |
 
 
 

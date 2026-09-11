@@ -1,14 +1,14 @@
 archive_module	qualified_name	kind	archive_line	name_match_count	unique_name_match_hint	live_owner	disposition
 preamble/all.py	<module>	module	1	0			unreviewed
 preamble/all.py	load	function	47	1	src/dzack_research/preamble/all.py		unreviewed
-preamble/catalogue.sage	<module>	module	1	0			unreviewed
-preamble/catalogue.sage	TwoElementary	binding	220	1	src/dzack_research/preamble/catalogue.py		unreviewed
-preamble/catalogue.sage	two_elementary_orthogonal_sums	function	299	1	src/dzack_research/preamble/catalogue.py		unreviewed
-preamble/catalogue.sage	signature_orthogonal_sums	function	447	1	src/dzack_research/preamble/catalogue.py		unreviewed
-preamble/catalogue.sage	NegativeDefTwoElementary	binding	545	1	src/dzack_research/preamble/catalogue.py		unreviewed
-preamble/catalogue.sage	Involutions	class	894	1	src/dzack_research/preamble/catalogue.py		unreviewed
-preamble/catalogue.sage	Embeddings	class	928	1	src/dzack_research/preamble/catalogue.py		unreviewed
-preamble/catalogue.sage	Lattices	reexport	1	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
+preamble/catalogue.sage	<module>	module	1	0		src/dzack_research/preamble/catalogue.py	reconciled-live-owner
+preamble/catalogue.sage	TwoElementary	binding	220	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
+preamble/catalogue.sage	two_elementary_orthogonal_sums	function	299	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
+preamble/catalogue.sage	signature_orthogonal_sums	function	447	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
+preamble/catalogue.sage	NegativeDefTwoElementary	binding	545	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
+preamble/catalogue.sage	Involutions	class	894	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
+preamble/catalogue.sage	Embeddings	class	928	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
+preamble/catalogue.sage	Lattices	reexport	1	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/abstract_categories/arrow_categories.sage	<module>	module	1	0			unreviewed
 preamble/categories/abstract_categories/arrow_categories.sage	common_category	function	32	1	src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py		unreviewed
 preamble/categories/abstract_categories/arrow_categories.sage	graph	class	43	1	src/dzack_research/preamble/owned_category.py		unreviewed
