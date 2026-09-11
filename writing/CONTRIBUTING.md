@@ -1910,6 +1910,67 @@ non-example or Remark that a subgroup of the underlying abelian group
 need not be a submodule), then close. Put the writing requirement in the
 requirements $\S$ where it is defined and cite it.
 
+### `SEC-4`: Arbitrary breaking of a work into sections
+
+A work is broken into titled $\S$'s that do not reflect logical
+dependency or coherent grouping of units, but partition prose arbitrarily
+to create length or satisfy a template. Standard textbooks and papers
+organize $\S$'s around dependency: foundations (what a functor,
+natural transformation, and comparison are) before general notions
+(preservation/reflection/creation), before theorems (monadic functors
+create limits), before applications (limits in $R\text{-}\mathbf{Mod}$
+computed on underlying sets). A titled $\S$ that exists to house a few
+paragraphs of paraphrase is not a $\S$.
+
+Concrete standard (amsthm): a $\S$ title names the mathematics its fenced
+units develop, and its position in the chapter reflects what those units
+define and what they use. Hartshorne, EGA, Lurie *Higher Topos Theory* and
+*Higher Algebra*, Riehl *Category Theory in Context* each place
+$2$-categorical foundations (parallel functors, natural isomorphisms)
+before any use of monadicity; creation via monadicity is in the
+monadicity chapter, not adjacent to the definition of a comparison.
+
+**Banned:** the quoted block's consecutive siblings "Creation of limits
+{#sec-creation}" and "Parallel functors {#sec-parallel-functors}" — the
+first is a specific application of monadicity, the second is a
+foundational $2$-categorical distinction that belongs in foundations, and
+neither contains a primary fenced unit of its own.
+
+**Preferred:** place "Parallel functors / comparisons / natural
+isomorphisms" in categorical foundations before any use of preservation
+or creation; place "Creation of limits via monadic functors" after the
+monadicity theorem, with its corollary (limits in algebraic categories)
+and its example (kernel) and non-example (subgroup need not be
+submodule), in the chapter where limits in algebraic categories are
+developed, at the point where the dependency is satisfied.
+
+### `SEC-5`: A section that is entirely remarks
+
+A $\S$ whose only content would be Remarks — or whose unfenced prose is
+all remarks, morals, and writing requirements ("Creation is a statement
+about limit cones: a subgroup … need not be a submodule …", "If no
+comparison is specified, $F$ and $G$ remain distinct," "A construction
+whose value happens to agree … names the functor …") — has no primary
+mathematical content. In amsthm style a Remark is secondary to a
+Definition, Theorem, Lemma, Proposition, Corollary, or Example; a $\S$ of
+only Remarks has nothing to remark on. If there is a precise claim, state
+it as the $\S$'s primary unit; if there is not, the $\S$ should not
+exist.
+
+**Banned:** a titled $\S$ whose paragraphs are all of the form "Creation
+is a statement about …" / "A construction whose value happens to agree
+…" / "If no comparison is specified …" — remarks without a primary
+Definition/Theorem/Example that belongs to this $\S$.
+
+**Preferred:** either state the primary claim as a fenced Proposition,
+Example, or Remark attached to a primary unit ("The forgetful
+$U\colon R\text{-}\mathbf{Mod}\to\mathbf{Sets}$ creates limits; the
+underlying set of a kernel carries a unique $R$-module structure making
+it the kernel" as Corollary with proof), or do not create the $\S$. A
+genuine meta-remark about how to speak about created limits versus
+underlying-set agreement belongs in the requirements $\S$ or in a
+Remark attached to the corollary, not as a standalone $\S$.
+
 ### `DEF-27`: Distinguished object introduced only in the title
 
 A block titled `{#def-distinguished-factorization}` defines "a
