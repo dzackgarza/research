@@ -3,34 +3,33 @@ r"""Diagrams, cones, cocones, and selected finite product constructions."""
 from collections.abc import Callable, Iterable
 from typing import Any
 
+from sage.categories.category import Category
+from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function
+from sage.misc.classcall_metaclass import typecall
+from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.parent import Parent
+
+from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
+from dzack_research.preamble.categories.abstract_categories.functors import (
+    ConstantDiagram,
+    DiscreteCategory,
+    DiscreteDiagram,
+)
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
     _category_hom,
     _category_homset,
 )
-from sage.categories.category import Category
-from sage.categories.morphism import Morphism
-from sage.misc.unknown import Unknown, UnknownClass
-from sage.misc.cachefunc import cached_function
-from sage.misc.classcall_metaclass import typecall
-from sage.categories.sets_cat import Sets as SageSets
-from sage.structure.parent import Parent
-from sage.structure.dynamic_class import DynamicMetaclass
-
-from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
 from dzack_research.preamble.categories.abstract_categories.objects import Objects as OwnedObjects
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.abstract_categories.functors import (
-    ConstantDiagram,
-    DiscreteCategory,
-    DiscreteDiagram,
-)
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 
 
 class DiagramCategory(FunctorCategory):
@@ -82,7 +81,7 @@ def _commutes_with_diagram(source, target, apex_map, cocone=False) -> bool:
 class ConeMorphism(Morphism):
     r"""A morphism of cones, determined by its apex map."""
 
-    def __init__(self, parent: "ConeHomset", apex_map: Morphism, *, verify: bool = True) -> None:
+    def __init__(self, parent: ConeHomset, apex_map: Morphism, *, verify: bool = True) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cone map has the wrong domain apex")
@@ -126,7 +125,7 @@ class ConeMorphism(Morphism):
 class CoconeMorphism(Morphism):
     r"""A morphism of cocones, determined by its apex map."""
 
-    def __init__(self, parent: "CoconeHomset", apex_map: Morphism, *, verify: bool = True) -> None:
+    def __init__(self, parent: CoconeHomset, apex_map: Morphism, *, verify: bool = True) -> None:
         Morphism.__init__(self, parent)
         if apex_map.domain() is not self.domain().apex():
             raise ValueError("the cocone map has the wrong domain apex")
@@ -182,7 +181,7 @@ class ConeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def cone_category(self) -> "ConeCategory":
+    def cone_category(self) -> ConeCategory:
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
@@ -218,7 +217,7 @@ class CoconeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def cocone_category(self) -> "CoconeCategory":
+    def cocone_category(self) -> CoconeCategory:
         return self.base_category()
 
     def _element_constructor_(self, apex_map):
@@ -313,7 +312,7 @@ class ConeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cone_category(self) -> "ConeCategory":
+        def cone_category(self) -> ConeCategory:
             return self.category()
 
         def diagram(self) -> Functor:
@@ -395,7 +394,7 @@ class CoconeCategory(OwnedCategory):
             self._transformation = transformation
             super().__init__(**rest)
 
-        def cocone_category(self) -> "CoconeCategory":
+        def cocone_category(self) -> CoconeCategory:
             return self.category()
 
         def diagram(self) -> Functor:

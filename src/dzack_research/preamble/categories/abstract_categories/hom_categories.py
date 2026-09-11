@@ -17,29 +17,29 @@ from __future__ import annotations
 
 from typing import Any
 
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
-    CategoryPacketMethods,
-    OwnedHomset,
-    underlying_set_homset,
-)
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from sage.categories.category import Category
 from sage.categories.homset import Hom, Homset
 from sage.categories.morphism import Morphism
 from sage.categories.objects import Objects as SageObjects
 from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
-    OwnedCategory,
-    OwnedCategoryMixin,
-)
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown, UnknownClass
-from sage.structure.sage_object import SageObject
-from sage.structure.parent import Parent
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.parent import Parent
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+    CategoryPacketMethods,
+    OwnedHomset,
+    underlying_set_homset,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategoryMixin,
+)
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.refine import refine
 
 
@@ -179,7 +179,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
 
     def __init__(
         self,
-        family: "HomCategoryOf",
+        family: HomCategoryOf,
         domain: Parent,
         codomain: Parent,
         *,
@@ -212,11 +212,11 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             # callers never observe an un-enriched module Hom parent.
             refine(self, category)
 
-    def hom_family(self) -> "HomCategoryOf":
+    def hom_family(self) -> HomCategoryOf:
         return self._family
 
     @property
-    def _HomCategory(self) -> type["HomCategoryOf"]:
+    def _HomCategory(self) -> type[HomCategoryOf]:
         # The Hom objects and their family are mutually recursive types.
         # Resolve the family's declaration only after this module is loaded.
         return DiscreteTwoHomCategoryOf
@@ -233,7 +233,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
     def identity_at(self, obj: Parent) -> Morphism:
         return self.hom_family().Of(obj, obj).arrow_set().identity()
 
-    def attach_end_family(self, family: "EndCategoryOf") -> None:
+    def attach_end_family(self, family: EndCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an endomorphism Hom category can carry an End-family role")
         owner = category_packet(self.base_category()).Ends()
@@ -247,10 +247,10 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             raise ValueError("one fixed Hom category cannot carry two End-family roles")
         self._end_family = owner
 
-    def end_family(self) -> "EndCategoryOf | None":
+    def end_family(self) -> EndCategoryOf | None:
         return self._end_family
 
-    def attach_aut_family(self, family: "AutCategoryOf") -> None:
+    def attach_aut_family(self, family: AutCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
         owner = category_packet(self.base_category()).Auts()
@@ -264,7 +264,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
         self._aut_family = owner
 
-    def aut_family(self) -> "AutCategoryOf | None":
+    def aut_family(self) -> AutCategoryOf | None:
         return self._aut_family
 
     def identity_endomorphism(self) -> Morphism:
@@ -342,7 +342,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
         self,
         domain: HomArrowObject | Morphism,
         codomain: HomArrowObject | Morphism,
-    ) -> "CategoricalHomset":
+    ) -> CategoricalHomset:
         return self.HomCategory().Of(domain, codomain)
 
     Mor = two_hom
@@ -364,7 +364,7 @@ class HomArrowDiscreteHomset(CategoricalHomset):
 
     def __init__(
         self,
-        family: "DiscreteTwoHomCategoryOf",
+        family: DiscreteTwoHomCategoryOf,
         domain: HomArrowObject,
         codomain: HomArrowObject,
     ) -> None:
@@ -400,7 +400,7 @@ class FixedHomCategory(CategoryPacketMethods, Category):
 
     def __init__(
         self,
-        family: "HomCategoryOf",
+        family: HomCategoryOf,
         domain: Parent,
         codomain: Parent,
     ) -> None:
@@ -421,14 +421,14 @@ class FixedHomCategory(CategoryPacketMethods, Category):
     def _make_named_class_key(self, name):
         return (self._family, id(self._domain_object), id(self._codomain_object))
 
-    def hom_family(self) -> "HomCategoryOf":
+    def hom_family(self) -> HomCategoryOf:
         return self._family
 
     @property
-    def _HomCategory(self) -> type["HomCategoryOf"]:
+    def _HomCategory(self) -> type[HomCategoryOf]:
         return DiscreteTwoHomCategoryOf
 
-    def attach_end_family(self, family: "EndCategoryOf") -> None:
+    def attach_end_family(self, family: EndCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an endomorphism Hom category can carry an End-family role")
         owner = category_packet(self.base_category()).Ends()
@@ -442,10 +442,10 @@ class FixedHomCategory(CategoryPacketMethods, Category):
             raise ValueError("one fixed Hom category cannot carry two End-family roles")
         self._end_family = owner
 
-    def end_family(self) -> "EndCategoryOf | None":
+    def end_family(self) -> EndCategoryOf | None:
         return self._end_family
 
-    def attach_aut_family(self, family: "AutCategoryOf") -> None:
+    def attach_aut_family(self, family: AutCategoryOf) -> None:
         if self.domain_object() is not self.codomain_object():
             raise ValueError("only an equal-endpoint Iso category can carry an Aut-family role")
         owner = category_packet(self.base_category()).Auts()
@@ -459,7 +459,7 @@ class FixedHomCategory(CategoryPacketMethods, Category):
             raise ValueError("one fixed Iso category cannot carry two Aut-family roles")
         self._aut_family = owner
 
-    def aut_family(self) -> "AutCategoryOf | None":
+    def aut_family(self) -> AutCategoryOf | None:
         return self._aut_family
 
     def identity_endomorphism(self) -> Morphism:
@@ -637,7 +637,7 @@ class RestrictedHomCategoryParent(Parent, FixedRestrictedHomCategory):
 
     def __init__(
         self,
-        family: "RestrictedHomCategoryOf",
+        family: RestrictedHomCategoryOf,
         domain: Parent,
         codomain: Parent,
         *,
@@ -863,42 +863,42 @@ class CategoryPacket(SageObject):
 
     C = category
 
-    def Homs(self) -> "HomCategoryOf":
+    def Homs(self) -> HomCategoryOf:
         if self._homs is None:
             self._homs = _declared_family(
                 self.category(), "_HomCategory", HomCategoryOf
             )
         return self._homs
 
-    def Ends(self) -> "EndCategoryOf":
+    def Ends(self) -> EndCategoryOf:
         if self._ends is None:
             self._ends = _declared_family(
                 self.category(), "_EndCategory", EndCategoryOf
             )
         return self._ends
 
-    def Monos(self) -> "MonoCategoryOf":
+    def Monos(self) -> MonoCategoryOf:
         if self._monos is None:
             self._monos = _declared_family(
                 self.category(), "_MonoCategory", MonoCategoryOf
             )
         return self._monos
 
-    def Epis(self) -> "EpiCategoryOf":
+    def Epis(self) -> EpiCategoryOf:
         if self._epis is None:
             self._epis = _declared_family(
                 self.category(), "_EpiCategory", EpiCategoryOf
             )
         return self._epis
 
-    def Isos(self) -> "IsoCategoryOf":
+    def Isos(self) -> IsoCategoryOf:
         if self._isos is None:
             self._isos = _declared_family(
                 self.category(), "_IsoCategory", IsoCategoryOf
             )
         return self._isos
 
-    def Auts(self) -> "AutCategoryOf":
+    def Auts(self) -> AutCategoryOf:
         if self._auts is None:
             self._auts = _declared_family(
                 self.category(), "_AutCategory", AutCategoryOf
@@ -1002,7 +1002,7 @@ class HomCategoryOf(Category):
     def base_category(self) -> Category:
         return self._base_category
 
-    def family_over(self, category: Category) -> "HomCategoryOf":
+    def family_over(self, category: Category) -> HomCategoryOf:
         return category_packet(category).Homs()
 
     def fixed_category_class(self) -> FixedHomClass:
@@ -1247,7 +1247,7 @@ class EndCategoryOf(HomCategoryOf):
     FixedCategoryClass = FixedEndCategory
     _declaration_name = "_EndCategory"
 
-    def family_over(self, category: Category) -> "EndCategoryOf":
+    def family_over(self, category: Category) -> EndCategoryOf:
         return category_packet(category).Ends()
 
     def Of(
@@ -1304,7 +1304,7 @@ _RestrictedCategoryOf = RestrictedHomCategoryOf
 class MonoCategoryOf(RestrictedHomCategoryOf):
     _declaration_name = "_MonoCategory"
 
-    def family_over(self, category: Category) -> "MonoCategoryOf":
+    def family_over(self, category: Category) -> MonoCategoryOf:
         return category_packet(category).Monos()
 
     def accepts(self, arrow: Morphism) -> bool:
@@ -1317,7 +1317,7 @@ class MonoCategoryOf(RestrictedHomCategoryOf):
 class EpiCategoryOf(RestrictedHomCategoryOf):
     _declaration_name = "_EpiCategory"
 
-    def family_over(self, category: Category) -> "EpiCategoryOf":
+    def family_over(self, category: Category) -> EpiCategoryOf:
         return category_packet(category).Epis()
 
     def accepts(self, arrow: Morphism) -> bool:
@@ -1333,7 +1333,7 @@ class IsoCategoryOf(HomCategoryOf):
 
     _inherits_morphisms_from = _carves_the_same_hom
 
-    def family_over(self, category: Category) -> "IsoCategoryOf":
+    def family_over(self, category: Category) -> IsoCategoryOf:
         return category_packet(category).Isos()
 
     def super_categories(self):
@@ -1357,7 +1357,7 @@ class AutCategoryOf(IsoCategoryOf):
     FixedCategoryClass = FixedAutCategory
     _declaration_name = "_AutCategory"
 
-    def family_over(self, category: Category) -> "AutCategoryOf":
+    def family_over(self, category: Category) -> AutCategoryOf:
         return category_packet(category).Auts()
 
     def super_categories(self):

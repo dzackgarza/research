@@ -3,35 +3,33 @@ r"""A represented category ``Cat`` of categories, functors, and natural transfor
 from collections.abc import Iterable
 from typing import Any, overload
 
+from sage.categories.category import Category
+from sage.categories.map import Map
+from sage.categories.morphism import Morphism
+from sage.categories.objects import Objects as SageObjects
+from sage.misc.abstract_method import abstract_method
+from sage.misc.cachefunc import cached_method
+from sage.misc.classcall_metaclass import typecall
+from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.element import Element
+from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoryPacketMethods,
     CategoricalHomset,
+    CategoryPacketMethods,
     FixedHomCategory,
     HomCategoryConstruction,
     _category_homset,
 )
-from sage.misc.cachefunc import cached_method
-from sage.categories.category import Category
-from sage.categories.map import Map
-from sage.categories.morphism import Morphism
-from sage.misc.abstract_method import abstract_method
-from sage.misc.classcall_metaclass import typecall
-from sage.misc.unknown import Unknown, UnknownClass
-from sage.categories.sets_cat import Sets as SageSets
-from sage.structure.element import Element
-from sage.structure.parent import Parent
-from sage.structure.dynamic_class import DynamicMetaclass
-
-from sage.categories.objects import Objects as SageObjects
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategoryMixin
-from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     Functor,
     IdentityFunctor,
     NaturalTransformation,
 )
-
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
 
 class CategoryObject(Parent):
@@ -39,14 +37,14 @@ class CategoryObject(Parent):
 
     def __init__(
         self,
-        category_of_categories: "Cat",
+        category_of_categories: Cat,
         represented_category: Category,
     ) -> None:
         self._category_of_categories = category_of_categories
         self._represented_category = represented_category
         Parent.__init__(self, category=category_of_categories)
 
-    def category_of_categories(self) -> "Cat":
+    def category_of_categories(self) -> Cat:
         return self._category_of_categories
 
     def represented_category(self) -> Category:
@@ -59,7 +57,7 @@ class CategoryObject(Parent):
 class CategoryFunctorMorphism(Morphism):
     r"""A live functor regarded as a morphism in ``Cat``."""
 
-    def __init__(self, parent: "CategoryFunctorHomset", functor: Functor) -> None:
+    def __init__(self, parent: CategoryFunctorHomset, functor: Functor) -> None:
         Morphism.__init__(self, parent)
         if functor.domain() != self.domain().represented_category():
             raise ValueError("the functor has the wrong Cat-domain")
@@ -119,7 +117,7 @@ class CategoryFunctorHomset(CategoricalHomset):
 
     def __init__(
         self,
-        category_of_categories: "Cat",
+        category_of_categories: Cat,
         domain: CategoryObject,
         codomain: CategoryObject,
     ) -> None:
@@ -128,14 +126,14 @@ class CategoryFunctorHomset(CategoricalHomset):
             self, HomCategoryConstruction(category_of_categories), domain, codomain
         )
 
-    def category_of_categories(self) -> "Cat":
+    def category_of_categories(self) -> Cat:
         return self._category_of_categories
 
-    def functor_category(self) -> "FunctorCategory":
+    def functor_category(self) -> FunctorCategory:
         return self.category_of_categories().Mor(self.domain(), self.codomain())
 
     @property
-    def _HomCategory(self) -> type["NaturalTransformationHomCategoryConstruction"]:
+    def _HomCategory(self) -> type[NaturalTransformationHomCategoryConstruction]:
         return NaturalTransformationHomCategoryConstruction
 
     def super_categories(self):
@@ -170,14 +168,14 @@ class CategoryFunctorHomset(CategoricalHomset):
 class FunctorHomCategoryConstruction(HomCategoryConstruction):
     r"""The family ``(C,D) |-> [C,D]``, with its actual natural transformations."""
 
-    def fixed_category_class(self) -> type["FunctorCategory"]:
+    def fixed_category_class(self) -> type[FunctorCategory]:
         return FunctorCategory
 
     def Of(
         self,
         domain: Category | CategoryObject,
         codomain: Category | CategoryObject,
-    ) -> "FunctorCategory":
+    ) -> FunctorCategory:
         category = self.base_category()
         source, target = category.object(domain), category.object(codomain)
         cached = self._cached_between(source, target)
@@ -257,7 +255,7 @@ class Cat(CategoryPacketMethods, Category):
         self._arrows[key] = result
         return result
 
-    def Mor(self, domain: Category, codomain: Category) -> "FunctorCategory":
+    def Mor(self, domain: Category, codomain: Category) -> FunctorCategory:
         return self.HomCategory().Of(domain, codomain)
 
     def identity(self, category: Category) -> CategoryFunctorMorphism:
@@ -552,7 +550,7 @@ class NaturalTransformationMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "NaturalTransformationHomset",
+        parent: NaturalTransformationHomset,
         transformation: NaturalTransformation,
     ) -> None:
         Morphism.__init__(self, parent)
@@ -620,7 +618,7 @@ class NaturalTransformationHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def functor_category(self) -> "FunctorCategory":
+    def functor_category(self) -> FunctorCategory:
         return self.base_category()
 
     def source(self) -> Functor:

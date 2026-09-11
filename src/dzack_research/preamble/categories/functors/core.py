@@ -208,11 +208,11 @@ class Functor(SageObject):
     def __call__(self, value: Parent | Map) -> Parent | Map:
         return self.morphism_image(value) if isinstance(value, Map) else self.object_image(value)
 
-    def then(self, other: "Functor") -> "CompositeFunctor":
+    def then(self, other: Functor) -> CompositeFunctor:
         r"""Return ``other ∘ self``."""
         return CompositeFunctor(self, other)
 
-    def factors(self) -> tuple["Functor", ...]:
+    def factors(self) -> tuple[Functor, ...]:
         return (self,)
 
     def is_faithful(self) -> bool:

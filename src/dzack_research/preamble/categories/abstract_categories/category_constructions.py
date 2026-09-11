@@ -2,21 +2,20 @@ r"""Opposite categories and binary products of categories."""
 
 from typing import Any
 
+from sage.categories.category import Category
+from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_method
+from sage.misc.unknown import Unknown, UnknownClass
+from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
     _category_hom,
     _category_homset,
 )
-from sage.misc.cachefunc import cached_method
-from sage.misc.unknown import Unknown, UnknownClass
-from sage.categories.category import Category
-from sage.categories.morphism import Morphism
-from sage.categories.sets_cat import Sets as SageSets
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.owned_category import object_of
-from sage.structure.parent import Parent
-
 
 
 class OppositeMorphism(Morphism):
@@ -24,7 +23,7 @@ class OppositeMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "OppositeHomset",
+        parent: OppositeHomset,
         underlying_arrow: Morphism,
     ) -> None:
         Morphism.__init__(self, parent)
@@ -72,7 +71,7 @@ class OppositeHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def opposite_category(self) -> "OppositeCategory":
+    def opposite_category(self) -> OppositeCategory:
         return self.base_category()
 
     def _element_constructor_(self, underlying_arrow):
@@ -117,7 +116,7 @@ class OppositeCategory(OwnedCategory):
             self._underlying_object = underlying_object
             super().__init__(**rest)
 
-        def opposite_category(self) -> "OppositeCategory":
+        def opposite_category(self) -> OppositeCategory:
             return self.category()
 
         def underlying_object(self) -> Parent:
@@ -172,7 +171,7 @@ class ProductMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "ProductHomset",
+        parent: ProductHomset,
         first: Morphism,
         second: Morphism,
     ) -> None:
@@ -228,7 +227,7 @@ class ProductHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def product_category(self) -> "ProductCategory":
+    def product_category(self) -> ProductCategory:
         return self.base_category()
 
     def _element_constructor_(self, first, second=None):
@@ -332,7 +331,7 @@ class ProductCategory(OwnedCategory):
             self._second = second
             super().__init__(**rest)
 
-        def product_category(self) -> "ProductCategory":
+        def product_category(self) -> ProductCategory:
             return self.category()
 
         def first(self) -> Parent:

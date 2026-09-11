@@ -2,16 +2,6 @@ r"""Arrow categories, commuting squares, cores, and slice-style categories."""
 
 from typing import Any
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    CategoricalIsomorphism,
-    HomCategoryConstruction,
-    FixedRestrictedHomCategory,
-    RestrictedHomCategoryOf,
-    category_packet,
-    _category_hom,
-    _category_homset,
-)
 from sage.categories.category import Category
 from sage.categories.homset import Homset
 from sage.categories.map import Map
@@ -19,14 +9,23 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown, UnknownClass
-from sage.categories.sets_cat import Sets as SageSets
-from sage.structure.parent import Parent
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.parent import Parent
+
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    CategoricalIsomorphism,
+    FixedRestrictedHomCategory,
+    HomCategoryConstruction,
+    RestrictedHomCategoryOf,
+    _category_hom,
+    _category_homset,
+    category_packet,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
+from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
 
 
 class CommutativeSquare(Morphism):
@@ -34,7 +33,7 @@ class CommutativeSquare(Morphism):
 
     def __init__(
         self,
-        parent: "ArrowHomset",
+        parent: ArrowHomset,
         left: Morphism,
         right: Morphism,
         *,
@@ -114,7 +113,7 @@ class ArrowHomset(CategoricalHomset):
             self, family, source, target
         )
 
-    def arrow_category(self) -> "ArrowCategory":
+    def arrow_category(self) -> ArrowCategory:
         return self.base_category()
 
     def _element_constructor_(self, left, right=None):
@@ -168,7 +167,7 @@ class ArrowCategory(OwnedCategory):
             self._arrow = arrow
             super().__init__(**rest)
 
-        def arrow_category(self) -> "ArrowCategory":
+        def arrow_category(self) -> ArrowCategory:
             return self.category()
 
         def arrow(self) -> Morphism:
@@ -302,7 +301,7 @@ class _EndofunctorAlgebraForgetfulFunctor(Functor):
 
     _faithful = True
 
-    def __init__(self, algebras: "_EndofunctorAlgebraCategory") -> None:
+    def __init__(self, algebras: _EndofunctorAlgebraCategory) -> None:
         self._algebras = algebras
         super().__init__(algebras, algebras.base_category())
 
@@ -726,7 +725,7 @@ class SubobjectMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "SubobjectHomset",
+        parent: SubobjectHomset,
         factor_morphism: Morphism,
         *,
         verify: bool = True,
@@ -793,7 +792,7 @@ class SubobjectHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def subobject_category(self) -> "SubobjectCategory":
+    def subobject_category(self) -> SubobjectCategory:
         return self.base_category()
 
     def _canonical_factor(self):
@@ -1129,7 +1128,7 @@ class CoreHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def core_category(self) -> "CoreCategory":
+    def core_category(self) -> CoreCategory:
         return self.base_category()
 
     def __contains__(self, candidate: Any) -> bool:
