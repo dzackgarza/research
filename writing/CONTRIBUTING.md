@@ -2170,6 +2170,30 @@ Example, a Remark attached to its primary unit — and link with
 clarification is truly needed, put it in a footnote `[^1]` and keep it to
 one clause, but prefer to avoid it by stating the mathematics precisely.
 
+### `PR-25`: "Names the …" for specifies/exhibits/is equipped with
+
+"Names" has no established mathematical meaning — nothing in mathematics
+"names" anything else. A construction does not "name the functor along
+which it is created," "name the comparison," or "name the factorization."
+The standard verbs for extra structure on a construction each have a clear
+a priori mathematical meaning: **specifies** (gives the data),
+**exhibits** (provides a witness), **is given by** (is presented as),
+**is equipped with** / **comes with** (carries as extra structure),
+**determines** / **is determined by** (is equivalent to the data),
+**is witnessed by**, **is classified by** (when there is a classifying
+object). If a verb is used for extra structure, it must have that clear
+meaning.
+
+**Banned:** "names the functor along which it is created"; "names the
+comparison with this composite"; "names the factorization."
+
+**Preferred:** "specifies the functor $\bar F$ and the equivalence
+$\alpha\colon F\simeq i\circ\bar F$"; "exhibits the factorization
+$(\bar F,\alpha)$"; "is equipped with the comparison $2$-cell
+$\gamma$"; "is determined by the invertible bimodule"; "comes with a
+specified natural equivalence." Use "determines" / "is determined by"
+only when the data are equivalent.
+
 ### `DEF-27`: Distinguished object introduced only in the title
 
 A block titled `{#def-distinguished-factorization}` defines "a
