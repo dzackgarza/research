@@ -5,6 +5,12 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_group im
     AbsoluteGaloisGroup,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/absolute_galois_group_subgroup.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_open_subgroup_retains_the_archived_ambient_absolute_galois_group() -> None:
     group = AbsoluteGaloisGroup(GF(5))

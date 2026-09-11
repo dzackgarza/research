@@ -866,20 +866,20 @@ preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFiniteP
 preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.super_categories	method	40	0			unreviewed
 preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.ParentMethods	class	43	0			unreviewed
 preamble/categories/group/finitely_presented_groups.sage	install_finitely_presented_groups	function	229	0			unreviewed
-preamble/categories/group/g_sets.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/g_sets.sage	GSets	class	32	1	src/dzack_research/preamble/categories/group/g_sets.py		unreviewed
-preamble/categories/group/g_sets.sage	GSets.super_categories	method	42	0			unreviewed
-preamble/categories/group/g_sets.sage	GSets.acting_group	method	45	0			unreviewed
-preamble/categories/group/g_sets.sage	GSets.ParentMethods	class	48	0			unreviewed
-preamble/categories/group/g_sets.sage	GSets.ParentMethods.action	method	50	0			unreviewed
-preamble/categories/group/g_sets.sage	GSets.ParentMethods.acting_group	method	59	0			unreviewed
-preamble/categories/group/g_sets.sage	GSets.ParentMethods.act	method	63	0			unreviewed
-preamble/categories/group/g_sets.sage	Torsors	class	68	1	src/dzack_research/preamble/categories/group/g_sets.py		unreviewed
-preamble/categories/group/g_sets.sage	Torsors.super_categories	method	78	0			unreviewed
-preamble/categories/group/g_sets.sage	Torsors.acting_group	method	81	0			unreviewed
-preamble/categories/group/g_sets.sage	Torsors.ParentMethods	class	84	0			unreviewed
-preamble/categories/group/g_sets.sage	Torsors.ParentMethods.an_element	method	86	0			unreviewed
-preamble/categories/group/g_sets.sage	Torsors.ParentMethods.transporter	method	95	0			unreviewed
+preamble/categories/group/g_sets.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	GSets	class	32	1	src/dzack_research/preamble/categories/group/g_sets.py	src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	GSets.super_categories	method	42	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	GSets.acting_group	method	45	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	GSets.ParentMethods	class	48	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	GSets.ParentMethods.action	method	50	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	GSets.ParentMethods.acting_group	method	59	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	GSets.ParentMethods.act	method	63	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	Torsors	class	68	1	src/dzack_research/preamble/categories/group/g_sets.py	src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	Torsors.super_categories	method	78	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	Torsors.acting_group	method	81	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	Torsors.ParentMethods	class	84	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	Torsors.ParentMethods.an_element	method	86	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
+preamble/categories/group/g_sets.sage	Torsors.ParentMethods.transporter	method	95	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
 preamble/categories/group/group_morphisms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/group/group_morphisms.sage	GroupHomomorphism	class	83	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/group/group_morphisms.sage	GroupHomomorphism.parent	method	96	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
@@ -1010,33 +1010,33 @@ preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.represe
 preamble/categories/group/profinite/absolute_galois_group.sage	LiftCoset.extension	method	313	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_group.sage	absolute_galois_group_category	function	330	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py		unreviewed
 preamble/categories/group/profinite/absolute_galois_group.sage	absolute_galois_group	function	344	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement	class	37	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.parent	method	61	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.stage	method	64	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.action	method	68	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.restrict	method	96	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.conjugacy_class	method	108	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	ElementConjugacyClass	class	127	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	ElementConjugacyClass.ambient	method	142	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_element.sage	ElementConjugacyClass.representative	method	145	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups	class	48	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.super_categories	method	66	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods	class	69	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.ambient	method	76	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.fixed_field	method	80	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.embedding	method	84	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.index	method	88	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.is_normal	method	93	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.core	method	98	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.conjugacy_class	method	104	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	open_absolute_galois_subgroup	function	122	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass	class	139	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.ambient	method	151	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.fixed_field	method	154	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.index	method	157	0			unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.representative	method	161	0			unreviewed
+preamble/categories/group/profinite/absolute_galois_group_element.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement	class	37	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.parent	method	61	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.stage	method	64	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.action	method	68	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.restrict	method	96	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	AbsoluteGaloisGroupElement.conjugacy_class	method	108	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	ElementConjugacyClass	class	127	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	ElementConjugacyClass.ambient	method	142	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_element.sage	ElementConjugacyClass.representative	method	145	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups	class	48	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_groups.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.super_categories	method	66	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods	class	69	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.ambient	method	76	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.fixed_field	method	80	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.embedding	method	84	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.index	method	88	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.is_normal	method	93	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.core	method	98	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.conjugacy_class	method	104	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	open_absolute_galois_subgroup	function	122	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass	class	139	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.ambient	method	151	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.fixed_field	method	154	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.index	method	157	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.representative	method	161	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/absolute_galois_groups.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_groups.sage	G_K	binding	4	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_groups.sage	sage	binding	22	5			unreviewed
@@ -1090,30 +1090,30 @@ preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy
 preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_extension	method	72	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_prolongation	method	85	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	default_choice_policy	function	112	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup	class	50	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py		unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.ambient	method	64	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.prime	method	67	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.image	method	70	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.conjugacy_class	method	76	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup	class	94	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py		unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.ambient	method	103	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.prime	method	106	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.image	method	109	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.conjugacy_class	method	115	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass	class	133	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py		unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.ambient	method	147	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.prime	method	150	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.image	method	153	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.conjugacy_class	method	159	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass	class	177	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py		unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass.ambient	method	186	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass.prime	method	189	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass.representative	method	192	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass	class	212	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py		unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.ambient	method	221	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.prime	method	224	0			unreviewed
-preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.representative	method	227	0			unreviewed
+preamble/categories/group/profinite/galois_decomposition.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup	class	50	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.ambient	method	64	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.prime	method	67	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.image	method	70	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.conjugacy_class	method	76	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup	class	94	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.ambient	method	103	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.prime	method	106	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.image	method	109	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteInertiaGroup.conjugacy_class	method	115	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass	class	133	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.ambient	method	147	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.prime	method	150	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.image	method	153	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	FrobeniusConjugacyClass.conjugacy_class	method	159	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass	class	177	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass.ambient	method	186	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass.prime	method	189	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	DecompositionGroupConjugacyClass.representative	method	192	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass	class	212	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.ambient	method	221	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.prime	method	224	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.representative	method	227	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_quotient.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_quotient.sage	restrict_along	function	46	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_quotient.sage	extensions_along	function	76	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
@@ -1664,29 +1664,29 @@ preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	Roo
 preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.super_categories	method	269	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.ParentMethods	class	274	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage	RootLatticeIsometries.ParentMethods.domain	method	277	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent	class	40	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.structure_morphism	method	51	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.ambient	method	52	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.gram_matrix	method	53	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.module_generators	method	54	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.is_primitive	method	55	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.embedded_module_generators	method	56	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects	class	59	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.super_categories	method	66	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods	class	69	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.ambient	method	74	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.lift	method	78	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.retract	method	82	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.index	method	86	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.is_primitive	method	102	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.saturation	method	120	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.index_in_saturation	method	163	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.sum	method	179	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.intersection	method	196	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.embedded_module_generators	method	240	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.isotropic_reduction	method	257	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobject	function	334	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent	class	40	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.structure_morphism	method	51	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.ambient	method	52	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.gram_matrix	method	53	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.module_generators	method	54	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.is_primitive	method	55	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.embedded_module_generators	method	56	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects	class	59	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py	src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.super_categories	method	66	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods	class	69	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.ambient	method	74	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.lift	method	78	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.retract	method	82	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.index	method	86	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.is_primitive	method	102	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.saturation	method	120	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.index_in_saturation	method	163	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.sum	method	179	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.intersection	method	196	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.embedded_module_generators	method	240	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects.ParentMethods.isotropic_reduction	method	257	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobject	function	334	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	<module>	module	1	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	forms	binding	42	0		src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	orthogonal_group_vector_equivalence_witness	function	137	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
@@ -1999,28 +1999,28 @@ preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMetho
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.subobject_on	method	276	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.is_framed	method	317	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.vector_space	method	320	0			unreviewed
-preamble/categories/modules/graded_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent	class	31	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators	method	38	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent.submodule	method	39	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators_of_degree	method	40	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent.degree_on_module_generator	method	41	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generator	method	42	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent.zero	method	43	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleElement	class	45	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleElement.parent	method	49	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleElement.coefficients	method	50	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules	class	53	1	src/dzack_research/preamble/categories/modules/graded_modules.py		unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.super_categories	method	60	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods	class	67	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods.degree_on_module_generator	method	69	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods.module_generators_of_degree	method	78	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods.graded_piece	method	92	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods	class	101	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.degree	method	102	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.is_homogeneous	method	117	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.homogeneous_components	method	131	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.truncate	method	147	0			unreviewed
+preamble/categories/modules/graded_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleParent	class	31	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators	method	38	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleParent.submodule	method	39	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators_of_degree	method	40	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleParent.degree_on_module_generator	method	41	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generator	method	42	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleParent.zero	method	43	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleElement	class	45	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleElement.parent	method	49	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModuleElement.coefficients	method	50	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules	class	53	1	src/dzack_research/preamble/categories/modules/graded_modules.py	src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.super_categories	method	60	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods	class	67	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods.degree_on_module_generator	method	69	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods.module_generators_of_degree	method	78	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ParentMethods.graded_piece	method	92	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods	class	101	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.degree	method	102	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.is_homogeneous	method	117	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.homogeneous_components	method	131	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
+preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.truncate	method	147	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
 preamble/categories/modules/group_modules/characters.py	<module>	module	1	0			unreviewed
 preamble/categories/modules/group_modules/characters.py	CharacterSets	class	31	1	src/dzack_research/preamble/categories/group/characters.py		unreviewed
 preamble/categories/modules/group_modules/characters.py	CharacterSets.super_categories	method	34	0			unreviewed

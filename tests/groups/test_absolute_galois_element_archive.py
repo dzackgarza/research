@@ -5,6 +5,12 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_group im
     AbsoluteGaloisGroup,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/absolute_galois_group_element.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_finite_stage_action_is_exposed_as_an_exact_restriction_coordinate() -> None:
     group = AbsoluteGaloisGroup(GF(5))

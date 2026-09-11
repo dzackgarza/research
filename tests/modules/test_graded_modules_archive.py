@@ -6,6 +6,12 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/graded_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/graded_modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _tensor_algebra():
     return TensorAlgebraOn(QQ, finite_ordered_set(("x", "y")))

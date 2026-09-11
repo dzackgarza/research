@@ -8,6 +8,12 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     PrimeProlongation,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/galois_decomposition.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_chosen_decomposition_and_inertia_groups_project_to_finite_quotients() -> None:
     group = AbsoluteGaloisGroup(QQ)
