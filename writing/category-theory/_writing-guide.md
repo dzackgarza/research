@@ -192,10 +192,11 @@ cadence.
 its effect on notation rather than by its mathematical content, using a conversational
 construction ("is what licenses", "is what allows", "is what lets us") instead of stating
 the theorem and deriving the convention from it. *Banned:* "Coherence is what licenses the
-notation $a_1\otimes\cdots\otimes a_n$ without parentheses." *Fix:* "By the coherence
-theorem, $a_1 \otimes \cdots \otimes a_n$ is well-defined up to the canonical associator,
-so parentheses are omitted." A standard text may explain that a theorem permits a
-notational shorthand; it does not define the theorem as that shorthand's justification.
+notation $a_1\otimes\cdots\otimes a_n$ without parentheses." *Fix:* "By the coherence theorem, any two parenthesizations of
+$a_1 \otimes \cdots \otimes a_n$ are connected by a unique composite of
+associators, so the expression is independent of parenthesization; parentheses
+are omitted." State the theorem — what is well-defined, and in what sense —
+then let the notational convention follow as a consequence.
 
 **PR-8 — Superficial "-ing" analysis.** A trailing participial clause performs analysis
 without adding content. *Banned:* "the pullback is universal, underscoring the classifier's

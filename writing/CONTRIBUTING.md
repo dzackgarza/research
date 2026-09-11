@@ -81,12 +81,13 @@ theorem and deriving the convention from it.
 **Banned:** "Coherence is what licenses the notation
 $a_1\otimes\cdots\otimes a_n$ without parentheses."
 
-**Preferred:** "By the coherence theorem, $a_1 \otimes \cdots \otimes a_n$ is
-well-defined up to the canonical associator, so parentheses are omitted."
-State the theorem, then let the notational convention follow as a
-consequence. A standard text may explain that a theorem permits a
-notational shorthand; it does not define the theorem as that shorthand's
-justification.
+**Preferred:** "By the coherence theorem, any two parenthesizations of
+$a_1 \otimes \cdots \otimes a_n$ are connected by a unique composite of
+associators, so the expression is independent of parenthesization;
+parentheses are omitted." State the theorem — what is well-defined, and in
+what sense — then let the notational convention follow as a consequence.
+A standard text may explain that a theorem permits a notational shorthand;
+it does not define the theorem as that shorthand's justification.
 
 ### `PR-8`: Superficial "-ing" analysis
 
