@@ -747,6 +747,29 @@ constructions. Name the mathematical functor or the implementation operation
 actually meant. Restrict Mathlib identifiers to code-formatted implementation
 anchors.
 
+### `TERM-2`: "Homomorphism" for a morphism or map
+
+Modern $\infty$-categorical and spectral literature writes "morphism" or
+"map" in the relevant $\infty$-category — a morphism in $\mathbf{CAlg}$,
+a map of $\mathbb{E}_\infty$-ring spectra, a morphism of commutative
+algebra objects in $\mathbf{Sp}$ — not "homomorphism of commutative
+rings." "Homomorphism" is classical universal-algebra language for a
+set-map preserving operations, tied to the truncated story where a ring is
+a set with addition and multiplication. In this book's ontology where
+rings are $\mathbb{E}_\infty$-ring spectra (DEF-13) and maps are maps of
+spectra with $\mathbb{E}_\infty$-structure, the standard word is
+"morphism" or "map."
+
+**Banned:** "Let $\varphi\colon A\to B$ be a homomorphism of commutative
+rings."
+
+**Preferred:** "Let $\varphi\colon A\to B$ be a morphism of commutative
+rings" (in a genuinely classical passage where $A = \pi_0 HA$) or "let
+$\varphi\colon A\to B$ be a map of $\mathbb{E}_\infty$-ring spectra" / "a
+morphism in $\mathbf{CAlg}$." Use "morphism" or "map" with the
+$\infty$-category stated; reserve "homomorphism" for no passage in this
+book.
+
 ## Parentheticals (`PAR-*`)
 
 A semantic parenthetical is a compression. Prefer expansion over compression:
