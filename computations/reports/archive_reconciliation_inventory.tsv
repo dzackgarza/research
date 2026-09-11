@@ -1070,17 +1070,17 @@ preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGr
 preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.lifts	method	270	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_groups.sage	AbsoluteGaloisGroups.ParentMethods.topological_generating_family	method	277	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_groups.sage	absolute_galois_group_factory	function	300	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets	class	47	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.super_categories	method	50	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ParentMethods	class	57	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods	class	73	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods.extension	method	82	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods.kernel	method	86	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods.restrict	method	90	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	profinite_character_homset	function	99	0			unreviewed
-preamble/categories/group/profinite/galois_characters.sage	CyclotomicCharacter	class	110	1	src/dzack_research/preamble/categories/group/profinite/galois_characters.py		unreviewed
-preamble/categories/group/profinite/galois_characters.sage	QuadraticCharacter	class	122	1	src/dzack_research/preamble/categories/group/profinite/galois_characters.py		unreviewed
+preamble/categories/group/profinite/galois_characters.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets	class	47	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.super_categories	method	50	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ParentMethods	class	57	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods	class	73	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods.extension	method	82	0		src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods.kernel	method	86	0		src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHomsets.ElementMethods.restrict	method	90	0		src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	profinite_character_homset	function	99	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	CyclotomicCharacter	class	110	1	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_characters.sage	QuadraticCharacter	class	122	1	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_choice_policy.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	G	binding	18	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	choice_policy	binding	19	0			unreviewed

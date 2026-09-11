@@ -18,6 +18,22 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import GF
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/galois_characters.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/galois_characters.py",
+    "disposition": "reconciled-live-owner",
+    "owner_overrides": {
+        "ProfiniteCharacterHomsets": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "ProfiniteCharacterHomsets.super_categories": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "ProfiniteCharacterHomsets.ParentMethods": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "ProfiniteCharacterHomsets.ElementMethods": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+        "ProfiniteCharacterHomsets.ElementMethods.extension": "src/dzack_research/preamble/categories/group/profinite/galois_characters.py",
+        "ProfiniteCharacterHomsets.ElementMethods.kernel": "src/dzack_research/preamble/categories/group/profinite/galois_characters.py",
+        "ProfiniteCharacterHomsets.ElementMethods.restrict": "src/dzack_research/preamble/categories/group/profinite/galois_characters.py",
+        "profinite_character_homset": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+    },
+}
+
 
 def test_continuous_group_hom_is_canonical_for_exact_endpoints() -> None:
     group = AbsoluteGaloisGroup(GF(5))
