@@ -949,3 +949,62 @@ group action"; "a sheaf for the topology."
 **Preferred:** "a monoid object in $(\mathcal{C},\times,\mathbf{1})$";
 "a module over $R[G]$"; "a sheaf on $(X,\mathcal{O}_X)$." The type names
 the kind of object; the category names where it lives.
+
+## Definitions and modern theory (`DEF-*` continued)
+
+### `DEF-5`: A theorem presented as a definition
+
+A construction is defined by a property or identification that is in fact
+a theorem — a result that holds under hypotheses, or a consequence of a
+deeper construction. The reader receives the theorem as the definition and
+has no access to the construction it replaces. Present the construction;
+state the theorem that identifies the construction with the simpler
+description; do not substitute the theorem for the definition.
+
+**Banned:** "$K_0^{\otimes}(S)$ is the group completion of the monoid of
+isomorphism classes." The group completion of $\pi_0(S^\simeq)$ is
+$\pi_0 K(S)$, but that identification is a theorem (the group completion
+theorem), not the definition. The definition is $K_0(S) = \pi_0 K(S)$,
+where $K(S)$ is the $K$-theory spectrum.
+
+**Preferred:** "Let $K(S)$ denote the algebraic $K$-theory spectrum of
+the symmetric monoidal category $S$. Define $K_0(S) = \pi_0 K(S)$. By the
+group completion theorem, $K_0(S)$ is the group completion of
+$\pi_0(S^\simeq)$ under the induced monoid operation." State the
+construction, then state the theorem that identifies it with the simpler
+description.
+
+### `DEF-6`: A definition that suppresses the governing structure
+
+A construction depends on a richer structure than the definition reveals.
+The definition names only the downstream consequence and omits the
+structure that governs it, so the reader has no access to the rest of
+what that structure provides. State the governing structure; derive the
+defined object as a component or consequence of it.
+
+**Banned:** defining $K_0(S)$ as the group completion of a monoid
+without introducing the $K$-theory spectrum $K(S)$. The reader has no
+access to $K_n(S)$, the higher $K$-groups, or the spectrum-level
+structure, because the spectrum was never stated.
+
+**Preferred:** introduce the spectrum $K(S)$, define $K_0(S) = \pi_0
+K(S)$, and then identify $\pi_0 K(S)$ with the group completion. The
+spectrum governs all $K_n$; $K_0$ is one component.
+
+### `DEF-7`: Nonstandard notation that marks a dependency the standard notation already encodes
+
+A superscript or subscript is added to a standard symbol to mark a
+dependency that the standard notation already encodes through its
+arguments. The decoration is a project coinage that distinguishes
+instances the standard notation does not distinguish, because the
+standard notation already parameterizes by the input.
+
+**Banned:** "$K_0^{\otimes}(S)$" — the $\otimes$ superscript marks the
+dependency on the monoidal structure, but $K_0(S)$ already takes the
+symmetric monoidal category $S$ (with its tensor) as input.
+
+**Preferred:** use the standard notation. If a distinction is needed
+between $K$-theories of the same category with different monoidal
+structures, name the monoidal structure in the argument:
+$K_0(S,\otimes)$, or use distinct symbols for the distinct monoidal
+categories.
