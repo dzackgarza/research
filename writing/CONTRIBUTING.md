@@ -1367,3 +1367,96 @@ the sophistication of its intended audience (modern graduate courses at
 Harvard, MIT, and Princeton; Lurie, Scholze, Gaitsgory, Haynes Miller)
 and does not rehearse warnings appropriate to a first encounter with the
 distinction.
+
+### `DEF-15`: One notion per definition block
+
+A definition block introduces one notion with its single defining
+occurrence. A block that defines left modules, right modules as left
+modules over the opposite, bimodules, forgetful functors, the commutative
+identification, and a warning about the noncommutative case in one go is
+a grab bag, not a definition. Each notion has one block with its type,
+data, and universal property; related notions have separate blocks that
+cite the first.
+
+**Banned:** "::: {#def-modules-over-ring} ## Modules over a ring — For a
+ring $A$, $A\text{-}\mathbf{Mod}$ is … A right $A$-module is … An
+$(A,B)$-bimodule therefore has … When $A$ is commutative … For a general
+ring, an equivalence …"
+
+**Preferred:** "::: {#def-left-modules} ## Left modules — Let $A$ be an
+associative ($\mathbb{E}_1$) ring spectrum. $\mathbf{LMod}_A$ is … :::"
+and then separately "::: {#def-right-modules} ## Right modules —
+$\mathbf{RMod}_A := \mathbf{LMod}_{A^{\mathrm{op}}}$ :::" and so on, each
+with its own defining occurrence.
+
+### `SYM-9`: Parallel notions in uniform notation
+
+Parallel notions use parallel notation. Left and right modules, left and
+right actions, opposite categories — each pair has two sides that the
+reader must distinguish at a glance. Using $A\text{-}\mathbf{Mod}$ for
+left modules but $B^{\mathrm{op}}\text{-}\mathbf{Mod}$ for right modules
+is inconsistent: the first names the side by position, the second by an
+opposite. The same inconsistency appears in mixing
+$\mathbf{LMod}_A$ with $A\text{-}\mathbf{Mod}$ in one passage.
+
+**Banned:** "$A\text{-}\mathbf{Mod}$ for left $A$-modules but
+$B^{\mathrm{op}}\text{-}\mathbf{Mod}$ for right $B$-modules in the same
+passage."
+
+**Preferred:** "$\mathbf{LMod}_A$ and $\mathbf{RMod}_A$" or
+consistently "$A\text{-}\mathbf{Mod}$ and $\mathbf{Mod}\text{-}A$." Choose
+one convention for sidedness and use it uniformly in the passage.
+
+### `PR-19`: Logical connective without entailment
+
+A logical connective — "therefore," "hence," "so," "it follows that" —
+asserts a consequence. A passage that writes "An $(A,B)$-bimodule
+therefore has forgetful functors …" asserts that the bimodule has
+forgetful functors as a consequence of the previous line (that a right
+module is a left $A^{\mathrm{op}}$-module). The functors are part of the
+definition of a bimodule, not a consequence. Do not join a definition to
+its own constituent data with a consequence marker.
+
+**Banned:** "A right $A$-module is a left $A^{\mathrm{op}}$-module. An
+$(A,B)$-bimodule therefore has forgetful functors …"
+
+**Preferred:** "A right $A$-module is a left $A^{\mathrm{op}}$-module. An
+$(A,B)$-bimodule is … It has forgetful functors …" State the definition;
+state its data. Use "therefore" only for an actual entailment.
+
+### `SYM-10`: Strict identity versus canonical equivalence
+
+Strict identity ($=$), isomorphism ($\cong$), and equivalence ($\simeq$)
+are distinct (NOT-2). "The identity $A=A^{\mathrm{op}}$" for a commutative
+ring asserts strict identity where the book's default structure is at most
+a canonical equivalence: for an $\mathbb{E}_\infty$-ring spectrum $A$,
+$A\simeq A^{\mathrm{op}}$ via the symmetry; for a discrete commutative
+ring the equality is strict, but only after truncating to $\pi_0$. Do not
+write $A=A^{\mathrm{op}}$ for the derived identification.
+
+**Banned:** "When $A$ is commutative, the identity $A=A^{\mathrm{op}}$
+identifies left and right $A$-module conventions."
+
+**Preferred:** "When $A$ is a commutative ($\mathbb{E}_\infty$) ring
+spectrum, the symmetry gives a canonical equivalence
+$A\simeq A^{\mathrm{op}}$, hence
+$\mathbf{LMod}_A\simeq\mathbf{RMod}_A$." Name the equivalence and how it
+is produced.
+
+### `DEF-16`: Remark or warning inside a definition block
+
+A definition block defines a notion. A remark about a different notion —
+a warning that left and right module categories are not equivalent for a
+general ring, a comment on additional data, a pointer to a subtlety —
+belongs in a Remark block or in the paragraph following the definition,
+not inside the definition's fenced div. A definition that contains its
+own counterexample or warning cannot be cited as the defining occurrence
+without dragging the warning along.
+
+**Banned:** a "::: {#def-modules-over-ring}" block whose last sentence is
+"For a general ring, an equivalence between left and right module
+categories is additional data …"
+
+**Preferred:** close the definition after its defining sentences, then
+write "::: {.Remark}" or a plain paragraph for the warning. The
+definition is citable; the remark is separate.
