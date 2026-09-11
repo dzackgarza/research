@@ -1668,6 +1668,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-inventory-20260911-0640` | archive-reconciliation / regenerable public-notion inventory | M0 continuation; `/home/dzack/research` | `computations/scripts/archive_reconciliation_inventory.py; computations/reports/archive_reconciliation_inventory.tsv; TODO.md` (write) | `032ffe8f` | 2026-09-11T06:40:00Z |
+
 
 
 
