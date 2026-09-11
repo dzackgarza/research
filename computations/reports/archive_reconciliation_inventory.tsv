@@ -722,10 +722,10 @@ preamble/categories/divisors/cartier_divisor_groups.sage	<module>	module	1	0		sr
 preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroup	function	13	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroups	class	21	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroups.super_categories	method	28	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
-preamble/categories/divisors/class_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/divisors/class_groups.sage	ClassGroup	function	13	2			unreviewed
-preamble/categories/divisors/class_groups.sage	ClassGroups	class	21	2			unreviewed
-preamble/categories/divisors/class_groups.sage	ClassGroups.super_categories	method	28	0			unreviewed
+preamble/categories/divisors/class_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/class_groups.sage	ClassGroup	function	13	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/class_groups.sage	ClassGroups	class	21	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/class_groups.sage	ClassGroups.super_categories	method	28	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/divisor_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/divisor_groups.sage	DivisorGroup	function	19	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/divisor_groups.sage	DivisorGroups	class	27	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
@@ -736,10 +736,10 @@ preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMeth
 preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods.terms	method	49	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods.components	method	56	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/divisor_groups.sage	FormalDivisor	function	75	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
-preamble/categories/divisors/picard_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/divisors/picard_groups.sage	PicardGroup	function	13	2			unreviewed
-preamble/categories/divisors/picard_groups.sage	PicardGroups	class	21	2			unreviewed
-preamble/categories/divisors/picard_groups.sage	PicardGroups.super_categories	method	28	0			unreviewed
+preamble/categories/divisors/picard_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/picard_groups.sage	PicardGroup	function	13	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/picard_groups.sage	PicardGroups	class	21	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/picard_groups.sage	PicardGroups.super_categories	method	28	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/weil_divisor_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroup	function	14	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroups	class	22	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner

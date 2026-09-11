@@ -34,6 +34,16 @@ ARCHIVE_RECONCILIATIONS = (
         "live_owner": "src/dzack_research/preamble/categories/divisors/divisor_groups.py",
         "disposition": "reconciled-live-owner",
     },
+    {
+        "archive_module": "preamble/categories/divisors/picard_groups.sage",
+        "live_owner": "src/dzack_research/preamble/categories/divisors/divisor_groups.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/categories/divisors/class_groups.sage",
+        "live_owner": "src/dzack_research/preamble/categories/divisors/divisor_groups.py",
+        "disposition": "reconciled-live-owner",
+    },
 )
 
 
