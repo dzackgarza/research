@@ -9,24 +9,7 @@ three are the degree pieces of the corresponding graded algebra: for
 
 from sage.arith.misc import binomial
 from sage.misc.cachefunc import cached_function
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    _engine_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleHomset,
-    ModuleMorphism,
-    module_coefficients,
-    module_homset,
-)
-from dzack_research.preamble.categories.sets.coordinate_families import (
-    coordinate_family as _coordinate_family,
-    coordinate_family_from_function as _coordinate_family_from_function,
-    coordinate_pair as _coordinate_pair,
-    finite_framing as _finite_framing,
-)
-from dzack_research.preamble.tensors.tensor import tensor
+
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
@@ -34,22 +17,43 @@ from dzack_research.preamble.categories.abstract_categories.products import (
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
     _presentation_from_relation_rows,
-    _presentation_matrix,
     _presentation_rows,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreshFreeModuleOn,
     FramedFreeModules,
     FreeModuleOn,
+    FreshFreeModuleOn,
     MatrixSpace,
     ring_as_module,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleHomset,
+    ModuleMorphism,
+    module_coefficients,
+    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     ModulesWithChosenFinitePresentation,
     _module_tensor_product_with_data,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedRings,
+    _owned_ring,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coordinate_family as _coordinate_family,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coordinate_family_from_function as _coordinate_family_from_function,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coordinate_pair as _coordinate_pair,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    finite_framing as _finite_framing,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,
     finite_ordered_image,
@@ -67,6 +71,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfFamily,
     Sets,
 )
+from dzack_research.preamble.tensors.tensor import tensor
 
 
 class _PowerModuleParentMethods:

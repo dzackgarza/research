@@ -28,9 +28,9 @@ from dzack_research.preamble.all import (
     PicardGroups,
     ProjectiveJetSpaces,
     RationalPolyhedralFans,
+    SectionRings,
     SectionsVanishingToOrder,
     TorusInvariantCycleGroups,
-    SectionRings,
     WeilDivisorGroups,
     module_homset,
 )

@@ -1,6 +1,6 @@
 r"""Local dimension and embedding dimension determine regularity."""
 
-from dzack_research.preamble.all import PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, PolynomialRing
 
 
 def test_affine_plane_origin_has_dimension_and_embedding_dimension_two() -> None:

@@ -5,10 +5,9 @@ from typing import Any, cast
 import pytest
 
 from dzack_research.preamble.all import (
-    AlgebrasWithChosenFinitePresentation,
     AffineGSchemes,
+    AlgebrasWithChosenFinitePresentation,
     Groups,
-    Schemes,
     Spec,
     SpecFunctor,
 )

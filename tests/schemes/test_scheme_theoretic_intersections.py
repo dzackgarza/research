@@ -7,10 +7,10 @@ tangential meeting from a transverse one.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSpace,
     ClosedEmbeddings,
     IntegralSchemes,
-    QQ,
     scheme_fiber_product,
 )
 

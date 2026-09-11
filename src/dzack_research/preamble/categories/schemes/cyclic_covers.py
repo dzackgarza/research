@@ -60,28 +60,28 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CyclicCoverAlgebra,
     cyclic_cover_presentation,
 )
+from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
-from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.affine_spec import SpecFunctor
+from dzack_research.preamble.categories.schemes.group_schemes import (
+    AffineGroupSchemeActions,
+    roots_of_unity_group_scheme,
+)
 from dzack_research.preamble.categories.schemes.schemes import (
-    AffineSchemes,
     AffineGSchemes,
+    AffineSchemes,
     Schemes,
     Spec,
     _affine_morphism_from_pullback,
     affine_spec_morphism,
     scheme_product,
-)
-from dzack_research.preamble.categories.schemes.group_schemes import (
-    AffineGroupSchemeActions,
-    roots_of_unity_group_scheme,
 )
 from dzack_research.preamble.refine import refine
 

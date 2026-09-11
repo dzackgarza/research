@@ -8,11 +8,11 @@ that sends the first symmetric function ``x + y`` to ``x + y + 2``.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineGSchemes,
     GObjects,
     Groups,
     PolynomialRing,
-    QQ,
     Schemes,
     Spec,
     SpecFunctor,

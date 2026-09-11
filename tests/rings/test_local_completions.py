@@ -1,10 +1,10 @@
 r"""L: multigenerator adic completions of represented singular local quotients."""
 
 from dzack_research.preamble.all import (
+    QQ,
     CompleteLocalRings,
     FinitelyPresentedAlgebra,
     PolynomialRing,
-    QQ,
 )
 
 

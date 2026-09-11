@@ -5,8 +5,8 @@ from sage.schemes.generic.scheme import Scheme
 from sage.structure.element import Element
 
 from dzack_research.preamble.all import (
-    AffineGSchemes,
     QQ,
+    AffineGSchemes,
     FiniteGluedInvariantQuotient,
     Groups,
     PolynomialRing,

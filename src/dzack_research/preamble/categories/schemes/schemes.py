@@ -4,19 +4,19 @@ from itertools import combinations
 from typing import Any, cast
 
 from sage.categories.category import Category
-from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.classcall_metaclass import typecall
 from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
 from sage.schemes.generic.scheme import AffineScheme as _SageAffineScheme
 from sage.schemes.generic.scheme import Scheme as _SageScheme
 from sage.schemes.generic.spec import Spec as _SageSpec
-from sage.schemes.projective.projective_space import (
-    ProjectiveSpace as _SageProjectiveSpace,
-)
 from sage.schemes.product_projective.space import (
     ProductProjectiveSpaces as _SageProductProjectiveSpaces,
+)
+from sage.schemes.projective.projective_space import (
+    ProjectiveSpace as _SageProjectiveSpace,
 )
 from sage.structure.category_object import CategoryObject
 
@@ -24,6 +24,10 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     CosliceUnder,
     Isomorphism,
     SliceOver,
+)
+from dzack_research.preamble.categories.abstract_categories.constructions import (
+    Coproduct,
+    Pushout,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -34,10 +38,20 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
+from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebrasWithChosenFinitePresentation,
+    CommutativeAlgebras,
+    FramedAlgebras,
+    _engine_algebra_morphism,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
+    FreeAlgebras,
+    GradedFreeAlgebras,
     PolynomialRing,
     SymmetricAlgebraOn,
+    SymmetricAlgebras,
 )
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     QuotientRings,
@@ -54,38 +68,17 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _proper_restriction_base_ring,
+    ring_homset,
+    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     LocallyRingedSpaces,
     SchemeUnderlyingSpace,
 )
-from dzack_research.preamble.refine import realize_owned_category
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Coproduct,
-    Pushout,
-    Subobjects,
-)
-from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
-from dzack_research.preamble.categories.algebras.algebras import (
-    Algebras,
-    AlgebrasWithChosenFinitePresentation,
-    CommutativeAlgebras,
-    FramedAlgebras,
-    _engine_algebra_morphism,
-)
-from dzack_research.preamble.categories.algebras.free_algebras import (
-    FreeAlgebras,
-    GradedFreeAlgebras,
-    SymmetricAlgebras,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    ring_homset,
-    ring_morphism,
-)
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
-
+from dzack_research.preamble.refine import realize_owned_category
 
 _SCHEME_MORPHISM_WRAPPERS = {}
 _AFFINE_SPECTRA = {}
@@ -643,8 +636,8 @@ class Schemes(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The affine line over the base ring."""
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
 
         ring = self.base_ring()
         return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
@@ -1171,7 +1164,7 @@ class SeparatedSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, separated because it is affine."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace
 
         return AffineSpace(1, self.base_ring())
 
@@ -1185,8 +1178,8 @@ class FiniteTypeSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, of finite type over the base ring."""
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
 
         ring = self.base_ring()
         return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
@@ -1202,8 +1195,8 @@ class IntegralSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, integral because its coordinate algebra is a domain."""
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
 
         ring = self.base_ring()
         return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
@@ -1238,7 +1231,7 @@ class SmoothSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, which is smooth over the base ring."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace
 
         return AffineSpace(1, self.base_ring())
 
@@ -1249,8 +1242,8 @@ class AffineSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line over the base ring."""
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
 
         ring = self.base_ring()
         return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
@@ -1827,8 +1820,8 @@ class QuasiAffineSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The affine line, which is affine."""
-        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
         from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
+        from dzack_research.preamble.categories.schemes.affine_spec import AffineSpecFunctor
 
         ring = self.base_ring()
         return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
@@ -1846,7 +1839,7 @@ class QuasiProjectiveSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The projective line, which is projective."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
 
         return ProjectiveSpace(1, self.base_ring())
 
@@ -1863,7 +1856,7 @@ class ProjectiveSchemes(_SchemePropertyCategory):
 
     def an_object(self):
         r"""The projective line."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
 
         return ProjectiveSpace(1, self.base_ring())
 
@@ -1896,7 +1889,7 @@ class ProjectiveSchemes(_SchemePropertyCategory):
 class AffineSpaces(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The affine line over the base ring."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace
 
         return AffineSpace(1, self.base_ring())
 
@@ -1935,7 +1928,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 class ProjectiveSpaces(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The projective line over the base ring."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
 
         return ProjectiveSpace(1, self.base_ring())
 
@@ -2100,7 +2093,7 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The affine plane as a product of two affine lines."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, scheme_product
 
         ring = self.base_ring()
         return scheme_product(AffineSpace(1, ring), AffineSpace(1, ring))
@@ -2185,7 +2178,7 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
 
     def an_object(self):
         r"""The product of two projective lines."""
-        from dzack_research.preamble.categories.schemes.schemes import AffineSpace, ProjectiveSpace, scheme_product
+        from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace, scheme_product
 
         ring = self.base_ring()
         return scheme_product(ProjectiveSpace(1, ring), ProjectiveSpace(1, ring))

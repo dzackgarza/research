@@ -507,11 +507,9 @@ class Modules(OwnedCategoryOverBaseRing):
 
     def _hom_parent_placement(self, domain, codomain, *, full_internal_hom=False):
         r"""Return the category chosen when the canonical module Hom is constructed."""
-        from sage.rings.integer_ring import ZZ as SageZZ
 
         from dzack_research.preamble.categories.group.additive_homsets import (
             AdditiveEndomorphismRings,
-            AdditiveHomGroups,
         )
 
         ring = self.base_ring()

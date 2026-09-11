@@ -9,8 +9,8 @@ whole curve of them, which is why an empty ``X^G`` never implies freeness.
 """
 
 from dzack_research.preamble.all import (
-    AffineGSchemes,
     GF,
+    AffineGSchemes,
     GObjects,
     Groups,
     PolynomialRing,

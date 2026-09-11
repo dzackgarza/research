@@ -2,23 +2,22 @@ r"""Basic commutative-algebra constructions needed by affine scheme theory."""
 
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
+)
+from sage.all import (
     PowerSeriesRing as _SagePowerSeriesRing,
+)
+from sage.all import (
     Zp as _SageZp,
 )
 from sage.categories.category import Category
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
-from sage.categories.rings import Rings as SageRings
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.structure.element import Element
-from sage.structure.element import CommutativeRingElement
-from sage.structure.parent import Parent
+from sage.rings.infinity import Infinity
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import CommutativeRingElement, Element
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.infinity import Infinity
 
-from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
@@ -28,17 +27,23 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _OwnedAlgebraParent,
     refine_algebra,
 )
+from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
+from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
+from dzack_research.preamble.categories.group.submonoids import (
+    Submonoids,
+    generated_submonoid,
+    predicate_submonoid,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedAdicallyCompleteRings,
-    OwnedCategoryOverBaseRing,
     OwnedArtinianRings,
-    OwnedRings,
+    OwnedCategoryOverBaseRing,
     OwnedCompleteLocalRings,
-    OwnedIntegralDomains,
     OwnedFields,
+    OwnedIntegralDomains,
     OwnedLocalRings,
     OwnedNoetherianRings,
-    LocalizationRings,
     OwnedRings,
     PrincipalIdealDomains,
     _engine_element,
@@ -46,25 +51,15 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_quotient_cover_ideal,
     _engine_ring,
     _own_ring,
+    ring_morphism,
 )
-from dzack_research.preamble.categories.group.submonoids import (
-    Submonoids,
-    generated_submonoid,
-    predicate_submonoid,
-)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import (
+    FiniteSets,
     PartiallyOrderedSets,
     SetInclusion,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
-from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeal
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    predicate_subring,
-    ring_morphism,
-)
-from dzack_research.preamble.categories.sets.set_categories import FiniteSets
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.owned_category import object_of
 
 
 def refine_commutative_algebra(algebra, base_ring, labels=None, *categories):
@@ -77,8 +72,9 @@ class PrimeSpectra(OwnedCategory):
 
     def an_object(self):
         r"""\(\operatorname{Spec}\mathbb{Z}\)."""
-        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from sage.rings.integer_ring import ZZ as SageZZ
+
+        from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
         return _own_ring(SageZZ).spectrum()
 
@@ -237,7 +233,7 @@ class PrimeSpectra(OwnedCategory):
             return bool(_engine_ideal(ring, self.ideal()) <= _engine_ideal(ring, other.ideal()))
 
         def _richcmp_(self, other, op):
-            if not other.parent() is self.parent() or other.parent() is not self.parent():
+            if other.parent() is not self.parent() or other.parent() is not self.parent():
                 return NotImplemented
             from sage.structure.richcmp import op_EQ, op_LE, op_LT, op_NE
 
@@ -529,7 +525,7 @@ class QuotientRings(OwnedCategory):
             return self * self.parent()(other).inverse_of_unit()
 
         def _richcmp_(self, other, op):
-            if not other.parent() is self.parent() or other.parent() is not self.parent():
+            if other.parent() is not self.parent() or other.parent() is not self.parent():
                 return NotImplemented
             if op not in (op_EQ, op_NE):
                 return NotImplemented

@@ -20,12 +20,12 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
@@ -278,7 +278,6 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             AffineQuotientFunctor,
         )
         from dzack_research.preamble.categories.schemes.schemes import (
-            AffineGSchemes,
             Schemes,
         )
 

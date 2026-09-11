@@ -1,27 +1,27 @@
 r"""Geometric cochain complexes and comparison-owned cohomology constructions."""
 
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
 from sage.categories.category import Category
 from sage.groups.free_group import FreeGroup
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
+from dzack_research.preamble.categories.group.groups import OwnedGroups, _own_group
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
     CochainComplexes,
     Cohomology,
 )
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    BilinearForm,
+)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FreshFreeModuleOn,
 )
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-    BilinearForm,
-)
-from dzack_research.preamble.categories.group.groups import OwnedGroups, _own_group
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )

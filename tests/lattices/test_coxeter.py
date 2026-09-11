@@ -1,6 +1,6 @@
 from sage.all import Infinity
 
-from dzack_research.preamble.all import CoxeterDiagrams, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
 
 
 def test_a2_root_realization_gives_single_bond_and_elliptic_diagram() -> None:

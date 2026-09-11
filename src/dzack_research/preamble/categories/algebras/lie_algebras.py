@@ -4,6 +4,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
@@ -12,7 +13,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _proper_restriction_base_ring,
 )
-from dzack_research.preamble.categories.algebras.algebras import Algebras
 
 
 class LieAlgebraMorphism(ModuleMorphism):

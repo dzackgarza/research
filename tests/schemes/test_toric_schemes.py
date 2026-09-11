@@ -8,22 +8,21 @@ localization is Prop. 1.3.16.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineSchemes,
     BasedFreeModule,
     IntegralSchemes,
     LatticePolygon,
     NormalSchemes,
     OpenImmersions,
-    QQ,
     RationalPolyhedralFans,
     Schemes,
     SmoothSchemes,
     Surfaces,
     ToricSchemes,
     Varieties,
-    ZZ,
 )
-
 
 # One rank-two cocharacter lattice for the whole file: a free module is a
 # fresh object on every construction, so building it twice would give two

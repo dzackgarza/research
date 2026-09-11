@@ -6,18 +6,18 @@ assertion below fails if one hypothesis is dropped from the criterion.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineSpace,
     Curves,
     FiniteTypeSchemes,
     IntegralSchemes,
     PolynomialRing,
     ProjectiveSpace,
-    QQ,
     SeparatedSchemes,
     Spec,
     Surfaces,
     Varieties,
-    ZZ,
     scheme_product,
 )
 

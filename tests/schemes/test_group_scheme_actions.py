@@ -3,11 +3,10 @@ r"""Affine group schemes and their scheme-theoretic actions."""
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineGroupSchemeActions,
     AffineGroupSchemes,
     AffineSpace,
-    PolynomialRing,
-    QQ,
     roots_of_unity_group_scheme,
 )
 from dzack_research.preamble.categories.schemes.schemes import (

@@ -7,7 +7,7 @@ presented kernel/cokernel machinery rather than requiring provenance from a
 map over the unlocalized source ring.
 """
 
-from dzack_research.preamble.all import BasedFreeModule, PolynomialRing, QQ, module_homset
+from dzack_research.preamble.all import QQ, BasedFreeModule, PolynomialRing, module_homset
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
 

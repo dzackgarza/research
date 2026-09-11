@@ -1,10 +1,10 @@
 """Finite presented modules complete by scalar extension along the ring completion."""
 
 from dzack_research.preamble.all import (
+    QQ,
     BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
-    QQ,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set

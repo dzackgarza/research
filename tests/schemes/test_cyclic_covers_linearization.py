@@ -19,7 +19,7 @@ element on sections is pullback along its inverse and scales ``z`` by
 construction that composed pullbacks the wrong way round is visible here.
 """
 
-from dzack_research.preamble.all import AffineGSchemes, GF, PolynomialRing, QQ
+from dzack_research.preamble.all import GF, QQ, AffineGSchemes, PolynomialRing
 from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
 
 

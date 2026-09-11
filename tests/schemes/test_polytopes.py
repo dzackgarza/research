@@ -1,11 +1,11 @@
 from dzack_research.preamble.all import (
+    QQ,
     ConvexPolygon,
     ConvexPolygons,
     ConvexPolytopes,
     LatticePolygon,
     LatticePolygons,
     LatticePolytopes,
-    QQ,
 )
 
 

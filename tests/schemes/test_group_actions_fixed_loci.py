@@ -3,12 +3,12 @@ r"""Affine group actions and their scheme-theoretic fixed loci."""
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineGSchemes,
     AffineSchemes,
     GObjects,
     Groups,
     PolynomialRing,
-    QQ,
     Schemes,
     Spec,
     SpecFunctor,

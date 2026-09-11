@@ -5,10 +5,9 @@ from sage.misc.unknown import Unknown
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    _SelectedFinitePresentationModules,
     _presentation_rows,
+    _SelectedFinitePresentationModules,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
@@ -22,12 +21,13 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
     FinitelyPresentedModules,
     FramedModules,
-    ModuleSubobjects,
     Modules,
+    ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import object_of
 
 
 class LocalizedModules(OwnedCategoryOverBaseRing):
@@ -38,8 +38,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.functors.module_localization import (
             ModuleLocalizationFunctor,
         )
-        from dzack_research.preamble.categories.rings.commutative_algebra import LocalizationRings
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+        from dzack_research.preamble.categories.rings.commutative_algebra import LocalizationRings
         from dzack_research.preamble.categories.sets.set_categories import finite_ordinal_set
 
         localization_ring = self.base_ring()

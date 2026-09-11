@@ -11,10 +11,10 @@ from the origin and has a two-dimensional fibre there.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
     BasedFreeModule,
     FinitelyPresentedModule,
     PolynomialRing,
-    QQ,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set

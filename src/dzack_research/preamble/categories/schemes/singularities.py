@@ -1,9 +1,10 @@
 r"""Local algebra invariants of supported hypersurface singularities."""
 
-from sage.rings.integer_ring import ZZ as SageZZ
+from sage.libs.singular.function import lib as singular_lib
+from sage.libs.singular.function import singular_function
 from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_method
-from sage.libs.singular.function import lib as singular_lib, singular_function
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,

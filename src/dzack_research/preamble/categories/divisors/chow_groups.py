@@ -1,8 +1,8 @@
 r"""Owned Chow-group roles for represented algebraic cycles."""
 
 from dzack_research.preamble.categories.modules.pure.modules import (
-    FreeModules,
     FinitelyPresentedModules,
+    FreeModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,

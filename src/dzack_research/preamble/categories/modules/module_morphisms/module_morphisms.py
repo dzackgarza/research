@@ -22,7 +22,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_ring,
-    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -35,6 +34,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
     Sets,
 )
+
 _LOGGER = logging.getLogger(__name__)
 
 

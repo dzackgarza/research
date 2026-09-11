@@ -1,6 +1,6 @@
 r"""Normalization, conductor, and delta for represented affine curve domains."""
 
-from dzack_research.preamble.all import PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, PolynomialRing
 
 
 def _cusp_ring():

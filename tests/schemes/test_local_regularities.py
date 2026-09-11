@@ -1,6 +1,6 @@
 r"""Affine schemes delegate regularity to their represented local rings."""
 
-from dzack_research.preamble.all import AffineSpace, QQ
+from dzack_research.preamble.all import QQ, AffineSpace
 
 
 def test_affine_plane_and_cusp_use_the_same_pointwise_regularity_owner() -> None:

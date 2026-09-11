@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from sage.rings.integer import Integer
 from sage.misc.cachefunc import cached_method
+from sage.rings.integer import Integer
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (

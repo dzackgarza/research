@@ -13,8 +13,8 @@ import pytest
 
 from dzack_research.preamble.all import (
     GF,
-    PolynomialRing,
     QQ,
+    PolynomialRing,
     Schemes,
     Spec,
 )

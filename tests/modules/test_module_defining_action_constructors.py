@@ -7,19 +7,19 @@ morphism ``R -> End_Ab(U(M))``.
 """
 
 from dzack_research.preamble.all import (
+    NN,
+    QQ,
+    ZZ,
     AdditiveGroups,
     BasedFreeModule,
-    FreeModuleOn,
     FramedModules,
+    FreeModuleOn,
     GeneralModule,
     MatrixSpace,
     Modules,
     ModulesWithChosenFinitePresentation,
-    NN,
     PolynomialRing,
-    QQ,
     Set,
-    ZZ,
     module_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -29,10 +29,10 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
     Biproduct,
     TensorProduct,
 )
-from dzack_research.preamble.categories.modules.internal_hom import InternalHom
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     ring_as_module,
 )
+from dzack_research.preamble.categories.modules.internal_hom import InternalHom
 from dzack_research.preamble.categories.modules.powers import (
     AlternatingPower,
     AlternatingPowerModules,

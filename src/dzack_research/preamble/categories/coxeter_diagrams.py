@@ -13,14 +13,13 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.tensors.tensor import tensor
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
 
 def _coxeter_entry(q1, q2, pairing):

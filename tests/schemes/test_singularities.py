@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, PolynomialRing
 from dzack_research.preamble.categories.schemes.singularities import (
     IsolatedHypersurfaceSingularity,
 )

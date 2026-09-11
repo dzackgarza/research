@@ -15,8 +15,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
-from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum
-from dzack_research.preamble.categories.schemes.gluing import _FiniteSchemeGluingDatum
+from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum, _FiniteSchemeGluingDatum
 
 
 def _rank_one_generator(module):

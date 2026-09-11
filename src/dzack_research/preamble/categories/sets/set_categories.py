@@ -6,7 +6,6 @@ from typing import Any, Self, SupportsInt, TypeVar
 
 from sage.categories.category import Category
 from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
-from sage.categories.homset import Homset
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.combinat.subset import Subsets as SageSubsets
@@ -14,33 +13,32 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.rings.integer import Integer as SageInteger
-from sage.rings.integer_ring import ZZ
 from sage.sets.condition_set import ConditionSet as SageConditionSet
 from sage.sets.image_set import ImageSet as SageImageSet
 from sage.sets.set import Set as SageSet
-from sage.structure.element import Element, parent as element_parent
+from sage.structure.element import Element
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.owned_category import OwnedParent, object_of
-from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    _category_hom,
     CategoricalHomset,
     CategoricalIsomorphism,
     HomCategoryConstruction,
+    _category_hom,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.sets.cardinals import (
-    CardinalityMorphism,
     Cardinalities,
+    CardinalityMorphism,
     aleph,
     aleph0,
     cardinal,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 IndexT = TypeVar("IndexT")
 SourcePointT = TypeVar("SourcePointT")
@@ -277,7 +275,7 @@ class OwnedSetMorphism(SetMorphism):
 
     def __init__(
         self,
-        parent: "SetMorCategory",
+        parent: SetMorCategory,
         function: Callable[[SourcePointT], TargetPointT],
     ) -> None:
         SetMorphism.__init__(self, parent, function)
@@ -903,7 +901,7 @@ class SetInclusion(OwnedSetMorphism):
     def is_injective(self) -> bool:
         return True
 
-    def factor_through(self, target_inclusion: "SetInclusion") -> SetMorphism:
+    def factor_through(self, target_inclusion: SetInclusion) -> SetMorphism:
         r"""Return the canonical map of subset objects when this subset is contained."""
         if target_inclusion.codomain() is not self.codomain():
             raise ValueError("subset factorization requires one common base set")
@@ -964,31 +962,31 @@ class SetInclusion(OwnedSetMorphism):
             "this subset relation has no represented decision procedure"
         )
 
-    def union(self, other: "SetInclusion") -> "SetInclusion":
+    def union(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: member in self or member in other
         )
 
-    def intersection(self, other: "SetInclusion") -> "SetInclusion":
+    def intersection(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: member in self and member in other
         )
 
-    def difference(self, other: "SetInclusion") -> "SetInclusion":
+    def difference(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: member in self and member not in other
         )
 
-    def symmetric_difference(self, other: "SetInclusion") -> "SetInclusion":
+    def symmetric_difference(self, other: SetInclusion) -> SetInclusion:
         self._check_common_base(other)
         return PowerSet(self.codomain()).from_predicate(
             lambda member: (member in self) != (member in other)
         )
 
-    def complement(self) -> "SetInclusion":
+    def complement(self) -> SetInclusion:
         return PowerSet(self.codomain()).from_predicate(lambda member: member not in self)
 
     def __or__(self, other):
