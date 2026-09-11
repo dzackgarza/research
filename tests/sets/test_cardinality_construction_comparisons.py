@@ -1,12 +1,19 @@
 r"""Archive reconciliation for cardinality comparison maps of set constructions."""
 
 from dzack_research.preamble.all import (
+    CC,
+    QQ,
+    QQbar,
+    RR,
+    ZZ,
     CartesianProductOfSets,
     CoproductOfSets,
+    PolynomialRing,
     PowerSet,
     Sets,
     aleph0,
     cardinal,
+    continuum,
 )
 from dzack_research.preamble.categories.functors.cardinality import cardinality_functor
 
@@ -39,3 +46,23 @@ def test_cardinality_compares_a_countable_power_set_with_two_to_aleph_zero() -> 
 
     assert comparison.domain() == expected
     assert comparison.codomain() == power_set.cardinality() == expected
+
+
+def test_cardinality_comparisons_retain_countable_and_continuum_factor_arithmetic() -> None:
+    polynomial = PolynomialRing(QQ, "y")
+    countable_product = CartesianProductOfSets(ZZ, polynomial)
+    continuum_product = CartesianProductOfSets(ZZ, RR)
+    continuum_coproduct = CoproductOfSets(QQbar, CC)
+    cardinality = cardinality_functor()
+
+    countable_comparison = cardinality.cartesian_product_comparison(countable_product)
+    assert countable_comparison.domain() == aleph0
+    assert countable_comparison.codomain() == aleph0
+
+    continuum_product_comparison = cardinality.cartesian_product_comparison(continuum_product)
+    assert continuum_product_comparison.domain() == continuum
+    assert continuum_product_comparison.codomain() == continuum
+
+    continuum_coproduct_comparison = cardinality.coproduct_comparison(continuum_coproduct)
+    assert continuum_coproduct_comparison.domain() == continuum
+    assert continuum_coproduct_comparison.codomain() == continuum
