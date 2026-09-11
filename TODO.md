@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-cardinality-functor-20260911-0805` | archive reconciliation / cardinality functor on core(Sets) | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/sets/test_functors_out_of_sets.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T08:05:00Z |
 
 
 
