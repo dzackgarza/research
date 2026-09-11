@@ -339,9 +339,74 @@ def DividedPowerAlgebraOn(base_ring, algebra_generating_set):
     return DividedPowerAlgebraOf(FreeModuleOn(base_ring, algebra_generating_set))
 
 
+def alternating_extension(module_morphism):
+    r"""Extend an alternating linear map uniquely to ``Lambda(M) -> A``.
+
+    The target is an arbitrary represented unital associative algebra over the
+    same base ring.  The selected generator images must square to zero and
+    anticommute, exactly the relations defining the exterior algebra.  The
+    current verification is finite-framing based; no finite subset is sampled
+    from an infinite framing.
+    """
+    from dzack_research.preamble.categories.algebras.algebras import Algebras
+    from dzack_research.preamble.categories.algebras.comparison_maps import (
+        construction_algebra_homset,
+    )
+
+    if not isinstance(module_morphism, ModuleMorphism):
+        raise TypeError("an alternating extension starts from a represented module morphism")
+    module = module_morphism.domain()
+    target = module_morphism.codomain()
+    base = module.base_ring()
+    if target not in Algebras(base).Associative().Unital():
+        raise TypeError("an alternating extension requires a unital associative algebra target")
+    labels = module.module_generating_set()
+    cardinality = labels.cardinality()
+    if not cardinality.is_finite():
+        raise NotImplementedError(
+            "verification of the exterior-algebra relations currently requires a finite selected framing"
+        )
+    labels = tuple(labels)
+    images = {
+        label: target(module_morphism(module.module_generator(label)))
+        for label in labels
+    }
+    zero = target.zero()
+    if any(image * image != zero for image in images.values()):
+        raise ValueError("alternating generator images must square to zero")
+    if any(
+        images[left] * images[right] + images[right] * images[left] != zero
+        for position, left in enumerate(labels)
+        for right in labels[position + 1 :]
+    ):
+        raise ValueError("alternating generator images must anticommute")
+
+    source = AlternatingAlgebraOf(module)
+
+    def evaluate(element):
+        element = source(element)
+        result = target.zero()
+        for degree, component in element.homogeneous_components().items():
+            piece = source.graded_piece(degree)
+            for basis_label, coefficient in module_coefficients(component, piece).items():
+                if degree == 0:
+                    value = target.one()
+                elif degree == 1:
+                    value = images[basis_label]
+                else:
+                    value = target.one()
+                    for generator_label in basis_label:
+                        value *= images[generator_label]
+                result += coefficient * value
+        return result
+
+    return construction_algebra_homset(source, target)(evaluate)
+
+
 __all__ = [
     "AlternatingAlgebraOf",
     "AlternatingAlgebraOn",
+    "alternating_extension",
     "DividedPowerAlgebraOf",
     "DividedPowerAlgebraOn",
     "PowerAlgebra",
