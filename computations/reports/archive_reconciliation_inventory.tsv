@@ -2874,12 +2874,12 @@ preamble/lexicon/__init__.py	SageElement	reexport	1	2			unreviewed
 preamble/lexicon/__init__.py	SageMorphism	reexport	1	2			unreviewed
 preamble/lexicon/__init__.py	SageParent	reexport	1	2			unreviewed
 preamble/lexicon/__init__.py	SageUniqueRepresentation	reexport	1	2			unreviewed
-preamble/lexicon/algebra.py	<module>	module	1	0			unreviewed
-preamble/lexicon/algebra.py	BaseRing	reexport	1	2			unreviewed
-preamble/lexicon/algebra.py	Element	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/lexicon/algebra.py	Matrix	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/lexicon/algebra.py	ModuleElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/lexicon/algebra.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
+preamble/lexicon/algebra.py	<module>	module	1	0		src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/lexicon/algebra.py	BaseRing	reexport	1	2		src/dzack_research/preamble/lexicon/algebra.py	reconciled-live-owner
+preamble/lexicon/algebra.py	Element	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/lexicon/algebra.py	Matrix	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/lexicon/algebra.py	ModuleElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/lexicon/algebra.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/foundations.py	<module>	module	1	0			unreviewed
 preamble/lexicon/foundations.py	GramMatrix	binding	83	2			unreviewed
 preamble/lexicon/foundations.py	RealApproximation	binding	102	5			unreviewed
@@ -2892,10 +2892,10 @@ preamble/lexicon/foundations.py	OrderedSet	reexport	1	2			unreviewed
 preamble/lexicon/foundations.py	Rational	reexport	1	2			unreviewed
 preamble/lexicon/foundations.py	SignaturePair	reexport	1	2			unreviewed
 preamble/lexicon/foundations.py	SymbolicExpression	reexport	1	2			unreviewed
-preamble/lexicon/geometry.py	<module>	module	1	0			unreviewed
-preamble/lexicon/geometry.py	CoxeterMatrix	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/lexicon/geometry.py	Graph	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/lexicon/geometry.py	Polyhedron	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
+preamble/lexicon/geometry.py	<module>	module	1	0		src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/lexicon/geometry.py	CoxeterMatrix	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/lexicon/geometry.py	Graph	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/lexicon/geometry.py	Polyhedron	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/interop.py	<module>	module	1	0			unreviewed
 preamble/lexicon/interop.py	SageCartanMatrix	reexport	1	1	src/dzack_research/preamble/lexicon/interop.py		unreviewed
 preamble/lexicon/interop.py	SageCategory	reexport	1	2			unreviewed
