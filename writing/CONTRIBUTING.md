@@ -1835,3 +1835,82 @@ quantifiers hidden in prose.
 **Preferred:** define $\operatorname{Ann}_R(m)$ once, then "$M$ is
 torsion if $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$;
 torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$."
+
+### `DEF-23`: Specialized notion without scaffolding from general notions
+
+A specialized notion — a basis, a based module — is defined without first
+defining the general notions it depends on: the free module functor,
+the universal property of freeness, what a generating family is, and
+whether "being a basis" is a property of a family, a chosen structure, or
+an existence statement. The definition jumps to "a basis indexed by $I$ is
+an isomorphism $e\colon R^{(I)}\xrightarrow{\sim}M$" without ever saying
+what $R^{(I)}$ is. Scaffold from the general: define the free functor,
+then the generating notions, then freeness, then basis.
+
+Concrete standard: the free $R$-module functor
+$F\colon\mathbf{Sets}\to\mathbf{LMod}_R$, $I\mapsto R^{(I)}:=
+\bigoplus_{i\in I}R$, is defined by the universal property
+$\operatorname{Hom}_R(F(I),M)\cong\operatorname{Hom}_{\mathbf{Sets}}(I,
+U(M))$ where $U\colon\mathbf{LMod}_R\to\mathbf{Sets}$ is the underlying-
+set functor. $R^{(I)}$ means the finite-support sum
+$\bigoplus_{i\in I}R$, not the product $R^I:=\prod_{i\in I}R$; they are
+not equal without a finiteness hypothesis on $I$, and a generating family
+as a map $\bigoplus_{i\in I}R\to M$ requires $I$ to be a set with that
+finite-support condition.
+
+**Banned:** "A basis of an $R$-module $M$ indexed by $I$ is an
+isomorphism $e\colon R^{(I)}\xrightarrow{\sim}M$" with no prior definition
+of $R^{(I)}$ or of $F$.
+
+**Preferred:** "Let $F\colon\mathbf{Sets}\to\mathbf{LMod}_R$,
+$F(I):=\bigoplus_{i\in I}R$, be the free functor. For $M\in\mathbf{LMod}_R$
+and a set $I$, a family $(m_i)_{i\in I}$ in $M$ is a basis if the induced
+$F(I)\to M$ is an equivalence; equivalently the $R$-linear map is an
+isomorphism."
+
+### `DEF-24`: Property versus structure versus existence for a basis
+
+"Being a basis" is used without stating whether it is a property of a
+family ($ (m_i)_{i\in I}$ is a basis iff the induced map is an iso), a
+chosen structure (a specific isomorphism $e\colon F(I)\xrightarrow{\sim}M$),
+or an existence statement ($I$ is a basis of $M$ if there exists an
+isomorphism $F(I)\xrightarrow{\sim}M$). The same English — "a basis indexed
+by $I$ is an isomorphism $e$" — collapses the family $(e(1_i))_{i\in I}\subset
+M$ with its classifying map $e$, and the quantifier ("there exists $e$" vs
+"a chosen $e$") is not stated.
+
+**Banned:** "A basis of an $R$-module $M$ indexed by $I$ is an
+isomorphism $e\colon R^{(I)}\xrightarrow{\sim}M$, and a based module is a
+pair $(M,e)$" — unclear whether "is" means property, chosen structure, or
+existence, and conflates the elements $e(1_i)\in M$ with the map $e$.
+
+**Preferred:** state which is meant. Property: "A family $(m_i)_{i\in I}$
+in $M$ is a basis if the induced $F(I)\to M$ is an equivalence." Structure:
+"A based $R$-module is a pair $(M,e)$ with $M\in\mathbf{LMod}_R$ and a
+chosen equivalence $e\colon F(I)\xrightarrow{\sim}M$; write the underlying
+family as $e_i:=e(1_i)$." Existence: "$I$ is a basis of $M$ if there
+exists an equivalence $F(I)\xrightarrow{\sim}M$."
+
+### `DEF-25`: A category defined pointwise by its objects
+
+A structure that should be a category — based $R$-modules — is defined
+only by its objects $(M,e)$, with no morphisms, no composition, no
+identities, and no forgetful functors. The set $\operatorname{Bas}_I(M)$
+of bases is introduced as an afterthought for fixed $I$. A category has
+objects and morphisms; defining only the objects is pointwise, not
+categorical, and the functoriality in $I$ is lost.
+
+**Banned:** "A basis … is an isomorphism $e\colon R^{(I)}\xrightarrow{\sim}M$,
+and a based module is a pair $(M,e)$. Write $\operatorname{Bas}_I(M)$ for
+the set of such isomorphisms."
+
+**Preferred:** define the category $\mathbf{BMod}_R$ of based $R$-modules:
+objects are pairs $(M,e)$ with $M\in\mathbf{LMod}_R$ and
+$e\colon F(I)\xrightarrow{\sim}M$ for some set $I$; a morphism
+$(M,e)\to(N,e')$ over $\varphi\colon I\to J$ is an $R$-linear
+$f\colon M\to N$ with $f\circ e = e'\circ F(\varphi)$, with
+$F(\varphi)\colon F(I)\to F(J)$. The forgetful functors
+$\mathbf{BMod}_R\to\mathbf{LMod}_R$, $(M,e)\mapsto M$, and
+$\mathbf{BMod}_R\to\mathbf{Sets}$, $(M,e)\mapsto I$, are part of the
+data. Then put $\operatorname{Bas}_I(M):=\operatorname{Iso}(F(I),M)$,
+which is a torsor under $\operatorname{Aut}(F(I))$ when nonempty.
