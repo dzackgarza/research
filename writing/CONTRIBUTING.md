@@ -2198,6 +2198,75 @@ $X\times_Y 1$, i.e. the object $f^{-1}(y)$ with $p_1\colon f^{-1}(y)\to X$,
 $p_2\colon f^{-1}(y)\to1$, and $\alpha\colon f\circ p_1\simeq y\circ p_2$
 exhibiting the square as cartesian."
 
+### `DEF-33`: Special case without scaffolding from the general notion
+
+The fiber $f^{-1}(y)$ is a special case of a fiber product (pullback).
+The standard scaffolding defines pullbacks once — the limit of a cospan
+$X\xrightarrow{f}Y\xleftarrow{g}Z$ with its universal property via terminal
+cones, notation $X\times_Y Z$ — and then recovers the fiber in one
+sentence by reference. Defining the fiber as "the apex of the cartesian
+square" without first defining fiber products repeats the cone's
+universal property that belongs in the general definition and leaves the
+general notion undefined.
+
+Concrete standard: define pullbacks as limits of cospans (\ref{def-pullback}):
+for $f\colon X\to Y$ and $g\colon Z\to Y$ in an $\infty$-category with
+pullbacks, the **pullback** is the limit $X\times_Y Z$ with its cone
+$(X\times_Y Z\to X, X\times_Y Z\to Z)$ terminal among cones over the
+cospan. Then: "The **fiber** of $f$ over $y\colon1\to Y$ is the pullback
+$X\times_Y 1$ of $f$ along $y$ (\ref{def-pullback})."
+
+**Banned:** "Let $\mathcal{C}$ have a terminal object $1$ and the
+relevant pullbacks, let $f\colon X\to Y$, and let $y\colon1\to Y$ be a
+point. The fiber of $f$ over $y$ is the apex of the cartesian square …"
+— defines the special case without the general notion.
+
+**Preferred:** define $X\times_Y Z$ once via terminal cones; then "the
+fiber is $X\times_Y 1$, the pullback of $f$ along $y$."
+
+### `PR-27`: "Apex of the cartesian square" for "pullback of $f$ along $y$" or $X\times_Y 1$
+
+"Pullback of $f$ along $y$" and the concise notation $X\times_Y 1$
+already encode the universal property. "The apex of the cartesian square"
+is a wordy prose paraphrase (PR-15) for the same object that names no
+limit and is longer than the notation it paraphrases.
+
+**Banned:** "the fiber of $f$ over $y$ is the apex of the cartesian
+square."
+
+**Preferred:** "the fiber of $f$ over $y$ is the pullback of $f$ along
+$y$" or "the fiber is $X\times_Y 1$."
+
+### `TERM-7`: "Apex" without definition; standard is terminal cone
+
+"Apex" is not defined in this book. The standard term for the vertex of
+a limit cone is the (terminal) cone — the cone
+$(P\to X, P\to Z)$ over $X\to Y\leftarrow Z$ that is terminal among
+cones. "Apex" alone names no cone and no universal property; it would be
+introduced once in the definition of pullbacks as the vertex of the
+terminal cone, not repeated in the definition of the fiber.
+
+**Banned:** "the fiber … is the apex of the cartesian square."
+
+**Preferred:** "the fiber is the pullback $X\times_Y 1$ with its terminal
+cone $(X\times_Y 1\to X, X\times_Y 1\to1)$."
+
+### `TERM-8`: Colloquial "cartesian square" for pullback square
+
+"Cartesian square" is colloquial for a pullback square and, in the
+book's setting, hides a theorem: when a square's projection is a
+(co)cartesian fibration and the square is a pullback in
+$\mathbf{Cat}_\infty$, the projection is a (co)cartesian fibration. The
+precise term is "pullback square," i.e. a square exhibiting a pullback
+via its universal property. Use "pullback square," or state the
+fibration property as a theorem, not as the name of the square.
+
+**Banned:** "the apex of the cartesian square."
+
+**Preferred:** "the pullback square exhibiting $X\times_Y 1$" or "the
+square exhibiting the pullback." Reserve "cartesian fibration" for the
+fibration property and prove when a pullback square has that property.
+
 ### `PR-24`: Self-referential meta-prose about the text's structure, notation, or theorems
 
 A professional mathematics text extremely rarely is self-referential,
