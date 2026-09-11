@@ -29,7 +29,7 @@ from pathlib import Path
 DATA = Path("writing/data")
 AUDIT = DATA / "sage-source-audit-10.9/sagemath-10.9-category-inventory.json"
 RUNTIME = DATA / "sage-runtime-10.10.beta0/sagemath-10.10.beta0-runtime-inventory.json"
-OUT = Path("writing/category-theory/sage/inventory")
+OUT = Path("docs/sage-inventory/inventory")
 
 SEP = "; "          # every multi-valued audit field except `bases`
 BASE_SEP = ","      # `bases` alone

@@ -3,7 +3,7 @@
 The diagram displays the sequence of categories, functors, and invariant maps from modules through form categories and integral lattices to discriminant and genus invariants.
 Every arrow is labeled by its functor or map.
 The discriminant construction is shown on category cores, and genus is the fiber of the displayed map on isometry classes over the image of a lattice class.
-The exhaustive Sage runtime hierarchy is recorded separately in the [SageMath category framework reference](../sage/Sage-Category-Framework-Inventory.md).
+The exhaustive Sage runtime hierarchy is recorded separately in the [SageMath category framework reference](https://github.com/dzackgarza/research/blob/main/docs/sage-inventory/Sage-Category-Framework-Inventory.md), which is implementation reference rather than part of this book.
 
 The editable source is [`category-graph.dot`](category-graph.dot).
 The command `just graph` renders the SVG and inserts it into the interactive view below.

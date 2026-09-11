@@ -65,16 +65,6 @@ book:
     - part: Realizations
       chapters:
         - category-theory/lean/Category-Graph.md
-        - category-theory/sage/Sage-Category-Framework-Inventory.md
-        # Generated wholesale by `just sage-inventory`; every entity is a section of
-        # the catalogue it belongs to, because a chapter is the only thing a book
-        # publishes and 290 entity pages would be 290 sidebar rows.
-        - category-theory/sage/inventory/index.md
-        - category-theory/sage/inventory/categories.md
-        - category-theory/sage/inventory/axioms.md
-        - category-theory/sage/inventory/constructions.md
-        - category-theory/sage/inventory/aliases.md
-        - category-theory/sage/inventory/runtime.md
     - part: Authoring and reference
       chapters:
         - category-theory/contributing/Mathematical-Language-Style-Guide.md
