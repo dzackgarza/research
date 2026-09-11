@@ -8,8 +8,10 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
     ConeCategory,
+    InverseSystem,
     restrict_diagram,
 )
+from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.functors.core import (
     Functor,
     IdentityFunctor,
@@ -160,3 +162,14 @@ def test_diagram_restriction_retains_the_indexing_functor_and_composes() -> None
     assert twice_restricted.original_diagram() is restricted
     assert twice_restricted.indexing_functor() is identity
     assert twice_restricted(shape.left()) == restricted(shape.left())
+
+
+def test_inverse_system_reverses_its_declared_index_category() -> None:
+    labels = finite_ordered_set(("m", "n"))
+    index = DiscreteCategory(labels)
+    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    systems = InverseSystem(index, line.category())
+
+    assert systems.base_index_category() is index
+    assert systems.index_category().base_category() is index
+    assert systems.index_category() is not index
