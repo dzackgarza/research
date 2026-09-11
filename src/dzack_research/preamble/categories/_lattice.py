@@ -35,6 +35,7 @@ from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -320,7 +321,7 @@ class Lattice(Parent, IndexedGenerators):
         for name, value in construction_data:
             setattr(self, f"_preamble_{name}", value)
         parent_category = (
-            Category.join((category, *tuple(extra_categories)))
+            Cat().meet((category, *tuple(extra_categories)))
             if extra_categories
             else category
         )
@@ -338,7 +339,7 @@ class Lattice(Parent, IndexedGenerators):
             self._preamble_subobject_lift = subobject_lift
             self._preamble_subobject_inclusion_factory = subobject_inclusion_factory
             self._preamble_subobject_verify_linearity = subobject_verify_linearity
-            parent_category = Category.join(
+            parent_category = Cat().meet(
                 (parent_category, ModuleSubobjects(category.base_ring()))
             )
         if isinstance(gram, _BiproductGram):
@@ -348,7 +349,7 @@ class Lattice(Parent, IndexedGenerators):
 
             self._preamble_direct_sum_summands = gram._summands
             self._preamble_direct_sum_index_set = gram._summands.index_set()
-            parent_category = Category.join((parent_category, DirectSumObjects()))
+            parent_category = Cat().meet((parent_category, DirectSumObjects()))
         IndexedGenerators.__init__(
             self,
             _basis_keys(module),
