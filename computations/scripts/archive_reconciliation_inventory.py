@@ -85,6 +85,19 @@ def semantic_scopes(text: str) -> dict[int, tuple[tuple[str, str], ...]]:
     return result
 
 
+def declared_exports(text: str) -> tuple[str, ...] | None:
+    r"""Return a static ``__all__`` list when the archived module declares one."""
+    match = re.search(r"(?ms)^[ \t]*__all__\s*=\s*\[(.*?)^[ \t]*\]", text)
+    if match is None:
+        return None
+    return tuple(
+        name
+        for _quote, name in re.findall(
+            r"([\"'])([A-Za-z_][A-Za-z0-9_]*)\1", match.group(1)
+        )
+    )
+
+
 def public(name: str) -> bool:
     return not name.startswith("_")
 
@@ -124,7 +137,22 @@ def scan_module(path: Path, root: Path) -> list[Notion]:
                     Notion(relative, assignment.group("name"), "binding", line_number)
                 )
 
-    return notions
+    exports = declared_exports(text)
+    if exports is None:
+        return notions
+
+    exported = set(exports)
+    filtered = [notions[0]]
+    represented = set()
+    for notion in notions[1:]:
+        root_name = notion.qualified_name.split(".", 1)[0]
+        if root_name in exported:
+            filtered.append(notion)
+            represented.add(root_name)
+    for name in exports:
+        if name not in represented:
+            filtered.append(Notion(relative, name, "reexport", 1))
+    return filtered
 
 
 def live_name_index(live_root: Path) -> dict[str, set[str]]:
@@ -132,12 +160,10 @@ def live_name_index(live_root: Path) -> dict[str, set[str]]:
     if not live_root.exists():
         return result
     for path in sorted(live_root.rglob("*.py")):
-        for line in path.read_text(errors="replace").splitlines():
-            match = DEFINITION.match(line)
-            if match and public(match.group("name")):
-                result.setdefault(match.group("name"), set()).add(
-                    path.relative_to(live_root.parent.parent.parent).as_posix()
-                )
+        for notion in scan_module(path, live_root):
+            if notion.kind == "module" or "." in notion.qualified_name:
+                continue
+            result.setdefault(notion.qualified_name, set()).add(path.as_posix())
     return result
 
 
