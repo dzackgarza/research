@@ -2589,19 +2589,19 @@ preamble/categories/schemes/threejs_viewer.py	generate_threejs_polytope_html	fun
 preamble/categories/schemes/toric/__init__.py	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/toric/__init__.py	reconciled-live-owner
 preamble/categories/schemes/toric/__init__.py	ToricSchemes	reexport	1	3		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
 preamble/categories/schemes/toric/__init__.py	ToricScheme	reexport	1	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
-preamble/categories/schemes/toric/toric_schemes.sage	<module>	module	1	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes	class	34	3			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.super_categories	method	40	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods	class	44	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.is_toric	method	73	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.fan	method	77	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.polytope	method	81	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.dimension	method	85	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.subscheme	method	89	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.standard_identification	method	106	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.standard_identification_latex	method	110	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.to_native_toric_variety	method	198	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	ToricScheme	function	208	0			unreviewed
+preamble/categories/schemes/toric/toric_schemes.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes	class	34	3		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.super_categories	method	40	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods	class	44	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.is_toric	method	73	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.fan	method	77	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.polytope	method	81	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.dimension	method	85	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.subscheme	method	89	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.standard_identification	method	106	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.standard_identification_latex	method	110	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.to_native_toric_variety	method	198	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/toric_schemes.sage	ToricScheme	function	208	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
 preamble/categories/schemes/varieties.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
 preamble/categories/schemes/varieties.sage	Varieties	class	49	2		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
 preamble/categories/schemes/varieties.sage	Varieties.super_categories	method	55	0		src/dzack_research/preamble/categories/schemes/varieties.py	reconciled-live-owner
