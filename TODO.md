@@ -237,7 +237,7 @@ Paths in this section are relative to
 
 ### Localization specializations through one construction
 
-- [ ] **`localization`**. **Needs:** none.
+- [x] **`localization`**. **Needs:** none.
   Route fraction fields and their maps through the existing localization
   owner, and close the affected specialization paths.
   **Owners:** `rings/ring_foundation.py::OwnedRings.ParentMethods.fraction_field`,

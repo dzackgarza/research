@@ -491,11 +491,13 @@ class LocalizationRings(OwnedCategory):
             _engine_ring=None,
             *,
             algebra_source=None,
+            fraction_field_realization=None,
             **rest,
         ) -> None:
             self._preamble_localization_source = source
             self._preamble_localization_submonoid = submonoid
             self._preamble_engine_ring = _engine_ring
+            self._preamble_fraction_field_realization = fraction_field_realization
             if algebra_source is not None:
                 self._preamble_algebra_base_ring = algebra_source.base_ring()
             super().__init__(base_ring=source.base_ring(), **rest)
@@ -709,6 +711,55 @@ class LocalizationRings(OwnedCategory):
 
         def localization_submonoid(self):
             return self._preamble_localization_submonoid
+
+        def is_fraction_field_localization(self) -> bool:
+            r"""Whether this localizes a domain at all of its nonzero elements."""
+            return (
+                self.localization_submonoid().structure_data().get("kind")
+                == "nonzero_elements"
+            )
+
+        def fraction_field_realization(self):
+            r"""Return the canonical owned field privately realizing this localization."""
+            if not self.is_fraction_field_localization():
+                raise ValueError("this localization is not the fraction-field specialization")
+            field = self._preamble_fraction_field_realization
+            if field is None:
+                raise ArithmeticError("a fraction-field localization has no selected field realization")
+            return field
+
+        @cached_method
+        def fraction_field_comparison(self):
+            r"""Return the canonical map ``(R-{0})^-1 R -> Frac(R)``."""
+            if not self.is_fraction_field_localization():
+                raise ValueError("this localization is not the fraction-field specialization")
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _canonical_map,
+            )
+
+            source_to_field = _canonical_map(
+                self.localization_source(), self.fraction_field_realization()
+            )
+
+            def image(element):
+                fraction = self(element)
+                numerator = source_to_field(fraction.numerator())
+                denominator = source_to_field(fraction.denominator())
+                return numerator * denominator.inverse_of_unit()
+
+            return ring_morphism(self, self.fraction_field_realization(), image)
+
+        @cached_method
+        def fraction_field_comparison_inverse(self):
+            r"""Return the inverse ``Frac(R) -> (R-{0})^-1 R``."""
+            if not self.is_fraction_field_localization():
+                raise ValueError("this localization is not the fraction-field specialization")
+            field = self.fraction_field_realization()
+            return ring_morphism(
+                field,
+                self,
+                lambda element: self._from_engine_element(_engine_element(field, element)),
+            )
 
         def inverted_elements(self):
             try:
@@ -1283,16 +1334,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
 
         def fraction_field(self):
-            r"""Return the fraction field through the computation ring."""
+            r"""Return the fraction field through its nonzero-element localization."""
             if self in OwnedFields():
                 return self
-            engine = _engine_ring(self)
-            assert engine is not self, (
-                f"{self} has no selected computation realization to build a fraction field "
-                "in; a ring with zero divisors has none at all, and inverting its regular "
-                "elements gives the total quotient ring instead"
-            )
-            return _own_ring(engine.fraction_field())
+            if self not in OwnedIntegralDomains():
+                raise ValueError(
+                    f"{self} is not an integral domain, so it has no fraction field; "
+                    "inverting its regular elements is the total quotient-ring construction"
+                )
+            return self.fraction_field_localization().fraction_field_realization()
 
 
 class OwnedOrderedRings(OwnedCategory):
@@ -1326,6 +1376,29 @@ class OwnedIntegralDomains(OwnedCategory):
             return True
 
         @cached_method
+        def nonzero_multiplicative_submonoid(self):
+            r"""Return ``R - {0}``, the multiplicative submonoid defining ``Frac(R)``."""
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _nonzero_element_submonoid,
+            )
+
+            return _nonzero_element_submonoid(self)
+
+        @cached_method
+        def fraction_field_localization(self):
+            r"""Return the represented localization ``(R-{0})^-1 R``."""
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                _localization_at_submonoid,
+            )
+
+            if self in OwnedFields():
+                return self
+            return _localization_at_submonoid(
+                self,
+                self.nonzero_multiplicative_submonoid(),
+            )
+
+        @cached_method
         def fraction_field_map(self):
             r"""Return the localization map ``R -> Frac(R)``.
 
@@ -1335,14 +1408,13 @@ class OwnedIntegralDomains(OwnedCategory):
             torsion, and an ideal extends along it to the unit ideal exactly
             when it is nonzero.
             """
-            from dzack_research.preamble.categories.rings.commutative_algebra import (
-                _canonical_map,
-            )
-
-            field = self.fraction_field()
-            if field is self:
+            if self in OwnedFields():
                 return ring_homset(self, self).identity()
-            return _canonical_map(self, field)
+            localization = self.fraction_field_localization()
+            return (
+                localization.fraction_field_comparison()
+                * localization.localization_map()
+            )
 
 
 class OwnedPrincipalIdealDomains(OwnedCategory):

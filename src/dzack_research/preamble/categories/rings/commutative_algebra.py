@@ -1397,6 +1397,46 @@ def _finite_generated_localization(source, submonoid):
     )
 
 
+@cached_function
+def _nonzero_element_submonoid(source):
+    r"""Return the represented multiplicative submonoid ``R - {0}`` of a domain."""
+    if source not in OwnedIntegralDomains():
+        raise ValueError("the nonzero elements form this localization submonoid only for a domain")
+    return predicate_submonoid(
+        source,
+        lambda element: element != source.zero(),
+        f"Nonzero multiplicative elements of {source}",
+        structure_data={"kind": "nonzero_elements"},
+    )
+
+
+def _fraction_field_localization(source, submonoid):
+    r"""Realize ``(R-{0})^-1 R`` while retaining the represented localization datum."""
+    if source not in OwnedIntegralDomains():
+        raise ValueError("fraction-field localization requires an integral domain")
+    if submonoid.structure_data().get("kind") != "nonzero_elements":
+        raise ValueError("fraction-field localization requires the nonzero-element submonoid")
+    if source in OwnedFields():
+        return source
+
+    engine = _engine_ring(source)
+    assert engine is not source, (
+        f"{source} has no selected computation realization for its fraction field"
+    )
+    fraction_engine = engine.fraction_field()
+    field = _own_ring(fraction_engine)
+    placements = [OwnedIntegralDomains(), OwnedFields()]
+    if source in OwnedNoetherianRings():
+        placements.append(OwnedNoetherianRings())
+    return object_of(
+        Category.join((LocalizationRings(), *placements)),
+        source=source,
+        submonoid=submonoid,
+        _engine_ring=fraction_engine,
+        fraction_field_realization=field,
+    )
+
+
 def Localization(ring, *datum):
     r"""Return ``S^{-1}R`` from a submonoid ``S -> (R,*)``.
 
@@ -1442,6 +1482,8 @@ def _localization_at_submonoid(source, submonoid):
     structure = submonoid.structure_data()
     if structure.get("kind") == "prime_complement":
         return _PrimeLocalizationFromSubmonoid(source, submonoid)
+    if structure.get("kind") == "nonzero_elements":
+        return _fraction_field_localization(source, submonoid)
     return _finite_generated_localization(source, submonoid)
 
 
