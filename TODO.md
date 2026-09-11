@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-fractional-ideals-20260911-0800` | archive reconciliation / ideals and fractional ideals as modules | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/modules/test_fractional_ideals_archive.py; tests/modules/test_fractional_ideal_gens_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T08:00:00Z |
 
 
 
