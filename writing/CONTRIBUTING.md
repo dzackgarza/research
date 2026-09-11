@@ -2185,14 +2185,60 @@ object). If a verb is used for extra structure, it must have that clear
 meaning.
 
 **Banned:** "names the functor along which it is created"; "names the
-comparison with this composite"; "names the factorization."
+comparison with this composite"; "names the factorization"; "names a
+particular monomorphism."
 
 **Preferred:** "specifies the functor $\bar F$ and the equivalence
 $\alpha\colon F\simeq i\circ\bar F$"; "exhibits the factorization
 $(\bar F,\alpha)$"; "is equipped with the comparison $2$-cell
 $\gamma$"; "is determined by the invertible bimodule"; "comes with a
-specified natural equivalence." Use "determines" / "is determined by"
-only when the data are equivalent.
+specified natural equivalence"; "specifies a particular monomorphism
+$f\colon A\rightarrowtail B$ with $\operatorname{isMono}(f)$" / "is
+equipped with a chosen monomorphism." Use "determines" / "is determined
+by" only when the data are equivalent.
+
+### `PR-26`: "Some … exists is a proposition" with unbound variables and no truncation
+
+An existence statement "some monomorphism $A\to B$ exists is a
+proposition" leaves $A,B$ unbound (SYM-1), writes "some … exists" for
+$\exists$ (PR-22), and calls the existence "a proposition" without
+stating the truncation level. In this book a proposition is a
+$(-1)$-truncated type (a mere proposition); the structure is the type
+$\sum_{f\colon A\to B}\operatorname{isMono}(f)$, and the proposition
+(mere existence) is its $(-1)$-truncation
+$\bigl\|\sum_{f}\operatorname{isMono}(f)\bigr\|_{-1}$.
+
+**Banned:** "The assertion that some monomorphism $A\to B$ exists is a
+proposition" — $A,B$ unbound, "some … exists" for $\exists$, no type for
+the monomorphisms, no $(-1)$-truncation.
+
+**Preferred:** "Let $A,B\in\mathcal{C}$. The type
+$\sum_{f\colon A\to B}\operatorname{isMono}(f)$ is the structure of a
+monomorphism $A\rightarrowtail B$; its $(-1)$-truncation
+$\bigl\|\sum_{f}\operatorname{isMono}(f)\bigr\|_{-1}$ is the proposition
+that there merely exists a monomorphism $A\rightarrowtail B$."
+
+### `TERM-6`: "Embedding" for "monomorphism" without definition or identification
+
+"Monomorphism" and "embedding" are used interchangeably mid-passage —
+"some monomorphism $A\to B$ exists" then "a construction that uses an
+embedding names a particular monomorphism" — without ever defining
+either term or stating the identification. In this book a monomorphism is
+a $(-1)$-truncated map ($f$ is mono if …), an embedding is a fully
+faithful functor (or, for spaces, an embedding as a $(-1)$-truncated
+map with extra condition) — each with its fenced definition. Do not
+switch terms without defining the identification.
+
+**Banned:** "some monomorphism $A\to B$ exists … a construction that
+uses an embedding names a particular monomorphism" — switches from
+"monomorphism" to "embedding" with no definition of either and no link
+between them.
+
+**Preferred:** choose one term and define it, or define both and state
+the identification: "A **monomorphism** ($f\colon A\rightarrowtail B$)
+is … (\ref{def-mono}). An **embedding** is … (\ref{def-embedding}). In
+$\mathbf{Sets}$, every monomorphism is an embedding; in general …" Link
+each use to its defining occurrence (XREF-5).
 
 ### `DEF-27`: Distinguished object introduced only in the title
 
