@@ -245,6 +245,37 @@ class ParallelPairDiagram(Functor):
         raise ValueError("unknown arrow of the walking parallel pair")
 
 
+class RestrictedDiagram(Functor):
+    r"""The precomposition ``D ∘ u`` retaining ``D`` and the indexing functor ``u``."""
+
+    def __init__(self, diagram: Functor, indexing_functor: Functor) -> None:
+        if indexing_functor.codomain() is not diagram.domain():
+            raise ValueError("a diagram restriction precomposes by a functor into the index category")
+        self._diagram = diagram
+        self._indexing_functor = indexing_functor
+        super().__init__(indexing_functor.domain(), diagram.codomain())
+
+    def original_diagram(self):
+        return self._diagram
+
+    def indexing_functor(self):
+        return self._indexing_functor
+
+    def _apply_object(self, obj):
+        return self.original_diagram()(self.indexing_functor()(obj))
+
+    def _apply_morphism(self, morphism):
+        return self.original_diagram()(self.indexing_functor()(morphism))
+
+    def restrict(self, indexing_functor):
+        return RestrictedDiagram(self, indexing_functor)
+
+
+def restrict_diagram(diagram: Functor, indexing_functor: Functor) -> RestrictedDiagram:
+    r"""Return the represented restriction of ``diagram`` along ``indexing_functor``."""
+    return RestrictedDiagram(diagram, indexing_functor)
+
+
 class SelectedLimitConstruction(SageObject):
     r"""A selected universal cone over one represented diagram."""
 
@@ -274,6 +305,21 @@ class SelectedLimitConstruction(SageObject):
             raise ValueError("the cone to factor must lie over this construction's diagram")
         apex_map = self._factorizer(cone)
         return ConeCategory(self.diagram()).Mor(cone, self.cone())(apex_map)
+
+    def induced_map(self, transformation, target_construction):
+        r"""Return the map on selected limits induced by ``D -> E``."""
+        if transformation.source() is not self.diagram():
+            raise ValueError("the natural transformation must start at this limit's diagram")
+        if transformation.target() is not target_construction.diagram():
+            raise ValueError("the natural transformation must end at the target limit's diagram")
+        target_diagram = target_construction.diagram()
+        induced_cone = ConeCategory(target_diagram).cone(
+            self.object(),
+            lambda index: (
+                transformation.component(index) * self.structure_morphism(index)
+            ),
+        )
+        return target_construction.factor(induced_cone).apex_map()
 
 
 class SelectedColimitConstruction(SageObject):
@@ -305,6 +351,22 @@ class SelectedColimitConstruction(SageObject):
             raise ValueError("the cocone to factor must lie under this construction's diagram")
         apex_map = self._factorizer(cocone)
         return CoconeCategory(self.diagram()).Mor(self.cocone(), cocone)(apex_map)
+
+    def induced_map(self, transformation, target_construction):
+        r"""Return the map on selected colimits induced by ``D -> E``."""
+        if transformation.source() is not self.diagram():
+            raise ValueError("the natural transformation must start at this colimit's diagram")
+        if transformation.target() is not target_construction.diagram():
+            raise ValueError("the natural transformation must end at the target colimit's diagram")
+        source_diagram = self.diagram()
+        induced_cocone = CoconeCategory(source_diagram).cocone(
+            target_construction.object(),
+            lambda index: (
+                target_construction.costructure_morphism(index)
+                * transformation.component(index)
+            ),
+        )
+        return self.factor(induced_cocone).apex_map()
 
 
 
@@ -956,6 +1018,7 @@ __all__ = [
     "ParallelPairDiagram",
     "ProductConeCategory",
     "ProductsOfCategory",
+    "RestrictedDiagram",
     "SelectedColimitConstruction",
     "SelectedLimitConstruction",
     "Span",
@@ -964,4 +1027,5 @@ __all__ = [
     "common_category_of",
     "coproduct_cocone_category",
     "product_cone_category",
+    "restrict_diagram",
 ]
