@@ -24,8 +24,16 @@ book:
   search: true
   sidebar:
     collapse-level: 1
+  # Two levels is all a book sidebar has: parts, then chapters. A nested `part:`
+  # fails schema validation and `book.sidebar.contents` is accepted and then
+  # ignored -- see TRAPS.md. So the parts below carry the whole tree, and each one
+  # is a run the part's own landing page already names. The runs are contiguous in
+  # the order the chapters were already in, so this groups the sidebar without
+  # moving a chapter or changing a number.
   chapters:
     - index.md
+    # "Categorical and arithmetic foundations": the landing page heads its own
+    # first group rather than repeating the title as a literal part.
     - part: category-theory/index.md
       chapters:
         - category-theory/framework/Higher-Categories-and-Universes.md
@@ -34,12 +42,16 @@ book:
         - category-theory/framework/Monoidal-Categories.md
         - category-theory/framework/Loops-and-Suspension.md
         - category-theory/framework/Identification.md
+    - part: Properties, structures, and algebra
+      chapters:
         - category-theory/framework/Truncation-and-Classifiers.md
         - category-theory/framework/Mathematical-Framework.md
         - category-theory/framework/Modules-and-Forms.md
         - category-theory/framework/Joins-Meets-and-Closure.md
         - category-theory/framework/Distinguished-Functors.md
         - category-theory/framework/Elements-and-Containment.md
+    - part: Forms and lattices
+      chapters:
         - category-theory/framework/Bilinear-and-Quadratic-Forms.md
         - category-theory/framework/Bilinear-Forms-on-Algebra-Modules.md
         - category-theory/framework/Lattices-and-Discriminant-Forms.md
@@ -50,18 +62,22 @@ book:
         - category-theory/framework/Morphisms-of-Form-Modules.md
         - category-theory/framework/Stable-Categories-of-Modules-with-Duality.md
         - category-theory/framework/Chain-Complexes.md
+    - part: Realizations
+      chapters:
         - category-theory/lean/Lean-Sage-Integration-Model.md
         - category-theory/lean/Category-Graph.md
         - category-theory/sage/Sage-Category-Framework-Inventory.md
-        # Only the index is a chapter. The 292 per-entity pages beside it are found
-        # by ordinary discovery and render without entering the sidebar, which works
-        # because inventory/ is a real directory in this project root rather than a
-        # symlinked part -- see TRAPS.md. Regenerate with `just sage-inventory`.
+        # Only the index is a chapter; the 292 per-entity pages beside it reach no
+        # reader yet. Regenerate with `just sage-inventory`.
         - inventory/index.md
         - category-theory/lean/Categorical-DSL.md
+    - part: Authoring and reference
+      chapters:
         - category-theory/contributing/Mathematical-Language-Style-Guide.md
         - category-theory/framework/Mathematical-Sources.md
         - category-theory/Roadmap.md
+    # "Coble surfaces": as above, the landing page heads the overview and the two
+    # groups of surface theory the paper starts from.
     - part: coble/index.md
       chapters:
         - coble/introduction/000-introduction.md
@@ -71,6 +87,8 @@ book:
         - coble/coble-surfaces/coble-surface-basics.md
         - coble/coble-surfaces/k3-covers-of-coble-surfaces.md
         - coble/coble-surfaces/rational-sextic-calculations.md
+    - part: Lattices and moduli
+      chapters:
         - coble/lattices-and-moduli/lattice-theory.md
         - coble/lattices-and-moduli/root-systems.md
         - coble/lattices-and-moduli/discriminant-forms-and-genus.md
@@ -82,43 +100,67 @@ book:
         - coble/lattices-and-moduli/nodal-enriques-lattices.md
         - coble/lattices-and-moduli/coble-moduli-basics.md
         - coble/lattices-and-moduli/moduli-construction.md
+    - part: Compactifications
+      chapters:
         - coble/compactifications/reflection-groups-and-vinberg.md
         - coble/compactifications/dynkin-foldings.md
         - coble/compactifications/toroidal-and-semitoroidal.md
         - coble/compactifications/scattone-cusp-method.md
+    - part: Degenerations
+      chapters:
         - coble/degenerations/kulikov-models.md
         - coble/degenerations/anticanonical-pairs-and-singularities.md
         - coble/degenerations/divisor-and-dlt-models.md
         - coble/degenerations/halphen-surfaces.md
         - coble/degenerations/morrison-flowerpot-degenerations.md
+    - part: The cusp correspondence
+      chapters:
         - coble/cusp-correspondence/cusp-diagram-calculations.md
         - coble/cusp-correspondence/coble-surface-cusps.md
         - coble/cusp-correspondence/enriques-surface-cusps.md
         - coble/cusp-correspondence/sterk-cusp-divisibilities.md
         - coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md
+    - part: Stable limits
+      chapters:
         - coble/stable-limits/geometric.md
         - coble/stable-limits/ias.md
         - coble/stable-limits/ksba.md
+    - part: 'Results for $F_{\mathrm{En},2}$'
+      chapters:
         - coble/results-f-en-2/main-theorem-and-cusps.md
         - coble/results-f-en-2/ksba-semitoroidal-comparison.md
         - coble/results-f-en-2/classifying-map-and-involution.md
+    - part: Open problems
+      chapters:
         - coble/open-problems/open-problems.md
+    - part: Formulae, diagrams, and sources
+      chapters:
         - coble/appendix-reference/adjunction-and-ramification-formulae.md
         - coble/appendix-reference/coxeter-and-dynkin-diagrams.md
         - coble/extracted-references/extracted-references.md
+    - part: Adjacent programs
+      chapters:
         - coble/adjacent-programs/halphen-index-2-moduli-program.md
         - coble/adjacent-programs/nodal-enriques-moduli-program.md
+    - part: Coble moduli research programs
+      chapters:
         - coble/coble-moduli/coble-families-research-program.md
         - coble/coble-moduli/coble-surface-structure-and-classification.md
         - coble/coble-moduli/cusp-correspondence-morphism-chain.md
+    - part: Computations
+      chapters:
         - coble/computations/coble-lattice-isotropic-candidates.md
         - coble/computations/computational-toolchain-and-recipe.md
         - coble/computations/coxiter-results-for-cusp-lattices.md
         - coble/computations/root-vectors-and-folded-sterk-diagrams.md
         - coble/computations/sterk-integral-affine-data.md
+    - part: Reference tables
+      chapters:
         - coble/reference-tables/lattice-and-diagram-conventions.md
         - coble/tables/coble-lattices.md
         - coble/tables/dynkin-diagrams.md
+    - part: Heegner report
+      chapters:
         - coble/heegner-report/coble-heegner-research-report.md
 # Assets that pandoc, rather than Quarto, opens must live in .assets/ -- see the
 # note beside `filters:` below. The two Coble bibliographies need no such

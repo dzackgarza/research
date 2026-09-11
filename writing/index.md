@@ -1,4 +1,7 @@
-# Writing
+---
+title: Writing
+number-sections: false
+---
 
 Two bodies of work.
 
