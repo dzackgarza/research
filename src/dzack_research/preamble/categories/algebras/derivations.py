@@ -11,9 +11,9 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     RestrictedHomCategoryOf,
     RestrictedHomCategoryParent,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.categories.category import Category
 from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.structure.element import ModuleElement
@@ -662,7 +662,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
             family,
             algebra,
             target,
-            category=Category.join((Modules(ring), ModuleSubobjects(ring))),
+            category=Cat().meet((Modules(ring), ModuleSubobjects(ring))),
         )
 
     @cached_method
