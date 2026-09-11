@@ -1527,3 +1527,62 @@ $A$-module conventions."
 **Preferred:** "the symmetry induces a canonical equivalence
 $\mathbf{LMod}_A\simeq\mathbf{RMod}_A$." Name the functor or equivalence;
 do not describe it as "identifying conventions."
+
+### `DEF-18`: Element formula on pure tensors for a functorial construction
+
+A construction that is functorially $B\otimes_A(-)$ — extension of scalars
+on modules, base change of a bilinear form as $B\otimes_A b$ — is defined
+by an elementwise recipe $b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y)$ on
+pure tensors $c\otimes x$. The recipe names no functor, no canonical
+isomorphisms, and is well-defined only by $B$-bilinear extension; it fails
+outside free modules and hides whether $\otimes_A$ is the derived
+($\otimes_A^L$) or underived product. The element formula, when it holds,
+is a consequence of the functorial construction, not the definition.
+State the functor and the canonical isomorphisms. The construction is
+$$
+(B\otimes_A M)\otimes_B(B\otimes_A M)\simeq
+B\otimes_A(M\otimes_A M)\xrightarrow{B\otimes_A b} B\otimes_A W,
+$$
+i.e. $b_B$ is $B\otimes_A b$ composed with the canonical
+$(B\otimes_A M)\otimes_B(B\otimes_A M)\simeq B\otimes_A(M\otimes_A M)$;
+on pure tensors this is $b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y)$
+when $B$-bilinear extension is well-defined.
+
+**Banned:** "Its base change is the $B$-bilinear map
+$b_B(c\otimes x,d\otimes y)=cd\otimes b(x,y)$, whose value module is
+$B\otimes_A W$."
+
+**Preferred:** "Let $M,W\in\mathbf{LMod}_A$ and
+$b\colon M\otimes_A M\to W$ be $A$-bilinear. Its base change is
+$b_B:=(B\otimes_A b)\circ\text{can}\colon
+(B\otimes_A M)\otimes_B(B\otimes_A M)\to B\otimes_A W$." State the
+functor and the canonical map; derive the pure-tensor formula as a
+consequence.
+
+### `SYM-12`: Derived tensor product not distinguished from underived
+
+In the book's derived and spectral ontology (DEF-13), $\otimes_A$ is the
+derived tensor product $\otimes_A^L$; the underived tensor on discrete
+modules is the further truncation $\pi_0(-\otimes_A^L-)$. Writing
+$B\otimes_A M$ without stating whether it is derived or underived leaves
+the reader unable to determine whether the construction is homotopically
+correct. State the derived product; note when passage to $\pi_0$ recovers
+the classical formula.
+
+**Banned:** "$B\otimes_A M$" and "$b_B(c\otimes x,d\otimes y)=cd\otimes
+b(x,y)$" with no indication whether $\otimes_A$ is $\otimes_A^L$.
+
+**Preferred:** "$B\otimes_A^L M$ for derived extension of scalars; its
+$\pi_0$ recovers the classical $B\otimes_A M$ for discrete $A,B,M$." Name
+the derived product where it is meant.
+
+### `TERM-3`: "Value module" for codomain or target
+
+"Value module" is a coinage for the codomain or target of a bilinear
+form. The standard terms are codomain, target, or value object. Do not
+coin a synonym for a standard categorical term.
+
+**Banned:** "whose value module is $B\otimes_A W$."
+
+**Preferred:** "with codomain $B\otimes_A W$" or "with target
+$B\otimes_A W$."
