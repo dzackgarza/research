@@ -1714,6 +1714,7 @@ behavior.
 
 
 
+| `ARCHIVE-framed-free-modules-20260911-1146` | archive reconciliation / framed free modules | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/modules/test_free_module_unit_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T11:46:00Z |
 | `CORE-sparse-free-algebra-category-boundary-20260911-0310` | category-boundaries / sparse free-algebra placement through owned Cat meet | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/algebras/sparse_free_algebras.py; tests/algebras/test_sparse_free_algebra_category_boundary.py` (write) | `fb0ab682` | 2026-09-11T03:10:00Z |
 | `ARCHIVE-functor-image-homs-20260910-0125` | archive reconciliation / functor-image Hom composition and underlying codomain Hom | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/abstract_categories/functor_images.py; tests/categories/test_functor_images_archive.py` (write) | `e20e5840` | 2026-09-10T01:25:00Z |
 | `ARCHIVE-vinberg-weighted-semantics-20260909-1346` | archive reconciliation / weighted Vinberg reflection semantics | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/vinberg_invariants.py; tests/lattices/test_vinberg_weighted_graph_semantics_archive.py` (write) | `90c3c5d9` | 2026-09-09T13:46:00Z |
