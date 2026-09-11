@@ -26,8 +26,12 @@ _EXPORTS = {
     'DirectedSystem': ('dzack_research.preamble.categories.abstract_categories.products', 'DirectedSystem'),
     'InverseSystem': ('dzack_research.preamble.categories.abstract_categories.products', 'InverseSystem'),
     'LimitsOfCategory': ('dzack_research.preamble.categories.abstract_categories.products', 'LimitsOfCategory'),
+    'ParallelPairCategory': ('dzack_research.preamble.categories.abstract_categories.products', 'ParallelPairCategory'),
+    'ParallelPairDiagram': ('dzack_research.preamble.categories.abstract_categories.products', 'ParallelPairDiagram'),
     'ProductConeCategory': ('dzack_research.preamble.categories.abstract_categories.products', 'ProductConeCategory'),
     'ProductsOfCategory': ('dzack_research.preamble.categories.abstract_categories.products', 'ProductsOfCategory'),
+    'SelectedColimitConstruction': ('dzack_research.preamble.categories.abstract_categories.products', 'SelectedColimitConstruction'),
+    'SelectedLimitConstruction': ('dzack_research.preamble.categories.abstract_categories.products', 'SelectedLimitConstruction'),
     'Span': ('dzack_research.preamble.categories.abstract_categories.products', 'Span'),
     'SpanCategory': ('dzack_research.preamble.categories.abstract_categories.products', 'SpanCategory'),
     'TensorProductCategory': ('dzack_research.preamble.categories.abstract_categories.products', 'TensorProductCategory'),
@@ -86,10 +90,12 @@ _EXPORTS = {
     'WideSubcategory': ('dzack_research.preamble.categories.abstract_categories.arrow_categories', 'WideSubcategory'),
     'Biproduct': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Biproduct'),
     'Coequalizer': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Coequalizer'),
+    'CoequalizerConstruction': ('dzack_research.preamble.categories.abstract_categories.constructions', 'CoequalizerConstruction'),
     'CoequalizerOfFamily': ('dzack_research.preamble.categories.abstract_categories.constructions', 'CoequalizerOfFamily'),
     'Cokernel': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Cokernel'),
     'Coproduct': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Coproduct'),
     'Equalizer': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Equalizer'),
+    'EqualizerConstruction': ('dzack_research.preamble.categories.abstract_categories.constructions', 'EqualizerConstruction'),
     'EqualizerOfFamily': ('dzack_research.preamble.categories.abstract_categories.constructions', 'EqualizerOfFamily'),
     'FiberProduct': ('dzack_research.preamble.categories.abstract_categories.constructions', 'FiberProduct'),
     'Kernel': ('dzack_research.preamble.categories.abstract_categories.constructions', 'Kernel'),
@@ -100,7 +106,7 @@ _EXPORTS = {
     'TensorSquare': ('dzack_research.preamble.categories.abstract_categories.constructions', 'TensorSquare'),
 }
 
-__all__ = ['FunctorImageForgetfulFunctor', 'FunctorImageMorphism', 'ImageOfFunctor', 'DirectSumDecomposition', 'DirectSumObjects', 'BiproductCategory', 'Cocone', 'CoconeCategory', 'ColimitsOfCategory', 'Cone', 'ConeCategory', 'CoproductCoconeCategory', 'CoproductsOfCategory', 'DiagramCategory', 'DirectSumCategory', 'DirectedSystem', 'InverseSystem', 'LimitsOfCategory', 'ProductConeCategory', 'ProductsOfCategory', 'Span', 'SpanCategory', 'TensorProductCategory', 'common_category_of', 'coproduct_cocone_category', 'product_cone_category', 'Cat', 'CategoryFunctorMorphism', 'CategoryObject', 'FunctorCategory', 'NaturalTransformationMorphism', 'AutCategoryConstruction', 'AutCategoryOf', 'CategoricalHomset', 'CategoryPacket', 'CategoryPacketMethods', 'EndCategoryConstruction', 'EndCategoryOf', 'EpiCategoryConstruction', 'EpiCategoryOf', 'HomCategories', 'HomCategoryConstruction', 'HomCategoryOf', 'IsoCategoryConstruction', 'IsoCategoryOf', 'MonoCategoryConstruction', 'MonoCategoryOf', 'category_packet', 'common_category', 'Isomorphism', 'IsoArrowCategory', 'EndArrowCategory', 'AutomorphismArrowCategory', 'EndofunctorAlgebras', 'OppositeCategory', 'OppositeMorphism', 'ProductCategory', 'ProductMorphism', 'ArrowCategory', 'CategoricalIsomorphism', 'CommutativeSquare', 'Core', 'CoreCategory', 'CosliceCategory', 'CosliceUnder', 'EpimorphismArrowCategory', 'MonomorphismArrowCategory', 'SliceCategory', 'SliceOver', 'SubobjectCategory', 'SubobjectHomset', 'SubobjectMorphism', 'SubobjectsOf', 'SuperobjectCategory', 'SuperobjectsOf', 'WideSubcategory', 'Biproduct', 'Coequalizer', 'CoequalizerOfFamily', 'Cokernel', 'Coproduct', 'Equalizer', 'EqualizerOfFamily', 'FiberProduct', 'Kernel', 'Product', 'Pushout', 'Subobjects', 'TensorProduct', 'TensorSquare']
+__all__ = ['FunctorImageForgetfulFunctor', 'FunctorImageMorphism', 'ImageOfFunctor', 'DirectSumDecomposition', 'DirectSumObjects', 'BiproductCategory', 'Cocone', 'CoconeCategory', 'ColimitsOfCategory', 'Cone', 'ConeCategory', 'CoproductCoconeCategory', 'CoproductsOfCategory', 'DiagramCategory', 'DirectSumCategory', 'DirectedSystem', 'InverseSystem', 'LimitsOfCategory', 'ParallelPairCategory', 'ParallelPairDiagram', 'ProductConeCategory', 'ProductsOfCategory', 'SelectedColimitConstruction', 'SelectedLimitConstruction', 'Span', 'SpanCategory', 'TensorProductCategory', 'common_category_of', 'coproduct_cocone_category', 'product_cone_category', 'Cat', 'CategoryFunctorMorphism', 'CategoryObject', 'FunctorCategory', 'NaturalTransformationMorphism', 'AutCategoryConstruction', 'AutCategoryOf', 'CategoricalHomset', 'CategoryPacket', 'CategoryPacketMethods', 'EndCategoryConstruction', 'EndCategoryOf', 'EpiCategoryConstruction', 'EpiCategoryOf', 'HomCategories', 'HomCategoryConstruction', 'HomCategoryOf', 'IsoCategoryConstruction', 'IsoCategoryOf', 'MonoCategoryConstruction', 'MonoCategoryOf', 'category_packet', 'common_category', 'Isomorphism', 'IsoArrowCategory', 'EndArrowCategory', 'AutomorphismArrowCategory', 'EndofunctorAlgebras', 'OppositeCategory', 'OppositeMorphism', 'ProductCategory', 'ProductMorphism', 'ArrowCategory', 'CategoricalIsomorphism', 'CommutativeSquare', 'Core', 'CoreCategory', 'CosliceCategory', 'CosliceUnder', 'EpimorphismArrowCategory', 'MonomorphismArrowCategory', 'SliceCategory', 'SliceOver', 'SubobjectCategory', 'SubobjectHomset', 'SubobjectMorphism', 'SubobjectsOf', 'SuperobjectCategory', 'SuperobjectsOf', 'WideSubcategory', 'Biproduct', 'Coequalizer', 'CoequalizerConstruction', 'CoequalizerOfFamily', 'Cokernel', 'Coproduct', 'Equalizer', 'EqualizerConstruction', 'EqualizerOfFamily', 'FiberProduct', 'Kernel', 'Product', 'Pushout', 'Subobjects', 'TensorProduct', 'TensorSquare']
 
 def __getattr__(name):
     try:

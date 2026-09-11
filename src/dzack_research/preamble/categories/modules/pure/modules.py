@@ -24,6 +24,11 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
+    CoconeCategory,
+    ConeCategory,
+    ParallelPairDiagram,
+    SelectedColimitConstruction,
+    SelectedLimitConstruction,
     _factor_family,
     _finite_factor_family,
 )
@@ -421,6 +426,13 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def _categorical_equalizer(self, left_morphism, right_morphism):
             r"""Realize an equalizer in ``R-Mod`` as ``ker(left-right)``."""
+            return self._categorical_equalizer_construction(
+                left_morphism, right_morphism
+            ).object()
+
+        @cached_method
+        def _categorical_equalizer_construction(self, left_morphism, right_morphism):
+            r"""Realize the selected equalizer cone through ``ker(left-right)``."""
             if (
                 left_morphism.domain() not in self
                 or left_morphism.codomain() not in self
@@ -428,10 +440,39 @@ class Modules(OwnedCategoryOverBaseRing):
                 or left_morphism.codomain() is not right_morphism.codomain()
             ):
                 raise ValueError("module equalizer arrows must be parallel R-linear maps")
-            return (left_morphism - right_morphism).kernel()
+            equalizer = (left_morphism - right_morphism).kernel()
+            inclusion = equalizer.inclusion()
+            diagram = ParallelPairDiagram(left_morphism, right_morphism, self)
+            shape = diagram.domain()
+            universal_cone = ConeCategory(diagram).cone(
+                equalizer,
+                lambda index: (
+                    inclusion
+                    if index is shape.source()
+                    else left_morphism * inclusion
+                ),
+            )
+
+            def factorizer(cone):
+                source_leg = cone.structure_morphism(shape.source())
+                source = cone.apex()
+                return module_homset(source, equalizer)(
+                    lambda label: inclusion.lift(
+                        source_leg(source.module_generator(label))
+                    )
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
         def _categorical_coequalizer(self, left_morphism, right_morphism):
             r"""Realize a coequalizer in ``R-Mod`` as ``coker(left-right)``."""
+            return self._categorical_coequalizer_construction(
+                left_morphism, right_morphism
+            ).object()
+
+        @cached_method
+        def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
+            r"""Realize the selected coequalizer cocone through ``coker(left-right)``."""
             if (
                 left_morphism.domain() not in self
                 or left_morphism.codomain() not in self
@@ -439,7 +480,29 @@ class Modules(OwnedCategoryOverBaseRing):
                 or left_morphism.codomain() is not right_morphism.codomain()
             ):
                 raise ValueError("module coequalizer arrows must be parallel R-linear maps")
-            return (left_morphism - right_morphism).cokernel()
+            difference = left_morphism - right_morphism
+            coequalizer = difference.cokernel()
+            projection = difference.cokernel_projection()
+            diagram = ParallelPairDiagram(left_morphism, right_morphism, self)
+            shape = diagram.domain()
+            universal_cocone = CoconeCategory(diagram).cocone(
+                coequalizer,
+                lambda index: (
+                    projection * left_morphism
+                    if index is shape.source()
+                    else projection
+                ),
+            )
+
+            def factorizer(cocone):
+                target_leg = cocone.costructure_morphism(shape.target())
+                target = cocone.apex()
+                ambient = left_morphism.codomain()
+                return module_homset(coequalizer, target)(
+                    lambda label: target_leg(ambient.module_generator(label))
+                )
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
         def equalizer_of_family(self, arrows):
             r"""Return the wide equalizer of a family of parallel arrows."""

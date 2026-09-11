@@ -331,12 +331,28 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return this category's represented equalizer of parallel arrows."""
 
         @abstract_method(optional=True)
+        def _categorical_equalizer_construction(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ):
+            r"""Return the selected equalizer with its diagram, cone and factorization."""
+
+        @abstract_method(optional=True)
         def _categorical_coequalizer(
             self,
             left_morphism: Morphism,
             right_morphism: Morphism,
         ) -> Parent:
             r"""Return this category's represented coequalizer of parallel arrows."""
+
+        @abstract_method(optional=True)
+        def _categorical_coequalizer_construction(
+            self,
+            left_morphism: Morphism,
+            right_morphism: Morphism,
+        ):
+            r"""Return the selected coequalizer with its diagram, cocone and factorization."""
 
         @abstract_method(optional=True)
         def _categorical_equalizer_family(self, morphisms: IndexedFamily) -> Parent:

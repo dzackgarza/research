@@ -154,6 +154,24 @@ def Equalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     return construction(left_morphism, right_morphism)
 
 
+def EqualizerConstruction(left_morphism: Morphism, right_morphism: Morphism):
+    r"""Return the selected equalizer construction, including its universal cone."""
+    if (
+        left_morphism.domain() is not right_morphism.domain()
+        or left_morphism.codomain() is not right_morphism.codomain()
+    ):
+        raise ValueError("equalizer arrows must be parallel")
+    category = _common_category(
+        left_morphism.domain(),
+        left_morphism.codomain(),
+    )
+    construction = category._categorical_equalizer_construction
+    assert construction is not NotImplemented, (
+        "no selected equalizer construction is owned by the arrows' common category"
+    )
+    return construction(left_morphism, right_morphism)
+
+
 def Coequalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     r"""Return the represented coequalizer of two parallel arrows."""
     if (
@@ -168,6 +186,24 @@ def Coequalizer(left_morphism: Morphism, right_morphism: Morphism) -> Parent:
     construction = category._categorical_coequalizer
     assert construction is not NotImplemented, (
         "no represented coequalizer is owned by the arrows' common category"
+    )
+    return construction(left_morphism, right_morphism)
+
+
+def CoequalizerConstruction(left_morphism: Morphism, right_morphism: Morphism):
+    r"""Return the selected coequalizer construction, including its universal cocone."""
+    if (
+        left_morphism.domain() is not right_morphism.domain()
+        or left_morphism.codomain() is not right_morphism.codomain()
+    ):
+        raise ValueError("coequalizer arrows must be parallel")
+    category = _common_category(
+        left_morphism.domain(),
+        left_morphism.codomain(),
+    )
+    construction = category._categorical_coequalizer_construction
+    assert construction is not NotImplemented, (
+        "no selected coequalizer construction is owned by the arrows' common category"
     )
     return construction(left_morphism, right_morphism)
 
@@ -222,7 +258,7 @@ def Subobjects(
 
 
 __all__ = [
-    "Biproduct", "Coequalizer", "CoequalizerOfFamily", "Cokernel", "Coproduct",
-    "Equalizer", "EqualizerOfFamily", "FiberProduct", "Kernel", "Product",
+    "Biproduct", "Coequalizer", "CoequalizerConstruction", "CoequalizerOfFamily", "Cokernel", "Coproduct",
+    "Equalizer", "EqualizerConstruction", "EqualizerOfFamily", "FiberProduct", "Kernel", "Product",
     "Pushout", "Subobjects", "TensorProduct", "TensorSquare",
 ]

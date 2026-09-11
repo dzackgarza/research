@@ -5,11 +5,12 @@ from typing import Any
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown, UnknownClass
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat, FunctorCategory
 from dzack_research.preamble.categories.abstract_categories.functors import (
@@ -27,6 +28,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import object_of
@@ -61,6 +63,248 @@ class DirectedSystem(DiagramCategory):
 
 class InverseSystem(DiagramCategory):
     r"""A diagram category read contravariantly as an inverse system."""
+
+
+class ParallelPairMorphism(Morphism):
+    r"""One arrow of the walking parallel-pair category ``0 ⇉ 1``."""
+
+    def __init__(self, parent, name: str) -> None:
+        Morphism.__init__(self, parent)
+        self._name = name
+
+    def name(self) -> str:
+        return self._name
+
+    def is_identity(self) -> bool:
+        return self.domain() is self.codomain()
+
+    def __mul__(self, other):
+        if not isinstance(other, ParallelPairMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        if self.is_identity():
+            return other
+        if other.is_identity():
+            return self
+        raise ValueError("the walking parallel pair has no composite of two nonidentity arrows")
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, ParallelPairMorphism)
+            and other.parent() is self.parent()
+            and other.name() == self.name()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash((id(self.parent()), self.name()))
+
+
+class ParallelPairHomset(CategoricalHomset):
+    Element = ParallelPairMorphism
+
+    def __init__(self, family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, family, domain, codomain)
+
+    def parallel_pair_category(self):
+        return self.base_category()
+
+    def cardinality(self):
+        category = self.parallel_pair_category()
+        if self.domain() is self.codomain():
+            return cardinal(1)
+        if self.domain() is category.source() and self.codomain() is category.target():
+            return cardinal(2)
+        return cardinal(0)
+
+    def _element_constructor_(self, name=None):
+        category = self.parallel_pair_category()
+        if self.domain() is self.codomain():
+            if name not in (None, "identity"):
+                raise ValueError("an endomorphism of the walking parallel pair is its identity")
+            return ParallelPairMorphism(self, "identity")
+        if self.domain() is category.source() and self.codomain() is category.target():
+            if name not in ("left", "right"):
+                raise ValueError("the two parallel arrows are named 'left' and 'right'")
+            return ParallelPairMorphism(self, name)
+        raise ValueError("the walking parallel pair has no arrow from 1 to 0")
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one object")
+        return self()
+
+
+class ParallelPairHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = ParallelPairHomset
+
+
+class ParallelPairCategory(OwnedCategory):
+    r"""The walking parallel pair ``0 ⇉ 1``."""
+
+    _HomCategory = ParallelPairHomCategoryConstruction
+
+    class ParentMethods:
+        def __init__(self, position, **rest) -> None:
+            self._position = int(position)
+            super().__init__(**rest)
+
+        def position(self) -> int:
+            return self._position
+
+        def _repr_(self) -> str:
+            return str(self.position())
+
+    def __init__(self) -> None:
+        self._positions = finite_ordered_set((0, 1))
+        self._objects = indexed_family(
+            self._positions,
+            lambda position: object_of(self, position=position),
+            name="Objects of the walking parallel pair",
+        )
+        super().__init__()
+
+    def super_categories(self):
+        return [OwnedObjects()]
+
+    def object_set(self):
+        return self._positions
+
+    def objects(self):
+        return self._objects
+
+    def source(self):
+        return self._objects[0]
+
+    def target(self):
+        return self._objects[1]
+
+    def __call__(self, position):
+        return self._objects[int(position)]
+
+    def __contains__(self, candidate) -> bool:
+        return getattr(candidate, "category", lambda: None)() is self
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a walking-parallel-pair Hom requires its owned objects")
+        return self.HomCategory().Of(domain, codomain)
+
+    @cached_method
+    def left(self):
+        return self.Mor(self.source(), self.target())("left")
+
+    @cached_method
+    def right(self):
+        return self.Mor(self.source(), self.target())("right")
+
+    def identity(self, obj):
+        return self.Mor(obj, obj).identity()
+
+
+class ParallelPairDiagram(Functor):
+    r"""A diagram ``A ⇉ B`` retaining its two parallel arrows."""
+
+    def __init__(self, left: Morphism, right: Morphism, target_category: Category) -> None:
+        if left.domain() is not right.domain() or left.codomain() is not right.codomain():
+            raise ValueError("a parallel-pair diagram requires parallel arrows")
+        self._left = left
+        self._right = right
+        self._shape = ParallelPairCategory()
+        super().__init__(self._shape, target_category)
+
+    def left(self):
+        return self._left
+
+    def right(self):
+        return self._right
+
+    def source_object(self):
+        return self.left().domain()
+
+    def target_object(self):
+        return self.left().codomain()
+
+    def _apply_object(self, obj):
+        if obj is self.domain().source():
+            return self.source_object()
+        if obj is self.domain().target():
+            return self.target_object()
+        raise ValueError("the object is not in the walking parallel pair")
+
+    def _apply_morphism(self, morphism):
+        if morphism.is_identity():
+            image = self(morphism.domain())
+            return _category_homset(self.codomain(), image, image).identity()
+        if morphism.name() == "left":
+            return self.left()
+        if morphism.name() == "right":
+            return self.right()
+        raise ValueError("unknown arrow of the walking parallel pair")
+
+
+class SelectedLimitConstruction(SageObject):
+    r"""A selected universal cone over one represented diagram."""
+
+    def __init__(self, diagram, universal_cone, factorizer) -> None:
+        if universal_cone.diagram() is not diagram:
+            raise ValueError("a selected limit retains a cone over its own diagram")
+        self._diagram = diagram
+        self._universal_cone = universal_cone
+        self._factorizer = factorizer
+
+    def diagram(self):
+        return self._diagram
+
+    def cone(self):
+        return self._universal_cone
+
+    def object(self):
+        return self.cone().apex()
+
+    apex = object
+
+    def structure_morphism(self, index):
+        return self.cone().structure_morphism(index)
+
+    def factor(self, cone):
+        if cone.diagram() is not self.diagram():
+            raise ValueError("the cone to factor must lie over this construction's diagram")
+        apex_map = self._factorizer(cone)
+        return ConeCategory(self.diagram()).Mor(cone, self.cone())(apex_map)
+
+
+class SelectedColimitConstruction(SageObject):
+    r"""A selected universal cocone under one represented diagram."""
+
+    def __init__(self, diagram, universal_cocone, factorizer) -> None:
+        if universal_cocone.diagram() is not diagram:
+            raise ValueError("a selected colimit retains a cocone under its own diagram")
+        self._diagram = diagram
+        self._universal_cocone = universal_cocone
+        self._factorizer = factorizer
+
+    def diagram(self):
+        return self._diagram
+
+    def cocone(self):
+        return self._universal_cocone
+
+    def object(self):
+        return self.cocone().apex()
+
+    apex = object
+
+    def costructure_morphism(self, index):
+        return self.cocone().costructure_morphism(index)
+
+    def factor(self, cocone):
+        if cocone.diagram() is not self.diagram():
+            raise ValueError("the cocone to factor must lie under this construction's diagram")
+        apex_map = self._factorizer(cocone)
+        return CoconeCategory(self.diagram()).Mor(self.cocone(), cocone)(apex_map)
 
 
 
@@ -708,8 +952,12 @@ __all__ = [
     "DirectedSystem",
     "InverseSystem",
     "LimitsOfCategory",
+    "ParallelPairCategory",
+    "ParallelPairDiagram",
     "ProductConeCategory",
     "ProductsOfCategory",
+    "SelectedColimitConstruction",
+    "SelectedLimitConstruction",
     "Span",
     "SpanCategory",
     "TensorProductCategory",
