@@ -2308,3 +2308,84 @@ $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$." Similarly, "A family
 $(m_i)_{i\in I}$ in $M$ is a **basis** if …," "A **based module** is a
 pair $(M,e)$ …," "A $t$-structure is **hereditary** if …" Bold the term;
 do not bold surrounding prose.
+
+## Contributing to this document
+
+When reading the corpus, audit for new instances of the general patterns
+below and always mint general policies grounded in examples that illustrate
+them. Extremely importantly, every corrected example stored in this document
+must be grounded in a standard pattern — a formulation, structure,
+rhetorical device, or convention — found by reading actual textbooks and
+papers, e.g. in Zotero. Do not invent the preferred form from memory; read
+the standard source and transcribe from it.
+
+The universal themes seen in slop writing, based on this session and the
+contributing document, are:
+
+**1. Truncated ontology where the modern is derived/spectral.** Rings for
+$\mathbb{E}_\infty$-ring spectra, modules for module spectra, categories
+for $\infty$-categories, $K_0$ as group completion for $\pi_0 K(S)$, $K_0$
+as a ring for $K(S)$ as an $\mathbb{E}_\infty$-ring spectrum (DEF-10,
+DEF-13, DEF-8, DEF-9, DEF-14, SEC-6). Anchoring in a superseded framework
+(1970s group completion vs $S_\bullet$ and Zakharevich/Campbell) and
+working truncated without marking $\pi_0 HR$ or $H(\pi_0R)$.
+
+**2. Prose paraphrase of a precise categorical statement** (PR-15 general
+pattern). Vague English — "is an invariant of isomorphism classes," "is
+functorial for …," "relating $\gamma$ to $\alpha$," "commuting with the
+projections," "is what licenses $a_1\otimes\cdots\otimes a_n$," "is
+additional data / does not follow from notation" — for a precise
+factorization through $\pi_0$, a functor
+$\mathbf{SymMonCat}\to\mathbf{Spectra}$, a hexagon diagram, a tuple
+$(\mathcal{C},\otimes,\mathbf{1},\alpha,\lambda,\varrho)$, or a moduli of
+equivalences ($\mathbf{LMod}_R\simeq\mathbf{RMod}_R$ as an invertible
+bimodule). Wordier and less precise than the statement; names no domain,
+codomain, or diagram.
+
+**3. Binding, scoping, and notation.** Symbols used without being bound —
+stating a type "symmetric monoidal category" does not bind $\otimes$; the
+tuple does (SYM-1, SEC header). Overloaded $1$ for terminal object and
+$\operatorname{id}$, maps without $\operatorname{dom}/\operatorname{cod}$,
+symbols introduced after use in a "where" clause, $R^{(I)}$ invented
+without the free functor $F\colon\mathbf{Sets}\to\mathbf{LMod}_R$
+($F(I)=\bigoplus_I R$, not $R^I$), inconsistent
+$A\text{-}\mathbf{Mod}$ vs $B^{\mathrm{op}}\text{-}\mathbf{Mod}$, and
+strict $A=A^{\mathrm{op}}$ for the canonical $A\simeq A^{\mathrm{op}}$
+of tuples (SYM-4–11, SYM-13, DEF-23, SYM-12 for $\otimes_A$ vs
+$\otimes_A^L$, MA-14 for $M\times M\to W$ "bilinear" vs $M\otimes_A M\to
+W$).
+
+**4. Structural and scaffolding failures.** One block for many notions with
+mixed logical status — unconditional replete full subcategories,
+integral-domain-conditional torsion, and a meta-remark about general
+rings — instead of one notion per fenced block (DEF-15, DEF-19, DEF-1);
+reminder masquerading as definition that merely assigns notation
+$A\text{-}\mathbf{Mod}$ without constructing $\mathbf{LMod}_R$ (DEF-17);
+category defined pointwise by objects $(M,e)$ and
+$\operatorname{Bas}_I(M)$ without morphisms or forgetful functors to
+$\mathbf{LMod}_R/\mathbf{Sets}$ (DEF-25); missing scaffolding — free
+functor before basis, generating family before freeness,
+$\operatorname{Ann}_R(m)$ before torsion (DEF-23, MA-15); sections with no
+fenced unit, arbitrary breaking that inverts dependency, and sections
+that are entirely remarks with no primary unit to remark on (SEC-1–7).
+The skeleton — fenced units with proofs — must be complete after deleting
+glue; remarks are secondary pedagogy.
+
+**5. Terminological slippage and characterization as definition.** Coinage
+with no referent — "value module," "torsion theory," "homomorphism" for
+"morphism/map in $\mathbf{CAlg}$," "carries," "data," "identifies
+conventions" (TERM-2–4, EV-6, PR-20); compound terms by bullet order
+("finitely generated projective: both conditions hold," DEF-21); "some
+$R^n\twoheadrightarrow M$ is surjective" for $\exists$ (PR-22);
+presenting a characteristic equivalence as the definition — projective as
+direct summand of free instead of the lifting property, with
+"$\text{direct summand iff projective}$" as a theorem (DEF-22).
+
+**6. Rhetorical slop.** Manufactured negative parallelism — "their mere
+existence supplies no order relation," "$a=b$ is a theorem, never a
+definitional identity" (PR-2) — contentless because existence never
+supplies structure unless defined, and patronizing strawman negation —
+"does not follow merely from notation," "is additional data" negating a
+premise no one held, with corrective dialectic for an audience that
+already distinguishes $\mathbb{E}_1$ from $\mathbb{E}_\infty$ and
+$\mathbf{LMod}_R$ from $\mathbf{RMod}_R$ (PR-16–18).
