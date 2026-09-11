@@ -1662,7 +1662,6 @@ found later, write a new task from the then-current source and its desired
 behavior.
 
 ### Active claims
-| `ARCHIVE-forms-classifiers-20260911-1050` | archive reconciliation / quadratic and bilinear form classifier vocabulary | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/forms/test_classifier_vocabulary.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T10:50:00Z |
 
 
 
