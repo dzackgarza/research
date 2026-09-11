@@ -462,71 +462,6 @@ restart of the module/algebra/action constructions.
 
 ### Shared diagrams and universal constructions
 
-- [ ] **`universal-constructions`**. **Needs:** none.
-  Integrate the general diagram and universal-construction contract with
-  retained systems and theorem-backed realizations, ready for completion to consume.
-  **Owners:** `categories/abstract_categories/products.py`'s `DiagramCategory`,
-  `DirectedSystem`, `InverseSystem`, cone/cocone and selected-construction
-  declarations; existing functor, natural-transformation, indexed-family,
-  product/coproduct, kernel/quotient and `Mor` owners. Coordinate these shared
-  files with their live reservations before editing.
-  **Starting point:** diagram and system declarations, selected finite product
-  cones and coproduct cocones already exist. Inspect the complete live paths
-  before deciding the remaining delta; their names alone establish neither the
-  full contract nor its absence. The observed completion gap is recorded in
-  [COMPLAINTS](COMPLAINTS.md#completion-must-be-a-limit-rather-than-one-quotient).
-  **Mathematical contract:** apply the normative
-  [limit/colimit specification](CONTRIBUTING.md#limits-colimits-and-structured-specialization)
-  and `OWN-14`. Keep general shape separate from the specialized realization.
-  Preserve parallel arrows, owned indexing maps, composition, and infinite
-  represented families without eager traversal. An inverse system uses the
-  correct opposite indexing category; directed does not mean sequential.
-  **Threading decision:** at each declaration, choose inheritance from the
-  actual general construction or composition with its stored owned instance.
-  Diagram access, cone/cocone legs, restriction, universal factorization and
-  induced morphisms must reuse that authority. Preserve distinct presentations
-  of a shared result without mutating the result with caller-specific state.
-  **General realizations:** supply the product/equalizer and coproduct/coequalizer
-  reductions where their component constructions exist. Keep indexed products
-  and coproducts in the declared category. Use its actual kernel, quotient,
-  tensor or other maintained operations where appropriate; do not copy module
-  coproducts into ring code. A primitive product/equalizer realization establishes
-  general universal data without calling the same general solver recursively.
-  **Restriction and maps:** precompose by an owned indexing functor, retaining
-  it with the restricted diagram. Supply comparisons in the specification's
-  directions and maps induced by nonidentity natural transformations. Preserve
-  composition of restrictions and induced maps. A chosen finite diagram, its
-  (co)limit, a stage and finite element information remain distinct outputs.
-  **Computational frontier:** an exact represented infinite construction need
-  not decide all equality or enumerate its elements. Retain existence hypotheses
-  and the actual target category; a stored diagram alone cannot impersonate an
-  existing limit. Do not add a local infinite-system solver or a theorem registry.
-  Existing private adapters own supported concrete computations (`OWN-08`).
-  **First consumers:** the module equalizer and coequalizer specimens below
-  exercise the general constructor, universal maps and induced morphisms through
-  actual module operations. Deliver these operational constructions, not merely
-  abstract declarations. The `completion` node owns the further integration of
-  this same contract with its ideal-power diagram and maintained series engine;
-  that requirement is retained there, not a reverse prerequisite of this node.
-  **Separating specimens:** a parallel pair of module maps distinguishes the
-  equalizer from the product and the coequalizer from the coproduct; use zero
-  and multiplication by `2` on `ZZ` to distinguish the zero equalizer and
-  `ZZ/2ZZ` coequalizer. An empty diagram distinguishes terminal from initial
-  construction in a category where they differ. A system on `N x N` exercises
-  incomparable indices and explicit finite rectangles. An inverse tower with
-  maps multiplication by `2` on `ZZ` must not infer that every stage element
-  lifts to its limit; a direct sequence `ZZ -> 0 -> 0 -> ...` must not treat
-  its first coprojection as injective. Reuse completion's existing precision
-  specimens and add a nonidentity compatible map of quotient systems.
-  **Acceptance:** public mathematical operations follow the same general
-  construction through each delivered specialization, with owned constituents,
-  compatible universal maps and source-backed realization selection. Source
-  review establishes delegation, not just agreement of answers; behavioral
-  specimens establish the mathematical distinctions under terminal T. Preserve
-  unfinished general cases when a bounded realization lands. The specification's
-  homotopical boundary binds future consumers but does not add a spectra engine
-  or an unrelated stable-homotopy workstream to this construction unit.
-
 ### Constructor and ownership convergence
 
 - [ ] **`constructor-convergence`**. **Needs:** none.
@@ -1642,4 +1577,3 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `UNIV-module-eq-coeq-20260911-2038` | universal-constructions / module equalizer-coequalizer universal data | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/abstract_categories/products.py; src/dzack_research/preamble/categories/abstract_categories/constructions.py; src/dzack_research/preamble/categories/abstract_categories/cat.py; src/dzack_research/preamble/categories/abstract_categories/__init__.py; src/dzack_research/preamble/categories/abstract_categories/functors.py; src/dzack_research/preamble/categories/modules/pure/modules.py; src/dzack_research/preamble/categories/sets/set_categories.py; tests/categories/test_module_universal_constructions.py; src/dzack_research/preamble/all.py` (write) | `19e6c16d+univ` | 2026-09-11T20:38:00Z |

@@ -33,7 +33,7 @@ from dzack_research.preamble.categories.functors.core import Functor, NaturalTra
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
 from dzack_research.preamble.owned_category import object_of
 
 
@@ -74,6 +74,146 @@ class InverseSystem(DiagramCategory):
     def base_index_category(self) -> Category:
         r"""Return ``J`` when this inverse system category is ``[J^op,C]``."""
         return self._base_index_category
+
+
+class PosetMorphism(Morphism):
+    r"""The unique arrow ``p -> q`` of a thin poset category when ``p <= q``."""
+
+    def __init__(self, parent) -> None:
+        Morphism.__init__(self, parent)
+
+    def __mul__(self, other):
+        if not isinstance(other, PosetMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return self.parent().poset_category().Mor(other.domain(), self.codomain()).unique()
+
+    def __eq__(self, other) -> bool:
+        return isinstance(other, PosetMorphism) and other.parent() is self.parent()
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(id(self.parent()))
+
+
+class PosetHomset(CategoricalHomset):
+    Element = PosetMorphism
+
+    def poset_category(self):
+        return self.base_category()
+
+    def cardinality(self):
+        category = self.poset_category()
+        return cardinal(
+            1
+            if category.le(self.domain().value(), self.codomain().value())
+            else 0
+        )
+
+    @cached_method
+    def unique(self):
+        if self.cardinality() != cardinal(1):
+            raise ValueError("there is no arrow between these incomparable poset objects")
+        return PosetMorphism(self)
+
+    def _element_constructor_(self, value=None):
+        if value is not None and value is not self.unique():
+            raise ValueError("a poset Hom-set has at most one arrow")
+        return self.unique()
+
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one object")
+        return self.unique()
+
+
+class PosetHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = PosetHomset
+
+
+class PosetCategory(OwnedCategory):
+    r"""The thin category attached to an owned partially ordered set ``P``.
+
+    Objects are the points of ``P`` and there is one arrow ``p -> q`` exactly
+    when ``p <= q``.  The object family is lazy, so an infinite poset remains
+    an infinite represented indexing category rather than an eagerly traversed
+    sequence.  ``le`` may be supplied when the owned set carries its order only
+    by construction rather than by element comparison.
+    """
+
+    _HomCategory = PosetHomCategoryConstruction
+
+    class ParentMethods:
+        def __init__(self, value, **rest) -> None:
+            self._value = value
+            super().__init__(**rest)
+
+        def value(self):
+            return self._value
+
+        def _repr_(self) -> str:
+            return repr(self.value())
+
+    def __init__(self, ordered_set, le=None) -> None:
+        if ordered_set not in Sets():
+            raise TypeError("a poset category requires an owned set of indices")
+        self._ordered_set = ordered_set
+        self._le = le
+        self._objects = indexed_family(
+            ordered_set,
+            lambda value: object_of(self, value=value),
+            name=f"Objects of the poset category on {ordered_set}",
+        )
+        super().__init__()
+
+    def _make_named_class_key(self, name):
+        return self._ordered_set, self._le
+
+    def super_categories(self):
+        return [OwnedObjects()]
+
+    def object_set(self):
+        return self._ordered_set
+
+    def objects(self):
+        return self._objects
+
+    def __call__(self, value):
+        return self._objects(self._ordered_set(value))
+
+    def __contains__(self, candidate) -> bool:
+        return getattr(candidate, "category", lambda: None)() is self
+
+    def le(self, left, right) -> bool:
+        left = self._ordered_set(left)
+        right = self._ordered_set(right)
+        if self._le is not None:
+            return bool(self._le(left, right))
+        return bool(left <= right)
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a poset Hom requires objects of this category")
+        return self.HomCategory().Of(domain, codomain)
+
+    def identity(self, obj):
+        return self.Mor(obj, obj).identity()
+
+    @cached_method
+    def arrows(self):
+        if self.object_set() not in FiniteSets():
+            raise NotImplementedError(
+                "the arrow set of an infinite poset category is represented by its order, not enumerated"
+            )
+        return finite_ordered_set(
+            tuple(
+                self.Mor(self(left), self(right)).unique()
+                for left in self.object_set()
+                for right in self.object_set()
+                if self.le(left, right)
+            )
+        )
 
 
 class FiniteOrdinalMorphism(Morphism):
@@ -1039,7 +1179,6 @@ class LimitsOfCategory(Category):
         try:
             object_set = shape.object_set()
             objects = shape.objects()
-            arrows = shape.arrows()
         except AttributeError as error:
             raise NotImplementedError(
                 "the theorem-backed realization currently requires an indexing category "
@@ -1049,6 +1188,12 @@ class LimitsOfCategory(Category):
             raise NotImplementedError(
                 "the current product/equalizer realization enumerates only a finite represented shape"
             )
+        try:
+            arrows = shape.arrows()
+        except AttributeError as error:
+            raise NotImplementedError(
+                "the theorem-backed realization currently requires a finite represented arrow set"
+            ) from error
         if not cardinal(arrows.cardinality()).is_finite():
             raise NotImplementedError(
                 "the current product/equalizer realization enumerates only a finite represented arrow set"
@@ -1406,6 +1551,7 @@ __all__ = [
     "LimitsOfCategory",
     "ParallelPairCategory",
     "ParallelPairDiagram",
+    "PosetCategory",
     "ProductConeCategory",
     "ProductsOfCategory",
     "RestrictedDiagram",

@@ -1,3 +1,5 @@
+import pytest
+
 from dzack_research.preamble.all import BasedFreeModule, ZZ, module_homset
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Coequalizer,
@@ -13,9 +15,11 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
     ColimitsOfCategory,
     ConeCategory,
+    DirectedSystem,
     FiniteSequenceDiagram,
     InverseSystem,
     LimitsOfCategory,
+    PosetCategory,
     restrict_diagram,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -27,7 +31,7 @@ from dzack_research.preamble.categories.functors.core import (
     IdentityFunctor,
     NaturalTransformation,
 )
-from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.categories.sets import NN, cartesian_product_of, finite_ordered_set
 
 
 def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
@@ -292,3 +296,104 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     from_colimit = colimit.factor(cocone).apex_map()
     assert from_colimit * colimit.costructure_morphism(shape(0)) == from_zero
     assert from_colimit * colimit.costructure_morphism(shape(2)) == from_two
+
+
+def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_rectangles() -> None:
+    grid = cartesian_product_of((NN, NN))
+    index = PosetCategory(
+        grid,
+        le=lambda left, right: left[0] <= right[0] and left[1] <= right[1],
+    )
+    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    e = line.module_generator("e")
+
+    class GridSystem(Functor):
+        def __init__(self):
+            super().__init__(index, line.category())
+
+        def _apply_object(self, _obj):
+            return line
+
+        def _apply_morphism(self, morphism):
+            source = morphism.domain().value()
+            target = morphism.codomain().value()
+            exponent = (
+                int(target[0]) - int(source[0])
+                + int(target[1]) - int(source[1])
+            )
+            return module_homset(line, line)({"e": (2**exponent) * e})
+
+    system = GridSystem()
+    systems = DirectedSystem(index, line.category())
+    assert systems(system) in systems
+    northeast = index(grid((0, 1)))
+    southeast = index(grid((1, 0)))
+    assert index.Mor(northeast, southeast).cardinality() == cardinal(0)
+    assert index.Mor(southeast, northeast).cardinality() == cardinal(0)
+
+    rectangle_points = finite_ordered_set(
+        tuple(grid(point) for point in ((0, 0), (0, 1), (1, 0), (1, 1)))
+    )
+    rectangle = PosetCategory(rectangle_points, le=index.le)
+
+    class RectangleInclusion(Functor):
+        def __init__(self):
+            super().__init__(rectangle, index)
+
+        def _apply_object(self, obj):
+            return index(obj.value())
+
+        def _apply_morphism(self, morphism):
+            return index.Mor(
+                self(morphism.domain()), self(morphism.codomain())
+            ).unique()
+
+    restricted = restrict_diagram(system, RectangleInclusion())
+    construction = LimitsOfCategory(rectangle, line.category()).construction(restricted)
+    assert construction.diagram() is restricted
+    assert construction.structure_morphism(rectangle(grid((1, 1)))).codomain() is line
+
+    with pytest.raises(NotImplementedError, match="finite represented shape"):
+        LimitsOfCategory(index, line.category()).construction(system)
+
+
+def test_inverse_tower_retains_transition_maps_without_claiming_an_infinite_limit() -> None:
+    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    e = line.module_generator("e")
+    base_index = PosetCategory(NN)
+    inverse_systems = InverseSystem(base_index, line.category())
+    opposite = inverse_systems.index_category()
+
+    class DoublingTower(Functor):
+        def __init__(self):
+            super().__init__(opposite, line.category())
+
+        def _apply_object(self, _obj):
+            return line
+
+        def _apply_morphism(self, morphism):
+            underlying = morphism.underlying_arrow()
+            source = int(underlying.domain().value())
+            target = int(underlying.codomain().value())
+            return module_homset(line, line)({"e": (2 ** (target - source)) * e})
+
+    tower = DoublingTower()
+    base_arrow = base_index.Mor(base_index(0), base_index(2)).unique()
+    tower_arrow = opposite.Mor(opposite(base_index(2)), opposite(base_index(0)))(
+        base_arrow
+    )
+    assert tower(tower_arrow)(e) == 4 * e
+    with pytest.raises(NotImplementedError):
+        LimitsOfCategory(opposite, line.category()).construction(tower)
+
+
+def test_direct_sequence_coprojection_can_fail_to_be_injective() -> None:
+    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    zero = BasedFreeModule(ZZ, finite_ordered_set(()))
+    collapse = module_homset(line, zero).zero()
+    diagram = FiniteSequenceDiagram((line, zero), (collapse,), line.category())
+    colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
+    shape = diagram.domain()
+
+    first_coprojection = colimit.costructure_morphism(shape(0))
+    assert not first_coprojection.is_injective()
