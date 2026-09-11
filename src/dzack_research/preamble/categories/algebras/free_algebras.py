@@ -749,6 +749,32 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
                 self.algebra_generating_set(),
             )
 
+        @cached_method
+        def ring_center(self):
+            r"""Return the exact center of the represented free tensor algebra.
+
+            On zero or one generator the tensor algebra is commutative.  On at
+            least two generators, comparison of coefficients in the word basis
+            shows that an element commuting with two distinct generators has no
+            nonconstant word, so the center is exactly the scalar ring.
+            """
+            size = self.algebra_generating_set().cardinality()
+            if size.is_finite() and int(size.finite_value()) <= 1:
+                return self
+            return self.algebra_base_ring()
+
+        @cached_method
+        def center_inclusion(self):
+            r"""Return the inclusion ``Z(T) -> T`` under the selected center identification."""
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                ring_morphism,
+            )
+
+            center = self.ring_center()
+            if center is self:
+                return ring_morphism(self, self, lambda element: element)
+            return ring_morphism(center, self, lambda scalar: self(scalar))
+
 
 class SymmetricAlgebras(OwnedCategoryOverBaseRing):
     r"""Symmetric algebras of represented modules."""
