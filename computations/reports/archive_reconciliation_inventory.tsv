@@ -880,29 +880,29 @@ preamble/categories/group/g_sets.sage	Torsors.acting_group	method	81	0			unrevie
 preamble/categories/group/g_sets.sage	Torsors.ParentMethods	class	84	0			unreviewed
 preamble/categories/group/g_sets.sage	Torsors.ParentMethods.an_element	method	86	0			unreviewed
 preamble/categories/group/g_sets.sage	Torsors.ParentMethods.transporter	method	95	0			unreviewed
-preamble/categories/group/group_morphisms.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomomorphism	class	83	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomomorphism.parent	method	96	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomomorphism.gap	method	97	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomomorphism.domain	method	98	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomomorphism.codomain	method	99	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomset	class	101	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomset.domain	method	117	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupHomset.codomain	method	118	0			unreviewed
-preamble/categories/group/group_morphisms.sage	group_homset	function	210	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphism	class	215	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphism.parent	method	219	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups	class	221	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.super_categories	method	224	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ElementMethods	class	227	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ElementMethods.inverse	method	228	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ParentMethods	class	246	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ParentMethods.one	method	319	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ParentMethods.group_generators	method	325	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup	class	350	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.engine_subgroup	method	380	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.supergroup	method	383	0			unreviewed
-preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.set_supergroup	method	386	0			unreviewed
+preamble/categories/group/group_morphisms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomomorphism	class	83	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomomorphism.parent	method	96	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomomorphism.gap	method	97	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomomorphism.domain	method	98	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomomorphism.codomain	method	99	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomset	class	101	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomset.domain	method	117	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupHomset.codomain	method	118	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	group_homset	function	210	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphism	class	215	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphism.parent	method	219	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups	class	221	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.super_categories	method	224	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ElementMethods	class	227	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ElementMethods.inverse	method	228	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ParentMethods	class	246	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ParentMethods.one	method	319	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroups.ParentMethods.group_generators	method	325	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup	class	350	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.engine_subgroup	method	380	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.supergroup	method	383	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.set_supergroup	method	386	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/group/groups.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/groups.sage	SubgroupInclusion	class	69	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
 preamble/categories/group/groups.sage	SubgroupInclusion.is_injective	method	72	0			unreviewed

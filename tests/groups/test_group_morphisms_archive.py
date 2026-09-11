@@ -2,6 +2,12 @@ r"""Archive reconciliation for owned group homomorphisms and automorphisms."""
 
 from dzack_research.preamble.all import Groups, group_homset
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/group_morphisms.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/groups.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_generator_images_define_an_actual_checked_group_homomorphism() -> None:
     source = Groups.C(4)
