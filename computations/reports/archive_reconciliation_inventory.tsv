@@ -3085,8 +3085,8 @@ preamble/tests/framework/conftest.py	projective_framework	function	11	0		tests/c
 preamble/tests/framework/projective_framework_loader.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/framework/projective_framework_loader.py	NotebookNamespace	binding	18	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/framework/projective_framework_loader.py	load_projective_framework	function	40	0		src/dzack_research/preamble/all.py	reconciled-live-owner
-preamble/tests/framework/scenario_manifest.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/scenario_manifest.sage	SCENARIO_MANIFEST	binding	8	0			unreviewed
+preamble/tests/framework/scenario_manifest.sage	<module>	module	1	0		TODO.md	reconciled-live-owner
+preamble/tests/framework/scenario_manifest.sage	SCENARIO_MANIFEST	binding	8	0		TODO.md	reconciled-live-owner
 preamble/tests/framework/test_base_change_and_bundles.sage	<module>	module	1	0			unreviewed
 preamble/tests/framework/test_base_change_and_bundles.sage	test_projection_pullback_matches_multiindices	specimen	6	0			unreviewed
 preamble/tests/framework/test_base_change_and_bundles.sage	test_identity_base_change_is_faithful_on_schemes_and_bundles	specimen	25	0			unreviewed
