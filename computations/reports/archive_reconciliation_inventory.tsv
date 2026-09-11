@@ -1217,8 +1217,8 @@ preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.primary_decomposition	method	437	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.annihilator	method	467	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModule	function	477	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py		unreviewed
-preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	ring_as_module	function	17	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py		unreviewed
+preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	ring_as_module	function	17	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/form_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	Form	binding	59	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	GeneratorAssignment	binding	64	0			unreviewed
