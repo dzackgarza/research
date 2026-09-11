@@ -1460,3 +1460,70 @@ categories is additional data …"
 **Preferred:** close the definition after its defining sentences, then
 write "::: {.Remark}" or a plain paragraph for the warning. The
 definition is citable; the remark is separate.
+
+### `DEF-17`: Reminder masquerading as a definition
+
+A paragraph that writes "For a ring $A$, write $A\text{-}\mathbf{Mod}$
+for the category of left $A$-modules" does not define left $A$-modules.
+It presupposes the reader already knows what a left $A$-module is and
+what the category is — its objects, morphisms, composition, forgetful
+functor — and merely assigns notation. No construction is stated, no
+universal property is given, no data are introduced. A definition
+defines: it states the objects, the structure, and the property that
+determines the notion. A reminder says "recall" and cites the defining
+occurrence where the notion was defined. If the notion is prerequisite,
+write "Recall (@def-left-modules) that …" and cite; if it is being
+defined here, construct it. Do not summon a category into existence by
+naming its notation.
+
+**Banned:** "For a ring $A$, write $A\text{-}\mathbf{Mod}$ for the
+category of left $A$-modules. A right $A$-module is a left
+$A^{\mathrm{op}}$-module." — no definition of "module," no construction
+of the category, no objects or morphisms stated.
+
+**Preferred:** "Let $A$ be an associative ($\mathbb{E}_1$) ring spectrum.
+An $A$-module is … The $\infty$-category $\mathbf{LMod}_A$ has objects …
+morphisms are … with forgetful functor …" Or, if prerequisite:
+"Recall that $\mathbf{LMod}_A$ denotes … as in @def-left-modules, with
+…"
+
+### `SYM-11`: Structured object versus underlying set
+
+A ring presented as a tuple $(|A|,+,0,\cdot,1,\ldots)$ and its opposite
+$(|A|,+,0,\cdot^{\mathrm{op}},1,\ldots)$ share the underlying set $|A|$
+but are not strictly equal as tuples: the multiplications are opposite,
+related by the monoidal twist. Writing "the identity $A=A^{\mathrm{op}}$"
+conflates equality of underlying sets with equality of structured objects.
+For an $\mathbb{E}_\infty$-ring spectrum the two are canonically
+equivalent via the symmetry, not strictly equal; for a discrete
+commutative ring strict equality holds only after forgetting to the
+underlying set or to $\pi_0$. State equality of the correct underlying
+data, and name the canonical equivalence for the structured objects.
+
+**Banned:** "the identity $A=A^{\mathrm{op}}$ identifies left and right
+$A$-module conventions" — asserts strict identity of tuples whose
+multiplications differ by a twist.
+
+**Preferred:** "the underlying sets of $A$ and $A^{\mathrm{op}}$
+coincide and the multiplications are opposite via the twist; for
+$\mathbb{E}_\infty$ $A$ the symmetry gives a canonical equivalence
+$A\simeq A^{\mathrm{op}}$, hence
+$\mathbf{LMod}_A\simeq\mathbf{RMod}_A$." Distinguish the set, the
+tuple, and the equivalence.
+
+### `PR-20`: "Identifies conventions" with no mathematical content
+
+A passage states that an identity or equivalence "identifies $X$ and $Y$
+conventions" or "identifies the two notions" without naming any functor,
+equivalence, or natural isomorphism. "Identifies conventions" names no
+mathematical object — no map, no domain, no codomain — and has no
+mathematical meaning. The precise statement is a canonical equivalence of
+categories or a natural isomorphism, with source, target, and how it is
+produced.
+
+**Banned:** "the identity $A=A^{\mathrm{op}}$ identifies left and right
+$A$-module conventions."
+
+**Preferred:** "the symmetry induces a canonical equivalence
+$\mathbf{LMod}_A\simeq\mathbf{RMod}_A$." Name the functor or equivalence;
+do not describe it as "identifying conventions."
