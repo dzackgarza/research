@@ -2232,15 +2232,15 @@ preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules	class
 preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.super_categories	method	33	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.ParentMethods	class	39	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.ParentMethods.is_projective	method	40	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
-preamble/categories/modules/pure/scalar_actions.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction	class	36	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.super_categories	method	46	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods	class	49	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.underlying_module	method	80	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.action	method	84	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.act	method	88	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.zero	method	106	0			unreviewed
-preamble/categories/modules/pure/scalar_actions.sage	module_over_ring	function	139	0			unreviewed
+preamble/categories/modules/pure/scalar_actions.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction	class	36	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.super_categories	method	46	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods	class	49	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.underlying_module	method	80	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.action	method	84	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.act	method	88	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.zero	method	106	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/scalar_actions.sage	module_over_ring	function	139	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/pure/torsion_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/pure/torsion_modules.sage	TorsionModules	class	14	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py		unreviewed
 preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.super_categories	method	21	0			unreviewed
@@ -3517,11 +3517,11 @@ preamble/tests/test_sage_symbols.py	test_generated_imports_support_a_polynomial_
 preamble/tests/test_sage_symbols.py	ring	binding	16	0			unreviewed
 preamble/tests/test_sage_symbols.py	x	binding	17	0			unreviewed
 preamble/tests/test_sage_symbols.py	square	binding	18	0			unreviewed
-preamble/tests/test_session_namespace.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_session_namespace.sage	session	function	18	0			unreviewed
-preamble/tests/test_session_namespace.sage	test_a_session_ring_is_the_ring_and_not_the_engine	specimen	25	0			unreviewed
-preamble/tests/test_session_namespace.sage	test_a_lattice_from_the_session_namespace_answers_for_itself	specimen	47	0			unreviewed
-preamble/tests/test_session_namespace.sage	test_loading_a_script_leaves_the_session_rings_owned	specimen	61	0			unreviewed
+preamble/tests/test_session_namespace.sage	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_session_namespace.sage	session	function	18	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_session_namespace.sage	test_a_session_ring_is_the_ring_and_not_the_engine	specimen	25	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_session_namespace.sage	test_a_lattice_from_the_session_namespace_answers_for_itself	specimen	47	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/test_session_namespace.sage	test_loading_a_script_leaves_the_session_rings_owned	specimen	61	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/test_sterk_artifacts.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_sterk_artifacts.sage	test_the_empty_subdiagram_is_connected_elliptic_and_labeled_a0	specimen	112	0			unreviewed
 preamble/tests/test_sterk_artifacts.sage	test_connected_elliptic_subdiagrams_reproduce_the_committed_artifacts	specimen	132	0			unreviewed

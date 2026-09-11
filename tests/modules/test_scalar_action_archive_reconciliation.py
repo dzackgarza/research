@@ -11,6 +11,12 @@ actual scalar action.
 from dzack_research.preamble.all import FreeModule, Modules, ZZ
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/pure/scalar_actions.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_module_constructor_recovers_the_underlying_object_from_the_action() -> None:
     line = FreeModule(ZZ, 1)
