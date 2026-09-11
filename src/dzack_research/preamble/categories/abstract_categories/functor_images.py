@@ -57,6 +57,10 @@ class FunctorImageHomset(CategoricalHomset):
             self.codomain().underlying_image(),
         )
 
+    def codomain_hom_category(self):
+        r"""Return the codomain Hom represented by this presentation Hom."""
+        return self._underlying_homset()
+
     def _element_constructor_(self, arrow):
         if isinstance(arrow, FunctorImageMorphism):
             if arrow.parent() is self:
@@ -71,6 +75,17 @@ class FunctorImageHomset(CategoricalHomset):
         if self.domain() is not self.codomain():
             raise ValueError("identity is defined only for an endomorphism Hom-set")
         return self(self._underlying_homset().identity())
+
+    def compose(self, second, first):
+        r"""Compose two presented-image arrows through their codomain arrows."""
+        if first.codomain() is not second.domain():
+            raise ValueError("the functor-image arrows are not composable")
+        if first.domain() is not self.domain() or second.codomain() is not self.codomain():
+            raise ValueError("the composite does not have this Hom-set's endpoints")
+        composite = second * first
+        if composite.parent() is not self:
+            return self(composite)
+        return composite
 
 
 class FunctorImageHomCategoryConstruction(HomCategoryConstruction):
