@@ -3543,27 +3543,27 @@ preamble/tests/test_tensor_and_direct_sum.sage	test_the_universal_property_facto
 preamble/tests/test_tensor_and_direct_sum.sage	test_the_factorization_through_tensor_is_unique	specimen	228	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_tensor_and_direct_sum.sage	test_the_form_on_a_triple_tensor_is_the_product_of_the_three_pairings	specimen	251	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_distributes_over_tensor	specimen	283	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
-preamble/tests/test_tensors.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_tensors.sage	test_a_gram_matrix_is_a_twice_covariant_tensor	specimen	37	0			unreviewed
-preamble/tests/test_tensors.sage	test_the_nesting_says_how_many_slots_and_covariance_is_the_default	specimen	51	0			unreviewed
-preamble/tests/test_tensors.sage	test_a_multiplication_table_is_a_type_one_two_tensor	specimen	59	0			unreviewed
-preamble/tests/test_tensors.sage	test_a_stated_valence_must_account_for_every_slot	specimen	82	0			unreviewed
-preamble/tests/test_tensors.sage	test_ragged_components_are_refused	specimen	90	0			unreviewed
-preamble/tests/test_tensors.sage	test_tensors_of_one_type_add_and_scale	specimen	98	0			unreviewed
-preamble/tests/test_tensors.sage	test_a_multiplication_table_multiplies	specimen	112	0			unreviewed
-preamble/tests/test_tensors.sage	test_feeding_one_element_leaves_a_tensor_with_the_rest_of_the_slots	specimen	129	0			unreviewed
-preamble/tests/test_tensors.sage	test_contraction_pairs_an_upper_slot_with_a_lower_one	specimen	140	0			unreviewed
-preamble/tests/test_tensors.sage	test_the_trace_contracts_a_tensor_against_itself	specimen	155	0			unreviewed
-preamble/tests/test_tensors.sage	test_the_gram_matrix_is_the_forms_covariant_tensor	specimen	163	0			unreviewed
-preamble/tests/test_tensors.sage	test_a_unimodular_form_raises_and_lowers_an_index	specimen	184	0			unreviewed
-preamble/tests/test_tensors.sage	test_raising_an_integral_index_requires_unimodularity	specimen	195	0			unreviewed
-preamble/tests/test_tensors.sage	test_a_nondegenerate_lattice_raises_indices_after_rationalization	specimen	203	0			unreviewed
-preamble/tests/test_tensors.sage	test_the_correlation_is_an_isomorphism_exactly_when_unimodular	specimen	218	0			unreviewed
-preamble/tests/test_tensors.sage	test_tensor_values_are_sage_elements	specimen	232	0			unreviewed
-preamble/tests/test_tensors.sage	test_mixed_tensors_are_the_homogeneous_pieces_of_one_bigraded_algebra	specimen	242	0			unreviewed
-preamble/tests/test_tensors.sage	test_covariant_slots_use_the_dual_module	specimen	264	0			unreviewed
-preamble/tests/test_tensors.sage	test_a_tensor_piece_is_the_tensor_product_of_powers_of_a_module_and_its_dual	specimen	282	0			unreviewed
-preamble/tests/test_tensors.sage	test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square	specimen	293	0			unreviewed
+preamble/tests/test_tensors.sage	<module>	module	1	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_a_gram_matrix_is_a_twice_covariant_tensor	specimen	37	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_the_nesting_says_how_many_slots_and_covariance_is_the_default	specimen	51	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_a_multiplication_table_is_a_type_one_two_tensor	specimen	59	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_a_stated_valence_must_account_for_every_slot	specimen	82	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_ragged_components_are_refused	specimen	90	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_tensors_of_one_type_add_and_scale	specimen	98	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_a_multiplication_table_multiplies	specimen	112	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_feeding_one_element_leaves_a_tensor_with_the_rest_of_the_slots	specimen	129	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_contraction_pairs_an_upper_slot_with_a_lower_one	specimen	140	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_the_trace_contracts_a_tensor_against_itself	specimen	155	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_the_gram_matrix_is_the_forms_covariant_tensor	specimen	163	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_a_unimodular_form_raises_and_lowers_an_index	specimen	184	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_raising_an_integral_index_requires_unimodularity	specimen	195	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_a_nondegenerate_lattice_raises_indices_after_rationalization	specimen	203	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_the_correlation_is_an_isomorphism_exactly_when_unimodular	specimen	218	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_tensor_values_are_sage_elements	specimen	232	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_mixed_tensors_are_the_homogeneous_pieces_of_one_bigraded_algebra	specimen	242	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_covariant_slots_use_the_dual_module	specimen	264	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_a_tensor_piece_is_the_tensor_product_of_powers_of_a_module_and_its_dual	specimen	282	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/tests/test_tensors.sage	test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square	specimen	293	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
 preamble/utilities.py	<module>	module	1	0		src/dzack_research/preamble/utilities.py	reconciled-live-owner
 preamble/utilities.py	lmap	function	11	1	src/dzack_research/preamble/utilities.py	src/dzack_research/preamble/utilities.py	reconciled-live-owner
 preamble/utilities.py	lzip	function	16	1	src/dzack_research/preamble/utilities.py	src/dzack_research/preamble/utilities.py	reconciled-live-owner
