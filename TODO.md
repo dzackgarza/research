@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-coble-20260911-0735` | archive reconciliation / Coble cusp and rank-ten Coxeter data | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/lattices/test_sterk_coble.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:35:00Z |
 
 
 
