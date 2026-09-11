@@ -901,32 +901,34 @@ $\delta\colon c\to c\times c$ is the diagonal."
 $!_c\colon c\to\mathbf{1}$ the unique map. Then …" — state the maps,
 then write the equations.
 
-### `SYM-7`: A monoidal category named in prose instead of as a tuple
+### `SYM-7`: A tuple-defined structure referred to in prose instead of by its tuple
 
-A monoid object lives in a monoidal category. The standard way to name
-that category is as a tuple $(\mathcal{C},\otimes,\mathbf{1})$, mirroring
-how a monoidal category was defined. Naming it in prose — "a monoid for
-the cartesian structure", "a monoid with respect to the product" — makes
-the reader assemble the monoidal category from English instead of
-recognizing the tuple. State the monoidal category as a tuple.
+A structure that was defined as a tuple — a monoidal category
+$(\mathcal{C},\otimes,\mathbf{1})$, an adjunction $(F,G,\eta,\epsilon)$,
+a chain complex $(C_\bullet,d)$ — is referred to in prose instead of by
+the tuple. The reader must assemble the structure from English instead of
+recognizing the tuple that was defined. Refer to a tuple-defined structure
+by its tuple.
 
-**Banned:** "a monoid $\langle c,\mu,\eta\rangle$ for the cartesian
-structure."
+**Banned:** "a monoid for the cartesian structure"; "the adjunction
+between free and underlying"; "the complex with the standard
+differential."
 
-**Preferred:** "a monoid object $(c,\mu,\eta)$ in
-$(\mathcal{C},\times,\mathbf{1})$." Name the monoidal category the same
-way it was defined.
+**Preferred:** "a monoid object in $(\mathcal{C},\times,\mathbf{1})$";
+"the adjunction $(F,G,\eta,\epsilon)$"; "the chain complex
+$(C_\bullet,d)$." Name the structure the same way it was defined.
 
 ### `SYM-8`: A mathematical object named by a prose qualifier instead of by its type
 
-"A monoid for the cartesian structure", "a group for the product", "a
-comonoid with respect to the coproduct" — each names the object by an
-English phrase instead of by its mathematical type. A monoid object is a
-monoid object in a specified monoidal category; a group object is a group
-object in a specified category with finite products. State the type and
-the category; do not qualify a bare noun with a prose preposition.
+A mathematical object is named by a bare noun qualified by a prepositional
+phrase — "a monoid for the cartesian structure", "a module for the group
+action", "a sheaf for the topology" — instead of by its type and the
+category it lives in. State the type and the category; do not qualify a
+bare noun with prose.
 
-**Banned:** "a monoid for the cartesian structure."
+**Banned:** "a monoid for the cartesian structure"; "a module for the
+group action"; "a sheaf for the topology."
 
-**Preferred:** "a monoid object in $(\mathcal{C},\times,\mathbf{1})$."
-The type is "monoid object"; the category is the tuple.
+**Preferred:** "a monoid object in $(\mathcal{C},\times,\mathbf{1})$";
+"a module over $R[G]$"; "a sheaf on $(X,\mathcal{O}_X)$." The type names
+the kind of object; the category names where it lives.
