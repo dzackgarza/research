@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from typing import cast
 
-from sage.categories.category import Category
 from sage.categories.finite_fields import FiniteFields
 from sage.categories.number_fields import NumberFields
 from sage.categories.map import Map
@@ -23,6 +22,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CosliceCategory,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     OpenAbsoluteGaloisSubgroups,
     absolute_galois_group_category,
@@ -423,7 +423,7 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
         self._extension_cache: dict[object, FiniteGaloisExtension] = {}
         self._quotient_cache: dict[int, FiniteGaloisQuotient] = {}
         self._one_element = None
-        category = Category.join(
+        category = Cat().meet(
             (absolute_galois_group_category(self._field), *tuple(extra_categories))
         )
         # The elements are field automorphisms of the closure, so this is the
