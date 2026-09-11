@@ -42,9 +42,9 @@ The charge behaves as follows under blowups of an anticanonical pair:
 
 - **Interior blowups**, at smooth points of $D$ (points lying on a single component of $D$), increase the charge by $1$.
 
-::: {.Warning}
-cite: reference for the charge formula and its blowup behaviour (Friedman/Engel--Friedman on anticanonical pairs); the migrated note gives no citation.
-:::
+This is [@Fri15 Lem. 2.2(iii)]; the charge itself is [@Fri15 Def. 1.1].
+
+
 :::
 
 ::: {.Theorem #thm:friedman-miranda-charge}

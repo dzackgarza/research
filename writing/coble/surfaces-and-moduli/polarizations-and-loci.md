@@ -46,14 +46,10 @@ surface yields a K3 surface $X$ carrying two commuting involutions: the
 fixed-point-free **Enriques involution** $\iota_{\En}$ (the deck transformation
 of the canonical cover) and the **del Pezzo involution** $\iota_{\operatorname{dP}}$
 [@AEGS25].
-::: {.Warning}
-The two source notes (Numerical polarization; Noether--Lefschetz Locus for
-Enriques Surfaces) carried no inline citations. The attributions here
-($\cL,\Num$ marking $\to$ CDL25; the canonical cover, its two involutions, the
-map $j\colon F_{\En,2}\to F_{(2,2,0)}$, the locus $\mathrm{NL}_{S_{\mathrm{En}}}$,
-and the KSBA-limit closure $B$ $\to$ AEGS25) are supplied as the standard
-sources for the concepts the notes name; the author should confirm the intended
-primary references.
+::: {.Remark}
+The numerical polarization and the $\Num$ marking are those of [@CDL25]; the canonical
+cover with its two involutions, the map $j\colon F_{\En,2}\to F_{(2,2,0)}$, the locus
+$\mathrm{NL}_{S_{\mathrm{En}}}$ and the KSBA-limit closure $B$ are those of [@AEGS25].
 :::
 :::
 

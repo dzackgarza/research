@@ -59,7 +59,9 @@ domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
 Is the orbit of admissible Coble roots under $\Gamma_{\En, 2}$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
 Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\Gamma_{\En, 2}$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
 ::: {.Warning}
-cite: Namikawa's root-orbit uniqueness, which is stated only modulo the full Enriques group $\Gamma_\En$ and does not settle the finite-index subgroup $\Gamma_{\En,2}$.
+The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full
+Enriques group $\Gamma_\En$. It does not settle the corresponding question for the
+finite-index subgroup $\Gamma_{\En,2}$, which is what the polarized problem needs.
 :::
 :::
 

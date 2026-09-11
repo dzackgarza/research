@@ -16,12 +16,10 @@ program (below); they do not discuss the relationship to Kulikov models
 explicitly. If a Kulikov comparison is intended here, supply it.
 :::
 
-::: {.Warning}
-The migrated notes carry no citations. The dlt/divisor/half-divisor
-apparatus tracks the Alexeev--Engel--Garza--Schaffler degree-$2$ Enriques
-program (cf. the use of the dlt models of [@AEGS25] in the Morrison
-degenerations section); attach the intended references once confirmed rather
-than asserting them here.
+::: {.Remark}
+The dlt, divisor and half-divisor models here are those of the Alexeev--Engel--Garza--Schaffler
+degree-$2$ Enriques program [@AEGS25], used in the Morrison degenerations section in the
+same form.
 :::
 :::
 

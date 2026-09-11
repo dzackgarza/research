@@ -9,8 +9,9 @@ The three ingredients are a *global extension of the Enriques involution* over $
 These are the program's own in-progress steps rather than settled theorems.
 They are stated conjecturally throughout, and they are exactly parallel to the open comparison of \longref{conj:ksba_semitoroidal_comparison} and to the incomplete normalization argument of \longref{thm:normalization}, whose migrated proof sketch records the author's remark that finiteness is *still unclear*.
 Zariski's Main Theorem itself is a classical, proven theorem; only its application to $\phi$ is conjectural here.
-::: {.Warning}
-The three source notes ("Extension of Enriques Involution", "Finiteness of the Classifying Map", "Zariski's Main Theorem in Moduli") carried no inline citations. Standard sources are supplied below for the concepts the notes name (the KSBA compactification $\overline{F_{\En,2}}$ and separatedness of KSBA limits via AEGS25/Kol23a; Zariski's Main Theorem via Har10a); the author should confirm the intended primary references and pin locators.
+::: {.Remark}
+The KSBA compactification $\overline{F_{\En,2}}$ and the separatedness of its limits are
+[@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
 :::
 :::
 

@@ -21,22 +21,15 @@ Let $\mathcal{F}_\bullet = \ts{\mathcal{F}_k}_{k=1}^5$ be the collection of fold
 ::: {.Notation #not:sterk-cusp-labels}
 ### Two indexings of the boundary
 
-The $0$-cusps are numbered $1,\dots,5$, as in \longref{ex:fen2_five_cusps}. The
-$1$-cusps carry a different label: the set of $0$-cusps they are incident to, written as
-a digit string. In the AEGS numbering the Enriques $1$-cusps are
+The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in \longref{ex:fen2_five_cusps}.
+A $1$-cusp is denoted $i_1\dots i_k$ when its closure contains the $0$-cusps
+$i_1,\dots,i_k$ [@AEGS25 Not. 3.1]; there are nine of them,
 $$
-12,\quad 13,\quad 14,\quad 15,\quad 245,\quad 34,\quad 35,\quad 45,\quad 55 ,
+12,\quad 13,\quad 14,\quad 15,\quad 245,\quad 34,\quad 35,\quad 45,\quad 55 .
 $$
-so that $245$ is the $1$-cusp incident to the $0$-cusps $2$, $4$ and $5$.
-The two indexings share digits and must not be read as one sequence.
-:::
-
-::: {.Remark}
-"Cusp $35$" in part 2 is therefore the $1$-cusp incident to the $0$-cusps $3$ and $5$, not
-the pair of $0$-cusps $3$ and $5$: the compactification is toroidal over the $0$-cusps $2$
-and $4$, over the $1$-cusps adjacent to them, and over the one further $1$-cusp $35$.
-This is consistent with \longref{ex:fen2_five_cusps}, where the $0$-cusps $3$ and $5$ are
-strictly semitoroidal.
+So "cusp $35$" in part 2 is the $1$-cusp whose closure contains the $0$-cusps $3$ and $5$,
+not the pair of $0$-cusps: part 2 is [@AEGS25 Lem. 5.7] verbatim, and the $0$-cusps $3$
+and $5$ are strictly semitoroidal, as \longref{ex:fen2_five_cusps} records.
 :::
 
 ::: {.Remark}
@@ -77,7 +70,10 @@ Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational
 ::: {.Example #ex:fen2_five_cusps}
 ### The five $0$-cusps of $\overline{F_{\En, 2}}$
 
-The boundary of the KSBA compactification $\overline{F_{\En, 2}}$ is stratified by $27$ rays across five $0$-cusps.
+The boundary of the KSBA compactification $\overline{F_{\En, 2}}$ has $27$ divisors across five
+$0$-cusps: $6$ of Type II and $21$ of Type III [@AEGS25 Lem. 5.8].
+The counts recorded per cusp below are *rays*, and a Type II divisor contributes one ray at
+each $0$-cusp it meets, so the per-cusp Type II counts sum to $13$ rather than to $6$.
 For each $0$-cusp we record the topological type of the reduced dual complex $\Gamma(\mathcal{Z}_0)$, the number of Type II and Type III rays, and the integral-affine-structure (IAS) involution.
 
 1. **Cusp 1**: Semitoroidal.
@@ -101,24 +97,13 @@ For each $0$-cusp we record the topological type of the reduced dual complex $\G
    $3$ Type II rays, $0$ Type III. IAS involution: flip hemispheres.
 :::
 
-::: {.Question #q:fen2-ray-bookkeeping}
-### What does the total of $27$ rays count?
-
-The per-cusp counts above give $0 + 7 + 7 + 7 + 0 = 21$ Type III rays and
-$2 + 2 + 2 + 4 + 3 = 13$ Type II rays, so $34$ in all, against the $27$ recorded in the
-header.
-
-Type III rays are deeper strata and belong to one $0$-cusp each, so they are not shared;
-Type II rays correspond to adjacent $1$-cusps and are shared between the $0$-cusps a
-$1$-cusp meets. Counting distinct rays would then give $21$ plus the number of distinct
-$1$-cusps, and $27$ would force that number to be $6$. The AEGS numbering of
-\longref{not:sterk-cusp-labels} lists nine Enriques $1$-cusps, so sharing alone does not
-reconcile the two figures, and one of the two data sets is wrong: either the per-cusp
-Type II counts, or the total.
-
-Both are migrated from working notes, and the remark below already records the per-cusp
-counts as provisional pending an independent cusp computation. That computation settles
-this question.
+::: {.Remark}
+The per-cusp counts above are exactly the ones of [@AEGS25 Lem. 5.8], obtained there from
+the Coxeter-fan counts $4+4,\ 2+8,\ 3+15,\ 4+12,\ 5+17$ of [@AEGS25 Lem. 5.2] by
+discarding the subgraphs with a connected component of irrelevant vertices. The Type III
+counts $0,7,7,7,0$ sum to the $21$ distinct Type III divisors; the Type II counts
+$2,2,2,4,3$ sum to $13$ rays carried by $6$ distinct Type II divisors, each of which is a
+curve through several $0$-cusps.
 :::
 
 ::: {.Remark}
