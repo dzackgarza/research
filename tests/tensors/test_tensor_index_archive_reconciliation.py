@@ -42,3 +42,18 @@ def test_archive_nondegenerate_form_raises_after_fraction_field_base_change() ->
     assert raised.tensor_valence() == (1, 1)
     assert raised.components() == [[1, 0], [0, 1]]
     assert rationalized.lower_index(raised, 0) == rationalized.gram_tensor()
+
+
+def test_archive_correlation_is_an_isomorphism_exactly_when_unimodular() -> None:
+    plane = Lattices(ZZ)("U")
+    correlation = plane.correlation_isomorphism()
+    dual = correlation.forward().codomain()
+
+    for generator in plane.module_generators():
+        assert correlation.inverse()(correlation.forward()(generator)) == generator
+    for functional in dual.module_generators():
+        assert correlation.forward()(correlation.inverse()(functional)) == functional
+
+    a2 = Lattices(ZZ)("A2")
+    with pytest.raises(ValueError, match="unimodular"):
+        a2.correlation_isomorphism()
