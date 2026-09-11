@@ -870,6 +870,10 @@ class OpenAbsoluteGaloisSubgroup(AbsoluteGaloisGroup):
     def supergroup(self):
         return self._supergroup
 
+    def ambient(self):
+        r"""Return the ambient absolute Galois group ``G_K``."""
+        return self.supergroup()
+
     def fixed_field(self):
         return self._fixed_extension.field()
 
@@ -1043,6 +1047,14 @@ class OpenGaloisSubgroupConjugacyClass(SageObject):
 
     def supergroup(self):
         return self._supergroup
+
+    def ambient(self):
+        r"""Return the ambient absolute Galois group ``G_K``.
+
+        ``supergroup`` is the generic subgroup vocabulary; ``ambient`` is the
+        arithmetic name retained by the open-subgroup construction data.
+        """
+        return self.supergroup()
 
     def fixed_field(self):
         return self._extension_field

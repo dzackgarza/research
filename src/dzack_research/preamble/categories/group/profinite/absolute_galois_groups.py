@@ -128,6 +128,10 @@ class OpenAbsoluteGaloisSubgroups(OwnedCategory):
         def supergroup(self):
             return self._supergroup
 
+        def ambient(self):
+            r"""Return the ambient absolute Galois group ``G_K``."""
+            return self.supergroup()
+
         def fixed_field(self):
             return self._fixed_extension.field()
 
