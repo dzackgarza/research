@@ -1663,6 +1663,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-sterk-20260911-0815` | archive reconciliation / Sterk cusp roots, layouts, and diagrams | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/lattices/test_sterk_elliptic_population_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T08:15:00Z |
+
 
 
 
