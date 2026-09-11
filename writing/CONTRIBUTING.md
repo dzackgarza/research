@@ -71,7 +71,24 @@ seen"), em-dash or parenthetical density.
 
 **Preferred:** keep what is needed; cut what is there for cadence.
 
-### `PR-7`: Superficial "-ing" analysis
+### `PR-7`: Concept defined by notational payoff
+
+A theorem or property is characterized by its effect on notation rather than
+by its mathematical content, using a conversational construction ("is what
+licenses", "is what allows", "is what lets us") instead of stating the
+theorem and deriving the convention from it.
+
+**Banned:** "Coherence is what licenses the notation
+$a_1\otimes\cdots\otimes a_n$ without parentheses."
+
+**Preferred:** "By the coherence theorem, $a_1 \otimes \cdots \otimes a_n$ is
+well-defined up to the canonical associator, so parentheses are omitted."
+State the theorem, then let the notational convention follow as a
+consequence. A standard text may explain that a theorem permits a
+notational shorthand; it does not define the theorem as that shorthand's
+justification.
+
+### `PR-8`: Superficial "-ing" analysis
 
 A trailing participial clause performs analysis without adding content.
 
@@ -80,7 +97,7 @@ A trailing participial clause performs analysis without adding content.
 **Preferred:** delete the clause, or replace it with the statement it gestures
 at — a theorem, a cross-reference, an actual consequence.
 
-### `PR-8`: Undue emphasis
+### `PR-9`: Undue emphasis
 
 `**bold**` used for emphasis or to mark a defined term in running prose.
 
@@ -88,7 +105,7 @@ at — a theorem, a cross-reference, an actual consequence.
 run-in label at the start of a list item or paragraph ("**In
 $\mathbf{Set}$.**", "**Remark.**"). Never bold to weight a clause.
 
-### `PR-9`: Formatting tells
+### `PR-10`: Formatting tells
 
 **Banned:** Title Case in headings; curly quotes; emoji; collaborative or
 meta language ("let me know", "I hope this helps"); bold-header bullet lists
@@ -97,7 +114,7 @@ where prose is clearer.
 **Preferred:** sentence case in headings; straight quotes; no emoji; no
 collaborative or meta language.
 
-### `PR-10`: Project process inside mathematical exposition
+### `PR-11`: Project process inside mathematical exposition
 
 A mathematical chapter pauses to discuss rulings, audit procedure,
 implementation status, or editorial policy.

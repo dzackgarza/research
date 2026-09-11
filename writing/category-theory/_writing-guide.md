@@ -188,22 +188,31 @@ only … but also", formulaic transitions opening successive sentences ("Additio
 seen"), em-dash or parenthetical density. *Fix:* keep what is needed; cut what is there for
 cadence.
 
-**PR-7 — Superficial "-ing" analysis.** A trailing participial clause performs analysis
+**PR-7 — Concept defined by notational payoff.** A theorem or property is characterized by
+its effect on notation rather than by its mathematical content, using a conversational
+construction ("is what licenses", "is what allows", "is what lets us") instead of stating
+the theorem and deriving the convention from it. *Banned:* "Coherence is what licenses the
+notation $a_1\otimes\cdots\otimes a_n$ without parentheses." *Fix:* "By the coherence
+theorem, $a_1 \otimes \cdots \otimes a_n$ is well-defined up to the canonical associator,
+so parentheses are omitted." A standard text may explain that a theorem permits a
+notational shorthand; it does not define the theorem as that shorthand's justification.
+
+**PR-8 — Superficial "-ing" analysis.** A trailing participial clause performs analysis
 without adding content. *Banned:* "the pullback is universal, underscoring the classifier's
 role." *Fix:* delete the clause, or replace it with the statement it gestures at — a
 theorem, a cross-reference, an actual consequence.
 
-**PR-8 — Undue emphasis.** `**bold**` used for emphasis or to mark a defined term in running
+**PR-9 — Undue emphasis.** `**bold**` used for emphasis or to mark a defined term in running
 prose. *Fix:* *italic* for a term at its definition; **bold** only as a run-in label at the
 start of a list item or paragraph ("**In $\mathbf{Set}$.**", "**Remark.**"). Never bold to
 weight a clause.
 
-**PR-9 — Formatting tells.** Sentence case in headings, not Title Case ("Axiom classifier",
+**PR-10 — Formatting tells.** Sentence case in headings, not Title Case ("Axiom classifier",
 not "Axiom Classifier"); straight quotes, not curly; no emoji; no collaborative or meta
 language ("let me know", "I hope this helps", knowledge-cutoff apologies); no bold-header
 bullet lists where prose is clearer.
 
-**PR-10 — Project process inside mathematical exposition.** A mathematical chapter pauses
+**PR-11 — Project process inside mathematical exposition.** A mathematical chapter pauses
 to discuss rulings, audit procedure, implementation status, editorial policy, or the work
 needed to maintain the book. *Banned:* "This ruling guards the conversion pipeline and is
 enforced by the audit." *Fix:* state the mathematical proposition in the chapter. Put only
