@@ -372,11 +372,26 @@ class SchemeMorphism(Morphism):
         equations = tuple(algebra._from_engine_element(generator) for generator in kernel.gens())
         return self.codomain().closed_subscheme(equations)
 
+    @cached_method
+    def quasi_coherent_adjunction(self):
+        r"""Return the affine adjunction ``f^* \dashv f_*`` on represented QCoh."""
+        from dzack_research.preamble.categories.schemes.sheaf_functors import (
+            affine_quasi_coherent_adjunction,
+        )
+
+        return affine_quasi_coherent_adjunction(self)
+
+    def module_pullback_functor(self):
+        r"""Return ``f^* : QCoh(Y) -> QCoh(X)`` for this affine morphism."""
+        return self.quasi_coherent_adjunction().pullback_functor()
+
+    def direct_image_functor(self):
+        r"""Return ``f_* : QCoh(X) -> QCoh(Y)`` for this affine morphism."""
+        return self.quasi_coherent_adjunction().direct_image_functor()
+
     def direct_image(self, sheaf):
         r"""``f_* N~ = (Res_{f^#} N)~`` for affine ``f: Spec B -> Spec A`` (Stacks, Tag 01I8)."""
-        assert sheaf.scheme() is self.domain(), "a direct image is taken of a sheaf on the source"
-        module = sheaf.module().restrict_scalars(self.coordinate_algebra_morphism())
-        return self.codomain().associated_module_sheaf(module)
+        return self.direct_image_functor().on_object(sheaf)
 
     def module_pullback(self, sheaf):
         r"""``f^* M~ = (M tensor_A B)~``, scalar extension along ``f^#`` (Stacks, Tag 01I8).
@@ -385,9 +400,7 @@ class SchemeMorphism(Morphism):
         O_Y f^{-1} M~``; the inverse-image sheaf ``f^{-1} M~`` itself is not
         quasi-coherent and is not represented here.
         """
-        assert sheaf.scheme() is self.codomain(), "a module pullback is taken of a sheaf on the target"
-        module = sheaf.module().base_change(self.coordinate_algebra_morphism())
-        return self.domain().associated_module_sheaf(module)
+        return self.module_pullback_functor().on_object(sheaf)
 
     def inverse_image_sheaf(self, sheaf):
         r"""``f^{-1} F``, the topological inverse image of a sheaf."""

@@ -190,3 +190,93 @@ def test_generic_module_pullback_agrees_with_transition_unit_line_bundle_pullbac
     assert refined_bundle.transition_unit(0, 1) == refinement.overlap_map(
         0, 1
     ).coordinate_algebra_morphism()(bundle.transition_unit(0, 1))
+
+
+def _cusp_parametrization():
+    from dzack_research.preamble.all import AffineSpace, PolynomialRing, SpecFunctor
+
+    plane = AffineSpace(2, QQ, names=("x", "y"))
+    algebra = plane.coordinate_ring()
+    x = algebra.algebra_generator("x")
+    y = algebra.algebra_generator("y")
+    line_ring = PolynomialRing(QQ, "t")
+    t = line_ring.algebra_generator("t")
+    morphism = SpecFunctor(QQ)(
+        algebra.Mor(line_ring)({"x": t**2, "y": t**3})
+    )
+    return plane, morphism.domain(), morphism
+
+
+def test_affine_quasi_coherent_pullback_and_direct_image_are_functorial() -> None:
+    plane, line, morphism = _cusp_parametrization()
+    pullback = morphism.module_pullback_functor()
+    direct = morphism.direct_image_functor()
+
+    target_module = FreeModule(plane.coordinate_algebra(), 1)
+    target_sheaf = plane.associated_module_sheaf(target_module)
+    target_label = target_module.module_generating_set()[0]
+    times_two = module_homset(target_module, target_module)(
+        {
+            target_label: target_module.scalar_multiple(
+                plane.coordinate_algebra()(2),
+                target_module.module_generator(target_label),
+            )
+        }
+    )
+    target_identity = module_homset(target_module, target_module).identity()
+
+    pulled = pullback.on_object(target_sheaf)
+    assert morphism.module_pullback(target_sheaf) is pulled
+    pulled_two = pullback.on_morphism(times_two)
+    pulled_identity = pullback.on_morphism(target_identity)
+    assert pulled_two * pulled_identity == pulled_two
+    assert pulled_identity * pulled_two == pulled_two
+
+    source_module = FreeModule(line.coordinate_algebra(), 1)
+    source_sheaf = line.associated_module_sheaf(source_module)
+    source_label = source_module.module_generating_set()[0]
+    times_three = module_homset(source_module, source_module)(
+        {
+            source_label: source_module.scalar_multiple(
+                line.coordinate_algebra()(3),
+                source_module.module_generator(source_label),
+            )
+        }
+    )
+    source_identity = module_homset(source_module, source_module).identity()
+
+    pushed = direct.on_object(source_sheaf)
+    assert morphism.direct_image(source_sheaf) is pushed
+    pushed_three = direct.on_morphism(times_three)
+    pushed_identity = direct.on_morphism(source_identity)
+    assert pushed_three * pushed_identity == pushed_three
+    assert pushed_identity * pushed_three == pushed_three
+
+
+def test_affine_quasi_coherent_pullback_is_left_adjoint_to_direct_image() -> None:
+    plane, line, morphism = _cusp_parametrization()
+    adjunction = morphism.quasi_coherent_adjunction()
+
+    target_module = FreeModule(plane.coordinate_algebra(), 1)
+    target_sheaf = plane.associated_module_sheaf(target_module)
+    pulled = adjunction.left_adjoint().on_object(target_sheaf)
+    pushed_back = adjunction.right_adjoint().on_object(pulled)
+    unit = adjunction.unit(target_sheaf)
+    assert unit.domain() is target_module
+    assert unit.codomain() is pushed_back.module()
+
+    source_module = FreeModule(line.coordinate_algebra(), 1)
+    source_sheaf = line.associated_module_sheaf(source_module)
+    pushed = adjunction.right_adjoint().on_object(source_sheaf)
+    pulled_back = adjunction.left_adjoint().on_object(pushed)
+    counit = adjunction.counit(source_sheaf)
+    assert counit.domain() is pulled_back.module()
+    assert counit.codomain() is source_module
+
+    source_label = source_module.module_generating_set()[0]
+    source_generator = source_module.module_generator(source_label)
+    assert counit(
+        pulled_back.module_generator(
+            pulled_back.module_generating_set()[0]
+        )
+    ) == source_generator
