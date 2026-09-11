@@ -1815,6 +1815,36 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError("the zero vector has no divided discriminant class")
             return self.discriminant_class(self.primitive_dual(element))
 
+        def get_isotropic_type(self, element) -> str:
+            r"""Classify a primitive isotropic vector in an even 2-elementary lattice.
+
+            Divisibility one is ``"Odd"``.  Divisibility two is separated by
+            whether the class ``[v/2]`` in the discriminant quadratic module
+            is characteristic, giving ``"Even characteristic"`` or
+            ``"Even ordinary"``.  These names classify the cusp type; they do
+            not assert that the ambient lattice itself is odd or even beyond
+            the explicit quadratic-form hypothesis.
+            """
+            if element.parent() is not self:
+                raise TypeError("isotropic type is defined for a vector of this lattice")
+            if not element.is_isotropic():
+                raise ValueError("isotropic type requires an isotropic vector")
+            if not element.is_primitive():
+                raise ValueError("isotropic type requires a primitive vector")
+            if not self.is_even() or not self.is_p_elementary(self.base_ring()(2)):
+                raise ValueError("the selected cusp-type classification requires an even 2-elementary lattice")
+            divisibility = self.div(element)
+            if divisibility == self.base_ring().one():
+                return "Odd"
+            if divisibility != self.base_ring()(2):
+                raise ValueError(
+                    "a primitive isotropic vector in the selected 2-elementary regime must have divisibility one or two"
+                )
+            divided_class = self.divided_discriminant_class(element)
+            if divided_class.is_characteristic():
+                return "Even characteristic"
+            return "Even ordinary"
+
         def radical(self):
             r"""Return ``rad(L)=id_L(L)^perp`` as a subobject of ``L``."""
             return self.identity_morphism().orthogonal_complement()
