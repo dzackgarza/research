@@ -268,8 +268,19 @@ membership is what `ls writing/.book` shows, and the writing that is not site co
 (the dissertation, talks, exams, research statement) is excluded simply by not being
 linked in. Edit the real file under `writing/`; the symlink is only how Quarto reaches it.
 
-- **Local preview** — `just docs-preview` serves `writing/.book` at http://localhost:7654/ via `uvx --from quarto-cli quarto preview` (live reload reaches edits made through the symlinks; quarto-cli provisioned on demand, not installed system-wide).
-  A stale render also lives at `writing/.book/_site/` from prior builds; it is not kept fresh with the working tree.
+- **Local site** — http://lattice-research.localhost/, served by nginx from
+  `/var/www/static-sites/lattice-research`, which is a symlink straight at
+  `writing/.book/_site`. `just docs-deploy` rebuilds it: the gate runs first, so a book
+  with a broken citation or a dangling reference never reaches the served copy. A push
+  that touches `writing/` deploys through this repo's `test-push`. The dashboard picks
+  the site up on its own — it lists every directory under `/var/www/static-sites` that
+  has an `index.html`, and takes the card's name from that page's `<title>`.
+
+- **Local preview** — `just docs-preview` serves `writing/.book` at http://localhost:7654/
+  with live reload, for the annotation loop below and for tight edit-and-look work. Run
+  it when you want it and stop it when you are done: it is not a service, and `docs-check`
+  refuses to start while it is running, because the two renders write the same
+  intermediate paths and corrupt each other.
 
 - **Published site** — GitHub Pages at https://dzackgarza.github.io/research/ (`build_type: workflow`, branch `main`), deployed by `.github/workflows/docs.yml`. The site-url is recorded in `_quarto.yml` (`book.site-url`).
 

@@ -39,6 +39,23 @@ docs-assets:
     cp --remove-destination ~/.pandoc/templates/css/mathjax-macros.html writing/.assets/mathjax-macros.html
     python3 scripts/docs_figures.py
 
+# Rebuild the book and refresh the local static copy at http://lattice-research.localhost/
+docs-deploy: docs-check
+    #!/usr/bin/env bash
+    set -euo pipefail
+    # nginx serves /var/www/static-sites/<app> for <app>.localhost, and the entry for
+    # this book is a symlink straight at the render output, so a successful render *is*
+    # the deploy: nothing to copy, and no window where the site is half-written. The
+    # gate is a dependency, so a book with a broken citation or a dangling reference
+    # never reaches the served copy -- the previous render stays up instead.
+    site="$(pwd)/writing/.book/_site"
+    link=/var/www/static-sites/lattice-research
+    [ -f "$site/index.html" ] || { echo "docs-deploy: $site has no index.html" >&2; exit 1; }
+    [ "$(readlink -f "$link" 2>/dev/null)" = "$site" ] || ln -sfn "$site" "$link"
+    code=$(curl -s -o /dev/null -w '%{http_code}' -H 'Host: lattice-research.localhost' http://127.0.0.1/)
+    [ "$code" = 200 ] || { echo "docs-deploy: nginx answered $code for lattice-research.localhost" >&2; exit 1; }
+    echo "docs-deploy: http://lattice-research.localhost/ is serving $(find "$site" -name '*.html' | wc -l) pages"
+
 # Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
 docs-check: docs-assets
     python3 scripts/docs_check.py
@@ -207,7 +224,15 @@ test-commit:
 
 # Run push-tier SageMath QC through the central implementation
 test-push:
-    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
+    #!/usr/bin/env bash
+    set -euo pipefail
+    just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
+    # A push that changes the book refreshes what lattice-research.localhost serves.
+    # The push gate itself is machine-wide and owns none of this; the deploy belongs
+    # to the repo that owns the book, which is why it hangs off this recipe.
+    if ! git diff --quiet "@{upstream}" -- writing 2>/dev/null; then
+        just docs-deploy
+    fi
 
 # Run CI acceptance QC through the central implementation
 test-ci:
