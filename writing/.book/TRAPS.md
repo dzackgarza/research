@@ -134,3 +134,25 @@ CI calls that script, so a fresh clone gets both passes.
 dropped never became a Quarto crossref. What it does check is that every chapter in
 `_quarto.yml` is a flat symlink, since a chapter that became a copy would render
 against the wrong registry and drift from the prose.
+
+## The gate needs the project to itself, and a preview will take it back
+
+Quarto renders each chapter to `<chapter>.html` beside the project file and then moves
+it into `_site`. Two Quarto processes on this project therefore move each other's
+intermediates, and the failure reads as
+
+    ERROR: NotFound ... rename '.../writing/.book/index.html' -> '.../_site/index.html'
+
+on whichever chapter lost the race — never on the one that is actually at fault.
+
+`docs-check` refuses to start when a preview is running. It used to test the port,
+which is the wrong signal: a preview binds :7654 only after its first render
+completes, so the whole of that first render is a window in which the port is free
+and the gate will start. It tests for the process now.
+
+That still leaves the case where a preview starts *during* a gate run — another
+session, or `just docs-preview` from an editor. There is no lock between them, so the
+gate fails, and the aborted render leaves one chapter's `.html` at the project root
+which fails the *next* run on a different chapter. The gate clears those strays before
+rendering, so one interruption no longer keeps every later run red; but a gate run
+still needs a window with no preview in it.
