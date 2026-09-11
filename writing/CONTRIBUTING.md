@@ -1971,6 +1971,59 @@ genuine meta-remark about how to speak about created limits versus
 underlying-set agreement belongs in the requirements $\S$ or in a
 Remark attached to the corollary, not as a standalone $\S$.
 
+### `SEC-6`: The skeleton is the fenced logical units
+
+The underlying skeleton of a paper or book is the set of fenced logical
+units — Definition (`::: {#def-...}`), Theorem (`::: {.Theorem
+#thm:...}`), Lemma, Proposition, Corollary, and Example (`:::
+{#exm-...}`) — each with its ID, title, hypotheses, quantifiers, and
+types. Their dependency graph is the work: every term used in a theorem
+is defined in a prior definition, every lemma used in a proof is proved
+earlier, every example instantiates a definition. The skeleton must be
+logically coherent and mathematically complete when every non-unit is
+removed — connecting prose, motivation, transitions, and Remarks. If the
+skeleton is not coherent on its own, the work is incomplete.
+
+Concrete standard (amsthm): Hartshorne, EGA, Lurie *Higher Topos Theory*
+and *Higher Algebra*, Riehl *Category Theory in Context* each present a
+chapter as a sequence of fenced units with proofs; the prose between them
+is glue. Deleting the glue and the Remarks leaves a citable, checkable
+graph that still defines every term and proves every claim. A section
+contributes to that graph only through its fenced units.
+
+**Banned:** a manuscript where the fenced units alone — Definitions,
+Theorems, and Examples with their IDs stripped of surrounding prose — do
+not define every term, do not state every claim, or do not prove every
+theorem.
+
+**Preferred:** write the fenced units first as the skeleton; then add
+prose and Remarks as glue. Test by deleting every non-unit: the remaining
+fenced units with their proofs still form a complete, dependency-ordered
+mathematical text.
+
+### `SEC-7`: Remarks are for pedagogy, not for primary claims
+
+A Remark (`::: {.Remark}`) is secondary to the skeleton: pedagogy,
+intuition, a warning that a subgroup of the underlying abelian group need
+not be a submodule, a note that two parallel functors are distinct unless
+a comparison is specified, an alternative viewpoint. A Remark does not
+introduce a new definition, a new theorem, or a new example that belongs
+to the book. A $\S$ whose fenced content would be only Remarks, or whose
+unfenced prose is all remarks and morals, has no primary claim and is out
+of place in a standard text.
+
+**Banned:** a titled $\S$ that would contain no Definition, Theorem,
+Lemma, Proposition, Corollary, or Example even after fencing — only
+"Creation is a statement about limit cones …" and "If no comparison is
+specified, $F$ and $G$ remain distinct" as Remarks.
+
+**Preferred:** attach the remark to its primary unit: the subgroup
+non-example as a Remark following the Corollary that $U$ creates limits
+(and the kernel Example), the parallel-functors distinction as a Remark
+following the definition of a natural transformation. If there is no
+primary unit to attach to, the $\S$ should not exist; the remark belongs
+in the requirements $\S$ or in CONTRIBUTING.md.
+
 ### `DEF-27`: Distinguished object introduced only in the title
 
 A block titled `{#def-distinguished-factorization}` defines "a
