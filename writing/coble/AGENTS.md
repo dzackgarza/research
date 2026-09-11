@@ -26,6 +26,43 @@ file, *and* every prose file is either listed or deliberately unlisted. The firs
 alone passes while a page you just wrote is invisible, which is how eleven chapters of
 absorbed mathematics came to be committed and unpublished.
 
+## Where a new chapter goes
+
+`writing/.book/_quarto.yml` is not a manifest of files that exist. It is the book's
+**reading order**, and it is the only place that order is written down. A chapter's
+position makes two claims about its mathematics:
+
+- everything it uses is defined above it, and
+- the part it sits in names the subject it is about.
+
+So a page is placed by **reading it**: what it defines, what it uses, and which of the
+two the rest of the part does. Appending to the end of a part, or inserting next to a
+file with a similar name, decides neither question. Filename order is unrelated to
+dependency order — sorting three Coble-lattice chapters by filename once produced the
+exact reverse of the order their own references require, and put all three inside the
+general lattice run whose results they depend on.
+
+Three checks, each cheap, each catching a different defect:
+
+- **Dependency.** For each `\ref`/`\longref` in the new page, find the page that
+  defines the target. Every one should be earlier. A handful of forward references is
+  normal in a book; a page whose targets are mostly later is in the wrong place.
+- **Subject.** Say what the part is about in one clause, then check the new page is
+  about that. General machinery and this project's own results are different subjects
+  and belong in different parts, however closely related — that split is what keeps
+  either readable.
+- **Size.** A part of a dozen chapters has stopped being a group. Split it at the seam
+  the mathematics already has.
+
+A page's own frontmatter often settles the grouping: `unit:` distinguishes a reusable
+`method` from the `computation` it produced and from a `research-program`, and
+`status: conjectural` marks what is not proved. The Computations run and the open-problems
+run are grouped on exactly those fields.
+
+Title a chapter with its subject, never with its format. "Lattice Summary" told a reader
+nothing and hid a chapter about Baily--Borel embeddings inside the lattice-theory run.
+One level-1 heading per page: later `# ` headings are sections, so write them as `##`.
+
 ## Building
 
 The site builds from the repository root, not from here.

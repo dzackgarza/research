@@ -2,12 +2,15 @@
 
 Categorical and arithmetic foundations support the lattice research code, its Sage implementation, and its Lean formalization.
 
-**Foundations.** Higher categories and universes, categorical foundations, limits and colimits, monoidal categories, loops and suspension, identification.
+The three parts are a single chain, and each one is used by the next.
 
-**Properties, structures, and algebra.** Truncation and classifiers, the mathematical framework, modules and forms, joins meets and closure, distinguished functors, elements and containment.
+**Foundations** fixes the setting: higher categories and universes, the categorical constructions, truncation and the classifiers that both limits and monoidal structure are stated with, limits and colimits, loops and suspension, and what an identification and an equality are.
 
-**Forms and lattices.** Bilinear and quadratic forms, bilinear forms on algebra modules, lattices and discriminant forms, isometries and arithmetic invariants, Coxeter systems and lattices, generators and presentations, hyperbolic forms and Witt classes, morphisms of form modules, stable categories of modules with duality, chain complexes.
+**Algebraic structure** builds algebra on that setting: categories presented by operations, monoidal structure and the internal algebraic objects it carries, modules and base change, generating families and presentations, joins meets and closure, the distinguished functors, elements and containment, and generic elements with their hypotheses and localization.
 
-**Realizations.** The category and functor diagram.
+**Forms, lattices, and Witt theory** is one dependency chain in its own order.
+A bilinear or quadratic form comes first, then forms on the underlying module of an algebra, then a lattice and its discriminant form, then isometries and arithmetic invariants, then Coxeter systems.
+The hyperbolic form and the Witt class follow, then the stable category of modules with duality the Witt class lives in, and finally the morphisms and the chain complexes built over that category.
 
-**Authoring and reference.** The mathematical language style guide, and the sources the framework draws on.
+**Realizations** is the generated category and functor diagram.
+**Authoring and reference** holds the mathematical language style guide and the sources the framework draws on.

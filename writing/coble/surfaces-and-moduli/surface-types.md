@@ -5,7 +5,7 @@
 
 The moduli theory of Coble surfaces is governed by the geometry of a small stock of ambient surfaces --- $K3$ surfaces, Enriques surfaces, the log del Pezzo $ADE$ and $BC$ surfaces, the quadric $\PP^1\times\PP^1$ and its toric quotient $W$ --- together with the moduli space of elliptic $K3$ surfaces.
 This section collects their definitions and basic invariants for reference.
-The associated lattices ($K3$ lattice, Enriques lattice, root lattices) are treated in the Lattice Theory sections; where a root lattice appears we use the algebraic-geometry sign convention, so that $A_n, D_n, E_n$ are negative definite with roots of norm $-2$ (see \cref{def:root-lattice,def:lattice-En}). All surfaces are taken over $k = \CC$.
+The associated lattices ($K3$ lattice, Enriques lattice, root lattices) are treated in the Lattice Theory sections; where a root lattice appears we use the algebraic-geometry sign convention, so that $A_n, D_n, E_n$ are negative definite with roots of norm $-2$ (see \longref{def:root-lattice} and \longref{def:lattice-En}). All surfaces are taken over $k = \CC$.
 :::
 
 ## $K3$ surfaces

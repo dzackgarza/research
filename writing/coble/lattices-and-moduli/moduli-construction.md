@@ -1,4 +1,4 @@
-# Moduli Spaces Summary
+# Constructions of the moduli space
 
 We summarize the relevant moduli spaces:
 
@@ -30,7 +30,7 @@ We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$
 
 \todo{\longref{fig:moduli-tower} is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.}
 
-# GIT Discussion
+## The GIT construction
 
 ::: {.Remark}
 ### GIT construction
@@ -54,7 +54,7 @@ as an open subset of $\qty{ (\PP^2)^{10} \sm D }/\PGL_3$ at the level of coarse
 moduli spaces.
 :::
 
-# Horikawa model
+## The Horikawa model
 
 ::: {.Remark}
 ### Horikawa's construction
@@ -82,7 +82,7 @@ surfaces as a divisor in $F_{\En}$, the 10-dimensional moduli space of
 unpolarized Enriques surfaces.
 :::
 
-# Period Domains
+## Period domains
 
 By passing to the K3 cover, one can embed $F_\Co$ into an arithmetic quotient of a 9-dimensional Hermitian symmetric domain of type $\rm{IV}$.
 Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
@@ -178,7 +178,7 @@ $$
 Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@AE22 Thm. 5.10] applied to $S_\Co =(11, 11, 1)_1$.
 We obtain $F_\Co$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\Co)^*$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]. We note that [@DK13] shows that $F_\Co$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
-# The sextic moduli construction
+## The sextic moduli construction
 
 ::: {.Remark}
 ### Orientation
@@ -371,7 +371,7 @@ than by its singular type, so which type $T$ carries which family is a question
 this section does not settle.
 :::
 
-# KSBA Spaces
+## KSBA spaces
 
 ::: {.Remark}
 

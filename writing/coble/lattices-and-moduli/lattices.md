@@ -1,4 +1,4 @@
-# Lattice Summary
+# Period domain embeddings and normalization
 
 We summarize the lattices that will be relevant to our discussion:
 

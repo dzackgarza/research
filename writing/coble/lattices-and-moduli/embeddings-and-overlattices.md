@@ -4,7 +4,7 @@
 
 The basic vocabulary of lattices, primitive embeddings, orthogonal
 complements, discriminant groups, and the unimodular lattices
-$\latI_{p, q}$ and $\latII_{p, q}$ was fixed in \cref{sec:lattice-theory}.
+$\latI_{p, q}$ and $\latII_{p, q}$ was fixed in [Lattice Theory](lattice-theory.md#sec:lattice-theory).
 We now develop the finer theory that underlies the lattice computations of
 this monograph: the several equivalent characterizations of a primitive
 sublattice, the classification of primitive embeddings up to isometry,
@@ -14,7 +14,7 @@ lattice, the classification of unimodular lattices, the finiteness of the set
 of primitive embeddings into an even unimodular lattice, and the behaviour of
 the discriminant group under scaling.
 Throughout, $S$, $T$, and $L$ denote nondegenerate lattices in the sense of
-\cref{sec:lattice-theory}, $\beta$ denotes the ambient bilinear form when no
+[Lattice Theory](lattice-theory.md#sec:lattice-theory), $\beta$ denotes the ambient bilinear form when no
 confusion can arise, and $A_L \da L\dual/L$ is the discriminant group with its
 quadratic form $q_L$.
 :::
@@ -190,7 +190,7 @@ extra quotient appearing in the uniqueness statement of
 An **overlattice** of a lattice $S$ is a lattice $L$ containing $S$ as a
 finite-index sublattice, with $\ro{\beta_L}{S} = \beta_S$.
 Equivalently, $L$ is a lattice with $S\subseteq L\subseteq S\dual$, where the
-inclusions use the canonical map $S\injects S\dual$ of \cref{sec:lattice-theory}
+inclusions use the canonical map $S\injects S\dual$ of [Lattice Theory](lattice-theory.md#sec:lattice-theory)
 and its dual; the finite quotient $L/S$ is then a subgroup of
 $A_S = S\dual/S$.
 :::
@@ -262,7 +262,7 @@ classification of primitive embeddings.
 A primitive embedding $S\injects L$ with orthogonal complement $T\da S^{\perp L}$
 realizes $L$ as an even overlattice of the orthogonal direct sum $S\oplus T$,
 whose discriminant group is $A_S\oplus A_T$ by the additivity recorded in
-\cref{sec:lattice-theory}.
+[Lattice Theory](lattice-theory.md#sec:lattice-theory).
 The corresponding isotropic subgroup $H\le A_S\oplus A_T$ is the graph of an
 isometry $\gamma\colon H_S\xrightarrow{\sim} H_T$ between subgroups
 $H_S\le A_S$ and $H_T\le A_T$, anti-isometric for the two discriminant forms; the
@@ -575,7 +575,7 @@ $\operatorname{Emb}(S, L)$ is finite.
 ### Discriminant group of a scaled lattice
 
 Let $L$ be a lattice and $m$ a positive integer, and let $L(m)$ be the twist of
-$L$ by $m$ (\cref{sec:lattice-theory}).
+$L$ by $m$ ([Lattice Theory](lattice-theory.md#sec:lattice-theory)).
 There is a short exact sequence of finite abelian groups
 $$
 0 \to L/mL \to A_{L(m)} \to A_L \to 0
@@ -620,7 +620,7 @@ $$
 .
 $$
 Writing $\tilde\Orth(L)\da\ker\psi$ for the **stable orthogonal group** of $L$
-(\cref{sec:lattice-theory}) and $\Orth^*(q_L)\da\coker\psi$, there is an exact
+([Lattice Theory](lattice-theory.md#sec:lattice-theory)) and $\Orth^*(q_L)\da\coker\psi$, there is an exact
 sequence
 $$
 0 \to \tilde\Orth(L) \to \Orth(L) \xrightarrow{\;\psi\;} \Orth(q_L) \to \Orth^*(q_L) \to 0

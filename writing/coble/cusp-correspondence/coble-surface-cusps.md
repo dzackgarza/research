@@ -1,6 +1,6 @@
 # Coble cusps
 
-Applying the mirror moves from \cref{sec:mirror-moves}, we obtain the cusp diagram for $F_\Co$, the moduli space of unpolarized Coble surfaces, shown in \longref{fig:coble-cusps}.
+Applying the [mirror moves](cusp-diagram-calculations.md#sec:mirror-moves), we obtain the cusp diagram for $F_\Co$, the moduli space of unpolarized Coble surfaces, shown in \longref{fig:coble-cusps}.
 
 ![Cusp diagram for $F_\Co = F_{(11, 11, 1)}$ where $T_\Co = \gens{2} \oplus E_{10}(2)$.](rendered/fig_Cusp_Diagram_Co.svg){#fig:coble-cusps}
 

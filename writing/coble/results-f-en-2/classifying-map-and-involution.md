@@ -97,6 +97,6 @@ Granting these, Zariski's Main Theorem would give that $\phi$ is an isomorphism,
 ### Status of the hypotheses
 
 Of the four inputs to \longref{conj:classifying_map_isomorphism}, properness and normality are the ambient structural facts of the KSBA and Baily--Borel constructions, while birationality on the interior and finiteness are the load-bearing steps: finiteness is the still-open \longref{conj:classifying_map_finite}, and the extension of the Enriques involution (\longref{conj:enriques_involution_extension}) is what makes the universal quotient family -- and hence $\phi$ -- available over the boundary in the first place.
-The isomorphism statement therefore inherits the open status of \cref{conj:classifying_map_finite,conj:enriques_involution_extension}, and is the compactification-side counterpart of the semitoroidal comparison \longref{conj:ksba_semitoroidal_comparison}.
+The isomorphism statement therefore inherits the open status of \longref{conj:classifying_map_finite} and \longref{conj:enriques_involution_extension}, and is the compactification-side counterpart of the semitoroidal comparison \longref{conj:ksba_semitoroidal_comparison}.
 This conclusion also refines the incomplete normalization statement \longref{thm:normalization}, whose migrated proof leaves both the stabilizer identity and finiteness unestablished.
 :::

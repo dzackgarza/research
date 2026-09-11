@@ -11,7 +11,7 @@ Conventions:
 Table \ref{tab:dynkin-diagrams-table} is a table of (labeled) classical and affine Dynkin diagrams.
 
 ```include
-../../tables/dynkin_diagrams.md
+../tables/dynkin-diagrams.md
 ```
 
 ### Mirror move algorithm
