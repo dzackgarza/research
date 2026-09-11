@@ -2039,6 +2039,59 @@ following the definition of a natural transformation. If there is no
 primary unit to attach to, the $\S$ should not exist; the remark belongs
 in the requirements $\S$ or in CONTRIBUTING.md.
 
+### `TERM-5`: Colloquial "lands", "property", "structure" without a precise definition
+
+Colloquial terms "lands (in)", "property", "structure", "stuff" are used
+as if their meaning were obvious — "a theorem that $F$ lands in $D_P$ is
+a factorization," "being torsion-free is a property," "being a torsor is
+structure" — without ever giving the precise categorical definition. In
+this book each has a precise meaning: "$F$ lands in $D_P$" means a
+factorization $F\simeq i\circ\bar F$ through the replete full inclusion
+$i\colon D_P\hookrightarrow D$ (with $\bar F$ the corestriction and
+$\alpha\colon F\simeq i\circ\bar F$ the specified equivalence);
+"property" means the forgetful functor $U\colon\mathcal{S}\to\mathcal{C}$
+is fully faithful, "structure" means $U$ is faithful, "stuff" means
+$U$ is arbitrary (STR-1), each with its fiber condition. Do not use the
+colloquial term in a definition, theorem, or title before the precise
+term has been fenced and defined.
+
+**Banned:** "A theorem that $F\colon\mathcal{C}\to\mathcal{D}$ lands in a
+replete full subcategory $i\colon D_P\hookrightarrow D$ is a factorization
+$F=i\circ\bar F$" — uses "lands in" as if defined, with no fenced
+definition of "lands in" as factorization.
+
+**Preferred:** first define: "::: {#def-lands} ## Lands in — A functor
+$F\colon\mathcal{C}\to\mathcal{D}$ **lands in** a replete full
+subcategory $i\colon D_P\hookrightarrow\mathcal{D}$ if there exists a
+functor $\bar F\colon\mathcal{C}\to D_P$ and a specified natural
+equivalence $\alpha\colon F\simeq i\circ\bar F$. The triple
+$(\bar F,\alpha)$ is a factorization of $F$ through $D_P$. :::" Then
+later: "Proposition: The functor $F$ lands in $D_P$ via $\bar F$ with
+$\alpha$."
+
+### `DEF-29`: Definition in running prose without a fenced block is not a definition
+
+A sentence in running prose that looks like a definition — "A
+factorization of $F$ through $D$ consists of functors $H$ and $G$
+together with …," "A theorem that $F$ lands is a factorization" — is not
+a definition. A definition is a fenced block `::: {#def-...} ## Title`
+with the definiendum bold at its first introduction, a single defining
+occurrence (DEF-1), and citable via `\ref`/`\longref`. Running prose
+cannot be cited, has no ID, and has no logical status. Colloquial
+"property," "structure," and "lands" definitions in prose are not
+definitions.
+
+**Banned:** "## Landing statements and constructions {#sec-statements-vs-
+constructions} A theorem that $F\colon\mathcal{C}\to\mathcal{D}$ lands in
+$D_P$ is a factorization $F=i\circ\bar F$. This theorem does not redefine
+$F$ or $D_P$." — two sentences of prose, no fenced `{#def-lands}` or
+`{.Theorem}`, no bold term.
+
+**Preferred:** "::: {#def-lands} ## Lands in — … :::" as above, and
+"::: {.Proposition #prp-lands} ### Landing — … :::" with proof exhibiting
+$\bar F$ and $\alpha$. The prose between fenced units is glue, not the
+definition.
+
 ### `DEF-27`: Distinguished object introduced only in the title
 
 A block titled `{#def-distinguished-factorization}` defines "a
