@@ -1541,27 +1541,27 @@ preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.mass	method	2094	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	register_indecomposable	function	2360	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	refine_one_lattice	function	2439	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_isotropic_orbit_representatives	function	127	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_line_equivalence_witness	function	144	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_sublattice_equivalence_witness	function	174	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_isotropic_stabilizer_generators	function	209	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups	class	423	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.super_categories	method	444	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods	class	451	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.domain	method	467	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.contains_character_kernel	method	471	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.intersection	method	484	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_line_orbit_representatives	method	591	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_plane_orbit_representatives	method	597	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_flag_orbit_representatives	method	601	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_lines_are_equivalent	method	629	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_planes_are_equivalent	method	635	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_flags_are_equivalent	method	641	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vector_orbit_representatives	method	653	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vectors_are_equivalent	method	678	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vector_equivalence_witness	method	704	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_predicate_subgroup	function	761	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	<module>	module	1	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_isotropic_orbit_representatives	function	127	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_line_equivalence_witness	function	144	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_sublattice_equivalence_witness	function	174	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_isotropic_stabilizer_generators	function	209	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups	class	423	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.super_categories	method	444	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods	class	451	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.domain	method	467	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.contains_character_kernel	method	471	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.intersection	method	484	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_line_orbit_representatives	method	591	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_plane_orbit_representatives	method	597	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_flag_orbit_representatives	method	601	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_lines_are_equivalent	method	629	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_planes_are_equivalent	method	635	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.isotropic_flags_are_equivalent	method	641	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vector_orbit_representatives	method	653	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vectors_are_equivalent	method	678	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vector_equivalence_witness	method	704	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_predicate_subgroup	function	761	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeMapSpecification	binding	36	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomsetParent	class	40	0			unreviewed
