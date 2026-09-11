@@ -115,14 +115,14 @@ preamble/categories/abstract_categories/category_constructions.sage	ProductCateg
 preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods	class	200	0			unreviewed
 preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods.first	method	213	0			unreviewed
 preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods.second	method	216	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects	class	39	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py		unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.super_categories	method	46	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods	class	49	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summands	method	63	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand_index_set	method	67	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand	method	70	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumDecomposition	function	98	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py		unreviewed
+preamble/categories/abstract_categories/direct_sum_objects.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects	class	39	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.super_categories	method	46	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods	class	49	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summands	method	63	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand_index_set	method	67	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand	method	70	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumDecomposition	function	98	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
 preamble/categories/abstract_categories/functor_images.sage	<module>	module	1	0			unreviewed
 preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories	class	62	0			unreviewed
 preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories.super_categories	method	65	0			unreviewed

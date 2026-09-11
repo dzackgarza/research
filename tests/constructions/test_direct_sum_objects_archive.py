@@ -16,6 +16,13 @@ from dzack_research.preamble.all import (
 )
 
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/abstract_categories/direct_sum_objects.sage",
+    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py",
+    "disposition": "reconciled-live-owner",
+}
+
+
 def test_constructor_owned_direct_sum_retains_its_indexed_summands() -> None:
     left = Lattices(ZZ)("U")
     right = Lattices(ZZ)("A2")
