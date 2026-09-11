@@ -971,17 +971,17 @@ preamble/categories/group/magmas.sage	AdditiveMonoids	class	111	1	src/dzack_rese
 preamble/categories/group/magmas.sage	AdditiveMonoids.super_categories	method	118	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
 preamble/categories/group/magmas.sage	AdditiveGroups	class	122	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
 preamble/categories/group/magmas.sage	AdditiveGroups.super_categories	method	129	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
-preamble/categories/group/predicate_subgroups.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups	class	38	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py		unreviewed
-preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.super_categories	method	56	0			unreviewed
-preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods	class	59	0			unreviewed
-preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods.supergroup	method	86	0			unreviewed
-preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods.defining_predicate	method	90	0			unreviewed
-preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods.one	method	110	0			unreviewed
-preamble/categories/group/predicate_subgroups.sage	is_predicate_subgroup	function	131	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py		unreviewed
-preamble/categories/group/predicate_subgroups.sage	predicate_subgroup_category	function	140	0			unreviewed
-preamble/categories/group/predicate_subgroups.sage	predicate_subgroup	function	149	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py		unreviewed
-preamble/categories/group/predicate_subgroups.sage	centralizer	function	163	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py		unreviewed
+preamble/categories/group/predicate_subgroups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups	class	38	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py	src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.super_categories	method	56	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods	class	59	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods.supergroup	method	86	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods.defining_predicate	method	90	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	PredicateSubgroups.ParentMethods.one	method	110	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	is_predicate_subgroup	function	131	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py	src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	predicate_subgroup_category	function	140	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	predicate_subgroup	function	149	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py	src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/group/predicate_subgroups.sage	centralizer	function	163	1	src/dzack_research/preamble/categories/group/predicate_subgroups.py	src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
 preamble/categories/group/profinite/absolute_galois_group.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_group.sage	FrobeniusElement	class	51	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
 preamble/categories/group/profinite/absolute_galois_group.sage	RealizedAbsoluteGaloisGroups	class	83	0			unreviewed

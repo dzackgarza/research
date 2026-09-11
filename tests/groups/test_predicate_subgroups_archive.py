@@ -12,6 +12,12 @@ from dzack_research.preamble.categories.group.predicate_subgroups import (
     predicate_subgroup,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/predicate_subgroups.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/predicate_subgroups.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_predicate_subgroup_retains_supergroup_predicate_and_inclusion() -> None:
     group = Groups.S(3)
