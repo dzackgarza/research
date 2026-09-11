@@ -4,6 +4,15 @@ import pytest
 
 from dzack_research.preamble.all import Groups, Lattices, ZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/group_modules/group_lattices.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py",
+    "owner_overrides": {
+        "GroupLatticeParent.isotypic_decomposition": "src/dzack_research/preamble/categories/modules/group_modules/isotypic.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _acted_a2():
     lattice = Lattices(ZZ)("A2")

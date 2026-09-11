@@ -8,6 +8,16 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py",
+    "owner_overrides": {
+        "FinitelyPresentedModules": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+        "FinitelyPresentedModules.ParentMethods.framing_morphism": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_hermite_form_changes_only_the_relation_rows() -> None:
     free = BasedFreeModule(ZZ, finite_ordered_set(("x",)))

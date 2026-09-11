@@ -14,6 +14,12 @@ from dzack_research.preamble.all import (
     LatticePolytopes,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/polytopes.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/polytopes.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_lattice_polygon_invariants_live_on_the_current_object() -> None:
     triangle = LatticePolygon(((0, 0), (0, 3), (6, 0)))

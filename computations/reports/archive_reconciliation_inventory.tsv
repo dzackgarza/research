@@ -415,48 +415,48 @@ preamble/categories/algebras/algebras.sage	OwnedAlgebras.ParentMethods.change_ri
 preamble/categories/algebras/algebras.sage	own_algebra	function	305	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
 preamble/categories/algebras/algebras.sage	finite_algebra_generators	function	317	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
 preamble/categories/algebras/algebras.sage	install_algebras	function	344	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	<module>	module	1	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent	class	39	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.base_ring	method	46	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.zero	method	47	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.one	method	48	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.algebra_generating_set	method	49	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.algebra_generator	method	50	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.module_generator	method	51	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.product_on_algebra_generators	method	52	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.ideal	method	55	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.quotient	method	56	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.hom	method	57	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent	class	61	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.base_ring	method	74	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.relations	method	75	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generating_set	method	76	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generator	method	77	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generator_morphism	method	78	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_presentation_morphism	method	79	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.presentation_ring	method	80	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras	class	89	2			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.super_categories	method	96	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods	class	101	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.is_finitely_presented	method	102	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.presentation	method	105	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.presentation_ring	method	110	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.presentation_ideal	method	115	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.relations	method	118	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.base_change	method	139	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generating_set	method	169	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generator_morphism	method	172	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generator	method	177	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generators	method	182	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_presentation_morphism	method	191	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.framing_morphism	method	197	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	is	class	204	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.product_on_algebra_generators	method	218	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FramedFGAlgebras	class	232	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FramedFGAlgebras.super_categories	method	241	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebra	function	279	2			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	FGAlgebra	function	334	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	install_finitely_presented_algebras	function	348	0			unreviewed
+preamble/categories/algebras/finitely_presented_algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent	class	39	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.base_ring	method	46	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.zero	method	47	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.one	method	48	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.algebra_generating_set	method	49	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.algebra_generator	method	50	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.module_generator	method	51	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.product_on_algebra_generators	method	52	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.ideal	method	55	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.quotient	method	56	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.hom	method	57	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent	class	61	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.base_ring	method	74	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.relations	method	75	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generating_set	method	76	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generator	method	77	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generator_morphism	method	78	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_presentation_morphism	method	79	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.presentation_ring	method	80	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras	class	89	2		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.super_categories	method	96	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods	class	101	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.is_finitely_presented	method	102	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.presentation	method	105	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.presentation_ring	method	110	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.presentation_ideal	method	115	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.relations	method	118	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.base_change	method	139	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generating_set	method	169	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generator_morphism	method	172	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generator	method	177	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_generators	method	182	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.algebra_presentation_morphism	method	191	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.framing_morphism	method	197	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	is	class	204	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebras.ParentMethods.product_on_algebra_generators	method	218	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FramedFGAlgebras	class	232	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FramedFGAlgebras.super_categories	method	241	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FinitelyPresentedAlgebra	function	279	2		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	FGAlgebra	function	334	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/finitely_presented_algebras.sage	install_finitely_presented_algebras	function	348	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
 preamble/categories/algebras/framed_free_algebras.sage	<module>	module	1	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent	class	94	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent.base_ring	method	110	0			unreviewed
@@ -786,10 +786,10 @@ preamble/categories/forms/forms.sage	QuadraticForm	function	841	1	src/dzack_rese
 preamble/categories/forms/gram_matrices.sage	<module>	module	1	0			unreviewed
 preamble/categories/forms/gram_matrices.sage	gram_matrix_graph	function	13	0			unreviewed
 preamble/categories/forms/gram_matrices.sage	gram_matrix_from_graph	function	38	0			unreviewed
-preamble/categories/functors/algebra_base_change.sage	<module>	module	1	0			unreviewed
-preamble/categories/functors/algebra_base_change.sage	AlgebraBaseChangeFunctor	class	28	0			unreviewed
-preamble/categories/functors/algebra_base_change.sage	AlgebraBaseChangeFunctor.ring_map	method	43	0			unreviewed
-preamble/categories/functors/algebra_base_change.sage	algebra_base_change	function	95	0			unreviewed
+preamble/categories/functors/algebra_base_change.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/algebra_scalar_change.py	reconciled-live-owner
+preamble/categories/functors/algebra_base_change.sage	AlgebraBaseChangeFunctor	class	28	0		src/dzack_research/preamble/categories/functors/algebra_scalar_change.py	reconciled-live-owner
+preamble/categories/functors/algebra_base_change.sage	AlgebraBaseChangeFunctor.ring_map	method	43	0		src/dzack_research/preamble/categories/functors/algebra_scalar_change.py	reconciled-live-owner
+preamble/categories/functors/algebra_base_change.sage	algebra_base_change	function	95	0		src/dzack_research/preamble/categories/functors/algebra_scalar_change.py	reconciled-live-owner
 preamble/categories/functors/base_change_adjunction.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/scalar_change.py	reconciled-live-owner
 preamble/categories/functors/base_change_adjunction.sage	BaseChangeFunctor	class	45	0		src/dzack_research/preamble/categories/functors/scalar_change.py	reconciled-live-owner
 preamble/categories/functors/base_change_adjunction.sage	BaseChangeFunctor.ring_map	method	54	0		src/dzack_research/preamble/categories/functors/scalar_change.py	reconciled-live-owner
@@ -1165,32 +1165,32 @@ preamble/categories/modules/framed/finitely_generated/finitely_generated_free_mo
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.hom	method	332	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	BasedFreeModule	function	364	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py		unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	Free_ZZ	function	382	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent	class	141	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.base_ring	method	146	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.presentation	method	147	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.number_of_module_generators	method	148	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules	class	153	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.super_categories	method	160	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods	class	170	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.number_of_module_generators	method	256	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.framing_morphism	method	260	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.presentation	method	263	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.zero	method	266	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_finitely_presented	method	292	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.rank	method	296	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_torsion	method	311	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.torsion_free_quotient	method	341	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_torsion_free	method	374	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_zero	method	387	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.cardinality	method	390	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.exponent	method	411	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.hermite_form	method	447	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.smith_form_module_generators	method	480	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.invariant_factor_form	method	510	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ElementMethods	class	548	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ElementMethods.coefficients	method	566	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModule	function	610	1	src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py		unreviewed
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent	class	141	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.base_ring	method	146	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.presentation	method	147	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.number_of_module_generators	method	148	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules	class	153	1	src/dzack_research/preamble/categories/modules/pure/modules.py	src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.super_categories	method	160	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods	class	170	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.number_of_module_generators	method	256	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.framing_morphism	method	260	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.presentation	method	263	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.zero	method	266	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_finitely_presented	method	292	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.rank	method	296	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_torsion	method	311	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.torsion_free_quotient	method	341	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_torsion_free	method	374	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.is_zero	method	387	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.cardinality	method	390	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.exponent	method	411	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.hermite_form	method	447	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.smith_form_module_generators	method	480	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ParentMethods.invariant_factor_form	method	510	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ElementMethods	class	548	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ElementMethods.coefficients	method	566	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModule	function	610	1	src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent	class	107	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.number_of_module_generators	method	112	0			unreviewed
@@ -2061,30 +2061,30 @@ preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0			unr
 preamble/categories/modules/group_modules/characters.py	Parent	reexport	1	0			unreviewed
 preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
 preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	EquivariantAssignment	binding	52	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent	class	54	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.base_ring	method	57	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.form	method	58	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.group	method	59	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.action_of	method	60	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.act	method	64	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.subobject_on	method	65	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.isotypic_decomposition	method	66	1	src/dzack_research/preamble/categories/modules/group_modules/isotypic.py		unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.invariant_lattice	method	67	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices	class	70	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.acting_group	method	82	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.base_ring	method	85	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.super_categories	method	91	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods	class	101	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.is_integral	method	102	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.is_nondegenerate	method	109	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.subobject_on	method	121	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.isotypic_lattice	method	136	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.invariant_lattice	method	142	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.coinvariant_lattice	method	146	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	group_lattice_homset	function	277	1	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py		unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	group_lattice	function	350	1	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py		unreviewed
+preamble/categories/modules/group_modules/group_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	EquivariantAssignment	binding	52	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent	class	54	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.base_ring	method	57	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.form	method	58	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.group	method	59	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.action_of	method	60	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.act	method	64	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.subobject_on	method	65	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.isotypic_decomposition	method	66	1	src/dzack_research/preamble/categories/modules/group_modules/isotypic.py	src/dzack_research/preamble/categories/modules/group_modules/isotypic.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.invariant_lattice	method	67	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices	class	70	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.acting_group	method	82	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.base_ring	method	85	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.super_categories	method	91	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods	class	101	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.is_integral	method	102	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.is_nondegenerate	method	109	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.subobject_on	method	121	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.isotypic_lattice	method	136	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.invariant_lattice	method	142	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.coinvariant_lattice	method	146	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	group_lattice_homset	function	277	1	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_lattices.sage	group_lattice	function	350	1	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
 preamble/categories/modules/group_modules/group_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	EquivariantAssignment	binding	52	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent	class	54	0			unreviewed
@@ -2449,56 +2449,56 @@ preamble/categories/schemes/ambient_spaces.sage	<module>	module	1	0		src/dzack_r
 preamble/categories/schemes/ambient_spaces.sage	AffineSpace	function	29	2		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
 preamble/categories/schemes/ambient_spaces.sage	ProjectiveSpace	function	44	2		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
 preamble/categories/schemes/ambient_spaces.sage	install_ambient_spaces	function	55	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
-preamble/categories/schemes/polytopes.sage	<module>	module	1	0			unreviewed
-preamble/categories/schemes/polytopes.sage	sage	binding	29	5			unreviewed
-preamble/categories/schemes/polytopes.sage	sage	binding	40	5			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticeCoord	binding	71	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePoint	binding	72	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes	class	95	2			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.super_categories	method	107	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods	class	119	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.polyhedron	method	156	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.ambient_space	method	160	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.dimension	method	170	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.vertices	method	174	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.facets	method	179	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.normal_fan	method	183	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.volume	method	187	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.normalized_volume	method	191	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.is_compact	method	199	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.integral_points	method	203	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.interior_integral_points	method	208	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.boundary_integral_points	method	213	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.n_integral_points	method	218	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.n_interior_points	method	222	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.n_boundary_points	method	226	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.contains_point	method	230	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.interior_contains_point	method	235	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.is_lattice_polytope	method	240	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.plot3d	method	245	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.tikz3d	method	350	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.plot	method	411	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.invariants	method	429	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes	class	442	2			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes.super_categories	method	454	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods	class	466	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.is_reflexive	method	480	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.is_smooth	method	485	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.polar_dual	method	490	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.ehrhart_polynomial	method	511	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.h_star_vector	method	516	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolygons	class	523	2			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolygons.super_categories	method	535	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolygons.ParentMethods	class	547	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolygons.ParentMethods.plot	method	558	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolygons.ParentMethods.tikz	method	633	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolygons	class	671	2			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolygons.super_categories	method	685	0			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolygons.ParentMethods	class	697	0			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolytope	function	719	2			unreviewed
-preamble/categories/schemes/polytopes.sage	ConvexPolygon	function	733	2			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolytope	function	748	2			unreviewed
-preamble/categories/schemes/polytopes.sage	LatticePolygon	function	762	2			unreviewed
+preamble/categories/schemes/polytopes.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	sage	binding	29	5		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	sage	binding	40	5		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticeCoord	binding	71	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePoint	binding	72	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes	class	95	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.super_categories	method	107	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods	class	119	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.polyhedron	method	156	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.ambient_space	method	160	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.dimension	method	170	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.vertices	method	174	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.facets	method	179	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.normal_fan	method	183	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.volume	method	187	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.normalized_volume	method	191	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.is_compact	method	199	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.integral_points	method	203	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.interior_integral_points	method	208	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.boundary_integral_points	method	213	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.n_integral_points	method	218	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.n_interior_points	method	222	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.n_boundary_points	method	226	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.contains_point	method	230	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.interior_contains_point	method	235	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.is_lattice_polytope	method	240	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.plot3d	method	245	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.tikz3d	method	350	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.plot	method	411	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytopes.ParentMethods.invariants	method	429	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes	class	442	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes.super_categories	method	454	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods	class	466	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.is_reflexive	method	480	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.is_smooth	method	485	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.polar_dual	method	490	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.ehrhart_polynomial	method	511	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytopes.ParentMethods.h_star_vector	method	516	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolygons	class	523	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolygons.super_categories	method	535	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolygons.ParentMethods	class	547	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolygons.ParentMethods.plot	method	558	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolygons.ParentMethods.tikz	method	633	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolygons	class	671	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolygons.super_categories	method	685	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolygons.ParentMethods	class	697	0		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolytope	function	719	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	ConvexPolygon	function	733	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolytope	function	748	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
+preamble/categories/schemes/polytopes.sage	LatticePolygon	function	762	2		src/dzack_research/preamble/categories/schemes/polytopes.py	reconciled-live-owner
 preamble/categories/schemes/ringed_spaces.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
 preamble/categories/schemes/ringed_spaces.sage	RingedSpaces	class	37	2		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner
 preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.LocallyRinged	method	44	0		src/dzack_research/preamble/categories/schemes/ringed_spaces.py	reconciled-live-owner

@@ -9,6 +9,16 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     PolynomialRing,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/algebras/finitely_presented_algebras.sage",
+    "live_owner": "src/dzack_research/preamble/categories/algebras/algebras.py",
+    "owner_overrides": {
+        "FinitelyPresentedAlgebra": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
+        "FinitelyPresentedAlgebras.ParentMethods.framing_morphism": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_finite_presentation_retains_ring_relations_and_generators() -> None:
     presentation = PolynomialRing(QQ, ("x", "y"))

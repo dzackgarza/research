@@ -15,6 +15,12 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.rings import ring_homset
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/functors/algebra_base_change.sage",
+    "live_owner": "src/dzack_research/preamble/categories/functors/algebra_scalar_change.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _quadratic_integer_algebra():
     polynomial = SymmetricAlgebraOn(ZZ, ("x",))
