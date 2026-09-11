@@ -386,35 +386,35 @@ preamble/categories/abstract_categories/slice_categories.sage	Superobject	functi
 preamble/categories/abstract_categories/slice_categories.sage	Subobject	function	335	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Covering	function	342	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Covered	function	349	0			unreviewed
-preamble/categories/algebras/algebras.sage	<module>	module	1	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraParent	class	41	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraParent.base_ring	method	49	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraParent.coerce_map_from	method	50	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraParent.change_ring	method	56	0			unreviewed
-preamble/categories/algebras/algebras.sage	FramedAlgebraParent	class	58	0			unreviewed
-preamble/categories/algebras/algebras.sage	FramedAlgebraParent.algebra_generating_set	method	61	0			unreviewed
-preamble/categories/algebras/algebras.sage	FramedAlgebraParent.algebra_generator	method	62	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraCategory	class	64	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraCategory.base_ring	method	67	0			unreviewed
-preamble/categories/algebras/algebras.sage	Algebras	class	70	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
-preamble/categories/algebras/algebras.sage	Algebras.super_categories	method	90	0			unreviewed
-preamble/categories/algebras/algebras.sage	Algebras.ParentMethods	class	105	0			unreviewed
-preamble/categories/algebras/algebras.sage	Algebras.ParentMethods.base_change	method	131	0			unreviewed
-preamble/categories/algebras/algebras.sage	Algebras.ParentMethods.is_algebra	method	153	0			unreviewed
-preamble/categories/algebras/algebras.sage	Algebras.SubcategoryMethods	class	157	0			unreviewed
-preamble/categories/algebras/algebras.sage	Algebras.SubcategoryMethods.Free	method	158	0			unreviewed
-preamble/categories/algebras/algebras.sage	Algebras.SubcategoryMethods.FinitelyPresented	method	167	0			unreviewed
-preamble/categories/algebras/algebras.sage	FramedAlgebras	class	175	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
-preamble/categories/algebras/algebras.sage	FramedAlgebras.super_categories	method	182	0			unreviewed
-preamble/categories/algebras/algebras.sage	FramedAlgebras.ParentMethods	class	189	0			unreviewed
-preamble/categories/algebras/algebras.sage	FramedAlgebras.ParentMethods.product_on_algebra_generators	method	192	0			unreviewed
-preamble/categories/algebras/algebras.sage	OwnedAlgebras	class	239	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
-preamble/categories/algebras/algebras.sage	OwnedAlgebras.super_categories	method	256	0			unreviewed
-preamble/categories/algebras/algebras.sage	OwnedAlgebras.ParentMethods	class	259	0			unreviewed
-preamble/categories/algebras/algebras.sage	OwnedAlgebras.ParentMethods.change_ring	method	286	0			unreviewed
-preamble/categories/algebras/algebras.sage	own_algebra	function	305	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
-preamble/categories/algebras/algebras.sage	finite_algebra_generators	function	317	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
-preamble/categories/algebras/algebras.sage	install_algebras	function	344	0			unreviewed
+preamble/categories/algebras/algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	AlgebraParent	class	41	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	AlgebraParent.base_ring	method	49	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	AlgebraParent.coerce_map_from	method	50	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	AlgebraParent.change_ring	method	56	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	FramedAlgebraParent	class	58	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	FramedAlgebraParent.algebra_generating_set	method	61	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	FramedAlgebraParent.algebra_generator	method	62	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	AlgebraCategory	class	64	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	AlgebraCategory.base_ring	method	67	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras	class	70	1	src/dzack_research/preamble/categories/algebras/algebras.py	src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras.super_categories	method	90	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras.ParentMethods	class	105	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras.ParentMethods.base_change	method	131	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras.ParentMethods.is_algebra	method	153	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras.SubcategoryMethods	class	157	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras.SubcategoryMethods.Free	method	158	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	Algebras.SubcategoryMethods.FinitelyPresented	method	167	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	FramedAlgebras	class	175	1	src/dzack_research/preamble/categories/algebras/algebras.py	src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	FramedAlgebras.super_categories	method	182	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	FramedAlgebras.ParentMethods	class	189	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	FramedAlgebras.ParentMethods.product_on_algebra_generators	method	192	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	OwnedAlgebras	class	239	1	src/dzack_research/preamble/categories/algebras/algebras.py	src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	OwnedAlgebras.super_categories	method	256	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	OwnedAlgebras.ParentMethods	class	259	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	OwnedAlgebras.ParentMethods.change_ring	method	286	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	own_algebra	function	305	1	src/dzack_research/preamble/categories/algebras/algebras.py	src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	finite_algebra_generators	function	317	1	src/dzack_research/preamble/categories/algebras/algebras.py	src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
+preamble/categories/algebras/algebras.sage	install_algebras	function	344	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
 preamble/categories/algebras/finitely_presented_algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent	class	39	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.base_ring	method	46	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
