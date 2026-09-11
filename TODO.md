@@ -732,7 +732,7 @@ with the item that requires it (`OWN-08`, `OWN-09`, `DEV-56`).
   diagrams retain chart labels and both embeddings; non-affine global
   sections do not replace the whole space by their spectrum.
 
-- [ ] **`sheaf-operations`**. **Needs:** `general-descent`.
+- [x] **`sheaf-operations`**. **Needs:** `general-descent`.
   Implement sheaf kernels, cokernels, tensor products, local presentations
   and stalk comparisons through the existing module operations.
   **Owner:** module sheaves and their descent morphisms.
