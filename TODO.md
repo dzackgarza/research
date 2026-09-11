@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-direct-sum-objects-20260911-0740` | archive reconciliation / constructor-owned direct-sum decompositions | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/constructions/test_direct_sum_objects_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:40:00Z |
 
 
 
