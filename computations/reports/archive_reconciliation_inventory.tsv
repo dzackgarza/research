@@ -2206,17 +2206,17 @@ preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules	class	4
 preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules.super_categories	method	60	0			unreviewed
 preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules.ParentMethods	class	65	0			unreviewed
 preamble/categories/modules/pure/free_modules.sage	FreeModuleOfRank	function	77	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	Function	binding	91	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModules	class	400	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModules.super_categories	method	407	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods	class	410	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods.base_ring	method	429	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods.zero	method	441	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModules.ElementMethods	class	471	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModule	function	533	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/modules/pure/function_modules.sage	smooth_functions	function	546	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/modules/pure/function_modules.sage	square_integrable_functions	function	551	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/pure/function_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	Function	binding	91	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py	src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	FunctionModules	class	400	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py	src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	FunctionModules.super_categories	method	407	0		src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods	class	410	0		src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods.base_ring	method	429	0		src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods.zero	method	441	0		src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	FunctionModules.ElementMethods	class	471	0		src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	FunctionModule	function	533	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py	src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	smooth_functions	function	546	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py	src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
+preamble/categories/modules/pure/function_modules.sage	square_integrable_functions	function	551	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py	src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
 preamble/categories/modules/pure/modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/pure/modules.sage	Modules	class	53	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
 preamble/categories/modules/pure/modules.sage	Modules.super_categories	method	67	0			unreviewed

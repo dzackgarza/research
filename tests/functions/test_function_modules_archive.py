@@ -13,6 +13,12 @@ from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.all import C, Lp, RR
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/pure/function_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/functions/real_functions.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_function_modules_are_the_live_mapping_and_lebesgue_spaces() -> None:
     smooth = C(Infinity, RR)
