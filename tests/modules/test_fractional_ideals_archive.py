@@ -7,6 +7,12 @@ its canonical inclusion, so no second module object is manufactured.
 
 from dzack_research.preamble.all import FractionalIdeals, Ideals, QQ, ZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/fractional_ideals.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/fractional_ideals.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_integral_ideal_is_already_the_module_with_its_canonical_inclusion() -> None:
     ideal = ZZ.ideal(6)
