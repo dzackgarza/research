@@ -14,6 +14,13 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
 )
 
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/galois_quotient.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
+    "disposition": "reconciled-live-owner",
+}
+
+
 def test_restriction_map_is_the_actual_finite_galois_quotient_coordinate() -> None:
     group = AbsoluteGaloisGroup(GF(5))
     frobenius = group.frobenius()

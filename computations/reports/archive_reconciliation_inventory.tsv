@@ -1114,12 +1114,12 @@ preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjug
 preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.ambient	method	221	0			unreviewed
 preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.prime	method	224	0			unreviewed
 preamble/categories/group/profinite/galois_decomposition.sage	InertiaGroupConjugacyClass.representative	method	227	0			unreviewed
-preamble/categories/group/profinite/galois_quotient.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/galois_quotient.sage	restrict_along	function	46	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py		unreviewed
-preamble/categories/group/profinite/galois_quotient.sage	extensions_along	function	76	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py		unreviewed
-preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap	class	96	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py		unreviewed
-preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap.extension	method	105	0			unreviewed
-preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap.kernel	method	109	0			unreviewed
+preamble/categories/group/profinite/galois_quotient.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_quotient.sage	restrict_along	function	46	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_quotient.sage	extensions_along	function	76	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap	class	96	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap.extension	method	105	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap.kernel	method	109	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/categories/group/profinite/profinite_groups.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/profinite/profinite_groups.sage	GroupParent	class	40	0			unreviewed
 preamble/categories/group/profinite/profinite_groups.sage	GroupParent.group_generators	method	44	0			unreviewed
