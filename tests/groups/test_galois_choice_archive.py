@@ -18,6 +18,15 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     PrimeProlongation,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/galois_choice_policy.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py",
+    "owner_overrides": {
+        "GaloisChoicePolicy.choose_prolongation": "src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_selected_extension_embedding_is_literal_construction_data() -> None:
     group = AbsoluteGaloisGroup(QQ)

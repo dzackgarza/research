@@ -103,18 +103,18 @@ preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Subobjects	me
 preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Superobjects	method	726	0			unreviewed
 preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoveringObjects	method	731	0			unreviewed
 preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoveredObjects	method	736	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory	class	52	1	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py		unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.ObjectType	method	56	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.ElementType	method	60	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.super_categories	method	63	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.OppositeCategory	method	76	1	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py		unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	ProductCategory	class	168	1	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py		unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.super_categories	method	171	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.pair	method	181	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods	class	200	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods.first	method	213	0			unreviewed
-preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods.second	method	216	0			unreviewed
+preamble/categories/abstract_categories/category_constructions.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory	class	52	1	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.ObjectType	method	56	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.ElementType	method	60	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.super_categories	method	63	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.OppositeCategory	method	76	1	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	ProductCategory	class	168	1	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.super_categories	method	171	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.pair	method	181	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods	class	200	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods.first	method	213	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/category_constructions.sage	ProductCategory.ParentMethods.second	method	216	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
 preamble/categories/abstract_categories/direct_sum_objects.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects	class	39	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.super_categories	method	46	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
@@ -272,94 +272,94 @@ preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruct
 preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.extra_super_categories	method	692	0			unreviewed
 preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.inherited_hom_category_families	method	695	0			unreviewed
 preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.super_categories	method	701	0			unreviewed
-preamble/categories/abstract_categories/products.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeParent	class	58	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeParent.category	method	59	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeParent	class	61	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeParent.category	method	62	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ModuleParent	class	64	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ModuleParent.module_generating_set	method	67	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ModuleParent.module_generator	method	68	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductParent	class	70	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductParent.category	method	74	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductParent.costructure_morphism	method	75	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductParent.tensor_factors	method	76	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductParent.module_generating_set	method	77	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductParent.hom	method	78	0			unreviewed
-preamble/categories/abstract_categories/products.sage	graph	class	90	1	src/dzack_research/preamble/owned_category.py		unreviewed
-preamble/categories/abstract_categories/products.sage	LimitsOfCategory	class	134	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	LimitsOfCategory.super_categories	method	137	0			unreviewed
-preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods	class	143	0			unreviewed
-preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods.diagram	method	144	0			unreviewed
-preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods.limit_cone	method	148	0			unreviewed
-preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods.universal_morphism	method	152	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ColimitsOfCategory	class	156	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.super_categories	method	159	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods	class	165	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods.diagram	method	166	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods.colimit_cocone	method	170	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods.universal_morphism	method	174	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory	class	178	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory.super_categories	method	181	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods	class	187	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.index_category	method	188	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.factors	method	191	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.projection	method	195	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.product_cone	method	199	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.limit_cone	method	215	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory	class	219	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.super_categories	method	222	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods	class	228	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.index_category	method	229	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.cofactors	method	232	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.injection	method	236	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.coproduct_cocone	method	240	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.colimit_cocone	method	256	0			unreviewed
-preamble/categories/abstract_categories/products.sage	DiagramCategory	class	260	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	DiagramCategory.super_categories	method	290	0			unreviewed
-preamble/categories/abstract_categories/products.sage	DirectedSystem	class	294	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	DirectedSystem.super_categories	method	326	0			unreviewed
-preamble/categories/abstract_categories/products.sage	InverseSystem	class	330	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	InverseSystem.super_categories	method	362	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory	class	366	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory.super_categories	method	372	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods	class	377	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.apex	method	393	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.structure_morphisms	method	396	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.structure_morphism	method	400	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.factors	method	404	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.factor	method	411	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory	class	416	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory.super_categories	method	422	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods	class	427	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.apex	method	443	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.costructure_morphisms	method	446	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.costructure_morphism	method	450	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.cofactors	method	454	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.cofactor	method	461	0			unreviewed
-preamble/categories/abstract_categories/products.sage	ProductConeCategory	class	466	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	ProductConeCategory.super_categories	method	497	0			unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductCoconeCategory	class	501	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	CoproductCoconeCategory.super_categories	method	532	0			unreviewed
-preamble/categories/abstract_categories/products.sage	BiproductCategory	class	536	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	BiproductCategory.super_categories	method	572	0			unreviewed
-preamble/categories/abstract_categories/products.sage	DirectSumCategory	binding	580	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	ambient_category_of	function	583	0			unreviewed
-preamble/categories/abstract_categories/products.sage	Cone	function	599	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	Cocone	function	619	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	Product	function	639	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py		unreviewed
-preamble/categories/abstract_categories/products.sage	Coproduct	function	658	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py		unreviewed
-preamble/categories/abstract_categories/products.sage	Biproduct	function	677	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py		unreviewed
-preamble/categories/abstract_categories/products.sage	DirectSum	binding	721	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory	class	723	1	src/dzack_research/preamble/categories/abstract_categories/products.py		unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.super_categories	method	778	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods	class	791	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.tensor_factors	method	792	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.tensor_factor	method	799	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.cartesian_source	method	803	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.universal_bilinear_map	method	807	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.pure_tensor	method	812	0			unreviewed
-preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.from_bilinear	method	830	0			unreviewed
+preamble/categories/abstract_categories/products.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeParent	class	58	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeParent.category	method	59	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeParent	class	61	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeParent.category	method	62	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ModuleParent	class	64	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ModuleParent.module_generating_set	method	67	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ModuleParent.module_generator	method	68	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductParent	class	70	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductParent.category	method	74	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductParent.costructure_morphism	method	75	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductParent.tensor_factors	method	76	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductParent.module_generating_set	method	77	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductParent.hom	method	78	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	graph	class	90	1	src/dzack_research/preamble/owned_category.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	LimitsOfCategory	class	134	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	LimitsOfCategory.super_categories	method	137	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods	class	143	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods.diagram	method	144	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods.limit_cone	method	148	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	LimitsOfCategory.ParentMethods.universal_morphism	method	152	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ColimitsOfCategory	class	156	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.super_categories	method	159	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods	class	165	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods.diagram	method	166	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods.colimit_cocone	method	170	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ColimitsOfCategory.ParentMethods.universal_morphism	method	174	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory	class	178	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory.super_categories	method	181	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods	class	187	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.index_category	method	188	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.factors	method	191	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.projection	method	195	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.product_cone	method	199	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductsOfCategory.ParentMethods.limit_cone	method	215	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory	class	219	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.super_categories	method	222	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods	class	228	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.index_category	method	229	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.cofactors	method	232	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.injection	method	236	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.coproduct_cocone	method	240	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductsOfCategory.ParentMethods.colimit_cocone	method	256	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	DiagramCategory	class	260	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	DiagramCategory.super_categories	method	290	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	DirectedSystem	class	294	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	DirectedSystem.super_categories	method	326	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	InverseSystem	class	330	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	InverseSystem.super_categories	method	362	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory	class	366	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory.super_categories	method	372	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods	class	377	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.apex	method	393	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.structure_morphisms	method	396	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.structure_morphism	method	400	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.factors	method	404	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ConeCategory.ParentMethods.factor	method	411	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory	class	416	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory.super_categories	method	422	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods	class	427	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.apex	method	443	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.costructure_morphisms	method	446	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.costructure_morphism	method	450	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.cofactors	method	454	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoconeCategory.ParentMethods.cofactor	method	461	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductConeCategory	class	466	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ProductConeCategory.super_categories	method	497	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductCoconeCategory	class	501	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	CoproductCoconeCategory.super_categories	method	532	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	BiproductCategory	class	536	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	BiproductCategory.super_categories	method	572	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	DirectSumCategory	binding	580	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	ambient_category_of	function	583	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	Cone	function	599	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	Cocone	function	619	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	Product	function	639	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py	src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	Coproduct	function	658	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py	src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	Biproduct	function	677	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py	src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	DirectSum	binding	721	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory	class	723	1	src/dzack_research/preamble/categories/abstract_categories/products.py	src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.super_categories	method	778	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods	class	791	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.tensor_factors	method	792	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.tensor_factor	method	799	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.cartesian_source	method	803	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.universal_bilinear_map	method	807	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.pure_tensor	method	812	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.from_bilinear	method	830	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
 preamble/categories/abstract_categories/slice_categories.sage	<module>	module	1	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	graph	class	37	1	src/dzack_research/preamble/owned_category.py		unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	SliceOverCategory	class	83	0			unreviewed
@@ -852,20 +852,20 @@ preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunct
 preamble/categories/functors/ring_centers.sage	<module>	module	1	0			unreviewed
 preamble/categories/functors/ring_centers.sage	RingCenterFunctor	class	36	1	src/dzack_research/preamble/categories/rings/ring_foundation.py		unreviewed
 preamble/categories/functors/ring_centers.sage	RingCenterFunctor.domain	method	48	0			unreviewed
-preamble/categories/functors/trivial_action.sage	<module>	module	1	0			unreviewed
-preamble/categories/functors/trivial_action.sage	GroupModuleForgetfulFunctor	class	43	0			unreviewed
-preamble/categories/functors/trivial_action.sage	group_module_forgetful_functor	function	67	0			unreviewed
-preamble/categories/functors/trivial_action.sage	TrivialActionFunctor	class	74	1	src/dzack_research/preamble/categories/functors/group_actions.py		unreviewed
-preamble/categories/functors/trivial_action.sage	TrivialActionFunctor.group	method	81	0			unreviewed
-preamble/categories/functors/trivial_action.sage	trivial_action	function	133	0			unreviewed
+preamble/categories/functors/trivial_action.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/categories/functors/trivial_action.sage	GroupModuleForgetfulFunctor	class	43	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/categories/functors/trivial_action.sage	group_module_forgetful_functor	function	67	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/categories/functors/trivial_action.sage	TrivialActionFunctor	class	74	1	src/dzack_research/preamble/categories/functors/group_actions.py	src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/categories/functors/trivial_action.sage	TrivialActionFunctor.group	method	81	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
+preamble/categories/functors/trivial_action.sage	trivial_action	function	133	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
 preamble/categories/functors/twist.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/twist.py	reconciled-live-owner
 preamble/categories/functors/twist.sage	TwistFunctor	class	26	1	src/dzack_research/preamble/categories/functors/twist.py	src/dzack_research/preamble/categories/functors/twist.py	reconciled-live-owner
 preamble/categories/functors/twist.sage	TwistFunctor.scale	method	47	0		src/dzack_research/preamble/categories/functors/twist.py	reconciled-live-owner
-preamble/categories/group/finitely_presented_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation	class	27	2			unreviewed
-preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.super_categories	method	40	0			unreviewed
-preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.ParentMethods	class	43	0			unreviewed
-preamble/categories/group/finitely_presented_groups.sage	install_finitely_presented_groups	function	229	0			unreviewed
+preamble/categories/group/finitely_presented_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation	class	27	2		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.super_categories	method	40	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.ParentMethods	class	43	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/finitely_presented_groups.sage	install_finitely_presented_groups	function	229	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/group/g_sets.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
 preamble/categories/group/g_sets.sage	GSets	class	32	1	src/dzack_research/preamble/categories/group/g_sets.py	src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
 preamble/categories/group/g_sets.sage	GSets.super_categories	method	42	0		src/dzack_research/preamble/categories/group/g_sets.py	reconciled-live-owner
@@ -1081,15 +1081,15 @@ preamble/categories/group/profinite/galois_characters.sage	ProfiniteCharacterHom
 preamble/categories/group/profinite/galois_characters.sage	profinite_character_homset	function	99	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_characters.sage	CyclotomicCharacter	class	110	1	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_characters.sage	QuadraticCharacter	class	122	1	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	src/dzack_research/preamble/categories/group/profinite/galois_characters.py	reconciled-live-owner
-preamble/categories/group/profinite/galois_choice_policy.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	G	binding	18	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	choice_policy	binding	19	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy	class	39	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.name	method	51	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_embedding	method	55	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_extension	method	72	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_prolongation	method	85	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	default_choice_policy	function	112	0			unreviewed
+preamble/categories/group/profinite/galois_choice_policy.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	G	binding	18	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	choice_policy	binding	19	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy	class	39	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.name	method	51	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_embedding	method	55	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_extension	method	72	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_prolongation	method	85	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
+preamble/categories/group/profinite/galois_choice_policy.sage	default_choice_policy	function	112	0		src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_decomposition.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup	class	50	1	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_decomposition.sage	AbsoluteDecompositionGroup.ambient	method	64	0		src/dzack_research/preamble/categories/group/profinite/galois_decomposition.py	reconciled-live-owner
@@ -2227,11 +2227,11 @@ preamble/categories/modules/pure/modules.sage	equality	binding	327	0			unreviewe
 preamble/categories/modules/pure/modules.sage	Modules.ElementMethods	class	867	0			unreviewed
 preamble/categories/modules/pure/modules.sage	VectorSpaces	class	892	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
 preamble/categories/modules/pure/modules.sage	VectorSpaces.super_categories	method	899	0			unreviewed
-preamble/categories/modules/pure/projective_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules	class	26	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
-preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.super_categories	method	33	0			unreviewed
-preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.ParentMethods	class	39	0			unreviewed
-preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.ParentMethods.is_projective	method	40	0			unreviewed
+preamble/categories/modules/pure/projective_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules	class	26	1	src/dzack_research/preamble/categories/modules/pure/modules.py	src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.super_categories	method	33	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.ParentMethods	class	39	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/projective_modules.sage	ProjectiveModules.ParentMethods.is_projective	method	40	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/pure/scalar_actions.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction	class	36	0			unreviewed
 preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.super_categories	method	46	0			unreviewed
@@ -2445,10 +2445,10 @@ preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.plot2d	m
 preamble/categories/schemes/ade_surfaces.sage	ToricLogPair	function	1389	2			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurface	function	1396	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	ADESurface	function	1401	0			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	<module>	module	1	0			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	AffineSpace	function	29	2			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	ProjectiveSpace	function	44	2			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	install_ambient_spaces	function	55	0			unreviewed
+preamble/categories/schemes/ambient_spaces.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
+preamble/categories/schemes/ambient_spaces.sage	AffineSpace	function	29	2		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
+preamble/categories/schemes/ambient_spaces.sage	ProjectiveSpace	function	44	2		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
+preamble/categories/schemes/ambient_spaces.sage	install_ambient_spaces	function	55	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
 preamble/categories/schemes/polytopes.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/polytopes.sage	sage	binding	29	5			unreviewed
 preamble/categories/schemes/polytopes.sage	sage	binding	40	5			unreviewed
@@ -2667,29 +2667,29 @@ preamble/categories/sets/cardinals.py	cardinal	function	782	1	src/dzack_research
 preamble/categories/sets/cardinals.py	aleph	function	810	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
 preamble/categories/sets/cardinals.py	aleph0	binding	817	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
 preamble/categories/sets/cardinals.py	continuum	binding	820	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/ordinals.py	<module>	module	1	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings	class	87	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.super_categories	method	96	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods	class	99	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.zero	method	120	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.one	method	123	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.initial	method	126	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.natural_sum	method	130	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.natural_product	method	150	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.proves_le	method	183	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods	class	205	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.expression	method	214	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.ordinal_sum	method	254	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.ordinal_product	method	269	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.ordinal_power	method	286	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.is_initial	method	307	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.initial_index	method	310	0			unreviewed
-preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.cardinality	method	316	0			unreviewed
-preamble/categories/sets/ordinals.py	Ordinal	binding	367	0			unreviewed
-preamble/categories/sets/ordinals.py	Ordinals	function	376	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/ordinals.py	ordinal	function	381	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/ordinals.py	omega	function	385	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
-preamble/categories/sets/ordinals.py	omega0	binding	390	1	src/dzack_research/preamble/categories/sets/cardinals.py		unreviewed
+preamble/categories/sets/ordinals.py	<module>	module	1	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings	class	87	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.super_categories	method	96	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods	class	99	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.zero	method	120	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.one	method	123	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.initial	method	126	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.natural_sum	method	130	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.natural_product	method	150	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ParentMethods.proves_le	method	183	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods	class	205	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.expression	method	214	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.ordinal_sum	method	254	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.ordinal_product	method	269	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.ordinal_power	method	286	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.is_initial	method	307	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.initial_index	method	310	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	OrdinalSemirings.ElementMethods.cardinality	method	316	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	Ordinal	binding	367	0		src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	Ordinals	function	376	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	ordinal	function	381	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	omega	function	385	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
+preamble/categories/sets/ordinals.py	omega0	binding	390	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
 preamble/categories/sets/owned_sets.py	<module>	module	1	0			unreviewed
 preamble/categories/sets/owned_sets.py	register_set_axioms	function	111	2			unreviewed
 preamble/categories/sets/owned_sets.py	SetSubcategoryMethods	class	125	2			unreviewed

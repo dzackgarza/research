@@ -8,6 +8,17 @@ unique mediator assembled by ``from_maps``.
 
 from dzack_research.preamble.all import Coproduct, Product, Sets
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/abstract_categories/products.sage",
+    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/products.py",
+    "owner_overrides": {
+        "Product": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+        "Coproduct": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+        "Biproduct": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_product_cone_is_the_live_product_with_its_universal_map() -> None:
     two = Sets.Δ[1]

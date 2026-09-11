@@ -2,6 +2,12 @@ r"""Archive reconciliation for projective modules as a module property."""
 
 from dzack_research.preamble.all import FreeModules, ProjectiveModules, QQ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/pure/projective_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_free_modules_lie_in_projective_modules_and_certify_projectivity() -> None:
     free = FreeModules(QQ).an_object()

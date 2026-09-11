@@ -1,5 +1,11 @@
 from dzack_research.preamble.all import Ordinals, omega
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/sets/ordinals.py",
+    "live_owner": "src/dzack_research/preamble/categories/sets/cardinals.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archive_initial_ordinals_retain_their_index() -> None:
     ordinals = Ordinals()

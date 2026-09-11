@@ -19,6 +19,12 @@ from dzack_research.preamble.categories.abstract_categories.category_constructio
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/abstract_categories/category_constructions.sage",
+    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/category_constructions.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _two_points_and_maps():
     points = finite_ordered_set(("a", "b"))

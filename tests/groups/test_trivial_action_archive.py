@@ -12,6 +12,12 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/functors/trivial_action.sage",
+    "live_owner": "src/dzack_research/preamble/categories/functors/group_actions.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_trivial_action_is_the_live_functor_on_a_nonidentity_lattice_map() -> None:
     group = Groups.C(2)

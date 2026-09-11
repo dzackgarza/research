@@ -8,6 +8,12 @@ from dzack_research.preamble.all import (
     QQ,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/ambient_spaces.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/schemes.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_affine_space_constructor_is_the_live_owned_constructor() -> None:
     affine = AffineSpace(2, QQ, names=("x", "y"))

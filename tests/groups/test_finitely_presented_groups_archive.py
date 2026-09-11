@@ -12,6 +12,12 @@ from dzack_research.preamble.all import (
     OwnedFinitelyPresentedGroups,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/finitely_presented_groups.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/groups.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_finite_presentability_and_chosen_presentation_are_distinct_properties() -> None:
     group = Groups.Free(2)
