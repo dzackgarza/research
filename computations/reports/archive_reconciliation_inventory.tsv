@@ -3079,12 +3079,12 @@ preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_paralle
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_a1_is_the_rank_one_diagram	specimen	111	0			unreviewed
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_b3_root_gram_matrix_is_symmetric_with_one_double_bond	specimen	126	0			unreviewed
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_diagram_roots_have_negative_square	specimen	145	0			unreviewed
-preamble/tests/framework/__init__.py	<module>	module	1	0			unreviewed
+preamble/tests/framework/__init__.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/framework/conftest.py	<module>	module	1	0		tests/conftest.py	reconciled-live-owner
 preamble/tests/framework/conftest.py	projective_framework	function	11	0		tests/conftest.py	reconciled-live-owner
-preamble/tests/framework/projective_framework_loader.py	<module>	module	1	0			unreviewed
-preamble/tests/framework/projective_framework_loader.py	NotebookNamespace	binding	18	0			unreviewed
-preamble/tests/framework/projective_framework_loader.py	load_projective_framework	function	40	0			unreviewed
+preamble/tests/framework/projective_framework_loader.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/framework/projective_framework_loader.py	NotebookNamespace	binding	18	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/tests/framework/projective_framework_loader.py	load_projective_framework	function	40	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/framework/scenario_manifest.sage	<module>	module	1	0			unreviewed
 preamble/tests/framework/scenario_manifest.sage	SCENARIO_MANIFEST	binding	8	0			unreviewed
 preamble/tests/framework/test_base_change_and_bundles.sage	<module>	module	1	0			unreviewed
