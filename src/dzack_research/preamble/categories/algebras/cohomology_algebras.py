@@ -1,4 +1,16 @@
-r"""Graded cohomology algebras of represented differential graded algebras."""
+r"""Graded cohomology algebras of represented differential graded algebras.
+
+The cohomology computation is deliberately the common owned cochain-complex
+construction: each homogeneous piece is literally ``Cohomology(dga, p)``, so
+its cycle inclusion, boundary-in-cycles map, quotient projection and selected
+representatives remain available to multiplication and induced maps.  Sage's
+``CommutativeDifferentialGradedAlgebra`` backend is not a replacement for this
+boundary: in its supported field regime ``cocycles`` and ``coboundaries`` are
+coordinate vector subspaces and ``cohomology`` is an abstract free module,
+which does not retain those comparison maps.  The maintained module backends
+used by ``Cohomology`` therefore remain the private computation authority for
+both commutative and noncommutative source DGAs.
+"""
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
