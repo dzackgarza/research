@@ -1696,24 +1696,142 @@ exists a finite set $I$ and an effective epimorphism
 $\bigoplus_{i\in I}R\twoheadrightarrow M$." Bind $M$, state the
 quantifiers, and do not double the surjectivity marker.
 
-### `DEF-20`: Torsion over a general ring is a torsion theory, not a property
+### `DEF-20`: Torsion over a general ring is extra structure, not a property
 
-Over an integral domain $R$ (discrete), torsion and torsion-free are
-properties of an $R$-module $M$ as above. Over a general
-($\mathbb{E}_1$) ring spectrum $R$, a "torsion subcategory" is not a
-property of $M$ but extra structure: a hereditary torsion pair, a
-$t$-structure, or a localizing subcategory with the corresponding
-torsion functor. The passage "Over a general ring, a torsion subcategory
-is used only after a torsion theory has been specified" is correct in
-intent but inside a definition block it is a prose usage rule with no
-construction. State the torsion theory and cite its definition; put the
-usage rule in a Remark, not in the definition of finitely generated
-projective modules.
+Over an integral domain $R$ (discrete, $R=\pi_0 HR$), torsion and
+torsion-free are properties of $M\in\mathbf{LMod}_R$: $M$ is torsion if
+$\forall m\,\exists\,0\neq r$ with $r\cdot m=0$, equivalently
+$\operatorname{Ann}_R(m)\neq0$ for every $m$ (see MA-15); $M$ is
+torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$. Over a general
+associative ($\mathbb{E}_1$) ring spectrum $R$, a "torsion subcategory"
+is not a property of $M$ but extra structure: a hereditary torsion pair
+$(\mathcal{T},\mathcal{F})$, a $t$-structure, or a localizing
+subcategory with its torsion functor — not "a torsion theory," which has
+no referent (TERM-4). The last sentence of {#def-module-subcategories}
+is a prose usage rule with no construction. State the precise structure
+and cite its definition; put the usage rule in a Remark, not in the
+definition of finitely generated projective modules.
 
 **Banned:** the last sentence of {#def-module-subcategories} as part of
-the definition of $R\text{-}\mathbf{Mod}$ subcategories.
+the definition of $R\text{-}\mathbf{Mod}$ subcategories, and "a torsion
+theory has been specified" with no definition of "torsion theory."
 
 **Preferred:** "::: {.Remark} Over a general $\mathbb{E}_1$-ring spectrum
-$R$, a torsion subcategory means a hereditary torsion theory
-$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-theory)
-and is used only after that theory has been specified. :::"
+$R$, a torsion subcategory means a hereditary torsion pair
+$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-pair)
+or the corresponding $t$-structure, and is used only after that pair has
+been specified. :::"
+
+### `TERM-4`: "Torsion theory" with no referent
+
+"Torsion theory" is not a mathematical object. There are hereditary
+torsion pairs, $t$-structures, and localizing subcategories with torsion
+functors — each with a definition. A passage that writes "a torsion
+theory has been specified" invents a term with no definition, no
+citation, and no construction, and uses it as if it were standard.
+Name the precise structure.
+
+**Banned:** "Over a general ring, a torsion subcategory is used only
+after a torsion theory has been specified."
+
+**Preferred:** "Over a general $\mathbb{E}_1$-ring spectrum $R$, a
+torsion subcategory is used only after a hereditary torsion pair
+$(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-pair)
+has been specified" or "after a $t$-structure
+$(\mathbf{LMod}_R^{\ge0},\mathbf{LMod}_R^{\le0})$ has been specified."
+
+### `DEF-21`: Compound term defined by "both conditions hold"
+
+A new term "finitely generated projective" is introduced as "both of the
+first two conditions hold," referencing bullet order, instead of defining
+"finitely generated" and "projective" and noting the subcategory of
+objects satisfying both is the intersection. The compound is not
+primitive; its meaning is the conjunction, and the equivalence with other
+characterizations (dualizable, compact projective) is a theorem.
+
+**Banned:** "finitely generated projective: both of the first two
+conditions hold."
+
+**Preferred:** "An $R$-module $M$ is finitely generated projective if it
+is finitely generated and projective, i.e.
+$M\in\mathbf{LMod}_R^{\mathrm{fg}}\cap\mathbf{Proj}_R$, each replete
+full." Define each property separately; the conjunction is the
+intersection, not a new primitive.
+
+### `PR-22`: "Some … is …" for $\exists$
+
+A property quantified by "there exists" is written as "some
+$R^n\twoheadrightarrow M$ is surjective" — colloquial quantification that
+picks a morphism $R^n\to M$ and then asks whether that already-surjective
+arrow is surjective. Standard sources write the quantifier explicitly and
+do not double the surjectivity marker ($\twoheadrightarrow$ already means
+surjective).
+
+**Banned:** "finitely generated: some $R^n\twoheadrightarrow M$ is
+surjective."
+
+**Preferred:** "there exists a finite set $I$ and an effective
+epimorphism $\bigoplus_{i\in I}R\twoheadrightarrow M$" (classical shadow:
+"there exists $n$ and a surjection $R^n\to M$"). State "there exists"
+and the surjection once; do not write "$\twoheadrightarrow$ is
+surjective."
+
+### `DEF-22`: Characterization presented as definition
+
+A notion is defined by a characterization whose equivalence with the
+defining property is a theorem, without stating which is the definition.
+"$M$ is a direct summand of a free module" is the theorem "projective
+iff retract of free," not the definition. The definition is the lifting
+property / $\operatorname{Hom}_R(M,-)$ exact.
+
+Concrete standard: $M\in\mathbf{LMod}_R$ is projective if
+$\operatorname{Hom}_R(M,-)$ preserves effective epimorphisms,
+equivalently every diagram
+$$
+\begin{tikzcd}
+& M\arrow[d]\\
+N\arrow[r,two heads]&P
+\end{tikzcd}
+$$
+with $N\twoheadrightarrow P$ lifts, equivalently every surjection
+$N\twoheadrightarrow M$ splits. Theorem: $M$ is projective iff it is a
+retract of $\bigoplus_{i\in I}R$ for some set $I$. Similarly, $M$ is
+finitely generated if $\operatorname{Hom}_R(M,-)$ preserves filtered
+colimits, equivalently the surjection condition above; state the
+definition, then cite the characterization as a theorem.
+
+**Banned:** "projective: $M$ is a direct summand of a free module" as the
+definition; "finitely generated: some $R^n\twoheadrightarrow M$ is
+surjective" as the definition without the generating-set or compactness
+formulation.
+
+**Preferred:** define $M$ projective by the lifting property; then
+"Theorem: $M$ is projective iff it is a retract of a free module
+$\bigoplus_{i\in I}R$." Define $M$ finitely generated by the generating
+set; then "iff there exists a finite $I$ and an effective epimorphism
+$\bigoplus_{i\in I}R\twoheadrightarrow M$."
+
+### `MA-15`: Prose to avoid defining the annihilator
+
+A paragraph of English — "every element is annihilated by a nonzero
+element of $R$," "multiplication by every nonzero element of $R$ is
+injective" — is used to avoid defining the annihilator ideal. The ideal
+is the standard algebraic object; defining it once makes every later
+torsion statement precise and short. Define the ideal.
+
+Concrete standard: for $R$ an integral domain (discrete) and
+$m\in M\in\mathbf{LMod}_R$, put
+$\operatorname{Ann}_R(m):=\{r\in R\mid r\cdot m=0\}\trianglelefteq R$.
+Then $M$ is torsion if $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$
+($\forall m\,\exists\,0\neq r$ with $r\cdot m=0$), torsion-free if
+$\operatorname{Ann}_R(m)=0$ for $m\neq0$, equivalently
+$r\cdot\colon M\to M$ injective for $0\neq r\in R$.
+
+**Banned:** "M is torsion when every element is annihilated by a nonzero
+element of $R$, and torsion-free when multiplication by every nonzero
+element of $R$ is injective" — two English paragraphs with per-element
+quantifiers hidden in prose.
+
+**Preferred:** define $\operatorname{Ann}_R(m)$ once, then "$M$ is
+torsion if $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$;
+torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$."
