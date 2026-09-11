@@ -851,3 +851,52 @@ is.
 **Preferred:** "$\mu\colon A\otimes_{\mathbb{Z}}A\to A$ is a homomorphism;
 the corresponding bilinear map $A\times A\to A$ is the multiplication."
 Declare the map, then name its role.
+
+### `SYM-4`: A symbol overloaded within one passage
+
+A single symbol is used for two distinct mathematical objects in the same
+passage — a terminal object and an identity morphism, a unit element and a
+unit map — so the reader cannot determine which referent is in force at
+each occurrence. Each symbol has one meaning throughout the book
+(`NOT-3`); within a single passage the constraint is tighter, because the
+two referents appear side by side.
+
+**Banned:** "Let $\mathcal C$ have finite products and a terminal object
+$1$. … $\mu\circ(1\times\zeta)\circ\delta$" — the first $1$ is the
+terminal object, the $1$ in $1\times\zeta$ is $\operatorname{id}_c$.
+
+**Preferred:** use distinct symbols. Name the terminal object $e$ or
+$\mathbf{1}$, and write $\operatorname{id}_c$ for the identity morphism.
+No reader confuses $\operatorname{id}_c\times\zeta$ with
+$e\times\zeta$.
+
+### `SYM-5`: A map written without its domain and codomain
+
+A morphism is written as a bare symbol in an equation — $1\times\zeta$,
+$\mu\circ\delta$ — without stating its domain and codomain. The reader
+must infer the types from context. In a definition, where the reader is
+meeting the maps for the first time, state the domain and codomain of
+each map before using it in an equation.
+
+**Banned:** "$\mu\circ(1\times\zeta)\circ\delta=\eta\circ{!}_c$" with no
+domain or codomain stated for $1\times\zeta$, $\delta$, or $!_c$ before
+their use.
+
+**Preferred:** "$\operatorname{id}_c\times\zeta\colon c\times c\to
+c\times c$, $\delta\colon c\to c\times c$, and $!_c\colon c\to
+\mathbf{1}$" stated before the equations that use them.
+
+### `SYM-6`: A symbol introduced after its first use
+
+A "where" clause defines $\delta$ after $\delta$ has already appeared in
+the equations above it. In a definition, every symbol is introduced before
+its first use. A "where" clause after an equation is a trailing gloss for
+a reader who already knows the notation; it is not a substitute for
+stating the data before using it.
+
+**Banned:** equations using $\delta$, then "where
+$\delta\colon c\to c\times c$ is the diagonal."
+
+**Preferred:** "Let $\delta\colon c\to c\times c$ be the diagonal and
+$!_c\colon c\to\mathbf{1}$ the unique map. Then …" — state the maps,
+then write the equations.
