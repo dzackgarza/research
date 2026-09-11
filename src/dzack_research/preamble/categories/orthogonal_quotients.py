@@ -296,7 +296,7 @@ class OrthogonalCharacterQuotient:
                     "a libGAP double-coset representative did not cross back to the character image"
                 )
             representatives.append(self._witnesses[quotient_representative])
-        return tuple(representatives)
+        return finite_ordered_set(tuple(representatives))
 
     def witness_meets_subgroup(self, witness, stabilizer_generators) -> bool:
         return self.adjust_witness_into_subgroup(witness, stabilizer_generators) is not None
