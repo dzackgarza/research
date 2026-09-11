@@ -9,8 +9,6 @@ takes values in \([0,\infty)\).
 The additive monoid \((\mathbb{N},+)\) is the discrete submonoid.
 """
 
-from sage.categories.commutative_additive_monoids import CommutativeAdditiveMonoids
-from sage.categories.category import Category
 from sage.rings.infinity import Infinity, minus_infinity
 from sage.rings.rational_field import QQ
 from sage.rings.semirings.non_negative_integer_semiring import NN
@@ -20,6 +18,8 @@ from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
 from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.categories.sets.cardinals import continuum
@@ -85,8 +85,8 @@ class NonNegativeReals(UniqueRepresentation, Parent):
     def __init__(self) -> None:
         Parent.__init__(
             self,
-            category=Category.join(
-                (CommutativeAdditiveMonoids().Infinite(), AdditiveMonoids())
+            category=Cat().meet(
+                (AdditiveMonoids().AdditiveCommutative(), Sets().Infinite())
             ),
         )
         realize_owned_category(self)
