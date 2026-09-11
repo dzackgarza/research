@@ -1662,6 +1662,7 @@ behavior.
 
 
 
+| `CORE-absolute-galois-category-boundary-20260911-0248` | category-boundaries / absolute-Galois parent placement through owned Cat meet | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py; tests/groups/test_absolute_galois_category_boundary.py` (write) | `e661b2d5` | 2026-09-11T02:48:00Z |
 | `ARCHIVE-functor-image-homs-20260910-0125` | archive reconciliation / functor-image Hom composition and underlying codomain Hom | Chat continuation 2026-09-10; `/home/dzack/research` | `src/dzack_research/preamble/categories/abstract_categories/functor_images.py; tests/categories/test_functor_images_archive.py` (write) | `e20e5840` | 2026-09-10T01:25:00Z |
 | `ARCHIVE-vinberg-weighted-semantics-20260909-1346` | archive reconciliation / weighted Vinberg reflection semantics | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/vinberg_invariants.py; tests/lattices/test_vinberg_weighted_graph_semantics_archive.py` (write) | `90c3c5d9` | 2026-09-09T13:46:00Z |
 | `ARCHIVE-torsion-form-subobjects-20260909-1050` | archive reconciliation / generic torsion-form subobjects | Chat continuation 2026-09-09; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py; tests/forms/test_torsion_form_subobjects_archive.py` (write) | `HEAD` | 2026-09-09T10:50:00Z |
