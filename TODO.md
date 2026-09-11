@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-galois-quotient-20260911-0730` | archive reconciliation / finite Galois quotients and restriction maps | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/groups/test_galois_quotient_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:30:00Z |
 
 
 
