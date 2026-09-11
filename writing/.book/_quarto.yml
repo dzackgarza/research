@@ -41,155 +41,155 @@ book:
     # Part 1. The landing page heads its own first group. Order is
     # definition-before-use: classifiers are needed by both limits and monoidal
     # structure, so truncation precedes them.
-    - part: category-theory/index.md
+    - part: category-theory.md
       chapters:
-        - category-theory/framework/Higher-Categories-and-Universes.md
-        - category-theory/framework/Categorical-Foundations.md
-        - category-theory/framework/Truncation-and-Classifiers.md
-        - category-theory/framework/Limits-and-Colimits.md
-        - category-theory/framework/Loops-and-Suspension.md
-        - category-theory/framework/Identification.md
-        - category-theory/framework/Equality.md
+        - Higher-Categories-and-Universes.md
+        - Categorical-Foundations.md
+        - Truncation-and-Classifiers.md
+        - Limits-and-Colimits.md
+        - Loops-and-Suspension.md
+        - Identification.md
+        - Equality.md
     - part: Algebraic structure
       chapters:
-        - category-theory/framework/Mathematical-Framework.md
-        - category-theory/framework/Monoidal-Categories.md
-        - category-theory/framework/Modules-and-Forms.md
-        - category-theory/framework/Generators-and-Presentations.md
-        - category-theory/framework/Joins-Meets-and-Closure.md
-        - category-theory/framework/Distinguished-Functors.md
-        - category-theory/framework/Elements-and-Containment.md
-        - category-theory/framework/Generic-Elements.md
+        - Mathematical-Framework.md
+        - Monoidal-Categories.md
+        - Modules-and-Forms.md
+        - Generators-and-Presentations.md
+        - Joins-Meets-and-Closure.md
+        - Distinguished-Functors.md
+        - Elements-and-Containment.md
+        - Generic-Elements.md
     # One dependency chain, in its own order: a form, then a lattice, then the
     # Witt class, then the stable category the Witt class lives in, then the
     # morphisms and complexes built on that category.
     - part: Forms, lattices, and Witt theory
       chapters:
-        - category-theory/framework/Bilinear-and-Quadratic-Forms.md
-        - category-theory/framework/Bilinear-Forms-on-Algebra-Modules.md
-        - category-theory/framework/Lattices-and-Discriminant-Forms.md
-        - category-theory/framework/Isometries-and-Arithmetic-Invariants.md
-        - category-theory/framework/Coxeter-Systems-and-Lattices.md
-        - category-theory/framework/Hyperbolic-Forms-and-Witt-Classes.md
-        - category-theory/framework/Stable-Categories-of-Modules-with-Duality.md
-        - category-theory/framework/Morphisms-of-Form-Modules.md
-        - category-theory/framework/Chain-Complexes.md
+        - Bilinear-and-Quadratic-Forms.md
+        - Bilinear-Forms-on-Algebra-Modules.md
+        - Lattices-and-Discriminant-Forms.md
+        - Isometries-and-Arithmetic-Invariants.md
+        - Coxeter-Systems-and-Lattices.md
+        - Hyperbolic-Forms-and-Witt-Classes.md
+        - Stable-Categories-of-Modules-with-Duality.md
+        - Morphisms-of-Form-Modules.md
+        - Chain-Complexes.md
     - part: Realizations
       chapters:
-        - category-theory/lean/Category-Graph.md
+        - Category-Graph.md
     - part: Authoring and reference
       chapters:
-        - category-theory/contributing/Mathematical-Language-Style-Guide.md
-        - category-theory/framework/Mathematical-Sources.md
+        - Mathematical-Language-Style-Guide.md
+        - Mathematical-Sources.md
     # Part 2. The geometry the paper starts from: the three surface classes, then
     # the K3 cover that carries every lattice-theoretic statement later.
-    - part: coble/index.md
+    - part: coble.md
       chapters:
-        - coble/introduction/000-introduction.md
-        - coble/surfaces-and-moduli/surface-types.md
-        - coble/surfaces-and-moduli/k3-covers-and-involutions.md
-        - coble/surfaces-and-moduli/polarizations-and-loci.md
-        - coble/coble-surfaces/coble-surface-basics.md
-        - coble/coble-surfaces/k3-covers-of-coble-surfaces.md
-        - coble/coble-moduli/coble-surface-structure-and-classification.md
-        - coble/coble-surfaces/rational-sextic-calculations.md
+        - 000-introduction.md
+        - surface-types.md
+        - k3-covers-and-involutions.md
+        - polarizations-and-loci.md
+        - coble-surface-basics.md
+        - k3-covers-of-coble-surfaces.md
+        - coble-surface-structure-and-classification.md
+        - rational-sextic-calculations.md
     # General lattice machinery, complete before any Coble-specific lattice is
     # named. Splitting this from the next part is what keeps either readable.
     - part: Lattice theory
       chapters:
-        - coble/lattices-and-moduli/lattice-theory.md
-        - coble/lattices-and-moduli/root-systems.md
-        - coble/lattices-and-moduli/discriminant-forms-and-genus.md
-        - coble/lattices-and-moduli/embeddings-and-overlattices.md
-        - coble/lattices-and-moduli/special-lattices.md
-        - coble/lattices-and-moduli/invariant-and-coinvariant-lattices.md
+        - lattice-theory.md
+        - root-systems.md
+        - discriminant-forms-and-genus.md
+        - embeddings-and-overlattices.md
+        - special-lattices.md
+        - invariant-and-coinvariant-lattices.md
     # This project's own arithmetic, in dependency order: the discriminant orbits
     # are what the Heegner line is cut out of, and the lifting criterion is stated
     # for the arithmetic group that chapter constructs.
     - part: The Coble lattice
       chapters:
-        - coble/lattices-and-moduli/discriminant-orbits-of-the-coble-lattice.md
-        - coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md
-        - coble/lattices-and-moduli/automorphism-lifting-through-a-gluing.md
-        - coble/lattices-and-moduli/coble-lattice-table.md
-        - coble/lattices-and-moduli/nodal-enriques-lattices.md
+        - discriminant-orbits-of-the-coble-lattice.md
+        - the-heegner-line-and-the-coble-arithmetic-group.md
+        - automorphism-lifting-through-a-gluing.md
+        - coble-lattice-table.md
+        - nodal-enriques-lattices.md
     - part: Moduli spaces and period domains
       chapters:
-        - coble/lattices-and-moduli/coble-moduli-basics.md
-        - coble/lattices-and-moduli/moduli-construction.md
-        - coble/lattices-and-moduli/lattices.md
+        - coble-moduli-basics.md
+        - moduli-construction.md
+        - lattices.md
     - part: Reflection groups and compactifications
       chapters:
-        - coble/compactifications/reflection-groups-and-vinberg.md
-        - coble/compactifications/coxeter-systems-and-classification.md
-        - coble/compactifications/dynkin-foldings.md
-        - coble/compactifications/hyperbolic-coxeter-polytopes.md
-        - coble/compactifications/reflective-two-elementary-lattices.md
-        - coble/compactifications/toroidal-and-semitoroidal.md
-        - coble/compactifications/scattone-cusp-method.md
+        - reflection-groups-and-vinberg.md
+        - coxeter-systems-and-classification.md
+        - dynkin-foldings.md
+        - hyperbolic-coxeter-polytopes.md
+        - reflective-two-elementary-lattices.md
+        - toroidal-and-semitoroidal.md
+        - scattone-cusp-method.md
     - part: Degenerations
       chapters:
-        - coble/degenerations/kulikov-models.md
-        - coble/degenerations/anticanonical-pairs-and-singularities.md
-        - coble/degenerations/divisor-and-dlt-models.md
-        - coble/degenerations/halphen-surfaces.md
-        - coble/degenerations/morrison-flowerpot-degenerations.md
+        - kulikov-models.md
+        - anticanonical-pairs-and-singularities.md
+        - divisor-and-dlt-models.md
+        - halphen-surfaces.md
+        - morrison-flowerpot-degenerations.md
     # Enriques first: the Coble diagram is obtained from it by mirror moves, and
     # the correspondence chapter runs in that direction too.
     - part: The cusp correspondence
       chapters:
-        - coble/cusp-correspondence/cusp-diagram-calculations.md
-        - coble/cusp-correspondence/enriques-surface-cusps.md
-        - coble/cusp-correspondence/coble-surface-cusps.md
-        - coble/cusp-correspondence/sterk-cusp-divisibilities.md
-        - coble/cusp-correspondence/enriques-to-coble-cusp-correspondence.md
+        - cusp-diagram-calculations.md
+        - enriques-surface-cusps.md
+        - coble-surface-cusps.md
+        - sterk-cusp-divisibilities.md
+        - enriques-to-coble-cusp-correspondence.md
     - part: Stable limits
       chapters:
-        - coble/stable-limits/geometric.md
-        - coble/stable-limits/ias.md
-        - coble/stable-limits/ksba.md
+        - geometric.md
+        - ias.md
+        - ksba.md
     - part: 'Results for $F_{\mathrm{En},2}$'
       chapters:
-        - coble/results-f-en-2/main-theorem-and-cusps.md
-        - coble/results-f-en-2/ksba-semitoroidal-comparison.md
-        - coble/results-f-en-2/classifying-map-and-involution.md
+        - main-theorem-and-cusps.md
+        - ksba-semitoroidal-comparison.md
+        - classifying-map-and-involution.md
     # The split below is the one the pages declare themselves, in their own
     # `unit:` frontmatter: reusable method, then the results it produced.
     - part: Computational methods
       chapters:
-        - coble/computations/computational-toolchain-and-recipe.md
-        - coble/computations/lattice-algorithms-by-signature.md
-        - coble/computations/fundamental-chamber-polyhedra.md
-        - coble/computations/isotropic-orbits-and-tits-buildings.md
-        - coble/computations/periods-and-local-monodromy.md
+        - computational-toolchain-and-recipe.md
+        - lattice-algorithms-by-signature.md
+        - fundamental-chamber-polyhedra.md
+        - isotropic-orbits-and-tits-buildings.md
+        - periods-and-local-monodromy.md
     - part: Computed results
       chapters:
-        - coble/computations/coxiter-results-for-cusp-lattices.md
-        - coble/computations/root-vectors-and-folded-sterk-diagrams.md
-        - coble/computations/sterk-root-counts-and-computed-chambers.md
-        - coble/computations/sterk-integral-affine-data.md
-        - coble/computations/coble-lattice-isotropic-candidates.md
+        - coxiter-results-for-cusp-lattices.md
+        - root-vectors-and-folded-sterk-diagrams.md
+        - sterk-root-counts-and-computed-chambers.md
+        - sterk-integral-affine-data.md
+        - coble-lattice-isotropic-candidates.md
     # Everything still conjectural, together: the pages below all carry
     # `status: conjectural`, and a reader is owed that boundary in the structure.
     - part: Open problems and research programs
       chapters:
-        - coble/open-problems/open-problems.md
-        - coble/coble-moduli/coble-families-research-program.md
-        - coble/coble-moduli/cusp-correspondence-morphism-chain.md
-        - coble/adjacent-programs/nodal-enriques-moduli-program.md
-        - coble/adjacent-programs/halphen-index-2-moduli-program.md
+        - open-problems.md
+        - coble-families-research-program.md
+        - cusp-correspondence-morphism-chain.md
+        - nodal-enriques-moduli-program.md
+        - halphen-index-2-moduli-program.md
     - part: Heegner report
       chapters:
-        - coble/heegner-report/coble-heegner-research-report.md
+        - coble-heegner-research-report.md
     # Back matter. coble/tables/*.md are untitled fragments, not chapters: they
     # are pulled into the Diagrams page by include, which is why they no longer
     # appear as blank entries in the sidebar.
     - part: Reference
       chapters:
-        - coble/appendix-reference/adjunction-and-ramification-formulae.md
-        - coble/appendix-reference/coxeter-and-dynkin-diagrams.md
-        - coble/reference-tables/lattice-and-diagram-conventions.md
-        - coble/extracted-references/extracted-references.md
+        - adjunction-and-ramification-formulae.md
+        - coxeter-and-dynkin-diagrams.md
+        - lattice-and-diagram-conventions.md
+        - extracted-references.md
 # Assets that pandoc, rather than Quarto, opens must live in .assets/ -- see the
 # note beside `filters:` below. The two Coble bibliographies need no such
 # treatment: they sit inside a symlinked part, so both tools reach them the same way.

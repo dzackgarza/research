@@ -1,0 +1,1 @@
+coble/computations/coble-lattice-isotropic-candidates.md

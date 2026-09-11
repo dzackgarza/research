@@ -1,0 +1,1 @@
+coble/surfaces-and-moduli/polarizations-and-loci.md

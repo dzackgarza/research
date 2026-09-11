@@ -7,7 +7,7 @@ lang: en
 toc: true
 toc-depth: 4
 number-sections: true
-bibliography: coble_references.bib
+bibliography: coble/heegner-report/coble_references.bib
 link-citations: true
 citeproc: true
 crossrefYaml: pandoc-crossref.yaml

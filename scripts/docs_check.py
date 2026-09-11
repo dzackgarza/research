@@ -53,15 +53,44 @@ for name in LINKED_PARTS:
     if entry.resolve() != source.resolve():
         sys.exit(f"docs-check: {entry} links to {entry.resolve()}, not to {source}")
 
-# --- render, capturing warnings -------------------------------------------------
-proc = subprocess.run(
-    [*QUARTO, "render", str(BOOK)],
-    capture_output=True, text=True,
-)
-log = proc.stdout + proc.stderr
-if proc.returncode != 0:
-    print(log)
-    sys.exit(f"docs-check: `quarto render` failed (exit {proc.returncode})")
+# Every chapter reaches the project root the same way: as a link to the prose that
+# stays in its topic directory under writing/. The flat layout is what gives the
+# numbered-block filter one registry instead of one per directory, so a chapter that
+# became a copy would both drift from its source and render against a stale registry.
+CHAPTERS = re.findall(r"^\s+-\s+(?:part:\s+)?([A-Za-z0-9._-]+\.md)\s*$",
+                      (BOOK / "_quarto.yml").read_text(), re.M)
+if len(CHAPTERS) < 2:
+    sys.exit("docs-check: read no chapter list out of _quarto.yml")
+for name in CHAPTERS:
+    entry = BOOK / name
+    if not entry.is_symlink():
+        sys.exit(f"docs-check: chapter {entry} is a copy, not a link into writing/ — "
+                 "edits to it would not reach the prose the book owns.")
+    if not entry.resolve().is_file():
+        sys.exit(f"docs-check: chapter {entry} links to {entry.resolve()}, which does not exist")
+
+# --- render twice, capturing warnings -------------------------------------------
+# custom-numbered-blocks resolves \ref and \longref against a registry it builds as
+# the render proceeds, so a first pass can only reach blocks declared in chapters it
+# has already processed. A reference forward to a later chapter finds nothing, and
+# pandoc drops the unmatched macro rather than printing it, so the sentence closes
+# over the hole. The registry is written to disk (._htmlbook_xref.json at the project
+# root) and read back at the start of each chapter, so a second pass over the same
+# tree resolves every reference the first pass registered. This is the same reason a
+# LaTeX document is compiled twice; the cost is one extra render.
+#
+# The gate must therefore render twice itself: a single pass would check a site whose
+# forward references are all missing, and CI clones fresh, so it has no earlier pass
+# to inherit a registry from.
+for _pass in (1, 2):
+    proc = subprocess.run(
+        [*QUARTO, "render", str(BOOK)],
+        capture_output=True, text=True,
+    )
+    log = proc.stdout + proc.stderr
+    if proc.returncode != 0:
+        print(log)
+        sys.exit(f"docs-check: `quarto render` failed on pass {_pass} (exit {proc.returncode})")
 
 # 1. undefined citations
 missing = sorted(set(re.findall(r"citation (\S+) not found", log)))

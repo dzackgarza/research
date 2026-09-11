@@ -1,0 +1,1 @@
+coble/computations/periods-and-local-monodromy.md

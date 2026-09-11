@@ -104,39 +104,33 @@ parse it afterwards to check the structure, rather than round-tripping it.
 Reported by a parallel session that hit it while merging chapter entries; the
 damage was caught before it was committed.
 
-## The numbered-block registry is per directory, so most cross-references render as nothing
+## The numbered-block registry is one file, and the render must run twice
 
 `custom-numbered-blocks` resolves `\ref` and `\longref` through a registry it writes
-to disk, `._htmlbook_xref.json`. The filename is a bare relative name, hard-coded in
-`cnb-1-init-chapters.lua`, so it lands in **pandoc's working directory** — and pandoc
-runs with its working directory at the real location of the input, which in this book
-is the chapter's own source directory.
+to disk as `._htmlbook_xref.json`. The filename is a bare relative name hard-coded in
+`cnb-1-init-chapters.lua`, so it lands in pandoc's working directory — which is the
+directory of the input **as the project lists it**, not the realpath of what a symlink
+points at.
 
-The registry is therefore not one book-wide table. It is one table per source
-directory, and there are twenty of them. `\longref{thm:x}` resolves only when the
-block declaring `#thm:x` sits in the *same directory* as the page referring to it.
-Every other reference renders as **nothing at all** — pandoc drops the unmatched raw
-LaTeX rather than printing it, so the sentence closes over the hole:
+Two consequences, and the layout depends on both.
 
-> The presentation $T_{\mathrm{Co}}\cong \mathrm{I}_{2,9}(2)$ is the one recorded in ,
-> and it is the form in which the divisibility computation of is carried out.
+**Every chapter is symlinked flat into `writing/.book`.** The prose stays in its topic
+directory under `writing/`; the project root holds one link per chapter. That is what
+makes the registry a single book-wide file. When the chapters were listed at nested
+paths instead, each topic directory got its own registry, `\longref{thm:x}` resolved
+only within one directory, and 188 of 525 references in the Coble part rendered as
+nothing — invisibly, because pandoc drops an unmatched macro rather than printing it.
+Never add a chapter at a nested path; add the flat link.
 
-Measured on the Coble part: of 525 references to numbered blocks, 310 resolve and 215
-render as nothing — 188 because the target is in another directory, 27 because no such
-block is declared anywhere.
+**The gate renders twice.** The registry is built as the render proceeds, so a first
+pass reaches only blocks in chapters it has already processed and every forward
+reference is dropped. The registry is written to disk and read back at the start of
+each chapter, so a second pass resolves them all. `scripts/docs_check.py` therefore
+runs `quarto render` twice — the same reason a LaTeX document is compiled twice — and
+CI calls that script, so a fresh clone gets both passes.
 
-Two things follow.
-
-**`docs-check` cannot see it.** Check 2 looks for Quarto's `quarto-unresolved-ref`
-marker in the rendered HTML, and a dropped reference never became a Quarto crossref.
-The gate reports "cross-refs all resolve" over a book where two in five do not. The
-check that would see it is a source-side one: the target's declaring file must be in
-the same directory as the referring file.
-
-**A clean build is worse than a local one.** The registry file is never cleared, so a
-second render in the same tree reads the previous pass's table and resolves references
-the first pass could not. CI clones fresh and renders once, so the published site loses
-references that the local preview shows.
-
-The extension assumes the standard flat Quarto book, every chapter in the project root.
-This book puts chapters in topic directories, which is what breaks the assumption.
+`docs-check` cannot see a dropped reference directly: its check looks for Quarto's
+`quarto-unresolved-ref` marker in the rendered HTML, and a reference the block filter
+dropped never became a Quarto crossref. What it does check is that every chapter in
+`_quarto.yml` is a flat symlink, since a chapter that became a copy would render
+against the wrong registry and drift from the prose.
