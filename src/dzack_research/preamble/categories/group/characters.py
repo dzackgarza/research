@@ -91,6 +91,15 @@ class CharacterSets(OwnedParameterizedCategory):
         def values(self):
             return self.class_function().values()
 
+        def class_values(self):
+            r"""Return the values on the retained conjugacy-class framing of ``G``.
+
+            This is the mathematical value family of the character.  Engine
+            arguments used to evaluate the underlying class function remain
+            private to the class-function adapter.
+            """
+            return self.values()
+
         def conjugacy_class_representatives(self):
             return self.class_function().conjugacy_class_representatives()
 
