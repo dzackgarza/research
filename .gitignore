@@ -42,3 +42,10 @@ writing/coble/papers/**/*.tmp
 writing/coble/papers/**/*.xref
 writing/coble/papers/**/*.4ct
 writing/coble/papers/**/*.4tc
+
+# `just docs-lint FILE` renders one page with pandoc's working directory at the
+# page, so the .html lands beside the prose. It is a throwaway: the book's real
+# output is writing/.book/_site/. The two checked-in .html under
+# category-theory/lean/ are the generated category graph, listed in _quarto.yml
+# as a project resource, so they are named rather than covered by this rule.
+writing/coble/**/*.html
