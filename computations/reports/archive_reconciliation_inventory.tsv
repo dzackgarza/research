@@ -858,9 +858,9 @@ preamble/categories/functors/trivial_action.sage	group_module_forgetful_functor	
 preamble/categories/functors/trivial_action.sage	TrivialActionFunctor	class	74	1	src/dzack_research/preamble/categories/functors/group_actions.py		unreviewed
 preamble/categories/functors/trivial_action.sage	TrivialActionFunctor.group	method	81	0			unreviewed
 preamble/categories/functors/trivial_action.sage	trivial_action	function	133	0			unreviewed
-preamble/categories/functors/twist.sage	<module>	module	1	0			unreviewed
-preamble/categories/functors/twist.sage	TwistFunctor	class	26	1	src/dzack_research/preamble/categories/functors/twist.py		unreviewed
-preamble/categories/functors/twist.sage	TwistFunctor.scale	method	47	0			unreviewed
+preamble/categories/functors/twist.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/twist.py	reconciled-live-owner
+preamble/categories/functors/twist.sage	TwistFunctor	class	26	1	src/dzack_research/preamble/categories/functors/twist.py	src/dzack_research/preamble/categories/functors/twist.py	reconciled-live-owner
+preamble/categories/functors/twist.sage	TwistFunctor.scale	method	47	0		src/dzack_research/preamble/categories/functors/twist.py	reconciled-live-owner
 preamble/categories/group/finitely_presented_groups.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation	class	27	2			unreviewed
 preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.super_categories	method	40	0			unreviewed
