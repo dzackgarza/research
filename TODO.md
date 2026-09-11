@@ -1663,7 +1663,7 @@ behavior.
 
 ### Active claims
 
-| `ARCHIVE-utilities-20260911-0715` | archive reconciliation / reusable utility helpers | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/test_utilities_archive_reconciliation.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:15:00Z |
+| `ARCHIVE-utilities-20260911-0715` | archive reconciliation / reusable utility helpers and multiline-signature inventory scope | Chat continuation 2026-09-11; `/home/dzack/research` | `computations/scripts/archive_reconciliation_inventory.py; computations/reports/archive_reconciliation_inventory.tsv; tests/test_archive_reconciliation_inventory.py; tests/test_utilities_archive_reconciliation.py` (write) | `HEAD` | 2026-09-11T07:15:00Z |
 
 
 
