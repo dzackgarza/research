@@ -63,6 +63,18 @@ def test_noncommutative_zero_differential_dga_keeps_noncommutative_cohomology() 
     assert x_class * y_class != y_class * x_class
 
 
+def test_degree_zero_cohomology_of_nonnegative_unital_dga_retains_the_unit() -> None:
+    dga = _noncommutative_zero_differential_dga()
+    cohomology = CohomologyAlgebra(dga)
+    degree_zero = cohomology.graded_piece(0)
+    unit_cycle = dga.one().homogeneous_component(0)
+    unit_class = degree_zero.class_of_cycle(unit_cycle)
+
+    assert dga.differential_component(-1).domain().module_rank() == 0
+    assert degree_zero is dga.cohomology(0)
+    assert cohomology.from_component(0, unit_class) == cohomology.one()
+
+
 def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map() -> None:
     dga = _noncommutative_zero_differential_dga()
     x = dga.algebra_generator("x")
