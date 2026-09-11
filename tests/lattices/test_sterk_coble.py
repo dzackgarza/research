@@ -1,5 +1,11 @@
 from dzack_research.preamble.all import Coble, Sterk, ZZ, tensor
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/coble.sage",
+    "live_owner": "src/dzack_research/preamble/coble.py",
+    "disposition": "reconciled-live-owner",
+}
+
 _STERK_NORM_COUNTS = {
     "Sterk_1": {-4: 12, -2: 0},
     "Sterk_2": {-4: 9, -2: 1},

@@ -2836,13 +2836,13 @@ preamble/categories/sets/sets.sage	FiniteSubsets	function	1052	1	src/dzack_resea
 preamble/categories/sets/sets.sage	E	binding	1058	0			unreviewed
 preamble/categories/sets/sets.sage	finite_ordered_set	function	1065	1	src/dzack_research/preamble/categories/sets/finite_ordered_sets.py		unreviewed
 preamble/categories/sets/sets.sage	ordered_set_owned_by	function	1120	0			unreviewed
-preamble/coble.sage	<module>	module	1	0			unreviewed
-preamble/coble.sage	Coble	class	56	1	src/dzack_research/preamble/coble.py		unreviewed
-preamble/coble.sage	Coble.isotropic_vectors	method	64	0			unreviewed
-preamble/coble.sage	Coble.isotropic_vectors_in_TEn	method	103	0			unreviewed
-preamble/coble.sage	Coble.isotropic_vectors_in_TdP	method	116	0			unreviewed
-preamble/coble.sage	Coble.rank_ten_coxeter_roots	method	130	0			unreviewed
-preamble/coble.sage	Coble.rank_ten_diagram	method	190	0			unreviewed
+preamble/coble.sage	<module>	module	1	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
+preamble/coble.sage	Coble	class	56	1	src/dzack_research/preamble/coble.py	src/dzack_research/preamble/coble.py	reconciled-live-owner
+preamble/coble.sage	Coble.isotropic_vectors	method	64	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
+preamble/coble.sage	Coble.isotropic_vectors_in_TEn	method	103	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
+preamble/coble.sage	Coble.isotropic_vectors_in_TdP	method	116	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
+preamble/coble.sage	Coble.rank_ten_coxeter_roots	method	130	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
+preamble/coble.sage	Coble.rank_ten_diagram	method	190	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
 preamble/display.py	<module>	module	1	0			unreviewed
 preamble/display.py	typesets_itself	function	35	0			unreviewed
 preamble/display.py	latex_if_typesettable	function	52	0			unreviewed
