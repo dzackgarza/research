@@ -1525,3 +1525,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| `RING-completion-arithmetic-20260911-2248` | completion arithmetic / exact-vs-finite precision semantics | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; tests/rings/test_completion_arithmetic.py; tests/rings/test_completion_inverse_system.py` (write) | `a3281c07` | 2026-09-11T22:48:00Z |
