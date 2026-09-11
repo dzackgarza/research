@@ -16,6 +16,9 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     restrict_diagram,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.functors.core import (
     Functor,
     IdentityFunctor,
@@ -212,3 +215,36 @@ def test_module_product_and_coproduct_use_selected_universal_constructions() -> 
     from_coproduct = coproduct.factor(cocone).apex_map()
     assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(0)) == from_left
     assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(1)) == from_right
+
+
+def test_empty_product_and_coproduct_distinguish_terminal_and_initial_sets() -> None:
+    empty_index = finite_ordered_set(())
+    empty_family = indexed_family(
+        empty_index,
+        lambda _index: finite_ordered_set(("unused",)),
+        name="Empty family of sets",
+    )
+
+    product = ProductConstruction(empty_family, target_category=Sets())
+    coproduct = CoproductConstruction(empty_family, target_category=Sets())
+
+    assert product.object().cardinality() == cardinal(1)
+    assert coproduct.object().cardinality() == cardinal(0)
+    assert product.object() is not coproduct.object()
+
+    probe = finite_ordered_set(("a", "b"))
+    product_cone = ConeCategory(product.diagram()).cone(
+        probe,
+        lambda _index: None,
+    )
+    into_terminal = product.factor(product_cone).apex_map()
+    assert into_terminal.domain() is probe
+    assert into_terminal.codomain() is product.object()
+
+    coproduct_cocone = CoconeCategory(coproduct.diagram()).cocone(
+        probe,
+        lambda _index: None,
+    )
+    from_initial = coproduct.factor(coproduct_cocone).apex_map()
+    assert from_initial.domain() is coproduct.object()
+    assert from_initial.codomain() is probe

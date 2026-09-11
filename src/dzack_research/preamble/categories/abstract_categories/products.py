@@ -988,8 +988,13 @@ def Cocone(
 def _discrete_diagram(factors, target_category=None):
     family = _finite_factor_family(factors)
     if family.cardinality() == cardinal(0):
-        raise ValueError("the current selected finite product requires at least one factor")
-    target = common_category_of(family) if target_category is None else target_category
+        if target_category is None:
+            raise ValueError(
+                "an empty diagram has no object from which to infer its target category"
+            )
+        target = target_category
+    else:
+        target = common_category_of(family) if target_category is None else target_category
 
     index = DiscreteCategory(family.index_set())
     return DiscreteDiagram(index, target, family)

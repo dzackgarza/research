@@ -10,6 +10,7 @@ from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 
@@ -57,7 +58,7 @@ def Product(left: Parent, right: Parent) -> Parent:
     return construction(left, right)
 
 
-def ProductConstruction(factors):
+def ProductConstruction(factors, *, target_category=None):
     r"""Return the selected finite product construction on ``factors``."""
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
@@ -65,7 +66,12 @@ def ProductConstruction(factors):
     )
 
     family = _finite_factor_family(factors, name="Product factors")
-    category = common_category_of(family)
+    if family.cardinality() == cardinal(0):
+        if target_category is None:
+            raise ValueError("an empty product requires its target category")
+        category = target_category
+    else:
+        category = common_category_of(family) if target_category is None else target_category
     construction = category._categorical_product_construction
     assert construction is not NotImplemented, (
         "no selected product construction is owned by the factors' common category"
@@ -82,7 +88,7 @@ def Coproduct(left: Parent, right: Parent) -> Parent:
     return construction(left, right)
 
 
-def CoproductConstruction(factors):
+def CoproductConstruction(factors, *, target_category=None):
     r"""Return the selected finite coproduct construction on ``factors``."""
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
@@ -90,7 +96,12 @@ def CoproductConstruction(factors):
     )
 
     family = _finite_factor_family(factors, name="Coproduct factors")
-    category = common_category_of(family)
+    if family.cardinality() == cardinal(0):
+        if target_category is None:
+            raise ValueError("an empty coproduct requires its target category")
+        category = target_category
+    else:
+        category = common_category_of(family) if target_category is None else target_category
     construction = category._categorical_coproduct_construction
     assert construction is not NotImplemented, (
         "no selected coproduct construction is owned by the factors' common category"

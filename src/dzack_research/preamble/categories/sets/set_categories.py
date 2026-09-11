@@ -521,11 +521,37 @@ class Sets(OwnedCategory):
             family = _factor_family(family, name="Product factors")
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
-                return _cartesian_product_of_finite_family(family)
+                return self._categorical_product_construction(family).object()
             return CartesianProductOfFamily(index_set, family)
 
         def _categorical_product(self, left, right):
-            return CartesianProductOfSets(left, right)
+            return self._categorical_product_construction((left, right)).object()
+
+        def _categorical_product_construction(self, factors):
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                ProductConeCategory,
+                SelectedLimitConstruction,
+                _discrete_diagram,
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Product factors")
+            if any(factor not in self for factor in family):
+                raise TypeError("a set product requires set-valued factors")
+            product = _cartesian_product_of_finite_family(family)
+            diagram = _discrete_diagram(family, self)
+            universal_cone = ProductConeCategory(diagram).cone(
+                product,
+                lambda index: product.projection(index.value()),
+            )
+
+            def factorizer(cone):
+                return product.from_maps(
+                    cone.apex(),
+                    lambda label: cone.structure_morphism(diagram.domain()(label)),
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
 
         def coproduct(
             self,
@@ -555,11 +581,37 @@ class Sets(OwnedCategory):
             family = _factor_family(family, name="Coproduct factors")
             index_set = family.index_set()
             if index_set in FiniteSets() and index_set in EnumeratedSets():
-                return _coproduct_of_finite_family(family)
+                return self._categorical_coproduct_construction(family).object()
             return CoproductOfFamily(index_set, family)
 
         def _categorical_coproduct(self, left, right):
-            return CoproductOfSets(left, right)
+            return self._categorical_coproduct_construction((left, right)).object()
+
+        def _categorical_coproduct_construction(self, factors):
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                CoproductCoconeCategory,
+                SelectedColimitConstruction,
+                _discrete_diagram,
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Coproduct factors")
+            if any(factor not in self for factor in family):
+                raise TypeError("a set coproduct requires set-valued factors")
+            coproduct = _coproduct_of_finite_family(family)
+            diagram = _discrete_diagram(family, self)
+            universal_cocone = CoproductCoconeCategory(diagram).cocone(
+                coproduct,
+                lambda index: coproduct.injection(index.value()),
+            )
+
+            def factorizer(cocone):
+                return coproduct.from_maps(
+                    cocone.apex(),
+                    lambda label: cocone.costructure_morphism(diagram.domain()(label)),
+                )
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
         def _categorical_product_morphism(self, left_morphism, right_morphism, source, target):
             return CartesianProductMorphism(
