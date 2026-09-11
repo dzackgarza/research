@@ -2,6 +2,12 @@ from dzack_research.preamble.all import CommutativeRings, MatrixSpace, OwnedRing
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/functors/ring_centers.sage",
+    "live_owner": "src/dzack_research/preamble/categories/rings/ring_foundation.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_ring_center_is_functorial_on_a_nonidentity_ring_isomorphism() -> None:
     matrices = MatrixSpace(QQ, 2)

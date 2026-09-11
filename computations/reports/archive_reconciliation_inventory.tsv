@@ -849,9 +849,9 @@ preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunct
 preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.counit	method	492	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.hom_set_isomorphism_forward	method	500	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.hom_set_isomorphism_inverse	method	512	0			unreviewed
-preamble/categories/functors/ring_centers.sage	<module>	module	1	0			unreviewed
-preamble/categories/functors/ring_centers.sage	RingCenterFunctor	class	36	1	src/dzack_research/preamble/categories/rings/ring_foundation.py		unreviewed
-preamble/categories/functors/ring_centers.sage	RingCenterFunctor.domain	method	48	0			unreviewed
+preamble/categories/functors/ring_centers.sage	<module>	module	1	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/functors/ring_centers.sage	RingCenterFunctor	class	36	1	src/dzack_research/preamble/categories/rings/ring_foundation.py	src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/functors/ring_centers.sage	RingCenterFunctor.domain	method	48	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/functors/trivial_action.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
 preamble/categories/functors/trivial_action.sage	GroupModuleForgetfulFunctor	class	43	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
 preamble/categories/functors/trivial_action.sage	group_module_forgetful_functor	function	67	0		src/dzack_research/preamble/categories/functors/group_actions.py	reconciled-live-owner
@@ -2196,16 +2196,16 @@ preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.s
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.free_resolution	method	207	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.is_finitely_generated	method	225	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.is_zero	method	235	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FreeModules	class	15	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
-preamble/categories/modules/pure/free_modules.sage	FreeModules.super_categories	method	22	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FreeModules.ParentMethods	class	25	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FreeModules.ParentMethods.is_free	method	26	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FreeModules.ParentMethods.is_torsion_free	method	30	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules	class	47	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules.super_categories	method	60	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules.ParentMethods	class	65	0			unreviewed
-preamble/categories/modules/pure/free_modules.sage	FreeModuleOfRank	function	77	0			unreviewed
+preamble/categories/modules/pure/free_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FreeModules	class	15	1	src/dzack_research/preamble/categories/modules/pure/modules.py	src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FreeModules.super_categories	method	22	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FreeModules.ParentMethods	class	25	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FreeModules.ParentMethods.is_free	method	26	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FreeModules.ParentMethods.is_torsion_free	method	30	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules	class	47	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules.super_categories	method	60	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FiniteRankFreeModules.ParentMethods	class	65	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/pure/free_modules.sage	FreeModuleOfRank	function	77	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/pure/function_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
 preamble/categories/modules/pure/function_modules.sage	Function	binding	91	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py	src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner
 preamble/categories/modules/pure/function_modules.sage	FunctionModules	class	400	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py	src/dzack_research/preamble/categories/functions/real_functions.py	reconciled-live-owner

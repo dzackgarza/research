@@ -5,6 +5,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from sage.rings.integer_ring import ZZ as SageZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/pure/free_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _countable_labels():
     return Sets.Δ[Sets.ℵ[0]]
