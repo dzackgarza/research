@@ -189,6 +189,31 @@ it cartesian or cocartesian, and name the resulting object and structure
 morphism in the diagram. The prose may state the universal property after
 the diagram; it never replaces the diagram.
 
+### `EV-6`: "Data" for a mathematical object
+
+A construction operates on objects, morphisms, 2-cells, or elements of a
+specified category. "Data" names none of them; it is a programmer's
+abstraction standing where a mathematical object belongs.
+
+**Banned:** "a construction that transports data along $\alpha$, $\lambda$,
+or $\varrho$."
+
+**Preferred:** name the things the construction operates on — "a construction
+that composes a cell with $\alpha$, $\lambda$, or $\varrho$." The word "data"
+erases the type; the replacement names it.
+
+### `EV-7`: Metaphor for an unnamed operation
+
+A sentence says something "transports", "carries", "flows", or "moves" along
+a map or cell without naming the categorical operation — composition,
+whiskering, application, base change, conjugation — that performs it.
+
+**Banned:** "transports data along $\alpha$."
+
+**Preferred:** name the operation — "composes with $\alpha$", "applies
+$\alpha$ to the cell", "whiskers $\alpha$ against $F$." The metaphor hides
+which operation; the replacement states it.
+
 ## Mathematical tells (`MA-*`)
 
 Colloquial or reinvented parlance in place of the standard notion, or of the

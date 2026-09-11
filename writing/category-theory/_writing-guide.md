@@ -260,12 +260,27 @@ some sense" used where an exact statement is owed. *Fix:* state it exactly, or, 
 approximation is meant, name the sense ("up to isomorphism", "to first order").
 
 **EV-5 — Universal construction left in prose.** A construction defined by a pullback,
-pushout, or another universal square is abbreviated as “obtained by pulling back” or an
-equivalent prose instruction. *Banned:* “Define $E\to X$ by pulling back
-$p\colon U\to B$ along $f\colon X\to B$.” *Fix:* draw the actual commutative square,
+pushout, or another universal square is abbreviated as "obtained by pulling back" or an
+equivalent prose instruction. *Banned:* "Define $E\to X$ by pulling back
+$p\colon U\to B$ along $f\colon X\to B$." *Fix:* draw the actual commutative square,
 label every morphism, mark it cartesian or cocartesian, and name the resulting object and
 structure morphism in the diagram. The prose may state the universal property after the
 diagram; it never replaces the diagram.
+
+**EV-6 — "Data" for a mathematical object.** A construction operates on objects, morphisms,
+2-cells, or elements of a specified category. "Data" names none of them; it is a
+programmer's abstraction standing where a mathematical object belongs. *Banned:* "a
+construction that transports data along $\alpha$, $\lambda$, or $\varrho$." *Fix:* name
+the things the construction operates on — "a construction that composes a cell with
+$\alpha$, $\lambda$, or $\varrho$." The word "data" erases the type; the replacement
+names it.
+
+**EV-7 — Metaphor for an unnamed operation.** A sentence says something "transports",
+"carries", "flows", or "moves" along a map or cell without naming the categorical
+operation — composition, whiskering, application, base change, conjugation — that
+performs it. *Banned:* "transports data along $\alpha$." *Fix:* name the operation —
+"composes with $\alpha$", "applies $\alpha$ to the cell", "whiskers $\alpha$ against
+$F$." The metaphor hides which operation; the replacement states it.
 
 
 ---
