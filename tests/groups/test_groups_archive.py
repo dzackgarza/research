@@ -9,6 +9,17 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedFinitelyPresentedGroups,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/groups.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/groups.py",
+    "owner_overrides": {
+        "OwnedGroups.Subobjects": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+        "OwnedGroups.Subobjects.ParentMethods": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+        "OwnedGroups.Subobjects.ParentMethods.inclusion": "src/dzack_research/preamble/categories/abstract_categories/constructions.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_native_group_constructors_cross_into_owned_property_categories() -> None:
     linear = Groups.GL(2, GF(3))
@@ -90,3 +101,14 @@ def test_archived_discriminant_module_keeps_group_and_module_structure_on_one_pa
     element = next(iter(discriminant))
     order = ZZ(element.additive_order())
     assert discriminant.scalar_multiple(order, element) == discriminant.zero()
+
+
+def test_archived_finite_group_character_surface_is_live_on_the_owned_group() -> None:
+    group = Groups.S(3)
+    representatives = group.conjugacy_classes_representatives()
+    irreducibles = group.irreducible_characters()
+    trivial = group.trivial_character()
+
+    assert representatives.cardinality() == irreducibles.cardinality()
+    assert trivial in irreducibles
+    assert all(trivial(representative) == 1 for representative in representatives)

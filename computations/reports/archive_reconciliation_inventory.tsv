@@ -903,59 +903,59 @@ preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup	class	350	
 preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.engine_subgroup	method	380	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.supergroup	method	383	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/group/group_morphisms.sage	GroupAutomorphismGroup.set_supergroup	method	386	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
-preamble/categories/group/groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/groups.sage	SubgroupInclusion	class	69	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/groups.sage	SubgroupInclusion.is_injective	method	72	0			unreviewed
-preamble/categories/group/groups.sage	GroupParent	class	127	0			unreviewed
-preamble/categories/group/groups.sage	GroupParent.one	method	133	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups	class	327	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.super_categories	method	429	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.ParentMethods	class	444	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.is_finitely_generated	method	449	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.is_arithmetic_group	method	473	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.End	method	498	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.Aut	method	523	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.is_isomorphic_to	method	552	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.Subobjects	class	596	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py		unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.Subobjects.ParentMethods	class	620	0			unreviewed
-preamble/categories/group/groups.sage	OwnedGroups.Subobjects.ParentMethods.inclusion	method	621	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups	class	635	2			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.super_categories	method	647	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods	class	650	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.is_finitely_generated	method	651	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.group_generators	method	655	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.number_of_group_generators	method	659	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.conjugation_morphism	method	665	0			unreviewed
-preamble/categories/group/groups.sage	coxeter_presentation	function	684	2			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups	class	801	2			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.super_categories	method	814	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods	class	817	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods.is_finitely_presented	method	818	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods.presenting_free_group	method	822	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods.defining_relations	method	835	0			unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings	class	849	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.super_categories	method	866	0			unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ElementMethods	class	869	0			unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods	class	912	0			unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.domain	method	946	0			unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.codomain	method	949	0			unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.one	method	958	0			unreviewed
-preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.zero	method	961	0			unreviewed
-preamble/categories/group/groups.sage	OwnedAbelianGroups	class	977	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/groups.sage	OwnedAbelianGroups.super_categories	method	989	0			unreviewed
-preamble/categories/group/groups.sage	OwnedAbelianGroups.ParentMethods	class	994	0			unreviewed
-preamble/categories/group/groups.sage	OwnedAbelianGroups.ParentMethods.endomorphism_ring	method	996	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteGroups	class	1034	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteGroups.super_categories	method	1041	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods	class	1044	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.conjugacy_classes_representatives	method	1045	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.irreducible_characters	method	1056	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.character	method	1066	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.trivial_character	method	1074	0			unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteAbelianGroups	class	1086	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
-preamble/categories/group/groups.sage	OwnedFiniteAbelianGroups.super_categories	method	1093	0			unreviewed
-preamble/categories/group/groups.sage	refine_group	function	1115	0			unreviewed
-preamble/categories/group/groups.sage	install_groups	function	1217	0			unreviewed
+preamble/categories/group/groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	SubgroupInclusion	class	69	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	SubgroupInclusion.is_injective	method	72	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	GroupParent	class	127	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	GroupParent.one	method	133	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups	class	327	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.super_categories	method	429	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.ParentMethods	class	444	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.is_finitely_generated	method	449	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.is_arithmetic_group	method	473	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.End	method	498	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.Aut	method	523	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.ParentMethods.is_isomorphic_to	method	552	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.Subobjects	class	596	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py	src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.Subobjects.ParentMethods	class	620	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedGroups.Subobjects.ParentMethods.inclusion	method	621	0		src/dzack_research/preamble/categories/abstract_categories/constructions.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups	class	635	2		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.super_categories	method	647	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods	class	650	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.is_finitely_generated	method	651	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.group_generators	method	655	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.number_of_group_generators	method	659	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.conjugation_morphism	method	665	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	coxeter_presentation	function	684	2		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups	class	801	2		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.super_categories	method	814	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods	class	817	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods.is_finitely_presented	method	818	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods.presenting_free_group	method	822	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods.defining_relations	method	835	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings	class	849	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.super_categories	method	866	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ElementMethods	class	869	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods	class	912	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.domain	method	946	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.codomain	method	949	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.one	method	958	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	AbelianGroupEndomorphismRings.ParentMethods.zero	method	961	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedAbelianGroups	class	977	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedAbelianGroups.super_categories	method	989	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedAbelianGroups.ParentMethods	class	994	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedAbelianGroups.ParentMethods.endomorphism_ring	method	996	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteGroups	class	1034	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteGroups.super_categories	method	1041	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods	class	1044	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.conjugacy_classes_representatives	method	1045	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.irreducible_characters	method	1056	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.character	method	1066	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteGroups.ParentMethods.trivial_character	method	1074	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteAbelianGroups	class	1086	1	src/dzack_research/preamble/categories/group/groups.py	src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	OwnedFiniteAbelianGroups.super_categories	method	1093	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	refine_group	function	1115	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
+preamble/categories/group/groups.sage	install_groups	function	1217	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/categories/group/magmas.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
 preamble/categories/group/magmas.sage	Magmas	class	32	1	src/dzack_research/preamble/categories/group/magmas.py	src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
 preamble/categories/group/magmas.sage	Magmas.super_categories	method	47	0		src/dzack_research/preamble/categories/group/magmas.py	reconciled-live-owner
