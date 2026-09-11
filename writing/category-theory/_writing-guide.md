@@ -203,17 +203,29 @@ without adding content. *Banned:* "the pullback is universal, underscoring the c
 role." *Fix:* delete the clause, or replace it with the statement it gestures at — a
 theorem, a cross-reference, an actual consequence.
 
-**PR-9 — Undue emphasis.** `**bold**` used for emphasis or to mark a defined term in running
+**PR-9 — Construction and verification in one sentence.** A single sentence simultaneously
+constructs an object and verifies its required properties, hiding the logical structure the
+reader needs to follow. *Banned:* "A category with finite products is monoidal with
+$a\otimes b$ a chosen product $a\times b$ and $e$ a terminal object, the three isomorphisms
+being the unique ones commuting with the projections; this is the cartesian monoidal
+structure." *Fix:* separate the construction from the verification. "Choose a product
+$a \times b$ for each pair of objects and a terminal object $e$. Set $\otimes = \times$ and
+take $e$ as the unit. The associator $\alpha_{a,b,c}$ and the unitors $\lambda_a$,
+$\varrho_a$ are the unique isomorphisms supplied by the universal property of the product."
+A reader follows construction, then verification; a semicolon-joined sentence conflates
+them.
+
+**PR-10 — Undue emphasis.** `**bold**` used for emphasis or to mark a defined term in running
 prose. *Fix:* *italic* for a term at its definition; **bold** only as a run-in label at the
 start of a list item or paragraph ("**In $\mathbf{Set}$.**", "**Remark.**"). Never bold to
 weight a clause.
 
-**PR-10 — Formatting tells.** Sentence case in headings, not Title Case ("Axiom classifier",
+**PR-11 — Formatting tells.** Sentence case in headings, not Title Case ("Axiom classifier",
 not "Axiom Classifier"); straight quotes, not curly; no emoji; no collaborative or meta
 language ("let me know", "I hope this helps", knowledge-cutoff apologies); no bold-header
 bullet lists where prose is clearer.
 
-**PR-11 — Project process inside mathematical exposition.** A mathematical chapter pauses
+**PR-12 — Project process inside mathematical exposition.** A mathematical chapter pauses
 to discuss rulings, audit procedure, implementation status, editorial policy, or the work
 needed to maintain the book. *Banned:* "This ruling guards the conversion pipeline and is
 enforced by the audit." *Fix:* state the mathematical proposition in the chapter. Put only
@@ -281,6 +293,14 @@ operation — composition, whiskering, application, base change, conjugation —
 performs it. *Banned:* "transports data along $\alpha$." *Fix:* name the operation —
 "composes with $\alpha$", "applies $\alpha$ to the cell", "whiskers $\alpha$ against
 $F$." The metaphor hides which operation; the replacement states it.
+
+**EV-8 — Universal property invoked but not stated.** A sentence appeals to "the
+projections", "the universal property", or "the unique map" without stating which universal
+property, from which object, to which target. The uniqueness is real, but the reader cannot
+verify it without the property identified. *Banned:* "the three isomorphisms being the
+unique ones commuting with the projections." *Fix:* "the associator $\alpha_{a,b,c}$ and
+the unitors $\lambda_a$, $\varrho_a$ are the unique isomorphisms supplied by the universal
+property of the product." Name the universal property and the object that supplies it.
 
 
 ---
@@ -374,6 +394,13 @@ functorial only on its core; an unlabeled edge whose direction could mean either
 or forgetting structure. *Fix:* write the actual source, target, and arrow label. Replace
 membership by prose, restrict a construction to its stated domain, and display a
 set-valued invariant as a map from $\pi_0$.
+
+**MA-12 — Named maps referred to by count.** Standard maps with standard names — the
+associator $\alpha$, the left unitor $\lambda$, the right unitor $\varrho$ — are referred
+to as "the three isomorphisms" or "the $n$ maps" instead of by name. The reader must infer
+which maps from context. *Banned:* "the three isomorphisms being the unique ones commuting
+with the projections." *Fix:* "the associator $\alpha_{a,b,c}$ and the unitors
+$\lambda_a$, $\varrho_a$." Name the maps. The count carries no mathematical information.
 
 ---
 
