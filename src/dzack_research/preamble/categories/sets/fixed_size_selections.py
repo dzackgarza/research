@@ -6,13 +6,12 @@ from typing import SupportsInt, TypeVar
 
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.arith.misc import binomial
-from sage.categories.category import Category
-from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import EnumeratedSets
-from dzack_research.preamble.categories.sets.set_categories import TotallyOrderedSets
+from dzack_research.preamble.categories.sets.set_categories import FiniteSets, TotallyOrderedSets
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
@@ -244,8 +243,8 @@ class FixedSizeSelections(Parent):
         except NotImplementedError:
             source_is_finite = False
         if source_is_finite:
-            categories.append(FiniteEnumeratedSets())
-        Parent.__init__(self, facade=False, category=Category.join(tuple(categories)))
+            categories.append(FiniteSets())
+        Parent.__init__(self, facade=False, category=Cat().meet(categories))
 
     def source(self) -> Parent:
         return self._source
