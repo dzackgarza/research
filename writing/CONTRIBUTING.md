@@ -1013,28 +1013,34 @@ categories.
 
 A definition or construction is presented using a framework the field has
 replaced, when a modern framework exists and is standard. The superseded
-framework is not wrong — it is a theorem under the modern one — but
-presenting it as the definition teaches the reader a picture that the
-field has moved past. The modern framework governs the superseded one,
-not the reverse. Anchor definitions in the current understanding of the
-subject; present the historical formulation as a theorem or remark if it
-is still useful.
+framework is not wrong — it is a shadow or special case of the modern one
+— but presenting it as the definition teaches the reader a picture that the
+field has moved past. This is especially acute in category theory, where
+the modern framework is $\infty$-category theory, derived and spectral
+algebraic geometry, and the constructions developed in the last 10-20
+years. A construction whose modern home is an $\infty$-categorical or
+spectral framework — $K$-theory, derived functors, cohomology, moduli,
+intersections, traces — is presented in its classical, pre-derived,
+pre-spectral form, and the reader has no access to the generality and
+structure the modern framework provides. Anchor definitions in the current
+understanding of the subject; present the classical formulation as a
+special case or theorem if it is still useful.
 
 **Banned:** defining $K_0(S)$ as the group completion of
-$\pi_0(S^\simeq)$ without mentioning the $K$-theory spectrum. The group
-completion is the pre-spectral presentation; the modern definition is
-$K_0(S) = \pi_0 K(S)$, and the group completion is a theorem identifying
-$\pi_0 K(S)$ with the group completion of the monoid.
+$\pi_0(S^\simeq)$ without mentioning the $K$-theory spectrum. $K$ is a
+functor from a subcategory of $\mathbf{Cat}$ to spectra; $K_0$ is $\pi_0$
+of that functor. The group completion of the monoid is an even more
+classical construction that the spectrum recovers. Presenting the
+group completion as the definition is anchoring in a framework two stages
+out of date.
 
-**Preferred:** define $K_0(S) = \pi_0 K(S)$ where $K(S)$ is the
-$K$-theory spectrum, constructed via the $S_\bullet$-construction
-[@Wal85] or the equivalent $\Gamma$-space construction. State the group
-completion theorem as a theorem. The spectrum-level construction is the
-modern framework: Zakharevich [@Zak17] constructs $K(\mathcal{V}_k)$ as a
-spectrum whose $\pi_0$ is the Grothendieck ring of varieties, with higher
-homotopy groups carrying geometric information; Campbell [@Cam17]
-produces $K(\mathbf{Var}_{/k})$ via an $S_\bullet$-type construction with
+**Preferred:** define $K$ as a functor to spectra, $K_0(S) = \pi_0 K(S)$,
+and state the group completion theorem as a theorem. The
+$S_\bullet$-construction [@Wal85] is the standard construction;
+Zakharevich [@Zak17] constructs $K(\mathcal{V}_k)$ as a spectrum whose
+$\pi_0$ is the Grothendieck ring of varieties, with higher homotopy
+groups carrying geometric information; Campbell [@Cam17] produces
+$K(\mathbf{Var}_{/k})$ via an $S_\bullet$-type construction with
 liftings of motivic measures to the spectrum. A reader trained on the
-modern definition can access $K_n$, the spectrum-level structure, and the
-methods the field actually uses; a reader trained on the superseded one
-cannot.
+modern definition can access the generality the functor to spectra
+provides; a reader trained on the superseded one cannot.
