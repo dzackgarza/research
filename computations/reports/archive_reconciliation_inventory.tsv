@@ -2976,7 +2976,7 @@ preamble/sterk.sage	SterkDiagrams	class	457	0		src/dzack_research/preamble/sterk
 preamble/symbols.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/symbols.py	import_statement_for	function	36	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/symbols.py	synthetic_imports	function	63	0		src/dzack_research/preamble/all.py	reconciled-live-owner
-preamble/tests/conftest.py	<module>	module	1	0			unreviewed
+preamble/tests/conftest.py	<module>	module	1	0		tests/conftest.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/conftest.py	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/conftest.py	test_data_dir	specimen	22	0			unreviewed
 preamble/tests/coxeter_tdd_specs/conftest.py	expected_finite_orders	function	28	0			unreviewed
@@ -3080,8 +3080,8 @@ preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_a1_is_t
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_b3_root_gram_matrix_is_symmetric_with_one_double_bond	specimen	126	0			unreviewed
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_diagram_roots_have_negative_square	specimen	145	0			unreviewed
 preamble/tests/framework/__init__.py	<module>	module	1	0			unreviewed
-preamble/tests/framework/conftest.py	<module>	module	1	0			unreviewed
-preamble/tests/framework/conftest.py	projective_framework	function	11	0			unreviewed
+preamble/tests/framework/conftest.py	<module>	module	1	0		tests/conftest.py	reconciled-live-owner
+preamble/tests/framework/conftest.py	projective_framework	function	11	0		tests/conftest.py	reconciled-live-owner
 preamble/tests/framework/projective_framework_loader.py	<module>	module	1	0			unreviewed
 preamble/tests/framework/projective_framework_loader.py	NotebookNamespace	binding	18	0			unreviewed
 preamble/tests/framework/projective_framework_loader.py	load_projective_framework	function	40	0			unreviewed
