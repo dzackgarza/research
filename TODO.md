@@ -1663,6 +1663,8 @@ behavior.
 
 ### Active claims
 
+| `ARCHIVE-twist-functor-20260911-0725` | archive reconciliation / lattice twist endofunctor | Chat continuation 2026-09-11; `/home/dzack/research` | `tests/lattices/test_twist_functor_archive.py; computations/reports/archive_reconciliation_inventory.tsv` (write) | `HEAD` | 2026-09-11T07:25:00Z |
+
 
 
 
