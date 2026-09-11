@@ -1,6 +1,5 @@
 """Submonoids represented as monomorphism subobjects of an ambient monoid."""
 
-from sage.categories.monoids import Monoids as SageMonoids
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
@@ -50,8 +49,8 @@ class _SubmonoidParent(Parent):
         description=None,
         structure_data=None,
     ) -> None:
-        if ambient not in Monoids() and ambient not in SageMonoids():
-            raise TypeError(f"{ambient} is not a monoid")
+        if ambient not in Monoids():
+            raise TypeError(f"{ambient} is not an owned monoid")
         if generators is None and predicate is None:
             raise ValueError("a represented submonoid needs generators or a membership predicate")
         self._preamble_ambient_monoid = ambient
