@@ -2962,17 +2962,17 @@ preamble/refine.sage	<module>	module	1	0			unreviewed
 preamble/refine.sage	refine	function	505	1	src/dzack_research/preamble/refine.py		unreviewed
 preamble/refine.sage	hook_post_init	function	566	0			unreviewed
 preamble/refine.sage	hooked_classes	function	630	0			unreviewed
-preamble/sterk.sage	<module>	module	1	0			unreviewed
-preamble/sterk.sage	NOT_PORTED	binding	42	0			unreviewed
-preamble/sterk.sage	Sterk	class	146	1	src/dzack_research/preamble/sterk.py		unreviewed
-preamble/sterk.sage	Sterk.roots_18_2_0	method	154	0			unreviewed
-preamble/sterk.sage	Sterk.roots_18_0_0	method	192	0			unreviewed
-preamble/sterk.sage	Sterk.sterk_roots	method	227	0			unreviewed
-preamble/sterk.sage	Sterk.selected_isotropic_vectors	method	334	0			unreviewed
-preamble/sterk.sage	Sterk.sterk5_in_U_E8_2	method	359	0			unreviewed
-preamble/sterk.sage	Sterk.sterks_in_ten	method	394	0			unreviewed
-preamble/sterk.sage	Sterk.isotropic_vectors	method	425	0			unreviewed
-preamble/sterk.sage	SterkDiagrams	class	457	0			unreviewed
+preamble/sterk.sage	<module>	module	1	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	NOT_PORTED	binding	42	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk	class	146	1	src/dzack_research/preamble/sterk.py	src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk.roots_18_2_0	method	154	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk.roots_18_0_0	method	192	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk.sterk_roots	method	227	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk.selected_isotropic_vectors	method	334	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk.sterk5_in_U_E8_2	method	359	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk.sterks_in_ten	method	394	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	Sterk.isotropic_vectors	method	425	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/sterk.sage	SterkDiagrams	class	457	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
 preamble/symbols.py	<module>	module	1	0			unreviewed
 preamble/symbols.py	import_statement_for	function	36	0			unreviewed
 preamble/symbols.py	synthetic_imports	function	63	0			unreviewed

@@ -16,6 +16,12 @@ import dzack_research
 
 from dzack_research.preamble.all import Sterk
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/sterk.sage",
+    "live_owner": "src/dzack_research/preamble/sterk.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 _ARTIFACTS = (
     Path(dzack_research.__file__).resolve().parent.parent.parent
