@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.rings.embeddings import (
     NumberFieldHomset,
@@ -637,7 +638,7 @@ def _owned_number_field_view(engine):
     categories = [OwnedNumberFields()]
     if engine is not SageQQ:
         categories.append(NumberFieldsWithChosenPrimitiveElement())
-    return refine(_owned_engine_ring(engine), OwnedCategory.join(tuple(categories)))
+    return refine(_owned_engine_ring(engine), Cat().meet(tuple(categories)))
 
 
 
