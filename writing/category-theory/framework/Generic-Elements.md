@@ -33,7 +33,7 @@ This is an ordinary implication whose hypotheses are formal propositions: discha
 Hypotheses are part of the statement, not commentary attached to it, and a statement is never displayed stripped of undischarged hypotheses.
 
 A relational hypothesis among already-named objects — $g \circ f = \mathrm{id}$, an equation between named elements — is a formal proposition and may be carried as such.
-When the relation is to be *consumed as data* rather than asserted — when later constructions depend on the retraction, not merely on its existence — the named objects are re-sited as a single object of the category of such diagrams (the retraction pair $(f, g, \, g \circ f = \mathrm{id})$ as an object of the category of retraction data), following the master principle that propositions become morphisms one level up ([Presentation Principles](../contributing/Categorical-Presentation-Principles.md#sec-master-principle)). The two forms are the hypothesis-level instance of the existence/data distinction of [Elements and Containment](Elements-and-Containment.md#sec-containment).
+When the relation is to be *consumed as data* rather than asserted — when later constructions depend on the retraction, not merely on its existence — the named objects are re-sited as a single object of the category of such diagrams (the retraction pair $(f, g, \, g \circ f = \mathrm{id})$ as an object of the category of retraction data), following the principle that a proposition becomes a morphism one level up. The two forms are the hypothesis-level instance of the existence/data distinction of [Elements and Containment](Elements-and-Containment.md#sec-containment).
 
 ## Case decomposition {#sec-case-decomposition}
 

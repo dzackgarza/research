@@ -11,7 +11,7 @@ ai_review_ci_release_channel := "main"
 ai_review_ci_workflow_template_version := "1"
 ai_review_ci_local_delegation := "global-justfile"
 ai_review_ci_default_branch := "main"
-preamble_megadoc_file := "writing/category-theory/preamble-megadoc.md"
+preamble_megadoc_file := ".agents/generated/preamble-megadoc.md"
 
 # List available recipes
 default:

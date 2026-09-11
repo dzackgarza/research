@@ -64,7 +64,6 @@ book:
         - category-theory/framework/Chain-Complexes.md
     - part: Realizations
       chapters:
-        - category-theory/lean/Lean-Sage-Integration-Model.md
         - category-theory/lean/Category-Graph.md
         - category-theory/sage/Sage-Category-Framework-Inventory.md
         # Generated wholesale by `just sage-inventory`; every entity is a section of
@@ -76,12 +75,10 @@ book:
         - category-theory/sage/inventory/constructions.md
         - category-theory/sage/inventory/aliases.md
         - category-theory/sage/inventory/runtime.md
-        - category-theory/lean/Categorical-DSL.md
     - part: Authoring and reference
       chapters:
         - category-theory/contributing/Mathematical-Language-Style-Guide.md
         - category-theory/framework/Mathematical-Sources.md
-        - category-theory/Roadmap.md
     # "Coble surfaces": as above, the landing page heads the overview and the two
     # groups of surface theory the paper starts from.
     - part: coble/index.md

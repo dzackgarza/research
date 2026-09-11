@@ -12,5 +12,4 @@ Categorical and arithmetic foundations support the lattice research code, its Sa
 
 **Authoring and reference.** The mathematical language style guide, and the sources the framework draws on.
 
-The [project roadmap](Roadmap.md) describes the Sage-parity and extension tracks.
-Current execution state is maintained in the [GitHub issue tree](https://github.com/dzackgarza/research/issues/46).
+**Realizations.** The Lean and Sage realizations of this mathematics, and the category and functor diagram.

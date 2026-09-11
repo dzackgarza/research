@@ -13,10 +13,10 @@ module imports ``dzack_research.preamble.all`` and interrogates the objects.
 
 Three surfaces come out of one survey:
 
-- ``writing/category-theory/preamble-megadoc.md``   the reference a contributor reads
-- ``writing/category-theory/preamble-graph.json``   the category and functor graph, serialized
-- ``writing/category-theory/preamble-graph.dot``    the same graph for GraphViz, rendered to
-  ``writing/category-theory/preamble-graph.html`` (pan and zoom) when ``dot`` is installed
+- ``.agents/generated/preamble-megadoc.md``   the reference a contributor reads
+- ``.agents/generated/preamble-graph.json``   the category and functor graph, serialized
+- ``.agents/generated/preamble-graph.dot``    the same graph for GraphViz, rendered to
+  ``.agents/generated/preamble-graph.html`` (pan and zoom) when ``dot`` is installed
 
 Introspection is defensive: a category the survey cannot instantiate, or a
 method whose signature will not resolve, is *recorded with its error*.  A
@@ -883,18 +883,18 @@ class Report:
             "A category the survey could not build, or an operation whose signature",
             "would not resolve, is recorded with the error rather than dropped.",
             "",
-            "The same survey is serialized to `writing/category-theory/preamble-graph.json`, which carries",
+            "The same survey is serialized to `.agents/generated/preamble-graph.json`, which carries",
             "every operation name, so a question this prose cannot index is a `jq` away:",
             "",
             "```bash",
             "# which category owns discriminant_group?",
             "jq -r '.categories | to_entries[]",
             '      | select(.value.operations.objects[]?.name == "discriminant_group")',
-            "      | .key' writing/category-theory/preamble-graph.json",
+            "      | .key' .agents/generated/preamble-graph.json",
             "```",
             "",
-            "The poset is drawn in `writing/category-theory/preamble-graph.html` (pan and zoom), from",
-            "`writing/category-theory/preamble-graph.dot`.",
+            "The poset is drawn in `.agents/generated/preamble-graph.html` (pan and zoom), from",
+            "`.agents/generated/preamble-graph.dot`.",
             "",
             "| | |",
             "| :--- | ---: |",
@@ -1353,7 +1353,7 @@ def render_interactive(dot_path: Path, out_path: Path) -> bool:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("-o", "--output", default="writing/category-theory/preamble-megadoc.md")
+    parser.add_argument("-o", "--output", default=".agents/generated/preamble-megadoc.md")
     arguments = parser.parse_args(argv)
 
     survey = Survey().run()
