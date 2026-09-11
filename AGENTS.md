@@ -231,7 +231,7 @@ Full catalogue: `.agents/references/terminology-dictionary.md`; code-shape patte
 
 # Docs prose policy (always-on)
 
-Prose in the docs book is governed by the writing guide, `writing/category-theory/_writing-guide.md` — a non-rendered (leading `_`, so Quarto ignores it), citable policy index of banned prose patterns in three kinds, each with a concrete example and remediation for one-shot learning:
+Prose in the docs book is governed by `writing/CONTRIBUTING.md` — a citable policy index of banned prose patterns, each with a concrete example and remediation:
 
 - **Prose tells (`PR-*`)** — bad prose on its own terms; the fix is a rewrite.
 
@@ -244,7 +244,7 @@ Prose in the docs book is governed by the writing guide, `writing/category-theor
 If so, fix it and cite the id.
 If it is a *new* pattern, record it in the guide — forward-facing, with an example and remediation — before or alongside fixing the one instance; a correction that fixes a sentence and leaves the pattern unrecorded will recur, and the guide is where a one-off correction graduates into policy an auditor applies everywhere.
 Run the index in the fresh-context audit (`.agents/references/mathematical-auditor-priming.md`) after every substantive docs edit, the same as the vocabulary pass.
-Requirements the docs must satisfy (definition-before-use, resolvable references) are *recorded* in the guide's Requirements section and audited against the artifact, never self-certified in prose (`PR-3`).
+Requirements the docs must satisfy (definition-before-use, resolvable references) are audited against the artifact, never self-certified in prose (`PR-3`).
 
 **Never write a definition or insert a citation from memory.** Before writing or editing any definition, open and read an actual source — the theory docs, the book's existing defining occurrence, the cited reference, or the upstream text — and transcribe from it.
 A definition recalled from training is a fabrication risk; a citation key recalled from memory is a fabrication risk (it may not exist in the bib file, or may point at the wrong entry).
