@@ -1022,12 +1022,19 @@ is still useful.
 
 **Banned:** defining $K_0(S)$ as the group completion of
 $\pi_0(S^\simeq)$ without mentioning the $K$-theory spectrum. The group
-completion is the pre-spectral (1970s) presentation; the modern
-definition is $K_0(S) = \pi_0 K(S)$, and the group completion is a
-theorem identifying $\pi_0 K(S)$ with the group completion of the monoid.
+completion is the pre-spectral presentation; the modern definition is
+$K_0(S) = \pi_0 K(S)$, and the group completion is a theorem identifying
+$\pi_0 K(S)$ with the group completion of the monoid.
 
 **Preferred:** define $K_0(S) = \pi_0 K(S)$ where $K(S)$ is the
-$K$-theory spectrum. State the group completion theorem as a theorem.
-A reader trained on the modern definition can access $K_n$, the
-spectrum-level structure, and the methods the field actually uses; a
-reader trained on the superseded one cannot.
+$K$-theory spectrum, constructed via the $S_\bullet$-construction
+[@Wal85] or the equivalent $\Gamma$-space construction. State the group
+completion theorem as a theorem. The spectrum-level construction is the
+modern framework: Zakharevich [@Zak17] constructs $K(\mathcal{V}_k)$ as a
+spectrum whose $\pi_0$ is the Grothendieck ring of varieties, with higher
+homotopy groups carrying geometric information; Campbell [@Cam17]
+produces $K(\mathbf{Var}_{/k})$ via an $S_\bullet$-type construction with
+liftings of motivic measures to the spectrum. A reader trained on the
+modern definition can access $K_n$, the spectrum-level structure, and the
+methods the field actually uses; a reader trained on the superseded one
+cannot.
