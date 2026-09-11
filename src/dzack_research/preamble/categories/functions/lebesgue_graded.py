@@ -22,7 +22,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from sage.categories.category import Category
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -503,7 +503,7 @@ class _LebesgueAlgebraFromMultiplication(Parent):
         Parent.__init__(
             self,
             base=_engine_ring(ring),
-            category=Category.join(tuple(categories)),
+            category=Cat().meet(tuple(categories)),
         )
         self._preamble_multiplication_morphism = _transport_multiplication(
             multiplication,
@@ -583,7 +583,7 @@ class GradedLebesgueModule(UniqueRepresentation, Parent):
         Parent.__init__(
             self,
             base=_engine_ring(ring),
-            category=Category.join(
+            category=Cat().meet(
                 (
                     LebesgueGradedModules(ring),
                     GradedModules(ring, grading_monoid),
