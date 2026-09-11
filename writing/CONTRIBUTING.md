@@ -589,3 +589,55 @@ with a proof. A category with finite products is an example of a monoidal
 category, not a theorem. State the definition, then give the example in an
 example block. Reserve proposition and proof blocks for statements that
 require verification beyond unpacking the definition.
+
+## Axioms and definitions (`AX-*`)
+
+### `AX-1`: A definition that names axioms without stating them
+
+A definition must fully determine the notion it introduces. Referencing
+axioms by name — "satisfying the two hexagon conditions", "satisfying the
+pentagon axiom" — without stating or drawing the diagrams is not a
+definition. The reader cannot evaluate whether a given object satisfies the
+definition, because the name of an axiom is not the axiom. State the
+equations or draw the diagrams. If they are long, cite the exact diagrams
+by reference to where they are written in full.
+
+**Banned:** "A braiding on a monoidal category is a natural isomorphism
+$\gamma_{a,b}\colon a\otimes b\cong b\otimes a$ satisfying the two hexagon
+conditions relating $\gamma$ to $\alpha$."
+
+**Preferred:** state or draw both hexagon diagrams. The definition names
+each component and each axiom; the axioms are commutative diagrams, and a
+definition either draws them or cites the exact reference where they are
+written.
+
+### `AX-2`: An axiom described by shape instead of by equation
+
+"The hexagon conditions", "the pentagon axiom", "the triangle identities" —
+the shape name is a mnemonic, not a mathematical condition. The condition
+is a commutative diagram or an equation. Use the shape name alongside the
+diagram, not in place of it. A reader who does not already know the shape
+cannot reconstruct the axiom from its name.
+
+**Banned:** "satisfying the two hexagon conditions relating $\gamma$ to
+$\alpha$."
+
+**Preferred:** draw the two hexagon diagrams, or write the equations they
+commute. The name "hexagon" may appear as a label; it may not substitute
+for the diagram.
+
+### `AX-3`: "relating" an axiom to its components without stating the relation
+
+"relating $\gamma$ to $\alpha$", "commuting with the projections",
+"compatible with the tensor product" — each names a relationship without
+stating the equation or diagram that expresses it. A definition or theorem
+that invokes a relation states the relation: the commutative diagram, the
+equation, or the naturality square. "Relating" and "compatible" gesture at
+a mathematical statement that is not written.
+
+**Banned:** "satisfying the two hexagon conditions relating $\gamma$ to
+$\alpha$."
+
+**Preferred:** state the relation — the hexagon diagrams express that
+specific composites of $\gamma$, $\alpha$, and the tensor product's
+functoriality are equal. Draw the diagrams or write the equations.
