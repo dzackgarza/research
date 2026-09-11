@@ -1,6 +1,6 @@
 archive_module	qualified_name	kind	archive_line	name_match_count	unique_name_match_hint	live_owner	disposition
-preamble/all.py	<module>	module	1	0			unreviewed
-preamble/all.py	load	function	47	1	src/dzack_research/preamble/all.py		unreviewed
+preamble/all.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/all.py	load	function	47	1	src/dzack_research/preamble/all.py	src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/catalogue.sage	<module>	module	1	0		src/dzack_research/preamble/catalogue.py	reconciled-live-owner
 preamble/catalogue.sage	TwoElementary	binding	220	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
 preamble/catalogue.sage	two_elementary_orthogonal_sums	function	299	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner

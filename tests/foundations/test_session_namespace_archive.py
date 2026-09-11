@@ -2,11 +2,18 @@ from pathlib import Path
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/test_session_namespace.sage",
-    "live_owner": "src/dzack_research/preamble/all.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/tests/test_session_namespace.sage",
+        "live_owner": "src/dzack_research/preamble/all.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/all.py",
+        "live_owner": "src/dzack_research/preamble/all.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def _session() -> dict:
