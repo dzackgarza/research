@@ -805,11 +805,11 @@ preamble/categories/functors/base_change_adjunction.sage	RestrictionOfScalarsFun
 preamble/categories/functors/base_change_adjunction.sage	RestrictionOfScalarsFunctor.ring_map	method	333	0			unreviewed
 preamble/categories/functors/base_change_adjunction.sage	BaseChangeAdjunction	class	364	1	src/dzack_research/preamble/categories/functors/scalar_change.py		unreviewed
 preamble/categories/functors/base_change_adjunction.sage	BaseChangeAdjunction.unit	method	375	0			unreviewed
-preamble/categories/functors/cardinality.sage	<module>	module	1	0			unreviewed
-preamble/categories/functors/cardinality.sage	CardinalityFunctor	class	22	1	src/dzack_research/preamble/categories/functors/cardinality.py		unreviewed
-preamble/categories/functors/cardinality.sage	CardinalityFunctor.domain	method	29	0			unreviewed
-preamble/categories/functors/cardinality.sage	CardinalityFunctor.codomain	method	30	0			unreviewed
-preamble/categories/functors/cardinality.sage	cardinality_functor	function	54	1	src/dzack_research/preamble/categories/functors/cardinality.py		unreviewed
+preamble/categories/functors/cardinality.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
+preamble/categories/functors/cardinality.sage	CardinalityFunctor	class	22	1	src/dzack_research/preamble/categories/functors/cardinality.py	src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
+preamble/categories/functors/cardinality.sage	CardinalityFunctor.domain	method	29	0		src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
+preamble/categories/functors/cardinality.sage	CardinalityFunctor.codomain	method	30	0		src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
+preamble/categories/functors/cardinality.sage	cardinality_functor	function	54	1	src/dzack_research/preamble/categories/functors/cardinality.py	src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
 preamble/categories/functors/form_forgetful_adjunction.sage	<module>	module	1	0			unreviewed
 preamble/categories/functors/form_forgetful_adjunction.sage	ForgetTheFormFunctor	class	71	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
 preamble/categories/functors/form_forgetful_adjunction.sage	TautologicalFormFunctor	class	104	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed

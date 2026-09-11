@@ -17,6 +17,12 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/functors/cardinality.sage",
+    "live_owner": "src/dzack_research/preamble/categories/functors/cardinality.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _shift(source, target):
     r"""The set map raising each ordinal label by one."""
