@@ -1,7 +1,7 @@
 r"""Archive reconciliation for function-valued modules with no finite framing."""
 
 import pytest
-from sage.all import RR, SR, exp, sin, var
+from sage.all import RR, SR, cosh, exp, sech, sin, tanh, var
 
 from dzack_research.preamble.categories.forms.forms import BilinearForms
 from dzack_research.preamble.categories.modules.pure.function_modules import (
@@ -61,3 +61,34 @@ def test_callable_bilinear_form_on_l2_needs_no_gram_matrix() -> None:
     assert abs(form(x, x2)) < 1e-9
     with pytest.raises(AssertionError, match="no finite generating set"):
         form.gram_matrix()
+
+
+def test_l2_rational_function_membership_has_the_exact_degree_and_pole_boundary() -> None:
+    x = var("x")
+    l2 = square_integrable_functions(RR)
+
+    assert l2(1 / (1 + x**2))(0) == 1
+    assert l2(x / (1 + x**2))(1) == SR(1) / 2
+    with pytest.raises(AssertionError):
+        l2(1 / x)
+    with pytest.raises(AssertionError):
+        l2(x**2 / (1 + x**2))
+
+
+def test_l2_bounded_multiple_and_vanishing_tail_criteria_retain_their_verdicts() -> None:
+    x = var("x")
+    l2 = square_integrable_functions(RR)
+
+    assert l2(sin(x) / (1 + x**2))(0) == 0
+    assert _square_integrability(sech(x**2), x) == _MEMBER
+    assert _square_integrability(exp(-cosh(x)), x) == _MEMBER
+    assert _square_integrability(tanh(x), x) == _NOT_MEMBER
+
+
+def test_l2_integral_fallback_certifies_integrable_and_divergent_exponentials() -> None:
+    x = var("x")
+    l2 = square_integrable_functions(RR)
+
+    assert l2(exp(-abs(x)))(0) == 1
+    with pytest.raises(AssertionError):
+        l2(exp(-x))
