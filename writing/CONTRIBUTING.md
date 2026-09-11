@@ -1184,3 +1184,36 @@ an $R$-module spectrum … consider the derived tensor product
 $M\otimes_R^L N$; its $\pi_0$ recovers the classical tensor product of
 $\pi_0 R$-modules." Or, in a genuinely classical passage: "Let
 $R = \pi_0 HR$ be a classical commutative ring" — state the truncation.
+
+### `PR-13`: "Is an invariant of X" for factoring through a quotient
+
+A map that factors through a quotient or truncation — through
+$\pi_0(S^\simeq)$, through a set of isomorphism classes, through a
+coarse moduli space — is described in prose as "is an invariant of
+isomorphism classes" or "is an invariant of $X$". The phrase names no
+domain, no factorization, and no map; the reader cannot determine what
+factors through what. State the factorization.
+
+**Banned:** "so $K_0^{\otimes}$ is an invariant of isomorphism
+classes."
+
+**Preferred:** "$K_0\colon\mathbf{SymMonCat}\to\mathbf{Ab}$ factors
+through $\pi_0\colon\mathbf{SymMonCat}\to\mathbf{Set}$,
+$S\mapsto\pi_0(S^\simeq)$." Name the domain, the quotient, and the
+factorization. If the factorization is the definition, do not restate it
+as an additional property.
+
+### `PR-14`: "Is functorial for X" for being a functor
+
+A functor is described in prose as "is functorial for symmetric monoidal
+functors" or "is functorial for $X$ morphisms" instead of being stated
+as a functor with its source and target category. The phrase names no
+domain, no codomain, and no action on morphisms. State the functor.
+
+**Banned:** "and is functorial for symmetric monoidal functors."
+
+**Preferred:** "$K\colon\mathbf{SymMonCat}\to\mathbf{Spectra}$ is a
+functor (hence $K_0 = \pi_0\circ K\colon\mathbf{SymMonCat}\to\mathbf{Ab}$
+is a functor)." State the source, the target, and the functor. If the
+object was defined as a functor, functoriality is not an additional
+property to be asserted in prose.
