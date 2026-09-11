@@ -10,6 +10,13 @@ from dzack_research.preamble.categories.group.profinite.profinite_groups import 
 )
 
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/group/profinite/profinite_groups.sage",
+    "live_owner": "src/dzack_research/preamble/categories/group/profinite/profinite_groups.py",
+    "disposition": "reconciled-live-owner",
+}
+
+
 def test_finite_field_absolute_galois_group_is_profinite_not_finitely_generated_algebraically() -> None:
     group = AbsoluteGaloisGroup(GF(5))
     frobenius = group.frobenius()

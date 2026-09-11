@@ -1120,14 +1120,14 @@ preamble/categories/group/profinite/galois_quotient.sage	extensions_along	functi
 preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap	class	96	1	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap.extension	method	105	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
 preamble/categories/group/profinite/galois_quotient.sage	GaloisRestrictionMap.kernel	method	109	0		src/dzack_research/preamble/categories/group/profinite/galois_quotient.py	reconciled-live-owner
-preamble/categories/group/profinite/profinite_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/group/profinite/profinite_groups.sage	GroupParent	class	40	0			unreviewed
-preamble/categories/group/profinite/profinite_groups.sage	GroupParent.group_generators	method	44	0			unreviewed
-preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups	class	47	1	src/dzack_research/preamble/categories/group/profinite/profinite_groups.py		unreviewed
-preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.super_categories	method	55	0			unreviewed
-preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.ParentMethods	class	61	0			unreviewed
-preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.ParentMethods.topological_group_generators	method	63	0			unreviewed
-preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.ParentMethods.is_profinite	method	69	0			unreviewed
+preamble/categories/group/profinite/profinite_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/profinite_groups.sage	GroupParent	class	40	0		src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/profinite_groups.sage	GroupParent.group_generators	method	44	0		src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups	class	47	1	src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.super_categories	method	55	0		src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.ParentMethods	class	61	0		src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.ParentMethods.topological_group_generators	method	63	0		src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
+preamble/categories/group/profinite/profinite_groups.sage	ProfiniteGroups.ParentMethods.is_profinite	method	69	0		src/dzack_research/preamble/categories/group/profinite/profinite_groups.py	reconciled-live-owner
 preamble/categories/modules/fractional_ideals.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals	class	42	0			unreviewed
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.super_categories	method	57	0			unreviewed
