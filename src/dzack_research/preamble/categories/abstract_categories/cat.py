@@ -303,8 +303,16 @@ class Cat(CategoryPacketMethods, Category):
             r"""Return this category's represented product of two objects."""
 
         @abstract_method(optional=True)
+        def _categorical_product_construction(self, factors):
+            r"""Return the selected product with its discrete diagram and universal cone."""
+
+        @abstract_method(optional=True)
         def _categorical_coproduct(self, left: Parent, right: Parent) -> Parent:
             r"""Return this category's represented coproduct of two objects."""
+
+        @abstract_method(optional=True)
+        def _categorical_coproduct_construction(self, factors):
+            r"""Return the selected coproduct with its discrete diagram and universal cocone."""
 
         @abstract_method(optional=True)
         def _categorical_pushout(

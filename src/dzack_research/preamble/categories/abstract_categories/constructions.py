@@ -57,6 +57,22 @@ def Product(left: Parent, right: Parent) -> Parent:
     return construction(left, right)
 
 
+def ProductConstruction(factors):
+    r"""Return the selected finite product construction on ``factors``."""
+    from dzack_research.preamble.categories.abstract_categories.products import (
+        _finite_factor_family,
+        common_category_of,
+    )
+
+    family = _finite_factor_family(factors, name="Product factors")
+    category = common_category_of(family)
+    construction = category._categorical_product_construction
+    assert construction is not NotImplemented, (
+        "no selected product construction is owned by the factors' common category"
+    )
+    return construction(family)
+
+
 def Coproduct(left: Parent, right: Parent) -> Parent:
     category = _common_category(left, right)
     construction = category._categorical_coproduct
@@ -64,6 +80,22 @@ def Coproduct(left: Parent, right: Parent) -> Parent:
         f"no represented coproduct is owned by a common category of {left}, {right}"
     )
     return construction(left, right)
+
+
+def CoproductConstruction(factors):
+    r"""Return the selected finite coproduct construction on ``factors``."""
+    from dzack_research.preamble.categories.abstract_categories.products import (
+        _finite_factor_family,
+        common_category_of,
+    )
+
+    family = _finite_factor_family(factors, name="Coproduct factors")
+    category = common_category_of(family)
+    construction = category._categorical_coproduct_construction
+    assert construction is not NotImplemented, (
+        "no selected coproduct construction is owned by the factors' common category"
+    )
+    return construction(family)
 
 
 def _ProductMorphism(
@@ -258,7 +290,7 @@ def Subobjects(
 
 
 __all__ = [
-    "Biproduct", "Coequalizer", "CoequalizerConstruction", "CoequalizerOfFamily", "Cokernel", "Coproduct",
-    "Equalizer", "EqualizerConstruction", "EqualizerOfFamily", "FiberProduct", "Kernel", "Product",
+    "Biproduct", "Coequalizer", "CoequalizerConstruction", "CoequalizerOfFamily", "Cokernel", "Coproduct", "CoproductConstruction",
+    "Equalizer", "EqualizerConstruction", "EqualizerOfFamily", "FiberProduct", "Kernel", "Product", "ProductConstruction",
     "Pushout", "Subobjects", "TensorProduct", "TensorSquare",
 ]

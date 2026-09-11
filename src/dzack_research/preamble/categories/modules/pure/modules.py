@@ -25,10 +25,13 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
+    CoproductCoconeCategory,
     ConeCategory,
     ParallelPairDiagram,
+    ProductConeCategory,
     SelectedColimitConstruction,
     SelectedLimitConstruction,
+    _discrete_diagram,
     _factor_family,
     _finite_factor_family,
 )
@@ -404,17 +407,63 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def product(self, factors):
             r"""Return $\prod_{i \in I} M_i$, which over a finite index set is the biproduct."""
-            return self.biproduct(factors)
+            return self._categorical_product_construction(factors).object()
 
         def _categorical_product(self, left, right):
-            return self._categorical_biproduct(left, right)
+            return self._categorical_product_construction((left, right)).object()
 
         def coproduct(self, factors):
             r"""Return $\coprod_{i \in I} M_i$, which over a finite index set is the biproduct."""
-            return self.biproduct(factors)
+            return self._categorical_coproduct_construction(factors).object()
 
         def _categorical_coproduct(self, left, right):
-            return self._categorical_biproduct(left, right)
+            return self._categorical_coproduct_construction((left, right)).object()
+
+        def _categorical_product_construction(self, factors):
+            r"""Return the selected finite product cone on the module biproduct."""
+            family = _finite_factor_family(factors, name="Product factors")
+            assert all(factor in self for factor in family), (
+                "a module product requires modules over one ring"
+            )
+            product = self.biproduct(family)
+            diagram = _discrete_diagram(family, self)
+            universal_cone = ProductConeCategory(diagram).cone(
+                product,
+                lambda index: product.projection(index.value()),
+            )
+
+            def factorizer(cone):
+                legs = indexed_family(
+                    family.index_set(),
+                    lambda label: cone.structure_morphism(diagram.domain()(label)),
+                    name="Product cone legs",
+                )
+                return product.from_product_cone(legs)
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+        def _categorical_coproduct_construction(self, factors):
+            r"""Return the selected finite coproduct cocone on the module biproduct."""
+            family = _finite_factor_family(factors, name="Coproduct factors")
+            assert all(factor in self for factor in family), (
+                "a module coproduct requires modules over one ring"
+            )
+            coproduct = self.biproduct(family)
+            diagram = _discrete_diagram(family, self)
+            universal_cocone = CoproductCoconeCategory(diagram).cocone(
+                coproduct,
+                lambda index: coproduct.injection(index.value()),
+            )
+
+            def factorizer(cocone):
+                legs = indexed_family(
+                    family.index_set(),
+                    lambda label: cocone.costructure_morphism(diagram.domain()(label)),
+                    name="Coproduct cocone legs",
+                )
+                return coproduct.from_coproduct_cocone(legs)
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
         def equalizer(self, left_arrow, right_arrow):
             r"""Return the equalizer of a parallel pair."""

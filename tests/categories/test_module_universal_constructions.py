@@ -2,8 +2,12 @@ from dzack_research.preamble.all import BasedFreeModule, ZZ, module_homset
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Coequalizer,
     CoequalizerConstruction,
+    Coproduct,
+    CoproductConstruction,
     Equalizer,
     EqualizerConstruction,
+    Product,
+    ProductConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
@@ -173,3 +177,38 @@ def test_inverse_system_reverses_its_declared_index_category() -> None:
     assert systems.base_index_category() is index
     assert systems.index_category().base_category() is index
     assert systems.index_category() is not index
+
+
+def test_module_product_and_coproduct_use_selected_universal_constructions() -> None:
+    left = BasedFreeModule(ZZ, finite_ordered_set(("x",)))
+    right = BasedFreeModule(ZZ, finite_ordered_set(("y",)))
+    probe = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
+    x = left.module_generator("x")
+    y = right.module_generator("y")
+    t = probe.module_generator("t")
+
+    product = ProductConstruction((left, right))
+    assert Product(left, right) is product.object()
+    product_shape = product.diagram().domain()
+    to_left = module_homset(probe, left)({"t": 2 * x})
+    to_right = module_homset(probe, right)({"t": 3 * y})
+    cone = ConeCategory(product.diagram()).cone(
+        probe,
+        lambda index: to_left if int(index.value()) == 0 else to_right,
+    )
+    into_product = product.factor(cone).apex_map()
+    assert product.structure_morphism(product_shape(0)) * into_product == to_left
+    assert product.structure_morphism(product_shape(1)) * into_product == to_right
+
+    coproduct = CoproductConstruction((left, right))
+    assert Coproduct(left, right) is coproduct.object()
+    coproduct_shape = coproduct.diagram().domain()
+    from_left = module_homset(left, probe)({"x": 5 * t})
+    from_right = module_homset(right, probe)({"y": 7 * t})
+    cocone = CoconeCategory(coproduct.diagram()).cocone(
+        probe,
+        lambda index: from_left if int(index.value()) == 0 else from_right,
+    )
+    from_coproduct = coproduct.factor(cocone).apex_map()
+    assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(0)) == from_left
+    assert from_coproduct * coproduct.costructure_morphism(coproduct_shape(1)) == from_right
