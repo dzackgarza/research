@@ -3,12 +3,12 @@ r"""Finite-support direct sums of a represented family of graded modules."""
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from typing import Any
 
-from sage.categories.category import Category
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
 )
@@ -147,7 +147,7 @@ class GradedDirectSumModule(Parent):
         Parent.__init__(
             self,
             base=_engine_ring(self._base_ring),
-            category=Category.join(tuple(categories)),
+            category=Cat().meet(categories),
         )
         realize_owned_category(self)
 
