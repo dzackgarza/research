@@ -419,8 +419,8 @@ restart of the module/algebra/action constructions.
   the responsible category/object methods, `Mor`, and existing private adapters;
   session exports in `all.py`, notation in `lexicon/`, and catalogue entrypoints.
   **Scope:** every surviving public construction family, including those whose
-  feature implementation no longer appears in this queue. Continue with localization
-  and completion, then their scheme, group, lattice, and collection consumers. This is a source-conformance task, not a claim that
+  feature implementation no longer appears in this queue. Continue with completion,
+  then its scheme, group, lattice, and collection consumers. This is a source-conformance task, not a claim that
   every family currently violates the contract.
   **Decision:** the constructor's defining datum and maps are authoritative.
   Document its allowed mathematical input forms at the existing declaration
@@ -440,10 +440,10 @@ restart of the module/algebra/action constructions.
   `OWN-05`. A call-site comment, same-file placement, new public raw accessor, or
   helper extraction cannot create an exception. Move raw computation only into
   its designated adapter and keep its raising inside that boundary.
-  **First remaining specimen:** the selected localization construction through
-  its object method and functor image, with a nonidentity induced map and the
-  owned source/target elements it acts on. Reuse specimens in that item rather
-  than commissioning another suite of implementation-shaped checks.
+  **First remaining specimen:** the selected completion construction through
+  its object method and defining comparison maps after the active completion
+  arithmetic release settles. Reuse its specimens rather than commissioning
+  another suite of implementation-shaped checks.
   **Acceptance:** the family's source routes converge and its public objects
   retain the required data before inherited operations run. The accompanying
   source review covers the actual computation and raising, not only exports or
@@ -1526,4 +1526,3 @@ behavior.
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
 | `RING-completion-arithmetic-20260911-2248` | completion arithmetic / exact-vs-finite precision semantics | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; tests/rings/test_completion_arithmetic.py; tests/rings/test_completion_inverse_system.py` (write) | `a3281c07` | 2026-09-11T22:48:00Z |
-| `ARCH-constructor-localization-20260911-2305` | constructor convergence / localization routes | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/ring_foundation.py; src/dzack_research/preamble/categories/modules/localizations.py; src/dzack_research/preamble/categories/functors/module_localization.py; src/dzack_research/preamble/all.py; tests/modules/test_localization_constructor_convergence.py` (write) | `37cdaaaf` | 2026-09-11T23:05:00Z |
