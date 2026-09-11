@@ -783,9 +783,9 @@ preamble/categories/forms/forms.sage	QuadraticFormMorphism.values_matrix	method	
 preamble/categories/forms/forms.sage	QuadraticFormMorphism.image	method	764	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
 preamble/categories/forms/forms.sage	BilinearForm	function	827	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
 preamble/categories/forms/forms.sage	QuadraticForm	function	841	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
-preamble/categories/forms/gram_matrices.sage	<module>	module	1	0			unreviewed
-preamble/categories/forms/gram_matrices.sage	gram_matrix_graph	function	13	0			unreviewed
-preamble/categories/forms/gram_matrices.sage	gram_matrix_from_graph	function	38	0			unreviewed
+preamble/categories/forms/gram_matrices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/forms/gram_matrices.py	reconciled-live-owner
+preamble/categories/forms/gram_matrices.sage	gram_matrix_graph	function	13	0		src/dzack_research/preamble/categories/forms/gram_matrices.py	reconciled-live-owner
+preamble/categories/forms/gram_matrices.sage	gram_matrix_from_graph	function	38	0		src/dzack_research/preamble/categories/forms/gram_matrices.py	reconciled-live-owner
 preamble/categories/functors/algebra_base_change.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/algebra_scalar_change.py	reconciled-live-owner
 preamble/categories/functors/algebra_base_change.sage	AlgebraBaseChangeFunctor	class	28	0		src/dzack_research/preamble/categories/functors/algebra_scalar_change.py	reconciled-live-owner
 preamble/categories/functors/algebra_base_change.sage	AlgebraBaseChangeFunctor.ring_map	method	43	0		src/dzack_research/preamble/categories/functors/algebra_scalar_change.py	reconciled-live-owner

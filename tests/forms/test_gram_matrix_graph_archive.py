@@ -7,6 +7,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.tensors.tensor import tensor
 from sage.rings.integer_ring import ZZ as SageZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/forms/gram_matrices.sage",
+    "live_owner": "src/dzack_research/preamble/categories/forms/gram_matrices.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_gram_graph_round_trip_preserves_loops_and_pairings() -> None:
     integers = _own_ring(SageZZ)
@@ -23,9 +29,9 @@ def test_archived_gram_graph_round_trip_preserves_loops_and_pairings() -> None:
 
     graph = gram_tensor_graph(gram)
     assert graph.has_edge(0, 0)
-    assert graph[0][0]["weight"] == 2
+    assert graph.edge_weight(0, 0) == integers(2)
     assert graph.has_edge(0, 1)
-    assert graph[0][1]["weight"] == 1
+    assert graph.edge_weight(0, 1) == integers(1)
     assert not graph.has_edge(0, 2)
 
     recovered = gram_tensor_from_graph(graph, integers)
