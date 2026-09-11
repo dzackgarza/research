@@ -279,58 +279,6 @@ Paths in this section are relative to
 
 ### Completion objects and finite approximations
 
-- [ ] **`completion`**. **Needs:** `universal-constructions`.
-  Replace the finite-quotient implementation of multigenerator adic
-  completion with a realization of the actual completion.
-  **Owner:** `rings/commutative_algebra.py::AdicCompletion` and its parent/
-  element implementation; private exact-algebra adapters supply computations.
-  **Observed gap:** see the
-  [completion complaint](COMPLAINTS.md#completion-must-be-a-limit-rather-than-one-quotient)
-  for the finite-quotient realization and mathematical dependency trace.
-  Exact finite-quotient arithmetic must not define arithmetic in the completion.
-  **Decision:** the completion and its finite quotients are distinct owned
-  objects. A computational precision selects available information, not a new
-  exact defining relation. Keep `A -> A_hat`, `A_hat -> A/I^n`, and
-  `A/I^m -> A/I^n` for `m >= n` as actual maps with their own endpoints.
-  Use the inverse-limit definition in
-  [Stacks 00M9](https://stacks.math.columbia.edu/tag/00M9).
-  **Shared route:** reuse `abstract_categories/products.py`'s diagram,
-  inverse-system, and cone contracts and the existing quotient/Hom operations.
-  Consume the delivered [shared construction work](#shared-diagrams-and-universal-constructions)
-  and complete its integration with this consumer here. Inherit its chosen
-  inverse-limit construction or store that actual owned construction and
-  delegate to it (`OWN-14`). The ideal-power system, universal cone, restrictions,
-  and induced maps have one owner. A second
-  completion-only diagram calculus or post-hoc system accessor is not integration.
-  A supported series engine realizes this same construction, without evaluating
-  an infinite product first or computing a second generic completion. The general
-  theorem-backed product/equalizer route remains a specialization of the same
-  contract, not a rival exact object or a finite approximation masquerading as it.
-  **Selected computation for the first specimen:** use Sage's documented
-  [multivariable polynomial completion](https://doc.sagemath.org/html/en/reference/polynomial_rings/sage/rings/polynomial/multi_polynomial_ring_base.html#sage.rings.polynomial.multi_polynomial_ring_base.MPolynomialRing_base.completion)
-  at the selected variables, with its series/lazy-series realization. Retain the
-  current maintained principal and p-adic computation routes under the same owned
-  completion contract. Their engine types and precision options remain private.
-  **Exact unresolved question for the broader branch:** which maintained
-  operation realizes completion of the selected presented algebra at a general
-  ideal, with quotient relations, source images, and continuous maps? Inspect the
-  current Sage/Singular and OSCAR/Macaulay2 adapters and their documented formal
-  or local standard-basis operations for that precise contract. A local monomial
-  order is not by itself a completed ring. Deliver the supported polynomial case
-  without removing this broader obligation or inventing a new series engine.
-  **Route convergence:** `AdicCompletion`, `PowerSeriesRing`, and `Zp` currently
-  enter different parent initializers in this file. Make each supported input
-  form establish the common completion data before exposure. Retain chosen
-  coefficients and variable labels; the shared constructor accepts already
-  computed defining data without requesting the same engine computation again.
-  **First specimen:** for `A=QQ[x,y]`, `I=(x,y)`, the image of `x^4`
-  is nonzero in `A_hat`; its projection to `A/I^4` is zero and to
-  `A/I^5` is nonzero. Write this at the ring-completion proof surface.
-  **Acceptance:** ring operations, source map, projections and transition
-  composition express those three different statements. Replacing the finite
-  quotient by a renamed wrapper or adding inverse-system accessors alone does
-  not deliver the completion.
-
 - [ ] **`completion-arithmetic`**. **Needs:** `completion`.
   Establish precision-aware element arithmetic at the shared completion
   boundary, including principal/p-adic and multivariable routes.
@@ -1577,4 +1525,3 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `RING-completion-20260911-2235` | completion / actual adic inverse limit and series realization | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/abstract_categories/products.py; src/dzack_research/preamble/categories/abstract_categories/__init__.py; src/dzack_research/preamble/all.py; tests/rings/test_local_completions.py; tests/rings/test_completion_inverse_system.py` (write) | `d7fa2204` | 2026-09-11T22:35:00Z |

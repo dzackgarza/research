@@ -1,14 +1,15 @@
-r"""L: multigenerator adic completions of represented singular local quotients."""
+r"""Adic completion objects and their finite quotient systems."""
+
+import pytest
 
 from dzack_research.preamble.all import (
     QQ,
-    CompleteLocalRings,
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 
 
-def test_cusp_maximal_adic_completion_retains_source_map_and_two_generators() -> None:
+def test_presented_cusp_is_not_replaced_by_one_artin_quotient() -> None:
     plane = PolynomialRing(QQ, ("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
@@ -16,19 +17,11 @@ def test_cusp_maximal_adic_completion_retains_source_map_and_two_generators() ->
     xbar = cusp.algebra_generator("x")
     ybar = cusp.algebra_generator("y")
     maximal = cusp.ideal(xbar, ybar)
-    completion = cusp.adic_completion(maximal, precision=6)
-
-    assert completion in CompleteLocalRings()
-    assert completion.completion_source() is cusp
-    assert completion.ideal_of_definition() == maximal
-    assert completion.computation_precision() == 6
-    assert completion.completion_map().domain() is cusp
-    assert completion.completion_map().codomain() is completion
-    assert len(completion.maximal_ideal().ideal_generators()) == 2
-    assert completion.residue_field().characteristic() == 0
+    with pytest.raises(NotImplementedError, match="finite Artin quotient is not the completion"):
+        cusp.adic_completion(maximal, precision=6)
 
 
-def test_multivariable_origin_completion_uses_the_requested_artin_precision() -> None:
+def test_multivariable_origin_completion_is_not_truncated_by_computation_precision() -> None:
     plane = PolynomialRing(QQ, ("x", "y"))
     x = plane.algebra_generator("x")
     y = plane.algebra_generator("y")
@@ -36,9 +29,13 @@ def test_multivariable_origin_completion_uses_the_requested_artin_precision() ->
 
     xhat = completion.completion_map()(x)
     yhat = completion.completion_map()(y)
-    assert xhat**4 == completion.zero()
-    assert yhat**4 == completion.zero()
-    assert xhat**3 != completion.zero()
+    assert xhat**4 != completion.zero()
+    assert yhat**4 != completion.zero()
+    fourth = completion.adic_projection(4)
+    fifth = completion.adic_projection(5)
+    assert fourth(xhat**4) == fourth.codomain().zero()
+    assert fifth(xhat**4) != fifth.codomain().zero()
+    assert completion.computation_precision() == 4
 
 
 def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> None:
@@ -55,3 +52,26 @@ def test_completion_retains_the_adic_inverse_system_and_transition_maps() -> Non
     assert transition.codomain() is second
     assert transition(fourth.quotient_map()(x)) == second.quotient_map()(x)
     assert transition(fourth.quotient_map()(x**2)) == second.zero()
+
+    system = completion.adic_inverse_system()
+    base = system.base_index_category()
+    opposite = system.domain()
+    fourth_index = opposite(base(3))
+    assert system(fourth_index) is fourth
+    limit = completion.adic_limit_construction()
+    assert limit.diagram() is system
+    assert limit.object() is completion
+    assert limit.structure_morphism(fourth_index) is completion.adic_projection(4)
+
+
+def test_completion_map_and_projection_form_the_canonical_source_cone() -> None:
+    plane = PolynomialRing(QQ, ("x", "y"))
+    x = plane.algebra_generator("x")
+    y = plane.algebra_generator("y")
+    completion = plane.adic_completion(plane.ideal(x, y), precision=3)
+    source_map = completion.completion_map()
+
+    for exponent in (1, 2, 5):
+        projection = completion.adic_projection(exponent)
+        quotient_map = completion.adic_truncation(exponent).quotient_map()
+        assert projection(source_map(x + y**2)) == quotient_map(x + y**2)

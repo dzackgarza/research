@@ -19,6 +19,12 @@ from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.products import (
+    ConeCategory,
+    InverseSystem,
+    PosetCategory,
+    SelectedLimitConstruction,
+)
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenFinitePresentation,
@@ -29,6 +35,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
 )
 from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
 from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.submonoids import (
     Submonoids,
     generated_submonoid,
@@ -58,6 +65,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     FiniteSets,
+    NN,
     PartiallyOrderedSets,
     SetInclusion,
 )
@@ -1291,6 +1299,11 @@ class AdicCompletions(Category):
             return self._preamble_computation_precision
 
         @cached_method
+        def adic_inverse_system(self):
+            r"""Return the represented inverse system ``n |-> A/I^(n+1)``."""
+            return _AdicQuotientInverseSystem(self)
+
+        @cached_method
         def adic_truncation(self, exponent):
             r"""Return the canonical Artin quotient ``A / I^exponent``."""
             exponent = int(exponent)
@@ -1316,6 +1329,93 @@ class AdicCompletions(Category):
                 lambda element: lower_projection(element.lift()),
             )
 
+        @cached_method
+        def adic_projection(self, exponent):
+            r"""Return the canonical projection ``A_hat -> A/I^exponent``."""
+            exponent = int(exponent)
+            if exponent <= 0:
+                raise ValueError("an adic projection exponent is positive")
+            target = self.adic_truncation(exponent)
+            quotient_map = target.quotient_map()
+            projection_lift = getattr(self, "_preamble_projection_lift", None)
+            if projection_lift is None:
+                raise NotImplementedError(
+                    "this completion realization has no maintained finite-truncation map"
+                )
+
+            def image(element):
+                backend = _engine_element(self, self(element))
+                return quotient_map(projection_lift(backend, exponent))
+
+            return ring_morphism(self, target, image)
+
+        @cached_method
+        def adic_limit_cone(self):
+            r"""Return the canonical cone ``A_hat -> (A/I^n)_n``."""
+            system = self.adic_inverse_system()
+            return ConeCategory(system).cone(
+                self,
+                lambda index: self.adic_projection(system.exponent(index)),
+            )
+
+        @cached_method
+        def adic_limit_construction(self):
+            r"""Return the selected inverse-limit construction defining this completion.
+
+            The represented completion and its cone are exact.  Constructing a
+            map into an arbitrary infinite inverse limit from a supplied coherent
+            cone is not implemented by the generic finite product/equalizer
+            solver; the supported series engine is the selected realization of
+            this particular limit.
+            """
+            system = self.adic_inverse_system()
+            cone = self.adic_limit_cone()
+
+            def factorizer(_cone):
+                raise NotImplementedError(
+                    "factorization of an arbitrary cone into an infinite adic limit "
+                    "requires a maintained compatible-series construction"
+                )
+
+            return SelectedLimitConstruction(system, cone, factorizer)
+
+
+class _AdicQuotientInverseSystem(Functor):
+    r"""The inverse system ``A/I <- A/I^2 <- ...`` owned by one completion."""
+
+    def __init__(self, completion) -> None:
+        self._completion = completion
+        self._base_index = PosetCategory(NN)
+        self._system_category = InverseSystem(
+            self._base_index,
+            OwnedRings().Commutative(),
+        )
+        super().__init__(
+            self._system_category.index_category(),
+            OwnedRings().Commutative(),
+        )
+
+    def completion(self):
+        return self._completion
+
+    def base_index_category(self):
+        return self._base_index
+
+    def system_category(self):
+        return self._system_category
+
+    def exponent(self, index) -> int:
+        return int(index.underlying_object().value()) + 1
+
+    def _apply_object(self, index):
+        return self.completion().adic_truncation(self.exponent(index))
+
+    def _apply_morphism(self, morphism):
+        underlying = morphism.underlying_arrow()
+        lower = int(underlying.domain().value()) + 1
+        higher = int(underlying.codomain().value()) + 1
+        return self.completion().adic_transition_map(higher, lower)
+
 
 class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
     r"""An engine-backed adic completion with its defining data fixed at construction."""
@@ -1329,10 +1429,12 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         *,
         engine_map=None,
         completed_ideal_generators=None,
+        projection_lift=None,
     ) -> None:
         self._preamble_completion_source = source
         self._preamble_ideal_of_definition = defining_ideal
         self._preamble_computation_precision = int(precision)
+        self._preamble_projection_lift = projection_lift
         placements = [AdicCompletions()]
         if source in OwnedNoetherianRings():
             placements.append(OwnedNoetherianRings())
@@ -1903,14 +2005,16 @@ def _prime_localization(source, prime_ideal):
 
 
 def AdicCompletion(ring, ideal, *, precision=20):
-    r"""Return a computational realization of the adic completion ``R^``.
+    r"""Return the represented adic completion ``R^``.
 
-    The mathematical parent records ``R`` and the ideal of definition;
-    ``precision`` records only the chosen Sage realization.
+    The mathematical parent records ``R``, the owned ideal of definition and
+    the inverse system ``R/I^n``.  ``precision`` is computational metadata; it
+    is never imposed as an additional relation in the completion.
     """
     source = _own_ring(ring)
-    defining = _engine_ideal(source, ideal)
-    generators = tuple(defining.gens())
+    defining = _owned_ideal(source, ideal)
+    defining_engine = _engine_ideal(source, defining)
+    generators = tuple(defining_engine.gens())
     engine = _engine_ring(source)
     if len(generators) == 1 and engine is SageZZ:
         generator = generators[0]
@@ -1918,66 +2022,64 @@ def AdicCompletion(ring, ideal, *, precision=20):
         if not prime.is_prime():
             raise ValueError("the represented ZZ-adic completion is at a prime ideal (p)")
         completion_engine = engine.completion(prime, int(precision))
+
+        def projection_lift(value, exponent):
+            if exponent > int(precision):
+                raise NotImplementedError(
+                    "the selected p-adic engine has not computed enough digits for this projection"
+                )
+            return source(int(value.lift()))
+
         return _AdicCompletionAlgebraParent(
             completion_engine,
             source,
             defining,
             precision,
-        )
-    if len(generators) == 1 and source in SymmetricAlgebras(source.base_ring()):
-        generator = generators[0]
-        completion_engine = engine.completion(generator, prec=precision)
-        return _AdicCompletionAlgebraParent(
-            completion_engine,
-            source,
-            defining,
-            precision,
+            projection_lift=projection_lift,
         )
 
     base = source.base_ring()
-    if source in AlgebrasWithChosenFinitePresentation(base):
-        presentation = source.presentation_ring()
-        relations = tuple(source.relations())
-    elif source in SymmetricAlgebras(base):
-        presentation = source
-        relations = ()
-    else:
+    if source not in SymmetricAlgebras(base):
+        if source in AlgebrasWithChosenFinitePresentation(base):
+            raise NotImplementedError(
+                "completion of a presented algebra at a general ideal requires a maintained "
+                "formal quotient/local standard-basis adapter; a finite Artin quotient is not the completion"
+            )
         raise NotImplementedError(
-            "multigenerator adic completion requires a selected polynomial presentation"
+            "adic completion currently has an exact maintained realization for polynomial rings and p-adic integers"
         )
 
-    presentation_engine = _engine_ring(presentation)
-    lifted_generators = tuple(
-        source.lift_to_presentation(source(generator))
-        if source in AlgebrasWithChosenFinitePresentation(base)
-        else presentation._from_engine_element(presentation_engine(generator))
-        for generator in ideal.ideal_generators()
-    )
-    lifted_engine_generators = tuple(
-        _engine_element(presentation, generator) for generator in lifted_generators
-    )
-    precision_ideal = presentation_engine.ideal(lifted_engine_generators) ** int(precision)
-    defining_relations = tuple(_engine_element(presentation, relation) for relation in relations)
-    truncated_ideal = presentation_engine.ideal(
-        (*defining_relations, *tuple(precision_ideal.gens()))
-    )
-    completion_engine = presentation_engine.quotient(truncated_ideal)
     source_engine = _engine_ring(source)
-
-    def engine_map(element):
-        representative = element.lift() if hasattr(element, "lift") else element
-        return completion_engine(representative)
-
-    completed_ideal_generators = tuple(
-        completion_engine(generator) for generator in lifted_engine_generators
+    selected_variables = []
+    engine_variables = tuple(source_engine.gens())
+    for generator in generators:
+        matching = tuple(variable for variable in engine_variables if generator == variable)
+        if len(matching) != 1:
+            raise NotImplementedError(
+                "the supported multivariable completion requires an ideal generated by selected polynomial variables"
+            )
+        selected_variables.append(matching[0])
+    completion_engine = source_engine.completion(
+        tuple(selected_variables),
+        prec=Infinity,
     )
+    engine_map = completion_engine.coerce_map_from(source_engine)
+    completed_ideal_generators = tuple(
+        completion_engine(variable) for variable in selected_variables
+    )
+
+    def projection_lift(value, exponent):
+        polynomial = value.truncate(exponent).polynomial()
+        return source._from_engine_element(source_engine(polynomial))
+
     return _AdicCompletionAlgebraParent(
         completion_engine,
         source,
         defining,
         precision,
-        engine_map=engine_map if source_engine is not presentation_engine else completion_engine,
+        engine_map=engine_map,
         completed_ideal_generators=completed_ideal_generators,
+        projection_lift=projection_lift,
     )
 
 
@@ -2026,8 +2128,20 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 class _FormalPowerSeriesAlgebraParent(_OwnedAlgebraParent):
     r"""A formal power-series algebra whose adic data are constructor-owned."""
 
-    def __init__(self, engine, base, labels, variable=None) -> None:
+    def __init__(
+        self,
+        engine,
+        base,
+        labels,
+        variable=None,
+        *,
+        completion_source=None,
+        defining_ideal=None,
+        computation_precision=20,
+    ) -> None:
         placements = [FormalPowerSeriesRings(base)]
+        if completion_source is not None:
+            placements.append(AdicCompletions())
         if base in OwnedNoetherianRings():
             placements.append(OwnedNoetherianRings())
         if base in OwnedLocalRings():
@@ -2041,10 +2155,27 @@ class _FormalPowerSeriesAlgebraParent(_OwnedAlgebraParent):
         )
         uniformizers = tuple(engine.gens()) if variable is None else (engine(variable),)
         selected_uniformizers = tuple(self._from_engine_element(uniformizer) for uniformizer in uniformizers)
+        if completion_source is not None:
+            self._preamble_completion_source = completion_source
+            self._preamble_ideal_of_definition = defining_ideal
+            self._preamble_computation_precision = int(computation_precision)
+            source_engine = _engine_ring(completion_source)
+            engine_map = engine.coerce_map_from(source_engine)
+            self._preamble_completion_map = _canonical_map(
+                completion_source,
+                self,
+                engine_map,
+            )
+
+            def projection_lift(value, exponent):
+                polynomial = value.truncate(exponent).polynomial()
+                return completion_source._from_engine_element(source_engine(polynomial))
+
+            self._preamble_projection_lift = projection_lift
         self._preamble_ideal_of_definition = GeneratedIdealView(
             self,
             selected_uniformizers,
-        )
+        ) if completion_source is None else defining_ideal
         if base in OwnedLocalRings():
             self._preamble_maximal_ideal = _maximal_ideal_over_local_base(
                 self,
@@ -2058,12 +2189,22 @@ def Zp(*args, **kwargs):
     engine = _SageZp(*args, **kwargs)
     prime = SageZZ(args[0] if args else kwargs.get("p"))
     source = _own_ring(SageZZ)
-    defining = SageZZ.ideal(prime)
+    defining = source.ideal(source(prime))
+    precision = int(engine.precision_cap())
+
+    def projection_lift(value, exponent):
+        if exponent > precision:
+            raise NotImplementedError(
+                "the selected p-adic engine has not computed enough digits for this projection"
+            )
+        return source(int(value.lift()))
+
     return _AdicCompletionAlgebraParent(
         engine,
         source,
         defining,
-        int(engine.precision_cap()),
+        precision,
+        projection_lift=projection_lift,
     )
 
 
@@ -2071,10 +2212,18 @@ def PowerSeriesRing(base_ring, *args, **kwargs):
     base = _own_ring(base_ring)
     engine = _SagePowerSeriesRing(_engine_ring(base), *args, **kwargs)
     labels = tuple(engine.variable_names())
+    polynomial = PolynomialRing(base, labels)
+    defining = polynomial.ideal(
+        *(polynomial.algebra_generator(label) for label in labels)
+    )
+    precision = getattr(engine, "default_prec", lambda: kwargs.get("default_prec", 20))()
     return _FormalPowerSeriesAlgebraParent(
         engine,
         base,
         labels,
+        completion_source=polynomial,
+        defining_ideal=defining,
+        computation_precision=precision,
     )
 
 
