@@ -4,11 +4,14 @@ from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebra,
     CohomologyAlgebras,
+    cohomology_algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     Differential,
     DifferentialGradedAlgebras,
+    dga_homset,
 )
+from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
     GradedCommutativeAlgebras,
@@ -58,3 +61,28 @@ def test_noncommutative_zero_differential_dga_keeps_noncommutative_cohomology() 
         cohomology.graded_piece(1).class_of_cycle(y.homogeneous_component(1)),
     )
     assert x_class * y_class != y_class * x_class
+
+
+def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map() -> None:
+    dga = _noncommutative_zero_differential_dga()
+    x = dga.algebra_generator("x")
+    y = dga.algebra_generator("y")
+    swap_algebra = algebra_homset(dga, dga)({"x": y, "y": x})
+    swap = dga_homset(dga, dga)(swap_algebra)
+
+    cohomology = CohomologyAlgebra(dga)
+    induced = cohomology_algebra_homset(cohomology, cohomology)(swap)
+    x_class = cohomology.from_component(
+        1,
+        cohomology.graded_piece(1).class_of_cycle(x.homogeneous_component(1)),
+    )
+    y_class = cohomology.from_component(
+        1,
+        cohomology.graded_piece(1).class_of_cycle(y.homogeneous_component(1)),
+    )
+
+    assert induced(x_class) == y_class
+    assert induced(y_class) == x_class
+    assert induced(x_class * y_class) == y_class * x_class
+    assert (induced * induced)(x_class) == x_class
+    assert (induced * induced)(y_class) == y_class
