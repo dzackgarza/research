@@ -1744,6 +1744,36 @@ $(\mathcal{T},\mathcal{F})$ on $\mathbf{LMod}_R$ (see @def-torsion-pair)
 or the corresponding $t$-structure, and is used only after that pair has
 been specified. :::"
 
+### `SEC-8`: Specialization of a general construction with no new claim
+
+A general construction is already defined — extension of scalars
+$B\otimes_A^L-\colon\mathbf{LMod}_A\to\mathbf{LMod}_B$ left adjoint to
+restriction along $A\to B$, base change of a bilinear form as
+$B\otimes_A^L b$, etc. Stating its specialization at specific constants
+with no new definition, theorem, or computation is filler: it restates
+the definiens on objects ("sends $L$ to $L\otimes_{\mathbb Z}\mathbb
+Z_p$") that is already the definition of the functor on objects, and
+contributes no fenced unit to the skeleton (SEC-6).
+
+Concrete standard: define $B\otimes_A^L-$ once as the left adjoint to
+$\operatorname{Res}_\varphi$; then write $L\otimes_{\mathbb Z}\mathbb Z_p$
+or $L\otimes_{\mathbb Z}^L\mathbb Z_p$ without a separate sentence
+announcing that this is what the functor does for $\mathbb Z\to\mathbb
+Z_p$.
+
+**Banned:** "Extension of scalars along $\mathbb Z\to\mathbb Z_p$ sends a
+$\mathbb Z$-module $L$ to $L\otimes_{\mathbb Z}\mathbb Z_p$" as a
+standalone sentence.
+
+**Preferred:** define $B\otimes_A^L-$ once; then use
+$L\otimes_{\mathbb Z}\mathbb Z_p$ inline. If the specialization has a
+claim, make it a fenced unit: "::: {#exm-extension-Zp} ## Extension to
+$\mathbb Z_p$ — For $L\in\mathbf{LMod}_{\mathbb Z}$, $L\otimes_{\mathbb
+Z}^L\mathbb Z_p$ is $p$-adic completion when $L$ is finitely generated;
+$\operatorname{Tor}_1^{\mathbb Z}(L,\mathbb Z_p)=0$ iff … :::" — a
+Proposition/Example with a precise claim, not a restatement of the
+general definiens.
+
 ### `TERM-4`: "Torsion theory" with no referent
 
 "Torsion theory" is not a mathematical object. There are hereditary
