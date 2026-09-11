@@ -2092,6 +2092,28 @@ $F$ or $D_P$." — two sentences of prose, no fenced `{#def-lands}` or
 $\bar F$ and $\alpha$. The prose between fenced units is glue, not the
 definition.
 
+### `XREF-5`: Use of a defined term linked to its defining occurrence
+
+Any use of a term that is defined within the book — "lands in,"
+"replete full subcategory," "factorization," "torsion," "basis,"
+"based module," "distinguished" — is linked to that definition via
+`\ref{def-...}`, `\longref{def-...}`, or `@def-...`. The link makes the
+defining occurrence citable and lets the reader navigate to the precise
+meaning (DEF-1); an unlinked use leaves the reader to guess which
+occurrence is defining and whether the term is being used in its defined
+sense. This applies to every occurrence that relies on the defined
+meaning, not just the first.
+
+**Banned:** "A theorem that $F$ lands in $D_P$ is a factorization" with
+no link to `{#def-lands}`; "a torsion module" with no link to the
+torsion definition; "a basis indexed by $I$" with no link to the basis
+definition.
+
+**Preferred:** "A theorem that $F$ **lands in** $D_P$ (\ref{def-lands})
+is a factorization"; "a **torsion** module (\ref{def-torsion})"; "a
+**basis** indexed by $I$ (\ref{def-basis})". Link the term at its use to
+its fenced defining occurrence.
+
 ### `DEF-27`: Distinguished object introduced only in the title
 
 A block titled `{#def-distinguished-factorization}` defines "a
