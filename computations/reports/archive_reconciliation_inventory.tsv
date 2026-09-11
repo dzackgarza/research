@@ -810,18 +810,18 @@ preamble/categories/functors/cardinality.sage	CardinalityFunctor	class	22	1	src/
 preamble/categories/functors/cardinality.sage	CardinalityFunctor.domain	method	29	0		src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
 preamble/categories/functors/cardinality.sage	CardinalityFunctor.codomain	method	30	0		src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
 preamble/categories/functors/cardinality.sage	cardinality_functor	function	54	1	src/dzack_research/preamble/categories/functors/cardinality.py	src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
-preamble/categories/functors/form_forgetful_adjunction.sage	<module>	module	1	0			unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	ForgetTheFormFunctor	class	71	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	TautologicalFormFunctor	class	104	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	TautologicalBilinearFormFunctor	class	144	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	TautologicalQuadraticFormFunctor	class	157	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction	class	170	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.unit	method	173	0			unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.counit	method	180	0			unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.hom_set_isomorphism_forward	method	189	0			unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.hom_set_isomorphism_inverse	method	195	0			unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	BilinearFormForgetfulAdjunction	class	207	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
-preamble/categories/functors/form_forgetful_adjunction.sage	QuadraticFormForgetfulAdjunction	class	217	1	src/dzack_research/preamble/categories/functors/free_forms.py		unreviewed
+preamble/categories/functors/form_forgetful_adjunction.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	ForgetTheFormFunctor	class	71	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	TautologicalFormFunctor	class	104	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	TautologicalBilinearFormFunctor	class	144	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	TautologicalQuadraticFormFunctor	class	157	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction	class	170	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.unit	method	173	0		src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.counit	method	180	0		src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.hom_set_isomorphism_forward	method	189	0		src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.hom_set_isomorphism_inverse	method	195	0		src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	BilinearFormForgetfulAdjunction	class	207	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
+preamble/categories/functors/form_forgetful_adjunction.sage	QuadraticFormForgetfulAdjunction	class	217	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
 preamble/categories/functors/free_forgetful_adjunction.sage	<module>	module	1	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	ModuleAlgebraFunctor	class	59	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	FreeAlgebraFunctor	class	164	0			unreviewed

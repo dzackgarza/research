@@ -18,6 +18,12 @@ from dzack_research.preamble.categories.functors.free_forms import (
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/functors/form_forgetful_adjunction.sage",
+    "live_owner": "src/dzack_research/preamble/categories/functors/free_forms.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _line_and_negation():
     line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
