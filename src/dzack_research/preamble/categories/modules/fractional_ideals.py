@@ -3,7 +3,6 @@ r"""Ideals and fractional ideals as modules represented by their inclusions."""
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from functools import reduce
 
-from sage.categories.category import Category
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
@@ -13,6 +12,7 @@ from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedOrders,
@@ -651,7 +651,7 @@ def _fractional_ideal_object(ring, fraction_field, values, integral):
         placement.append(Ideals(ring))
     placement.append(FinitelyGeneratedModules(ring))
     return object_of(
-        Category.join(placement),
+        Cat().meet(placement),
         base_ring=ring,
         fraction_field=fraction_field,
         module_generator_values=values,
