@@ -16,11 +16,18 @@ import dzack_research
 
 from dzack_research.preamble.all import Sterk
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/sterk.sage",
-    "live_owner": "src/dzack_research/preamble/sterk.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/sterk.sage",
+        "live_owner": "src/dzack_research/preamble/sterk.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/test_sterk_artifacts.sage",
+        "live_owner": "src/dzack_research/preamble/sterk.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 _ARTIFACTS = (

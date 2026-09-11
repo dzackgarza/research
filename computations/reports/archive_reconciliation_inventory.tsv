@@ -3522,9 +3522,9 @@ preamble/tests/test_session_namespace.sage	session	function	18	0		src/dzack_rese
 preamble/tests/test_session_namespace.sage	test_a_session_ring_is_the_ring_and_not_the_engine	specimen	25	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/test_session_namespace.sage	test_a_lattice_from_the_session_namespace_answers_for_itself	specimen	47	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/test_session_namespace.sage	test_loading_a_script_leaves_the_session_rings_owned	specimen	61	0		src/dzack_research/preamble/all.py	reconciled-live-owner
-preamble/tests/test_sterk_artifacts.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_sterk_artifacts.sage	test_the_empty_subdiagram_is_connected_elliptic_and_labeled_a0	specimen	112	0			unreviewed
-preamble/tests/test_sterk_artifacts.sage	test_connected_elliptic_subdiagrams_reproduce_the_committed_artifacts	specimen	132	0			unreviewed
+preamble/tests/test_sterk_artifacts.sage	<module>	module	1	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/tests/test_sterk_artifacts.sage	test_the_empty_subdiagram_is_connected_elliptic_and_labeled_a0	specimen	112	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
+preamble/tests/test_sterk_artifacts.sage	test_connected_elliptic_subdiagrams_reproduce_the_committed_artifacts	specimen	132	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
 preamble/tests/test_subobject_lll.sage	<module>	module	1	0		src/dzack_research/preamble/categories/definite_lattices.py	reconciled-live-owner
 preamble/tests/test_subobject_lll.sage	test_the_reduced_framing_is_the_one_reduction_defines	specimen	46	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_subobject_lll.sage	test_reduction_keeps_the_submodule_and_shortens_its_generators	specimen	58	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
