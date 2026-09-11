@@ -16,6 +16,16 @@ from dzack_research.preamble.all import (
     ZZ,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/toric/__init__.py",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/toric/__init__.py",
+    "owner_overrides": {
+        "ToricScheme": "src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py",
+        "ToricSchemes": "src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _plane_fans():
     return RationalPolyhedralFans(BasedFreeModule(ZZ, 2))

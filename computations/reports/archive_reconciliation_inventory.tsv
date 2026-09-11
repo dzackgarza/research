@@ -2586,9 +2586,9 @@ preamble/categories/schemes/threejs_viewer.py	autoSpin	binding	623	0			unreviewe
 preamble/categories/schemes/threejs_viewer.py	showGrid	binding	631	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	showAxes	binding	639	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	generate_threejs_polytope_html	function	705	0			unreviewed
-preamble/categories/schemes/toric/__init__.py	<module>	module	1	0			unreviewed
-preamble/categories/schemes/toric/__init__.py	ToricSchemes	reexport	1	3			unreviewed
-preamble/categories/schemes/toric/__init__.py	ToricScheme	reexport	1	0			unreviewed
+preamble/categories/schemes/toric/__init__.py	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/toric/__init__.py	reconciled-live-owner
+preamble/categories/schemes/toric/__init__.py	ToricSchemes	reexport	1	3		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
+preamble/categories/schemes/toric/__init__.py	ToricScheme	reexport	1	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
 preamble/categories/schemes/toric/toric_schemes.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes	class	34	3			unreviewed
 preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.super_categories	method	40	0			unreviewed
