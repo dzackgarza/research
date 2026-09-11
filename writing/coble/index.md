@@ -26,6 +26,8 @@ The parts below run in one direction: geometry, then the lattices that encode it
 
 **Open problems and research programs** is everything still conjectural, kept together so the boundary between what is proved here and what is not is visible in the structure rather than only in the prose.
 
-The **Heegner report** is a standalone research report with its own bibliography, and **Reference** holds the formula sheets, the diagram conventions and the extracted references.
+It closes with the **Heegner report**, a standalone survey of the whole program with its own bibliography and status ledger.
+
+**Reference** holds the formula sheets, the diagram conventions and the extracted references.
 
 Sources and reference material sit beside the vault rather than in it: `papers/` holds the extracted third-party papers, and `reference/` the source PDFs and the last built version of the paper, from 24 July 2026.

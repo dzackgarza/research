@@ -8,13 +8,11 @@
 project:
   type: book
   output-dir: _site
-  # Only single files can be listed here. A directory, with or without a glob, is
-  # collected by a walk that does not descend a symlink, and every part reaches this
-  # directory as one -- so a directory entry silently copies nothing. The resource
-  # trees are copied by the post-render step instead.
-  resources:
-    - category-theory/lean/category-graph.html
-    - category-theory/lean/category-graph.dot
+  # `resources:` is unused here. A directory entry is collected by a walk that does not
+  # descend a symlink, and every part reaches this directory as one, so it silently
+  # copies nothing; a single file that is itself a symlink is copied *as a symlink*,
+  # which lands dangling in _site and then collides with itself on the second render
+  # pass. Everything the site needs is copied by the post-render step instead.
   post-render:
     - .assets/copy-resources.sh
 book:
@@ -74,9 +72,6 @@ book:
         - Stable-Categories-of-Modules-with-Duality.md
         - Morphisms-of-Form-Modules.md
         - Chain-Complexes.md
-    - part: Realizations
-      chapters:
-        - Category-Graph.md
     - part: Authoring and reference
       chapters:
         - Mathematical-Language-Style-Guide.md
@@ -178,8 +173,6 @@ book:
         - cusp-correspondence-morphism-chain.md
         - nodal-enriques-moduli-program.md
         - halphen-index-2-moduli-program.md
-    - part: Heegner report
-      chapters:
         - coble-heegner-research-report.md
     # Back matter. coble/tables/*.md are untitled fragments, not chapters: they
     # are pulled into the Diagrams page by include, which is why they no longer

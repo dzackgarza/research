@@ -12,5 +12,29 @@ The three parts are a single chain, and each one is used by the next.
 A bilinear or quadratic form comes first, then forms on the underlying module of an algebra, then a lattice and its discriminant form, then isometries and arithmetic invariants, then Coxeter systems.
 The hyperbolic form and the Witt class follow, then the stable category of modules with duality the Witt class lives in, and finally the morphisms and the chain complexes built over that category.
 
-**Realizations** is the generated category and functor diagram.
 **Authoring and reference** holds the mathematical language style guide and the sources the framework draws on.
+
+## The category and functor diagram
+
+The diagram below is the framework at a glance: the sequence of categories, functors and
+invariant maps running from modules, through the form categories, to integral lattices
+and on to the discriminant and genus invariants. Every arrow is labelled by its functor
+or map. The discriminant construction is drawn on category cores, and the genus is the
+fibre of the displayed map on isometry classes over the image of a lattice class.
+
+A category, functor or map shown here refers to its mathematical definition in the
+chapters above; the GraphViz identifier is only its implementation label. The editable
+source is [`category-graph.dot`](category-graph.dot), and `just graph` re-renders the
+interactive view from it.
+
+```{=html}
+<iframe src="category-graph.html" title="Interactive category and functor diagram"
+        style="width:100%;height:78vh;border:1px solid var(--bs-border-color,#e5e7eb);border-radius:8px"
+        loading="lazy"></iframe>
+```
+
+[Open the diagram fullscreen](category-graph.html). Scroll to zoom and drag to pan.
+
+The exhaustive Sage runtime hierarchy is recorded separately in the
+[SageMath category framework reference](https://github.com/dzackgarza/research/blob/main/docs/sage-inventory/Sage-Category-Framework-Inventory.md),
+which is implementation reference rather than part of this book.

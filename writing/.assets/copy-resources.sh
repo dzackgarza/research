@@ -12,6 +12,14 @@ set -euo pipefail
 
 out="${QUARTO_PROJECT_OUTPUT_DIR:?post-render step run outside Quarto}"
 
+# The interactive category diagram is an ordinary file pair, not a tree: the book page
+# that embeds it is at the site root, so the iframe's `category-graph.html` has to be
+# there too, whatever directory the source lives in.
+for file in category-theory/lean/category-graph.html category-theory/lean/category-graph.dot; do
+    [ -f "${file}" ] || { echo "copy-resources: ${file} is missing" >&2; exit 1; }
+    cp -L --no-preserve=mode "${file}" "${out}/"
+done
+
 for tree in data coble/reference coble/papers; do
     [ -d "${tree}" ] || { echo "copy-resources: ${tree} is missing" >&2; exit 1; }
     mkdir -p "${out}/$(dirname "${tree}")"

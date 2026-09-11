@@ -1,1 +1,0 @@
-category-theory/lean/Category-Graph.md
