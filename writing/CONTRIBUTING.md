@@ -1836,6 +1836,80 @@ quantifiers hidden in prose.
 torsion if $\operatorname{Ann}_R(m)\neq0$ for every $m\in M$;
 torsion-free if $\operatorname{Ann}_R(m)=0$ for $m\neq0$."
 
+## Section structure (`SEC-*`)
+
+A $\S$ is its fenced logical units. The book's logical units are fenced
+blocks — Definition (`::: {#def-...}`), Theorem (`::: {.Theorem
+#thm:...}`), Lemma, Proposition, Corollary, Example (`::: {#exm-...}`),
+Remark (`::: {.Remark}`) — each with an ID and a title, citable via
+`\ref`/`\longref` or `@`. Running prose that points at a definition
+elsewhere, cites a theorem elsewhere, or paraphrases either in English is
+not a logical unit that belongs to this book.
+
+### `SEC-1`: A section with no fenced logical unit has no content
+
+A $\S$ that contains only prose paragraphs — "Preservation, reflection,
+and creation of limits are defined in @def-...," "A monadic functor
+creates any limits [@Rie16]," "Hence a limit in $R\text{-}\mathbf{Mod}$
+is computed on underlying sets," "The kernel … is a limit — the equalizer
+… — so it is the set-theoretic kernel …," "Creation is a statement about
+limit cones: a subgroup … need not be a submodule …" — has no Definition,
+no Theorem, no Example, and no Remark that belongs to this $\S$. The
+title "Creation of limits" is then a heading over filler. Every $\S$
+introduces at least one fenced unit of its own; a $\S$ that only cites
+and paraphrases is not a $\S$.
+
+**Banned:** "## Creation of limits {#sec-creation}" followed by five
+paragraphs, none fenced, that cite @def-preserve-reflect-create,
+[@Rie16, Theorem 5.6.5], [@Rie16, Corollary 5.5.3], then "Hence …" and
+"The kernel … so it is …" in prose.
+
+**Preferred:** "::: {#def-create} ## Creation of limits — … :::" or
+"::: {.Proposition #prp-limit-created} ### Limits in $R\text{-}\mathbf{Mod}$
+— … :::" with proof that cites the monadicity theorem and explains how
+it applies. The $\S$'s content is the fenced unit; the paragraphs are the
+proof or the remarks that follow it, not the $\S$ itself.
+
+### `SEC-2`: Example and remark inside a mathematical section must be fenced
+
+"For example, the additive and multiplicative monoids of a ring define
+distinct functors $\mathbf{Ring}\to\mathbf{Mon}$" is an example without
+an `{#exm-...}` block. "If no comparison is specified, $F$ and $G$ remain
+distinct" is a remark about parallel functors without a `{.Remark}`. An
+example and a remark that belong to a $\S$ are fenced and typed, not
+"For example, …" or "If … remain distinct" in running prose. An
+extended remark that is fenced is fine to leave unlabeled as a Remark;
+an unfenced paragraph is not a Remark.
+
+**Banned:** "For example, the additive and multiplicative monoids …" as a
+closing sentence of $\S$ Parallel functors.
+
+**Preferred:** "::: {#exm-add-vs-mult} ## Additive versus multiplicative
+— The functors $\mathbf{Ring}\to\mathbf{Mon}$ sending $R$ to
+$(|R|,+,0)$ and to $(|R|,\cdot,1)$ are distinct; no natural isomorphism
+is specified. :::"
+
+### `SEC-3`: Writing requirement not inside a mathematical section
+
+"A construction whose value happens to agree on underlying sets across
+two categories names the functor along which it is created" and "If no
+comparison is specified, $F$ and $G$ remain distinct" are writing
+requirements about how to speak about constructions versus statements and
+about when parallel functors are distinct. They belong in a requirements
+section (@sec-statements-vs-constructions) or in CONTRIBUTING.md
+(PR-15, PR-16), not as closing morals of $\S$ Creation and $\S$ Parallel
+functors. A $\S$ that states a theorem about monadic functors does not
+close with a style rule.
+
+**Banned:** the last paragraph of each $\S$ in the quoted block as a
+prose moral inside a mathematical $\S$.
+
+**Preferred:** state the theorem, prove it, give the example and the
+non-example (kernel versus subgroup — the latter as a fenced
+non-example or Remark that a subgroup of the underlying abelian group
+need not be a submodule), then close. Put the writing requirement in the
+requirements $\S$ where it is defined and cite it.
+
 ### `DEF-27`: Distinguished object introduced only in the title
 
 A block titled `{#def-distinguished-factorization}` defines "a
