@@ -811,17 +811,25 @@ information. A tagline removes none.
 
 ## Symbols and binding (`SYM-*`)
 
+Mathematical text follows scoping and binding conventions analogous to those
+in a formal language. A symbol is bound at the point where the object it
+names is declared — with its type, domain, codomain, or constituent data.
+Before that point, the symbol is unbound and the reader cannot determine
+what it refers to. Naming a type ("let $\mathcal{C}$ be a monoidal
+category") does not bind the symbols for that type's constituent data
+($\otimes$, $\mathbf{1}$, $\alpha$, $\lambda$, $\varrho$); those are bound
+by stating the tuple
+$(\mathcal{C},\otimes,\mathbf{1},\alpha,\lambda,\varrho)$. A symbol used
+before its binding is an unbound reference; a symbol that changes meaning
+within a passage is a shadowing conflict.
+
 ### `SYM-1`: A symbol used without being bound
 
-A passage uses a symbol — $\mu$, $\eta$, $\otimes$, $\mathbf{1}$ — without
-introducing the object it names. This includes both maps and the
-constituent data of a structure. Stating the type of a structure ("let $S$
-be a symmetric monoidal category") does not bind the symbols for its
-constituents ($\otimes$, $\mathbf{1}$, $\alpha$, $\lambda$, $\varrho$,
-$\gamma$); those are bound by stating the tuple
-$(\mathcal{S},\otimes,\mathbf{1},\ldots)$. State the data first: name the
-object or tuple, its type, and each map's domain and codomain. Then use
-the symbols.
+A passage uses a symbol before declaring the object it names. No type, no
+domain, no codomain, and no constituent tuple is stated. The reader cannot
+determine what the symbol refers to without external knowledge. Bind the
+symbol first: state the object, its type, and the map's domain and
+codomain (or the structure's tuple). Then use the symbol.
 
 **Banned:** "A monoid in $(\mathbf{Ab},\otimes_{\mathbb Z},\mathbb Z)$ is a
 ring, its multiplication being the bilinear map classified by $\mu$ and its
