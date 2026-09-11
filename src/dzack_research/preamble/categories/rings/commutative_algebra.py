@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     AlgebrasWithChosenFinitePresentation,
     CommutativeAlgebras,
     OwnedAlgebras,
+    _OwnedAlgebraElement,
     _OwnedAlgebraParent,
     refine_algebra,
 )
@@ -1417,8 +1418,191 @@ class _AdicQuotientInverseSystem(Functor):
         return self.completion().adic_transition_map(higher, lower)
 
 
+class _AdicCompletionElement(_OwnedAlgebraElement):
+    r"""An element of a completion with equality respecting its information model."""
+
+    def exact_source_expression(self):
+        r"""Return the retained exact source expression, or ``None``.
+
+        A finite computational approximation does not become exact merely by
+        living in the completion.  Expressions arriving through the completion
+        map, however, still carry their exact source expression, and ordinary
+        ring operations preserve that information while both operands have it.
+        """
+        return getattr(self, "_preamble_exact_source_expression", None)
+
+    def _with_source_expression(self, backend_value, source_expression):
+        constructor = getattr(self.parent(), "_completion_element", None)
+        if constructor is None:
+            return self.parent()._from_engine_element(backend_value)
+        return constructor(backend_value, source_expression=source_expression)
+
+    def _add_(self, other):
+        left_source = self.exact_source_expression()
+        right_source = other.exact_source_expression()
+        source_expression = None
+        if left_source is not None and right_source is not None:
+            source_expression = left_source + right_source
+        return self._with_source_expression(
+            self._backend() + other._backend(),
+            source_expression,
+        )
+
+    def _mul_(self, other):
+        left_source = self.exact_source_expression()
+        right_source = other.exact_source_expression()
+        source_expression = None
+        if left_source is not None and right_source is not None:
+            source_expression = left_source * right_source
+        return self._with_source_expression(
+            self._backend() * other._backend(),
+            source_expression,
+        )
+
+    def _neg_(self):
+        source_expression = self.exact_source_expression()
+        if source_expression is not None:
+            source_expression = -source_expression
+        return self._with_source_expression(-self._backend(), source_expression)
+
+    def __pow__(self, exponent, modulus=None):
+        if modulus is not None:
+            return super().__pow__(exponent, modulus)
+        try:
+            exponent = exponent.__index__()
+        except AttributeError:
+            return NotImplemented
+        source_expression = self.exact_source_expression()
+        if source_expression is not None and exponent >= 0:
+            source_expression = source_expression**exponent
+        else:
+            source_expression = None
+        return self._with_source_expression(
+            self._backend() ** exponent,
+            source_expression,
+        )
+
+    def _exact_source_difference_is_zero(self, other) -> bool:
+        left_source = self.exact_source_expression()
+        right_source = other.exact_source_expression()
+        if left_source is None or right_source is None:
+            return False
+        return bool(left_source - right_source == self.parent().completion_source().zero())
+
+    @staticmethod
+    def _backend_exact_zero_status(difference):
+        r"""Return ``True``/``False`` when the backend decides exact zero.
+
+        ``None`` means that the selected finite information agrees with zero
+        but does not decide exact zero in the completion.
+        """
+        exact_zero = getattr(difference, "_is_exact_zero", None)
+        if callable(exact_zero) and bool(exact_zero()):
+            return True
+        inexact_zero = getattr(difference, "_is_inexact_zero", None)
+        if callable(inexact_zero) and bool(inexact_zero()):
+            return None
+
+        precision = getattr(difference, "precision_absolute", None)
+        if callable(precision):
+            if bool(difference):
+                return False
+            return True if precision() is Infinity else None
+
+        return None
+
+    def _completion_equal(self, other) -> bool:
+        parent = self.parent()
+        try:
+            other = parent(other)
+        except (TypeError, ValueError):
+            return False
+        if self is other:
+            return True
+        left = self._backend()
+        right = other._backend()
+        if self._exact_source_difference_is_zero(other):
+            return True
+        mode = parent.completion_arithmetic_mode()
+        if mode == "exact_lazy":
+            options = getattr(left.parent(), "options", None)
+            old_secure = None
+            if options is not None:
+                old_secure = options["secure"]
+                options["secure"] = True
+            try:
+                try:
+                    return bool(left == right)
+                except ValueError as error:
+                    raise AssertionError(
+                        "exact equality of these lazy completion elements is undecidable by the selected engine"
+                    ) from error
+            finally:
+                if options is not None:
+                    options["secure"] = old_secure
+        difference = left - right
+        status = self._backend_exact_zero_status(difference)
+        if status is True:
+            return True
+        if status is False:
+            return False
+        if mode == "finite_approximation" and difference != left.parent().zero():
+            return False
+        raise AssertionError(
+            "finite completion data agree at the selected precision but do not decide exact equality"
+        )
+
+    def __eq__(self, other):
+        return self._completion_equal(other)
+
+    def __ne__(self, other):
+        return not self._completion_equal(other)
+
+    __hash__ = None
+
+    def __bool__(self):
+        return not self._completion_equal(self.parent().zero())
+
+    def is_zero(self):
+        return self._completion_equal(self.parent().zero())
+
+    def is_one(self):
+        return self._completion_equal(self.parent().one())
+
+    def is_unit(self):
+        return bool(self._backend().is_unit())
+
+    def inverse_of_unit(self):
+        if not self.is_unit():
+            raise ZeroDivisionError(f"{self} is not a unit")
+        return self.parent()._from_engine_element(self._backend() ** -1)
+
+    def precision_absolute(self):
+        r"""Return the selected absolute computation precision when represented."""
+        precision = getattr(self._backend(), "precision_absolute", None)
+        if callable(precision):
+            return precision()
+        return self.parent().computation_precision()
+
+    def refine_precision(self, precision):
+        r"""Refine an exact source image without inventing missing coefficients."""
+        source_expression = self.exact_source_expression()
+        if source_expression is None:
+            raise AssertionError(
+                "precision refinement requires an exact retained source expression"
+            )
+        refined = AdicCompletion(
+            self.parent().completion_source(),
+            self.parent().ideal_of_definition(),
+            precision=int(precision),
+        )
+        return refined.completion_map()(source_expression)
+
+
 class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
     r"""An engine-backed adic completion with its defining data fixed at construction."""
+
+    Element = _AdicCompletionElement
 
     def __init__(
         self,
@@ -1430,11 +1614,14 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
         engine_map=None,
         completed_ideal_generators=None,
         projection_lift=None,
+        arithmetic_mode="finite_precision",
+        completion_image=None,
     ) -> None:
         self._preamble_completion_source = source
         self._preamble_ideal_of_definition = defining_ideal
         self._preamble_computation_precision = int(precision)
         self._preamble_projection_lift = projection_lift
+        self._preamble_completion_arithmetic_mode = arithmetic_mode
         placements = [AdicCompletions()]
         if source in OwnedNoetherianRings():
             placements.append(OwnedNoetherianRings())
@@ -1448,7 +1635,34 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             None,
             categories=tuple(placements),
         )
-        self._preamble_completion_map = _canonical_map(source, self, engine_map)
+        selected_engine_map = engine_map
+        if completion_image is None:
+            source_engine = _engine_ring(source)
+            if selected_engine_map is None:
+                selected_engine_map = engine.coerce_map_from(source_engine)
+
+            def completion_image(element):
+                source_value = _engine_element(source, source(element))
+                value = (
+                    selected_engine_map(source_value)
+                    if selected_engine_map is not None
+                    else engine(source_value)
+                )
+                return engine(value)
+
+        def completion_map_image(element):
+            selected = source(element)
+            return self._completion_element(
+                completion_image(selected),
+                source_expression=selected,
+            )
+
+        self._preamble_completion_map = ring_morphism(
+            source,
+            self,
+            completion_map_image,
+            engine_morphism=selected_engine_map,
+        )
         self._preamble_structure_map = self._preamble_completion_map
         if is_maximal:
             if completed_ideal_generators is None:
@@ -1462,6 +1676,41 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                 source_ideal=defining_ideal,
             )
             self._preamble_residue_field = ResidueField(source, defining_ideal)
+
+    def completion_arithmetic_mode(self):
+        return self._preamble_completion_arithmetic_mode
+
+    def _completion_element(self, value, *, source_expression=None):
+        if getattr(value, "parent", lambda: None)() is not self._engine:
+            value = self._engine(value)
+        element = self.element_class(self, value)
+        element._preamble_exact_source_expression = source_expression
+        return element
+
+    def _element_constructor_(self, value):
+        if getattr(value, "parent", lambda: None)() is self:
+            return value
+        completion_map = getattr(self, "_preamble_completion_map", None)
+        if completion_map is None:
+            return super()._element_constructor_(value)
+        source = self.completion_source()
+        try:
+            selected = source(value)
+        except (TypeError, ValueError, AttributeError):
+            return super()._element_constructor_(value)
+        return completion_map(selected)
+
+    def zero(self):
+        completion_map = getattr(self, "_preamble_completion_map", None)
+        if completion_map is None:
+            return super().zero()
+        return completion_map(self.completion_source().zero())
+
+    def one(self):
+        completion_map = getattr(self, "_preamble_completion_map", None)
+        if completion_map is None:
+            return super().one()
+        return completion_map(self.completion_source().one())
 
 
 class GeneratedIdealView(SageObject):
@@ -2041,9 +2290,37 @@ def AdicCompletion(ring, ideal, *, precision=20):
     base = source.base_ring()
     if source not in SymmetricAlgebras(base):
         if source in AlgebrasWithChosenFinitePresentation(base):
-            raise NotImplementedError(
-                "completion of a presented algebra at a general ideal requires a maintained "
-                "formal quotient/local standard-basis adapter; a finite Artin quotient is not the completion"
+            truncation = source.quotient_ring(defining.power(int(precision)))
+            truncation_engine = getattr(truncation, "_preamble_engine_ring", None)
+            if truncation_engine is None:
+                raise NotImplementedError(
+                    "the presented completion has no maintained finite approximation engine"
+                )
+            quotient_map = truncation.quotient_map()
+
+            def completion_image(element):
+                return _engine_element(truncation, quotient_map(source(element)))
+
+            def projection_lift(value, exponent):
+                if exponent > int(precision):
+                    raise NotImplementedError(
+                        "the selected finite approximation has not computed enough adic levels for this projection"
+                    )
+                return truncation._from_engine_element(value).lift()
+
+            completed_ideal_generators = tuple(
+                completion_image(generator)
+                for generator in defining.ideal_generators()
+            )
+            return _AdicCompletionAlgebraParent(
+                truncation_engine,
+                source,
+                defining,
+                precision,
+                completed_ideal_generators=completed_ideal_generators,
+                projection_lift=projection_lift,
+                arithmetic_mode="finite_approximation",
+                completion_image=completion_image,
             )
         raise NotImplementedError(
             "adic completion currently has an exact maintained realization for polynomial rings and p-adic integers"
@@ -2080,6 +2357,7 @@ def AdicCompletion(ring, ideal, *, precision=20):
         engine_map=engine_map,
         completed_ideal_generators=completed_ideal_generators,
         projection_lift=projection_lift,
+        arithmetic_mode="exact_lazy",
     )
 
 
@@ -2127,6 +2405,8 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
 class _FormalPowerSeriesAlgebraParent(_OwnedAlgebraParent):
     r"""A formal power-series algebra whose adic data are constructor-owned."""
+
+    Element = _AdicCompletionElement
 
     def __init__(
         self,
@@ -2183,6 +2463,9 @@ class _FormalPowerSeriesAlgebraParent(_OwnedAlgebraParent):
                 selected_uniformizers,
             )
             self._preamble_residue_field = base.residue_field()
+
+    def completion_arithmetic_mode(self):
+        return "finite_precision"
 
 
 def Zp(*args, **kwargs):
