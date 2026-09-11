@@ -2973,9 +2973,9 @@ preamble/sterk.sage	Sterk.sterk5_in_U_E8_2	method	359	0		src/dzack_research/prea
 preamble/sterk.sage	Sterk.sterks_in_ten	method	394	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
 preamble/sterk.sage	Sterk.isotropic_vectors	method	425	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
 preamble/sterk.sage	SterkDiagrams	class	457	0		src/dzack_research/preamble/sterk.py	reconciled-live-owner
-preamble/symbols.py	<module>	module	1	0			unreviewed
-preamble/symbols.py	import_statement_for	function	36	0			unreviewed
-preamble/symbols.py	synthetic_imports	function	63	0			unreviewed
+preamble/symbols.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/symbols.py	import_statement_for	function	36	0		src/dzack_research/preamble/all.py	reconciled-live-owner
+preamble/symbols.py	synthetic_imports	function	63	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/conftest.py	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/conftest.py	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/conftest.py	test_data_dir	specimen	22	0			unreviewed
