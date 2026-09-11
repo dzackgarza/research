@@ -744,45 +744,45 @@ preamble/categories/divisors/weil_divisor_groups.sage	<module>	module	1	0		src/d
 preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroup	function	14	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroups	class	22	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroups.super_categories	method	29	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
-preamble/categories/forms/forms.sage	<module>	module	1	0			unreviewed
-preamble/categories/forms/forms.sage	Pairing	binding	30	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticValueMap	binding	31	0			unreviewed
-preamble/categories/forms/forms.sage	FormDatum	binding	35	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormDatum	binding	36	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticMapMorphism	class	101	1	src/dzack_research/preamble/categories/forms/forms.py		unreviewed
-preamble/categories/forms/forms.sage	QuadraticMap	function	121	1	src/dzack_research/preamble/categories/forms/forms.py		unreviewed
-preamble/categories/forms/forms.sage	classifying_morphism	function	140	1	src/dzack_research/preamble/categories/forms/forms.py		unreviewed
-preamble/categories/forms/forms.sage	quadratic_map_from_morphism	function	175	1	src/dzack_research/preamble/categories/forms/forms.py		unreviewed
-preamble/categories/forms/forms.sage	BilinearFormHomset	class	199	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormHomset.module	method	228	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormHomset	class	247	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormHomset.module	method	269	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearForms	function	290	1	src/dzack_research/preamble/categories/forms/forms.py		unreviewed
-preamble/categories/forms/forms.sage	QuadraticForms	function	296	1	src/dzack_research/preamble/categories/forms/forms.py		unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism	class	338	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.parent	method	344	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.module	method	379	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.gram_matrix	method	383	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.subdivide_gram_matrix	method	396	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.norm	method	445	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.polar_form	method	448	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.pullback	method	468	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.descends_along	method	484	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.values_matrix	method	520	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearFormMorphism.image	method	530	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism	class	590	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.parent	method	593	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.module	method	623	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.lift_form	method	655	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.polar_form	method	673	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.b	method	683	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.gram_matrix	method	686	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.pullback	method	708	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.descends_along	method	722	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.values_matrix	method	758	0			unreviewed
-preamble/categories/forms/forms.sage	QuadraticFormMorphism.image	method	764	0			unreviewed
-preamble/categories/forms/forms.sage	BilinearForm	function	827	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/forms/forms.sage	QuadraticForm	function	841	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
+preamble/categories/forms/forms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	Pairing	binding	30	0		src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticValueMap	binding	31	0		src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	FormDatum	binding	35	0		src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormDatum	binding	36	0		src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticMapMorphism	class	101	1	src/dzack_research/preamble/categories/forms/forms.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticMap	function	121	1	src/dzack_research/preamble/categories/forms/forms.py	src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	classifying_morphism	function	140	1	src/dzack_research/preamble/categories/forms/forms.py	src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	quadratic_map_from_morphism	function	175	1	src/dzack_research/preamble/categories/forms/forms.py	src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormHomset	class	199	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormHomset.module	method	228	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormHomset	class	247	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormHomset.module	method	269	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearForms	function	290	1	src/dzack_research/preamble/categories/forms/forms.py	src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticForms	function	296	1	src/dzack_research/preamble/categories/forms/forms.py	src/dzack_research/preamble/categories/forms/forms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism	class	338	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.parent	method	344	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.module	method	379	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.gram_matrix	method	383	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.subdivide_gram_matrix	method	396	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.norm	method	445	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.polar_form	method	448	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.pullback	method	468	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.descends_along	method	484	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.values_matrix	method	520	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearFormMorphism.image	method	530	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism	class	590	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.parent	method	593	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.module	method	623	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.lift_form	method	655	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.polar_form	method	673	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.b	method	683	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.gram_matrix	method	686	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.pullback	method	708	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.descends_along	method	722	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.values_matrix	method	758	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticFormMorphism.image	method	764	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	BilinearForm	function	827	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/forms/forms.sage	QuadraticForm	function	841	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
 preamble/categories/forms/gram_matrices.sage	<module>	module	1	0			unreviewed
 preamble/categories/forms/gram_matrices.sage	gram_matrix_graph	function	13	0			unreviewed
 preamble/categories/forms/gram_matrices.sage	gram_matrix_from_graph	function	38	0			unreviewed
