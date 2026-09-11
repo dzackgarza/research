@@ -1663,7 +1663,6 @@ behavior.
 
 ### Active claims
 
-| `CORE-monoid-hom-category-boundary-20260911-1400` | category-boundaries / owned monoid Hom category | Chat continuation 2026-09-11; `/home/dzack/research` | `src/dzack_research/preamble/categories/group/magmas.py; tests/groups/test_monoid_hom_category_boundary.py` (write) | `HEAD` | 2026-09-11T14:00:00Z |
 
 
 
