@@ -1556,26 +1556,6 @@ review until every downstream consumer has copied the same bypass.
   the weaker implementation acceptable. Do not turn this comparison into a
   source-policing test or a count of engine imports.
 
-- [ ] **`runtime-available-at-t`**. **Needs:** none.
-  Make the declared Sage runtime reachable from the repository's tracked
-  configuration, so terminal T is not the moment this is discovered.
-  **Observed 2026-09-11:** the tracked `.envrc` exports
-  `SAGE_BIN="${SAGE_BIN:-/home/dzack/gitclones/sage-dev-allopts/.venv/bin/sage}"`.
-  That checkout exists; that path does not. Any commit whose staged paths make the
-  Sage QC preflight applicable fails with
-  `ERROR: SAGE_BIN is unset or not executable`, and the whole preamble programme is
-  currently invisible to this because `DEV-58` defers execution and prose commits take
-  the sanctioned `--no-verify` route. A working `sage` is on `PATH` at
-  `/home/dzack/.local/bin/sage`; whether that is the interpreter this repository
-  intends is the question to settle, not something to paper over by repointing the
-  variable at whatever is nearest.
-  **Deliver:** a tracked default that resolves to the Sage this repository actually
-  targets on this host, or a recorded decision naming the required interpreter and
-  what must be provisioned to supply it.
-  **Acceptance:** the Sage QC preflight passes on a commit that touches a preamble
-  path, from a shell that has only sourced the tracked `.envrc`. This is a
-  configuration repair, not permission to start executing suites before T.
-
 - [ ] **`terminal-execution`**. **Needs:** `terminal-reference`.
   Execute the prescribed public-construction and mathematical suites in the
   terminal verification phase through the existing project recipes.
@@ -1688,7 +1668,6 @@ behavior.
 
 ### Active claims
 
-| `RUNTIME-sage-bin-20260911-0637` | runtime-available-at-t / tracked Sage development launcher | M0 continuation; `/home/dzack/research` | `.envrc; TODO.md` (write) | `0150f9d2` | 2026-09-11T06:37:00Z |
 
 
 
