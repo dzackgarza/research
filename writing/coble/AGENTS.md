@@ -12,7 +12,6 @@ chapters in `writing/.book/_quarto.yml`; a new page is not published until it is
 ```
 <topic>/            One directory per topic, kebab-case, one page per file
 index.md            The part landing page
-summary.md          Project status: what is proven, what is blocked
 papers/             Extracted third-party sources, one directory per citation key
 reference/          Source PDFs and the last built version of the paper
 scripts/            The computational toolchain

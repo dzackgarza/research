@@ -42,6 +42,7 @@ book:
         - category-theory/framework/Monoidal-Categories.md
         - category-theory/framework/Loops-and-Suspension.md
         - category-theory/framework/Identification.md
+        - category-theory/framework/Equality.md
     - part: Properties, structures, and algebra
       chapters:
         - category-theory/framework/Truncation-and-Classifiers.md
@@ -50,6 +51,7 @@ book:
         - category-theory/framework/Joins-Meets-and-Closure.md
         - category-theory/framework/Distinguished-Functors.md
         - category-theory/framework/Elements-and-Containment.md
+        - category-theory/framework/Generic-Elements.md
     - part: Forms and lattices
       chapters:
         - category-theory/framework/Bilinear-and-Quadratic-Forms.md
