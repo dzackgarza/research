@@ -45,6 +45,7 @@ def semantic_scopes(text: str) -> dict[int, tuple[tuple[str, str], ...]]:
     scopes: list[tuple[int, str, str]] = []
     pending: tuple[str, str] | None = None
     pending_kind: str | None = None
+    pending_after_newline = False
     depth = 0
     result: dict[int, tuple[tuple[str, str], ...]] = {}
     tokens = tokenize.generate_tokens(io.StringIO(text).readline)
@@ -62,16 +63,26 @@ def semantic_scopes(text: str) -> dict[int, tuple[tuple[str, str], ...]]:
                     kind, name = pending
                     scopes.append((depth, kind, name))
                     pending = None
+                pending_after_newline = False
+                continue
+            if token_type == tokenize.NEWLINE:
+                if pending is not None:
+                    pending_after_newline = True
                 continue
             if token_type in {
                 tokenize.ENCODING,
                 tokenize.NL,
-                tokenize.NEWLINE,
                 tokenize.COMMENT,
                 tokenize.ENDMARKER,
             }:
                 continue
-            result.setdefault(start[0], tuple((kind, name) for _d, kind, name in scopes))
+            if pending_after_newline and pending is not None:
+                pending = None
+                pending_after_newline = False
+            active_scopes = tuple((kind, name) for _d, kind, name in scopes)
+            if pending is not None:
+                active_scopes = active_scopes + (pending,)
+            result.setdefault(start[0], active_scopes)
             if token_type == tokenize.NAME and value in {"class", "def"}:
                 pending_kind = value
                 continue

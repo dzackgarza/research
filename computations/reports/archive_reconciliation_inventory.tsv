@@ -120,10 +120,9 @@ preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.super_categories	method	46	0			unreviewed
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods	class	49	0			unreviewed
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summands	method	63	0			unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand_index_set	method	67	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py		unreviewed
+preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand_index_set	method	67	0			unreviewed
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand	method	70	0			unreviewed
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumDecomposition	function	98	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py		unreviewed
-preamble/categories/abstract_categories/direct_sum_objects.sage	summand_index_set	binding	101	1	src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py		unreviewed
 preamble/categories/abstract_categories/functor_images.sage	<module>	module	1	0			unreviewed
 preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories	class	62	0			unreviewed
 preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories.super_categories	method	65	0			unreviewed
@@ -151,7 +150,6 @@ preamble/categories/abstract_categories/functors.sage	IdentityFunctor.factors	me
 preamble/categories/abstract_categories/functors.sage	DomainFunctor	class	223	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
 preamble/categories/abstract_categories/functors.sage	CodomainFunctor	class	245	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
 preamble/categories/abstract_categories/functors.sage	compose_functors	function	267	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	hom_category	binding	270	0			unreviewed
 preamble/categories/abstract_categories/functors.sage	ComposedFunctor	class	284	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
 preamble/categories/abstract_categories/functors.sage	ComposedFunctor.factors	method	305	0			unreviewed
 preamble/categories/abstract_categories/functors.sage	ComposedFunctor.is_faithful	method	308	0			unreviewed
@@ -383,25 +381,21 @@ preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCateg
 preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory.ObjectType	method	256	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory.super_categories	method	262	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Slice	function	272	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	is_mono	binding	274	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	is_epi	binding	275	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Coslice	function	300	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	is_mono	binding	302	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	is_epi	binding	303	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Superobject	function	328	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Subobject	function	335	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Covering	function	342	0			unreviewed
 preamble/categories/abstract_categories/slice_categories.sage	Covered	function	349	0			unreviewed
 preamble/categories/algebras/algebras.sage	<module>	module	1	0			unreviewed
 preamble/categories/algebras/algebras.sage	AlgebraParent	class	41	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraParent.base_ring	method	49	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/algebras.sage	AlgebraParent.base_ring	method	49	0			unreviewed
 preamble/categories/algebras/algebras.sage	AlgebraParent.coerce_map_from	method	50	0			unreviewed
 preamble/categories/algebras/algebras.sage	AlgebraParent.change_ring	method	56	0			unreviewed
 preamble/categories/algebras/algebras.sage	FramedAlgebraParent	class	58	0			unreviewed
 preamble/categories/algebras/algebras.sage	FramedAlgebraParent.algebra_generating_set	method	61	0			unreviewed
 preamble/categories/algebras/algebras.sage	FramedAlgebraParent.algebra_generator	method	62	0			unreviewed
 preamble/categories/algebras/algebras.sage	AlgebraCategory	class	64	0			unreviewed
-preamble/categories/algebras/algebras.sage	AlgebraCategory.base_ring	method	67	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/algebras.sage	AlgebraCategory.base_ring	method	67	0			unreviewed
 preamble/categories/algebras/algebras.sage	Algebras	class	70	1	src/dzack_research/preamble/categories/algebras/algebras.py		unreviewed
 preamble/categories/algebras/algebras.sage	Algebras.super_categories	method	90	0			unreviewed
 preamble/categories/algebras/algebras.sage	Algebras.ParentMethods	class	105	0			unreviewed
@@ -423,7 +417,7 @@ preamble/categories/algebras/algebras.sage	finite_algebra_generators	function	31
 preamble/categories/algebras/algebras.sage	install_algebras	function	344	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	<module>	module	1	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent	class	39	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.base_ring	method	46	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.base_ring	method	46	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.zero	method	47	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.one	method	48	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.algebra_generating_set	method	49	0			unreviewed
@@ -434,7 +428,7 @@ preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraP
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.quotient	method	56	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentingAlgebraParent.hom	method	57	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent	class	61	0			unreviewed
-preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.base_ring	method	74	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.base_ring	method	74	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.relations	method	75	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generating_set	method	76	0			unreviewed
 preamble/categories/algebras/finitely_presented_algebras.sage	PresentedAlgebraParent.algebra_generator	method	77	0			unreviewed
@@ -465,7 +459,7 @@ preamble/categories/algebras/finitely_presented_algebras.sage	FGAlgebra	function
 preamble/categories/algebras/finitely_presented_algebras.sage	install_finitely_presented_algebras	function	348	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	<module>	module	1	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent	class	94	0			unreviewed
-preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent.base_ring	method	110	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent.base_ring	method	110	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent.one	method	111	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent.zero	method	112	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraParent.number_of_algebra_generators	method	113	0			unreviewed
@@ -481,7 +475,7 @@ preamble/categories/algebras/framed_free_algebras.sage	DividedPowerAlgebraParent
 preamble/categories/algebras/framed_free_algebras.sage	DividedPowerAlgebraParent.divided_square	method	171	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraElement	class	221	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraElement.parent	method	226	0			unreviewed
-preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraElement.base_ring	method	227	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraElement.base_ring	method	227	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraElement.coefficients	method	228	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraElement.degree	method	229	0			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	FreeAlgebraElement.coefficient	method	230	0			unreviewed
@@ -631,7 +625,7 @@ preamble/categories/algebras/framed_free_algebras.sage	AlternatingAlgebraOf	func
 preamble/categories/algebras/framed_free_algebras.sage	DividedPowerAlgebraOf	function	2592	2			unreviewed
 preamble/categories/algebras/free_algebras.sage	<module>	module	1	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent	class	24	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.base_ring	method	32	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.base_ring	method	32	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.algebra_generating_set	method	33	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.monomial_system	method	34	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.module_generator	method	35	0			unreviewed
@@ -640,7 +634,7 @@ preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.graded_p
 preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebraParent	class	43	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebraParent.divided_power	method	46	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	FreeAlgebraCategory	class	50	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebraCategory.base_ring	method	53	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/free_algebras.sage	FreeAlgebraCategory.base_ring	method	53	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	FreeAlgebras	class	56	1	src/dzack_research/preamble/categories/algebras/free_algebras.py		unreviewed
 preamble/categories/algebras/free_algebras.sage	FreeAlgebras.super_categories	method	63	0			unreviewed
 preamble/categories/algebras/free_algebras.sage	FreeAlgebras.SubcategoryMethods	class	74	0			unreviewed
@@ -677,7 +671,7 @@ preamble/categories/algebras/number_fields.sage	EngineNumberField	class	70	0			u
 preamble/categories/algebras/number_fields.sage	EngineNumberField.pari_nf	method	79	0			unreviewed
 preamble/categories/algebras/number_fields.sage	EngineNumberField.pari_bnf	method	80	0			unreviewed
 preamble/categories/algebras/number_fields.sage	NumberFieldParent	class	82	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.base_ring	method	90	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.base_ring	method	90	0			unreviewed
 preamble/categories/algebras/number_fields.sage	NumberFieldParent.zero	method	91	0			unreviewed
 preamble/categories/algebras/number_fields.sage	NumberFieldParent.one	method	92	0			unreviewed
 preamble/categories/algebras/number_fields.sage	NumberFieldParent.relations	method	93	0			unreviewed
@@ -839,9 +833,9 @@ preamble/categories/functors/free_forgetful_adjunction.sage	DividedPowerAlgebraF
 preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleFunctorClass	class	232	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	UnderlyingSetOfGroupFunctor	class	278	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	GroupRingFunctor	class	304	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	GroupRingFunctor.base_ring	method	332	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/functors/free_forgetful_adjunction.sage	GroupRingFunctor.base_ring	method	332	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleOnGroupFunctor	class	367	1	src/dzack_research/preamble/categories/algebras/group_algebras.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleOnGroupFunctor.base_ring	method	391	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleOnGroupFunctor.base_ring	method	391	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	ForgetfulFunctorClass	class	403	0			unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction	class	430	1	src/dzack_research/preamble/categories/functors/core.py		unreviewed
 preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.left_adjoint	method	437	0			unreviewed
@@ -871,7 +865,6 @@ preamble/categories/group/finitely_presented_groups.sage	<module>	module	1	0			u
 preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation	class	27	2			unreviewed
 preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.super_categories	method	40	0			unreviewed
 preamble/categories/group/finitely_presented_groups.sage	GroupsWithChosenFinitePresentation.ParentMethods	class	43	0			unreviewed
-preamble/categories/group/finitely_presented_groups.sage	subscript	binding	163	0			unreviewed
 preamble/categories/group/finitely_presented_groups.sage	install_finitely_presented_groups	function	229	0			unreviewed
 preamble/categories/group/g_sets.sage	<module>	module	1	0			unreviewed
 preamble/categories/group/g_sets.sage	GSets	class	32	1	src/dzack_research/preamble/categories/group/g_sets.py		unreviewed
@@ -915,21 +908,6 @@ preamble/categories/group/groups.sage	SubgroupInclusion	class	69	1	src/dzack_res
 preamble/categories/group/groups.sage	SubgroupInclusion.is_injective	method	72	0			unreviewed
 preamble/categories/group/groups.sage	GroupParent	class	127	0			unreviewed
 preamble/categories/group/groups.sage	GroupParent.one	method	133	0			unreviewed
-preamble/categories/group/groups.sage	var	binding	182	2			unreviewed
-preamble/categories/group/groups.sage	invariant_form	binding	183	0			unreviewed
-preamble/categories/group/groups.sage	var	binding	195	2			unreviewed
-preamble/categories/group/groups.sage	invariant_form	binding	196	0			unreviewed
-preamble/categories/group/groups.sage	var	binding	208	2			unreviewed
-preamble/categories/group/groups.sage	invariant_form	binding	209	0			unreviewed
-preamble/categories/group/groups.sage	e	binding	221	0			unreviewed
-preamble/categories/group/groups.sage	var	binding	222	2			unreviewed
-preamble/categories/group/groups.sage	invariant_form	binding	223	0			unreviewed
-preamble/categories/group/groups.sage	e	binding	235	0			unreviewed
-preamble/categories/group/groups.sage	var	binding	236	2			unreviewed
-preamble/categories/group/groups.sage	invariant_form	binding	237	0			unreviewed
-preamble/categories/group/groups.sage	implementation	binding	294	0			unreviewed
-preamble/categories/group/groups.sage	base_ring	binding	295	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/group/groups.sage	index_set	binding	296	0			unreviewed
 preamble/categories/group/groups.sage	OwnedGroups	class	327	1	src/dzack_research/preamble/categories/group/groups.py		unreviewed
 preamble/categories/group/groups.sage	OwnedGroups.super_categories	method	429	0			unreviewed
 preamble/categories/group/groups.sage	OwnedGroups.ParentMethods	class	444	0			unreviewed
@@ -949,7 +927,6 @@ preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods
 preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.number_of_group_generators	method	659	0			unreviewed
 preamble/categories/group/groups.sage	OwnedFinitelyGeneratedGroups.ParentMethods.conjugation_morphism	method	665	0			unreviewed
 preamble/categories/group/groups.sage	coxeter_presentation	function	684	2			unreviewed
-preamble/categories/group/groups.sage	names	binding	686	2			unreviewed
 preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups	class	801	2			unreviewed
 preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.super_categories	method	814	0			unreviewed
 preamble/categories/group/groups.sage	OwnedFinitelyPresentedGroups.ParentMethods	class	817	0			unreviewed
@@ -1055,7 +1032,6 @@ preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbso
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.core	method	98	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenAbsoluteGaloisSubgroups.ParentMethods.conjugacy_class	method	104	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	open_absolute_galois_subgroup	function	122	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	ambient	binding	123	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass	class	139	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.ambient	method	151	0			unreviewed
 preamble/categories/group/profinite/absolute_galois_group_subgroup.sage	OpenGaloisSubgroupConjugacyClass.fixed_field	method	154	0			unreviewed
@@ -1109,7 +1085,7 @@ preamble/categories/group/profinite/galois_choice_policy.sage	<module>	module	1	
 preamble/categories/group/profinite/galois_choice_policy.sage	G	binding	18	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	choice_policy	binding	19	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy	class	39	0			unreviewed
-preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.name	method	51	2			unreviewed
+preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.name	method	51	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_embedding	method	55	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_extension	method	72	0			unreviewed
 preamble/categories/group/profinite/galois_choice_policy.sage	GaloisChoicePolicy.choose_prolongation	method	85	0			unreviewed
@@ -1157,7 +1133,7 @@ preamble/categories/modules/fractional_ideals.sage	OwnedIdeals	class	42	0			unre
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.super_categories	method	57	0			unreviewed
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods	class	60	0			unreviewed
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.ring	method	82	0			unreviewed
-preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.module_generators	method	107	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.module_generators	method	107	0			unreviewed
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.inverse	method	116	0			unreviewed
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.is_principal	method	146	0			unreviewed
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.principal_generator	method	150	0			unreviewed
@@ -1167,9 +1143,9 @@ preamble/categories/modules/fractional_ideals.sage	own_ideal	function	215	0			un
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	GeneratorAssignment	binding	51	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent	class	53	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.base_ring	method	58	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.base_ring	method	58	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.module_generating_set	method	59	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.module_generators	method	60	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.module_generators	method	60	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.number_of_module_generators	method	61	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.is_zero	method	62	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.zero	method	63	0			unreviewed
@@ -1191,7 +1167,7 @@ preamble/categories/modules/framed/finitely_generated/finitely_generated_free_mo
 preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	Free_ZZ	function	382	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent	class	141	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.base_ring	method	146	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.base_ring	method	146	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.presentation	method	147	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.number_of_module_generators	method	148	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules	class	153	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
@@ -1216,10 +1192,9 @@ preamble/categories/modules/framed/finitely_generated/finitely_presented_modules
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ElementMethods.coefficients	method	566	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModule	function	610	1	src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py		unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	module_generating_set	binding	74	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent	class	107	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.number_of_module_generators	method	112	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.module_generators	method	113	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.module_generators	method	113	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.zero	method	114	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.exponent	method	115	0			unreviewed
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.annihilator	method	116	0			unreviewed
@@ -1248,13 +1223,13 @@ preamble/categories/modules/framed/formed/form_modules.sage	<module>	module	1	0	
 preamble/categories/modules/framed/formed/form_modules.sage	Form	binding	59	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	GeneratorAssignment	binding	64	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent	class	66	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.base_ring	method	78	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.form	method	79	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.base_ring	method	78	0			unreviewed
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.form	method	79	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.value_module	method	80	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.gram_matrix	method	81	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.vector_space	method	82	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generating_set	method	83	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generators	method	84	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generators	method	84	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generator_morphism	method	85	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.zero	method	86	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.is_torsion	method	87	0			unreviewed
@@ -1275,7 +1250,7 @@ preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement.un
 preamble/categories/modules/framed/formed/form_modules.sage	FormModules	class	136	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormModules.super_categories	method	153	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods	class	172	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.form	method	243	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.form	method	243	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.b	method	247	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.twist	method	258	0			unreviewed
 preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.framing_morphism	method	286	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
@@ -1424,7 +1399,6 @@ preamble/categories/modules/framed/formed/integrallattice/engines.sage	rows	bind
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	line	binding	344	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	n	binding	349	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	m	binding	350	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/engines.sage	julia_program	binding	357	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	oscar_even_unimodular_primitive_embedding	function	397	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	gram	binding	416	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	S	binding	417	0			unreviewed
@@ -1460,7 +1434,7 @@ preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sa
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.signature_pair	method	39	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.twist	method	40	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.gram_matrix	method	41	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.module_generators	method	42	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.module_generators	method	42	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.zero	method	43	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices	class	50	1	src/dzack_research/preamble/categories/hyperbolic_lattices.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.super_categories	method	62	0			unreviewed
@@ -1553,7 +1527,6 @@ preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.is_primitive	method	1878	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.e_perp_mod_e	method	1903	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	set_zero_dots	function	1916	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	module_generating_set	binding	1926	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus	class	1968	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.signature_pair	method	1992	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.discriminant_form	method	1996	0			unreviewed
@@ -1568,8 +1541,6 @@ preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.mass	method	2094	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	register_indecomposable	function	2360	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	refine_one_lattice	function	2439	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	names	binding	2540	2			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	module_generating_set	binding	2541	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_isotropic_orbit_representatives	function	127	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_line_equivalence_witness	function	144	0			unreviewed
@@ -1591,9 +1562,6 @@ preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vectors_are_equivalent	method	678	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vector_equivalence_witness	method	704	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_predicate_subgroup	function	761	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	determinant_kernel	binding	766	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	spinor_kernel	binding	767	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	discriminant_preimages	binding	768	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeMapSpecification	binding	36	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomsetParent	class	40	0			unreviewed
@@ -1701,7 +1669,7 @@ preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobj
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.structure_morphism	method	51	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.ambient	method	52	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.gram_matrix	method	53	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.module_generators	method	54	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.module_generators	method	54	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.is_primitive	method	55	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	SubobjectParent.embedded_module_generators	method	56	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/subobjects.sage	Subobjects	class	59	1	src/dzack_research/preamble/categories/abstract_categories/constructions.py		unreviewed
@@ -1738,7 +1706,7 @@ preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sag
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets	class	132	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.super_categories	method	143	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.ParentMethods	class	146	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.ParentMethods.index_of	method	178	1	src/dzack_research/preamble/categories/sets/finite_ordered_sets.py		unreviewed
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.ParentMethods.index_of	method	178	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	X_ref	binding	187	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs	class	195	1	src/dzack_research/preamble/categories/vinberg_invariants.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.super_categories	method	201	0			unreviewed
@@ -1796,9 +1764,7 @@ preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sag
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.graph	method	806	1	src/dzack_research/preamble/owned_category.py		unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.tikz	method	817	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	vinberg_invariant_matrix_from_gram	function	890	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	names	binding	892	2			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	combinatorial_vinberg_invariant_matrix	function	932	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	names	binding	935	2			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs	class	966	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.super_categories	method	978	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods	class	981	0			unreviewed
@@ -1813,8 +1779,6 @@ preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sag
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.to_vinberg_matrix	method	1112	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.underlying_digraph	method	1116	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	projective_weighted_digraph	function	1135	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	vertex_weights	binding	1138	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	edges	binding	1139	0			unreviewed
 preamble/categories/modules/framed/formed/lattice_axioms.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices	class	57	0			unreviewed
 preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices.extra_super_categories	method	74	0			unreviewed
@@ -1843,7 +1807,7 @@ preamble/categories/modules/framed/formed/lattices.sage	Lattices.namespace	metho
 preamble/categories/modules/framed/formed/lattices.sage	Lattices.install	method	483	1	src/dzack_research/preamble/language_runtime.py		unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	DiscriminantBilinearParent	class	28	0			unreviewed
-preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	DiscriminantBilinearParent.form	method	31	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	DiscriminantBilinearParent.form	method	31	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	DiscriminantBilinearParent.smith_form_module_generators	method	32	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	DiscriminantBilinearParent.regenerate	method	33	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	DiscriminantBilinearElement	class	35	0			unreviewed
@@ -1869,7 +1833,7 @@ preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modu
 preamble/categories/modules/framed/formed/torsionform/discriminant_bilinear_modules.sage	DiscriminantBilinearModules.ElementMethods	class	351	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	DiscriminantQuadraticParent	class	48	0			unreviewed
-preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	DiscriminantQuadraticParent.form	method	51	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	DiscriminantQuadraticParent.form	method	51	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	DiscriminantQuadraticParent.smith_form_module_generators	method	52	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	DiscriminantQuadraticParent.regenerate	method	53	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	DiscriminantQuadraticElement	class	58	0			unreviewed
@@ -1898,10 +1862,10 @@ preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_mod
 preamble/categories/modules/framed/formed/torsionform/discriminant_quadratic_modules.sage	DiscriminantQuadraticModules.ElementMethods.is_characteristic	method	371	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent	class	54	0			unreviewed
-preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.form	method	59	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.form	method	59	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.presentation	method	60	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.module_generator	method	61	0			unreviewed
-preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.module_generators	method	62	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.module_generators	method	62	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.module_generating_set	method	63	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.smith_form_module_generators	method	64	0			unreviewed
 preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage	TorsionFormParent.cardinality	method	65	0			unreviewed
@@ -1969,7 +1933,7 @@ preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.
 preamble/categories/modules/framed/fraction_field_quotients.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotientParent	class	71	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotientParent.base	method	78	0			unreviewed
-preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotientParent.base_ring	method	79	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotientParent.base_ring	method	79	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotientParent.coerce_map_from	method	80	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotientParent.fraction_field	method	81	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotientParent.modulus	method	82	0			unreviewed
@@ -1980,7 +1944,7 @@ preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQu
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients	class	96	1	src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py		unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.super_categories	method	112	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods	class	125	0			unreviewed
-preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods.base_ring	method	126	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods.base_ring	method	126	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods.fraction_field	method	137	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods.modulus	method	141	0			unreviewed
 preamble/categories/modules/framed/fraction_field_quotients.sage	FractionFieldQuotients.ParentMethods.lift	method	150	0			unreviewed
@@ -1992,7 +1956,7 @@ preamble/categories/modules/framed/fraction_field_quotients.sage	install_fractio
 preamble/categories/modules/framed/framed_free_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	GeneratorAssignment	binding	58	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent	class	60	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.base_ring	method	65	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.base_ring	method	65	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.module_generating_set	method	66	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.module_generator_morphism	method	67	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleParent.Hom	method	68	0			unreviewed
@@ -2006,19 +1970,19 @@ preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.Pa
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generating_set	method	268	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.framing_morphism	method	272	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.zero	method	286	0			unreviewed
-preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generators	method	307	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generators	method	307	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.module_generator_morphism	method	327	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.hom	method	335	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.is_torsion_free	method	358	0			unreviewed
 preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleOn	function	361	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py		unreviewed
 preamble/categories/modules/framed/framed_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent	class	98	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.base_ring	method	103	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.base_ring	method	103	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.zero	method	104	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.variable_names	method	105	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.framing_morphism	method	106	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generator_morphism	method	107	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generators	method	108	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generators	method	108	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generator	method	109	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generating_set	method	110	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.subobject_on	method	111	0			unreviewed
@@ -2029,7 +1993,7 @@ preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMetho
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generator_morphism	method	149	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generating_set	method	207	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generator	method	212	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generators	method	216	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generators	method	216	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.inject_variables	method	227	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.linear_combination	method	261	0			unreviewed
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.subobject_on	method	276	0			unreviewed
@@ -2037,7 +2001,7 @@ preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMetho
 preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.vector_space	method	320	0			unreviewed
 preamble/categories/modules/graded_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/graded_modules.sage	GradedModuleParent	class	31	0			unreviewed
-preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators	method	38	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators	method	38	0			unreviewed
 preamble/categories/modules/graded_modules.sage	GradedModuleParent.submodule	method	39	0			unreviewed
 preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators_of_degree	method	40	0			unreviewed
 preamble/categories/modules/graded_modules.sage	GradedModuleParent.degree_on_module_generator	method	41	0			unreviewed
@@ -2100,8 +2064,8 @@ preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	
 preamble/categories/modules/group_modules/group_lattices.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	EquivariantAssignment	binding	52	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent	class	54	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.base_ring	method	57	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.form	method	58	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.base_ring	method	57	0			unreviewed
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.form	method	58	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.group	method	59	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.action_of	method	60	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.act	method	64	0			unreviewed
@@ -2110,7 +2074,7 @@ preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent.invariant_lattice	method	67	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices	class	70	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.acting_group	method	82	0			unreviewed
-preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.base_ring	method	85	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.base_ring	method	85	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.super_categories	method	91	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods	class	101	0			unreviewed
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.is_integral	method	102	0			unreviewed
@@ -2124,13 +2088,13 @@ preamble/categories/modules/group_modules/group_lattices.sage	group_lattice	func
 preamble/categories/modules/group_modules/group_modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	EquivariantAssignment	binding	52	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent	class	54	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.base_ring	method	62	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.base_ring	method	62	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.rank	method	63	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.group	method	64	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.action_matrix	method	65	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.Hom	method	66	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModules	class	69	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.base_ring	method	95	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.base_ring	method	95	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModules.acting_group	method	98	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModules.super_categories	method	104	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModules.is_semisimple	method	110	0			unreviewed
@@ -2159,6 +2123,7 @@ preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomor
 preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.domain	method	36	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.is_finite	method	37	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.group_generators	method	38	0			unreviewed
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsetBase	binding	93	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsetBase	binding	95	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	module_homset	function	99	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	endomorphism_ring	function	154	0			unreviewed
@@ -2193,7 +2158,6 @@ preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomor
 preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.is_finite	method	862	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.order	method	865	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroup	function	918	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	group_generators	binding	920	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupAction	class	930	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupAction.parent	method	934	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets	class	937	0			unreviewed
@@ -2207,7 +2171,6 @@ preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHo
 preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset.domain	method	1065	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset.codomain	method	1066	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	group_action_homset	function	1092	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	automorphism_group	binding	1095	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion	class	1101	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion.is_injective	method	1117	0			unreviewed
 preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion.values	method	1120	0			unreviewed
@@ -2223,13 +2186,13 @@ preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.s
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModuleParent	class	141	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModuleParent.module_generating_set	method	146	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModuleParent.module_generator	method	147	0			unreviewed
-preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModuleParent.module_generators	method	148	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModuleParent.module_generators	method	148	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModuleParent.zero	method	149	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules	class	152	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.super_categories	method	159	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods	class	166	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.number_of_module_generators	method	167	0			unreviewed
-preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.module_generators	method	184	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
+preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.module_generators	method	184	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.free_resolution	method	207	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.is_finitely_generated	method	225	0			unreviewed
 preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage	FinitelyGeneratedModules.ParentMethods.is_zero	method	235	0			unreviewed
@@ -2248,13 +2211,12 @@ preamble/categories/modules/pure/function_modules.sage	Function	binding	91	1	src
 preamble/categories/modules/pure/function_modules.sage	FunctionModules	class	400	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
 preamble/categories/modules/pure/function_modules.sage	FunctionModules.super_categories	method	407	0			unreviewed
 preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods	class	410	0			unreviewed
-preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods.base_ring	method	429	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods.base_ring	method	429	0			unreviewed
 preamble/categories/modules/pure/function_modules.sage	FunctionModules.ParentMethods.zero	method	441	0			unreviewed
 preamble/categories/modules/pure/function_modules.sage	FunctionModules.ElementMethods	class	471	0			unreviewed
 preamble/categories/modules/pure/function_modules.sage	FunctionModule	function	533	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
 preamble/categories/modules/pure/function_modules.sage	smooth_functions	function	546	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
 preamble/categories/modules/pure/function_modules.sage	square_integrable_functions	function	551	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/modules/pure/function_modules.sage	base_ring	binding	552	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
 preamble/categories/modules/pure/modules.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/pure/modules.sage	Modules	class	53	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
 preamble/categories/modules/pure/modules.sage	Modules.super_categories	method	67	0			unreviewed
@@ -2306,7 +2268,7 @@ preamble/categories/modules/tensors.sage	TensorModules.ParentMethods	class	545	0
 preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.module	method	564	0			unreviewed
 preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.valence	method	568	0			unreviewed
 preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.degree	method	572	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.base_ring	method	576	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.base_ring	method	576	0			unreviewed
 preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.dual_module	method	579	0			unreviewed
 preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.intrinsic_module	method	582	0			unreviewed
 preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.zero	method	666	0			unreviewed
@@ -2324,7 +2286,7 @@ preamble/categories/modules/tensors.sage	MixedTensorAlgebras	class	950	0			unrev
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.super_categories	method	957	0			unreviewed
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods	class	963	0			unreviewed
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.module	method	980	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.base_ring	method	983	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.base_ring	method	983	0			unreviewed
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.dual_module	method	986	0			unreviewed
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.vector_tensor_algebra	method	989	0			unreviewed
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.covector_tensor_algebra	method	994	0			unreviewed
@@ -2337,8 +2299,6 @@ preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.vale
 preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.homogeneous_component	method	1057	0			unreviewed
 preamble/categories/modules/tensors.sage	MixedTensorAlgebra	function	1111	2			unreviewed
 preamble/categories/modules/tensors.sage	tensor	function	1119	2			unreviewed
-preamble/categories/modules/tensors.sage	valence	binding	1122	0			unreviewed
-preamble/categories/modules/tensors.sage	module	binding	1123	0			unreviewed
 preamble/categories/rings/predicate_subrings.sage	<module>	module	1	0			unreviewed
 preamble/categories/rings/predicate_subrings.sage	PredicateSubrings	class	45	2			unreviewed
 preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.super_categories	method	57	0			unreviewed
@@ -2383,7 +2343,7 @@ preamble/categories/rings/rings.sage	owned_ring_named	function	620	0			unreviewe
 preamble/categories/rings/rings.sage	own_ring	function	627	0			unreviewed
 preamble/categories/rings/rings.sage	owned_ring_view	function	645	0			unreviewed
 preamble/categories/rings/rings.sage	OwnedBaseRing	class	651	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedBaseRing.base_ring	method	669	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/rings/rings.sage	OwnedBaseRing.base_ring	method	669	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	sage	binding	40	5			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	LOG_DIVISOR_COEFFICIENT_RING	binding	93	0			unreviewed
@@ -2483,21 +2443,11 @@ preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.distingu
 preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.plot	method	1215	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.plot2d	method	1218	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	ToricLogPair	function	1389	2			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	variety	binding	1390	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurface	function	1396	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	ADESurface	function	1401	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	variant	binding	1404	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	affine	binding	1405	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	n	binding	1406	0			unreviewed
 preamble/categories/schemes/ambient_spaces.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/ambient_spaces.sage	AffineSpace	function	29	2			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	R	binding	31	0			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	names	binding	32	2			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	ambient_projective_space	binding	33	0			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	default_embedding_index	binding	34	0			unreviewed
 preamble/categories/schemes/ambient_spaces.sage	ProjectiveSpace	function	44	2			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	R	binding	46	0			unreviewed
-preamble/categories/schemes/ambient_spaces.sage	names	binding	47	2			unreviewed
 preamble/categories/schemes/ambient_spaces.sage	install_ambient_spaces	function	55	0			unreviewed
 preamble/categories/schemes/polytopes.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/polytopes.sage	sage	binding	29	5			unreviewed
@@ -2546,19 +2496,9 @@ preamble/categories/schemes/polytopes.sage	LatticePolygons	class	671	2			unrevie
 preamble/categories/schemes/polytopes.sage	LatticePolygons.super_categories	method	685	0			unreviewed
 preamble/categories/schemes/polytopes.sage	LatticePolygons.ParentMethods	class	697	0			unreviewed
 preamble/categories/schemes/polytopes.sage	ConvexPolytope	function	719	2			unreviewed
-preamble/categories/schemes/polytopes.sage	lattice	binding	721	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
-preamble/categories/schemes/polytopes.sage	base_ring	binding	722	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/schemes/polytopes.sage	category	binding	723	0			unreviewed
 preamble/categories/schemes/polytopes.sage	ConvexPolygon	function	733	2			unreviewed
-preamble/categories/schemes/polytopes.sage	lattice	binding	735	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
-preamble/categories/schemes/polytopes.sage	base_ring	binding	736	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/schemes/polytopes.sage	category	binding	737	0			unreviewed
 preamble/categories/schemes/polytopes.sage	LatticePolytope	function	748	2			unreviewed
-preamble/categories/schemes/polytopes.sage	lattice	binding	750	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
-preamble/categories/schemes/polytopes.sage	base_ring	binding	751	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/schemes/polytopes.sage	category	binding	752	0			unreviewed
 preamble/categories/schemes/polytopes.sage	LatticePolygon	function	762	2			unreviewed
-preamble/categories/schemes/polytopes.sage	lattice	binding	764	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
 preamble/categories/schemes/ringed_spaces.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/ringed_spaces.sage	RingedSpaces	class	37	2			unreviewed
 preamble/categories/schemes/ringed_spaces.sage	RingedSpaces.LocallyRinged	method	44	0			unreviewed
@@ -2583,7 +2523,7 @@ preamble/categories/schemes/scheme_points.sage	SchemePoint.codomain	method	36	0	
 preamble/categories/schemes/scheme_points.sage	install_scheme_points	function	41	0			unreviewed
 preamble/categories/schemes/schemes.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/schemes.sage	SchemeParent	class	50	0			unreviewed
-preamble/categories/schemes/schemes.sage	SchemeParent.base_ring	method	54	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
+preamble/categories/schemes/schemes.sage	SchemeParent.base_ring	method	54	0			unreviewed
 preamble/categories/schemes/schemes.sage	SchemeParent.category	method	55	0			unreviewed
 preamble/categories/schemes/schemes.sage	SchemeParent.subscheme	method	56	0			unreviewed
 preamble/categories/schemes/schemes.sage	SchemeParent.gen	method	61	0			unreviewed
@@ -2629,8 +2569,6 @@ preamble/categories/schemes/subschemes.sage	EquationDefinedClosedSubschemes.Pare
 preamble/categories/schemes/subschemes.sage	EquationDefinedClosedSubschemes.ParentMethods.dimension	method	137	0			unreviewed
 preamble/categories/schemes/subschemes.sage	EquationDefinedClosedSubschemes.ParentMethods.defining_polynomial	method	141	0			unreviewed
 preamble/categories/schemes/subschemes.sage	EquationDefinedClosedSubscheme	function	149	0			unreviewed
-preamble/categories/schemes/subschemes.sage	equations	binding	151	0			unreviewed
-preamble/categories/schemes/subschemes.sage	dimension	binding	152	0			unreviewed
 preamble/categories/schemes/subschemes.sage	OpenSubschemes	class	163	0			unreviewed
 preamble/categories/schemes/subschemes.sage	OpenSubschemes.super_categories	method	169	0			unreviewed
 preamble/categories/schemes/subschemes.sage	OpenSubschemes.ParentMethods	class	176	0			unreviewed
@@ -2638,18 +2576,6 @@ preamble/categories/schemes/subschemes.sage	OpenSubschemes.ParentMethods.inclusi
 preamble/categories/schemes/subschemes.sage	install_subschemes	function	184	0			unreviewed
 preamble/categories/schemes/svg_2d_viewer.py	<module>	module	1	0			unreviewed
 preamble/categories/schemes/svg_2d_viewer.py	generate_2d_polygon_svg	function	88	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	interior_points	binding	91	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	boundary_points	binding	92	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	distinguished_points	binding	93	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	blue_facets	binding	94	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	p_star	binding	95	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	side_decorations	binding	96	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	latex_label	binding	97	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	dynkin_data	binding	98	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	theme	binding	99	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	width	binding	100	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	height	binding	101	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	padding	binding	102	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	<module>	module	1	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	vWorldPos	binding	117	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	gl_Position	binding	118	0			unreviewed
@@ -2660,14 +2586,6 @@ preamble/categories/schemes/threejs_viewer.py	autoSpin	binding	623	0			unreviewe
 preamble/categories/schemes/threejs_viewer.py	showGrid	binding	631	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	showAxes	binding	639	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	generate_threejs_polytope_html	function	705	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	interior_points	binding	709	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	boundary_points	binding	710	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	p_star	binding	711	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	title	binding	712	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	latex_label	binding	713	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	invariants	binding	714	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	height	binding	715	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	lattice_range	binding	716	0			unreviewed
 preamble/categories/schemes/toric/__init__.py	<module>	module	1	0			unreviewed
 preamble/categories/schemes/toric/__init__.py	ToricSchemes	reexport	1	3			unreviewed
 preamble/categories/schemes/toric/__init__.py	ToricScheme	reexport	1	0			unreviewed
@@ -2684,9 +2602,6 @@ preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.
 preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.standard_identification_latex	method	110	0			unreviewed
 preamble/categories/schemes/toric/toric_schemes.sage	ToricSchemes.ParentMethods.to_native_toric_variety	method	198	0			unreviewed
 preamble/categories/schemes/toric/toric_schemes.sage	ToricScheme	function	208	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	dim	binding	210	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	identification	binding	211	0			unreviewed
-preamble/categories/schemes/toric/toric_schemes.sage	base_ring	binding	212	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
 preamble/categories/schemes/varieties.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/varieties.sage	Varieties	class	49	2			unreviewed
 preamble/categories/schemes/varieties.sage	Varieties.super_categories	method	55	0			unreviewed
@@ -2695,11 +2610,6 @@ preamble/categories/schemes/varieties.sage	Varieties.ParentMethods	class	68	0			
 preamble/categories/schemes/varieties.sage	Varieties.ElementMethods	class	71	0			unreviewed
 preamble/categories/schemes/varieties.sage	Varieties.MorphismMethods	class	74	0			unreviewed
 preamble/categories/schemes/varieties.sage	ToricVariety	function	83	3			unreviewed
-preamble/categories/schemes/varieties.sage	coordinate_names	binding	85	0			unreviewed
-preamble/categories/schemes/varieties.sage	names	binding	86	2			unreviewed
-preamble/categories/schemes/varieties.sage	coordinate_indices	binding	87	0			unreviewed
-preamble/categories/schemes/varieties.sage	base_ring	binding	88	1	src/dzack_research/preamble/categories/modules/pure/function_modules.py		unreviewed
-preamble/categories/schemes/varieties.sage	base_field	binding	89	0			unreviewed
 preamble/categories/schemes/varieties.sage	Curve	function	104	2			unreviewed
 preamble/categories/schemes/varieties.sage	Curves	class	118	2			unreviewed
 preamble/categories/schemes/varieties.sage	Curves.super_categories	method	124	0			unreviewed
@@ -2846,8 +2756,6 @@ preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods.is_countabl
 preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods.is_uncountable	method	1310	0			unreviewed
 preamble/categories/sets/owned_sets.py	PosetTikz	class	1314	0			unreviewed
 preamble/categories/sets/owned_sets.py	PosetTikz.tikz_code	method	1367	0			unreviewed
-preamble/categories/sets/owned_sets.py	include	binding	1581	0			unreviewed
-preamble/categories/sets/owned_sets.py	exclude	binding	1582	0			unreviewed
 preamble/categories/sets/owned_sets.py	PartiallyOrderedSets	class	1591	2			unreviewed
 preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods	class	1643	0			unreviewed
 preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods.hasse_layout	method	1644	0			unreviewed
@@ -2860,11 +2768,7 @@ preamble/categories/sets/owned_sets.py	placement_of	function	1726	2			unreviewed
 preamble/categories/sets/sets.sage	<module>	module	1	0			unreviewed
 preamble/categories/sets/sets.sage	Set	function	69	2			unreviewed
 preamble/categories/sets/sets.sage	ConditionSet	function	87	2			unreviewed
-preamble/categories/sets/sets.sage	names	binding	90	2			unreviewed
 preamble/categories/sets/sets.sage	ImageSet	function	97	2			unreviewed
-preamble/categories/sets/sets.sage	category	binding	101	0			unreviewed
-preamble/categories/sets/sets.sage	is_injective	binding	102	0			unreviewed
-preamble/categories/sets/sets.sage	inverse	binding	103	0			unreviewed
 preamble/categories/sets/sets.sage	ObjectSetFunctor	class	168	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
 preamble/categories/sets/sets.sage	CartesianProductFunctor	class	187	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
 preamble/categories/sets/sets.sage	DisjointUnionFunctor	class	209	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
@@ -3071,9 +2975,7 @@ preamble/sterk.sage	Sterk.isotropic_vectors	method	425	0			unreviewed
 preamble/sterk.sage	SterkDiagrams	class	457	0			unreviewed
 preamble/symbols.py	<module>	module	1	0			unreviewed
 preamble/symbols.py	import_statement_for	function	36	0			unreviewed
-preamble/symbols.py	name	binding	37	2			unreviewed
 preamble/symbols.py	synthetic_imports	function	63	0			unreviewed
-preamble/symbols.py	names	binding	64	2			unreviewed
 preamble/tests/conftest.py	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/conftest.py	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/conftest.py	test_data_dir	specimen	22	0			unreviewed
@@ -3495,7 +3397,6 @@ preamble/tests/test_power_sets.sage	test_power_set_cardinalities_cover_standard_
 preamble/tests/test_power_sets.sage	test_cantor_inequality_holds_for_the_standard_catalogue	specimen	250	0			unreviewed
 preamble/tests/test_power_sets.sage	test_iterated_power_sets_contain_subsets_of_the_previous_power_set	specimen	264	0			unreviewed
 preamble/tests/test_preamble.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_preamble.sage	max_buffer	binding	268	0			unreviewed
 preamble/tests/test_preamble.sage	error	binding	318	0			unreviewed
 preamble/tests/test_preamble.sage	test_named_lattices_have_their_defining_invariants	specimen	431	0			unreviewed
 preamble/tests/test_preamble.sage	test_root_lattices_use_the_negative_definite_convention	specimen	456	0			unreviewed
@@ -3663,9 +3564,8 @@ preamble/tests/test_tensors.sage	test_mixed_tensors_are_the_homogeneous_pieces_o
 preamble/tests/test_tensors.sage	test_covariant_slots_use_the_dual_module	specimen	264	0			unreviewed
 preamble/tests/test_tensors.sage	test_a_tensor_piece_is_the_tensor_product_of_powers_of_a_module_and_its_dual	specimen	282	0			unreviewed
 preamble/tests/test_tensors.sage	test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square	specimen	293	0			unreviewed
-preamble/utilities.py	<module>	module	1	0			unreviewed
-preamble/utilities.py	lmap	function	11	1	src/dzack_research/preamble/utilities.py		unreviewed
-preamble/utilities.py	lzip	function	16	1	src/dzack_research/preamble/utilities.py		unreviewed
-preamble/utilities.py	to_var_names	function	21	1	src/dzack_research/preamble/utilities.py		unreviewed
-preamble/utilities.py	zipsum	function	26	1	src/dzack_research/preamble/utilities.py		unreviewed
-preamble/utilities.py	term	binding	31	1	src/dzack_research/preamble/utilities.py		unreviewed
+preamble/utilities.py	<module>	module	1	0		src/dzack_research/preamble/utilities.py	reconciled-live-owner
+preamble/utilities.py	lmap	function	11	1	src/dzack_research/preamble/utilities.py	src/dzack_research/preamble/utilities.py	reconciled-live-owner
+preamble/utilities.py	lzip	function	16	1	src/dzack_research/preamble/utilities.py	src/dzack_research/preamble/utilities.py	reconciled-live-owner
+preamble/utilities.py	to_var_names	function	21	1	src/dzack_research/preamble/utilities.py	src/dzack_research/preamble/utilities.py	reconciled-live-owner
+preamble/utilities.py	zipsum	function	26	1	src/dzack_research/preamble/utilities.py	src/dzack_research/preamble/utilities.py	reconciled-live-owner
