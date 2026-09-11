@@ -1147,3 +1147,40 @@ presentation is derived or $\infty$-categorical.
 Rozenblyum, Scholze's courses and the Berkeley lectures, Haynes Miller's
 spectral sequences courses) and match their level of abstraction and
 presentation.
+
+### `DEF-13`: Everything implicitly or explicitly derived and homotopical
+
+The book works in the derived and homotopical ontology by default. Every
+classical term has a derived analogue that is the default meaning; the
+classical object is a truncation, and a passage that means the derived
+object does not use the classical name. This applies uniformly:
+
+| Classical name | Default meaning in this book |
+| --- | --- |
+| ring | $\mathbb{E}_\infty$-ring spectrum |
+| module | module spectrum |
+| category | $\infty$-category |
+| functor | total derived functor (e.g. derived tensor product is $\otimes^L$) |
+| stack | derived stack |
+| space | homotopy type, anima, or $\infty$-topos; write $\mathbf{Top}$ when actual topological spaces are meant |
+| topology | Grothendieck topology |
+| group | $\infty$-group or loop space; write $\Omega BG$ to recover a discrete group |
+
+A passage that means the derived object does not use the classical name
+and rely on the reader to supply the derived upgrade. A passage that
+means the classical truncation states it as a truncation — $\pi_0 HR$
+for the classical ring $R$, $\tau_{\leq 0}\mathcal{C}$ for the ordinary
+category, the heart of the t-structure for classical modules — and makes
+the extraction explicit. Do not belabour every derived detail at every
+mention, but do not implicitly assume everything is truncated everywhere.
+
+**Banned:** "Let $R$ be a commutative ring and $M$ an $R$-module …
+consider the tensor product $M\otimes_R N$" — used where $R$ is an
+$\mathbb{E}_\infty$-ring spectrum, $M$ and $N$ are module spectra, and
+$\otimes$ is the derived tensor product.
+
+**Preferred:** "Let $R$ be an $\mathbb{E}_\infty$-ring spectrum and $M$
+an $R$-module spectrum … consider the derived tensor product
+$M\otimes_R^L N$; its $\pi_0$ recovers the classical tensor product of
+$\pi_0 R$-modules." Or, in a genuinely classical passage: "Let
+$R = \pi_0 HR$ be a classical commutative ring" — state the truncation.
