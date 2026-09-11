@@ -182,6 +182,13 @@ def live_name_index(live_root: Path) -> dict[str, set[str]]:
 def reconciliation_metadata(test_root: Path) -> dict[str, dict[str, object]]:
     r"""Read archive dispositions from source-backed reconciliation specimens."""
     result: dict[str, dict[str, object]] = {}
+
+    def register(value: dict[str, object]) -> None:
+        module = value["archive_module"]
+        if module in result and result[module] != value:
+            raise ValueError(f"conflicting archive reconciliation metadata for {module}")
+        result[module] = value
+
     if not test_root.exists():
         return result
     for path in sorted(test_root.rglob("test_*.py")):
@@ -193,13 +200,20 @@ def reconciliation_metadata(test_root: Path) -> dict[str, dict[str, object]]:
             if not isinstance(node, (ast.Assign, ast.AnnAssign)):
                 continue
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
-            if not any(isinstance(target, ast.Name) and target.id == "ARCHIVE_RECONCILIATION" for target in targets):
+            names = {
+                target.id
+                for target in targets
+                if isinstance(target, ast.Name)
+                and target.id in {"ARCHIVE_RECONCILIATION", "ARCHIVE_RECONCILIATIONS"}
+            }
+            if not names:
                 continue
             value = ast.literal_eval(node.value)
-            module = value["archive_module"]
-            if module in result and result[module] != value:
-                raise ValueError(f"conflicting archive reconciliation metadata for {module}")
-            result[module] = value
+            if "ARCHIVE_RECONCILIATION" in names:
+                register(value)
+            if "ARCHIVE_RECONCILIATIONS" in names:
+                for item in value:
+                    register(item)
     return result
 
 

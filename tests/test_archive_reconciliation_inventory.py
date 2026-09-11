@@ -48,3 +48,38 @@ def test_one_line_suite_does_not_nest_later_public_declarations(tmp_path: Path) 
     names = tuple(notion.qualified_name for notion in notions)
 
     assert names == ("<module>", "first", "second", "Third", "Third.method")
+
+
+def test_reconciliation_metadata_accepts_one_or_many_archive_modules(tmp_path: Path) -> None:
+    tests = tmp_path / "tests"
+    tests.mkdir()
+    (tests / "test_single.py").write_text(
+        "ARCHIVE_RECONCILIATION = {\n"
+        "    'archive_module': 'preamble/single.sage',\n"
+        "    'live_owner': 'src/single.py',\n"
+        "    'disposition': 'reconciled-live-owner',\n"
+        "}\n"
+    )
+    (tests / "test_many.py").write_text(
+        "ARCHIVE_RECONCILIATIONS = (\n"
+        "    {\n"
+        "        'archive_module': 'preamble/first.sage',\n"
+        "        'live_owner': 'src/first.py',\n"
+        "        'disposition': 'reconciled-live-owner',\n"
+        "    },\n"
+        "    {\n"
+        "        'archive_module': 'preamble/second.sage',\n"
+        "        'live_owner': 'src/second.py',\n"
+        "        'disposition': 'reconciled-live-owner',\n"
+        "    },\n"
+        ")\n"
+    )
+
+    metadata = _inventory_module()["reconciliation_metadata"](tests)
+
+    assert set(metadata) == {
+        "preamble/single.sage",
+        "preamble/first.sage",
+        "preamble/second.sage",
+    }
+    assert metadata["preamble/first.sage"]["live_owner"] == "src/first.py"

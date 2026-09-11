@@ -18,6 +18,24 @@ from dzack_research.preamble.all import (
     ZZ,
 )
 
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/categories/divisors/divisor_groups.sage",
+        "live_owner": "src/dzack_research/preamble/categories/divisors/divisor_groups.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/categories/divisors/cartier_divisor_groups.sage",
+        "live_owner": "src/dzack_research/preamble/categories/divisors/divisor_groups.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/categories/divisors/weil_divisor_groups.sage",
+        "live_owner": "src/dzack_research/preamble/categories/divisors/divisor_groups.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
+
 
 def test_divisor_roles_preserve_the_archived_module_distinctions() -> None:
     primes = Set(("D0", "D1"))

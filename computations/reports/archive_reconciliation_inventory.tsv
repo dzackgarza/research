@@ -718,32 +718,32 @@ preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods
 preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.inverse	method	470	0			unreviewed
 preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.conjugates	method	484	0			unreviewed
 preamble/categories/algebras/number_fields.sage	own_number_field	function	501	0			unreviewed
-preamble/categories/divisors/cartier_divisor_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroup	function	13	2			unreviewed
-preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroups	class	21	2			unreviewed
-preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroups.super_categories	method	28	0			unreviewed
+preamble/categories/divisors/cartier_divisor_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroup	function	13	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroups	class	21	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroups.super_categories	method	28	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/class_groups.sage	<module>	module	1	0			unreviewed
 preamble/categories/divisors/class_groups.sage	ClassGroup	function	13	2			unreviewed
 preamble/categories/divisors/class_groups.sage	ClassGroups	class	21	2			unreviewed
 preamble/categories/divisors/class_groups.sage	ClassGroups.super_categories	method	28	0			unreviewed
-preamble/categories/divisors/divisor_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/divisors/divisor_groups.sage	DivisorGroup	function	19	2			unreviewed
-preamble/categories/divisors/divisor_groups.sage	DivisorGroups	class	27	2			unreviewed
-preamble/categories/divisors/divisor_groups.sage	DivisorGroups.super_categories	method	34	0			unreviewed
-preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups	class	38	2			unreviewed
-preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.super_categories	method	45	0			unreviewed
-preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods	class	48	0			unreviewed
-preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods.terms	method	49	0			unreviewed
-preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods.components	method	56	0			unreviewed
-preamble/categories/divisors/divisor_groups.sage	FormalDivisor	function	75	2			unreviewed
+preamble/categories/divisors/divisor_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	DivisorGroup	function	19	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	DivisorGroups	class	27	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	DivisorGroups.super_categories	method	34	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups	class	38	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.super_categories	method	45	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods	class	48	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods.terms	method	49	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	FormalDivisorGroups.ElementMethods.components	method	56	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/divisor_groups.sage	FormalDivisor	function	75	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/picard_groups.sage	<module>	module	1	0			unreviewed
 preamble/categories/divisors/picard_groups.sage	PicardGroup	function	13	2			unreviewed
 preamble/categories/divisors/picard_groups.sage	PicardGroups	class	21	2			unreviewed
 preamble/categories/divisors/picard_groups.sage	PicardGroups.super_categories	method	28	0			unreviewed
-preamble/categories/divisors/weil_divisor_groups.sage	<module>	module	1	0			unreviewed
-preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroup	function	14	2			unreviewed
-preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroups	class	22	2			unreviewed
-preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroups.super_categories	method	29	0			unreviewed
+preamble/categories/divisors/weil_divisor_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroup	function	14	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroups	class	22	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
+preamble/categories/divisors/weil_divisor_groups.sage	WeilDivisorGroups.super_categories	method	29	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/forms/forms.sage	<module>	module	1	0			unreviewed
 preamble/categories/forms/forms.sage	Pairing	binding	30	0			unreviewed
 preamble/categories/forms/forms.sage	QuadraticValueMap	binding	31	0			unreviewed
@@ -1191,32 +1191,32 @@ preamble/categories/modules/framed/finitely_generated/finitely_presented_modules
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ElementMethods	class	548	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModules.ElementMethods.coefficients	method	566	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	FinitelyPresentedModule	function	610	1	src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent	class	107	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.number_of_module_generators	method	112	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.module_generators	method	113	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.zero	method	114	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.exponent	method	115	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.annihilator	method	116	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.presenting_free_group	method	117	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleElement	class	120	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleElement.parent	method	123	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleElement.is_zero	method	124	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules	class	127	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py		unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.super_categories	method	156	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.direct_sum_of_cyclics	method	171	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.from_abelian_group	method	187	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ElementMethods	class	271	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ElementMethods.additive_order	method	301	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods	class	322	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.is_abelian	method	372	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.group_generators	method	376	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.presenting_free_group	method	388	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.defining_relations	method	400	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.is_p_elementary	method	424	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.primary_decomposition	method	437	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.annihilator	method	467	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModule	function	477	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py		unreviewed
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent	class	107	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.number_of_module_generators	method	112	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.module_generators	method	113	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.zero	method	114	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.exponent	method	115	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.annihilator	method	116	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleParent.presenting_free_group	method	117	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleElement	class	120	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleElement.parent	method	123	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModuleElement.is_zero	method	124	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules	class	127	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.super_categories	method	156	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.direct_sum_of_cyclics	method	171	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.from_abelian_group	method	187	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ElementMethods	class	271	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ElementMethods.additive_order	method	301	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods	class	322	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.is_abelian	method	372	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.group_generators	method	376	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.presenting_free_group	method	388	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.defining_relations	method	400	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.is_p_elementary	method	424	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.primary_decomposition	method	437	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	FinitelyPresentedTorsionModules.ParentMethods.annihilator	method	467	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModule	function	477	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	ring_as_module	function	17	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/form_modules.sage	<module>	module	1	0			unreviewed
@@ -2241,11 +2241,11 @@ preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.Par
 preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.act	method	88	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/pure/scalar_actions.sage	ModulesWithChosenAction.ParentMethods.zero	method	106	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/pure/scalar_actions.sage	module_over_ring	function	139	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
-preamble/categories/modules/pure/torsion_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/pure/torsion_modules.sage	TorsionModules	class	14	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py		unreviewed
-preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.super_categories	method	21	0			unreviewed
-preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.ParentMethods	class	24	0			unreviewed
-preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.ParentMethods.is_torsion	method	25	0			unreviewed
+preamble/categories/modules/pure/torsion_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/pure/torsion_modules.sage	TorsionModules	class	14	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.super_categories	method	21	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.ParentMethods	class	24	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
+preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.ParentMethods.is_torsion	method	25	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
 preamble/categories/modules/tensors.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/tensors.sage	Components	binding	56	0			unreviewed
 preamble/categories/modules/tensors.sage	DualModule	function	126	0			unreviewed

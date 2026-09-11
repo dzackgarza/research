@@ -5,6 +5,19 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     BasedFreeModule,
 )
 
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/categories/modules/pure/torsion_modules.sage",
+        "live_owner": "src/dzack_research/preamble/categories/modules/pure/torsion_modules.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage",
+        "live_owner": "src/dzack_research/preamble/categories/modules/pure/torsion_modules.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
+
 
 def test_archive_torsion_category_is_inherited_by_finitely_presented_torsion_modules() -> None:
     category = TorsionModules(ZZ)
