@@ -44,6 +44,7 @@ The proof reduces to the recognizable-divisor theorem of Alexeev--Engel [@AE23]:
 The relevant polarizing divisor here is the ramification divisor $R_\iota$ of the nonsymplectic Enriques involution, which is recognizable (\longref{ex:recognizable-divisors}).
 Applying the theorem produces a semitoroidal compactification on the normalization of $\overline{F_{\En, 2}}$, and identifying the resulting semifan cusp-by-cusp gives the explicit collection $\mathcal{F}_\bullet$, one semifan per $0$-cusp.
 The passage from the ambient K3 picture to the Enriques space is the descent of \longref{conj:descent_semitoroidal_data_En2}, which supplies the folded semifans $\mathcal{F}_k$ and their boundary stratification.
+
 ::: {.Warning}
 The source note states the reduction to Alexeev--Engel but does not carry out the cusp-by-cusp identification of $\mathcal{F}_\bullet$ nor the descent of the semifan; these are recorded here (the descent as \longref{conj:descent_semitoroidal_data_En2}) rather than proved in full.
 :::
@@ -74,6 +75,7 @@ Imposing the involution constraints on this restricted structure produces a coll
 
 The folded semifans $\mathcal{F}_k$ determine the semitoroidal compactification $\overline{F_{\En, 2}}^{\mathcal{F}_\bullet}$ appearing in \longref{thm:ksba_semitoroidal_En2}, and they define the combinatorial stratification of its boundary, which maps directly onto the KSBA strata.
 The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter through the stable-pair family and the locally closed embeddings of \longref{lem:locally_closed_embedding_BB}; the descent here is the Enriques (involution-quotient) analogue of the Coble semifan restriction of \longref{conj:restricted_ramification_semifan}.
+
 ::: {.Warning}
 The source note is tagged as a proposition but reproduces no proof or proof reference for the descent/restriction itself (that $\mathcal{F}_{\operatorname{ram}}$ restricts to $B^\nu$ and folds to the $\mathcal{F}_k$); it is recorded here as a conjecture pending that argument. Within the settled degree-$2$ Enriques package [@AEGS25] this descent is expected to hold, and the statement may be upgraded to a proposition once the restriction-and-folding argument is written or cited.
 :::

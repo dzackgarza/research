@@ -9,6 +9,7 @@ The three ingredients are a *global extension of the Enriques involution* over $
 These are the program's own in-progress steps rather than settled theorems.
 They are stated conjecturally throughout, and they are exactly parallel to the open comparison of \longref{conj:ksba_semitoroidal_comparison} and to the incomplete normalization argument of \longref{thm:normalization}, whose migrated proof sketch records the author's remark that finiteness is *still unclear*.
 Zariski's Main Theorem itself is a classical, proven theorem; only its application to $\phi$ is conjectural here.
+
 ::: {.Remark}
 The KSBA compactification $\overline{F_{\En,2}}$ and the separatedness of its limits are
 [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
@@ -58,6 +59,7 @@ If a strict coarsening occurred, then distinct maximal degenerations -- differin
 The proposed input is the KSBA principle that the dual complex uniquely identifies maximally degenerate limits; granting this, no such identification can occur, and hence no coarsening occurs.
 
 This argument is presented as the program's intended route, not as a completed proof.
+
 ::: {.Warning}
 Note-vs-note conflict: the source note states finiteness is "proved via a combinatorial comparison", whereas the parallel normalization argument (\longref{thm:normalization}) is migrated with the author's inline remark that "finiteness is still unclear" and a suggestion to use $\text{finite} \iff \text{proper with finite fibers}$ (Stacks 02LS) or Zariski's Main Theorem. These two accounts should be reconciled; until then finiteness is rendered conjecturally. The no-coarsening statement is moreover the same phenomenon as the no-moduli-loss conjecture (\longref{conj:no_moduli_loss}), which is itself open.
 :::

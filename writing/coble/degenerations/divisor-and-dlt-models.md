@@ -10,6 +10,7 @@ quotient.
 The three are related: a half-divisor model is the quotient of a divisor model
 by an involution, and the dlt models supply the birational models on whose
 strata the associated combinatorial data live.
+
 ::: {.Question}
 The source notes describe the relationship of these models to the KSBA
 program (below); they do not discuss the relationship to Kulikov models

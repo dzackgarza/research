@@ -46,6 +46,7 @@ surface yields a K3 surface $X$ carrying two commuting involutions: the
 fixed-point-free **Enriques involution** $\iota_{\En}$ (the deck transformation
 of the canonical cover) and the **del Pezzo involution** $\iota_{\operatorname{dP}}$
 [@AEGS25].
+
 ::: {.Remark}
 The numerical polarization and the $\Num$ marking are those of [@CDL25]; the canonical
 cover with its two involutions, the map $j\colon F_{\En,2}\to F_{(2,2,0)}$, the locus

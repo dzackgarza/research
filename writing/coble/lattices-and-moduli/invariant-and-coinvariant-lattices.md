@@ -82,7 +82,33 @@ Adding the two expressions gives $v_+ + v_- = 2v$, and the summands are orthogon
 
 Let $L$ be a $2$-elementary lattice and let $I\in\Orth^*(L)$ be an involution lying in the stable orthogonal group $\Orth^*(L) = \tilde\Orth(L)$.
 Then both the invariant lattice $L^I$ and the coinvariant lattice $L_I$ are again $2$-elementary.
-::: {.Warning}
-cite: 2-elementarity of the invariant and coinvariant lattices $L^I, L_I$ of an involution $I \in \Orth^*(L)$ of a 2-elementary lattice $L$
 :::
+
+::: {.proof}
+
+Write $\pi_\pm\colon L\otimes\QQ \to L^{\pm}\otimes\QQ$ for the projections
+$\pi_\pm(v) = \tfrac12(v \pm I v)$, where $L^{+} = L^I$ and $L^{-} = L_I$.
+
+Both $L^{\pm}$ are primitive in $L$: if $nv \in L^I$ for some $v \in L$ and $n \neq 0$ then
+$nIv = nv$, so $Iv = v$; and $L_I = (L^I)^{\perp}$ is primitive because an orthogonal
+complement always is. A primitive sublattice is a direct summand as a $\ZZ$-module, so
+restriction $L\dual \to (L^{\pm})\dual$ is surjective, and under the identifications made by
+the form it is $\pi_{\pm}$. Hence every $x \in (L^{\pm})\dual$ is $x = \pi_{\pm}(w)$ for some
+$w \in L\dual$, and
+$$
+2x = w \pm Iw .
+$$
+
+Now use the two hypotheses. Since $I$ lies in the stable orthogonal group it acts trivially
+on $A_L = L\dual/L$, so $Iw - w \in L$; and since $L$ is $2$-elementary, $2L\dual \subseteq L$,
+so $2w \in L$. Therefore
+$$
+2x = w - Iw = -(Iw - w) \in L
+\qquad\text{and}\qquad
+2x = w + Iw = 2w + (Iw - w) \in L
+$$
+in the two cases respectively. In each case $2x$ lies in $L^{\pm}\otimes\QQ$ as well as in
+$L$, and $L^{\pm}$ is primitive, so $2x \in L^{\pm}$.
+
+Thus $2(L^{\pm})\dual \subseteq L^{\pm}$, which is $2$-elementarity.
 :::

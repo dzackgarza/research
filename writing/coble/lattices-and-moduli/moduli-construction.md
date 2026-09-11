@@ -23,16 +23,39 @@ F_{\Nod, 2} &= ???
 $$
 
 where $T_{\dP}$ is described in [@AEGS25]. Note that we implicitly use the embedding $\eta: T_\Co \injects T_\En$ of \longref{lem:primitive_embedding_eta}.
+
 ::: {.Question}
 Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?) Cobles with $n$ boundary components. So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
 :::
+
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp T_{\En}}$ for some $v^2=-2$, which implies that there is a birational isomorphism $F_{\Co} \birational \cH_{-2}/\Orth^+(T_\En)^*$.
 
-![The tower of moduli spaces relating the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}, F_{\En,2}$, their unpolarized quotients $F_\Co, F_\En$, and the degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)} \injects F_4$. The map $F_{\Co,2} \to F_\Co$ marked $?$ is not yet determined (cf. the remark on $\Gamma_{\Co,2}$ above).](rendered/fig_moduli_tower.png){#fig-moduli-tower}
+```{.tikz}
+%%| filename: moduli-tower
+%%| additionalPackages: \usepackage{amsmath,amssymb,tikz-cd}
+\begin{tikzcd}[column sep=large, row sep=large]
+F_{\mathrm{Co},2}
+  \arrow[r]
+  \arrow[d, "?"'] &
+F_{\mathrm{En},2}
+  \arrow[r]
+  \arrow[d] &
+F_{(2,2,0)}
+  \arrow[r, hook] &
+F_4 \\
+F_{\mathrm{Co}}
+  \arrow[r] &
+F_{\mathrm{En}}
+\end{tikzcd}
+```
 
-::: {.Warning}
-@fig-moduli-tower is migrated as a raster talk figure; it should be redrawn as a native \texttt{tikzcd} diagram and its casing reconciled with the surrounding notation ($F_{\Co,2}$ vs.\ the figure's $F_{co,2}$). The $?$-map $F_{\Co,2}\to F_\Co$ encodes the open question flagged above.
-:::
+The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli
+$F_{\Co,2}$, $F_{\En,2}$, their unpolarized quotients $F_\Co$, $F_\En$, and the
+degree-$(2,2,0)$ K3 moduli space $F_{(2,2,0)}\injects F_4$.
+The map $F_{\Co,2}\to F_\Co$ marked $?$ is the one not yet determined, for the reason
+above: $\Gamma_{\Co,2}$ has no explicit description.
+
+
 
 ## The GIT construction
 
@@ -137,6 +160,7 @@ The K3 lattice has rank $22$, so $\operatorname{rank}(T) = 22 - \operatorname{ra
 and $T$ has signature $(2, 20 - \operatorname{rank}(M))$; apply
 \longref{prop:type-iv-dimension}.
 :::
+
 Letting $E_{10} \da U \oplus E_8$, one can similarly consider the Enriques lattices $S_\En := E_{10}(2)$ with $T_\En = U \oplus E_{10}(2)$.
 Letting
 
