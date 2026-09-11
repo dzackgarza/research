@@ -2574,8 +2574,8 @@ preamble/categories/schemes/subschemes.sage	OpenSubschemes.super_categories	meth
 preamble/categories/schemes/subschemes.sage	OpenSubschemes.ParentMethods	class	176	0			unreviewed
 preamble/categories/schemes/subschemes.sage	OpenSubschemes.ParentMethods.inclusion	method	179	0			unreviewed
 preamble/categories/schemes/subschemes.sage	install_subschemes	function	184	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	<module>	module	1	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	generate_2d_polygon_svg	function	88	0			unreviewed
+preamble/categories/schemes/svg_2d_viewer.py	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/svg_2d_viewer.py	generate_2d_polygon_svg	function	88	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
 preamble/categories/schemes/threejs_viewer.py	<module>	module	1	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	vWorldPos	binding	117	0			unreviewed
 preamble/categories/schemes/threejs_viewer.py	gl_Position	binding	118	0			unreviewed

@@ -232,6 +232,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             dynkin_variant,
             is_affine_type,
             polygon,
+            polygon_vertex_order,
             distinguished_point,
             side_decorations,
             **rest,
@@ -241,6 +242,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             self._preamble_dynkin_variant = dynkin_variant
             self._preamble_is_affine_type = is_affine_type
             self._preamble_polygon = polygon
+            self._preamble_polygon_vertex_order = polygon_vertex_order
             self._preamble_distinguished_point = distinguished_point
             self._preamble_side_decorations = side_decorations
             super().__init__(**rest)
@@ -319,6 +321,15 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             r"""The integral ADE polygon ``Q``."""
             return self._preamble_polygon
 
+        def polygon_vertex_order(self):
+            r"""Return the boundary-ordered vertices used by the ADE side data.
+
+            ``SideDecoration.side`` is indexed by positions in this family.
+            A polytope as an unordered convex hull does not retain that
+            presentation, so the ADE structure owns the order separately.
+            """
+            return self._preamble_polygon_vertex_order
+
         @cached_method
         def vertices(self):
             r"""Return the vertices of ``Q`` as the polygon's owned finite set."""
@@ -339,6 +350,87 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def side_decorations(self):
             r"""The decorations of the sides of ``Q`` incident to ``p*``."""
             return self._preamble_side_decorations
+
+        def ade_svg(self):
+            r"""Return a deterministic SVG view of the retained ADE polygon data.
+
+            This is a view of the live log-pair object, not a second polygon
+            presentation.  Vertices come from :meth:`polygon`, ``p*`` from
+            :meth:`distinguished_point`, and the decorated sides from
+            :meth:`side_decorations`.  Floating-point conversion is confined
+            to this rendering boundary; stable ``data-*`` attributes retain
+            the ADE semantics for notebook inspection and regression tests.
+            """
+            vertices = tuple(
+                tuple(float(coordinate) for coordinate in vertex)
+                for vertex in self.polygon_vertex_order()
+            )
+            if len(vertices) < 3:
+                return None
+            point = tuple(float(coordinate) for coordinate in self.p_star())
+            all_x = tuple(vertex[0] for vertex in vertices) + (point[0],)
+            all_y = tuple(vertex[1] for vertex in vertices) + (point[1],)
+            minimum_x, maximum_x = min(all_x), max(all_x)
+            minimum_y, maximum_y = min(all_y), max(all_y)
+            span_x = max(maximum_x - minimum_x, 1.0)
+            span_y = max(maximum_y - minimum_y, 1.0)
+            scale = 260.0 / max(span_x, span_y)
+            margin = 30.0
+
+            def screen(coordinates):
+                x, y = coordinates
+                return (
+                    margin + (x - minimum_x) * scale,
+                    margin + (maximum_y - y) * scale,
+                )
+
+            width = 2 * margin + span_x * scale
+            height = 2 * margin + span_y * scale
+            polygon_points = " ".join(
+                f"{screen(vertex)[0]:.2f},{screen(vertex)[1]:.2f}"
+                for vertex in vertices
+            )
+            lines = [
+                (
+                    f'<svg xmlns="http://www.w3.org/2000/svg" '
+                    f'viewBox="0 0 {width:.2f} {height:.2f}" '
+                    f'data-role="ade-polygon" data-ade-type="{self.dynkin_letter()}{int(self.dynkin_rank())}">'
+                ),
+                f'<polygon data-role="polygon" points="{polygon_points}" fill="none" stroke="currentColor"/>',
+            ]
+            for position in self.side_decorations().index_set():
+                decoration = self.side_decorations()[position]
+                first = int(decoration.side[0])
+                second = int(decoration.side[1])
+                start = screen(vertices[first])
+                end = screen(vertices[second])
+                lines.append(
+                    f'<line data-role="decorated-side" data-length-class="{decoration.length_class}" '
+                    f'data-vertex-colour="{decoration.vertex_colour}" '
+                    f'data-side="{first},{second}" x1="{start[0]:.2f}" y1="{start[1]:.2f}" '
+                    f'x2="{end[0]:.2f}" y2="{end[1]:.2f}" stroke="currentColor" stroke-width="3"/>'
+                )
+            blue_coordinates = {
+                tuple(float(coordinate) for coordinate in boundary_point)
+                for boundary_point in self.distinguished_boundary_points()
+            }
+            for boundary_point in sorted(blue_coordinates):
+                rendered = screen(boundary_point)
+                lines.append(
+                    f'<circle data-role="blue-boundary-point" data-lattice-point="{boundary_point[0]:g},{boundary_point[1]:g}" '
+                    f'cx="{rendered[0]:.2f}" cy="{rendered[1]:.2f}" r="3"/>'
+                )
+            rendered_point = screen(point)
+            lines.append(
+                f'<circle data-role="p-star" data-point="{point[0]:g},{point[1]:g}" '
+                f'cx="{rendered_point[0]:.2f}" cy="{rendered_point[1]:.2f}" r="6"/>'
+            )
+            lines.append("</svg>")
+            return "".join(lines)
+
+        def _repr_svg_(self):
+            r"""Notebook SVG view retaining the ADE decorations and ``p*``."""
+            return self.ade_svg()
 
         @cached_method
         def integral_invariants(self):
@@ -492,6 +584,10 @@ def ADELogPair(dynkin_letter, dynkin_rank, base_ring, variant=(), affine=False):
         dynkin_variant=variant,
         is_affine_type=bool(affine),
         polygon=polygon,
+        polygon_vertex_order=finite_family(
+            tuple(_rational_point(vertex) for vertex in vertices),
+            name="ADE polygon boundary order",
+        ),
         distinguished_point=_rational_point(point),
         side_decorations=decorations,
         log_scheme=toric_base,
