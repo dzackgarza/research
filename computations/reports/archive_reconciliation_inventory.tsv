@@ -2880,18 +2880,18 @@ preamble/lexicon/algebra.py	Element	reexport	1	1	src/dzack_research/preamble/lex
 preamble/lexicon/algebra.py	Matrix	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/algebra.py	ModuleElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/algebra.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
-preamble/lexicon/foundations.py	<module>	module	1	0			unreviewed
-preamble/lexicon/foundations.py	GramMatrix	binding	83	2			unreviewed
-preamble/lexicon/foundations.py	RealApproximation	binding	102	5			unreviewed
-preamble/lexicon/foundations.py	RealNumber	reexport	1	6			unreviewed
-preamble/lexicon/foundations.py	CartanType	reexport	1	2			unreviewed
-preamble/lexicon/foundations.py	Integer	reexport	1	4			unreviewed
-preamble/lexicon/foundations.py	LatticeName	reexport	1	2			unreviewed
-preamble/lexicon/foundations.py	MatrixData	reexport	1	2			unreviewed
-preamble/lexicon/foundations.py	OrderedSet	reexport	1	2			unreviewed
-preamble/lexicon/foundations.py	Rational	reexport	1	2			unreviewed
-preamble/lexicon/foundations.py	SignaturePair	reexport	1	2			unreviewed
-preamble/lexicon/foundations.py	SymbolicExpression	reexport	1	2			unreviewed
+preamble/lexicon/foundations.py	<module>	module	1	0		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	GramMatrix	binding	83	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	RealApproximation	binding	102	5		src/dzack_research/preamble/rings/real.py	reconciled-live-owner
+preamble/lexicon/foundations.py	RealNumber	reexport	1	6		src/dzack_research/preamble/rings/real.py	reconciled-live-owner
+preamble/lexicon/foundations.py	CartanType	reexport	1	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	Integer	reexport	1	4		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	LatticeName	reexport	1	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	MatrixData	reexport	1	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	OrderedSet	reexport	1	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	Rational	reexport	1	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	SignaturePair	reexport	1	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
+preamble/lexicon/foundations.py	SymbolicExpression	reexport	1	2		src/dzack_research/preamble/lexicon/foundations.py	reconciled-live-owner
 preamble/lexicon/geometry.py	<module>	module	1	0		src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/geometry.py	CoxeterMatrix	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
 preamble/lexicon/geometry.py	Graph	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner

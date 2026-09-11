@@ -9,11 +9,22 @@ changing any archived noun.
 import dzack_research.preamble.lexicon as lexicon
 from dzack_research.preamble.lexicon import algebra, foundations, geometry, interop
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/lexicon/__init__.py",
-    "live_owner": "src/dzack_research/preamble/lexicon/__init__.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/lexicon/__init__.py",
+        "live_owner": "src/dzack_research/preamble/lexicon/__init__.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/lexicon/foundations.py",
+        "live_owner": "src/dzack_research/preamble/lexicon/foundations.py",
+        "owner_overrides": {
+            "RealApproximation": "src/dzack_research/preamble/rings/real.py",
+            "RealNumber": "src/dzack_research/preamble/rings/real.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def test_archived_lexicon_nouns_are_the_defining_module_objects() -> None:
