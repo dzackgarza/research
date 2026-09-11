@@ -1586,3 +1586,26 @@ coin a synonym for a standard categorical term.
 
 **Preferred:** "with codomain $B\otimes_A W$" or "with target
 $B\otimes_A W$."
+
+### `MA-14`: Map out of a product called bilinear versus map out of the tensor product
+
+A bilinear map is presented as a set map $b\colon M\times M\to W$ that
+"is $A$-bilinear" in prose, instead of as a morphism
+$b\colon M\otimes_A M\to W$ out of the tensor product. The product
+$M\times M$ and the prose qualifier "bilinear" bloat the statement: they
+introduce the underlying-set product, then add the $A$-bilinearity
+conditions in English, instead of using the object that represents
+bilinear maps. The tensor product is the representing object:
+$\operatorname{Hom}(M\otimes_A M,W)\cong\operatorname{Bilin}_A(M\times
+M,W)$ is the universal property that makes bilinearity precise. State the
+tensor product and the morphism out of it.
+
+**Banned:** "Let $W$ be an $A$-module and let $b\colon M\times M\to W$ be
+$A$-bilinear." — $M$ is unbound, $M\times M$ is the set product, and
+"$A$-bilinear" is a prose qualifier for the linearity conditions.
+
+**Preferred:** "Let $M,W\in\mathbf{LMod}_A$ and
+$b\colon M\otimes_A M\to W$ in $\mathbf{LMod}_A$" (or
+$b\colon M\otimes_A^L M\to W$ for the derived product). The single
+morphism out of the tensor product replaces the map out of the product
+plus the English "bilinear."
