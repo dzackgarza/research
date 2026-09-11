@@ -1268,10 +1268,14 @@ the distinction is only for $\mathbb{E}_1$.
 
 A passage states that a comparison "is additional data" or "does not
 follow merely from notation" instead of stating what the extra structure
-is and what classifies it. The phrase names no data and no moduli. State
-the structure: there is no canonical equivalence; an equivalence is
-equivalent to the data of an invertible bimodule, a Morita equivalence,
-an $\mathbb{E}_1$-equivalence $R\simeq R^{\mathrm{op}}$, or whichever
+is and what classifies it. The phrase names no data and no moduli, and
+"does not follow from notation" negates a premise no one holds: no
+mathematician thinks an equivalence
+$\mathbf{LMod}_R\simeq\mathbf{RMod}_R$ would follow from writing $R$ on
+the left versus on the right. State the structure: there is no canonical
+equivalence; an equivalence is equivalent to the data of an invertible
+bimodule, a Morita equivalence, an
+$\mathbb{E}_1$-equivalence $R\simeq R^{\mathrm{op}}$, or whichever
 structure is relevant, and state the universal property that classifies
 it.
 
@@ -1284,3 +1288,28 @@ to the data of an invertible $(R,R)$-bimodule, and in particular to an
 $\mathbb{E}_1$-equivalence $R\simeq R^{\mathrm{op}}$ when it is induced
 by an anti-automorphism." Name the data and the classification; do not
 paraphrase existence of structure as English about notation.
+
+### `PR-17`: Negating a strawman premise about notation
+
+A precise negative existence statement — "there is no canonical
+equivalence $\mathbf{LMod}_R\simeq\mathbf{RMod}_R$" — is replaced by
+meta-commentary negating a premise no one holds: "it does not follow
+merely from notation that …" No mathematician thinks notation produces
+equivalences; the notation $\mathbf{LMod}_R$ versus $\mathbf{RMod}_R$
+already distinguishes them. The strawman is fabricated — it exists only
+to be corrected — and the sentence is incoherent because the premise it
+negates is not a view anyone holds. The default for a general
+($\mathbb{E}_1$) $R$ is not that an equivalence exists and needs data; it
+is that no such equivalence exists. State the precise negative existence
+and the moduli when an equivalence does exist.
+
+**Banned:** "it does not follow merely from notation that left and right
+module categories are equivalent" — negates a strawman; no one claimed
+notation would make them equivalent. "An equivalence is additional data;
+it does not follow from notation" — frames existence as the default that
+merely needs data, when the default is non-existence.
+
+**Preferred:** "there is no canonical equivalence
+$\mathbf{LMod}_R\simeq\mathbf{RMod}_R$; an equivalence, when it exists,
+is equivalent to …" State the theorem, not commentary on what notation
+does not do.
