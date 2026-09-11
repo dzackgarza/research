@@ -1,4 +1,24 @@
+r"""Archive reconciliation for owned category refinement.
+
+The archive's mathematical operation ``refine`` survives directly: it adds a
+verified property/category to the same owned object and refuses false
+certificates.  The archived ``hook_post_init``/``hooked_classes`` mechanism
+did not describe additional mathematics; it monkey-patched Sage classes so
+foreign parents could be adopted after construction.  The live architecture
+deliberately retired that global hook registry.  Owned constructors select
+their category at ingress, while ``construction_scope`` and
+``run_construction_hooks`` run newly reached owned construction hooks during a
+local refinement.  The specimens below therefore reconcile the mathematical
+refinement behavior without restoring constructor monkey-patching.
+"""
+
 import pytest
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/refine.sage",
+    "live_owner": "src/dzack_research/preamble/refine.py",
+    "disposition": "reconciled-live-owner",
+}
 
 from dzack_research.preamble.categories.lattices import (
     EvenLattices,
