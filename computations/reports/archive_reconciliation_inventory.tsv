@@ -1428,26 +1428,26 @@ preamble/categories/modules/framed/formed/integrallattice/engines.sage	lattice	b
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	isometry	binding	735	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	lattice_with_isometry	binding	736	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/engines.sage	check	binding	739	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	sage	binding	12	5			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent	class	36	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.signature_pair	method	39	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.twist	method	40	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.gram_matrix	method	41	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.module_generators	method	42	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.zero	method	43	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices	class	50	1	src/dzack_research/preamble/categories/hyperbolic_lattices.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.super_categories	method	62	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods	class	67	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.weyl_group	method	70	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.fundamental_chamber	method	85	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.dominant_cone	method	97	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.chamber_complex	method	113	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.isotropic_elements_below_height	method	127	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.is_reflective	method	148	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.vinberg_algorithm	method	194	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.allcock_edgewalk	method	287	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.is_cocompact	method	360	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	sage	binding	12	5		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent	class	36	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.signature_pair	method	39	1	src/dzack_research/preamble/categories/_lattice.py	src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.twist	method	40	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.gram_matrix	method	41	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.module_generators	method	42	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLatticeParent.zero	method	43	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices	class	50	1	src/dzack_research/preamble/categories/hyperbolic_lattices.py	src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.super_categories	method	62	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods	class	67	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.weyl_group	method	70	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.fundamental_chamber	method	85	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.dominant_cone	method	97	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.chamber_complex	method	113	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.isotropic_elements_below_height	method	127	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.is_reflective	method	148	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.vinberg_algorithm	method	194	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.allcock_edgewalk	method	287	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.is_cocompact	method	360	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	sage	binding	32	5			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	LatticeParent	class	116	0			unreviewed
@@ -3203,23 +3203,23 @@ preamble/tests/test_free_constructions.sage	test_the_four_free_algebra_functors_
 preamble/tests/test_free_constructions.sage	test_the_free_algebra_units_are_natural_on_presented_modules	specimen	816	0			unreviewed
 preamble/tests/test_free_constructions.sage	test_free_algebra_functors_preserve_their_characteristic_operations	specimen	850	0			unreviewed
 preamble/tests/test_free_constructions.sage	test_the_grading_decomposes_every_element	specimen	883	0			unreviewed
-preamble/tests/test_function_modules.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_function_modules.sage	test_functions_form_a_module_over_the_reals	specimen	68	0			unreviewed
-preamble/tests/test_function_modules.sage	test_the_module_action_needs_no_generating_set	specimen	80	0			unreviewed
-preamble/tests/test_function_modules.sage	test_a_form_can_be_given_by_its_pairing_rather_than_a_matrix	specimen	97	0			unreviewed
-preamble/tests/test_function_modules.sage	test_that_form_is_symmetric_and_bilinear_on_specimens	specimen	116	0			unreviewed
-preamble/tests/test_function_modules.sage	test_a_polynomial_is_refused_by_square_integrable_functions_on_the_line	specimen	137	0			unreviewed
-preamble/tests/test_function_modules.sage	test_a_gaussian_and_its_polynomial_multiples_are_certified_for_l2	specimen	159	0			unreviewed
-preamble/tests/test_function_modules.sage	test_an_elementary_expression_is_certified_smooth	specimen	173	0			unreviewed
-preamble/tests/test_function_modules.sage	test_rational_functions_are_decided_completely_by_the_p_test	specimen	183	0			unreviewed
-preamble/tests/test_function_modules.sage	test_a_linear_combination_of_members_is_a_member	specimen	205	0			unreviewed
-preamble/tests/test_function_modules.sage	test_a_bounded_multiple_of_a_member_is_a_member	specimen	218	0			unreviewed
-preamble/tests/test_function_modules.sage	test_the_integral_decides_what_the_structural_tiers_cannot	specimen	226	0			unreviewed
-preamble/tests/test_function_modules.sage	test_a_vanishing_tail_certifies_what_the_integral_cannot_evaluate	specimen	245	0			unreviewed
-preamble/tests/test_function_modules.sage	test_module_arithmetic_stays_symbolic_and_needs_no_certificate	specimen	271	0			unreviewed
-preamble/tests/test_function_modules.sage	test_an_opaque_callable_is_trusted_where_an_expression_is_refused	specimen	291	0			unreviewed
-preamble/tests/test_function_modules.sage	test_such_a_form_has_no_gram_matrix_and_says_so	specimen	304	0			unreviewed
-preamble/tests/test_function_modules.sage	test_a_finitely_generated_form_still_has_one	specimen	321	0			unreviewed
+preamble/tests/test_function_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_functions_form_a_module_over_the_reals	specimen	68	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_the_module_action_needs_no_generating_set	specimen	80	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_a_form_can_be_given_by_its_pairing_rather_than_a_matrix	specimen	97	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_that_form_is_symmetric_and_bilinear_on_specimens	specimen	116	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_a_polynomial_is_refused_by_square_integrable_functions_on_the_line	specimen	137	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_a_gaussian_and_its_polynomial_multiples_are_certified_for_l2	specimen	159	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_an_elementary_expression_is_certified_smooth	specimen	173	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_rational_functions_are_decided_completely_by_the_p_test	specimen	183	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_a_linear_combination_of_members_is_a_member	specimen	205	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_a_bounded_multiple_of_a_member_is_a_member	specimen	218	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_the_integral_decides_what_the_structural_tiers_cannot	specimen	226	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_a_vanishing_tail_certifies_what_the_integral_cannot_evaluate	specimen	245	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_module_arithmetic_stays_symbolic_and_needs_no_certificate	specimen	271	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_an_opaque_callable_is_trusted_where_an_expression_is_refused	specimen	291	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_such_a_form_has_no_gram_matrix_and_says_so	specimen	304	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
+preamble/tests/test_function_modules.sage	test_a_finitely_generated_form_still_has_one	specimen	321	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
 preamble/tests/test_functor_codomains.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_functor_codomains.sage	test_free_module_functor_lands_in_modules	specimen	37	0			unreviewed
 preamble/tests/test_functor_codomains.sage	test_underlying_set_of_group_functor_lands_in_sets	specimen	53	0			unreviewed
@@ -3357,17 +3357,17 @@ preamble/tests/test_known_mathematics.sage	test_the_sixteen_printed_vinberg_root
 preamble/tests/test_known_mathematics.sage	test_the_bogachev_kolpakov_lattice_with_roots_is_not_reflective	specimen	2356	0			unreviewed
 preamble/tests/test_known_mathematics.sage	test_the_root_length_49_case_is_excluded_by_a_local_obstruction	specimen	2369	0			unreviewed
 preamble/tests/test_known_mathematics.sage	test_vinberg_enumeration_separates_the_two_bogachev_kolpakov_lattices	specimen	2397	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_set_literal_preparser_preserves_sage_generator_declarations	specimen	58	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_explicit_generator_form_lowers_to_names_keyword	specimen	95	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_ellipsis_form_expands_the_range	specimen	109	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_explicit_generator_form_binds_names	specimen	125	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_generator_count_must_match_the_rank	specimen	133	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_assign_names_then_inject_works	specimen	144	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_variable_names_before_assignment_raises	specimen	155	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_pow_is_repeated_direct_sum	specimen	174	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_named_lattice_helper_gives_the_intended_sugar	specimen	191	0			unreviewed
-preamble/tests/test_lattice_generator_syntax.sage	test_named_lattice_helper_rejects_a_count_mismatch	specimen	202	0			unreviewed
+preamble/tests/test_lattice_generator_syntax.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_set_literal_preparser_preserves_sage_generator_declarations	specimen	58	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_explicit_generator_form_lowers_to_names_keyword	specimen	95	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_ellipsis_form_expands_the_range	specimen	109	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_explicit_generator_form_binds_names	specimen	125	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_generator_count_must_match_the_rank	specimen	133	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_assign_names_then_inject_works	specimen	144	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_variable_names_before_assignment_raises	specimen	155	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_pow_is_repeated_direct_sum	specimen	174	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_named_lattice_helper_gives_the_intended_sugar	specimen	191	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_lattice_generator_syntax.sage	test_named_lattice_helper_rejects_a_count_mismatch	specimen	202	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_objects_are_one_object.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_objects_are_one_object.sage	test_compiler_runtime_names_do_not_enter_the_installed_namespace	specimen	37	0			unreviewed
 preamble/tests/test_objects_are_one_object.sage	test_a_free_module_is_one_object_per_ring_and_set	specimen	51	0			unreviewed
@@ -3382,20 +3382,20 @@ preamble/tests/test_objects_are_one_object.sage	test_the_module_action_scales_th
 preamble/tests/test_objects_are_one_object.sage	test_a_quadratic_form_scales_by_the_square	specimen	175	0			unreviewed
 preamble/tests/test_objects_are_one_object.sage	test_the_lattice_axioms_compose_in_any_order	specimen	187	0			unreviewed
 preamble/tests/test_objects_are_one_object.sage	test_integral_lattices_is_that_join_and_holds_the_specimens	specimen	203	0			unreviewed
-preamble/tests/test_power_sets.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_power_sets.sage	test_power_set_accepts_finite_and_canonical_infinite_subsets	specimen	20	0			unreviewed
-preamble/tests/test_power_sets.sage	test_a_power_set_element_is_a_subobject_with_a_characteristic_morphism	specimen	36	0			unreviewed
-preamble/tests/test_power_sets.sage	test_characteristic_morphisms_construct_power_set_elements	specimen	54	0			unreviewed
-preamble/tests/test_power_sets.sage	test_predicates_construct_infinite_subsets_without_enumeration	specimen	74	0			unreviewed
-preamble/tests/test_power_sets.sage	test_power_set_boolean_algebra_is_intrinsic	specimen	89	0			unreviewed
-preamble/tests/test_power_sets.sage	test_power_set_is_a_bounded_distributive_lattice	specimen	112	0			unreviewed
-preamble/tests/test_power_sets.sage	test_characteristic_morphisms_preserve_boolean_operations_pointwise	specimen	130	0			unreviewed
-preamble/tests/test_power_sets.sage	test_inverse_image_makes_power_set_contravariant	specimen	152	0			unreviewed
-preamble/tests/test_power_sets.sage	test_inverse_image_respects_identity_composition_and_boolean_operations	specimen	175	0			unreviewed
-preamble/tests/test_power_sets.sage	test_direct_image_is_left_adjoint_to_inverse_image	specimen	205	0			unreviewed
-preamble/tests/test_power_sets.sage	test_power_set_cardinalities_cover_standard_finite_and_infinite_sets	specimen	228	0			unreviewed
-preamble/tests/test_power_sets.sage	test_cantor_inequality_holds_for_the_standard_catalogue	specimen	250	0			unreviewed
-preamble/tests/test_power_sets.sage	test_iterated_power_sets_contain_subsets_of_the_previous_power_set	specimen	264	0			unreviewed
+preamble/tests/test_power_sets.sage	<module>	module	1	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_power_set_accepts_finite_and_canonical_infinite_subsets	specimen	20	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_a_power_set_element_is_a_subobject_with_a_characteristic_morphism	specimen	36	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_characteristic_morphisms_construct_power_set_elements	specimen	54	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_predicates_construct_infinite_subsets_without_enumeration	specimen	74	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_power_set_boolean_algebra_is_intrinsic	specimen	89	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_power_set_is_a_bounded_distributive_lattice	specimen	112	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_characteristic_morphisms_preserve_boolean_operations_pointwise	specimen	130	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_inverse_image_makes_power_set_contravariant	specimen	152	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_inverse_image_respects_identity_composition_and_boolean_operations	specimen	175	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_direct_image_is_left_adjoint_to_inverse_image	specimen	205	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_power_set_cardinalities_cover_standard_finite_and_infinite_sets	specimen	228	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_cantor_inequality_holds_for_the_standard_catalogue	specimen	250	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/tests/test_power_sets.sage	test_iterated_power_sets_contain_subsets_of_the_previous_power_set	specimen	264	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
 preamble/tests/test_preamble.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_preamble.sage	error	binding	318	0			unreviewed
 preamble/tests/test_preamble.sage	test_named_lattices_have_their_defining_invariants	specimen	431	0			unreviewed
@@ -3525,10 +3525,10 @@ preamble/tests/test_session_namespace.sage	test_loading_a_script_leaves_the_sess
 preamble/tests/test_sterk_artifacts.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_sterk_artifacts.sage	test_the_empty_subdiagram_is_connected_elliptic_and_labeled_a0	specimen	112	0			unreviewed
 preamble/tests/test_sterk_artifacts.sage	test_connected_elliptic_subdiagrams_reproduce_the_committed_artifacts	specimen	132	0			unreviewed
-preamble/tests/test_subobject_lll.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_subobject_lll.sage	test_the_reduced_framing_is_the_one_reduction_defines	specimen	46	0			unreviewed
-preamble/tests/test_subobject_lll.sage	test_reduction_keeps_the_submodule_and_shortens_its_generators	specimen	58	0			unreviewed
-preamble/tests/test_subobject_lll.sage	test_reduction_agrees_on_the_negative_definite_target	specimen	71	0			unreviewed
+preamble/tests/test_subobject_lll.sage	<module>	module	1	0		src/dzack_research/preamble/categories/definite_lattices.py	reconciled-live-owner
+preamble/tests/test_subobject_lll.sage	test_the_reduced_framing_is_the_one_reduction_defines	specimen	46	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_subobject_lll.sage	test_reduction_keeps_the_submodule_and_shortens_its_generators	specimen	58	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/tests/test_subobject_lll.sage	test_reduction_agrees_on_the_negative_definite_target	specimen	71	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/tests/test_tensor_and_direct_sum.sage	<module>	module	1	0			unreviewed
 preamble/tests/test_tensor_and_direct_sum.sage	test_sum_of_a_list_is_the_orthogonal_direct_sum	specimen	48	0			unreviewed
 preamble/tests/test_tensor_and_direct_sum.sage	test_direct_sum_satisfies_the_biproduct_identity	specimen	57	0			unreviewed

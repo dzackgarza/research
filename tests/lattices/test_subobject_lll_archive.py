@@ -1,5 +1,16 @@
 from dzack_research.preamble.all import Lattices, ZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_subobject_lll.sage",
+    "live_owner": "src/dzack_research/preamble/categories/definite_lattices.py",
+    "owner_overrides": {
+        "test_the_reduced_framing_is_the_one_reduction_defines": "src/dzack_research/preamble/categories/lattices.py",
+        "test_reduction_keeps_the_submodule_and_shortens_its_generators": "src/dzack_research/preamble/categories/lattices.py",
+        "test_reduction_agrees_on_the_negative_definite_target": "src/dzack_research/preamble/categories/lattices.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _skew_subobject(*, negative=False):
     sign = -1 if negative else 1

@@ -4,6 +4,12 @@ from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from sage.rings.integer_ring import ZZ as SageZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_lattice_generator_syntax.sage",
+    "live_owner": "src/dzack_research/preamble/categories/lattices.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_explicit_lattice_names_bind_the_selected_generators() -> None:
     integers = _own_ring(SageZZ)

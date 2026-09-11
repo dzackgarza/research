@@ -2,6 +2,12 @@ r"""Archive reconciliation for the public hyperbolic reflection vocabulary."""
 
 from dzack_research.preamble.all import HyperbolicLattices, Lattices, ZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage",
+    "live_owner": "src/dzack_research/preamble/categories/hyperbolic_lattices.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _u_plus_a1():
     return HyperbolicLattices(ZZ)(Lattices(ZZ)("U") + Lattices(ZZ)("A1"))

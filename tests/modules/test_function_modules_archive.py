@@ -12,6 +12,12 @@ from dzack_research.preamble.categories.modules.pure.function_modules import (
     square_integrable_functions,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_function_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/pure/function_modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_function_modules_use_pointwise_module_operations_without_generators() -> None:
     smooth = smooth_functions(RR)
