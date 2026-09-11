@@ -1,7 +1,7 @@
 # Preamble TODO
 
 This file owns the work queue for `src/dzack_research/preamble/`, including archive-derived requirements.
-Read it before changing the preamble, together with the generated `.agents/generated/preamble-megadoc.md`.
+Read it before changing the preamble, together with the generated `docs/preamble-megadoc.md`.
 The workstreams and their DAG organize execution; detailed requirements, source findings, and work claims follow.
 Recorded findings and completion notes retain their original scope; inspect the current owner before using them to select work.
 The [2026-09-07 cutoff handoff](references/preamble-handoff-2026-09-07.md) records the current construction releases and the next implementation boundaries.
@@ -638,7 +638,7 @@ Replace the preamble runtime responsibilities covered by that transfer in the sa
 Transfer related dependency chains together where mixed object systems would require duplicate mathematical owners.
 Broad annotation, collection, and package-layout sweeps follow the surviving interfaces; annotate and consolidate each active construction as it changes.
 
-Before editing `src/dzack_research/preamble/**`, follow `AGENTS.md`: read this TODO and the generated `.agents/generated/preamble-megadoc.md`; regenerate the megadoc first when it is stale relative to the live tree.
+Before editing `src/dzack_research/preamble/**`, follow `AGENTS.md`: read this TODO and the generated `docs/preamble-megadoc.md`; regenerate the megadoc first when it is stale relative to the live tree.
 Preserve the dirty authoritative tree and unrelated work throughout.
 
 ### Selecting the next construction
@@ -3053,7 +3053,7 @@ Renaming requires both source and destination reservations.
 | Affine schemes and restriction/gluing | The S/G files in [edit locations](#edit-locations) | S/G/J/Q/V/B/L; serialize shared files, then narrow claims as distinct owners emerge. |
 | Actions | The A files in [edit locations](#edit-locations); exact group/Hom files when needed | A/Q/B/O; reserve common abstract-category files separately. |
 | Forms and lattices | Exact files in `categories/modules/framed/formed/`, `categories/forms/`, and the existing lattice owners | V/H/J/O; using their public operations needs no write lock. |
-| Imports and generated documentation | Exact `__init__.py`/session entrypoints; `.agents/generated/preamble-megadoc.md` and `.agents/generated/preamble-graph.{json,dot,html}` as one generated set | All streams. One worker integrates exports and regenerates a coherent source snapshot. |
+| Imports and generated documentation | Exact `__init__.py`/session entrypoints; `docs/preamble-megadoc.md` and `docs/preamble-graph.{json,dot,html}` as one generated set | All streams. One worker integrates exports and regenerates a coherent source snapshot. |
 | Live notebook kernel | `kernel:<server>:<kernel-id>`, plus each edited notebook path | One worker changes a kernel's state at a time. Read/execution use follows the repo's japi rules. |
 | Git index and work-board updates | The transaction mutex below | All workers sharing this checkout; commits and claim updates serialize. |
 
