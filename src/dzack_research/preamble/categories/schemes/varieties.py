@@ -19,6 +19,62 @@ from dzack_research.preamble.categories.schemes.schemes import (
     SeparatedSchemes,
     SmoothSchemes,
 )
+from dzack_research.preamble.refine import refine
+
+
+def Curve(equation, ambient=None):
+    r"""Return the integral one-dimensional closed subscheme cut out by ``equation``.
+
+    With an explicit ambient scheme this is its existing closed-subscheme
+    construction, followed by the verified placement in ``Curves(R)``.  With
+    no ambient, ``equation`` must belong to a represented polynomial algebra;
+    its base ring and selected algebra-generator labels determine the affine
+    space in which the curve is cut out.
+
+    A reducible or otherwise non-variety one-dimensional subscheme is rejected
+    rather than being placed in ``Curves(R)`` merely because its dimension is
+    one.
+    """
+    match ambient:
+        case None:
+            source = equation.parent()
+            try:
+                base = source.base_ring()
+                labels = tuple(source.algebra_generating_set())
+            except AttributeError as error:
+                raise TypeError(
+                    "Curve(f) requires f in a represented polynomial algebra; "
+                    "otherwise supply the ambient scheme explicitly"
+                ) from error
+            ambient = AffineSpace(
+                len(labels),
+                base,
+                names=tuple(str(label) for label in labels),
+            )
+            target = ambient.coordinate_algebra()
+            match source is target:
+                case True:
+                    ambient_equation = equation
+                case False:
+                    images = {
+                        label: target.algebra_generator(str(label))
+                        for label in labels
+                    }
+                    ambient_equation = source.Mor(target)(images)(equation)
+        case _:
+            base = ambient.scheme_base_ring()
+            ambient_equation = equation
+
+    curve = ambient.closed_subscheme(ambient_equation)
+    category = Curves(base)
+    match curve in category:
+        case False:
+            raise ValueError(
+                f"the closed subscheme cut out by {equation} in {ambient} is not an integral curve over {base}"
+            )
+        case True:
+            pass
+    return refine(curve, category)
 
 
 class Varieties(OwnedCategoryOverBaseRing):
@@ -140,4 +196,4 @@ class Surfaces(_DimensionSubcategoryOfVarieties):
         return f"surfaces over {self.base_ring()}"
 
 
-__all__ = ["Curves", "Surfaces", "Varieties"]
+__all__ = ["Curve", "Curves", "Surfaces", "Varieties"]
