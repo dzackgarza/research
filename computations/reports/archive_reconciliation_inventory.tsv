@@ -2021,46 +2021,46 @@ preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.deg
 preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.is_homogeneous	method	117	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
 preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.homogeneous_components	method	131	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
 preamble/categories/modules/graded_modules.sage	GradedModules.ElementMethods.truncate	method	147	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
-preamble/categories/modules/group_modules/characters.py	<module>	module	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets	class	31	1	src/dzack_research/preamble/categories/group/characters.py		unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.super_categories	method	34	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ParentMethods	class	41	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ParentMethods.group	method	50	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods	class	77	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.class_values	method	90	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.argument_map	method	94	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.group	method	100	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.element_argument	method	104	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.degree	method	121	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.irreducible_constituents	method	126	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	character_set	function	172	1	src/dzack_research/preamble/categories/group/characters.py		unreviewed
-preamble/categories/modules/group_modules/characters.py	Character	class	177	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	ConstructionData	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	Parent	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py		unreviewed
-preamble/categories/modules/group_modules/characters.py	Integer	reexport	1	4			unreviewed
-preamble/categories/modules/group_modules/characters.py	Integer	reexport	1	4			unreviewed
-preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	Parent	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0			unreviewed
-preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0			unreviewed
+preamble/categories/modules/group_modules/characters.py	<module>	module	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets	class	31	1	src/dzack_research/preamble/categories/group/characters.py	src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.super_categories	method	34	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ParentMethods	class	41	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ParentMethods.group	method	50	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods	class	77	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.class_values	method	90	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.argument_map	method	94	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.group	method	100	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.element_argument	method	104	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.degree	method	121	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	CharacterSets.ElementMethods.irreducible_constituents	method	126	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	character_set	function	172	1	src/dzack_research/preamble/categories/group/characters.py	src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Character	class	177	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ConstructionData	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Parent	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	RingElement	reexport	1	1	src/dzack_research/preamble/lexicon/__init__.py	src/dzack_research/preamble/lexicon/__init__.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Integer	reexport	1	4		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Integer	reexport	1	4		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Group	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	Parent	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	GroupElement	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
+preamble/categories/modules/group_modules/characters.py	ElementConstructorInput	reexport	1	0		src/dzack_research/preamble/categories/group/characters.py	reconciled-live-owner
 preamble/categories/modules/group_modules/group_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
 preamble/categories/modules/group_modules/group_lattices.sage	EquivariantAssignment	binding	52	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLatticeParent	class	54	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner

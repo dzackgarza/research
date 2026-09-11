@@ -3,6 +3,15 @@ r"""Archive reconciliation for ordinary characters of finite groups."""
 from dzack_research.preamble.categories.group.characters import character_set
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/group_modules/characters.py",
+    "live_owner": "src/dzack_research/preamble/categories/group/characters.py",
+    "owner_overrides": {
+        "RingElement": "src/dzack_research/preamble/lexicon/__init__.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_irreducible_characters_live_in_one_owned_character_set() -> None:
     symmetric = OwnedGroups().S(3)
