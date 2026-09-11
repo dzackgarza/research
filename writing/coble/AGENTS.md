@@ -90,6 +90,10 @@ entry there is a stopgap; the work still belongs in Zotero.
 Never write a citation as an inline URL to arXiv, a DOI, or nLab. The docs gate rejects
 it.
 
+Cite the Stacks Project by tag, `[@stacks-02LS]`. The `stacks-tags` filter rewrites the
+key to the single global Stacks entry and appends a hyperlinked `[Tag 02LS]`; verify the
+tag against the tag page before using it, since a wrong tag still renders.
+
 ## Writing conventions
 
 Numbered environments go through the `custom-numbered-blocks` filter:

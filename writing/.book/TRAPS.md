@@ -156,3 +156,19 @@ gate fails, and the aborted render leaves one chapter's `.html` at the project r
 which fails the *next* run on a different chapter. The gate clears those strays before
 rendering, so one interruption no longer keeps every later run red; but a gate run
 still needs a window with no preview in it.
+
+## `link-citations: true` swallows a link placed inside a citation
+
+`link-citations: true` makes citeproc wrap the whole rendered citation -- the
+author-date text *and* its prefix and suffix -- in one anchor pointing at the
+bibliography entry. A `pandoc.Link` inserted into that suffix by an earlier
+filter therefore becomes a nested `<a>`, which HTML writers are not allowed to
+emit, so the writer keeps the link text and silently drops the `href`.
+
+The failure is invisible in the source and in the rendered prose: the words are
+all there, they are simply not clickable, and the gate has nothing to report
+because the citation itself resolves. `stacks-tags.lua` hit this and now returns
+a list -- the `Cite` followed by a separate bracketed `Link` -- so the tag link
+sits beside the citation rather than inside it.
+
+Any filter that wants a hyperlink attached to a citation has to do the same.

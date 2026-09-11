@@ -59,11 +59,46 @@ $$
 Restricting $\Psi$ to its scheme-theoretic image $X$ yields a finite, birational map from the normal variety $F_{\En, 2}$ to $X$, which by Zariski's Main Theorem exhibits $F_{\En, 2}$ as the normalization of $X$.
 :::
 
-![The induced correspondence of Baily--Borel boundaries under $\Psi\colon F_{\En, 2}\to F_{(2,2,0)}$: the cusps of $\overline{F_{\En, 2}}^{\bb}$ (top) map to the cusps of $\overline{F_{(2,2,0)}}^{\bb}$ (bottom).](rendered/fig_bb_boundary_correspondence.png){#fig-bb-boundary-correspondence}
+```{.tikz}
+%%| filename: bb-boundary-correspondence
+%%| additionalPackages: \usepackage{amsmath,amssymb,tikz}
+\usetikzlibrary{arrows.meta}
+\begin{tikzpicture}[>={Stealth[round]}, thick, every node/.style={font=\small}]
+  % the Enriques Baily--Borel boundary
+  \node[circle,fill,inner sep=1.6pt,label=left:$2$]      (e2) at (0,3) {};
+  \node[circle,fill,inner sep=1.6pt]                     (e1) at (6,3) {};
+  \draw (e2) to[bend left=38]  node[above] {$12$}  (e1);
+  \draw (e2) to[bend right=38] node[below] {$245$} (e1);
+  \node at (3,3) {$\overline{F}_{\mathrm{En},2}^{\,\mathrm{BB}}$};
+  \draw[purple] (e1) -- ++(35:0.9);
+  \draw[purple] (e1) -- ++(-35:0.9);
+  \node[right,xshift=6pt] at (e1) {$13,\ 14$};
 
-::: {.Warning}
-@fig-bb-boundary-correspondence is migrated as a raster talk figure; its cusp labels ($2,12,13,14,245$ and $2,12\mathrm{A},12\mathrm{B},1\mathrm{A},1\mathrm{B}$) are Sterk's talk numbering and should be reconciled with the five-cusp enumeration of \longref{ex:fen2_five_cusps} and redrawn as a native TikZ figure.
-:::
+  % the degree-(2,2,0) K3 Baily--Borel boundary
+  \node[circle,fill,inner sep=1.6pt,label=left:$2$]      (k2) at (0,0) {};
+  \node[circle,fill,inner sep=1.6pt]                     (k1) at (6,0) {};
+  \draw (k2) to[bend left=38]  node[above] {$12\mathrm{A}$} (k1);
+  \draw (k2) to[bend right=38] node[below] {$12\mathrm{B}$} (k1);
+  \node at (3,0) {$\overline{F}_{(2,2,0)}^{\,\mathrm{BB}}$};
+  \draw[purple] (k1) -- ++(35:0.9);
+  \draw[purple] (k1) -- ++(-35:0.9);
+  \node[right,xshift=6pt] at (k1) {$1\mathrm{A},\ 1\mathrm{B}$};
+
+  % the map on 0-cusps
+  \draw[->,red] (e2) ++(0,-0.35) -- ++(0,-2.3);
+  \draw[->,red] (e1) ++(0,-0.35) -- ++(0,-2.3);
+\end{tikzpicture}
+```
+
+The correspondence of Baily--Borel boundaries under $\Psi\colon F_{\En, 2}\to F_{(2,2,0)}$:
+the $0$-cusps of $\overline{F_{\En,2}}^{\bb}$ (top) map to the $0$-cusps of
+$\overline{F_{(2,2,0)}}^{\bb}$ (bottom), and the $1$-cusps to $1$-cusps, by
+[@AEGS25 Lem. 3.2].
+The $0$-cusps of $F_{(2,2,0)}$ are distinguished by the divisibility
+$\mathrm{div}(e)\in\ts{1,2}$ of the isotropic vector, and the map is read off from the
+divisibilities of Sterk's $e_1,\dots,e_5$ taken in $T_\En$ and in $T_\dP$ separately; the
+Enriques $1$-cusps are labelled as in \longref{not:sterk-cusp-labels}.
+
 
 ## The five $0$-cusps
 

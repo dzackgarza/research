@@ -1,18 +1,79 @@
 # KSBA stable limits
 
+## How a stable limit is obtained
+
 ::: {.Remark}
 
-We describe the KSBA stable limits of Coble surfaces.
+A KSBA stable limit here is never constructed directly. The pair is
+$(Z, \varepsilon R_Z)$ for an Enriques or Coble surface $Z$ and $0 < \varepsilon \ll 1$,
+and $Z$ is a quotient of its K3 cover; the stable limits are correspondingly the
+*quotients of the stable limits of the K3 pairs $(X, \varepsilon R)$ by the involution*
+[@AEGS25 §7.3]. So the work happens upstairs, on the K3 side, where Kulikov models and
+their dual complexes are available (\longref{def:singular_ias}), and the Enriques or Coble limit
+is read off by descending along $\iota_\En$.
 :::
 
 ::: {.Remark}
 
-We give an example of an integral affine structure for a degeneration of Coble surfaces.
+Which limit one obtains is determined by combinatorics rather than by geometry. Over a
+$0$-cusp the semifan is a generalized Coxeter fan, and its cones are indexed by
+subdiagrams of the folded Coxeter diagram of that cusp [@AEGS25 §5.1]:
+
+- a **Type III** limit corresponds to an *elliptic* subdiagram. Each relevant connected
+  component contributes an ADE surface, and the limit is their union glued along the
+  double curves [@AEGS25 §7.1].
+
+- a **Type II** limit corresponds to a *maximal parabolic* subdiagram. After the
+  irrelevant components are discarded, each remaining component is an
+  $\widetilde{A}\widetilde{D}\widetilde{E}$ diagram [@AEGS25 §7.2].
+
+The irrelevant roots are exactly those the generalized Coxeter semifan collapses, which
+is why the compactification is toroidal over some cusps and strictly semitoroidal over
+the rest.
+:::
+
+::: {.Remark}
+
+For the Coble locus one further restriction applies, and it is the content of the rest of
+this chapter. A polarized Coble surface is an Enriques surface whose period lies on the
+Heegner divisor cut by an admissible root $\delta$, so its stable limits are those
+Enriques limits lying over $\delta^{\perp}$. Making that precise means restricting the
+semifan $\mathcal{F}_{\mathrm{ram}}$ along $\bD(\delta^{\perp})$, which is
+\longref{conj:restricted_ramification_semifan}, and identifying the resulting singularity
+type, which is \longref{conj:coble_quarter_singularity}.
+:::
+
+## A worked integral affine structure
+
+::: {.Example #ex:type-ii-ias-41}
+### The Type II ray at the $1$-cusp $41$
+
+Take the monodromy invariant with barycentric coordinates
+$$
+\ell = (0^6, 1, 0^7, 1, 0^5, 2, 2)
+$$
+at $0$-cusp $4$. The resulting integral affine sphere agrees with the one built at
+$0$-cusp $1$ from $(0, 0, 1, 0^7, 1, 0^9, 2, 2)$, which is what it means for this ray to
+be shared: it is the Type II ray corresponding to the $1$-cusp labelled $41$, and it
+occurs as a limit of $\mathrm{IAS}^2$ at either of the two $0$-cusps it joins
+[@AEGS25 Ex. 4.16].
+
+Being Type II, the dual complex $\Gamma(\cX_0)$ is a segment rather than a sphere, here of
+length one, and the central fiber is
+$$
+\cX_0 = \widetilde{V}_1 \cup_E \widetilde{V}_2 ,
+$$
+two copies of the same $\widetilde{D}_8$ involution pair glued along the elliptic curves
+$E \in \abs{-K_{\widetilde{V}_1}}$ with a twist by $2$-torsion.
 :::
 
 ::: {.Warning}
-Both sections above are outlines: the KSBA stable limits and the worked integral affine example remain to be written.
+The Enriques involution *flips* this segment. So the Enriques equator is not a
+subcomplex of $\Gamma(\cX_0)$, which is what the equivariant-triangulation machinery
+usually assumes: this ray is one of the cases where that hypothesis has to be dropped
+[@AEGS25 Ex. 4.16]. Compare \longref{que:equivariant_triangulation}.
 :::
+
 
 ## The polarized Coble locus and its branches
 

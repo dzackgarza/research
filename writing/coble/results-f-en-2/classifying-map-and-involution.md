@@ -7,7 +7,8 @@ The results collected here are the intended culmination of the compactification 
 The three ingredients are a *global extension of the Enriques involution* over $B$, a *finiteness statement* for $\phi$, and the *application of Zariski's Main Theorem* that combines them.
 
 These are the program's own in-progress steps rather than settled theorems.
-They are stated conjecturally throughout, and they are exactly parallel to the open comparison of \longref{conj:ksba_semitoroidal_comparison} and to the incomplete normalization argument of \longref{thm:normalization}, whose migrated proof sketch records the author's remark that finiteness is *still unclear*.
+They are stated conjecturally throughout, and they are exactly parallel to the open comparison of \longref{conj:ksba_semitoroidal_comparison}.
+The period-domain counterpart of the finiteness step is \longref{thm:normalization}, which is proved; what is open here is the KSBA-side statement for $\phi$.
 Zariski's Main Theorem itself is a classical, proven theorem; only its application to $\phi$ is conjectural here.
 
 ::: {.Remark}
@@ -60,8 +61,13 @@ The proposed input is the KSBA principle that the dual complex uniquely identifi
 
 This argument is presented as the program's intended route, not as a completed proof.
 
-::: {.Warning}
-Note-vs-note conflict: the source note states finiteness is "proved via a combinatorial comparison", whereas the parallel normalization argument (\longref{thm:normalization}) is migrated with the author's inline remark that "finiteness is still unclear" and a suggestion to use $\text{finite} \iff \text{proper with finite fibers}$ (Stacks 02LS) or Zariski's Main Theorem. These two accounts should be reconciled; until then finiteness is rendered conjecturally. The no-coarsening statement is moreover the same phenomenon as the no-moduli-loss conjecture (\longref{conj:no_moduli_loss}), which is itself open.
+::: {.Remark}
+### Which morphism is being made finite
+
+The statement above is finiteness of $\phi\colon B^\nu\to\overline{F_{\En,2}}$, a morphism of KSBA compactifications, and its proposed proof is the semifan comparison just described.
+It is a different statement from the finiteness of the period map $F_\Co\to F_\En$ established in \longref{thm:normalization}.
+The two share the criterion -- a proper morphism with finite fibres is finite [@stacks-02LS] -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
+The no-coarsening statement is moreover the same phenomenon as the no-moduli-loss conjecture (\longref{conj:no_moduli_loss}), which is itself open.
 :::
 :::
 
@@ -105,5 +111,5 @@ Granting these, Zariski's Main Theorem would give that $\phi$ is an isomorphism,
 
 Of the four inputs to \longref{conj:classifying_map_isomorphism}, properness and normality are the ambient structural facts of the KSBA and Baily--Borel constructions, while birationality on the interior and finiteness are the load-bearing steps: finiteness is the still-open \longref{conj:classifying_map_finite}, and the extension of the Enriques involution (\longref{conj:enriques_involution_extension}) is what makes the universal quotient family -- and hence $\phi$ -- available over the boundary in the first place.
 The isomorphism statement therefore inherits the open status of \longref{conj:classifying_map_finite} and \longref{conj:enriques_involution_extension}, and is the compactification-side counterpart of the semitoroidal comparison \longref{conj:ksba_semitoroidal_comparison}.
-This conclusion also refines the incomplete normalization statement \longref{thm:normalization}, whose migrated proof leaves both the stabilizer identity and finiteness unestablished.
+The same three-step shape -- stabilizer, finite fibres, properness -- is what carries \longref{thm:normalization} on the period side; the open part here is that the semifan comparison replacing the fibre count is not yet established.
 :::
