@@ -105,10 +105,18 @@ def test_normal_a1_surface_has_a_weil_prime_that_is_not_cartier() -> None:
     prime = ring.spectrum()(prime_ideal)
     vertex = ring.spectrum()(ring.ideal(x, y, z))
     assert prime.height() == 1
-    assert prime_ideal.local_number_of_generators(vertex) == 2
 
     full_weil = affine_normal_weil_divisor_group(scheme)
     prime_divisor = full_weil.prime_divisor(prime)
+    assert not full_weil.prime_is_cartier_at(prime, vertex)
+    assert full_weil.prime_is_cartier_at(prime, prime)
+    outside_prime = ring.spectrum()(ring.ideal(y, z))
+    assert full_weil.prime_is_cartier_at(prime, outside_prime)
+
+    # Since principal divisors are Cartier, a Weil divisor that fails to be
+    # Cartier at one point cannot become Cartier after adding a principal
+    # divisor.  Thus this is genuinely a non-Cartier Weil *class*, not merely
+    # a selected nonprincipal equation.
     divisor_of_x = full_weil.principal_divisor(x)
     assert full_weil.multiplicity(divisor_of_x, prime) == 2
     assert divisor_of_x == 2 * prime_divisor
