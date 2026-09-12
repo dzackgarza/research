@@ -609,9 +609,61 @@ class DisjointUnionFunctor(CoproductFunctor):
         super().__init__(Sets())
 
 
-class LimitFunctor(ProductFunctor):
-    r"""The represented binary limit functor; binary products are its discrete case."""
+class LimitFunctor(Functor):
+    r"""The selected limit functor ``[J,C] -> C`` for one represented shape."""
+
+    def __init__(self, codomain: Category, index_category: Category) -> None:
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            DiagramCategory,
+            LimitsOfCategory,
+        )
+
+        self._index_category = index_category
+        self._limits = LimitsOfCategory(index_category, codomain)
+        super().__init__(DiagramCategory(index_category, codomain), codomain)
+
+    def index_category(self) -> Category:
+        return self._index_category
+
+    @staticmethod
+    def _diagram(diagram_object):
+        return diagram_object.arrow().functor()
+
+    def _apply_object(self, diagram_object: Parent) -> Parent:
+        return self._limits.construction(self._diagram(diagram_object)).object()
+
+    def _apply_morphism(self, transformation_morphism: Map) -> Map:
+        transformation = transformation_morphism.transformation()
+        source = self._limits.construction(transformation.source())
+        target = self._limits.construction(transformation.target())
+        return source.induced_map(transformation, target)
 
 
-class ColimitFunctor(CoproductFunctor):
-    r"""The represented binary colimit functor; binary coproducts are its discrete case."""
+class ColimitFunctor(Functor):
+    r"""The selected colimit functor ``[J,C] -> C`` for one represented shape."""
+
+    def __init__(self, codomain: Category, index_category: Category) -> None:
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            ColimitsOfCategory,
+            DiagramCategory,
+        )
+
+        self._index_category = index_category
+        self._colimits = ColimitsOfCategory(index_category, codomain)
+        super().__init__(DiagramCategory(index_category, codomain), codomain)
+
+    def index_category(self) -> Category:
+        return self._index_category
+
+    @staticmethod
+    def _diagram(diagram_object):
+        return diagram_object.arrow().functor()
+
+    def _apply_object(self, diagram_object: Parent) -> Parent:
+        return self._colimits.construction(self._diagram(diagram_object)).object()
+
+    def _apply_morphism(self, transformation_morphism: Map) -> Map:
+        transformation = transformation_morphism.transformation()
+        source = self._colimits.construction(transformation.source())
+        target = self._colimits.construction(transformation.target())
+        return source.induced_map(transformation, target)
