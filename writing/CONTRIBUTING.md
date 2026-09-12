@@ -2922,6 +2922,78 @@ say they differ without $H$; the quantified theorem already obviates it.
 Give a counterexample only as an illustration of the boundary, not as a
 restatement that the definitions are distinct.
 
+### `PR-36`: Negative framing bloats the text, ruins the tone, and undermines standard exposition structure
+
+The general device behind PR-2, PR-16–18, PR-24, PR-28, PR-30–35, and
+SEC-8: instead of the positive quantified statement the mathematics
+requires, the text adds a negative sentence — "$a=b$ is a theorem,
+never a definitional identity," "does not follow merely from notation,"
+"is additional data," "their mere existence supplies no order relation,"
+"requires a stated descent theorem with its hypotheses," "without $H$,
+$A$ and $B$ are distinct constructions," "a conclusion about $L$ from
+either image requires …" Each is a negation, a "without," or a
+"requires" standing for a positive Definition or Theorem not stated.
+
+Three costs, all general:
+
+**1. Bloat.** A positive theorem $H\Rightarrow (c_M\text{ is an
+equivalence via the named map})$ has infinitely many true negatives you
+could state — without $H$ it need not hold, without $H_1$ it fails,
+without notation it is not defined, existence alone supplies no relation,
+etc. Stating any of them doubles the text while adding no fenced unit to
+the skeleton (SEC-6). Standard exposition states the quantified positive
+once and stops; the complements are implicit and obvious to any reader
+who has read the definitions as distinct and the theorem as quantified.
+
+**2. Tone.** Each negative assumes a reader who was about to make a
+mistake — conflate $A$ and $B$, think notation supplies structure, draw
+a conclusion from one image, think existence supplies order — and
+corrects that mistake before it is made, though the reader never made it
+or thought about making it. It does not address the reader as an equal
+pursuing the mathematics, but as a lesser to be controlled, steered, and
+corrected (PR-32). Standard prose never scolds preemptively; it states
+the mathematics and lets the reader use it.
+
+**3. Structure.** A negative sentence is not a Definition, Theorem, or
+Example with a named map, quantified $H$ (perfect / finitely presented /
+finitely generated, faithfully flat, etc.), and a checkable claim. It is
+unfalsifiable (PR-30) — "a conclusion" names no proposition, "either
+image" names no functor, "with its hypotheses" names no list — and often
+true by definition ("are distinct constructions," PR-33) or true by logic
+of "theorems have hypotheses" (PR-34, PR-31) and therefore contributes no
+proof obligation while hiding that the actual obligation (name the map,
+quantify $H$, state iso vs. not, give the boundary counterexample only
+when it teaches) was not met. It is doctrine posing as content, leaking
+contributor governance into the book.
+
+Concrete standard: standard mathematical exposition is positive and
+constructive — definitions as data/tuples
+$(\mathcal{C},\otimes,\mathbf{1},\alpha,\lambda,\varrho)$ with
+diagrams (SYM-1), theorems as quantified implications with the comparison
+map, proofs, then boundary examples/counterexamples at the quantified
+edge when they teach. Stacks Project, EGA, Serre, Hartshorne, Lurie
+HTT/HA, EKMM never write "without $H$, $A$ and $B$ are distinct" or
+"this requires a theorem with hypotheses"; they write
+"::: {#thm-descent} **Theorem (fpqc descent).** For faithfully flat
+$R\to S$, … :::" and "::: {#thm-complete-vs-basechange} **Theorem.**
+$c_M$ is an equivalence for $M$ perfect … :::" and apply them.
+
+**Banned:** "Without the finite-generation hypothesis, scalar extension
+and completion are distinct constructions"; "A conclusion about $L$ from
+either image requires a stated descent or local-to-global theorem with
+its hypotheses"; "$a=b$ is a theorem, never a definitional identity";
+"does not follow merely from notation"; "is additional data"; "their mere
+existence supplies no order relation."
+
+**Preferred:** delete every negative standing for a positive not stated,
+and state the positive once, quantified, with the named map: present
+$-\otimes^L_{\mathbb Z}\mathbb Z_p$ and $\widehat{(-)}_p$ with different
+definitions (hence distinct), then one fenced theorem with $c_M$ and
+quantified $H$ (PR-33), then apply it. No sentence is needed to say what
+does not follow, what is not supplied, what is distinct without $H$, or
+what is required. The positive theorem already says it, without bloat,
+without condescension, and with a checkable claim.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3040,3 +3112,16 @@ failure with a counterexample ($\bigoplus_{\mathbb N}\mathbb Z$,
 $\mathbb Q$), not that the definitions are distinct. Once the distinct
 definitions and the positive theorem are stated, the complement without
 $H$ is implicit and obvious and needs no separate sentence (PR-35).
+
+**10. Negative framing as bloat, tone, and structural defect.** Every
+"is not," "does not follow," "without $H$ distinct," "requires a
+theorem with hypotheses," "mere existence supplies no …" is a negative
+standing for a positive Definition/Theorem not stated (PR-36, general
+form of PR-2, PR-16–18, PR-24, PR-28, PR-30–35, SEC-8). Each doubles the
+text (infinitely many true negatives per positive theorem), assumes a
+reader mistake never made and scolds preemptively instead of addressing
+an equal, and contributes no fenced unit with a named map and quantified
+$H$ — hiding that the actual proof obligation was not met. Standard
+exposition is positive: definitions as tuples, theorems as quantified
+implications with the comparison map, proofs, then boundary
+counterexamples when they teach.
