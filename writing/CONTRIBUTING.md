@@ -3227,6 +3227,64 @@ $\mathbf{Mod}_R$ (resp. $\mathbf{Mod}_R$-enriched presheaf via
 {#thm-mod-closed})"; otherwise just "as a functor
 $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$."
 
+### `TERM-11`: Bare "maps $M\to W$" with no category — egregiously imprecise, and wrong for quadratics
+
+"Map $M\to W$" unqualified in $\mathbf{Mod}_R$ means morphism in
+$\mathbf{Mod}_R$ — i.e. $R$-linear. A quadratic $q\colon M\to W$ is
+*not* $R$-linear (and not a morphism in $\mathbf{Mod}_R$); it is a
+function on underlying sets for the forgetful
+$U\colon\mathbf{Mod}_R\to\mathbf{Set}$ satisfying $q(rx)=r^2q(x)$ and
+$R$-bilinearity of the polarization
+$b_q(x,y):=q(x+y)-q(x)-q(y)$. "Maps $M\to W$" without "of sets" / "of
+underlying sets" / "in $\mathbf{Set}$ after $U$" therefore names the
+wrong hom, hides which forgetful is meant (Set vs. $\mathcal S$ vs.
+anima stably matters), and leaves no object to enrich — the later "as
+$R$-module, under pointwise operations" then has no category to attach
+to.
+
+This is the general form behind PR-37/PR-38: a set-level datum
+described as if it were a morphism in the ambient $R$-linear category,
+mislocating structure and forcing filler.
+
+Concrete standards — name the category, and use the classifier so no
+"maps $M\to W$" is needed:
+
+* **Underlying sets:** let $U\colon\mathbf{Mod}_R\to\mathbf{Set}$ be the
+  forgetful. A quadratic function is a map $U(M)\to U(W)$ in
+  $\mathbf{Set}$ with those two conditions. Stably $U\colon\mathbf{LMod}_R
+  \to\mathcal S$.
+
+* **Classifier (so no "maps $M\to W$" to describe):** fix the divided
+  power (Whitehead) classifier $\Gamma^2_R$ once, fenced, with its
+  universal property. Then
+  $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$
+  as $R$-module (stably
+  $\mathbf{RHom}_R(\mathbf{\Gamma}^2_R(M),W)$). Its underlying set is the
+  set of functions $U(M)\to U(W)$ satisfying the quadratic condition;
+  its $R$-module structure is the self-enrichment {#thm-mod-closed} on
+  that Hom, not "pointwise via $W$" on a set of maps whose category was
+  never named. Similarly $\operatorname{Sym}_{R,W}(M):=
+  \operatorname{Hom}_R(\operatorname{Sym}^2_R(M),W)$ for symmetric,
+  $\operatorname{Bil}_{R,W}(M)=\operatorname{Hom}_R(M\otimes_R M,W)$ as
+  above — each Hom classifies the flavour, no element-level "maps
+  $M\times M\to W$ / $M\to W$" to re-spell.
+
+**Banned:** "of maps $q\colon M\to W$ for which $q(rx)=r^2q(x)$ and …"
+with no "of sets / of underlying sets / in $\mathbf{Set}$ after $U$";
+"Let $\operatorname{Quad}_{R,W}(M)$ be the $R$-module, under pointwise
+operations, of maps $M\to W$ …"
+
+**Preferred:** "Let $U\colon\mathbf{Mod}_R\to\mathbf{Set}$ be the
+forgetful. A **quadratic form** on $M$ valued in $W$ is a function
+$q\colon U(M)\to U(W)$ with $q(rx)=r^2q(x)$ and $b_q(x,y)$ $R$-bilinear"
+— or, classifier-first and with no "maps $M\to W$": "Put
+$\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ as
+$R$-module. Its elements are the functions $U(M)\to U(W)$ with that
+condition." Name $\mathbf{Set}$ / $U$ when the map is not $R$-linear;
+for bilinear/symmetric/quadratic never write bare "maps $M\to W$" or
+"$M\times M\to W$" once the classifier ($\otimes$, $\operatorname{Sym}^2$,
+$\Gamma^2$) is defined.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3396,3 +3454,13 @@ $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" overloads the generic
 name for $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Set}$ and adds no
 content beyond "functor" — name the enrichment when needed as
 $\mathbf{Mod}_R$-valued / $\mathbf{Mod}_R$-enriched presheaf (TERM-10).
+
+**14. Bare "maps $M\to W$" with no category.** "Maps $q\colon M\to W$"
+unqualified in $\mathbf{Mod}_R$ means $R$-linear; a quadratic $q$ is not
+$R$-linear — it is a function $U(M)\to U(W)$ in $\mathbf{Set}$ for the
+forgetful $U\colon\mathbf{Mod}_R\to\mathbf{Set}$ (TERM-11). The
+classifier $\Gamma^2_R$ already gives $\operatorname{Quad}_{R,W}(M):=
+\operatorname{Hom}_R(\Gamma^2_R(M),W)$ as $R$-module; never write bare
+"maps $M\to W$" or "$M\times M\to W$" once $\otimes$, $\operatorname{Sym}^2$,
+$\Gamma^2$ classify the flavour. Name $\mathbf{Set}$ / $U$ when the map
+is not $R$-linear.
