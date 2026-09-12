@@ -663,17 +663,6 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   products use a multiplication compatible with the differential and descend
   to cycles modulo boundaries.
 
-- [ ] **`fundamental-hodge`**. **Needs:** none.
-  Extend pointed fundamental groups and Hodge structures to the selected
-  geometric realizations.
-  **Deliver:** a base point, induced maps for pointed morphisms, and supported
-  pure or mixed Hodge data attached to the relevant cohomology.
-  **Decision:** a toric trivial-fundamental-group result or diagonal Hodge
-  pattern cannot classify a general scheme. Hodge-star operators on formed
-  modules are not the Hodge structure of a variety.
-  **Acceptance:** a sourced nontrivial fundamental-group or off-diagonal
-  Hodge example forces the new geometric computation to do real work.
-
 - [ ] **`linearizations`**. **Needs:** `geometric-cohomology`.
   Construct line-bundle linearizations and induced section/cohomology
   actions before equivariant geometric applications.
@@ -762,7 +751,7 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   A separately required formal comparison must add `formal-families` to Needs
   before work begins; it cannot silently consume an unfinished formal model.
 
-- [ ] **`monodromy`**. **Needs:** `analytic-families`, `fundamental-hodge`, `geometric-cohomology`.
+- [ ] **`monodromy`**. **Needs:** `analytic-families`, `geometric-cohomology`.
   Construct higher direct images, local systems and monodromy for the
   required family strata.
   **Dependencies:** the selected topology, sheaves and geometric cohomology.
