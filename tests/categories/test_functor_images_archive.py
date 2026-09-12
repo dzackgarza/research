@@ -1,16 +1,36 @@
 r"""Archive reconciliation for categories of chosen functor images."""
 
 from dzack_research.preamble.categories.abstract_categories.functor_images import ImageOfFunctor
-from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.abstract_categories.functors import (
+    DiscreteCategory,
+    compose_functors,
+)
+from dzack_research.preamble.categories.functors.core import Functor, IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/abstract_categories/functor_images.sage",
-    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/functor_images.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/categories/abstract_categories/functor_images.sage",
+        "live_owner": "src/dzack_research/preamble/categories/abstract_categories/functor_images.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/categories/abstract_categories/functors.sage",
+        "live_owner": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "owner_overrides": {
+            "Functor": "src/dzack_research/preamble/categories/functors/core.py",
+            "Functor.Image": "src/dzack_research/preamble/categories/abstract_categories/functor_images.py",
+            "ImageInclusionFunctor": "src/dzack_research/preamble/categories/abstract_categories/functor_images.py",
+            "IdentityFunctor": "src/dzack_research/preamble/categories/functors/core.py",
+            "IdentityFunctor.factors": "src/dzack_research/preamble/categories/functors/core.py",
+            "ComposedFunctor": "src/dzack_research/preamble/categories/functors/core.py",
+            "ComposedFunctor.factors": "src/dzack_research/preamble/categories/functors/core.py",
+            "ComposedFunctor.is_faithful": "src/dzack_research/preamble/categories/functors/core.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 class _ConstantPresentedSetFunctor(Functor):
@@ -102,3 +122,18 @@ def test_functor_image_hom_exposes_codomain_hom_and_composes_through_it() -> Non
     assert composite.domain() is presented_source
     assert composite.codomain() is presented_target
     assert inclusion(composite) == second_underlying * first_underlying
+
+
+def test_archived_composition_with_identity_keeps_the_nonidentity_set_map() -> None:
+    functor = _IdentitySetsFunctor()
+    identity = IdentityFunctor(Sets())
+    composed_left = compose_functors(identity, functor)
+    composed_right = compose_functors(functor, identity)
+    source = finite_ordered_set((0, 1))
+    target = finite_ordered_set(("a", "b"))
+    arrow = Sets().Mor(source, target)(lambda value: target("a") if value == 0 else target("b"))
+
+    assert composed_left is functor
+    assert composed_right is functor
+    assert composed_left(arrow) is arrow
+    assert composed_right(arrow) is arrow

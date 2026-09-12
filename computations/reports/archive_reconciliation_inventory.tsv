@@ -132,40 +132,40 @@ preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.Paren
 preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.preimage	method	148	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
 preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.image_category	method	151	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
 preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.constructing_functor	method	158	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
-preamble/categories/abstract_categories/functors.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategories	class	54	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategories.super_categories	method	57	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategories.ParentMethods	class	69	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategories.ParentMethods.objects	method	73	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategory	class	123	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategory.ObjectType	method	127	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategory.objects	method	130	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteCategory.super_categories	method	133	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	Functor	class	148	1	src/dzack_research/preamble/categories/functors/core.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	Functor.Image	method	170	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	ImageInclusionFunctor	class	175	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	IdentityFunctor	class	194	1	src/dzack_research/preamble/categories/functors/core.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	IdentityFunctor.factors	method	216	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DomainFunctor	class	223	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	CodomainFunctor	class	245	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	compose_functors	function	267	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	ComposedFunctor	class	284	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	ComposedFunctor.factors	method	305	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	ComposedFunctor.is_faithful	method	308	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteDiagram	class	330	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	DiscreteDiagram.diagram_objects	method	343	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	ConstantDiagram	class	356	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	ConstantDiagram.constant_value	method	370	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	DiagonalFunctor	class	383	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	LimitFunctor	class	406	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	LimitFunctor.index_category	method	414	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	ColimitFunctor	class	453	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	ColimitFunctor.index_category	method	461	0			unreviewed
-preamble/categories/abstract_categories/functors.sage	ProductFunctor	class	500	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	CoproductFunctor	class	519	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	NaturalTransformations	function	538	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	NaturalTransformation	function	546	1	src/dzack_research/preamble/categories/functors/core.py		unreviewed
-preamble/categories/abstract_categories/functors.sage	NaturalIsomorphism	function	555	2			unreviewed
+preamble/categories/abstract_categories/functors.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategories	class	54	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategories.super_categories	method	57	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategories.ParentMethods	class	69	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategories.ParentMethods.objects	method	73	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategory	class	123	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategory.ObjectType	method	127	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategory.objects	method	130	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteCategory.super_categories	method	133	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	Functor	class	148	1	src/dzack_research/preamble/categories/functors/core.py	src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	Functor.Image	method	170	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ImageInclusionFunctor	class	175	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	IdentityFunctor	class	194	1	src/dzack_research/preamble/categories/functors/core.py	src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	IdentityFunctor.factors	method	216	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DomainFunctor	class	223	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	CodomainFunctor	class	245	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	compose_functors	function	267	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ComposedFunctor	class	284	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ComposedFunctor.factors	method	305	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ComposedFunctor.is_faithful	method	308	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteDiagram	class	330	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiscreteDiagram.diagram_objects	method	343	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ConstantDiagram	class	356	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ConstantDiagram.constant_value	method	370	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	DiagonalFunctor	class	383	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	LimitFunctor	class	406	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	LimitFunctor.index_category	method	414	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ColimitFunctor	class	453	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ColimitFunctor.index_category	method	461	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	ProductFunctor	class	500	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	CoproductFunctor	class	519	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	NaturalTransformations	function	538	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	NaturalTransformation	function	546	1	src/dzack_research/preamble/categories/functors/core.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/functors.sage	NaturalIsomorphism	function	555	2		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
 preamble/categories/abstract_categories/hom_categories.sage	<module>	module	1	0			unreviewed
 preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf	class	56	2			unreviewed
 preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.inherited_hom_category_families	method	62	0			unreviewed
