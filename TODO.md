@@ -338,7 +338,7 @@ Paths in this section are relative to
 
 ### Local algebra extensions
 
-- [ ] **`normalization`**. **Needs:** none.
+- [x] **`normalization`**. **Needs:** none.
   Extend normalization and local-length operations beyond the represented
   integral affine and selected plane-curve regimes needed below.
   **Owners:** `rings/commutative_algebra.py`, `rings/commutative_ideals.py`,
@@ -1499,4 +1499,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `RING-normalization-20260912-0017` | local algebra / normalization | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/rings/commutative_ideals.py; src/dzack_research/preamble/categories/schemes/singularities.py; tests/rings/test_normalization_frontier.py` (write) | `d323fbb9` | 2026-09-12T00:17:00Z |
+| `RING-local-module-maps-20260912-0019` | local algebra / local-module-maps | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/rings/commutative_ideals.py; src/dzack_research/preamble/categories/modules/pure/modules.py; src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py; tests/rings/test_local_module_maps_frontier.py` (write) | `d323fbb9; 19e6c16d` | 2026-09-12T00:19:00Z |
