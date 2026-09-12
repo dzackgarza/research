@@ -2994,6 +2994,80 @@ does not follow, what is not supplied, what is distinct without $H$, or
 what is required. The positive theorem already says it, without bloat,
 without condescension, and with a checkable claim.
 
+### `PR-37`: Sign-posting "Fix $R$ and $W$, the value module of the forms below" is not a mathematical unit
+
+A setup sentence that fixes variables for upcoming material — "Fix a
+commutative ring $R$ and an $R$-module $W$, the $*$-module of the $*$s
+below" — is an imperative to the reader to hold variables across a
+section, not a Definition/Theorem/Example with a checkable claim. Delete
+all glue and the skeleton must remain complete (SEC-6); here every form
+below would then lose its $R,W$ quantifier, so the skeleton is
+incomplete without glue. "Of the forms below" is a forward reference to
+no specified label, names $W$ by a future description, and fixes a single
+$W$ where the mathematics requires a *parameter* quantifying over
+$\mathbf{LMod}_R$.
+
+This is the general form behind SEC-8/PR-33: prose that holds variables
+outside any fenced unit instead of quantifying them inside the unit that
+uses them. It creates ambiguous scope — is $W$ fixed for the section,
+the chapter, or one definition? — and forces later text to rely on
+ambient context.
+
+Concrete standards:
+
+* **$W$-valued bilinear form:** for $R$ an $\mathbb E_\infty$-ring
+  spectrum and $W,M\in\mathbf{LMod}_R$,
+  a $W$-valued bilinear form on $M$ is a morphism
+  $b\colon M\otimes_R M\to W$ in $\mathbf{LMod}_R$ (equivalently,
+  $M\otimes_R^L M\to W$). For $R$ discrete and $M,W$ discrete, this is
+  an $R$-bilinear $M\times M\to W$. The datum is the map $b$; $W$ is its
+  codomain, varying with $b$, not a once-fixed module. Similarly a
+  quadratic or symmetric form is a map from the appropriate
+  classifying object for that flavour, valued in varying $W$.
+
+* **Quantification belongs inside the unit.** Standard texts never write
+  a free-floating "Fix $R$ and $W$ for below." They quantify inside
+  each fenced unit or make the section header the formal quantifier.
+
+**Banned:** "Fix a commutative ring $R$ and an $R$-module $W$, the value
+module of the forms below" as a standalone setup sentence; "Fix $R$ for
+the forms below; let $W$ be the value module."
+
+**Preferred:** quantify inside the fenced unit, with varying $W$:
+
+"::: {#def-bilinear} **Definition.** Let $R$ be a commutative ring (resp.
+$\mathbb E_\infty$-ring spectrum) and let $W,M\in\mathbf{LMod}_R$. A
+**$W$-valued bilinear form** on $M$ is a morphism
+$b\colon M\otimes_R M\to W$ in $\mathbf{LMod}_R$. :::"
+
+Or, when a section works over one $R$, make the header the quantifier
+once and keep $W$ varying:
+
+"::: {.Remark} Throughout §2, $R$ denotes a fixed commutative ring;
+$W$ varies over $\mathbf{LMod}_R$ and all forms are $W$-valued as in
+{#def-bilinear}. :::"
+
+Do not fix a single $W$ for "the forms below"; let $W$ be a parameter
+of the form. Do not forward-reference "below"; label the definitions
+and refer to them.
+
+### `TERM-9`: "Value module" with no definition, fixing a single $W$
+
+"Value module" is not a standard term with a defined referent and, as
+used in "the value module of the forms below," asserts a single $W$
+fixed for a section where the mathematics requires $W$ varying over
+$\mathbf{LMod}_R$ (PR-37). Forms are $W$-valued for varying $W$; the
+codomain is part of the datum $b\colon M\otimes_R M\to W$, not a global
+choice.
+
+**Banned:** "the value module $W$ of the forms below"; "fix the value
+module $W$."
+
+**Preferred:** "let $W\in\mathbf{LMod}_R$ and let $b\colon M\otimes_R
+M\to W$ be a $W$-valued bilinear form" (PR-37); or "a bilinear form
+valued in $W$" with $W$ quantified in the definition. Do not reify "the
+value module" as a once-fixed object.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3125,3 +3199,14 @@ $H$ — hiding that the actual proof obligation was not met. Standard
 exposition is positive: definitions as tuples, theorems as quantified
 implications with the comparison map, proofs, then boundary
 counterexamples when they teach.
+
+**11. Sign-posting that fixes variables for "below."** "Fix $R$ and $W$,
+the value module of the forms below" is not a unit; it holds variables
+outside any fenced Definition and forward-references an unspecified
+"below," with a single fixed $W$ where $W$ must vary over
+$\mathbf{LMod}_R$ as the codomain $b\colon M\otimes_R M\to W$ (PR-37,
+TERM-9). Correct is quantified fenced units — "Let $R$ be …, let
+$W,M\in\mathbf{LMod}_R$; a $W$-valued bilinear form is
+$b\colon M\otimes_R M\to W$" — or a section header that quantifies $R$
+once while $W$ varies; the skeleton is then complete after deleting
+glue.
