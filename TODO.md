@@ -707,21 +707,6 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   without changing the formal object; compatible truncation data is connected
   to the completed algebra by actual maps.
 
-- [ ] **`monodromy`**. **Needs:** `geometric-cohomology`.
-  Construct higher direct images, local systems and monodromy for the
-  required family strata.
-  **Dependencies:** the selected topology, sheaves and geometric cohomology.
-  **Deliver:** the relevant higher direct-image sheaf, stalk-to-fiber
-  comparison, local system on the smooth stratum, and a representation of its
-  pointed fundamental group on the actual cohomology module.
-  **Decision:** a fiber cohomology module alone is not a higher direct image
-  and repeated fiber dimensions do not prove local constancy.
-  Use [topological proper base change](https://stacks.math.columbia.edu/tag/09V4)
-  only in its stated setting. Singular-fiber specialization and nearby/vanishing
-  cycles require their own comparison, not that same theorem by analogy.
-  **Acceptance:** a sourced family with nonidentity monodromy and a singular
-  fiber; maps preserve the applicable pairing and action.
-
 - [x] **`singularity-classification`**. **Needs:** `normalization`, `local-module-maps`.
   Extend local singularity classification beyond selected coordinate
   normal-form recognition.
@@ -1021,7 +1006,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

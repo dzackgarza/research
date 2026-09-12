@@ -29,6 +29,31 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.owned_category import object_of
 
 
+class ComplexManifoldPoint(SageObject):
+    r"""A selected point of an owned complex manifold, with private Sage coordinates."""
+
+    def __init__(self, manifold, coordinates, engine_point, chart_label) -> None:
+        self._manifold = manifold
+        self._coordinates = tuple(coordinates)
+        self._engine_point = engine_point
+        self._chart_label = chart_label
+
+    def manifold(self):
+        return self._manifold
+
+    def coordinates(self):
+        return self._coordinates
+
+    def chart(self):
+        return self.manifold().atlas()[self._chart_label]
+
+    def _engine_manifold_point(self):
+        return self._engine_point
+
+    def _repr_(self):
+        return f"Point {self.coordinates()} of {self.manifold()}"
+
+
 class ManifoldAtlasChart(SageObject):
     r"""One labelled chart of an owned manifold."""
 
@@ -573,6 +598,22 @@ class ComplexManifolds(OwnedCategory):
         def holomorphic_polynomial_map(self, codomain, coordinate_expressions):
             return self.Mor(codomain).polynomial(coordinate_expressions)
 
+        def point(self, coordinates, chart_label="standard"):
+            coordinates = tuple(coordinates)
+            if len(coordinates) != self.dimension():
+                raise ValueError("a complex-manifold point has one coordinate per complex dimension")
+            chart = self.atlas()[chart_label]
+            engine_point = self._engine_manifold()(
+                coordinates,
+                chart=chart._engine_chart(),
+            )
+            return ComplexManifoldPoint(
+                self,
+                coordinates,
+                engine_point,
+                chart_label,
+            )
+
         def is_open_submanifold(self) -> bool:
             return getattr(self, "_preamble_open_ambient", None) is not None
 
@@ -603,6 +644,7 @@ class ComplexManifolds(OwnedCategory):
 
 __all__ = [
     "ComplexManifoldHomset",
+    "ComplexManifoldPoint",
     "ComplexManifolds",
     "DifferentiableManifolds",
     "HolomorphicMap",
