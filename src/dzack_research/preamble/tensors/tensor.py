@@ -1714,6 +1714,26 @@ class MixedTensorAlgebraParent(UniqueRepresentation, Parent):
     def module(self):
         return self._module
 
+    def dual_module(self):
+        r"""Return the linear dual ``M^*`` used by the covariant factor."""
+        return self.module().dual_module()
+
+    def vector_tensor_algebra(self):
+        r"""Return ``T(M)``, the contravariant tensor-algebra factor."""
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+            TensorAlgebraOf,
+        )
+
+        return TensorAlgebraOf(self.module())
+
+    def covector_tensor_algebra(self):
+        r"""Return ``T(M^*)``, the covariant tensor-algebra factor."""
+        from dzack_research.preamble.categories.algebras.framed_free_algebras import (
+            TensorAlgebraOf,
+        )
+
+        return TensorAlgebraOf(self.dual_module())
+
     def base_ring(self):
         return self._base_ring
 
