@@ -4,7 +4,16 @@ from dzack_research.preamble.all import (
     FiniteAtlasInvertibleSheaf,
     ProjectiveSpace,
     QQ,
+    Schemes,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_base_change_and_bundles.sage",
+    "live_owner": "tests/divisors/test_projective_line_bundles.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def test_projective_O_one_is_descent_on_the_actual_projective_space() -> None:
@@ -116,3 +125,35 @@ def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
         local = comparison.line_bundle_refinement().local_isomorphism(index)
         assert local.forward().domain().base_ring() is fine.chart(index).coordinate_algebra()
         assert local.forward().codomain() is pulled.local_module(index)
+
+
+def test_projection_pullback_places_degree_in_the_selected_product_factor() -> None:
+    labels = finite_ordered_set(("left", "right"))
+    line = ProjectiveSpace(1, QQ)
+    product = Schemes(QQ).product(indexed_family(labels, lambda _label: line))
+    projection = product.projection("left")
+    bundle = line.O(2)
+
+    pulled = bundle.pullback(projection)
+    section_pullback = bundle.global_sections().pullback(projection)
+
+    assert pulled.projective_product() is product
+    assert pulled.multidegree().index_set() is labels
+    assert pulled.multidegree()["left"] == 2
+    assert pulled.multidegree()["right"] == 0
+    assert section_pullback.domain() is bundle.global_sections()
+    assert section_pullback.codomain() is pulled.global_sections()
+    assert section_pullback.is_injective()
+    assert section_pullback.domain().module_rank() == section_pullback.codomain().module_rank() == 3
+
+
+def test_identity_base_change_preserves_projective_dimension_and_bundle_degree() -> None:
+    plane = ProjectiveSpace(2, QQ)
+    identity = QQ.Mor(QQ).identity()
+    changed_plane = plane.base_change(identity)
+    changed_bundle = plane.O(1).base_change(identity)
+
+    assert changed_plane.relative_dimension() == plane.relative_dimension() == 2
+    assert changed_bundle.degree() == 1
+    assert changed_bundle.scheme() is changed_plane
+    assert changed_bundle.base_change_projection().codomain() is plane

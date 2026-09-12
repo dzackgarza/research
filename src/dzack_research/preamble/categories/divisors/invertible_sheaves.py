@@ -590,6 +590,39 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         r"""Return ``i^* O(d)`` for a represented projective closed immersion ``i``."""
         return ProjectiveSubschemeLineBundle(closed_subscheme, self)
 
+    def pullback(self, morphism):
+        r"""Return ``f^*O(d)`` for a represented projective-product projection.
+
+        For the projection ``pi_i : prod_j P_j -> P_i``, the pullback is the
+        multiprojective line bundle with degree ``d`` in the selected factor
+        and degree zero in every other factor.  The retained projection label,
+        rather than equality of repeated factors, selects that role.
+        """
+        from dzack_research.preamble.categories.schemes.schemes import (
+            ProductProjectiveSpaces,
+        )
+
+        if morphism.codomain() is not self.projective_space():
+            raise ValueError("line-bundle pullback requires a morphism into the bundle's projective space")
+        source = morphism.domain()
+        base = source.scheme_base_ring()
+        if source not in ProductProjectiveSpaces(base):
+            raise NotImplementedError(
+                "projective-space line-bundle pullback is currently represented for product projections"
+            )
+        label = getattr(morphism, "_preamble_product_projection_label", None)
+        if label is None:
+            raise NotImplementedError(
+                "projective-space line-bundle pullback is currently represented for product projections"
+            )
+        labels = tuple(source.factors().index_set())
+        label = source.factors().index_set()(label)
+        if morphism is not source.projection(label):
+            raise ValueError("the retained projection label does not identify this morphism")
+        return source.O(
+            tuple(self.degree() if factor_label == label else 0 for factor_label in labels)
+        )
+
     def linearize(self, scheme_action_functor, character):
         from dzack_research.preamble.categories.divisors.linearizations import (
             ProjectiveLineBundleLinearization,

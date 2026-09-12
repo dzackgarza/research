@@ -131,6 +131,51 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
                 )
             return self.linear_combination(coefficients)
 
+        def pullback(self, morphism):
+            r"""Pull homogeneous sections back along a represented product projection.
+
+            If ``pi_i : prod_j P_j -> P_i``, a degree-``d`` monomial keeps its
+            exponent vector in the ``i``-th block and has exponent zero in all
+            other blocks.  This is the section map underlying
+            ``pi_i^* O(d) = O(0,...,d,...,0)``.
+            """
+            source_scheme = self.section_scheme()
+            if morphism.codomain() is not source_scheme:
+                raise ValueError("section pullback requires a morphism into the section scheme")
+            pulled_bundle = source_scheme.O(self.homogeneous_degree()).pullback(morphism)
+            target = pulled_bundle.global_sections()
+            product = morphism.domain()
+            label = getattr(morphism, "_preamble_product_projection_label", None)
+            if label is None:
+                raise NotImplementedError(
+                    "homogeneous section pullback is currently represented for product projections"
+                )
+            labels = tuple(product.factors().index_set())
+            label = product.factors().index_set()(label)
+            source_exponents = self._preamble_homogeneous_exponents
+            target_by_exponents = {
+                tuple(tuple(block) for block in exponents): monomial
+                for monomial, exponents in target._preamble_multihomogeneous_exponents.items()
+            }
+
+            def target_exponents(monomial):
+                selected = tuple(source_exponents[monomial])
+                blocks = []
+                for factor_label in labels:
+                    factor = product.factors()[factor_label]
+                    width = int(factor.relative_dimension()) + 1
+                    blocks.append(selected if factor_label == label else (0,) * width)
+                return tuple(blocks)
+
+            return module_homset(self, target)(
+                {
+                    monomial: target.module_generator(
+                        target_by_exponents[target_exponents(monomial)]
+                    )
+                    for monomial in self.module_generating_set()
+                }
+            )
+
         def pullback_by_projective_automorphism(self, morphism):
             r"""Return ``morphism^*:H^0(P,O(d))->H^0(P,O(d))`` by homogeneous substitution.
 

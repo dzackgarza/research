@@ -3030,9 +3030,9 @@ preamble/tests/framework/projective_framework_loader.py	NotebookNamespace	bindin
 preamble/tests/framework/projective_framework_loader.py	load_projective_framework	function	40	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/framework/scenario_manifest.sage	<module>	module	1	0		TODO.md	reconciled-live-owner
 preamble/tests/framework/scenario_manifest.sage	SCENARIO_MANIFEST	binding	8	0		TODO.md	reconciled-live-owner
-preamble/tests/framework/test_base_change_and_bundles.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/test_base_change_and_bundles.sage	test_projection_pullback_matches_multiindices	specimen	6	0			unreviewed
-preamble/tests/framework/test_base_change_and_bundles.sage	test_identity_base_change_is_faithful_on_schemes_and_bundles	specimen	25	0			unreviewed
+preamble/tests/framework/test_base_change_and_bundles.sage	<module>	module	1	0		tests/divisors/test_projective_line_bundles.py	reconciled-live-owner
+preamble/tests/framework/test_base_change_and_bundles.sage	test_projection_pullback_matches_multiindices	specimen	6	0		tests/divisors/test_projective_line_bundles.py	reconciled-live-owner
+preamble/tests/framework/test_base_change_and_bundles.sage	test_identity_base_change_is_faithful_on_schemes_and_bundles	specimen	25	0		tests/divisors/test_projective_line_bundles.py	reconciled-live-owner
 preamble/tests/framework/test_blowups_and_non_toric_families.sage	<module>	module	1	0		tests/schemes/test_scheme_products_over_a_base.py	reconciled-live-owner
 preamble/tests/framework/test_blowups_and_non_toric_families.sage	test_affine_tensored_product_backbone_is_non_toric_affine	specimen	6	0		tests/schemes/test_scheme_products_over_a_base.py	reconciled-live-owner
 preamble/tests/framework/test_blowups_and_non_toric_families.sage	test_projective_and_affine_base_change_products	specimen	16	0		tests/schemes/test_scheme_products_over_a_base.py	reconciled-live-owner
