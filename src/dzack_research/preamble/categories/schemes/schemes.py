@@ -10,6 +10,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
+from sage.schemes.generic.algebraic_scheme import AlgebraicScheme_subscheme as _SageAlgebraicSchemeSubscheme
 from sage.schemes.generic.scheme import AffineScheme as _SageAffineScheme
 from sage.schemes.generic.scheme import Scheme as _SageScheme
 from sage.schemes.generic.spec import Spec as _SageSpec
@@ -469,6 +470,81 @@ class SchemeMorphism(Morphism):
 
     def _repr_(self) -> str:
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
+
+
+class _OpenComplementInclusion(SchemeMorphism):
+    r"""The open immersion ``X \ Z -> X`` retained by its closed complement."""
+
+    def __init__(self, homset, closed_complement) -> None:
+        Morphism.__init__(self, homset)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        self._preamble_coordinate_algebra_morphism = None
+        self._native_morphism = None
+        self._preamble_closed_complement = closed_complement
+
+    def native_morphism(self):
+        raise NotImplementedError(
+            "this open immersion is retained by its exact closed complement rather than a native polynomial map"
+        )
+
+    def closed_complement(self):
+        return self._preamble_closed_complement
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, _OpenComplementInclusion)
+            and other.domain() is self.domain()
+            and other.codomain() is self.codomain()
+            and other.closed_complement() is self.closed_complement()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    __hash__ = None
+
+    def _repr_(self):
+        return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self.closed_complement()}"
+
+
+class _ProjectiveCoordinateMorphism(SchemeMorphism):
+    r"""A map to projective space retained by its basepoint-free homogeneous coordinates."""
+
+    def __init__(self, homset, coordinates) -> None:
+        Morphism.__init__(self, homset)
+        self._preamble_domain_override = None
+        self._preamble_codomain_override = None
+        self._preamble_coordinate_algebra_morphism = None
+        self._native_morphism = None
+        self._preamble_projective_coordinate_sections = finite_family(
+            tuple(coordinates),
+            name="Homogeneous coordinates of a projective morphism",
+        )
+
+    def native_morphism(self):
+        raise NotImplementedError(
+            "this projective morphism is retained by owned homogeneous-coordinate sections on its exact open domain"
+        )
+
+    def homogeneous_coordinates(self):
+        return self._preamble_projective_coordinate_sections
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, _ProjectiveCoordinateMorphism)
+            and other.domain() is self.domain()
+            and other.codomain() is self.codomain()
+            and tuple(other.homogeneous_coordinates()) == tuple(self.homogeneous_coordinates())
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    __hash__ = None
+
+    def _repr_(self):
+        return f"Projective morphism from {self.domain()} to {self.codomain()} defined by {tuple(self.homogeneous_coordinates())}"
 
 
 class _RepresentedAffineSchemeMorphism(SchemeMorphism):
@@ -1060,6 +1136,26 @@ class Schemes(OwnedCategoryOverBaseRing):
                     )
                     wrapped._preamble_coordinate_algebra_morphism = pullback
             return wrapped
+
+        def projective_morphism_from_coordinates(self, target, coordinates):
+            r"""Return the projective morphism defined by a basepoint-free coordinate family.
+
+            ``coordinates`` are owned homogeneous sections on the ambient
+            projective presentation.  The caller has selected this exact source
+            as a domain on which they have no common zero; retaining that open
+            domain and the coordinate family is the complete defining datum of
+            the morphism.  No larger rational-map domain is silently substituted.
+            """
+            base = self.scheme_base_ring()
+            if target not in ProjectiveSpaces(base):
+                raise TypeError("projective homogeneous coordinates require a projective-space target")
+            coordinates = tuple(coordinates)
+            if len(coordinates) != int(target.relative_dimension()) + 1:
+                raise ValueError("a projective morphism has one homogeneous coordinate per target coordinate")
+            return _ProjectiveCoordinateMorphism(
+                self.Mor(target),
+                coordinates,
+            )
 
         def categorical_identity_morphism(self):
             selected = getattr(self, "_preamble_identity_morphism", None)
@@ -1788,10 +1884,29 @@ class ProjectiveSchemes(_SchemePropertyCategory):
 
         def closed_subscheme(self, *equations):
             r"""``V_+(f_1, ..., f_k)``, cut out by homogeneous equations."""
-            equations = tuple(equations[0]) if len(equations) == 1 and isinstance(equations[0], (tuple, list)) else tuple(equations)
+            equations = (
+                tuple(equations[0])
+                if len(equations) == 1 and isinstance(equations[0], (tuple, list))
+                else tuple(equations)
+            )
+            engine_equations = []
+            retain_owned_equations = True
             for equation in equations:
-                assert equation.is_homogeneous(), f"{equation} is not homogeneous, so it cuts out no closed subscheme of {self}"
-            return refine_closed_subscheme(self.subscheme(equations), self)
+                if not equation.is_homogeneous():
+                    raise ValueError(
+                        f"{equation} is not homogeneous, so it cuts out no closed subscheme of {self}"
+                    )
+                parent = getattr(equation, "parent", lambda: None)()
+                try:
+                    engine_equations.append(_engine_element(parent, equation))
+                except (AttributeError, TypeError, ValueError):
+                    engine_equations.append(equation)
+                    retain_owned_equations = False
+            return refine_closed_subscheme(
+                self.subscheme(tuple(engine_equations)),
+                self,
+                defining_equations=equations if retain_owned_equations else None,
+            )
 
 
 class AffineSpaces(OwnedCategoryOverBaseRing):
@@ -3741,6 +3856,22 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
                 return self.defining_ideal()
             return self.inclusion().codomain().coordinate_ring().ideal(*equations)
 
+        def is_empty(self) -> bool:
+            r"""Return whether this represented closed subscheme is empty."""
+            codomain = self.inclusion().codomain()
+            base = codomain.scheme_base_ring()
+            if codomain in AffineSchemes(base):
+                return self.defining_ideal_owned().contains_ambient_element(
+                    codomain.coordinate_algebra().one()
+                )
+            if codomain in ProjectiveSchemes(base):
+                # Sage's projective dimension is ``-1`` exactly for the empty
+                # Proj; this is the maintained projective-ideal computation.
+                return int(self.dimension()) < 0
+            raise NotImplementedError(
+                "emptiness of this represented closed subscheme has no selected computation"
+            )
+
         def corestriction(self, morphism):
             r"""The factorization ``T -> Z`` of a morphism ``T -> X`` landing in ``Z``.
 
@@ -3863,7 +3994,23 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             """
             codomain = self.inclusion().codomain()
             base = codomain.scheme_base_ring()
-            assert codomain in AffineSchemes(base), "the represented open complement requires a closed subscheme of an affine scheme"
+            if codomain in ProjectiveSchemes(base):
+                native = _SageAlgebraicSchemeSubscheme.complement(self, codomain)
+                opened = refine_scheme(
+                    native,
+                    base,
+                    [OpenImmersions(codomain), QuasiProjectiveSchemes(base)],
+                )
+                opened._preamble_inclusion = _OpenComplementInclusion(
+                    opened.Mor(codomain),
+                    self,
+                )
+                opened._preamble_open_complement_closed_subscheme = self
+                return opened
+            if codomain not in AffineSchemes(base):
+                raise NotImplementedError(
+                    "the represented open complement requires an affine or projective ambient scheme"
+                )
             equations = self.defining_equations()
             indices = equations.index_set()
             charts = {index: codomain.distinguished_open(equations[index]) for index in indices}

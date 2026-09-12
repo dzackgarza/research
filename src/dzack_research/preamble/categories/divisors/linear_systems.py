@@ -10,6 +10,8 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
@@ -31,7 +33,9 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     finite_indexed_family,
+    indexed_family,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class CompleteLinearSystems(OwnedCategoryOverBaseRing):
@@ -84,6 +88,20 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         def homogeneous_coordinate_ring(self):
             return self._preamble_homogeneous_coordinate_ring
 
+        def homogeneous_polynomial(self, section):
+            r"""Return the homogeneous polynomial represented by ``section``."""
+            section = self(section)
+            coefficients = module_coefficients(section, self)
+            ring = self.homogeneous_coordinate_ring()
+            scalar_map = ring.algebra_structure_morphism()
+            return sum(
+                (
+                    scalar_map(coefficient) * monomial
+                    for monomial, coefficient in coefficients.items()
+                ),
+                ring.zero(),
+            )
+
 
 class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     r"""Finite multihomogeneous section spaces on products of projective spaces."""
@@ -104,6 +122,64 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
 
         def homogeneous_coordinate_ring(self):
             return self._preamble_homogeneous_coordinate_ring
+
+
+class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
+    r"""Projective parameter spaces of represented section subspaces of ``O(d)``."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "projective linear systems"
+
+    def super_categories(self):
+        return [ProjectiveSchemes(self.base_ring())]
+
+    class ParentMethods:
+        def line_bundle(self):
+            return self._preamble_linear_system_line_bundle
+
+        def ambient_section_space(self):
+            return self.line_bundle().global_sections()
+
+        def projective_dimension(self):
+            return self.relative_dimension()
+
+        def selected_section_space(self):
+            return self._preamble_selected_section_space
+
+        def section_embedding(self):
+            return self._preamble_section_embedding
+
+        def selected_sections(self):
+            embedding = self.section_embedding()
+            source = self.selected_section_space()
+            return indexed_family(
+                source.module_generating_set(),
+                lambda label: embedding(source.module_generator(label)),
+                name="Selected sections of the linear system",
+            )
+
+        def base_locus(self):
+            return self._preamble_base_locus
+
+        def is_basepoint_free(self) -> bool:
+            return self.base_locus().is_empty()
+
+        @cached_method
+        def domain_of_definition(self):
+            if self.is_basepoint_free():
+                return self.line_bundle().scheme()
+            return self.base_locus().open_complement()
+
+        @cached_method
+        def associated_morphism(self):
+            domain = self.domain_of_definition()
+            source_sections = self.ambient_section_space()
+            coordinates = tuple(
+                source_sections.homogeneous_polynomial(section)
+                for section in self.selected_sections()
+            )
+            return domain.projective_morphism_from_coordinates(self, coordinates)
 
 
 class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
@@ -372,6 +448,37 @@ def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_
     return restriction
 
 
+def ProjectiveLinearSystem(line_bundle, sections):
+    r"""Return the projective linear system spanned by independent sections of ``line_bundle``."""
+    scheme = line_bundle.projective_space()
+    ambient = line_bundle.global_sections()
+    base = scheme.scheme_base_ring()
+    sections = tuple(ambient(section) for section in sections)
+    if not sections:
+        raise ValueError("a projective linear system requires a nonzero section subspace")
+    labels = Sets.Δ[len(sections) - 1]
+    selected = FreshFreeModuleOn(base, labels)
+    images = {
+        label: sections[int(labels.ranking_map()(label))]
+        for label in labels
+    }
+    selected_map = module_homset(selected, ambient)(images)
+    if int(selected_map.kernel().dimension()) != 0:
+        raise ValueError("the supplied sections must be a basis of their selected subspace")
+    embedding = module_embedding(selected, ambient, images)
+    polynomials = tuple(
+        ambient.homogeneous_polynomial(section)
+        for section in sections
+    )
+    base_locus = scheme.closed_subscheme(polynomials)
+    system = ProjectiveSpace(len(sections) - 1, base)
+    system._preamble_linear_system_line_bundle = line_bundle
+    system._preamble_selected_section_space = selected
+    system._preamble_section_embedding = embedding
+    system._preamble_base_locus = base_locus
+    return refine_scheme(system, base, [ProjectiveLinearSystems(base)])
+
+
 def _centered_jet_basis(base, dimension, jet_order):
     names = tuple(f"v{index}" for index in range(dimension))
     ring = PolynomialRing(base, names)
@@ -626,6 +733,8 @@ __all__ = [
     "ImposedMultiplicityLinearSystems",
     "ImposedPointMultiplicityLinearSystem",
     "ProjectiveJetSpaces",
+    "ProjectiveLinearSystem",
+    "ProjectiveLinearSystems",
     "ProjectivePointJetEvaluation",
     "SectionsVanishingAtPoint",
     "SectionsVanishingToOrder",
