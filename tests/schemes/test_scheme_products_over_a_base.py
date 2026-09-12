@@ -1,23 +1,25 @@
 r"""Products of schemes as categorical products over the stated base.
 
-The two represented regimes are affine factors, where the product is the
-spectrum of the coproduct of coordinate algebras, and projective factors,
-where it is the multiprojective scheme.  A mixed product is a projective
-space over the affine factor's coordinate algebra, and what is missing there
-is its two projections, not the object.
+Affine factors use coproducts of coordinate algebras, projective factors use
+the multiprojective realization, and finite mixed affine/projective families
+are glued from products of standard affine charts.  Every represented route
+retains the same factor family and its actual projections.
 """
-
-import pytest
 
 from dzack_research.preamble.all import (
     AffineSchemes,
     AffineSpace,
     FiniteTypeSchemes,
     IntegralSchemes,
+    NormalSchemes,
+    ProductSchemes,
     ProjectiveSchemes,
     ProjectiveSpace,
     QQ,
+    QuasiAffineSchemes,
+    QuasiProjectiveSchemes,
     SeparatedSchemes,
+    SmoothSchemes,
     Surfaces,
     ZZ,
     scheme_product,
@@ -44,15 +46,40 @@ def test_a_product_of_affine_spaces_is_affine_of_the_summed_dimension() -> None:
     plane = scheme_product(line, line)
 
     assert plane in AffineSchemes(ZZ)
+    assert plane in QuasiAffineSchemes(ZZ)
+    assert plane in QuasiProjectiveSchemes(ZZ)
     assert plane.relative_dimension() == 2
     assert plane.projection(0).codomain() is line
     # Over Z the coordinate ring has one more Krull dimension than the fibre.
     assert plane.coordinate_ring().krull_dimension() == 3
 
 
-def test_a_mixed_product_names_the_two_projections_it_cannot_represent() -> None:
+def test_a_mixed_affine_projective_product_retains_projections_and_exact_properties() -> None:
     affine = AffineSpace(1, QQ)
     projective = ProjectiveSpace(1, QQ)
 
-    with pytest.raises(AssertionError, match="neither projection is represented"):
-        scheme_product(affine, projective)
+    product = scheme_product(affine, projective)
+
+    assert product.relative_dimension() == 2
+    assert product.projection(0).codomain() is affine
+    assert product.projection(1).codomain() is projective
+    assert product in SeparatedSchemes(QQ)
+    assert product in FiniteTypeSchemes(QQ)
+    assert product in SmoothSchemes(QQ)
+    assert product in QuasiProjectiveSchemes(QQ)
+    assert product in IntegralSchemes(QQ)
+    assert product in NormalSchemes(QQ)
+    assert product not in AffineSchemes(QQ)
+
+
+def test_projective_line_diagonal_uses_the_projective_product_cone() -> None:
+    line = ProjectiveSpace(1, QQ)
+
+    diagonal = line.diagonal_morphism()
+    product = diagonal.codomain()
+
+    assert product in ProductSchemes(QQ)
+    assert product in ProjectiveSchemes(QQ)
+    assert diagonal.domain() is line
+    assert product.projection(0) * diagonal == line.categorical_identity_morphism()
+    assert product.projection(1) * diagonal == line.categorical_identity_morphism()

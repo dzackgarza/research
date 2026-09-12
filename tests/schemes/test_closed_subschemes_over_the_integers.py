@@ -39,3 +39,20 @@ def test_the_defining_ideal_is_derived_from_the_equations_when_it_is_asked_for()
     _plane, _equation, parabola = _parabola_in_the_plane_over(QQ)
 
     assert parabola.codimension() == 1
+
+
+def test_successive_integer_equations_retain_both_closed_embeddings_and_base() -> None:
+    plane, _equation, parabola = _parabola_in_the_plane_over(ZZ)
+    parabola_algebra = parabola.coordinate_algebra()
+    x = parabola_algebra.algebra_generator("x")
+
+    origin = parabola.closed_subscheme(x)
+    through_plane = parabola.inclusion() * origin.inclusion()
+
+    assert parabola.scheme_base_ring() is ZZ
+    assert origin.scheme_base_ring() is ZZ
+    assert origin in ClosedEmbeddings(parabola)
+    assert origin.inclusion().codomain() is parabola
+    assert through_plane.domain() is origin
+    assert through_plane.codomain() is plane
+    assert origin.inclusion().coordinate_algebra_morphism()(x).is_zero()

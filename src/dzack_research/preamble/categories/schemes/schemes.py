@@ -77,7 +77,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     SchemeUnderlyingSpace,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import realize_owned_category
 
@@ -172,6 +172,51 @@ class SchemeMorphism(Morphism):
             structure = other.domain().structure_morphism()
             if structure.codomain() is self.codomain():
                 return structure
+
+        projection_label = getattr(
+            self,
+            "_preamble_product_projection_label",
+            None,
+        )
+        product_cone_target = getattr(
+            other,
+            "_preamble_product_cone_target",
+            None,
+        )
+        product_cone_legs = getattr(
+            other,
+            "_preamble_product_cone_legs",
+            None,
+        )
+        if (
+            projection_label is not None
+            and product_cone_target is self.domain()
+            and product_cone_legs is not None
+        ):
+            return product_cone_legs[projection_label]
+
+        fiber_projection_index = getattr(
+            self,
+            "_preamble_fiber_projection_index",
+            None,
+        )
+        fiber_cone_target = getattr(
+            other,
+            "_preamble_fiber_product_cone_target",
+            None,
+        )
+        fiber_cone_legs = getattr(
+            other,
+            "_preamble_fiber_product_cone_legs",
+            None,
+        )
+        if (
+            fiber_projection_index is not None
+            and fiber_cone_target is self.domain()
+            and fiber_cone_legs is not None
+        ):
+            return fiber_cone_legs[fiber_projection_index]
+
         # The composite is a morphism between the stated endpoints, whichever
         # engine route computes it.  Reading the endpoints off the engine's
         # answer lands it on Spec of a coordinate ring instead.
@@ -224,13 +269,19 @@ class SchemeMorphism(Morphism):
             if self.domain() in ProductProjectiveSpaces(base):
                 factors = self.domain().factors()
                 stored_points = getattr(native_point, "_points", None)
-                if stored_points is not None:
-                    for index, factor in enumerate(factors):
-                        if factor is self.codomain():
+                factor_label = getattr(
+                    self,
+                    "_preamble_product_projection_label",
+                    None,
+                )
+                if stored_points is not None and factor_label is not None:
+                    labels = tuple(factors.index_set())
+                    for position, label in enumerate(labels):
+                        if label == factor_label:
                             return categorical_scheme_morphism(
-                                stored_points[index],
+                                stored_points[position],
                                 domain=point.domain(),
-                                codomain=factor,
+                                codomain=factors[label],
                             )
         return self.compose(point)
 
@@ -645,7 +696,7 @@ class Schemes(OwnedCategoryOverBaseRing):
             )
 
             family = _finite_factor_family(factors, name="Product factors")
-            return scheme_product(tuple(family))
+            return scheme_product(family)
 
         def _categorical_product(self, left, right):
             return scheme_product(left, right)
@@ -1748,6 +1799,7 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         return [
             AffineSchemes(self.base_ring()),
             FiniteTypeSchemes(self.base_ring()),
+            QuasiProjectiveSchemes(self.base_ring()),
             SmoothSchemes(self.base_ring()),
         ]
 
@@ -1937,56 +1989,136 @@ class ProductSchemes(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         def factors(self):
-            r"""Return the family of factors, indexed by the product's own index set."""
+            r"""Return the exact indexed family whose product this is."""
 
-            return _finite_factor_family(self._preamble_product_factors, name="Product factors")
+            return self._preamble_product_factors
 
         def number_of_factors(self):
             return self.factors().cardinality()
 
         def projection(self, index):
+            r"""Return the projection to the factor carrying label ``index``."""
             return self._preamble_product_projections[index]
 
         def projections(self):
-            return tuple(self.projection(index) for index in range(self.number_of_factors()))
+            r"""Return the projections indexed by the same set as :meth:`factors`."""
+            return self._preamble_product_projections
 
         def from_product_cone(self, legs):
-            r"""The unique morphism ``T -> prod_i X_i`` with the stated legs.
+            r"""Return the unique represented map into this selected product.
 
-            A cone over the product is the family of legs ``f_i: T -> X_i``,
-            indexed the way the factors are, so that is the datum this takes.
-
-            For affine factors the product is ``Spec`` of the coproduct of
-            coordinate algebras, so the cone map is the cocone map on
-            algebras: each generator of the product algebra is the image of a
-            factor generator under a projection pullback, and it is sent to
-            that generator's image under the corresponding leg.
+            The cone carries the same index set as the retained factor family.
+            Affine products factor through the coordinate-algebra coproduct.
+            Products of projective spaces use Sage's maintained polynomial
+            morphism realization after concatenating the coordinate data of the
+            labelled legs.  Glued mixed targets retain their projections but do
+            not yet have a represented general map *into* the gluing.
             """
             factors = self.factors()
-            legs = _finite_factor_family(legs, name="Product cone legs")
-            assert legs.cardinality() == factors.cardinality(), "a product cone has one leg per factor"
-            leg_labels = tuple(legs.index_set())
-            source = legs[leg_labels[0]].domain()
+            factor_indices = factors.index_set()
+            factor_labels = tuple(factor_indices)
+            if isinstance(legs, IndexedFamily):
+                if legs.index_set() is not factor_indices:
+                    raise ValueError(
+                        "a product cone is indexed by the product's exact factor index set"
+                    )
+            else:
+                leg_values = tuple(legs)
+                if len(leg_values) != len(factor_labels):
+                    raise ValueError("a product cone has one leg per factor")
+
+                def leg_at(label):
+                    for position, known_label in enumerate(factor_labels):
+                        if known_label == label:
+                            return leg_values[position]
+                    raise KeyError(label)
+
+                legs = indexed_family(
+                    factor_indices,
+                    leg_at,
+                    name="Product cone legs",
+                )
+
+            source = legs[factor_labels[0]].domain()
+            if any(legs[label].domain() is not source for label in factor_labels):
+                raise ValueError("a product cone has one apex")
+            for factor_label in factor_labels:
+                if legs[factor_label].codomain() is not factors[factor_label]:
+                    raise ValueError(
+                        f"the leg at {factor_label} must land in its indexed factor"
+                    )
+
             base = self.scheme_base_ring()
-            assert all(legs[label].domain() is source for label in leg_labels), "a cone has one apex"
-            assert self in AffineSchemes(base) and source in AffineSchemes(base), "the represented product cone map currently requires affine schemes"
-            product_algebra = self.coordinate_algebra()
-            images = {}
-            for index, label in enumerate(leg_labels):
-                leg = legs[label]
-                factor = factors[index]
-                assert leg.codomain() is factor, f"leg {index} must land in factor {index}"
-                projection_pullback = self.projection(index).coordinate_algebra_morphism()
-                leg_pullback = leg.coordinate_algebra_morphism()
-                factor_algebra = factor.coordinate_algebra()
-                for label in factor_algebra.algebra_generating_set():
-                    generator = factor_algebra.algebra_generator(label)
-                    images[_algebra_generator_label(product_algebra, projection_pullback(generator))] = leg_pullback(generator)
-            pullback = product_algebra.Mor(source.coordinate_algebra())(images)
-            cone = _affine_morphism_from_pullback(source, self, pullback)
-            for index, label in enumerate(leg_labels):
-                assert self.projection(index) * cone == legs[label], f"the product cone map does not recover leg {index}"
+            if self in AffineSchemes(base):
+                if source not in AffineSchemes(base):
+                    raise NotImplementedError(
+                        "the affine product factorization currently requires an affine cone apex"
+                    )
+                product_algebra = self.coordinate_algebra()
+                images = {}
+                for factor_label in factor_labels:
+                    leg = legs[factor_label]
+                    factor = factors[factor_label]
+                    projection_pullback = self.projection(
+                        factor_label
+                    ).coordinate_algebra_morphism()
+                    leg_pullback = leg.coordinate_algebra_morphism()
+                    factor_algebra = factor.coordinate_algebra()
+                    for generator_label in factor_algebra.algebra_generating_set():
+                        generator = factor_algebra.algebra_generator(generator_label)
+                        images[
+                            _algebra_generator_label(
+                                product_algebra,
+                                projection_pullback(generator),
+                            )
+                        ] = leg_pullback(generator)
+                pullback = product_algebra.Mor(source.coordinate_algebra())(images)
+                cone = _affine_morphism_from_pullback(source, self, pullback)
+            elif self in ProductProjectiveSpaces(base):
+                coordinates = []
+                for factor_label in factor_labels:
+                    leg = legs[factor_label]
+                    native = leg.native_morphism()
+                    from sage.schemes.generic.morphism import SchemeMorphism_id
+
+                    if isinstance(native, SchemeMorphism_id):
+                        leg_coordinates = tuple(leg.domain().coordinate_ring().gens())
+                    else:
+                        defining_polynomials = getattr(
+                            native,
+                            "defining_polynomials",
+                            None,
+                        )
+                        if defining_polynomials is None:
+                            raise NotImplementedError(
+                                "a map into a product of projective spaces requires each "
+                                "represented leg to carry polynomial coordinate data"
+                            )
+                        leg_coordinates = tuple(defining_polynomials())
+                    coordinates.extend(leg_coordinates)
+                native = _native_scheme_homset(source, self)(
+                    coordinates,
+                    check=False,
+                )
+                cone = categorical_scheme_morphism(
+                    native,
+                    domain=source,
+                    codomain=self,
+                )
+            else:
+                raise NotImplementedError(
+                    "a general map into a glued mixed scheme product is not yet represented"
+                )
+
+            cone._preamble_product_cone_target = self
+            cone._preamble_product_cone_legs = legs
+            for factor_label in factor_labels:
+                if self.projection(factor_label) * cone != legs[factor_label]:
+                    raise ArithmeticError(
+                        f"the product cone map does not recover leg {factor_label}"
+                    )
             return cone
+
 
 
 class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
@@ -2066,7 +2198,12 @@ def _initialize_owned_affine_spectrum(
     """
     categories = [AffineSchemes(base)]
     if algebra is base or algebra in FramedAlgebras(base):
-        categories.append(FiniteTypeSchemes(base))
+        categories.extend(
+            (
+                FiniteTypeSchemes(base),
+                QuasiProjectiveSchemes(base),
+            )
+        )
     if algebra is base:
         categories.append(SmoothSchemes(base))
         if _normal_placement(base):
@@ -2489,9 +2626,8 @@ def _normalized_space_names(names):
     return tuple(names)
 
 
-@cached_function
-def _affine_space_from_owned_data(base, engine_dimension, names):
-    r"""Private constructor for the selected affine space."""
+def _fresh_affine_space_from_owned_data(base, engine_dimension, names):
+    r"""Construct one fresh owned affine-space carrier from the stated data."""
     if names is None:
         scheme = _SageAffineSpace(engine_dimension, _engine_ring(base))
     else:
@@ -2540,14 +2676,19 @@ def _affine_space_from_owned_data(base, engine_dimension, names):
     return scheme
 
 
+@cached_function
+def _affine_space_from_owned_data(base, engine_dimension, names):
+    r"""Return the canonical ordinary affine space for this constructor datum."""
+    return _fresh_affine_space_from_owned_data(base, engine_dimension, names)
+
+
 def AffineSpace(dimension, base_ring, names=None):
     r"""Return the category-owned affine space ``A^n_R``."""
     return AffineSpaces(_own_ring(base_ring))(dimension, names=names)
 
 
-@cached_function
-def _projective_space_from_owned_data(base, engine_dimension, names):
-    r"""Private constructor for the selected projective space."""
+def _fresh_projective_space_from_owned_data(base, engine_dimension, names):
+    r"""Construct one fresh owned projective-space carrier from the stated data."""
     if names is None:
         scheme = _SageProjectiveSpace(engine_dimension, _engine_ring(base))
     else:
@@ -2558,6 +2699,12 @@ def _projective_space_from_owned_data(base, engine_dimension, names):
     if _normal_placement(base):
         categories.append(NormalSchemes(base))
     return refine_scheme(scheme, base, categories)
+
+
+@cached_function
+def _projective_space_from_owned_data(base, engine_dimension, names):
+    r"""Return the canonical ordinary projective space for this constructor datum."""
+    return _fresh_projective_space_from_owned_data(base, engine_dimension, names)
 
 
 def ProjectiveSpace(dimension, base_ring, names=None):
@@ -2622,7 +2769,33 @@ def _standard_projective_chart_embedding(projective, chart_index):
     )
 
 
-def _mixed_affine_projective_product(schemes, base):
+def _install_scheme_product_data(product, factors, projections):
+    r"""Retain one indexed factor family and the correspondingly indexed projections."""
+    factors = _finite_factor_family(factors, name="Product factors")
+    labels = tuple(factors.index_set())
+    projection_values = tuple(projections)
+    if len(labels) != len(projection_values):
+        raise ValueError("a scheme product has exactly one projection for each factor label")
+
+    def projection_at(label):
+        for position, known_label in enumerate(labels):
+            if known_label == label:
+                return projection_values[position]
+        raise KeyError(label)
+
+    for position, label in enumerate(labels):
+        projection_values[position]._preamble_product_projection_label = label
+
+    product._preamble_product_factors = factors
+    product._preamble_product_projections = indexed_family(
+        factors.index_set(),
+        projection_at,
+        name="Scheme product projections",
+    )
+    return product
+
+
+def _mixed_affine_projective_product(factors, base):
     r"""Glue a finite product containing affine and projective factors.
 
     For each projective factor choose one standard affine chart.  The product
@@ -2633,6 +2806,8 @@ def _mixed_affine_projective_product(schemes, base):
     factors give the finite gluing.  The local factor projections agree on
     overlaps, so they glue to the categorical product projections.
     """
+    factors = _finite_factor_family(factors, name="Product factors")
+    schemes = tuple(factors)
     projective_positions = tuple(position for position, scheme in enumerate(schemes) if scheme in ProjectiveSpaces(base))
     chart_labels = tuple(cartesian_product(*(range(int(schemes[position].relative_dimension()) + 1) for position in projective_positions)))
     projective_slot = {position: slot for slot, position in enumerate(projective_positions)}
@@ -2725,14 +2900,35 @@ def _mixed_affine_projective_product(schemes, base):
         SeparatedSchemes(base),
         FiniteTypeSchemes(base),
         SmoothSchemes(base),
-        QuasiProjectiveSchemes(base),
     ):
         if all(factor in placement for factor in schemes):
             categories.append(placement)
+
+    # A finite-type affine morphism is quasi-projective; projective spaces are
+    # projective, hence quasi-projective.  This criterion is strictly about the
+    # represented mixed regime and does not tag arbitrary affine schemes that
+    # have no finite-type placement.
+    if all(
+        factor in QuasiProjectiveSchemes(base)
+        or (factor in AffineSchemes(base) and factor in FiniteTypeSchemes(base))
+        for factor in schemes
+    ):
+        categories.append(QuasiProjectiveSchemes(base))
+
+    # For products of the standard affine/projective spaces the local charts
+    # are polynomial rings over the base.  Hence integral/normal placement is
+    # inherited from the same base criteria used by the individual spaces.
+    standard_spaces = all(
+        factor in AffineSpaces(base) or factor in ProjectiveSpaces(base)
+        for factor in schemes
+    )
+    if standard_spaces and _integral_placement(base):
+        categories.append(IntegralSchemes(base))
+    if standard_spaces and _normal_placement(base):
+        categories.append(NormalSchemes(base))
     refine_scheme(product, base, categories)
     product._preamble_relative_dimension = sum(int(factor.relative_dimension()) for factor in schemes)
-    product._preamble_product_factors = tuple(schemes)
-    product._preamble_product_projections = tuple(projections)
+    _install_scheme_product_data(product, factors, projections)
     product._preamble_mixed_product_gluing_datum = datum
     return product
 
@@ -2740,32 +2936,50 @@ def _mixed_affine_projective_product(schemes, base):
 def scheme_product(*schemes):
     r"""Return the categorical product in the currently supported scheme regimes.
 
-    Affine spaces use ``A^m x A^n = A^{m+n}``; products of projective spaces
-    use Sage's genuine multiprojective scheme backend.  In both cases the
-    returned scheme retains the stated factors and actual projection
-    morphisms.  General affine schemes and mixed products belong to the same
-    surface but require the coordinate-algebra tensor-product/fiber-product
-    layer and are not silently represented as products of underlying sets.
+    The defining datum is an indexed family.  Positional arguments and one
+    tuple/list are syntactic ingress for the family on the canonical finite
+    ordinal; an explicit :class:`IndexedFamily` keeps its exact index set, so
+    repeated equal or identical factors still have distinct mathematical roles.
+
+    Affine spaces use ``A^m x A^n = A^{m+n}``; general represented affine
+    factors use the coproduct of their coordinate algebras; projective spaces
+    use Sage's multiprojective computation privately; finite mixtures of affine
+    schemes and projective spaces are glued from products of their affine charts.
+    Every route retains the same indexed factors and actual projection morphisms.
     """
-    if len(schemes) == 1 and isinstance(schemes[0], (tuple, list)):
-        schemes = tuple(schemes[0])
-    if len(schemes) < 2:
+    factor_input = (
+        schemes[0]
+        if len(schemes) == 1 and isinstance(schemes[0], (tuple, list, IndexedFamily))
+        else schemes
+    )
+    factors = _finite_factor_family(factor_input, name="Product factors")
+    factor_labels = tuple(factors.index_set())
+    if len(factor_labels) < 2:
         raise ValueError("a represented scheme product requires at least two factors")
-    base = schemes[0].scheme_base_ring()
-    if any(scheme not in Schemes(base) for scheme in schemes):
+    scheme_values = tuple(factors[label] for label in factor_labels)
+    base = scheme_values[0].scheme_base_ring()
+    if any(scheme not in Schemes(base) for scheme in scheme_values):
         raise TypeError("all product factors must be schemes over the same base")
-    if any(scheme.scheme_base_ring() is not base for scheme in schemes):
+    if any(scheme.scheme_base_ring() is not base for scheme in scheme_values):
         raise ValueError("all product factors must have the same represented base ring")
 
-    if all(scheme in AffineSpaces(base) for scheme in schemes):
-        dimensions = tuple(int(scheme.relative_dimension()) for scheme in schemes)
-        names = tuple(f"x{factor}_{coordinate}" for factor, dimension in enumerate(dimensions) for coordinate in range(dimension))
-        product = AffineSpace(sum(dimensions), base, names=names)
+    if all(scheme in AffineSpaces(base) for scheme in scheme_values):
+        dimensions = tuple(int(scheme.relative_dimension()) for scheme in scheme_values)
+        names = tuple(
+            f"x{factor}_{coordinate}"
+            for factor, dimension in enumerate(dimensions)
+            for coordinate in range(dimension)
+        )
+        product = _fresh_affine_space_from_owned_data(
+            base,
+            sum(dimensions),
+            _normalized_space_names(names),
+        )
         refine_scheme(product, base, [ProductSchemes(base)])
         coordinates = tuple(product._preamble_engine_coordinate_ring.gens())
         projections = []
         offset = 0
-        for factor, dimension in zip(schemes, dimensions, strict=True):
+        for factor, dimension in zip(scheme_values, dimensions, strict=True):
             projections.append(
                 _product_projection(
                     product,
@@ -2774,24 +2988,27 @@ def scheme_product(*schemes):
                 )
             )
             offset += dimension
-    elif all(scheme in ProjectiveSpaces(base) for scheme in schemes):
-        # Each factor brings its own homogeneous coordinates x0..xn, so the
-        # product needs one name per coordinate of the whole; the affine branch
-        # above indexes them by factor for the same reason.
-        names = tuple(f"x{factor}_{coordinate}" for factor, scheme in enumerate(schemes) for coordinate in range(int(scheme.relative_dimension()) + 1))
+    elif all(scheme in ProjectiveSpaces(base) for scheme in scheme_values):
+        names = tuple(
+            f"x{factor}_{coordinate}"
+            for factor, scheme in enumerate(scheme_values)
+            for coordinate in range(int(scheme.relative_dimension()) + 1)
+        )
         product = _SageProductProjectiveSpaces(
-            [int(scheme.relative_dimension()) for scheme in schemes],
+            [int(scheme.relative_dimension()) for scheme in scheme_values],
             _engine_ring(base),
             names=names,
         )
         categories = [ProductProjectiveSpaces(base)]
         if _integral_placement(base):
             categories.append(IntegralSchemes(base))
+        if _normal_placement(base):
+            categories.append(NormalSchemes(base))
         refine_scheme(product, base, categories)
         coordinates = tuple(product.coordinate_ring().gens())
         projections = []
         offset = 0
-        for factor in schemes:
+        for factor in scheme_values:
             width = int(factor.relative_dimension()) + 1
             projections.append(
                 _product_projection(
@@ -2801,8 +3018,8 @@ def scheme_product(*schemes):
                 )
             )
             offset += width
-    elif all(scheme in AffineSchemes(base) for scheme in schemes):
-        algebras = tuple(scheme.coordinate_algebra() for scheme in schemes)
+    elif all(scheme in AffineSchemes(base) for scheme in scheme_values):
+        algebras = tuple(scheme.coordinate_algebra() for scheme in scheme_values)
         algebra = Coproduct(algebras[0], algebras[1])
         factor_maps = list(algebra.coproduct_injections())
         for next_algebra in algebras[2:]:
@@ -2810,21 +3027,31 @@ def scheme_product(*schemes):
             left_map, right_map = new_algebra.coproduct_injections()
             factor_maps = [left_map * factor_map for factor_map in factor_maps] + [right_map]
             algebra = new_algebra
-        product = Spec(algebra, base_ring=base)
-        projections = [affine_spec_morphism(factor_map) for factor_map in factor_maps]
-        refine_scheme(product, base, [ProductSchemes(base)])
-    elif all(scheme in AffineSchemes(base) or scheme in ProjectiveSpaces(base) for scheme in schemes):
-        return _mixed_affine_projective_product(tuple(schemes), base)
+        product = _fresh_affine_spectrum(
+            algebra,
+            base,
+            extra_categories=(ProductSchemes(base),),
+        )
+        projections = [
+            _affine_morphism_from_pullback(product, factor, factor_map)
+            for factor, factor_map in zip(scheme_values, factor_maps, strict=True)
+        ]
+    elif all(
+        scheme in AffineSchemes(base) or scheme in ProjectiveSpaces(base)
+        for scheme in scheme_values
+    ):
+        return _mixed_affine_projective_product(factors, base)
     else:
-        raise NotImplementedError("the represented product currently supports affine schemes, projective spaces, and arbitrary finite mixtures of those regimes")
+        raise NotImplementedError(
+            "the represented product currently supports affine schemes, projective spaces, "
+            "and arbitrary finite mixtures of those regimes"
+        )
 
-    product._preamble_product_factors = tuple(schemes)
-    product._preamble_product_projections = tuple(projections)
-    return product
+    return _install_scheme_product_data(product, factors, projections)
 
 
 class FiberProductSchemes(OwnedCategoryOverBaseRing):
-    r"""Affine schemes equipped as selected pullbacks of one cospan."""
+    r"""Schemes equipped as selected pullbacks of one represented cospan."""
 
     def an_object(self):
         r"""``A^1 \times_{Spec R} A^1``, the affine plane as a fiber product."""
@@ -2832,7 +3059,7 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
         return scheme_fiber_product(line.structure_morphism(), line.structure_morphism())
 
     def super_categories(self):
-        return [AffineSchemes(self.base_ring())]
+        return [Schemes(self.base_ring())]
 
     class ParentMethods:
         def fiber_product_cospan(self):
@@ -2851,7 +3078,7 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
             return self.fiber_product_projections()[1]
 
         def from_pullback_cone(self, left_map, right_map):
-            r"""Return the unique represented map into this affine fiber product."""
+            r"""Return the represented factorization of a cone through this pullback."""
             if left_map.domain() is not right_map.domain():
                 raise ValueError("a pullback cone requires one common source")
             left_projection, right_projection = self.fiber_product_projections()
@@ -2859,22 +3086,42 @@ class FiberProductSchemes(OwnedCategoryOverBaseRing):
                 raise ValueError("the left pullback-cone map has the wrong codomain")
             if right_map.codomain() is not right_projection.codomain():
                 raise ValueError("the right pullback-cone map has the wrong codomain")
-            left_pullback = left_map.coordinate_algebra_morphism()
-            right_pullback = right_map.coordinate_algebra_morphism()
-            selected_factorization = getattr(
+
+            scheme_factorization = getattr(
                 self,
-                "_preamble_fiber_product_cocone_factorization",
+                "_preamble_fiber_product_scheme_factorization",
                 None,
             )
-            if selected_factorization is None:
-                algebra_pushout = self._preamble_fiber_product_algebra_pushout
-                induced = algebra_pushout.from_pushout_cocone(
-                    left_pullback,
-                    right_pullback,
-                )
+            if scheme_factorization is not None:
+                factorization = scheme_factorization(left_map, right_map)
             else:
-                induced = selected_factorization(left_pullback, right_pullback)
-            return affine_spec_morphism(induced)
+                left_pullback = left_map.coordinate_algebra_morphism()
+                right_pullback = right_map.coordinate_algebra_morphism()
+                selected_factorization = getattr(
+                    self,
+                    "_preamble_fiber_product_cocone_factorization",
+                    None,
+                )
+                if selected_factorization is None:
+                    algebra_pushout = self._preamble_fiber_product_algebra_pushout
+                    induced = algebra_pushout.from_pushout_cocone(
+                        left_pullback,
+                        right_pullback,
+                    )
+                else:
+                    induced = selected_factorization(left_pullback, right_pullback)
+                factorization = _affine_morphism_from_pullback(
+                    left_map.domain(),
+                    self,
+                    induced,
+                )
+
+            factorization._preamble_fiber_product_cone_target = self
+            factorization._preamble_fiber_product_cone_legs = (
+                left_map,
+                right_map,
+            )
+            return factorization
 
 
 def _quotient_base_change_pushout(left_pullback, right_pullback):
@@ -2938,12 +3185,151 @@ def _quotient_base_change_pushout(left_pullback, right_pullback):
     return realize(right_pullback, left_pullback, quotient_on_right=False)
 
 
+def _projective_base_change_factorization(changed, projective_map):
+    r"""Raise a map to ``P^n_R`` from an ``R'``-scheme to ``P^n_{R'}``.
+
+    This is the scheme-side factorization in the scalar-base-change pullback.
+    On an affine/projective represented source, Sage's maintained polynomial
+    scheme-morphism implementation transports the already-selected coordinate
+    functions.  On a finite glued source, the same operation is applied on each
+    affine chart and then descended through the glued-scheme Hom owner.
+    """
+    source = projective_map.domain()
+    if hasattr(source, "gluing_datum"):
+        datum = source.gluing_datum()
+        return source.Mor(changed)(
+            indexed_family(
+                datum.chart_index_set(),
+                lambda index: _projective_base_change_factorization(
+                    changed,
+                    projective_map * datum.chart_embedding(index),
+                ),
+                name="Local projective base-change factorizations",
+            )
+        )
+
+    native = projective_map.native_morphism()
+    defining_polynomials = getattr(native, "defining_polynomials", None)
+    if defining_polynomials is None:
+        raise NotImplementedError(
+            "projective base-change factorization requires a represented polynomial map "
+            "or a finite affine gluing of such maps"
+        )
+    lifted_native = _native_scheme_homset(source, changed)(
+        list(defining_polynomials()),
+        check=False,
+    )
+    return categorical_scheme_morphism(
+        lifted_native,
+        domain=source,
+        codomain=changed,
+    )
+
+
+def _projective_space_scalar_base_change(left_map, right_map):
+    r"""Realize the pullback of ``P^n_R`` along ``Spec R' -> Spec R``.
+
+    Return ``None`` when the cospan is not this specialization.  The result is
+    the ordinary owned projective-space constructor over ``R'`` together with
+    its actual projection to ``P^n_R``, its structure map to ``Spec R'``, and a
+    represented cone factorization.
+    """
+    base_scheme = left_map.codomain()
+    if right_map.codomain() is not base_scheme:
+        return None
+
+    candidates = (
+        (left_map, right_map, True),
+        (right_map, left_map, False),
+    )
+    for projective_leg, scalar_leg, projective_on_left in candidates:
+        projective = projective_leg.domain()
+        scalar_scheme = scalar_leg.domain()
+        source_base = projective.scheme_base_ring()
+        if projective not in ProjectiveSpaces(source_base):
+            continue
+        if base_scheme is not projective.base_scheme():
+            continue
+        target_base = scalar_scheme.scheme_base_ring()
+        if scalar_scheme is not scalar_scheme.base_scheme():
+            continue
+
+        changed = _fresh_projective_space_from_owned_data(
+            target_base,
+            int(projective.relative_dimension()),
+            _normalized_space_names(projective.variable_names()),
+        )
+        engine_coordinates = tuple(changed.coordinate_ring().gens())
+        projection_native = _native_scheme_homset(changed, projective)(
+            list(engine_coordinates),
+            check=False,
+        )
+        projective_projection = categorical_scheme_morphism(
+            projection_native,
+            domain=changed,
+            codomain=projective,
+        )
+        scalar_projection = changed.structure_morphism()
+        if scalar_projection.codomain() is not scalar_scheme:
+            raise ArithmeticError(
+                "the projective base change has the wrong scalar projection codomain"
+            )
+
+        projections = (
+            (projective_projection, scalar_projection)
+            if projective_on_left
+            else (scalar_projection, projective_projection)
+        )
+        for index, projection in enumerate(projections):
+            projection._preamble_fiber_projection_index = index
+        changed._preamble_fiber_product_cospan = (left_map, right_map)
+        changed._preamble_fiber_product_projections = projections
+
+        def factor(left_cone_map, right_cone_map):
+            projective_cone_map = (
+                left_cone_map if projective_on_left else right_cone_map
+            )
+            scalar_cone_map = (
+                right_cone_map if projective_on_left else left_cone_map
+            )
+            apex = projective_cone_map.domain()
+            if apex not in Schemes(target_base):
+                raise NotImplementedError(
+                    "the represented projective base-change factorization requires "
+                    "the cone apex to carry its R'-scheme structure"
+                )
+            if scalar_cone_map != apex.structure_morphism():
+                raise NotImplementedError(
+                    "the represented projective base-change factorization currently "
+                    "uses the apex's selected R'-structure morphism"
+                )
+            return _projective_base_change_factorization(
+                changed,
+                projective_cone_map,
+            )
+
+        changed._preamble_fiber_product_scheme_factorization = factor
+        return refine_scheme(
+            changed,
+            target_base,
+            [FiberProductSchemes(target_base)],
+        )
+    return None
+
+
 def scheme_fiber_product(left_map, right_map):
-    r"""Return ``X x_S Y`` for two represented affine scheme maps to ``S``."""
+    r"""Return ``X x_S Y`` in the represented affine and scalar-projective regimes."""
     if not isinstance(left_map, SchemeMorphism) or not isinstance(right_map, SchemeMorphism):
         raise TypeError("a represented scheme fiber product is specified by scheme morphisms")
     if left_map.codomain() is not right_map.codomain():
         raise ValueError("fiber-product maps require one common codomain")
+
+    projective_base_change = _projective_space_scalar_base_change(
+        left_map,
+        right_map,
+    )
+    if projective_base_change is not None:
+        return projective_base_change
 
     left = left_map.domain()
     right = right_map.domain()
@@ -2986,9 +3372,21 @@ def scheme_fiber_product(left_map, right_map):
                 right_pushout_map,
                 cocone_factorization,
             ) = quotient_base_change
-    product = Spec(algebra_pushout, base_ring=base_ring)
-    left_projection = affine_spec_morphism(left_pushout_map)
-    right_projection = affine_spec_morphism(right_pushout_map)
+    product = _fresh_affine_spectrum(
+        algebra_pushout,
+        base_ring,
+        extra_categories=(FiberProductSchemes(base_ring),),
+    )
+    left_projection = _affine_morphism_from_pullback(
+        product,
+        left,
+        left_pushout_map,
+    )
+    right_projection = _affine_morphism_from_pullback(
+        product,
+        right,
+        right_pushout_map,
+    )
     product._preamble_fiber_product_cospan = (left_map, right_map)
     product._preamble_fiber_product_algebra_pushout = algebra_pushout
     if cocone_factorization is not None:
@@ -2997,7 +3395,9 @@ def scheme_fiber_product(left_map, right_map):
         left_projection,
         right_projection,
     )
-    return refine_scheme(product, base_ring, [FiberProductSchemes(base_ring)])
+    left_projection._preamble_fiber_projection_index = 0
+    right_projection._preamble_fiber_projection_index = 1
+    return product
 
 
 class _SchemeSubobjectsOf(OwnedParameterizedCategory):

@@ -43,14 +43,15 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
-    AffineSpace,
     AffineSpaces,
     FiberProductSchemes,
-    ProjectiveSpace,
     ProjectiveSpaces,
     Schemes,
     Spec,
     _affine_morphism_from_pullback,
+    _fresh_affine_space_from_owned_data,
+    _fresh_affine_spectrum,
+    _normalized_space_names,
     refine_scheme,
     scheme_fiber_product,
 )
@@ -151,15 +152,26 @@ class SchemeBaseChangeFunctor(Functor):
         source, target = self._source_ring, self._target_ring
         match scheme:
             case _ if scheme in AffineSpaces(source):
-                changed = AffineSpace(
-                    scheme.relative_dimension(),
+                changed = _fresh_affine_space_from_owned_data(
                     target,
-                    names=tuple(str(label) for label in scheme.coordinate_algebra().algebra_generating_set()),
+                    int(scheme.relative_dimension()),
+                    _normalized_space_names(
+                        tuple(
+                            str(label)
+                            for label in scheme.coordinate_algebra().algebra_generating_set()
+                        )
+                    ),
                 )
             case _ if scheme in ProjectiveSpaces(source):
-                return ProjectiveSpace(scheme.relative_dimension(), target, names=scheme.variable_names())
+                return scheme_fiber_product(
+                    scheme.structure_morphism(),
+                    self.base_morphism(),
+                )
             case _ if scheme in AffineSchemes(source):
-                changed = Spec(_base_changed_algebra(scheme.coordinate_algebra(), self.ring_map()), base_ring=target)
+                changed = _fresh_affine_spectrum(
+                    _base_changed_algebra(scheme.coordinate_algebra(), self.ring_map()),
+                    target,
+                )
             case _:
                 assert False, f"base change of {scheme} is represented for affine schemes and projective spaces"
         algebra = scheme.coordinate_algebra()
