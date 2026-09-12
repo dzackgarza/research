@@ -12,6 +12,12 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     is_form_morphism,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/form_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_form_module_refines_the_represented_module_by_the_selected_form_type() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("e", "f")))

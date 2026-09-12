@@ -1211,89 +1211,89 @@ preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion
 preamble/categories/modules/framed/finitely_generated/finitely_presented_torsion_modules.sage	TorsionModule	function	477	1	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/ring_as_module.sage	ring_as_module	function	17	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
-preamble/categories/modules/framed/formed/form_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	Form	binding	59	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	GeneratorAssignment	binding	64	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent	class	66	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.base_ring	method	78	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.form	method	79	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.value_module	method	80	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.gram_matrix	method	81	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.vector_space	method	82	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generating_set	method	83	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generators	method	84	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generator_morphism	method	85	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.zero	method	86	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.is_torsion	method	87	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.raise_index	method	88	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.Hom	method	98	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FiniteFreeFormedParent	class	104	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FiniteFreeFormedParent.dual_module	method	112	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FiniteFreeFormedParent.correlation_morphism	method	113	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedElement	class	115	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.parent	method	118	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.underlying_element	method	119	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.b	method	120	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.span	method	121	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement	class	124	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement.parent	method	127	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement.coefficients	method	128	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement.underlying_set_element	method	129	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules	class	136	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.super_categories	method	153	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods	class	172	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.form	method	243	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.b	method	247	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.twist	method	258	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.framing_morphism	method	286	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.value_module	method	290	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.gram_matrix	method	293	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.gram_tensor	method	296	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.raise_index	method	316	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.raise_index_over_fraction_field	method	324	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.lower_index	method	334	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.Aut	method	365	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.hom	method	386	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods	class	608	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.underlying_element	method	619	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.b	method	638	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.norm	method	655	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.is_isotropic	method	667	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.is_orthogonal_to	method	680	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.represents	method	691	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.span	method	704	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.isotropic_reduction	method	707	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	BilinearFormModules	class	917	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	BilinearFormModules.super_categories	method	934	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	SymmetricBilinearFormModules	class	938	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	SymmetricBilinearFormModules.super_categories	method	957	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules	class	961	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules.super_categories	method	978	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules.ElementMethods	class	981	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules.ElementMethods.q	method	982	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules	class	987	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.super_categories	method	1004	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ParentMethods	class	1012	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ParentMethods.subobject_on	method	1014	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ElementMethods	class	1055	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ElementMethods.underlying_set_element	method	1056	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules	class	1062	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.super_categories	method	1081	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods	class	1089	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods.scale_submodule	method	1091	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods.is_integral	method	1117	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods.hom	method	1148	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules	class	1177	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.super_categories	method	1196	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods	class	1205	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.dual_module	method	1215	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.correlation_morphism	method	1233	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.radical	method	1264	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.radical_quotient	method	1274	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.is_nondegenerate	method	1285	0			unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	FormModule	function	1300	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	is_form_morphism	function	1372	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py		unreviewed
-preamble/categories/modules/framed/formed/form_modules.sage	correlation_of	function	1386	0			unreviewed
+preamble/categories/modules/framed/formed/form_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	Form	binding	59	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	GeneratorAssignment	binding	64	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent	class	66	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.base_ring	method	78	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.form	method	79	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.value_module	method	80	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.gram_matrix	method	81	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.vector_space	method	82	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generating_set	method	83	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generators	method	84	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.module_generator_morphism	method	85	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.zero	method	86	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.is_torsion	method	87	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.raise_index	method	88	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedParent.Hom	method	98	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FiniteFreeFormedParent	class	104	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FiniteFreeFormedParent.dual_module	method	112	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FiniteFreeFormedParent.correlation_morphism	method	113	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedElement	class	115	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.parent	method	118	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.underlying_element	method	119	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.b	method	120	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormedElement.span	method	121	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement	class	124	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement.parent	method	127	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement.coefficients	method	128	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	UnderlyingElement.underlying_set_element	method	129	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules	class	136	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.super_categories	method	153	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods	class	172	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.form	method	243	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.b	method	247	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.twist	method	258	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.framing_morphism	method	286	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.value_module	method	290	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.gram_matrix	method	293	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.gram_tensor	method	296	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.raise_index	method	316	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.raise_index_over_fraction_field	method	324	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.lower_index	method	334	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.Aut	method	365	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ParentMethods.hom	method	386	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods	class	608	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.underlying_element	method	619	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.b	method	638	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.norm	method	655	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.is_isotropic	method	667	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.is_orthogonal_to	method	680	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.represents	method	691	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.span	method	704	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModules.ElementMethods.isotropic_reduction	method	707	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	BilinearFormModules	class	917	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	BilinearFormModules.super_categories	method	934	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	SymmetricBilinearFormModules	class	938	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	SymmetricBilinearFormModules.super_categories	method	957	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules	class	961	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules.super_categories	method	978	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules.ElementMethods	class	981	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	QuadraticFormModules.ElementMethods.q	method	982	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules	class	987	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.super_categories	method	1004	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ParentMethods	class	1012	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ParentMethods.subobject_on	method	1014	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ElementMethods	class	1055	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FreeFormModules.ElementMethods.underlying_set_element	method	1056	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules	class	1062	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.super_categories	method	1081	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods	class	1089	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods.scale_submodule	method	1091	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods.is_integral	method	1117	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFormModules.ParentMethods.hom	method	1148	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules	class	1177	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.super_categories	method	1196	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods	class	1205	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.dual_module	method	1215	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.correlation_morphism	method	1233	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.radical	method	1264	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.radical_quotient	method	1274	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FinitelyGeneratedFreeFormModules.ParentMethods.is_nondegenerate	method	1285	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	FormModule	function	1300	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	is_form_morphism	function	1372	1	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/form_modules.sage	correlation_of	function	1386	0		src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/free_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices	class	29	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.super_categories	method	36	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
