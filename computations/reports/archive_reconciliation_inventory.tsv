@@ -3085,12 +3085,12 @@ preamble/tests/test_constructors_meet_their_obligations.sage	test_refining_a_deg
 preamble/tests/test_constructors_meet_their_obligations.sage	test_a_half_integral_form_is_refused_the_integral_axiom	specimen	469	0			unreviewed
 preamble/tests/test_constructors_meet_their_obligations.sage	test_a_torsion_valued_form_has_no_integrality_and_routes_past_the_axiom	specimen	492	0			unreviewed
 preamble/tests/test_constructors_meet_their_obligations.sage	test_the_scale_submodule_is_generated_by_the_forms_values	specimen	508	0			unreviewed
-preamble/tests/test_coxeter_diagrams.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_coxeter_diagrams.sage	test_cartan_type_constructs_its_diagram_as_a_sage_parent	specimen	12	0			unreviewed
-preamble/tests/test_coxeter_diagrams.sage	test_induced_subdiagram_recovers_the_standard_a3_diagram	specimen	30	0			unreviewed
-preamble/tests/test_coxeter_diagrams.sage	test_parent_constructs_a_diagram_from_its_coxeter_matrix	specimen	39	0			unreviewed
-preamble/tests/test_coxeter_diagrams.sage	test_rooted_diagram_records_roots_intersections_layout_and_tikz	specimen	49	0			unreviewed
-preamble/tests/test_coxeter_diagrams.sage	test_morphisms_preserve_the_full_coxeter_matrix_and_compose	specimen	93	0			unreviewed
+preamble/tests/test_coxeter_diagrams.sage	<module>	module	1	0		tests/lattices/test_coxeter.py	reconciled-live-owner
+preamble/tests/test_coxeter_diagrams.sage	test_cartan_type_constructs_its_diagram_as_a_sage_parent	specimen	12	0		tests/lattices/test_coxeter.py	reconciled-live-owner
+preamble/tests/test_coxeter_diagrams.sage	test_induced_subdiagram_recovers_the_standard_a3_diagram	specimen	30	0		tests/lattices/test_coxeter.py	reconciled-live-owner
+preamble/tests/test_coxeter_diagrams.sage	test_parent_constructs_a_diagram_from_its_coxeter_matrix	specimen	39	0		tests/lattices/test_coxeter.py	reconciled-live-owner
+preamble/tests/test_coxeter_diagrams.sage	test_rooted_diagram_records_roots_intersections_layout_and_tikz	specimen	49	0		tests/lattices/test_coxeter_subdiagrams.py	reconciled-live-owner
+preamble/tests/test_coxeter_diagrams.sage	test_morphisms_preserve_the_full_coxeter_matrix_and_compose	specimen	93	0		tests/lattices/test_coxeter.py	reconciled-live-owner
 preamble/tests/test_discriminant_forms.sage	<module>	module	1	0		tests/forms/test_discriminant_oracles_archive.py	reconciled-live-owner
 preamble/tests/test_discriminant_forms.sage	test_discriminant_group_order_is_the_absolute_determinant	specimen	35	0		tests/forms/test_discriminant_oracles_archive.py	reconciled-live-owner
 preamble/tests/test_discriminant_forms.sage	test_root_lattice_discriminant_groups_are_the_classical_ones	specimen	50	0		tests/forms/test_discriminant_oracles_archive.py	reconciled-live-owner

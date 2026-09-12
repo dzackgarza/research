@@ -2,6 +2,15 @@ from sage.all import Infinity
 
 from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_coxeter_diagrams.sage",
+    "live_owner": "tests/lattices/test_coxeter.py",
+    "owner_overrides": {
+        "test_rooted_diagram_records_roots_intersections_layout_and_tikz": "tests/lattices/test_coxeter_subdiagrams.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_a2_root_realization_gives_single_bond_and_elliptic_diagram() -> None:
     lattice = Lattices(ZZ)("A2")
@@ -60,3 +69,26 @@ def test_coxeter_tikz_is_a_view_of_the_live_bond_data() -> None:
     assert r"$ \infty $" in tikz
     assert "$ 3 $" not in tikz
     assert "$ a $" in tikz
+
+
+def test_coxeter_diagram_morphisms_preserve_all_bonds_and_compose() -> None:
+    a2 = CoxeterDiagrams().from_cartan_type(["A", 2])
+    a3 = CoxeterDiagrams().from_cartan_type(["A", 3])
+    a4 = CoxeterDiagrams().from_cartan_type(["A", 4])
+    a2_vertices = tuple(a2.index_set())
+    a3_vertices = tuple(a3.index_set())
+    a4_vertices = tuple(a4.index_set())
+
+    first = CoxeterDiagrams().Mor(a2, a3)(a3_vertices[1:])
+    second = CoxeterDiagrams().Mor(a3, a4)(a4_vertices[1:])
+    composite = second * first
+
+    assert tuple(composite.images()) == a4_vertices[2:]
+    assert composite.domain() is a2
+    assert composite.codomain() is a4
+    assert CoxeterDiagrams().Mor(a2, a2).identity().is_identity()
+
+    import pytest
+
+    with pytest.raises(ValueError, match="preserve every Coxeter matrix entry"):
+        CoxeterDiagrams().Mor(a2, a3)((a3_vertices[0], a3_vertices[2]))

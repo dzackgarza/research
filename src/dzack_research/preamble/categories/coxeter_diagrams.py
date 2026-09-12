@@ -5,6 +5,7 @@ from itertools import combinations
 from sage.combinat.posets.posets import Poset
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+from sage.categories.morphism import Morphism
 from sage.graphs.graph import Graph
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
@@ -12,6 +13,10 @@ from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
@@ -43,8 +48,103 @@ def _coxeter_entry(q1, q2, pairing):
     raise ValueError(f"the root pair does not determine a crystallographic Coxeter angle: 4 cos^2(pi/m) = {four_cos_squared}")
 
 
+class CoxeterDiagramMorphism(Morphism):
+    r"""A vertex map preserving every Coxeter exponent.
+
+    A Coxeter diagram is its symmetric matrix ``(m_vw)``.  A morphism sends
+    vertices to vertices and preserves that entire matrix, including the
+    entries ``m=2`` that are omitted from the drawn graph.  Thus composition
+    is ordinary composition of the underlying vertex maps.
+    """
+
+    def __init__(self, parent, function) -> None:
+        Morphism.__init__(self, parent)
+        self._vertex_function = function
+
+    def __call__(self, vertex):
+        source_vertex = self.domain().index_set()(vertex)
+        return self.codomain().index_set()(self._vertex_function(source_vertex))
+
+    def __mul__(self, other):
+        if not isinstance(other, CoxeterDiagramMorphism) or other.codomain() is not self.domain():
+            return NotImplemented
+        return CoxeterDiagrams().Mor(other.domain(), self.codomain())(
+            lambda vertex: self(other(vertex))
+        )
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, CoxeterDiagramMorphism)
+            and other.parent() is self.parent()
+            and all(self(vertex) == other(vertex) for vertex in self.domain().index_set())
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(
+            (
+                id(self.parent()),
+                tuple(self(vertex) for vertex in self.domain().index_set()),
+            )
+        )
+
+    def images(self):
+        r"""Return the images in source-vertex order."""
+        return finite_ordered_set(
+            tuple(self(vertex) for vertex in self.domain().index_set())
+        )
+
+    def is_identity(self) -> bool:
+        return self.domain() is self.codomain() and all(
+            self(vertex) == vertex for vertex in self.domain().index_set()
+        )
+
+
+class CoxeterDiagramHomset(CategoricalHomset):
+    r"""The bond-preserving maps between two represented Coxeter diagrams."""
+
+    Element = CoxeterDiagramMorphism
+
+    def _element_constructor_(self, datum):
+        if isinstance(datum, CoxeterDiagramMorphism):
+            if datum.parent() is self:
+                return datum
+            raise ValueError("the Coxeter-diagram morphism has different endpoints")
+        if callable(datum):
+            function = datum
+        else:
+            images = tuple(datum)
+            vertices = tuple(self.domain().index_set())
+            if len(images) != len(vertices):
+                raise ValueError("a Coxeter-diagram morphism needs one image per vertex")
+            assignment = dict(zip(vertices, images, strict=True))
+            function = assignment.__getitem__
+        morphism = CoxeterDiagramMorphism(self, function)
+        for left in self.domain().index_set():
+            for right in self.domain().index_set():
+                if self.domain().coxeter_entry(left, right) != self.codomain().coxeter_entry(
+                    morphism(left), morphism(right)
+                ):
+                    raise ValueError("a Coxeter-diagram morphism must preserve every Coxeter matrix entry")
+        return morphism
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity requires one Coxeter diagram")
+        return self(lambda vertex: vertex)
+
+
+class CoxeterDiagramHomCategoryConstruction(HomCategoryConstruction):
+    FixedCategoryClass = CoxeterDiagramHomset
+
+
 class CoxeterDiagrams(OwnedCategory):
     r"""Finite Coxeter diagrams: a symmetric matrix of vertex angles."""
+
+    _HomCategory = CoxeterDiagramHomCategoryConstruction
 
     def an_object(self):
         r"""The diagram of ``A_2``: two vertices joined by an edge of order 3."""
@@ -56,6 +156,11 @@ class CoxeterDiagrams(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a Coxeter-diagram morphism requires two Coxeter diagrams")
+        return self.HomCategory().Of(domain, codomain)
 
     class ParentMethods:
         def __init__(
