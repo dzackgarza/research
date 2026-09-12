@@ -29,6 +29,12 @@ from dzack_research.preamble.categories.functors.hom_packets import (
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/abstract_categories/hom_categories.sage",
+    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/hom_categories.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_hom_and_end_families_recover_actual_external_homsets() -> None:
     source = Sets.Δ[2]
@@ -170,3 +176,23 @@ def test_ring_hom_packet_reuses_the_canonical_equal_endpoint_hom_object() -> Non
     assert identity.parent() is hom
     assert (identity * identity).parent() is hom
     assert (identity * identity)(ZZ(3)) == ZZ(3)
+
+
+def test_restricted_hom_families_compose_nonidentity_set_injections_in_the_base_homs() -> None:
+    source = Sets.Δ[1]
+    middle = Sets.Δ[2]
+    target = Sets.Δ[3]
+    first = set_injection(source, middle, lambda value: middle(int(value)))
+    second = set_injection(middle, target, lambda value: target(int(value) + 1))
+
+    mono_source = MonoCategoryOf(Sets()).Of(source, middle)
+    mono_target = MonoCategoryOf(Sets()).Of(middle, target)
+    mono_composite = MonoCategoryOf(Sets()).Of(source, target)
+
+    assert first in mono_source
+    assert second in mono_target
+    composite = second * first
+    assert composite in mono_composite
+    assert composite(source(0)) == target(1)
+    assert composite(source(1)) == target(2)
+    assert mono_composite.underlying_homset() is Sets().Mor(source, target)
