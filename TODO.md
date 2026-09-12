@@ -663,21 +663,6 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   products use a multiplication compatible with the differential and descend
   to cycles modulo boundaries.
 
-- [ ] **`linearizations`**. **Needs:** `geometric-cohomology`.
-  Construct line-bundle linearizations and induced section/cohomology
-  actions before equivariant geometric applications.
-  **Owners:** invertible sheaves, their pullback functors, section/cohomology
-  functors, and `GObjects` transport.
-  **Decision:** preserving a line-bundle isomorphism class is not choosing a
-  compatible linearization. Keep the cocycle datum, the group action, and
-  contravariance explicit; use inverse pullback for a left action on sections.
-  **Deliver:** fixed-point fiber evaluation as an equivariant map, eigenspace/
-  isotypic subobjects, invariant divisor versus eigensection comparisons,
-  and action-preserving maps on geometric cohomology.
-  **Acceptance:** a nontrivial linearization and two character twists give
-  different section actions while the underlying line bundle is unchanged.
-  Reuse the group-module scalar-change and restricted-action owners.
-
 - [ ] **`geometric-quotients`**. **Needs:** none.
   Extend fixed loci, quotients and descended maps to the remaining
   non-affine and family cases.
@@ -804,7 +789,7 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`k3-family`**. **Needs:** `linearizations`, `geometric-quotients`.
+- [ ] **`k3-family`**. **Needs:** `geometric-quotients`.
   Construct the `(4,4)` double-cover K3 family over `P^1 x P^1` and
   the two lifts of the diagonal sign involution.
   **Inputs:** branch sections, a selected linearization, the existing cyclic
