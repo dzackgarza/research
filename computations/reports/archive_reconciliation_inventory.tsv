@@ -1524,30 +1524,30 @@ preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vectors_are_equivalent	method	678	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	OrthogonalPredicateSubgroups.ParentMethods.vector_equivalence_witness	method	704	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_predicate_subgroup	function	761	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeMapSpecification	binding	36	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomsetParent	class	40	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomsetParent.domain	method	43	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms	class	46	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.super_categories	method	53	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ParentMethods	class	68	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ElementMethods	class	128	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ElementMethods.discriminant_isometry	method	129	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ElementMethods.discriminant_inclusion	method	192	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets	class	251	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.super_categories	method	258	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods	class	264	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.is_empty	method	318	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.an_element	method	469	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.acting_group	method	548	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.transporter	method	562	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomset	function	597	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets	class	602	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.super_categories	method	609	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.ParentMethods	class	615	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.ParentMethods.is_empty	method	723	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.ParentMethods.an_element	method	744	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomset	function	815	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeMapSpecification	binding	36	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomsetParent	class	40	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomsetParent.domain	method	43	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms	class	46	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.super_categories	method	53	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ParentMethods	class	68	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ElementMethods	class	128	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ElementMethods.discriminant_isometry	method	129	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	LatticeHomomorphisms.ElementMethods.discriminant_inclusion	method	192	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets	class	251	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.super_categories	method	258	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods	class	264	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.is_empty	method	318	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.an_element	method	469	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.acting_group	method	548	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomsets.ParentMethods.transporter	method	562	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	IsometryHomset	function	597	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets	class	602	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.super_categories	method	609	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.ParentMethods	class	615	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.ParentMethods.is_empty	method	723	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomsets.ParentMethods.an_element	method	744	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage	EmbeddingHomset	function	815	0		src/dzack_research/preamble/categories/lattice_morphisms.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sage	<module>	module	1	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sage	IsometryGroupParent	class	53	0			unreviewed
 preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sage	IsometryGroupParent.domain	method	63	0			unreviewed

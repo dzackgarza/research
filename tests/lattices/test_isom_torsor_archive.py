@@ -8,6 +8,12 @@ specimens below retain the actual equation defining the torsor action.
 
 from dzack_research.preamble.all import ZZ, Lattices
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/lattice_homomorphisms.sage",
+    "live_owner": "src/dzack_research/preamble/categories/lattice_morphisms.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_isom_homset_is_acted_on_by_the_codomain_orthogonal_group() -> None:
     lattice = Lattices(ZZ)("A2")
