@@ -1,5 +1,17 @@
 from dzack_research.preamble.all import ZZ, Lattices
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/lattice_isometries.sage",
+    "live_owner": "src/dzack_research/preamble/categories/lattice_morphisms.py",
+    "owner_overrides": {
+        "LatticeIsometries.ParentMethods.special_orthogonal_subgroup": "src/dzack_research/preamble/categories/lattices.py",
+        "LatticeIsometries.ParentMethods.spinor_kernel_subgroup": "src/dzack_research/preamble/categories/lattices.py",
+        "LatticeIsometries.ElementMethods.centralizer_discriminant_image": "src/dzack_research/preamble/categories/lattice_engines.py",
+        "LatticeIsometries.ElementMethods.cyclic_subgroup": "src/dzack_research/preamble/categories/group/cyclic_subgroups.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_orthogonal_group_owns_acted_lattice_generators_and_matrix_elements() -> None:
     lattice = Lattices(ZZ)("A1")
