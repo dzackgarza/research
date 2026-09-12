@@ -4234,6 +4234,41 @@ does it hold for $\mathrm{QCoh}(X)$, for $L^2(\mathbb R)$ with its
 Hilbert topology, and for $M$ not finitely generated? If not, the
 statement is overfit.
 
+### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
+
+A fenced `Definition` is an atomic unit with one logical status: it
+introduces one notion (or one tightly related family, e.g. the four
+flavours symmetric / skew / alternating / even via the same
+$b\colon M\otimes M\to W$, $\tau$, $\Delta$, $\Gamma^2$). Grouping
+several *related* definitions in one block is the rare exception and
+requires each to be clearly enumerated as a definition. A Lemma,
+Proposition, Theorem, or Remark is never in that block — not even as a
+trailing sentence.
+
+This is the explicit form of DEF-15/DEF-19 and SEC-6 (one notion per
+fenced block, skeleton complete after deleting glue): a Definition block
+defines; implications between defined subobjects ($\operatorname{Alt}\subseteq
+\operatorname{Skew}$, converse when $2$ injective), obstructions
+($2_*$ / $\gamma^*$), and side observations ("when $2W=W$ every $b$ is
+even") are separate fenced `Lemma` / `Proposition` / `Remark` blocks
+with quantified hypotheses and proofs, even when the material is "not
+hard to prove — but that does not give license to hand-wave it" (PR-48).
+
+**Banned:** `::: {#def-form-axioms} For b: … - b symmetric if …; …;
+Alternating forms are skew-symmetric. The converse holds when 2 injective.
+When 2W=W, every b satisfies …; quadratic refinements retain … :::`
+— four definitions plus a Lemma plus a Proposition plus a Remark in one
+`Definition`.
+
+**Preferred:** `::: {#def-symmetric} b is symmetric if $b\circ\tau=b$ :::`
+(and similarly for skew / alternating / even, either as four fenced
+`Definition`s or as one fenced `Definition` that clearly enumerates the
+four related definitions), then separate
+`::: {#lem-alt-skew} Lemma. AltBil⊆SkewBil. Proof. … :::`,
+`::: {#prop-skew-alt} Proposition. Skew=Alt iff 2:W↪W injective. … :::`,
+`::: {.Remark} When 2W=W the element condition is vacuous; the content
+is the fiber of γ^* … :::` — one status per block.
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4635,7 +4670,9 @@ $\operatorname{AltBil}\subseteq\operatorname{SkewBil}$ as $R$-submodules,
 and "converse when $2$ injective" / "when $2W=W$ every $b$ even" is a
 Proposition about $2_*\colon\operatorname{Bil}\to\operatorname{Bil}$
 induced by $2\colon W\to W$ and its obstruction (PR-48); neither belongs
-in the Definition block. Pithy prose avoids naming
+in the Definition block, which is atomic — one definition per fenced
+block, rarely a tightly related family, never a Lemma/Proposition/Remark
+(PR-64). Pithy prose avoids naming
 $\operatorname{SymBil}$, $\operatorname{SkewBil}$, $\operatorname{AltBil}$,
 $\operatorname{EvBil}$ and $2_*$ between named $R$-submodules of
 $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$, and
