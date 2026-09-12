@@ -66,3 +66,14 @@ def test_three_dimensional_polytope_delegates_to_sages_local_threejs_view() -> N
 
     assert "threejs" in html.lower() or "THREE" in html
     assert tetrahedron.dimension() == 3
+
+
+def test_dodecahedron_schlafli_symbol_has_h3_full_reflection_symmetry() -> None:
+    dodecahedron = RegularPolytopes().from_schlafli_symbol("{5,3}")
+    diagram = dodecahedron.symmetry_coxeter_diagram()
+
+    assert tuple(dodecahedron.schlafli_symbol()) == (5, 3)
+    assert dodecahedron.dimension() == 3
+    assert diagram.coxeter_matrix()[0, 1] == 5
+    assert diagram.coxeter_matrix()[1, 2] == 3
+    assert dodecahedron.symmetry_group().order() == 120

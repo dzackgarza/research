@@ -37,6 +37,86 @@ def _owned_rational(coordinate):
     return _own_ring(SageQQ)(coordinate)
 
 
+class RegularPolytopes(OwnedCategory):
+    r"""Finite spherical regular abstract polytopes named by Schlaefli symbols.
+
+    The Schlaefli symbol ``{p_1,...,p_{n-1}}`` determines the string Coxeter
+    diagram ``[p_1,...,p_{n-1}]`` of the full reflection symmetry group.  This
+    owner records that abstract regular-polytope datum; it is distinct from the
+    rational-coordinate convex-polytope owner below, since examples such as the
+    dodecahedron require ``sqrt(5)`` coordinates in a Euclidean realization.
+    """
+
+    def an_object(self):
+        return self.from_schlafli_symbol((3, 3))
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "finite spherical regular polytopes"
+
+    def super_categories(self):
+        return [Sets()]
+
+    def from_schlafli_symbol(self, symbol):
+        r"""Return the finite regular abstract polytope with Schlaefli symbol ``symbol``."""
+        from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
+
+        from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+
+        if isinstance(symbol, str):
+            written = symbol.strip()
+            if not (written.startswith("{") and written.endswith("}")):
+                raise ValueError("a Schlaefli symbol is written {p1,...,pr}")
+            body = written[1:-1].strip()
+            bonds = () if not body else tuple(int(part.strip()) for part in body.split(","))
+        else:
+            bonds = tuple(int(bond) for bond in symbol)
+        if not bonds or any(bond < 3 for bond in bonds):
+            raise ValueError("a finite regular polytope symbol has bond orders at least three")
+        rank = len(bonds) + 1
+        entries = tuple(
+            tuple(
+                1
+                if row == column
+                else bonds[min(row, column)]
+                if abs(row - column) == 1
+                else 2
+                for column in range(rank)
+            )
+            for row in range(rank)
+        )
+        diagram = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(entries))
+        if not diagram.is_elliptic():
+            raise ValueError("this Schlaefli symbol does not define a finite spherical regular polytope")
+        return object_of(
+            self,
+            schlafli_bonds=finite_ordered_set(bonds),
+            symmetry_coxeter_diagram=diagram,
+        )
+
+    class ParentMethods:
+        def __init__(self, schlafli_bonds, symmetry_coxeter_diagram, **rest) -> None:
+            self._preamble_schlafli_bonds = schlafli_bonds
+            self._preamble_symmetry_coxeter_diagram = symmetry_coxeter_diagram
+            super().__init__(**rest)
+
+        def schlafli_symbol(self):
+            return self._preamble_schlafli_bonds
+
+        def dimension(self):
+            return _own_ring(SageZZ)(self.schlafli_symbol().cardinality() + 1)
+
+        def symmetry_coxeter_diagram(self):
+            return self._preamble_symmetry_coxeter_diagram
+
+        def symmetry_group(self):
+            return self.symmetry_coxeter_diagram().coxeter_group()
+
+        def _repr_(self):
+            symbol = ",".join(str(bond) for bond in self.schlafli_symbol())
+            return f"Regular polytope {{{symbol}}}"
+
+
 class ConvexPolytopes(OwnedCategory):
     r"""Rational convex polytopes in a chosen coordinate lattice.
 
@@ -676,4 +756,5 @@ __all__ = [
     "LatticePolygons",
     "LatticePolytope",
     "LatticePolytopes",
+    "RegularPolytopes",
 ]

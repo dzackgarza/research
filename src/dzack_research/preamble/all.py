@@ -980,6 +980,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     LatticePolygons,
     LatticePolytope,
     LatticePolytopes,
+    RegularPolytopes,
     LocallyRingedSpaces,
     LogPair,
     LogPairs,
