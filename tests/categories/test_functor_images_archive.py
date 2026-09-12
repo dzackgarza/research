@@ -6,6 +6,12 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/abstract_categories/functor_images.sage",
+    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/functor_images.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 class _ConstantPresentedSetFunctor(Functor):
     def __init__(self, domain, target) -> None:

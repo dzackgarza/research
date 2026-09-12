@@ -122,16 +122,16 @@ preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand_index_set	method	67	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumObjects.ParentMethods.summand	method	70	0		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
 preamble/categories/abstract_categories/direct_sum_objects.sage	DirectSumDecomposition	function	98	2		src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py	reconciled-live-owner
-preamble/categories/abstract_categories/functor_images.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories	class	62	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories.super_categories	method	65	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories.is_image_category	method	77	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor	class	84	2			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.super_categories	method	87	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods	class	136	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.preimage	method	148	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.image_category	method	151	0			unreviewed
-preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.constructing_functor	method	158	0			unreviewed
+preamble/categories/abstract_categories/functor_images.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories	class	62	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories.super_categories	method	65	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	FunctorImageCategories.is_image_category	method	77	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor	class	84	2		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.super_categories	method	87	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods	class	136	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.preimage	method	148	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.image_category	method	151	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/functor_images.sage	ImageOfFunctor.ParentMethods.constructing_functor	method	158	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
 preamble/categories/abstract_categories/functors.sage	<module>	module	1	0			unreviewed
 preamble/categories/abstract_categories/functors.sage	DiscreteCategories	class	54	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
 preamble/categories/abstract_categories/functors.sage	DiscreteCategories.super_categories	method	57	0			unreviewed
