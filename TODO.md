@@ -707,20 +707,7 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   without changing the formal object; compatible truncation data is connected
   to the completed algebra by actual maps.
 
-- [ ] **`analytic-families`**. **Needs:** none.
-  Add analytic-disc families and their specified comparison with algebraic
-  or formal models.
-  **Decision:** use the analytic category and its topology. A formal power
-  series need not converge; completion does not construct an analytic disc.
-  **Deliver:** the analytic family morphism, the supported comparison functor
-  and maps, and explicit hypotheses for transporting sheaf/cohomology results.
-  **Acceptance:** the selected analytic example has a source-backed comparison;
-  do not fabricate a comparison for arbitrary formal input.
-  **Dependency choice:** use an algebraic comparison for the first example.
-  A separately required formal comparison must add `formal-families` to Needs
-  before work begins; it cannot silently consume an unfinished formal model.
-
-- [ ] **`monodromy`**. **Needs:** `analytic-families`, `geometric-cohomology`.
+- [ ] **`monodromy`**. **Needs:** `geometric-cohomology`.
   Construct higher direct images, local systems and monodromy for the
   required family strata.
   **Dependencies:** the selected topology, sheaves and geometric cohomology.

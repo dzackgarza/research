@@ -7,9 +7,15 @@ represented atlas transition.
 """
 
 from sage.manifolds.manifold import Manifold as _SageManifold
+from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
@@ -147,6 +153,7 @@ class TopologicalManifolds(OwnedCategory):
             manifold_name=str(name),
             manifold_structure="topological",
             differentiability_degree=None,
+            manifold_field="real",
         )
 
     class ParentMethods:
@@ -157,6 +164,7 @@ class TopologicalManifolds(OwnedCategory):
             manifold_name,
             manifold_structure,
             differentiability_degree,
+            manifold_field="real",
             **rest,
         ) -> None:
             self._preamble_engine_manifold = engine_manifold
@@ -164,6 +172,7 @@ class TopologicalManifolds(OwnedCategory):
             self._preamble_manifold_name = str(manifold_name)
             self._preamble_manifold_structure = str(manifold_structure)
             self._preamble_differentiability_degree = differentiability_degree
+            self._preamble_manifold_field = str(manifold_field)
             self._preamble_charts = {}
             self._preamble_transitions = {}
             super().__init__(**rest)
@@ -176,6 +185,9 @@ class TopologicalManifolds(OwnedCategory):
 
         def manifold_structure(self):
             return self._preamble_manifold_structure
+
+        def base_field_type(self):
+            return self._preamble_manifold_field
 
         def regularity(self):
             degree = self._preamble_differentiability_degree
@@ -308,6 +320,7 @@ class DifferentiableManifolds(OwnedCategory):
             manifold_name=str(name),
             manifold_structure="differentiable",
             differentiability_degree=degree,
+            manifold_field="real",
         )
 
 
@@ -341,11 +354,258 @@ class SmoothManifolds(OwnedCategory):
             manifold_name=str(name),
             manifold_structure="smooth",
             differentiability_degree=Infinity,
+            manifold_field="real",
         )
 
 
+class HolomorphicMap(Morphism):
+    r"""A holomorphic map represented by polynomial formulas in selected complex charts."""
+
+    def __init__(self, parent, engine_map, coordinate_expressions, source_label, target_label) -> None:
+        Morphism.__init__(self, parent)
+        self._preamble_engine_map = engine_map
+        self._preamble_coordinate_expressions = tuple(coordinate_expressions)
+        self._preamble_source_chart_label = source_label
+        self._preamble_target_chart_label = target_label
+
+    def coordinate_expressions(self):
+        return self._preamble_coordinate_expressions
+
+    def source_chart(self):
+        return self.domain().atlas()[self._preamble_source_chart_label]
+
+    def target_chart(self):
+        return self.codomain().atlas()[self._preamble_target_chart_label]
+
+    def _engine_holomorphic_map(self):
+        return self._preamble_engine_map
+
+    def __mul__(self, other):
+        if not isinstance(other, HolomorphicMap) or other.codomain() is not self.domain():
+            return NotImplemented
+        engine = self._engine_holomorphic_map() * other._engine_holomorphic_map()
+        source = other.source_chart()
+        target = self.target_chart()
+        expressions = engine.expr(source._engine_chart(), target._engine_chart())
+        if self.codomain().dimension() == 1 and not isinstance(expressions, tuple):
+            expressions = (expressions,)
+        return other.domain().Mor(self.codomain())._from_engine_polynomial_map(
+            engine,
+            tuple(expressions),
+            source.label(),
+            target.label(),
+        )
+
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, HolomorphicMap)
+            and other.domain() is self.domain()
+            and other.codomain() is self.codomain()
+            and other.coordinate_expressions() == self.coordinate_expressions()
+            and other.source_chart().label() == self.source_chart().label()
+            and other.target_chart().label() == self.target_chart().label()
+        )
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    __hash__ = None
+
+    def _repr_(self):
+        return f"Holomorphic map {self.domain()} -> {self.codomain()}"
+
+
+class ComplexManifoldHomset(CategoricalHomset):
+    Element = HolomorphicMap
+
+    def __init__(self, hom_family, domain, codomain) -> None:
+        CategoricalHomset.__init__(self, hom_family, domain, codomain)
+
+    @staticmethod
+    def _unique_chart(manifold):
+        labels = tuple(manifold.chart_labels())
+        if len(labels) != 1:
+            raise NotImplementedError(
+                "the represented polynomial holomorphic-map constructor currently requires one selected global chart"
+            )
+        return manifold.atlas()[labels[0]]
+
+    def polynomial(self, coordinate_expressions):
+        r"""Construct the holomorphic map defined by polynomial chart formulas."""
+        source = self._unique_chart(self.domain())
+        target = self._unique_chart(self.codomain())
+        expressions = tuple(coordinate_expressions)
+        if len(expressions) != self.codomain().dimension():
+            raise ValueError("a holomorphic coordinate map has one expression per target coordinate")
+        variables = tuple(source.coordinates())
+        if any(not all(expression.is_polynomial(variable) for variable in variables) for expression in expressions):
+            raise ValueError("this constructor certifies holomorphicity only for polynomial coordinate formulas")
+        engine = self.domain()._engine_manifold().diff_map(
+            self.codomain()._engine_manifold(),
+            expressions if len(expressions) != 1 else expressions[0],
+            chart1=source._engine_chart(),
+            chart2=target._engine_chart(),
+        )
+        return self._from_engine_polynomial_map(
+            engine, expressions, source.label(), target.label()
+        )
+
+    def _from_engine_polynomial_map(self, engine, expressions, source_label, target_label):
+        return self.element_class(
+            self, engine, tuple(expressions), source_label, target_label
+        )
+
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined only for equal complex-manifold endpoints")
+        chart = self._unique_chart(self.domain())
+        return self.polynomial(tuple(chart.coordinates()))
+
+
+class ComplexManifoldHomCategoryConstruction(HomCategoryConstruction):
+    def fixed_category_class(self):
+        return ComplexManifoldHomset
+
+
+class ComplexManifolds(OwnedCategory):
+    r"""Finite-dimensional complex analytic manifolds with holomorphic atlases."""
+
+    _HomCategory = ComplexManifoldHomCategoryConstruction
+
+    def super_categories(self):
+        return [TopologicalManifolds()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "complex analytic manifolds"
+
+    def an_object(self):
+        return self.affine_space(1, name="C")
+
+    def _call_(self, dimension, name):
+        dimension = int(dimension)
+        if dimension <= 0:
+            raise ValueError("a complex manifold has positive complex dimension")
+        engine = _SageManifold(
+            dimension,
+            str(name),
+            field="complex",
+            structure="smooth",
+            unique_tag=object(),
+        )
+        return object_of(
+            self,
+            engine_manifold=engine,
+            manifold_dimension=dimension,
+            manifold_name=str(name),
+            manifold_structure="complex analytic",
+            differentiability_degree=Infinity,
+            manifold_field="complex",
+        )
+
+    def affine_space(self, dimension, name=None, coordinate_names=None):
+        dimension = int(dimension)
+        if name is None:
+            name = f"C^{dimension}"
+        if coordinate_names is None:
+            coordinate_names = tuple(f"z{index}" for index in range(dimension))
+        coordinate_names = tuple(str(name) for name in coordinate_names)
+        if len(coordinate_names) != dimension:
+            raise ValueError("a complex affine chart has one coordinate name per dimension")
+        manifold = self(dimension, name)
+        manifold.chart("standard", " ".join(coordinate_names))
+        return manifold
+
+    def open_submanifold(self, ambient, name, restriction):
+        if ambient not in self:
+            raise TypeError("a complex analytic open submanifold requires a complex ambient manifold")
+        labels = tuple(ambient.chart_labels())
+        if len(labels) != 1:
+            raise NotImplementedError("represented analytic opens currently require one ambient global chart")
+        ambient_chart = ambient.atlas()[labels[0]]
+        engine_open = ambient._engine_manifold().open_subset(
+            str(name),
+            coord_def={ambient_chart._engine_chart(): restriction},
+        )
+        engine_chart = ambient_chart._engine_chart().restrict(engine_open)
+        opened = object_of(
+            self,
+            engine_manifold=engine_open,
+            manifold_dimension=ambient.dimension(),
+            manifold_name=str(name),
+            manifold_structure="complex analytic",
+            differentiability_degree=Infinity,
+            manifold_field="complex",
+        )
+        opened._preamble_charts[labels[0]] = ManifoldAtlasChart(
+            opened, labels[0], engine_chart
+        )
+        opened._preamble_open_ambient = ambient
+        opened._preamble_open_restriction = restriction
+        coordinates = tuple(opened.atlas()[labels[0]].coordinates())
+        opened._preamble_open_inclusion = opened.Mor(ambient).polynomial(coordinates)
+        return opened
+
+    def disc(self, radius=1, name="Delta"):
+        radius = float(radius)
+        if radius <= 0:
+            raise ValueError("an analytic disc has positive radius")
+        ambient = self.affine_space(1, name=f"{name}_ambient", coordinate_names=("z",))
+        z = ambient.atlas()["standard"].coordinate(0)
+        disc = self.open_submanifold(ambient, name, abs(z) < radius)
+        disc._preamble_disc_radius = radius
+        return disc
+
+    class ParentMethods:
+        def complex_dimension(self):
+            return self.dimension()
+
+        def real_dimension(self):
+            return 2 * int(self.dimension())
+
+        def is_analytic(self) -> bool:
+            return True
+
+        def regularity(self):
+            return "analytic"
+
+        def holomorphic_polynomial_map(self, codomain, coordinate_expressions):
+            return self.Mor(codomain).polynomial(coordinate_expressions)
+
+        def is_open_submanifold(self) -> bool:
+            return getattr(self, "_preamble_open_ambient", None) is not None
+
+        def open_ambient(self):
+            ambient = getattr(self, "_preamble_open_ambient", None)
+            if ambient is None:
+                raise ValueError("this complex manifold was not constructed as a represented open")
+            return ambient
+
+        def open_restriction(self):
+            if not self.is_open_submanifold():
+                raise ValueError("this complex manifold was not constructed as a represented open")
+            return self._preamble_open_restriction
+
+        def open_inclusion(self):
+            inclusion = getattr(self, "_preamble_open_inclusion", None)
+            if inclusion is None:
+                raise ValueError("this complex manifold was not constructed as a represented open")
+            return inclusion
+
+        def disc_radius(self):
+            radius = getattr(self, "_preamble_disc_radius", None)
+            if radius is None:
+                raise ValueError("this complex manifold is not a represented analytic disc")
+            return radius
+
+
+
 __all__ = [
+    "ComplexManifoldHomset",
+    "ComplexManifolds",
     "DifferentiableManifolds",
+    "HolomorphicMap",
     "ManifoldAtlasChart",
     "ManifoldAtlasTransition",
     "SmoothManifolds",
