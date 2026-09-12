@@ -1569,6 +1569,47 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             return all(self.b(left, right) == self.value_module().zero() for left in elements for right in elements)
 
 
+        def gram_matrix(self):
+            r"""Return canonical rational representatives of the finite-form Gram values."""
+            representative = _representative_gram(self, quadratic=False)
+            rows, columns = representative.tensor_shape()
+            return MatrixSpace(
+                representative.base_ring(), int(rows), int(columns)
+            ).from_tensor(representative)
+
+        def reframing_isometry(self, generators):
+            r"""Return the explicit isometry to this form on the selected generating family."""
+            return _regenerate_form_on_generators(
+                self, tuple(generators), quadratic=False
+            )
+
+        def regenerate(self, generators):
+            r"""Return this finite form written on the selected generating family."""
+            return self.reframing_isometry(generators).codomain()
+
+        @cached_method
+        def primary_components(self):
+            r"""Return the prime-indexed family of primary form-bearing subobjects."""
+            primes = finite_ordered_set(
+                tuple(
+                    sorted(
+                        {
+                            prime
+                            for invariant in self.invariant_factors()
+                            for prime in abs(invariant).prime_divisors()
+                        }
+                    )
+                )
+            )
+            return indexed_family(
+                primes,
+                lambda prime: self.primary_part(prime),
+                name=f"Primary components of {self}",
+            )
+
+        primary_decomposition = primary_components
+
+
         @cached_method
         def subobjects(self):
             r"""Return all form-bearing subobjects of this finite form."""
@@ -1664,6 +1705,10 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             return _p_adic_jordan_form(self, quadratic=False)
 
         normal_form = p_adic_jordan_form
+
+        def normal_form_isometry(self):
+            r"""Return the normal-form-to-original morphism."""
+            return self.normal_form().inverse()
 
         def twist(self, scalar):
             r"""Return the same finite module equipped with ``scalar*b``."""
@@ -1825,6 +1870,47 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             return all(self.q(element) == self.value_module().zero() for element in elements)
 
 
+        def gram_matrix(self):
+            r"""Return canonical rational representatives of the finite-form Gram values."""
+            representative = _representative_gram(self, quadratic=True)
+            rows, columns = representative.tensor_shape()
+            return MatrixSpace(
+                representative.base_ring(), int(rows), int(columns)
+            ).from_tensor(representative)
+
+        def reframing_isometry(self, generators):
+            r"""Return the explicit isometry to this form on the selected generating family."""
+            return _regenerate_form_on_generators(
+                self, tuple(generators), quadratic=True
+            )
+
+        def regenerate(self, generators):
+            r"""Return this finite form written on the selected generating family."""
+            return self.reframing_isometry(generators).codomain()
+
+        @cached_method
+        def primary_components(self):
+            r"""Return the prime-indexed family of primary form-bearing subobjects."""
+            primes = finite_ordered_set(
+                tuple(
+                    sorted(
+                        {
+                            prime
+                            for invariant in self.invariant_factors()
+                            for prime in abs(invariant).prime_divisors()
+                        }
+                    )
+                )
+            )
+            return indexed_family(
+                primes,
+                lambda prime: self.primary_part(prime),
+                name=f"Primary components of {self}",
+            )
+
+        primary_decomposition = primary_components
+
+
         @cached_method
         def subobjects(self):
             r"""Return all form-bearing subobjects of this finite form."""
@@ -1920,6 +2006,10 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             return _p_adic_jordan_form(self, quadratic=True)
 
         normal_form = p_adic_jordan_form
+
+        def normal_form_isometry(self):
+            r"""Return the normal-form-to-original morphism."""
+            return self.normal_form().inverse()
 
         def twist(self, scalar):
             r"""Return the same finite module equipped with ``scalar*q``."""

@@ -213,3 +213,25 @@ def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizer
     assert sorted(int(orbit.cardinality()) for orbit in isotropic_orbits) == [1, 2]
     assert form.orbit(first).cardinality() == 2
     assert second in form.orbit(first)
+
+
+def test_generic_torsion_form_reframing_and_primary_components_are_live_objects() -> None:
+    values = FractionFieldQuotient(ZZ, 1)
+    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
+        _matrix(ZZ, [[2, 0], [0, 3]]),
+        _matrix(QQ, [[QQ(1) / 2, 0], [0, QQ(1) / 3]]),
+        values,
+    )
+    generators = tuple(form.module_generators())
+    reframing = form.reframing_isometry(generators)
+    components = form.primary_components()
+    gram = form.gram_matrix()
+
+    assert reframing.domain() is form
+    assert tuple(reframing.codomain().invariant_factors()) == tuple(form.invariant_factors())
+    assert form.regenerate(generators) is reframing.codomain()
+    assert tuple(components.index_set()) == (ZZ(2), ZZ(3))
+    assert components[ZZ(2)].cardinality() == 2
+    assert components[ZZ(3)].cardinality() == 3
+    assert gram[0, 0] == QQ(1) / 2
+    assert gram[1, 1] == QQ(1) / 3
