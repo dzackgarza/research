@@ -280,7 +280,7 @@ Paths in this section are relative to
 
 ### Completion objects and finite approximations
 
-- [ ] **`module-completion`**. **Needs:** none.
+- [x] **`module-completion`**. **Needs:** none.
   Make finite-module completion consume the corrected ring completion and
   construct its functorial maps.
   **Owner:** `modules/framed/finitely_generated/finitely_presented_modules.py`,
@@ -1476,4 +1476,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `MODULE-completion-20260912-0012` | completion / module-completion | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py; src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py; src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py; src/dzack_research/preamble/categories/modules/pure/modules.py; tests/modules/test_module_completion_maps.py` (write) | `4deeea2b` | 2026-09-12T00:12:00Z |
+| `MODULE-quotient-completion-20260912-0014` | completion / quotient-completion | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/modules/pure/modules.py; src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py; tests/modules/test_quotient_completion.py` (write) | `f1638c64` | 2026-09-12T00:14:00Z |
