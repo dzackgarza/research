@@ -4634,6 +4634,38 @@ note "$\dim_FV=\operatorname{rk}_F(V)$ for $F$ a field" and
 "$\operatorname{sig}(L\otimes_RF)$ is the $F$-fiber of
 $\operatorname{sig}_R(L)$" as specializations.
 
+### `TERM-14`: "Index" always means $p-q$, "signature" always means the full tuple $(p,q)$ or $(p,q,r)$ — not vice versa
+
+Competing conventions abound — manifold theory / $L$-theory
+($\sigma(M)=p-q$ called "signature"), arithmetic lattices (often
+"signature $(p,q)$" called "index"), Sterk-style indefinite lattices
+("signature $(p,q)$" vs. "$2$-elementary $(r,a,\delta)$"), etc. —
+but in this book **index** always means the integer
+
+$$ \operatorname{ind}(b):=p-q\in\mathbb Z, $$
+
+and **signature** always means the full tuple
+
+$$ \operatorname{sig}(b):=(p,q)\quad\text{or}\quad(p,q,r)\in\mathbb Z^2\text{ resp. }\mathbb Z^3 $$
+
+(with $r:=\dim\operatorname{rad}$, $p+q+r=n$ when defined). This abuse
+is not pedantry: the Hodge index theorem computes $p-q$ and *deduces*
+$(p,q)$ (since $p+q=n-r$ is known), so calling $p-q$ the *index* is
+philosophically correct — it is the Fredholm / operator-theoretic index
+$\operatorname{ind}= \dim\ker_+ - \dim\ker_-$ (number of positive minus
+negative eigenvalues of $G_e(b)$), i.e. the $L^2$-index that Hodge
+computes, while $(p,q)$ is the more refined *signature* that follows
+from it. Manifold-theoretic "$\sigma(M)=p-q$ is the signature"
+conflates the two; here $\sigma(M)=p-q$ is the index and $(p,q)$ is the
+signature.
+
+**Banned:** "the signature $p-q$" / "the index $(p,q)$" / "signature
+$(p,q)$ called the index."
+
+**Preferred:** "The form $b$ has **signature** $(p,q)$ (resp.
+$(p,q,r)$) and **index** $p-q$." / "Hodge computes the index
+$p-q$ and hence the signature $(p,q)$ since $p+q=n-r$."
+
 ### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
 
 A fenced `Definition` is an atomic unit with one logical status: it
@@ -5349,6 +5381,14 @@ $R\to\mathbb R$ at $\sigma$) and recovers $\dim_F:=\operatorname{rk}_F$
 as the field specialization (PR-73). Flag once-removed definitions
 outside the book until the intrinsic $R$-theory is supplied; they require
 judgement and interactive research.
+
+**35. "Index" is $p-q$, "signature" is $(p,q)$ / $(p,q,r)$ — never the
+reverse.** Competing conventions (manifold / $L$-theory "$\sigma(M)=p-q$
+is the signature," arithmetic Sterk-style "$\sigma=(p,q)$ vs. index")
+conflate the two; here index always means the integer $p-q$ (Fredholm /
+operator-theoretic index, Hodge computes $p-q$ and deduces $(p,q)$ since
+$p+q=n-r$) and signature always means the full tuple $(p,q)$ or
+$(p,q,r)$ (TERM-14).
 
 **29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
 $\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
