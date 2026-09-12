@@ -3997,6 +3997,61 @@ N\hookrightarrow(M,b))^{\perp}\subseteq M$ as $R$-submodule" and, when
 quoting the lattice, "the abstract lattice $N\cong\langle2\rangle$ embeds
 via $i_1,i_2$ with $N^{\perp_{i_1}}\not\cong N^{\perp_{i_2}}$."
 
+### `PR-58`: $\operatorname{Gram}(b)$ is ill-defined on $(M,b)\in\mathbf{Bil}_{R,W}$, well-defined on $((M,e),b)$ in $\mathbf{Bil}_{R,W}^{\mathrm{fr}}$ — it is $e^*b$, not a property of $(M,b)$
+
+"$\operatorname{Gram}(b)$" as a matrix $(b(e_i,e_j))$ presupposes a finite
+ordered basis $e\colon R^n\xrightarrow{\sim}M$, i.e. an object of
+$\mathbf{FMod}_R^{\mathrm{fr}}$ / $\mathbf{BMod}_R$, not of
+$\mathbf{Mod}_R$. An object $(M,b\colon M\otimes M\to W)$ in
+$\mathbf{Bil}_{R,W}$ has $M$ arbitrary — $M=\mathbb Q$,
+$\mathbb Q/\mathbb Z$, $\bigoplus_{\mathbb N}\mathbb Z$, non-free
+projective all carry $W$-valued $b$ with no $n$ and no $(e_i)$ — so no
+$n\times n$ matrix exists. The functor $(M,b)\mapsto\operatorname{Gram}(b)$
+has no domain on $\mathbf{Bil}_{R,W}$.
+
+On $\mathbf{Lat}_R\subseteq\mathbf{Bil}_{R,W}$ — finite free over $\mathbb Z$
+(resp. $\mathbb Z_{(p)}$) with nondegenerate $b$ — an $n$ *does* exist, but
+still no distinguished $e$: the $n\times n$ matrix is defined only *after*
+choosing an ordered basis. Framed, it is well-typed as the pullback
+$G_e(b):=e^*b:=b\circ(e\otimes e)\in M_n(W)=\operatorname{Hom}_R(R^n\otimes R^n,W)$,
+i.e. $(b(e_i,e_j))$, and then $\det$, $\operatorname{rk}$, etc. are
+$\operatorname{GL}_n(R)$-invariants of the isometry class $[G_e(b)]$.
+
+Concrete standards — name the framing, then Gram is the pullback:
+
+* **Bare $(M,b)$:** no Gram matrix.
+* **Framed $((M,e),b)$:** for ordered basis $e=(e_1,\dots,e_n)\colon R^n\xrightarrow{\sim}M$,
+  put $G_e(b):=e^*b\in M_n(W)$, $G_e(b)_{ij}:=b(e_i,e_j)$.
+
+**Banned:** "$\operatorname{Gram}(b)$" for $(M,b)\in\mathbf{Bil}_{R,W}$
+with no $e$.
+
+**Preferred:** "Let $((M,e),b)$ be framed, $e\colon R^n\xrightarrow{\sim}M$.
+Put $G_e(b):=e^*b\in M_n(W)$."
+
+### `PR-59`: Without an explicit ordered basis / generating set, $\operatorname{Gram}(b)$ is well-defined only up to $\operatorname{GL}_n(R)$-congruence
+
+Without the ordered frame $e$ the matrix has no size and no value; with
+$e$ it is $G_e(b)=e^*b$ and changes by congruence when $e$ changes.
+For ordered bases $e' = e\circ P$ with
+$P\in\operatorname{GL}_n(R)=\operatorname{Aut}_R(R^n)$,
+$G_{e'}(b)=P^{\!t}G_e(b)P$ in $M_n(W)$. So without $e$, $\operatorname{Gram}(b)$
+is well-defined only as the isometry class $[G_e(b)]\in M_n(W)/\operatorname{GL}_n(R)$
+— i.e. up to $\operatorname{GL}_n(R)$-congruence, with $n=\operatorname{rk}M$ itself
+defined only after the framing — not as a matrix. With only a generating
+set $S$ and $F(S)\twoheadrightarrow M$, the $|S|\times|S|$ matrix on
+$F(S)$ is well-defined only up to $\operatorname{Aut}_R(F(S))$ and up to
+stabilization by the relations of $M$; different $S$ give different sizes,
+so the assignment is a function on $((M,e_S),b)$ in $\mathbf{Mod}_R^{\mathrm{fr}}$,
+not on $(M,b)$.
+
+**Banned:** "$\operatorname{Gram}(b)$" for $(M,b)$ with no $e$ (PR-58);
+"the Gram matrix of $(M,b)$ is …" with no $e$ / $S$ to make the congruence
+class a matrix.
+
+**Preferred:** always name $e$: "$G_e(b)$," "$G_{e'}(b)=P^{\!t}G_e(b)P$ for
+$P\in\operatorname{GL}_n(R)$," "the isometry class $[G_e(b)]$."
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4467,6 +4522,15 @@ $N_2^{\perp}=\mathbb Z(e-f)\cong\langle-2\rangle$; same $N\subseteq
 $b_1\neq b_2$ on the same $M$. Write $N^{\perp_b}$ /
 $N^{\perp_i}$ / $(i\colon N\hookrightarrow(M,b))^{\perp}\subseteq M$,
 never bare "$N^{\perp}$."
+
+**23. $\operatorname{Gram}(b)$ is not a function of $(M,b)$.** $M$ in
+$\mathbf{Bil}_{R,W}$ need not be free and has no distinguished basis, so
+no $n\times n$ matrix exists; $\operatorname{Gram}(b)$ as $(b(e_i,e_j))$
+is $G_e(b)=e^*b$ for a framed $((M,e),b)$ with ordered basis
+$e\colon R^n\xrightarrow{\sim}M$, and without $e$ is well-defined only
+up to $\operatorname{GL}_n(R)$-congruence $G_{e'}=P^{\!t}G_eP$ (PR-58,
+PR-59). Write $G_e(b)$ and $[G_e(b)]$, never "$\operatorname{Gram}(b)$"
+for $(M,b)$.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
