@@ -2,6 +2,24 @@ r"""Archive reconciliation for ADE base log-pair vocabulary."""
 
 from dzack_research.preamble.all import QQ, ADELogPair
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/ade_surfaces.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/ade_surfaces.py",
+    "owner_overrides": {
+        "LogPairs": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "LogPairs.super_categories": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "LogPairs.ParentMethods": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "LogPairs.ParentMethods.is_log_pair": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "ToricLogPairs": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "ToricLogPairs.super_categories": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "ToricLogPairs.ParentMethods": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "ToricLogPairs.ParentMethods.scheme": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "ToricLogPairs.ParentMethods.boundary_divisor": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+        "ToricLogPair": "src/dzack_research/preamble/categories/schemes/log_pairs.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_ade_type_names_read_the_same_retained_family_data() -> None:
     pair = ADELogPair("A", 3, QQ, variant=("long", "short"))

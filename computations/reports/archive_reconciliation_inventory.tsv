@@ -2303,106 +2303,106 @@ preamble/categories/rings/rings.sage	own_ring	function	627	0		src/dzack_research
 preamble/categories/rings/rings.sage	owned_ring_view	function	645	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
 preamble/categories/rings/rings.sage	OwnedBaseRing	class	651	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
 preamble/categories/rings/rings.sage	OwnedBaseRing.base_ring	method	669	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
-preamble/categories/schemes/ade_surfaces.sage	<module>	module	1	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	LOG_DIVISOR_COEFFICIENT_RING	binding	93	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	EPSILON	binding	94	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	VALID_DECORATIONS	binding	97	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	LatticeCoord	binding	103	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	LatticePoint2D	binding	104	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	IntegralInvariants	class	127	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	SideDecoration	class	165	2			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADETypeData	class	179	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	LogPairs	class	223	2			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	LogPairs.super_categories	method	227	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	LogPairs.ParentMethods	class	239	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	LogPairs.ParentMethods.is_log_pair	method	242	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs	class	246	2			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.super_categories	method	251	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.ParentMethods	class	263	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.ParentMethods.scheme	method	284	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.ParentMethods.boundary_divisor	method	287	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs	class	301	2			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.super_categories	method	305	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods	class	317	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.scheme	method	321	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.toric_scheme	method	326	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.polarizing_polytope	method	331	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.codimension_in_toric_scheme	method	336	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.ade_type_data	method	340	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.cover	method	345	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.base	method	350	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.is_cover	method	360	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.is_base	method	365	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.letter	method	369	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.rank	method	372	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.variant	method	375	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.is_affine	method	378	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.key	method	381	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.latex_label	method	384	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.cartan_type	method	387	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.dynkin_diagram	method	392	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.p_star	method	395	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.polytope_matrix	method	398	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.boundary_divisor	method	407	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.log_divisor	method	412	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.log_pair	method	417	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.log_pair_label	method	422	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.integral_invariants	method	426	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.cartan_type_latex	method	438	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.toric_embedding_latex	method	443	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces	class	480	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.super_categories	method	484	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods	class	496	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.scheme	method	523	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.toric_scheme	method	527	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.polarizing_polytope	method	531	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.codimension_in_toric_scheme	method	535	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.cover	method	539	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.base	method	542	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.is_cover	method	545	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.is_base	method	548	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.blue_line_divisor	method	551	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.complementary_divisor	method	554	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.boundary_divisor	method	557	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.branch_divisor	method	568	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.log_divisor	method	575	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.log_pair	method	584	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.log_pair_label	method	587	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.defining_polynomial	method	590	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.parametric_branch_polynomial	method	593	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.dynkin_diagram_data	method	596	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.distinguished_boundary_points	method	599	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces	class	663	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.super_categories	method	670	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods	class	682	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.cover	method	756	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.base	method	759	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.is_cover	method	762	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.is_base	method	765	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.polygon	method	944	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.vertices	method	947	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.side_decorations	method	950	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.boundary_divisor	method	953	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.ramification_divisor	method	964	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.log_divisor	method	970	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.log_pair	method	979	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.log_pair_label	method	982	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.scheme	method	985	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.toric_scheme	method	989	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.polarizing_polytope	method	993	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.codimension_in_toric_scheme	method	997	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.blue_line_divisor	method	1001	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.complementary_divisor	method	1015	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.defining_polynomial	method	1034	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.anticanonical_equation	method	1078	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.parametric_branch_polynomial	method	1084	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.dynkin_diagram_data	method	1140	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.distinguished_boundary_points	method	1207	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.plot	method	1215	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.plot2d	method	1218	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ToricLogPair	function	1389	2			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurface	function	1396	0			unreviewed
-preamble/categories/schemes/ade_surfaces.sage	ADESurface	function	1401	0			unreviewed
+preamble/categories/schemes/ade_surfaces.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	LOG_DIVISOR_COEFFICIENT_RING	binding	93	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	EPSILON	binding	94	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	VALID_DECORATIONS	binding	97	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	LatticeCoord	binding	103	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	LatticePoint2D	binding	104	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	IntegralInvariants	class	127	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	SideDecoration	class	165	2		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADETypeData	class	179	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	LogPairs	class	223	2		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	LogPairs.super_categories	method	227	0		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	LogPairs.ParentMethods	class	239	0		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	LogPairs.ParentMethods.is_log_pair	method	242	0		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs	class	246	2		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.super_categories	method	251	0		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.ParentMethods	class	263	0		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.ParentMethods.scheme	method	284	0		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ToricLogPairs.ParentMethods.boundary_divisor	method	287	0		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs	class	301	2		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.super_categories	method	305	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods	class	317	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.scheme	method	321	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.toric_scheme	method	326	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.polarizing_polytope	method	331	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.codimension_in_toric_scheme	method	336	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.ade_type_data	method	340	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.cover	method	345	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.base	method	350	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.is_cover	method	360	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.is_base	method	365	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.letter	method	369	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.rank	method	372	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.variant	method	375	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.is_affine	method	378	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.key	method	381	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.latex_label	method	384	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.cartan_type	method	387	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.dynkin_diagram	method	392	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.p_star	method	395	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.polytope_matrix	method	398	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.boundary_divisor	method	407	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.log_divisor	method	412	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.log_pair	method	417	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.log_pair_label	method	422	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.integral_invariants	method	426	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.cartan_type_latex	method	438	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADELogPairs.ParentMethods.toric_embedding_latex	method	443	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces	class	480	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.super_categories	method	484	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods	class	496	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.scheme	method	523	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.toric_scheme	method	527	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.polarizing_polytope	method	531	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.codimension_in_toric_scheme	method	535	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.cover	method	539	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.base	method	542	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.is_cover	method	545	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.is_base	method	548	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.blue_line_divisor	method	551	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.complementary_divisor	method	554	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.boundary_divisor	method	557	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.branch_divisor	method	568	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.log_divisor	method	575	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.log_pair	method	584	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.log_pair_label	method	587	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.defining_polynomial	method	590	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.parametric_branch_polynomial	method	593	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.dynkin_diagram_data	method	596	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurfaces.ParentMethods.distinguished_boundary_points	method	599	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces	class	663	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.super_categories	method	670	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods	class	682	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.cover	method	756	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.base	method	759	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.is_cover	method	762	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.is_base	method	765	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.polygon	method	944	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.vertices	method	947	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.side_decorations	method	950	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.boundary_divisor	method	953	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.ramification_divisor	method	964	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.log_divisor	method	970	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.log_pair	method	979	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.log_pair_label	method	982	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.scheme	method	985	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.toric_scheme	method	989	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.polarizing_polytope	method	993	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.codimension_in_toric_scheme	method	997	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.blue_line_divisor	method	1001	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.complementary_divisor	method	1015	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.defining_polynomial	method	1034	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.anticanonical_equation	method	1078	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.parametric_branch_polynomial	method	1084	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.dynkin_diagram_data	method	1140	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.distinguished_boundary_points	method	1207	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.plot	method	1215	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurfaces.ParentMethods.plot2d	method	1218	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ToricLogPair	function	1389	2		src/dzack_research/preamble/categories/schemes/log_pairs.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADEBaseSurface	function	1396	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/schemes/ade_surfaces.sage	ADESurface	function	1401	0		src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
 preamble/categories/schemes/ambient_spaces.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
 preamble/categories/schemes/ambient_spaces.sage	AffineSpace	function	29	2		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
 preamble/categories/schemes/ambient_spaces.sage	ProjectiveSpace	function	44	2		src/dzack_research/preamble/categories/schemes/schemes.py	reconciled-live-owner
