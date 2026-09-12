@@ -723,17 +723,6 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   nearby non-equivalent example where invariants do not suffice, and a
   nonperfect-base case that separates regularity from smoothness.
 
-- [ ] **`curve-genus`**. **Needs:** `normalization`, `general-descent`.
-  Connect local delta, normalization, and geometric genus globally.
-  **Dependencies:** normalization maps, local lengths, and projective gluing.
-  **Deliver:** projective curve normalization and the comparison between
-  arithmetic and geometric genus, with local contributions at every singular
-  point and the applicable connectedness/geometric-integrality hypotheses.
-  **Decision:** do not sum a global affine delta once per singular point.
-  Base extension can split points and components; retain residue degrees.
-  **Acceptance:** a curve with more than one singular point and a curve with a
-  nonrational singular point, using an independently sourced genus relation.
-
 ## Geometric research applications
 
 **Release boundary:** these are research consumers of the preceding shared
@@ -1006,7 +995,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

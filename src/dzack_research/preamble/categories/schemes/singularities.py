@@ -347,6 +347,60 @@ class IsolatedHypersurfaceSingularity:
         local_data = singular_function("deltaLoc")(equation, origin, ring=engine)
         return tuple(int(value) for value in local_data)
 
+    def _plane_curve_prime_data(self, point):
+        r"""Return local data at one represented closed prime of the plane.
+
+        Singular ``deltaLoc`` accepts an irreducible prime component of the
+        singular locus.  For a nonrational closed point it returns the sum over
+        the conjugate geometric points.  We retain the original closed point
+        and divide that total by its represented residue degree; multiplying
+        the resulting local invariant back by the residue degree recovers the
+        contribution over the ground field.
+        """
+        ring = self.polynomial_ring()
+        if point.parent().ring() is not ring:
+            raise ValueError("the selected local point belongs to a different plane")
+        generators = tuple(ring.algebra_generators())
+        if len(generators) != 2:
+            raise NotImplementedError("local delta data are currently represented for plane curves")
+        engine = _engine_ring(ring)
+        equation = _engine_element(ring, self.equation())
+        equation_ideal = engine.ideal(equation)
+        if equation_ideal.radical() != equation_ideal:
+            raise ValueError("delta and conductor require a reduced plane curve")
+        singular_lib("normal.lib")
+        local_data = singular_function("deltaLoc")(
+            equation,
+            point.ideal()._engine_ideal(),
+            ring=engine,
+        )
+        total_delta, total_tjurina, total_branches = (
+            int(value) for value in local_data
+        )
+        residue_degree = int(point.residue_degree())
+        if residue_degree <= 0 or total_delta % residue_degree:
+            raise ArithmeticError("local delta total is incompatible with the represented residue degree")
+        return (
+            total_delta // residue_degree,
+            total_tjurina,
+            total_branches,
+            residue_degree,
+        )
+
+    def delta_invariant_at(self, point):
+        r"""Return the local delta invariant at a represented closed point."""
+        delta, _tjurina, _branches, _degree = self._plane_curve_prime_data(point)
+        if delta < 0:
+            raise ValueError("the selected curve germ has infinite delta invariant")
+        return _own_ring(SageZZ)(delta)
+
+    def delta_contribution_over_base(self, point):
+        r"""Return ``delta_p [kappa(p):k]`` without splitting the closed point."""
+        delta, _tjurina, _branches, degree = self._plane_curve_prime_data(point)
+        if delta < 0:
+            raise ValueError("the selected curve germ has infinite delta invariant")
+        return _own_ring(SageZZ)(delta * degree)
+
     def delta_invariant(self):
         r"""Return the local plane-curve delta invariant at the selected origin.
 
@@ -355,10 +409,9 @@ class IsolatedHypersurfaceSingularity:
         therefore local at the chosen maximal ideal rather than a sum over all
         affine singularities.
         """
-        delta, _tjurina, _branches = self._plane_curve_origin_data()
-        if delta < 0:
-            raise ValueError("the selected curve germ has infinite delta invariant")
-        return _own_ring(SageZZ)(delta)
+        ring = self.polynomial_ring()
+        origin = ring.spectrum()(ring.ideal(*tuple(ring.algebra_generators())))
+        return self.delta_invariant_at(origin)
 
     def local_tjurina_number(self):
         r"""Return the local Tjurina number from the same selected germ calculation."""

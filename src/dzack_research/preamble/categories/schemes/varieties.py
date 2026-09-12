@@ -157,8 +157,26 @@ class Curves(_DimensionSubcategoryOfVarieties):
             polynomial = defining_ideal._engine_ideal().hilbert_polynomial()
             return int(1 - polynomial(0))
 
+        def normalization_data(self):
+            data = getattr(self, "_preamble_curve_normalization_data", None)
+            if data is None:
+                raise ValueError("this projective curve has no selected normalization map")
+            return data
+
+        def normalization_morphism(self):
+            return self.normalization_data().normalization_morphism()
+
+        def normalization_curve(self):
+            return self.normalization_data().normalization_curve()
+
+        def local_delta_contributions(self):
+            return self.normalization_data().local_contributions()
+
+        def genus_comparison(self):
+            return self.normalization_data().genus_comparison()
+
         def geometric_genus(self):
-            r"""Return geometric genus where smoothness identifies it with ``p_a``.
+            r"""Return geometric genus from a selected normalization, or smoothness.
 
             A smooth projective integral curve has no normalization defect, so
             its geometric and arithmetic genera agree.  For singular curves
@@ -172,6 +190,9 @@ class Curves(_DimensionSubcategoryOfVarieties):
                 raise NotImplementedError(
                     "geometric genus here requires a represented projective curve"
                 )
+            normalization = getattr(self, "_preamble_curve_normalization_data", None)
+            if normalization is not None:
+                return normalization.geometric_genus()
             if self not in SmoothSchemes(base):
                 raise NotImplementedError(
                     "geometric genus of a singular curve requires its normalization, not the arithmetic genus"
