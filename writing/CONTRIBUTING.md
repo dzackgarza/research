@@ -2643,6 +2643,84 @@ $(m_i)_{i\in I}$ in $M$ is a **basis** if …," "A **based module** is a
 pair $(M,e)$ …," "A $t$-structure is **hereditary** if …" Bold the term;
 do not bold surrounding prose.
 
+### `PR-28`: "Requires a stated descent/local-to-global theorem with its hypotheses" is not a theorem
+
+Meta-commentary that a conclusion requires a theorem with hypotheses
+contributes no fenced unit to the skeleton (SEC-6) and says a theorem
+must exist instead of stating it. The standard is to state the descent
+theorem with its hypotheses once, then apply it — not to warn that one
+is needed.
+
+Vacuous generality is the other half: "a conclusion about $L$ from
+either image" quantifies over no specified conclusion (isomorphism,
+projectivity, rank, form, basis), no specified images (under which
+functors $B\otimes_A^L-$), and no specified hypotheses (faithfully flat,
+finite presentation, etc.). Each conclusion has different hypotheses; no
+single sentence covers them. "Either image" is false as stated — one
+image $L\otimes_{\mathbb Z}\mathbb Z_p$ alone never recovers $L$; descent
+recovers $L$ from the collection plus gluing.
+
+Concrete standards (state one, then apply it):
+
+* **fpqc descent for $\mathbf{LMod}$** [@Stacks-023N, Tag 023N; Lurie
+  DAG, descent for $\mathbf{LMod}_R$]: for faithfully flat
+  $R\to S$, $\mathbf{LMod}_R \xrightarrow{\sim}
+  \lim\bigl(\mathbf{LMod}_S \rightrightarrows \mathbf{LMod}_{S\otimes_R
+  S} \substack{\to\\ \to\\ \to} \cdots\bigr)$ via
+  $M\mapsto S\otimes_R^L M$ with descent datum. In particular,
+  $M\simeq N$ in $\mathbf{LMod}_R$ iff $S\otimes_R^L M\simeq
+  S\otimes_R^L N$ compatibly.
+
+* **Beauville–Laszlo / Milnor patching for $\mathbb Z$**:
+  for $M\in\mathbf{LMod}_{\mathbb Z}$ finitely presented,
+  $M \simeq (M\otimes_{\mathbb Z}^L\mathbb Z_p)\times_{M\otimes_{\mathbb
+  Z}^L\mathbb Q_p}(M\otimes_{\mathbb Z}^L\mathbb Q)$ as a pullback in
+  $\mathbf{LMod}_{\mathbb Z}$; equivalently $M$ is recovered from the
+  pair $(M\otimes\mathbb Z_p, M\otimes\mathbb Q)$ plus an identification
+  over $\mathbb Q_p$. Hypotheses: finite presentation (or perfect) for
+  the pullback to be exact; without it the square need not be cartesian.
+
+* **Local-to-global for lattices:** $L\simeq L'$ as $\mathbb Z$-lattices
+  iff $L\otimes\mathbb Z_p\simeq L'\otimes\mathbb Z_p$ for all $p$ and
+  $L\otimes\mathbb Q\simeq L'\otimes\mathbb Q$ compatibly over
+  $\mathbb Q_p$ — a conjunction, not "either image."
+
+**Banned:** "A conclusion about $L$ from either image requires a stated
+descent or local-to-global theorem with its hypotheses."
+
+**Preferred:** "::: {#thm-descent} **Theorem (fpqc descent).** For
+faithfully flat $R\to S$, $R\to S$ is of effective descent for
+$\mathbf{LMod}$: $M\mapsto S\otimes_R^L M$ induces
+$\mathbf{LMod}_R\simeq\lim \mathbf{LMod}_{S^{\otimes_R\bullet+1}}$. In
+particular, for finitely presented $M,N$, $M\simeq N$ iff the base
+changes are compatibly isomorphic. :::" Then: "::: {#cor-ZpQ} By
+Beauville–Laszlo, for finitely presented $M$,
+$M\simeq (M_p)\times_{M_{\mathbb Q_p}}(M_{\mathbb Q})$. Hence
+$L\simeq L'$ iff … :::" State which conclusion, which images, which
+theorem, which hypotheses; then apply it. Do not state that a theorem is
+required.
+
+### `PR-29`: Vague "either" / "a conclusion" with unquantified hypotheses
+
+"A conclusion," "either image," "some theorem with its hypotheses" are
+unbound: no domain, no codomain, no quantifier, no hypothesis list. This
+is the general form of PR-28 and of PR-22 ("some … is …" for $\exists$):
+using English indefinite for a mathematical quantifier so that no claim
+is falsifiable. Each "a" hides a $\forall$ or $\exists$ and a condition.
+
+**Banned:** "A conclusion about $L$ from either image requires a stated
+descent or local-to-global theorem with its hypotheses"; "some
+$R^n\twoheadrightarrow M$ is surjective" (PR-22); "the relevant
+pullbacks" (DEF-31).
+
+**Preferred:** quantify: "For every finitely presented $M$ and every
+faithfully flat $R\to S$, $M\simeq0$ iff $S\otimes_R^L M\simeq0$";
+"There exists a finite set $I$ and an effective epimorphism
+$\bigoplus_{i\in I}R\twoheadrightarrow M$"; "For the pullback squares
+exhibiting $X\times_Y 1$ in {#def-pullback}." Write $\forall$/$\exists$
+and the hypothesis list; do not use "a"/"either"/"relevant"/"some"
+standing for them.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -2723,3 +2801,15 @@ supplies structure unless defined, and patronizing strawman negation —
 premise no one held, with corrective dialectic for an audience that
 already distinguishes $\mathbb{E}_1$ from $\mathbb{E}_\infty$ and
 $\mathbf{LMod}_R$ from $\mathbf{RMod}_R$ (PR-16–18).
+
+**7. Specialization with no new claim, and meta-requirement for a
+theorem.** A general construction $B\otimes_A^L-$ already defined; its
+specialization at $\mathbb Z\to\mathbb Z_p$ with no new definition,
+theorem, or computation restates the definiens on objects and contributes
+no fenced unit (SEC-8). Likewise, "a conclusion about $L$ from either
+image requires a stated descent theorem with its hypotheses" says a
+theorem must exist instead of stating it, with unquantified "a
+conclusion" / "either image" and no hypothesis list (PR-28, PR-29); the
+correct form states fpqc descent / Beauville–Laszlo with faithfully flat
+/ finitely presented hypotheses, then applies it — and notes that one
+image alone never suffices, only the compatible pair with gluing.
