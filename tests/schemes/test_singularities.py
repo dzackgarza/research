@@ -3,6 +3,12 @@ from dzack_research.preamble.categories.schemes.singularities import (
     IsolatedHypersurfaceSingularity,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_curves_and_singularities.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/singularities.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_cusp_milnor_tjurina_and_completion_share_the_hypersurface_equation() -> None:
     plane = PolynomialRing(QQ, ("x", "y"))
@@ -58,6 +64,15 @@ def test_cusp_delta_branch_and_conductor_are_local_normalization_invariants() ->
     localization = local_ring.localization_map()
     assert localization(x) in conductor
     assert localization(y) in conductor
+
+
+def test_archived_a1_and_a3_curve_germs_keep_their_ade_invariants() -> None:
+    for label, milnor in (("A1", 1), ("A3", 3)):
+        singularity = IsolatedHypersurfaceSingularity.from_ade_type(QQ, label)
+        assert singularity.ade_normal_form_type() == ("A", milnor)
+        assert singularity.milnor_number() == milnor
+        assert singularity.tjurina_number() == milnor
+        assert singularity.is_singular_at_origin()
 
 
 def test_selected_ade_plane_curve_normal_forms_retain_their_exact_type() -> None:
