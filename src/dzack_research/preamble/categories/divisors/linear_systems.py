@@ -1,6 +1,7 @@
 r"""Complete linear systems represented by their section spaces."""
 
 from itertools import product as cartesian_product
+from math import comb
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
@@ -14,6 +15,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -105,7 +107,7 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
 
 
 class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
-    r"""Finite jet spaces of ``O(d)`` at supported coordinate points."""
+    r"""Finite local jet realizations ``O(d)_p / m_p^r O(d)_p`` on projective space."""
 
     @classmethod
     def _repr_object_names(cls):
@@ -118,14 +120,41 @@ class ProjectiveJetSpaces(OwnedCategoryOverBaseRing):
         def jet_projective_space(self):
             return self._preamble_jet_projective_space
 
+        def jet_line_bundle(self):
+            return self._preamble_jet_line_bundle
+
         def jet_homogeneous_degree(self):
-            return self._preamble_jet_homogeneous_degree
+            return self.jet_line_bundle().degree()
 
         def jet_order(self):
             return self._preamble_jet_order
 
+        def jet_point(self):
+            return self._preamble_jet_point
+
+        def jet_affine_chart(self):
+            return self._preamble_jet_affine_chart
+
+        def jet_spectrum_point(self):
+            return self._preamble_jet_spectrum_point
+
+        def jet_stalk(self):
+            return self._preamble_jet_stalk
+
+        def jet_maximal_ideal(self):
+            return self._preamble_jet_maximal_ideal
+
+        def jet_local_quotient(self):
+            return self._preamble_jet_local_quotient
+
+        def jet_residue_field(self):
+            return self._preamble_jet_residue_field
+
         def jet_coordinate_index(self):
-            return self._preamble_jet_coordinate_index
+            index = getattr(self, "_preamble_jet_coordinate_index", None)
+            if index is None:
+                raise ValueError("this jet condition was not selected at a coordinate point")
+            return index
 
 
 class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
@@ -153,6 +182,10 @@ class ImposedMultiplicityLinearSystems(OwnedCategoryOverBaseRing):
 
 
 def _weak_compositions(total, length):
+    if length == 0:
+        if total == 0:
+            yield ()
+        return
     if length == 1:
         yield (total,)
         return
@@ -339,66 +372,132 @@ def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_
     return restriction
 
 
-def CoordinatePointJetEvaluation(projective_space, degree, coordinate_index, jet_order):
-    r"""Return the order-``r`` jet evaluation at one coordinate point of ``P^n``.
+def _centered_jet_basis(base, dimension, jet_order):
+    names = tuple(f"v{index}" for index in range(dimension))
+    ring = PolynomialRing(base, names)
+    labels = tuple(ring.algebra_generating_set())
+    monomials = []
+    by_exponents = {}
+    for total in range(jet_order):
+        for exponents in _weak_compositions(total, dimension):
+            monomial = ring.one()
+            for position, exponent in enumerate(exponents):
+                if exponent:
+                    monomial *= ring.algebra_generator(labels[position]) ** exponent
+            monomials.append(monomial)
+            by_exponents[tuple(exponents)] = monomial
+    return ring, tuple(monomials), by_exponents
 
-    On the chart ``x_i != 0`` around the coordinate point ``[0:...:1:...:0]``
-    we set ``x_i=1``.  The target is ``O_{P^n,p}/m_p^r`` with basis the local
-    monomials of total degree strictly below ``r``.  A homogeneous monomial is
-    sent to its dehomogenization when that local degree is below ``r`` and to
-    zero otherwise.
+
+def ProjectivePointJetEvaluation(line_bundle, point, jet_order):
+    r"""Return ``H^0(P,L) -> L_p / m_p^r L_p`` at a represented rational point.
+
+    The local quotient is the defining object: choose a standard affine chart
+    containing ``p``, form its spectrum point, localize to ``O_{P,p}``, and
+    quotient by the ``r``-th power of its maximal ideal.  Centered affine
+    monomials of total degree below ``r`` give the finite free realization used
+    by the section map.  Thus a non-coordinate point changes the evaluation
+    coefficients without changing the mathematical jet object.
     """
-    degree = int(degree)
-    coordinate_index = int(coordinate_index)
+    projective_space = line_bundle.projective_space()
+    base = projective_space.scheme_base_ring()
+    if base not in OwnedFields():
+        raise TypeError("the represented projective point-jet realization requires a field base")
+    if point.codomain() is not projective_space:
+        raise ValueError("a projective jet is evaluated at a point of its line bundle's scheme")
+    if point.domain() is not projective_space.base_scheme():
+        raise NotImplementedError("the represented projective jet currently requires a rational point")
     jet_order = int(jet_order)
-    dimension = int(projective_space.relative_dimension())
-    if degree < 0:
-        raise ValueError("a homogeneous polynomial degree is nonnegative")
-    if coordinate_index < 0 or coordinate_index > dimension:
-        raise ValueError("the coordinate index is outside the projective coordinate range")
     if jet_order < 1:
         raise ValueError("a jet order is positive")
 
-    source_names = tuple(f"x{index}" for index in range(dimension + 1))
-    source = HomogeneousPolynomialSectionSpace(
-        projective_space,
-        degree,
-        coordinate_names=source_names,
+    coordinates = tuple(point.point_coordinates())
+    dimension = int(projective_space.relative_dimension())
+    if len(coordinates) != dimension + 1:
+        raise ValueError("a projective point has dimension plus one homogeneous coordinates")
+    pivot = next(
+        (index for index, coordinate in enumerate(coordinates) if coordinate != base.zero()),
+        None,
     )
-    local_names = tuple(
-        f"u{index}" for index in range(dimension + 1) if index != coordinate_index
+    if pivot is None:
+        raise ValueError("projective point coordinates cannot all vanish")
+    pivot_inverse = coordinates[pivot].inverse_of_unit()
+    affine_values = tuple(
+        coordinates[index] * pivot_inverse
+        for index in range(dimension + 1)
+        if index != pivot
     )
-    local_ring = PolynomialRing(projective_space.scheme_base_ring(), local_names)
-    local_labels = tuple(local_ring.algebra_generating_set())
-    local_monomials = []
-    local_exponents = {}
-    for total in range(jet_order):
-        for exponents in _weak_compositions(total, dimension):
-            monomial = local_ring.one()
-            for position, exponent in enumerate(exponents):
-                if exponent:
-                    monomial *= local_ring.algebra_generator(local_labels[position]) ** exponent
-            local_monomials.append(monomial)
-            local_exponents[exponents] = monomial
+
+    chart = projective_space.standard_affine_chart(pivot)
+    chart_algebra = chart.coordinate_algebra()
+    chart_coordinates = tuple(
+        projective_space._standard_chart_coordinate(pivot, index)
+        for index in range(dimension + 1)
+        if index != pivot
+    )
+    scalar_map = chart_algebra.algebra_structure_morphism()
+    point_ideal = chart_algebra.ideal(
+        *(
+            coordinate - scalar_map(value)
+            for coordinate, value in zip(chart_coordinates, affine_values, strict=True)
+        )
+    )
+    spectrum_point = chart.underlying_space()(point_ideal)
+    stalk = spectrum_point.local_ring()
+    maximal_ideal = stalk.maximal_ideal()
+    local_quotient = stalk.quotient_ring(maximal_ideal.power(jet_order))
+    residue_field = spectrum_point.residue_field()
+
+    _centered_ring, local_monomials, local_by_exponents = _centered_jet_basis(
+        base,
+        dimension,
+        jet_order,
+    )
+    source = line_bundle.global_sections()
     target = FreshFreeModuleOn(
-        projective_space.scheme_base_ring(),
-        finite_ordered_set(tuple(local_monomials)),
-        _extra_categories=(ProjectiveJetSpaces(projective_space.scheme_base_ring()),),
+        base,
+        finite_ordered_set(local_monomials),
+        _extra_categories=(ProjectiveJetSpaces(base),),
         _extra_construction_data=(
             ("_preamble_jet_projective_space", projective_space),
-            ("_preamble_jet_homogeneous_degree", degree),
-            ("_preamble_jet_order", jet_order),
-            ("_preamble_jet_coordinate_index", coordinate_index),
+            ("_preamble_jet_line_bundle", line_bundle),
+            ("_preamble_jet_order", _own_ring(SageZZ)(jet_order)),
+            ("_preamble_jet_point", point),
+            ("_preamble_jet_affine_chart", chart),
+            ("_preamble_jet_spectrum_point", spectrum_point),
+            ("_preamble_jet_stalk", stalk),
+            ("_preamble_jet_maximal_ideal", maximal_ideal),
+            ("_preamble_jet_local_quotient", local_quotient),
+            ("_preamble_jet_residue_field", residue_field),
         ),
     )
     source_exponents = source._preamble_homogeneous_exponents
+    nonpivot = tuple(index for index in range(dimension + 1) if index != pivot)
 
     def image(monomial):
-        exponents = source_exponents[monomial]
-        local = exponents[:coordinate_index] + exponents[coordinate_index + 1 :]
-        if sum(local) >= jet_order:
-            return target.zero()
-        return target.module_generator(local_exponents[local])
+        homogeneous_exponents = source_exponents[monomial]
+        local_powers = tuple(homogeneous_exponents[index] for index in nonpivot)
+        coefficients = {}
+        choices = tuple(
+            range(power + 1)
+            for power in local_powers
+        )
+        for centered_exponents in cartesian_product(*choices):
+            if sum(centered_exponents) >= jet_order:
+                continue
+            coefficient = base.one()
+            for power, centered_power, value in zip(
+                local_powers,
+                centered_exponents,
+                affine_values,
+                strict=True,
+            ):
+                coefficient *= base(comb(power, centered_power)) * value ** (
+                    power - centered_power
+                )
+            if coefficient != base.zero():
+                coefficients[local_by_exponents[tuple(centered_exponents)]] = coefficient
+        return target.linear_combination(coefficients)
 
     evaluation = module_homset(source, target)(
         {
@@ -406,8 +505,59 @@ def CoordinatePointJetEvaluation(projective_space, degree, coordinate_index, jet
             for monomial in source.module_generating_set()
         }
     )
-    evaluation._preamble_projective_point_coordinate_index = coordinate_index
+    evaluation._preamble_projective_point = point
+    evaluation._preamble_projective_point_chart_index = pivot
     return evaluation
+
+
+def CoordinatePointJetEvaluation(projective_space, degree, coordinate_index, jet_order):
+    r"""Coordinate-point spelling of :func:`ProjectivePointJetEvaluation`."""
+    coordinate_index = int(coordinate_index)
+    dimension = int(projective_space.relative_dimension())
+    if coordinate_index < 0 or coordinate_index > dimension:
+        raise ValueError("the coordinate index is outside the projective coordinate range")
+    base = projective_space.scheme_base_ring()
+    coordinates = tuple(
+        base.one() if index == coordinate_index else base.zero()
+        for index in range(dimension + 1)
+    )
+    point = projective_space.point_morphism(coordinates)
+    evaluation = ProjectivePointJetEvaluation(
+        projective_space.O(degree),
+        point,
+        jet_order,
+    )
+    evaluation._preamble_projective_point_coordinate_index = coordinate_index
+    evaluation.codomain()._preamble_jet_coordinate_index = coordinate_index
+    return evaluation
+
+
+def SectionsVanishingAtPoint(line_bundle, point, vanishing_order):
+    r"""Sections whose germ lies in ``m_p^r L_p``."""
+    return ProjectivePointJetEvaluation(
+        line_bundle,
+        point,
+        vanishing_order,
+    ).kernel()
+
+
+def ImposedPointMultiplicityLinearSystem(line_bundle, point, vanishing_order):
+    r"""Projectivize sections vanishing to order at least ``r`` at ``point``."""
+    evaluation = ProjectivePointJetEvaluation(line_bundle, point, vanishing_order)
+    constrained = evaluation.kernel()
+    dimension = int(constrained.dimension())
+    if dimension == 0:
+        raise ValueError("the imposed condition leaves no nonzero section to projectivize")
+    base = line_bundle.projective_space().scheme_base_ring()
+    parameter_space = ProjectiveSpace(dimension - 1, base)
+    parameter_space._preamble_ambient_section_space = evaluation.domain()
+    parameter_space._preamble_constrained_section_space = constrained
+    parameter_space._preamble_imposed_jet_evaluation = evaluation
+    return refine_scheme(
+        parameter_space,
+        base,
+        [ImposedMultiplicityLinearSystems(base)],
+    )
 
 
 def SectionsVanishingToOrder(projective_space, degree, coordinate_index, vanishing_order):
@@ -421,27 +571,26 @@ def SectionsVanishingToOrder(projective_space, degree, coordinate_index, vanishi
 
 
 def ImposedMultiplicityLinearSystem(projective_space, degree, coordinate_index, vanishing_order):
-    r"""Projectivize sections vanishing to order at least ``r`` at a coordinate point."""
-    evaluation = CoordinatePointJetEvaluation(
-        projective_space,
-        degree,
-        coordinate_index,
+    r"""Coordinate-point spelling of :func:`ImposedPointMultiplicityLinearSystem`."""
+    coordinate_index = int(coordinate_index)
+    dimension = int(projective_space.relative_dimension())
+    if coordinate_index < 0 or coordinate_index > dimension:
+        raise ValueError("the coordinate index is outside the projective coordinate range")
+    base = projective_space.scheme_base_ring()
+    point = projective_space.point_morphism(
+        tuple(
+            base.one() if index == coordinate_index else base.zero()
+            for index in range(dimension + 1)
+        )
+    )
+    result = ImposedPointMultiplicityLinearSystem(
+        projective_space.O(degree),
+        point,
         vanishing_order,
     )
-    constrained = evaluation.kernel()
-    dimension = int(constrained.dimension())
-    if dimension == 0:
-        raise ValueError("the imposed condition leaves no nonzero section to projectivize")
-    base = projective_space.scheme_base_ring()
-    parameter_space = ProjectiveSpace(dimension - 1, base)
-    parameter_space._preamble_ambient_section_space = evaluation.domain()
-    parameter_space._preamble_constrained_section_space = constrained
-    parameter_space._preamble_imposed_jet_evaluation = evaluation
-    return refine_scheme(
-        parameter_space,
-        base,
-        [ImposedMultiplicityLinearSystems(base)],
-    )
+    result.imposed_jet_evaluation()._preamble_projective_point_coordinate_index = coordinate_index
+    result.imposed_jet_evaluation().codomain()._preamble_jet_coordinate_index = coordinate_index
+    return result
 
 
 def CompleteLinearSystem(scheme, divisor, section_space):
@@ -475,6 +624,9 @@ __all__ = [
     "HomogeneousPolynomialSectionSpaces",
     "ImposedMultiplicityLinearSystem",
     "ImposedMultiplicityLinearSystems",
+    "ImposedPointMultiplicityLinearSystem",
     "ProjectiveJetSpaces",
+    "ProjectivePointJetEvaluation",
+    "SectionsVanishingAtPoint",
     "SectionsVanishingToOrder",
 ]

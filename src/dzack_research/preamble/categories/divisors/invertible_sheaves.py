@@ -564,6 +564,23 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     is_globally_generated = is_basepoint_free
 
+    def jet_evaluation(self, point, order):
+        from dzack_research.preamble.categories.divisors.linear_systems import (
+            ProjectivePointJetEvaluation,
+        )
+
+        return ProjectivePointJetEvaluation(self, point, order)
+
+    def sections_vanishing_to_order(self, point, order):
+        return self.jet_evaluation(point, order).kernel()
+
+    def imposed_multiplicity_linear_system(self, point, order):
+        from dzack_research.preamble.categories.divisors.linear_systems import (
+            ImposedPointMultiplicityLinearSystem,
+        )
+
+        return ImposedPointMultiplicityLinearSystem(self, point, order)
+
     def homogeneous_polynomial_sections(self):
         return self.global_sections()
 
