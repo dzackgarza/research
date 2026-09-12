@@ -2969,19 +2969,19 @@ preamble/tests/coxeter_tdd_specs/sage_verification/test_sage_delegation.sage	tes
 preamble/tests/coxeter_tdd_specs/sage_verification/test_sage_delegation.sage	strict	binding	380	0			unreviewed
 preamble/tests/coxeter_tdd_specs/sage_verification/test_sage_delegation.sage	reason	binding	381	0			unreviewed
 preamble/tests/coxeter_tdd_specs/sage_verification/test_sage_delegation.sage	test_the_icosahedral_root_systems_are_form_modules_over_the_golden_ring	specimen	389	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	<module>	module	1	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	CLASSICAL_TYPES	binding	52	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	FAMILY_SCHLAEFLIAN	binding	63	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	EXCEPTIONAL_TYPES	binding	75	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	EXCEPTIONAL_ORDERS	binding	91	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_classical_finite_types_are_elliptic_of_the_tabulated_schlaeflian	specimen	137	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_exceptional_finite_types_are_elliptic_of_the_tabulated_rank	specimen	159	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_exceptional_finite_groups_have_the_tabulated_order	specimen	181	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_affine_types_are_parabolic_with_a_vanishing_schlaeflian	specimen	194	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_a2_schlaefli_matrix_is_the_negative_of_this_repositorys_gram_matrix	specimen	223	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_rank_two_schlaeflian_is_four_sine_squared	specimen	273	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_two_three_seven_triangle_is_a_lanner_simplex	specimen	293	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_three_infinity_triangle_is_quasi_lanner	specimen	338	0			unreviewed
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	CLASSICAL_TYPES	binding	52	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	FAMILY_SCHLAEFLIAN	binding	63	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	EXCEPTIONAL_TYPES	binding	75	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	EXCEPTIONAL_ORDERS	binding	91	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_classical_finite_types_are_elliptic_of_the_tabulated_schlaeflian	specimen	137	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_exceptional_finite_types_are_elliptic_of_the_tabulated_rank	specimen	159	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_exceptional_finite_groups_have_the_tabulated_order	specimen	181	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_affine_types_are_parabolic_with_a_vanishing_schlaeflian	specimen	194	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_a2_schlaefli_matrix_is_the_negative_of_this_repositorys_gram_matrix	specimen	223	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_rank_two_schlaeflian_is_four_sine_squared	specimen	273	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_two_three_seven_triangle_is_a_lanner_simplex	specimen	293	0		tests/lattices/test_coxeter_hyperbolic_tdd_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_three_infinity_triangle_is_quasi_lanner	specimen	338	0		tests/lattices/test_coxeter_hyperbolic_tdd_archive.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	BRACKET_ORDERS	binding	59	0			unreviewed
 preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_bracket_notation_names_a_finite_group_of_the_tabulated_order	specimen	72	0			unreviewed

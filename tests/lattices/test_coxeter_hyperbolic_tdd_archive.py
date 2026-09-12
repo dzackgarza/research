@@ -13,6 +13,16 @@ from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.all import CoxeterDiagrams
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage",
+    "live_owner": "tests/lattices/test_coxeter_literature.py",
+    "owner_overrides": {
+        "test_the_two_three_seven_triangle_is_a_lanner_simplex": "tests/lattices/test_coxeter_hyperbolic_tdd_archive.py",
+        "test_the_three_infinity_triangle_is_quasi_lanner": "tests/lattices/test_coxeter_hyperbolic_tdd_archive.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _triangle(first, second, third):
     entries = (
@@ -68,3 +78,16 @@ def test_three_infinity_triangle_is_quasi_lanner_not_lanner() -> None:
             tuple(vertex for vertex in vertices if vertex != omitted)
         )
         assert subdiagram.is_elliptic() or subdiagram.is_parabolic()
+
+
+def test_elliptic_parabolic_and_hyperbolic_specimens_are_pairwise_distinguished() -> None:
+    elliptic = CoxeterDiagrams().from_cartan_type(["A", 2])
+    parabolic = CoxeterDiagrams().from_cartan_type(["A", 2, 1])
+    hyperbolic = _triangle(3, 7, 2)
+
+    assert elliptic.is_elliptic() and not elliptic.is_parabolic()
+    assert parabolic.is_parabolic() and not parabolic.is_elliptic()
+    invariants = hyperbolic.vinberg_invariant_matrix()
+    assert invariants.is_hyperbolic()
+    assert not invariants.is_elliptic()
+    assert not invariants.is_parabolic()
