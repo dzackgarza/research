@@ -986,6 +986,7 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     PGL2IntegralCohomology,
     PGL2IntegralTopology,
     ProjectiveGeneralLinearGroup2,
+    QuarticK3HodgeData,
     QuarticK3IntegralCohomology,
     QuarticK3IntegralTopology,
     ToricCycleClassIsomorphism,

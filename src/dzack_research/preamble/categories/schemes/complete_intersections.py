@@ -312,6 +312,14 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         def integral_singular_cohomology(self, degree):
             return self.integral_topology().integral_cohomology(degree)
 
+        @cached_method
+        def hodge_structure(self):
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                QuarticK3HodgeData,
+            )
+
+            return QuarticK3HodgeData(self)
+
         def del_pezzo_degree(self):
             r"""Return ``(-K_X)^2`` for a represented del Pezzo complete intersection."""
             if not self.is_del_pezzo():

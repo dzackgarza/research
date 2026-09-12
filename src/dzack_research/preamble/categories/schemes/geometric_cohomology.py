@@ -778,9 +778,77 @@ class QuarticK3IntegralTopology(SageObject):
             )
         return int(degree()) * self.hyperplane_first_chern_class()
 
+    @cached_method
+    def hodge_structure(self):
+        return QuarticK3HodgeData(self.scheme())
+
     def middle_cohomology_torsion_free_quotient(self):
         r"""K3 middle cohomology is already torsion-free."""
         return self.middle_cohomology_lattice()
+
+
+class QuarticK3HodgeData(SageObject):
+    r"""Pure Hodge data of the selected smooth quartic K3 realization.
+
+    Adjunction gives ``K_X = O_X``.  The represented restriction of the unique
+    constant section computes ``h^(2,0)=h^0(K_X)``.  Hodge symmetry gives
+    ``h^(0,2)``, and the integral K3 lattice supplies ``b_2=22``, so the
+    remaining middle dimension is ``h^(1,1)``.  Thus the off-diagonal terms are
+    attached to the live canonical bundle and integral cohomology rather than a
+    toric diagonal template.
+    """
+
+    def __init__(self, scheme) -> None:
+        _require_smooth_quartic_k3_complex_realization(scheme)
+        self._scheme = scheme
+
+    def scheme(self):
+        return self._scheme
+
+    def is_pure(self) -> bool:
+        return True
+
+    def integral_topology(self):
+        return self.scheme().integral_topology()
+
+    def integral_cohomology(self, degree):
+        return self.integral_topology().integral_cohomology(degree)
+
+    @cached_method
+    def holomorphic_two_form_space(self):
+        canonical = self.scheme().canonical_line_bundle()
+        return canonical.represented_global_section_image()
+
+    def hodge_number(self, p, q):
+        p = int(p)
+        q = int(q)
+        if p < 0 or q < 0 or p > 2 or q > 2:
+            return 0
+        if (p, q) == (0, 0) or (p, q) == (2, 2):
+            return 1
+        if p + q != 2:
+            return 0
+        holomorphic = int(self.holomorphic_two_form_space().dimension())
+        if (p, q) in ((2, 0), (0, 2)):
+            return holomorphic
+        middle_rank = int(self.integral_cohomology(2).module_rank())
+        return middle_rank - 2 * holomorphic
+
+    def degree_hodge_numbers(self, degree):
+        degree = int(degree)
+        if degree < 0 or degree > 4:
+            raise ValueError("a K3 surface has Hodge degrees zero through four")
+        return tuple(
+            (p, degree - p, self.hodge_number(p, degree - p))
+            for p in range(3)
+            if 0 <= degree - p <= 2
+        )
+
+    def middle_betti_number(self):
+        return int(self.integral_cohomology(2).module_rank())
+
+    def polarization_class(self):
+        return self.integral_topology().hyperplane_first_chern_class()
 
 
 def QuarticK3IntegralCohomology(scheme, degree):
@@ -1289,6 +1357,7 @@ def ToricHodgeStructure(scheme):
 
 
 __all__ = [
+    "QuarticK3HodgeData",
     "ProjectiveLineFundamentalGroup",
     "PGL2FundamentalGroup",
     "NodalCubicFundamentalGroup",
