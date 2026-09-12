@@ -4099,6 +4099,25 @@ $(M,e)\mapsto M$ be the Grothendieck construction for frames. Define
 $G\colon\mathbf{FMod}_R^{\mathrm{fr}}\to M_n(W)$ by $G((M,e),b):=G_e(b)$.
 Then $G$ factors through $U$-fibers as $[G_e(b)]\in M_n(W)/\operatorname{GL}_n$."
 
+### `PR-61`: $\operatorname{Gram}$ as written is overfit to free finite $W=R$ — $b\in\mathbf{Bil}_{R,W}(M)$ is a $W$-valued $(0,2)$-tensor, not a matrix, and $b(v,w)=\sum a_iG_{ij}c_j$ assumes $M=R^{(I)}$ and discrete finite support
+
+The block "Let $M$ be free on $E=\{e_i\}_{i\in I}$, $b$ with values in $R$, $G_{ij}=b(e_i,e_j)$, $b(v,w)=\sum_{i,j}a_iG_{ij}c_j$ finite by finite support, every $(G_{ij})$ arises" is the $W=R$, free, $M=R^{(I)}$ specialization of $b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_RM,W)$ written as if it were $\mathbf{Bil}_{R,W}$. An arbitrary $(M,b)$ — $M=\mathbb Q$, $\mathbb Q/\mathbb Z$, $\bigoplus_{\mathbb N}\mathbb Z$, $\mathcal O_X$-module, $\mathbf{Sp}$-module — has no $E$ and no $I\times I$ matrix, and a $W\neq R$ even on a free $M$ has $G_{ij}\in W$, not $R$.
+
+Philosophy — never overfit to finite / finitely generated / finitely presented subcategories, never assume convergence or that topologies are discrete, never conflate a tensor with a multidimensional array or matrix unless extremely specific about the map from a matrix algebra to a Hom space / space of tensors, in which case its kernel and cokernel are the content (well-definedness, ambiguity).
+
+Concrete standards:
+
+* **$b$ as $W$-valued $(0,2)$-tensor.** For $R$ commutative and $W,M\in\mathbf{Mod}_R$, $b\colon M\otimes_RM\to W$ is $W$-valued covariant $2$-tensor — in index notation $b_{ij}$ with two *down* indices. When $W=R$ and $M\cong R^n$ finite free, $\operatorname{Hom}_R(M\otimes M,R)\cong M^\vee\otimes M^\vee$ is the $(0,2)$-tensor $b_{ij}$; an endomorphism is $(1,1)$-tensor $T^i_j\in\operatorname{Hom}_R(M,M)\cong M\otimes M^\vee$. $G_{ij}=b(e_i,e_j)$ as $(0,2)$ transforms by **congruence** $G_{e'}=P^{\!t}G_eP$ for $e'=eP$, $P\in\operatorname{GL}_n(R)$, i.e. $G_{e'\,kl}=\sum_{i,j}P^i_kP^j_lG_{e\,ij}$, while $(1,1)$ transforms by **similarity** $T_{e'}=P^{-1}T_eP$, $T^i_j\mapsto\sum_{k,l}(P^{-1})^i_kT^k_lP^l_j$. Writing both as "$G_{ij}$" and "$\sum a_iG_{ij}c_j$" conflates $(0,2)$ with $(1,1)$ (and with $(2,0)$ $W^\vee$-valued) and hides which $P$ acts on which side and whether $W$ is involved.
+
+* **The map from matrices to tensors, not the identification.**
+  Fix an ordered basis $e\colon R^n\xrightarrow{\sim}M$ (framed $((M,e),b)$). The $R$-linear $\Phi_e\colon M_{n\times n}(W):=W^{I\times I}\to\operatorname{Hom}_R(M\otimes M,W)$, $\Phi_e((G_{ij})):=e^*b$ with $b(e_i,e_j)=G_{ij}$, is an *isomorphism* only when $M=R^{(I)}$ free on $I$ and $W$ is discrete with $M^{(I)}$-finite support; its kernel/cokernel are the well-definedness/ambiguity content. For general $M$ the domain $M_{n\times n}(W)$ has no map to $\operatorname{Hom}_R(M\otimes M,W)$ at all — the matrix algebra and the space of $W$-valued $(0,2)$-tensors are not the same object.
+
+* **The sum and $(L^2(\mathbb R),\int)$.** "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$, finite by finite support" is the coordinate shadow of $b\circ(e\otimes e)$ for $v=\sum_ia_ie_i$ with $a_i$ finitely supported — i.e. $M=R^{(I)}$ as *algebraic* free module with discrete topology. $(L^2(\mathbb R),\langle f,g\rangle:=\int_{\mathbb R}fg\in\mathbb R)$ is a perfectly reasonable $\mathbb R$-valued bilinear $\mathbb R$-module — $M:=L^2(\mathbb R)\in\mathbf{Mod}_{\mathbb R}$, $b(f,g):=\int fg\in\mathbb R$, $b\in\operatorname{Hom}_{\mathbb R}(L^2\otimes L^2,\mathbb R)$ stably — but $L^2$ is not $\mathbb R^{(I)}$ for any $I$ (no Hamel basis gives $f=\sum a_ie_i$ finitely; no orthonormal basis gives algebraic finite sums; $f=\sum\langle f,e_i\rangle e_i$ is $L^2$-convergent, not finite). No $I\times I$ family $G_{ij}\in\mathbb R$ and no finite $\sum a_iG_{ij}c_j$ computes $\int fg$; the Gram "matrix" is the integral kernel $K$ with $\int fg=\iint f(x)K(x,y)g(y)$, i.e. the $(0,2)$-tensor as distribution, whose map $M_{I\times I}(\mathbb R)\to\operatorname{Hom}(L^2\otimes L^2,\mathbb R)$ has huge kernel/cokernel. Never assume finite support / discrete topology.
+
+**Banned:** the block as stated in $\mathbf{Bil}_{R,W}$ — "$M$ free on $E$, $b$ with values in $R$, $G_{ij}=b(e_i,e_j)$, $b(v,w)=\sum a_iG_{ij}c_j$ finite, every $(G_{ij})$ arises" as the definition of $\operatorname{Gram}$ for $(M,b)\in\mathbf{Bil}_{R,W}$.
+
+**Preferred:** for $R$ commutative and $W,M\in\mathbf{Mod}_R$, put $b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ as $W$-valued $(0,2)$-tensor $b_{ij}$ with two down indices; for framed $((M,e),b)$, $e\colon R^n\xrightarrow{\sim}M$, put $G_e(b)_{ij}:=b(e_i,e_j)\in W$ and state $\Phi_e$ and its variance $G_{e'}=P^{\!t}G_eP$ (congruence, not similarity), with kernel/cokernel of $\Phi_e$ as the well-definedness content. Never write $G_{ij}$ for a $(1,1)$-tensor and a $(0,2)$-tensor without distinguishing, and never assume $M=R^{(I)}$ or finite $I$.
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4590,6 +4609,21 @@ similarity / conjugacy, with invariants independent of the choice — or
 as the study of its fibers / $\operatorname{GL}_n$-orbits / sections
 (PR-60). Without (A) or (B) the construction is ill-defined and its
 dependence on the choice unfalsifiable.
+
+**25. Never overfit to free / finite / finitely generated, never assume
+discrete topology / finite support, never conflate a $W$-valued
+$(0,2)$-tensor with a matrix.** The block "$M$ free on $E$, $b$ with
+values in $R$, $G_{ij}=b(e_i,e_j)$, $b(v,w)=\sum a_iG_{ij}c_j$ finite,
+every $(G_{ij})$ arises" is the $W=R$, $M=R^{(I)}$ specialization of
+$b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ as
+$W$-valued $(0,2)$-tensor $b_{ij}$ (two down indices, $G_{e'}=P^{\!t}G_eP$
+congruence) conflated with a $(1,1)$-tensor $T^i_j$ ($P^{-1}T_eP$
+similarity) and with the matrix algebra $M_{I\times I}(W)$ itself
+(PR-61). The map $\Phi_e\colon M_{I\times I}(W)\to\operatorname{Hom}_R(M\otimes M,W)$
+is an isomorphism only for $M=R^{(I)}$ discrete; its kernel/cokernel are
+the well-definedness content, and $(L^2(\mathbb R),\int)$ is a valid
+$\mathbb R$-valued bilinear $\mathbb R$-module with no finite $G_{ij}$
+and no finite $\sum a_iG_{ij}c_j$.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
