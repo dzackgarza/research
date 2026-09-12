@@ -660,60 +660,60 @@ preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.ParentMetho
 preamble/categories/algebras/graded_algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
 preamble/categories/algebras/graded_algebras.sage	GradedAlgebras	class	11	1	src/dzack_research/preamble/categories/algebras/graded_algebras.py	src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
 preamble/categories/algebras/graded_algebras.sage	GradedAlgebras.super_categories	method	24	0		src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
-preamble/categories/algebras/number_fields.sage	<module>	module	1	0			unreviewed
-preamble/categories/algebras/number_fields.sage	PresentingAlgebraParent	class	58	0			unreviewed
-preamble/categories/algebras/number_fields.sage	PresentingAlgebraParent.number_of_algebra_generators	method	66	0			unreviewed
-preamble/categories/algebras/number_fields.sage	EngineNumberField	class	70	0			unreviewed
-preamble/categories/algebras/number_fields.sage	EngineNumberField.pari_nf	method	79	0			unreviewed
-preamble/categories/algebras/number_fields.sage	EngineNumberField.pari_bnf	method	80	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent	class	82	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.base_ring	method	90	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.zero	method	91	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.one	method	92	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.relations	method	93	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.algebra_generating_set	method	94	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.algebra_generator	method	95	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.presentation_ring	method	96	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.defining_polynomial	method	97	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.degree	method	98	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.discriminant	method	99	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.primitive_element	method	100	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.embedding_images	method	101	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldParent.underlying_algebra	method	102	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldElement	class	106	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldElement.lift	method	109	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldElement.parent	method	110	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldElement.matrix	method	112	2			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldElement.minimal_polynomial	method	113	0			unreviewed
-preamble/categories/algebras/number_fields.sage	NumberFieldElement.roots	method	114	1	src/dzack_research/preamble/categories/definite_lattices.py		unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields	class	116	2			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.super_categories	method	123	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods	class	131	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.defining_polynomial	method	132	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.degree	method	141	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.primitive_element	method	150	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.algebra_generators	method	161	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.is_field	method	171	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.discriminant	method	225	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.signature	method	237	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.underlying_algebra	method	257	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.base_change_functor	method	299	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.integral_basis	method	315	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.class_number	method	333	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.ramified_primes	method	340	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.is_galois	method	344	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.galois_group	method	357	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.embedding_images	method	379	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods	class	396	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.matrix	method	416	2			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.norm	method	433	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.trace	method	437	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.characteristic_polynomial	method	441	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.minimal_polynomial	method	452	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.is_integral	method	458	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.inverse	method	470	0			unreviewed
-preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.conjugates	method	484	0			unreviewed
-preamble/categories/algebras/number_fields.sage	own_number_field	function	501	0			unreviewed
+preamble/categories/algebras/number_fields.sage	<module>	module	1	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	PresentingAlgebraParent	class	58	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	PresentingAlgebraParent.number_of_algebra_generators	method	66	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	EngineNumberField	class	70	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	EngineNumberField.pari_nf	method	79	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	EngineNumberField.pari_bnf	method	80	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent	class	82	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.base_ring	method	90	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.zero	method	91	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.one	method	92	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.relations	method	93	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.algebra_generating_set	method	94	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.algebra_generator	method	95	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.presentation_ring	method	96	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.defining_polynomial	method	97	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.degree	method	98	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.discriminant	method	99	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.primitive_element	method	100	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.embedding_images	method	101	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldParent.underlying_algebra	method	102	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldElement	class	106	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldElement.lift	method	109	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldElement.parent	method	110	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldElement.matrix	method	112	2		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldElement.minimal_polynomial	method	113	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	NumberFieldElement.roots	method	114	1	src/dzack_research/preamble/categories/definite_lattices.py	src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields	class	116	2		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.super_categories	method	123	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods	class	131	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.defining_polynomial	method	132	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.degree	method	141	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.primitive_element	method	150	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.algebra_generators	method	161	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.is_field	method	171	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.discriminant	method	225	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.signature	method	237	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.underlying_algebra	method	257	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.base_change_functor	method	299	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.integral_basis	method	315	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.class_number	method	333	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.ramified_primes	method	340	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.is_galois	method	344	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.galois_group	method	357	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ParentMethods.embedding_images	method	379	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods	class	396	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.matrix	method	416	2		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.norm	method	433	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.trace	method	437	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.characteristic_polynomial	method	441	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.minimal_polynomial	method	452	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.is_integral	method	458	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.inverse	method	470	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	OwnedNumberFields.ElementMethods.conjugates	method	484	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
+preamble/categories/algebras/number_fields.sage	own_number_field	function	501	0		src/dzack_research/preamble/categories/rings/number_fields.py	reconciled-live-owner
 preamble/categories/divisors/cartier_divisor_groups.sage	<module>	module	1	0		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroup	function	13	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner
 preamble/categories/divisors/cartier_divisor_groups.sage	CartierDivisorGroups	class	21	2		src/dzack_research/preamble/categories/divisors/divisor_groups.py	reconciled-live-owner

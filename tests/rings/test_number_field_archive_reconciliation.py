@@ -1,3 +1,16 @@
+r"""Archive reconciliation for number fields and their owned arithmetic views.
+
+The archived one-object presentation is split at its mathematical owners: the
+field retains degree, discriminant, embeddings and element endomorphisms, while
+its selected integral basis belongs to the selected order underlying the field.
+"""
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/algebras/number_fields.sage",
+    "live_owner": "src/dzack_research/preamble/categories/rings/number_fields.py",
+    "disposition": "reconciled-live-owner",
+}
+
 from dzack_research.preamble.all import QuadraticField
 
 
