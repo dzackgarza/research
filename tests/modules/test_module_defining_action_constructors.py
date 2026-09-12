@@ -340,6 +340,13 @@ def test_localization_is_scalar_extension_of_the_selected_presentation_and_actio
     assert localized.presentation_object().arrow() is localized.presentation()
     generator = localized.module_generator("g")
     scalar = localization_ring.localization_map()(x)
-    assert localized.scalar_action()(scalar)(generator) == localized.scalar_multiple(
-        scalar, generator
-    )
+    acted = localized.scalar_action()(scalar)(generator)
+    multiplied = localized.scalar_multiple(scalar, generator)
+
+    assert generator.parent() is localized
+    assert scalar.parent() is localization_ring
+    assert acted.parent() is localized
+    assert multiplied.parent() is localized
+    assert acted == multiplied
+    assert acted.numerator().parent() is module
+    assert acted.denominator().parent() is ring

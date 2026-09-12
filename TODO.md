@@ -867,48 +867,6 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
 
 ### Organization findings
 
-- [ ] **`framework-transfer`**. **Needs:** none.
-  Transfer each remaining subsystem to `sage-categories` only with its
-  complete mathematical dependency path.
-  **Inputs:** read the upstream `specs/system.md`, `specs/leaves.md`,
-  `specs/functor.md`, and `specs/leaf-scaffolding.md` at that transfer.
-  **Deliver:** leaf constructors, structural functors on objects and morphisms,
-  inherited data/operations, and the real downstream algorithm; retire the
-  covered local runtime responsibility in the same unit.
-  **Decision:** arbitrary abelian-group/bimodule realization and the remaining
-  generic monoidal/class/static-projection work belong upstream. A matching
-  category name or a specification is not an implemented dependency.
-  **Computational decision:** distinguish the upstream class compiler from its
-  mathematical computation owners. For finite diagrams, presented categories,
-  module categories, and structural operations, inspect the applicable CAP and
-  Catlab/GATlab implementations through upstream's existing bridges. Identify
-  the exact output, maps, and supported regime at the consuming declaration.
-  A finite-diagram engine is not an algorithm for arbitrary infinite limits;
-  an equational engine does not decide every presented morphism equality.
-  **Remaining source review:** inspect the complete transferred dependency path
-  for local algorithms duplicating those maintained operations. Replace an
-  established duplication at its computation owner and connect the preamble
-  consumer to the released interface. Copying the same algorithm into
-  `sage-categories` does not satisfy this obligation. Use its README, COMPLAINTS,
-  and specs as requirements and discovery leads, then inspect the implementation.
-  Do not repair all unrelated upstream findings as a precondition for this unit.
-  Explicit functor reuse may keep a preamble consumer coherent before full
-  automatic inheritance; it must not duplicate the underlying algorithm.
-  The polynomial-module CAP adapter now delegates repository-local GAP package
-  selection and exact-version loading through the released upstream dependency;
-  its remaining local presentation/kernel codec stays in this item until the
-  corresponding upstream computation is released and the consumer is switched.
-  **Acceptance:** a nonidentity morphism and inherited operation work through
-  the transferred construction without a second mathematical object system.
-  Indexed-colimit transfer must preserve the nonidentity functorial edge: a
-  compatible stagewise natural transformation induces the selected colimit map
-  on representatives and satisfies every universal cocone-leg equation.
-  The downstream dependency is declared through the repository's supported
-  release route, not a sibling-checkout import. The old local implementation
-  remains a removal obligation until all its required callers use the surviving
-  owner; changing imports or shipping an unused upstream implementation is not
-  completion. Coordinate the interface revision before consumers change.
-
 - [ ] **`collection-ownership`**. **Needs:** `toric-cohomology`.
   Finish collection ownership and typing on the surviving interfaces.
   **Targets:** group and coset/orbit collections, discriminant objects,
@@ -944,7 +902,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

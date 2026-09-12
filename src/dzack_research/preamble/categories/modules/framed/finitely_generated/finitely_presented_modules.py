@@ -1766,9 +1766,7 @@ def _cap_presentation_kernel(morphism):
     lift matrices; the returned object is the ordinary owned finitely
     presented module with its actual inclusion into ``morphism.domain()``.
     """
-    from dzack_research.preamble.categories.modules.cap_presented_modules import (
-        kernel_presentation,
-    )
+    from sage_categories.engines.presented_modules import kernel_presentation
 
     domain = morphism.domain()
     codomain = morphism.codomain()

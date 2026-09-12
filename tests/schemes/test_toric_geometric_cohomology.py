@@ -25,13 +25,18 @@ def test_scalar_two_acts_on_the_actual_nonzero_weight_class() -> None:
     label = next(iter(cycle_module.module_generating_set()))
     cycle = cycle_module.module_generator(label)
     class_ = cohomology.class_of_cycle(cycle)
+    assert class_.parent() is cohomology
+    assert cohomology.cycle_representative(class_).parent() is cycle_module
     assert class_ != cohomology.zero()
 
     cochain_map = ToricWeightScalarCochainMap(plane, divisor, weight, QQ(2))
     induced = ToricWeightScalarCohomologyMap(plane, divisor, weight, 2, QQ(2))
 
     assert cochain_map.component(2)(cycle) == QQ(2) * cycle
-    assert induced(class_) == QQ(2) * class_
+    scaled = QQ(2) * class_
+    assert scaled.parent() is cohomology
+    assert induced(class_) == scaled
+    assert induced(class_).parent() is cohomology
 
 
 def test_nonzero_weight_piece_includes_into_total_cohomology() -> None:
@@ -45,13 +50,18 @@ def test_nonzero_weight_piece_includes_into_total_cohomology() -> None:
     cycle_module = piece.cochain_complex().graded_piece(0)
     label = next(iter(cycle_module.module_generating_set()))
     class_ = piece.class_of_cycle(cycle_module.module_generator(label))
+    included = inclusion(class_)
+    projected = projection(included)
 
+    assert class_.parent() is piece
+    assert included.parent() is total
+    assert projected.parent() is piece
     assert inclusion.domain() is piece
     assert inclusion.codomain() is total
     assert projection.domain() is total
     assert projection.codomain() is piece
-    assert inclusion(class_) != total.zero()
-    assert projection(inclusion(class_)) == class_
+    assert included != total.zero()
+    assert projected == class_
 
 
 def test_zero_support_and_boundary_degree_keep_the_geometric_complex() -> None:

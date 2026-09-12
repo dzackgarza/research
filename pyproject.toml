@@ -7,7 +7,7 @@ dependencies = [
     "pandoc-config @ https://github.com/dzackgarza/pandoc-config/archive/b567314b56b11326fdba05041afdccd11adee5b3.tar.gz",
     "python-dotenv>=1.2.2",
     "sage-julia-bridge @ git+https://github.com/dzackgarza/sage-julia-bridge",
-    "sage-categories @ git+https://github.com/dzackgarza/sage-categories.git@5238f06852ecfe2357e9f4e7fff9d9223818c428",
+    "sage-categories @ git+https://github.com/dzackgarza/sage-categories.git@66efc15bf5050a527f1bb4ff3bff8542e3d83203",
     "streamlit>=1.59.2",
     "tree-sitter-sage",
     "vinal @ git+https://github.com/dzackgarza/vinal",
