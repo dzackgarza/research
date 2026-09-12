@@ -4,11 +4,27 @@ from dzack_research.preamble.all import (
     QQ,
     ZZ,
     AlternatingAlgebraOn,
+    AlternatingAlgebras,
     DividedPowerAlgebraOn,
+    DividedPowerAlgebras,
+    FreeAlgebraOn,
+    FreeAlgebras,
+    GradedFreeAlgebras,
     SymmetricAlgebraOn,
+    SymmetricAlgebras,
     TensorAlgebraOn,
+    TensorAlgebras,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/algebras/free_algebras.sage",
+    "live_owner": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
+    "owner_overrides": {
+        "TensorAlgebras.ParentMethods.center_embedding": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 
 def _two_labels():
@@ -188,3 +204,21 @@ def test_archive_degree_two_pieces_remain_countable_on_countably_many_generators
         image = piece.inclusion()(generator)
         assert image in algebra
         assert image.degree() == 2
+
+
+def test_archive_free_algebra_categories_are_the_live_four_flavor_placements() -> None:
+    labels = _two_labels()
+    symmetric = SymmetricAlgebraOn(QQ, labels)
+    specimens = (
+        (TensorAlgebraOn(QQ, labels), TensorAlgebras(QQ)),
+        (symmetric, SymmetricAlgebras(QQ)),
+        (AlternatingAlgebraOn(QQ, labels), AlternatingAlgebras(QQ)),
+        (DividedPowerAlgebraOn(QQ, labels), DividedPowerAlgebras(QQ)),
+    )
+
+    assert FreeAlgebraOn(QQ, labels) is symmetric
+    for algebra, flavor in specimens:
+        assert algebra in FreeAlgebras(QQ)
+        assert algebra in GradedFreeAlgebras(QQ)
+        assert algebra in flavor
+        assert algebra.is_free()

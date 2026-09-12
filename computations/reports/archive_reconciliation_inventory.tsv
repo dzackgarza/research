@@ -619,44 +619,44 @@ preamble/categories/algebras/framed_free_algebras.sage	TensorAlgebraOf	function	
 preamble/categories/algebras/framed_free_algebras.sage	SymmetricAlgebraOf	function	2582	1	src/dzack_research/preamble/categories/algebras/framed_free_algebras.py		unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	AlternatingAlgebraOf	function	2587	2			unreviewed
 preamble/categories/algebras/framed_free_algebras.sage	DividedPowerAlgebraOf	function	2592	2			unreviewed
-preamble/categories/algebras/free_algebras.sage	<module>	module	1	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent	class	24	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.base_ring	method	32	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.algebra_generating_set	method	33	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.monomial_system	method	34	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.module_generator	method	35	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.degree_on_module_generator	method	36	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.graded_piece_monomials	method	39	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebraParent	class	43	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebraParent.divided_power	method	46	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebraCategory	class	50	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebraCategory.base_ring	method	53	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebras	class	56	1	src/dzack_research/preamble/categories/algebras/free_algebras.py		unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebras.super_categories	method	63	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebras.SubcategoryMethods	class	74	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebras.SubcategoryMethods.on	method	75	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebras.ParentMethods	class	88	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	FreeAlgebras.ParentMethods.is_free	method	89	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras	class	94	1	src/dzack_research/preamble/categories/algebras/free_algebras.py		unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.super_categories	method	101	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods	class	108	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.graded_piece	method	120	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.degree_on_module_generator	method	154	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.graded_piece_monomials	method	168	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.ideal_generators_in_degree	method	200	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	TensorAlgebras	class	232	1	src/dzack_research/preamble/categories/algebras/free_algebras.py		unreviewed
-preamble/categories/algebras/free_algebras.sage	TensorAlgebras.super_categories	method	239	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	TensorAlgebras.ParentMethods	class	242	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	TensorAlgebras.ParentMethods.ring_center	method	243	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	TensorAlgebras.ParentMethods.center_embedding	method	256	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	SymmetricAlgebras	class	273	1	src/dzack_research/preamble/categories/algebras/free_algebras.py		unreviewed
-preamble/categories/algebras/free_algebras.sage	SymmetricAlgebras.super_categories	method	284	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	AlternatingAlgebras	class	293	1	src/dzack_research/preamble/categories/algebras/free_algebras.py		unreviewed
-preamble/categories/algebras/free_algebras.sage	AlternatingAlgebras.super_categories	method	300	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras	class	304	1	src/dzack_research/preamble/categories/algebras/free_algebras.py		unreviewed
-preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.super_categories	method	316	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.ParentMethods	class	324	0			unreviewed
-preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.ParentMethods.ideal_generators_in_degree	method	325	0			unreviewed
+preamble/categories/algebras/free_algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent	class	24	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.base_ring	method	32	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.algebra_generating_set	method	33	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.monomial_system	method	34	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.module_generator	method	35	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.degree_on_module_generator	method	36	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebraParent.graded_piece_monomials	method	39	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebraParent	class	43	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebraParent.divided_power	method	46	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebraCategory	class	50	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebraCategory.base_ring	method	53	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebras	class	56	1	src/dzack_research/preamble/categories/algebras/free_algebras.py	src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebras.super_categories	method	63	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebras.SubcategoryMethods	class	74	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebras.SubcategoryMethods.on	method	75	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebras.ParentMethods	class	88	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	FreeAlgebras.ParentMethods.is_free	method	89	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras	class	94	1	src/dzack_research/preamble/categories/algebras/free_algebras.py	src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.super_categories	method	101	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods	class	108	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.graded_piece	method	120	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.degree_on_module_generator	method	154	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.graded_piece_monomials	method	168	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	GradedFreeAlgebras.ParentMethods.ideal_generators_in_degree	method	200	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	TensorAlgebras	class	232	1	src/dzack_research/preamble/categories/algebras/free_algebras.py	src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	TensorAlgebras.super_categories	method	239	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	TensorAlgebras.ParentMethods	class	242	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	TensorAlgebras.ParentMethods.ring_center	method	243	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	TensorAlgebras.ParentMethods.center_embedding	method	256	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	SymmetricAlgebras	class	273	1	src/dzack_research/preamble/categories/algebras/free_algebras.py	src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	SymmetricAlgebras.super_categories	method	284	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	AlternatingAlgebras	class	293	1	src/dzack_research/preamble/categories/algebras/free_algebras.py	src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	AlternatingAlgebras.super_categories	method	300	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras	class	304	1	src/dzack_research/preamble/categories/algebras/free_algebras.py	src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.super_categories	method	316	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.ParentMethods	class	324	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
+preamble/categories/algebras/free_algebras.sage	DividedPowerAlgebras.ParentMethods.ideal_generators_in_degree	method	325	0		src/dzack_research/preamble/categories/algebras/free_algebras.py	reconciled-live-owner
 preamble/categories/algebras/graded_algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
 preamble/categories/algebras/graded_algebras.sage	GradedAlgebras	class	11	1	src/dzack_research/preamble/categories/algebras/graded_algebras.py	src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
 preamble/categories/algebras/graded_algebras.sage	GradedAlgebras.super_categories	method	24	0		src/dzack_research/preamble/categories/algebras/graded_algebras.py	reconciled-live-owner
