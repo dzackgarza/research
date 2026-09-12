@@ -2800,6 +2800,93 @@ state the governance once: "Every local-to-global conclusion is a
 fenced Theorem with quantified hypotheses; do not draw it from one image
 alone."
 
+### `PR-33`: "Are distinct constructions" is true by definition — the claim is about the comparison map
+
+$M\mapsto M\otimes_{\mathbb Z}^L\mathbb Z_p$ and
+$M\mapsto \widehat M_p:=\lim_n M\otimes_{\mathbb Z}^L\mathbb Z/p^n$ are
+different functors, defined differently. Saying they "are distinct
+constructions" without or with a hypothesis states a tautology that
+holds regardless. The substantive mathematics is whether the canonical
+comparison map is an equivalence.
+
+Concrete standards:
+
+* **Scalar extension:** $-\otimes_{\mathbb Z}^L\mathbb Z_p\colon
+  \mathbf{LMod}_{\mathbb Z}\to\mathbf{LMod}_{\mathbb Z_p}$ (underived
+  $-\otimes_{\mathbb Z}\mathbb Z_p$ on discrete modules). Left adjoint
+  to restriction.
+
+* **$p$-adic completion:** $\widehat{(-)}_p:=\lim_n (-\otimes_{\mathbb
+  Z}^L\mathbb Z/p^n)$ in $\mathbf{LMod}_{\mathbb Z}$, resp.
+  $\lim_n M/p^nM$ for discrete $M$.
+
+* **Comparison map:** the natural $c_M\colon M\otimes_{\mathbb Z}^L
+  \mathbb Z_p \to \widehat M_p$ induced by
+  $\mathbb Z_p\simeq\lim_n\mathbb Z/p^n$ and
+  $M\otimes^L\lim_n\mathbb Z/p^n\to\lim_n(M\otimes^L\mathbb Z/p^n)$.
+
+Do not state that the functors are distinct. State what $c_M$ does.
+
+**Banned:** "Without the finite-generation hypothesis, scalar extension
+and completion are distinct constructions."
+
+**Preferred:** "::: {#thm-complete-vs-basechange} **Theorem.** For
+$M\in\mathbf{LMod}_{\mathbb Z}$ perfect (in particular, for discrete
+finitely generated $M$ over Noetherian $\mathbb Z$), $c_M\colon
+M\otimes_{\mathbb Z}^L\mathbb Z_p \xrightarrow{\sim}\widehat M_p$ is an
+equivalence; in particular $M\otimes_{\mathbb Z}\mathbb Z_p\simeq\widehat
+M_p$ for discrete finitely generated $M$. :::" Then apply or refute:
+"$c_M$ is not an equivalence in general: for
+$M=\bigoplus_{\mathbb N}\mathbb Z$,
+$M\otimes\mathbb Z_p=\bigoplus_{\mathbb N}\mathbb Z_p$ (finite support)
+while $\widehat M_p$ strictly contains it; for $M=\mathbb Q$,
+$\mathbb Q\otimes_{\mathbb Z}\mathbb Z_p\simeq\mathbb Q_p$ while
+$\widehat{\mathbb Q}_p\simeq0$ [@Stacks-0A05, Tag 0A05; Lurie DAG, formal
+completion]." Name the functors, the map, and the quantified
+equivalence; do not say the definitions are distinct.
+
+### `PR-34`: "Without the $H$ hypothesis" is true of every theorem with hypothesis $H$
+
+"Without the finite-generation hypothesis, $A$ and $B$ are distinct / do
+not coincide / fail" is true of any theorem "$H\Rightarrow A\simeq B$"
+and therefore says nothing: it restates that the theorem has a
+hypothesis (PR-31) while naming neither the theorem, the quantified $H$
+(finitely generated vs. finitely presented vs. perfect vs. coherent),
+nor the quantified claim $A\simeq B$ (which $A$, which $B$, which map),
+so it is unfalsifiable (PR-30) and can be deflected to any intended
+meaning.
+
+This is the general form behind PR-28/PR-31: a sentence that is true
+by definition of "distinct constructions" or true by logic of
+"theorems have hypotheses," and hence vacuous.
+
+**Banned:** "Without the finite-generation hypothesis, scalar extension
+and completion are distinct constructions"; "Without $H$, $A$ and $B$
+are different."
+
+**Preferred:** state the quantified theorem with $H$ and the comparison
+map (PR-33), then state the quantified failure without $H$ with a
+counterexample: "Without finite generation $c_M$ need not be an
+equivalence; e.g. $M=\bigoplus_{\mathbb N}\mathbb Z$ as above." Do not
+use "without $H$, $A$ and $B$ are distinct" standing for a theorem plus
+a counterexample.
+
+### `DEF-34`: "Finite-generation hypothesis" with no quantified finiteness notion
+
+"Finite-generation hypothesis" names no notion: finitely generated vs.
+finitely presented vs. perfect (compact in $\mathbf{LMod}_{\mathbb Z}$)
+vs. coherent are distinct, and over a general $\mathbb E_1$-ring
+spectrum $R$ the correct condition is perfectness, not discrete finite
+generation. The book's default is $\mathbf{LMod}_R$ stable; discrete
+finite generation is a property of $\pi_0M$ after truncating.
+
+**Banned:** "the finite-generation hypothesis" unqualified.
+
+**Preferred:** quantify: "for $M$ perfect in $\mathbf{LMod}_{\mathbb Z}$
+(in particular, for discrete $M$ finitely generated over Noetherian
+$\mathbb Z$)" or "for $M$ finitely presented" — name which finiteness,
+in which category, and whether derived or discrete, at each use.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -2904,3 +2991,15 @@ never committed (PR-32). Standard prose states the theorem with
 hypotheses and applies it; it does not tell the reader that a theorem is
 required. Governance belongs in `CONTRIBUTING.md`, not in the
 mathematical text (cf. PR-24, PR-16–18).
+
+**9. "Are distinct constructions" tautology and "without $H$" vacuity.**
+Two functors defined differently are distinct by definition, with or
+without any hypothesis; the substantive claim is whether the canonical
+comparison map $c_M\colon M\otimes^L\mathbb Z_p\to\widehat M_p$ is an
+equivalence (PR-33). "Without the finite-generation hypothesis, $A$ and
+$B$ are distinct" is true of every theorem $H\Rightarrow A\simeq B$ and
+says nothing, with unquantified $H$ (finitely generated vs. presented
+vs. perfect) and no map or counterexample (PR-34, PR-33). State the
+quantified theorem ($c_M$ an iso for perfect $M$) and the quantified
+failure with a counterexample ($\bigoplus_{\mathbb N}\mathbb Z$,
+$\mathbb Q$), not that the definitions are distinct.
