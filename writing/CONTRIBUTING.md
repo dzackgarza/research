@@ -4456,6 +4456,115 @@ finite-dimensional / $M=R^n$ / $G_{ij}$ / $\max$ specialization as a
 fenced Remark / Corollary that recovers the desired case. Always perform
 the permutation check; if not much harder, the general is the definition.
 
+### `PR-72`: Premature specialization as the definition — signature $(p,q,r)$ for $F$ ordered finite-dimensional, and $\operatorname{sig}(L)$ for $L\in\mathbf{Lat}_R$ — and the explicit scope that was owed
+
+The block "`$F$ ordered, $V$ finite-dimensional, $p:=\max\dim U$ with
+$b_{|U}>0$" is *sound* for $F$ a field — every field has IBN, so
+$\dim_FU$ is well-defined and $\{\dim U\mid b_{|U}>0\}\subseteq
+\{0,\dots,n\}$ has a $\max$ — and Sylvester's law makes $(p,q,r)$ an
+isometry invariant, so it does define the expected $GW(F)\to\mathbb Z$
+(for the fixed ordering, $r:=\dim\operatorname{rad}$) for any ordered
+field. It is not ill-typed in its stated scope. What it *is* is a
+one-real-place, finite-dimensional, $W=F$ specialization presented as
+*the* definition, so it quietly fixes the book to $F=\mathbb Q$ / $\mathbb R$
+and cuts off the arithmetic the lattice theory is about.
+
+Concretely:
+
+* **Soundness vs. IBN.** "$\dim$" in the definition assumes IBN for $F$.
+  Every field has IBN, so for $F$ a field the $\max$ is well-defined; if
+  the same "$\max\dim$" were used for an ordered *ring* $R$ without IBN,
+  "$\dim_RU$" would have no referent and $(p,q,r)$ would be ill-defined.
+  Soundness as written is exactly the field case.
+
+* **$\operatorname{sig}(L)$ not over $R$.** For $L\in\mathbf{Lat}_R$ ($R$ a
+  domain, e.g. $\mathbb Z$, $\mathcal O_K$, $\mathbb Z_p$) the $R$-linear
+  $b\colon L\otimes_RL\to R$ has no "$b_{|U}>0$" — $R$ is not ordered.
+  The invariant is $\operatorname{sig}(L):=\operatorname{sig}(L\otimes_RF,
+  b_F)$ for $F:=\operatorname{Frac}(R)$ via change-of-rings
+  $-\otimes_RF\colon\mathbf{Mod}_R\to\mathbf{Vect}_F$, $b_F:=b\otimes_RF
+  \colon L_F\otimes_FL_F\to F$ (PR-69/70 with $F$ ordered, $L_F$ finite-
+  dimensional where the $\max$ is attained). Writing "$\operatorname{sig}(L)$"
+  without the $-\otimes_RF$ is ill-typed.
+
+* **Specialization, not the notion.** As the definition of signature it
+  rules out the cases where signature has no meaning and hides the cases
+  where it has a *family* of meanings:
+
+  — $F=\mathbb F_q$ ($\operatorname{Frac}(R)=\mathbb F_q$ for
+  $R=\mathbb F_q$) is a field but not ordered, so "$b_{|U}>0$" is not
+  typed and there is no $(p,q,r)$; $W(\mathbb F_q)$ is detected by
+  $\dim\bmod2$ and discriminant in $\mathbb F_q^\times/(\mathbb F_q^\times)^2$
+  (Arf when $2=0$), not a signature — correctly ruled out.
+
+  — $F=\mathbb C$ is a field but not ordered, so no $(p,q,r)$;
+  $W(\mathbb C)\cong\mathbb Z/2$ via $\dim\bmod2$.
+
+  — $F=\operatorname{Frac}(R)$ for $R=\mathcal O_K$, $K$ a number field,
+  has $[K:\mathbb Q]$ real embeddings $\sigma\colon K\hookrightarrow\mathbb R$
+  (and complex pairs). The $F$-linear $b_F$ has no single $(p,q,r)$; it
+  has a family $(p_\sigma,q_\sigma,r_\sigma)_{\sigma\text{ real}}$ with
+  $p_\sigma:=\sup\dim_{K_\sigma}U$ where $\sigma(b)_{|U}>0$ in the ordered
+  $K_\sigma\cong\mathbb R$ — i.e. $\operatorname{sig}_\sigma(L):=
+  \operatorname{sig}(L\otimes_RK\xrightarrow{\sigma}L\otimes_R\mathbb R)$.
+  Lattices over $\mathcal O_K$ are the arithmetic case where signature is a
+  vector over the real places.
+
+* **Explicit scope that was owed, and flagging.** The local/arithmetic
+  object is $L\in\mathbf{Lat}_R$ for $R$ a Dedekind domain — $\mathbb Z$,
+  $\mathbb Z_{(p)}$, $\mathbb Z_p$, $\mathcal O_K$ (often
+  $\operatorname{cl}(R)=1$ so $L\cong R^n$ as $R$-module, but the theory must
+  not assume it), $R=\mathbb Z_p$, $\mathbb Q_p$, $\mathbb C_p$,
+  $\mathbb A_{\mathbb Q,f}$, $\mathbb A_K$, etc. — with $b\colon L\otimes_RL
+  \to R$ (or $W$ invertible). For $R=\mathbb Z_p$, $\operatorname{Frac}(R)=
+  \mathbb Q_p$ is not ordered, so again no $(p,q,r)$; the $p$-adic
+  invariants are rank, discriminant, Hasse. A definition fitted to
+  "$\mathbb Z\to\mathbb Q$ plus a little more" ($F$ ordered finite-dimensional
+  with $\max$) therefore presents the $\mathbb R$-specialization as if it
+  were the notion and lets the book proceed without ever naming the general
+  $W$-valued $b\colon M\otimes M\to W$ over a Dedekind $R$, its base changes
+  $L\otimes_RF$, $L\otimes_RK_\sigma$, $L\otimes_R\mathbb Q_p$,
+  $L\otimes_R\mathbb A$, and the invariants that actually do the work there.
+  It should have been flagged at the point of writing as *needs research* /
+  *needs generalization* — not as a definition to build on — with the
+  explicit note that the arithmetic local theory (arbitrary Dedekind $R$,
+  $p$-adic $R$, adeles) requires the sup-on-$\mathrm{Fl}$ / $b^{\sharp}$ /
+  $\Gamma^2_R$ setup and a separate treatment of $(p,q,r)$ as the
+  $\mathbb R$-fiber of that setup.
+
+**Standard:** in the book's scaffolding and in this `CONTRIBUTING.md`,
+state the explicit generalization scope most definitions should be at:
+
+> "Bilinear/quadratic notions are $W$-valued $b\colon M\otimes_RM\to W$
+> for $R$ a Dedekind domain (in particular $\mathbb Z$, $\mathcal O_K$,
+> $\mathbb Z_p$) and $W\in\mathbf{Mod}_R$ invertible, with
+> $M\in\mathbf{Mod}_R$ arbitrary; signature $(p,q,r)$ is the
+> $\mathbb R$-fiber $L\mapsto(L\otimes_RF_\sigma,b_{F_\sigma})_{\sigma
+> \text{ real}}$ for $F=\operatorname{Frac}(R)$ ordered at $\sigma$,
+> $p_\sigma:=\sup\dim_{F_\sigma}U$ on $\mathrm{Gr}(L_{F_\sigma})$, and is
+> not defined for $F=\mathbb C$, $\mathbb F_q$, $\mathbb Q_p$."
+
+Then every new definition is reviewed against that scope, and a block that
+only does $F$ ordered finite-dimensional with $\max$ is flagged *outside*
+the book (GitHub issue with `needs-research`, not a fenced Definition)
+until the $R$ Dedekind / $\mathbb Z_p$ / $\mathbb A$ / $W$-varying form is
+supplied. The finite $W=R$, $V$ finite-dimensional, $\max$ specialization
+is then a fenced Remark / Corollary that recovers the desired case.
+
+**Banned:** the block as stated with "$F$ ordered, $V$ finite-dimensional,
+$p$ is the greatest dimension … triple $(p,q,r)$ is the signature" as the
+*definition* of signature for $L\in\mathbf{Lat}_R$.
+
+**Preferred:** define $(p,q,r)$ via the suprema on $\mathrm{Gr}(V)$ /
+$\mathrm{Fl}(V)$ for $F$ ordered arbitrary $V$ as in PR-70, then add the
+fenced scope note above and the flagged `needs-research` for the
+Dedekind / $p$-adic / adele generalization; define
+$\operatorname{sig}(L):=\operatorname{sig}(L\otimes_R\operatorname{Frac}(R))$
+only when $\operatorname{Frac}(R)$ is ordered at the relevant $\sigma$,
+with $r:=\dim\operatorname{rad}$ via $b^{\sharp}$, and note that for
+$F=\mathbb C$, $\mathbb F_q$, $\mathbb Q_p$ the invariant is not
+$(p,q,r)$.
+
 ### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
 
 A fenced `Definition` is an atomic unit with one logical status: it
@@ -5113,6 +5222,25 @@ $(p,q,r)\in\mathbf{Card}^3$ (PR-70); the finite $V$ with "$\max$" and
 $p+q+r=n$ is the specialization where the suprema are attained, not the
 definition.
 
+**32. Signature is not over $R$; premature specialization to one
+ordered $F$ hides the arithmetic scope.** The block as the definition of
+signature quietly fixes the book to $F=\mathbb Q$ / $\mathbb R$ (one real
+place, $W=F$, $V$ finite-dimensional). In fact $(p,q,r)$ is sound for
+$F$ a field (IBN) and defines $GW(F)\to\mathbb Z$, but it is a
+specialization: $\operatorname{sig}(L)$ for $L\in\mathbf{Lat}_R$ is
+$\operatorname{sig}(L\otimes_R\operatorname{Frac}(R),b_{\operatorname{Frac}(R)})$
+when $\operatorname{Frac}(R)$ is ordered at the relevant place, not
+$\max\dim_RU$ over $R$; it rules out (correctly) $F=\mathbb F_q$,
+$\mathbb C$ where no order exists, and for $R=\mathcal O_K$ it is a
+family $(p_\sigma,q_\sigma,r_\sigma)_{\sigma\text{ real}}$ over the real
+places $\sigma\colon K\hookrightarrow\mathbb R$, not a single triple.
+The local theory belongs over arbitrary Dedekind $R$ ($\mathbb Z$,
+$\mathcal O_K$ with $\operatorname{cl}(R)=1$ not assumed, $\mathbb Z_p$,
+$\mathbb Q_p$, $\mathbb C_p$, $\mathbb A$) with $b\colon L\otimes_RL\to
+W$ $W$-varying — a scope that should be stated explicitly and, when the
+$W\neq R$ / $\mathbb Z_p$ / adele form is not yet supplied, flagged as
+needs-research outside the book (PR-72).
+
 **32. Always ask if the statement generalizes without much more
 difficulty — if not, state the general and recover the special case.**
 For every Definition / Proposition, go through all permutations of its
@@ -5123,6 +5251,23 @@ and ask "is it that much harder with $X$ relaxed?" If no, the general
 is the definition and the desired special case is a Remark / Corollary
 (PR-71) — as with $b\colon M\otimes M\to W$ vs. $M$ free $W=R$ finite,
 and $\sup$ vs. $\max$ for signature.
+
+**33. Premature specialization of signature hides the Dedekind /
+$p$-adic / adele scope and should be flagged as needs-research.**
+The quick "$F$ ordered, $V$ finite-dimensional, $p:=\max\dim U$" as the
+definition of signature fixes the book to $F=\mathbb Q$ / $\mathbb R$
+and presents the one-real-place specialization as if it were the notion,
+when the notion for $L\in\mathbf{Lat}_R$ is
+$\operatorname{sig}(L):=\operatorname{sig}(L\otimes_R\operatorname{Frac}(R))$
+only when $\operatorname{Frac}(R)$ is ordered, is a family
+$(p_\sigma,q_\sigma,r_\sigma)_{\sigma\text{ real}}$ for $R=\mathcal O_K$,
+is not defined for $F=\mathbb C$, $\mathbb F_q$, $\mathbb Q_p$ (which
+have $\dim\bmod2$ / discriminant / Hasse, not $(p,q,r)$), and belongs
+over arbitrary Dedekind $R$ (in particular $\operatorname{cl}(R)=1$ not
+assumed), $\mathbb Z_p$, $\mathbb Q_p$, $\mathbb C_p$, $\mathbb A$
+(PR-72). State the explicit scope most definitions should be at and flag
+a block that only does the ordered-field finite case outside the book
+until the $R$ Dedekind / $p$-adic / adele generalization is supplied.
 
 **29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
 $\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
