@@ -413,7 +413,7 @@ def _presented_algebra_on_engine(
     )
 
 
-def FinitelyPresentedAlgebra(
+def _finitely_presented_algebra_from_data(
     presentation_ring,
     relations,
     *,
@@ -432,7 +432,7 @@ def FinitelyPresentedAlgebra(
         # first rather than needing a tower of quotient objects.
         source = presentation_ring.presentation_ring()
         existing = presentation_ring.relations()
-        return FinitelyPresentedAlgebra(
+        return _finitely_presented_algebra_from_data(
             source,
             (
                 *(existing.value(index) for index in existing.index_set()),
@@ -509,6 +509,24 @@ def FinitelyPresentedAlgebra(
         commutative_backend=True,
         finite_free_degree=finite_free_degree,
         presentation_flattening=presentation_flattening,
+    )
+
+
+def FinitelyPresentedAlgebra(
+    presentation_ring,
+    relations,
+    *,
+    _extra_categories=(),
+    _extra_construction_data=None,
+    _free_source_module=None,
+):
+    r"""Notebook notation for the selected finite-presentation algebra constructor."""
+    return AlgebrasWithChosenFinitePresentation(presentation_ring.base_ring())(
+        presentation_ring,
+        relations,
+        extra_categories=_extra_categories,
+        extra_construction_data=_extra_construction_data,
+        free_source_module=_free_source_module,
     )
 
 

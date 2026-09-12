@@ -1541,6 +1541,30 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             FramedAlgebras(self.base_ring()),
         ]
 
+    def _call_(
+        self,
+        presentation_ring,
+        relations,
+        *,
+        extra_categories=(),
+        extra_construction_data=None,
+        free_source_module=None,
+    ):
+        r"""Construct an algebra from its selected finite polynomial presentation."""
+        if presentation_ring.base_ring() is not self.base_ring():
+            raise ValueError("a chosen algebra presentation stays over its stated scalar base")
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            _finitely_presented_algebra_from_data,
+        )
+
+        return _finitely_presented_algebra_from_data(
+            presentation_ring,
+            relations,
+            _extra_categories=tuple(extra_categories),
+            _extra_construction_data=extra_construction_data,
+            _free_source_module=free_source_module,
+        )
+
     class ParentMethods:
         def _algebra_homset_class(self):
             return PresentedAlgebraHomset

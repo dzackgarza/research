@@ -52,3 +52,24 @@ def test_archived_presented_algebra_morphism_is_determined_by_generator_images()
     assert swap(xbar) == ybar
     assert swap(ybar) == xbar
     assert swap(xbar * ybar) == algebra.zero()
+
+
+def test_selected_finite_presentation_constructor_is_owned_by_its_category() -> None:
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        FinitelyPresentedAlgebra,
+        PolynomialRing,
+    )
+
+    presentation = PolynomialRing(QQ, ("x", "y"))
+    x = presentation.algebra_generator("x")
+    declared = AlgebrasWithChosenFinitePresentation(QQ)(
+        presentation,
+        (x**2,),
+    )
+    notation = FinitelyPresentedAlgebra(presentation, (x**2,))
+
+    assert declared in AlgebrasWithChosenFinitePresentation(QQ)
+    assert notation in AlgebrasWithChosenFinitePresentation(QQ)
+    assert declared.presentation_ring() is presentation
+    assert notation.presentation_ring() is presentation
+    assert tuple(declared.relations()) == tuple(notation.relations())
