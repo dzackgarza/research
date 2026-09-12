@@ -3872,6 +3872,24 @@ goal; reusable building blocks are." Then enforce it: every new
 definition is reviewed against that stated goal, not against the cheapest
 sentence that lets the next paragraph proceed.
 
+### `PR-55`: Hygiene and foresight — building on the $\mathbf{Set}$-shadow instead of on the named categorical object that classifies it
+
+The lack of hygiene in "$M=N\oplus N^{\perp}$," "$b(x,y)=b(y,x)$," "$b(x,x)\in2W$," "$\{x\mid b(x,N)=0\}$," "$b$ satisfies the evenness condition," "pullback defines a presheaf," "retain additional information in the discriminant setting" is one pattern: the definition / theorem is stated on the evaluation of a categorical object on $U$-points $x\colon1\to M$ ($U\colon\mathcal C\to\mathbf{Set}$), not on the object that classifies that evaluation. The shadow is locally correct for $\mathbf{Mod}_R$ and matches classical $b(x,N)=0$ literature, but it names no $b^{\sharp}$, no $\ker$, no $\operatorname{Val}(b)$, no $\operatorname{Bil}_{R,W}$, no $\Gamma^2_R$, so it cannot be reused and cannot be transported: every later notion must be re-spelled elementwise and every $\mathcal C$ without $U$ (e.g. $\mathrm{QCoh}(X)$, $\mathbf{Sp}$-modules, sheaves, $\infty\text{-}\mathbf{Cat}$) needs a new definition.
+
+Foresight is stating the scaffolding and the governing object once, diagrammatically, with its universal property, so that the element formula is its shadow — not its definition — and later theory is an instance.
+
+Concrete scaffolding that was owed once, fenced, before any $b(x,y)$ or $N^{\perp}$:
+
+* $(\mathbf{Mod}_R,\otimes_R,R,\tau)$ symmetric monoidal closed and self-enriched, $M\otimes_RM$ classifying $R$-bilinears, $\underline{\operatorname{Hom}}_R(M,W)\in\mathbf{Mod}_R$ as internal hom {#thm-mod-closed}/{#def-tensor}; $\operatorname{Hom}_R(M\otimes M,W)\cong\operatorname{Hom}_R(M,\underline{\operatorname{Hom}}_R(M,W))$ giving $b^{\sharp_{\!L}},b^{\sharp_{\!R}}\colon M\to\underline{\operatorname{Hom}}_R(M,W)$.
+* $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ and its named $R$-submodules $\operatorname{SymBil}:=\ker(\tau^*-\mathrm{id})$, $\operatorname{SkewBil}:=\ker(\tau^*+\mathrm{id})$, $\operatorname{AltBil}:=\ker(\Delta^*)$, $\operatorname{EvBil}:=\operatorname{im}(\gamma^*)$ with $\Gamma^2_R\xrightarrow{\gamma}\operatorname{Sym}^2_R\to M\otimes M$; $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ and $\gamma^*\colon\operatorname{Quad}\to\operatorname{Bil}$.
+* $\operatorname{Val}(b)\subseteq W$ as $R$-submodule $\langle b(x,x)\rangle$ i.e. image of $\gamma^*$; $N^{\perp}:=\ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))$; isotropic as $\ker(M\xrightarrow{\Delta}M\otimes M\xrightarrow{b}W)$, anisotropic as $\ker=0$; nondegenerate as $b^{\sharp}$ iso; $M^\vee:=\underline{\operatorname{Hom}}_R(M,R)$; $(M,b)\perp(N,c)$ as orthogonal sum in $\mathbf{Bil}_{R,W}$.
+
+With those named, hygiene is: every definition is membership in a named $R$-submodule / kernel of a named $R$-linear map; every theorem is a containment of named subobjects or a statement about a named map $2_*$ / $\gamma^*$ being (non-)iso with obstruction $\ker/\operatorname{coker}$; every "for every $x$" is the $U$-evaluation of that diagram when $U$ exists. The minimal "$\forall x\in M$, $b(x,y)=b(y,x)$ / $b(x,N)=0$ / $b(x,x)\in2W$" is then never the definition.
+
+**Banned:** any definition / theorem that quantifies $\forall x\in M$ / $\{x\mid\ldots\}$ / "$b\colon M\times M\to W$" / "$b$ satisfies the … condition" / "pullback … defines a presheaf" / "retain additional information in the … setting" / "$M=N\oplus N^{\perp}$ and the sum is orthogonal" as prose without the named $b^{\sharp}$, $\ker$, $\operatorname{Bil}$ / $\operatorname{Alt}/\operatorname{Skew}/\operatorname{EvBil}$, $\operatorname{Val}(b)$, $\Gamma^2_R$, and the proved biproduct $\perp$ vs. $\oplus$ in $\mathbf{Bil}_{R,W}$ vs. $R\text{-}\mathbf{Mod}$.
+
+**Preferred:** state the scaffolding once; then every bilinear/quadratic notion is a named $R$-submodule / kernel / image with its universal property, every implication is a Lemma/Proposition about containments of those named subobjects or about $\gamma^*$ / $2_*$ between named objects with quantified hypotheses and proof, and element formulas appear only as "on $U$-points $x\colon R\to M$ this is $b(x,y)=b(y,x)$."
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4303,6 +4321,22 @@ $\mathbf{TorQuad}_{R,W}$ of torsion forms, with discriminant object
 $D_L:=L^\vee/L$ (TERM-13) — and sign-posting it in the general
 $\operatorname{Bil}/\operatorname{Quad}$ section before lattices and
 $L^\vee/L$ exist inverts dependency order and violates theory-of-mind.
+All three are the weasel mass-noun pattern (PR-52).
+
+**20. Hygiene and foresight — the Set-shadow vs. the categorical
+object.** Every "$b(x,y)=b(y,x)$ / $b(x,x)\in2W$ / $\{x\mid b(x,N)=0\}$ /
+$b$ satisfies the evenness condition / pullback defines a presheaf /
+retain additional information / $M=N\oplus N^{\perp}$" in the block is
+the same failure: the statement on $U$-points $x\colon1\to M$ instead of
+on the named object that classifies it — $b^{\sharp}$, $\ker(b^{\sharp})$,
+$\ker(b\circ\Delta)$, $\operatorname{Bil}_{R,W}$, $\operatorname{Val}(b)$,
+$\Gamma^2_R$, $\perp$ as biproduct in $\mathbf{Bil}_{R,W}$ vs. $\oplus$
+in $R\text{-}\mathbf{Mod}$ (PR-55). Locally correct for $\mathbf{Mod}_R$,
+it bypasses the adjoint/dual/orthogonal subtheory, avoids one general
+building block ($b^{\sharp}$, $\ker$, $\operatorname{Val}$) that later
+theory and every non-concrete $\mathcal C$ would reuse, and trades
+applicability tomorrow for the minimal sentence that lets this page
+proceed — the opposite of long-term hygiene.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
