@@ -2777,6 +2777,38 @@ def _copy_polynomial_by_exponents(
     return result
 
 
+def _evaluate_owned_homogeneous_polynomial_on_coordinates(
+    polynomial,
+    polynomial_ring,
+    coordinates,
+):
+    r"""Evaluate one owned homogeneous polynomial on an owned coordinate family."""
+    polynomial = polynomial_ring(polynomial)
+    labels = tuple(polynomial_ring.algebra_generating_set())
+    coordinates = tuple(coordinates)
+    if len(coordinates) != len(labels):
+        raise ValueError("homogeneous substitution needs one coordinate per target variable")
+    source_ring = coordinates[0].parent()
+    if any(coordinate.parent() is not source_ring for coordinate in coordinates):
+        raise ValueError("projective homogeneous coordinates must lie in one source ring")
+    base = polynomial_ring.base_ring()
+    if source_ring.base_ring() is not base:
+        raise ValueError("projective substitution requires one scalar base")
+    scalar_map = source_ring.algebra_structure_morphism()
+    backend = _engine_element(polynomial_ring, polynomial)
+    engine = _engine_ring(polynomial_ring)
+    engine_base = _engine_ring(base)
+    result = source_ring.zero()
+    for exponent, coefficient in engine(backend).monomial_coefficients().items():
+        powers = _polynomial_exponents(exponent, len(labels))
+        term = scalar_map(base._from_engine_element(engine_base(coefficient)))
+        for coordinate, power in zip(coordinates, powers, strict=True):
+            if power:
+                term *= coordinate**power
+        result += term
+    return source_ring(result)
+
+
 def _evaluate_polynomial_in_algebra(polynomial: Any, algebra: Any) -> Any:
     r"""Evaluate a backend polynomial on the selected generators of ``algebra``."""
     labels = tuple(algebra.algebra_generating_set())
@@ -3912,27 +3944,55 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
         def corestriction(self, morphism):
             r"""The factorization ``T -> Z`` of a morphism ``T -> X`` landing in ``Z``.
 
-            A morphism into ``X`` factors through the closed subscheme
-            ``Z = V(I)`` exactly when its pullback kills ``I`` (Stacks, Tag
-            01QP); for affine endpoints the factor is ``Spec`` of the induced
-            map ``A/I -> O(T)`` on the presentation's generators.
+            In the affine case the factor is induced by the quotient coordinate
+            algebra.  For a projective-coordinate morphism into projective
+            space, the retained homogeneous coordinates factor through ``Z``
+            exactly when every homogeneous defining equation vanishes after
+            substitution.  The factor retains those same coordinates, now in
+            ``Mor(T,Z)``.
             """
             assert morphism.codomain() is self.inclusion().codomain(), "a corestriction is taken of a morphism into the codomain of the inclusion"
             source = morphism.domain()
             base = source.scheme_base_ring()
-            assert source in AffineSchemes(base) and self in AffineSchemes(base), "the represented corestriction currently requires affine schemes"
-            pullback = morphism.coordinate_algebra_morphism()
-            for equation in self.defining_equations():
-                assert pullback(equation) == source.coordinate_algebra().zero(), f"{morphism} does not factor through {self}: its pullback does not kill {equation}"
-            quotient_map = self.inclusion().coordinate_algebra_morphism()
-            algebra = self.coordinate_algebra()
-            factor_pullback = algebra.Mor(source.coordinate_algebra())(
-                {label: pullback(morphism.codomain().coordinate_algebra().algebra_generator(label)) for label in algebra.algebra_generating_set()}
+            codomain = morphism.codomain()
+            if source in AffineSchemes(base) and self in AffineSchemes(base):
+                pullback = morphism.coordinate_algebra_morphism()
+                for equation in self.defining_equations():
+                    assert pullback(equation) == source.coordinate_algebra().zero(), f"{morphism} does not factor through {self}: its pullback does not kill {equation}"
+                quotient_map = self.inclusion().coordinate_algebra_morphism()
+                algebra = self.coordinate_algebra()
+                factor_pullback = algebra.Mor(source.coordinate_algebra())(
+                    {label: pullback(codomain.coordinate_algebra().algebra_generator(label)) for label in algebra.algebra_generating_set()}
+                )
+                factor = _affine_morphism_from_pullback(source, self, factor_pullback)
+                assert self.inclusion() * factor == morphism, "the corestriction does not recover the morphism through the inclusion"
+                assert quotient_map.domain() is codomain.coordinate_algebra()
+                return factor
+            if codomain in ProjectiveSpaces(base) and isinstance(
+                morphism, _ProjectiveCoordinateMorphism
+            ):
+                coordinates = tuple(morphism.homogeneous_coordinates())
+                target_ring = codomain.O(1).global_sections().homogeneous_coordinate_ring()
+                for equation in self.homogeneous_defining_equations(target_ring):
+                    value = _evaluate_owned_homogeneous_polynomial_on_coordinates(
+                        equation,
+                        target_ring,
+                        coordinates,
+                    )
+                    if value != value.parent().zero():
+                        raise ValueError(
+                            f"{morphism} does not factor through {self}: a homogeneous defining equation does not vanish"
+                        )
+                factor = _ProjectiveCoordinateMorphism(
+                    source.Mor(self),
+                    coordinates,
+                )
+                factor._preamble_projective_corestriction_ambient_morphism = morphism
+                factor._preamble_projective_corestriction_closed_subscheme = self
+                return factor
+            raise NotImplementedError(
+                "the represented closed corestriction currently supports affine maps or retained projective-coordinate maps into projective space"
             )
-            factor = _affine_morphism_from_pullback(source, self, factor_pullback)
-            assert self.inclusion() * factor == morphism, "the corestriction does not recover the morphism through the inclusion"
-            assert quotient_map.domain() is morphism.codomain().coordinate_algebra()
-            return factor
 
         def intersection(self, other):
             r"""``Z cap W = V(I + J)``, the scheme-theoretic intersection in ``X``.
