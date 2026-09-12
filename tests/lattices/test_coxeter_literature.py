@@ -34,15 +34,22 @@ from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
 from dzack_research.preamble.all import CoxeterDiagrams, Lattices, ZZ
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage",
-    "live_owner": "tests/lattices/test_coxeter_literature.py",
-    "owner_overrides": {
-        "test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form": "tests/lattices/test_coxeter.py",
-        "test_b3_root_gram_matrix_is_symmetric_with_one_double_bond": "tests/lattices/test_coxeter.py",
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "owner_overrides": {
+            "test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form": "tests/lattices/test_coxeter.py",
+            "test_b3_root_gram_matrix_is_symmetric_with_one_double_bond": "tests/lattices/test_coxeter.py",
+        },
+        "disposition": "reconciled-live-owner",
     },
-    "disposition": "reconciled-live-owner",
-}
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def bracket_diagram(*bonds: int):
@@ -326,3 +333,34 @@ def test_archived_a2_root_gram_is_the_live_negative_definite_root_lattice() -> N
     assert gram[0, 1] == gram[1, 0] == 1
     assert diagram.coxeter_entry(0, 1) == 3
     assert diagram.schlafli_tensor()[0, 1] == -AA(1) / AA(2)
+
+def test_archived_b3_root_roundtrip_retains_gram_bonds_and_group() -> None:
+    rooted = CoxeterDiagrams().from_cartan_type(["B", 3], rooted=True)
+    recovered = CoxeterDiagrams().from_roots(tuple(rooted.roots()))
+
+    assert recovered.root_gram_tensor() == rooted.root_gram_tensor()
+    assert recovered.coxeter_matrix() == rooted.coxeter_matrix()
+    assert recovered.coxeter_group().order() == 48
+
+
+def test_archived_c3_construction_paths_reach_the_same_coxeter_system() -> None:
+    by_type = CoxeterDiagrams().from_cartan_type(["C", 3])
+    by_matrix = CoxeterDiagrams().from_coxeter_matrix(CoxeterMatrix(["C", 3]))
+    by_roots = CoxeterDiagrams().from_cartan_type(["C", 3], rooted=True)
+
+    assert by_type.coxeter_matrix() == by_matrix.coxeter_matrix()
+    assert by_roots.coxeter_matrix() == by_type.coxeter_matrix()
+    assert {
+        diagram.coxeter_group().order()
+        for diagram in (by_type, by_matrix, by_roots)
+    } == {48}
+
+
+def test_archived_e6_rank_agrees_across_diagram_and_root_realization() -> None:
+    diagram = CoxeterDiagrams().from_cartan_type(["E", 6], rooted=True)
+
+    assert diagram.cardinality() == 6
+    assert diagram.root_lattice().module_rank() == 6
+    assert diagram.root_realization().module_rank() == 6
+    assert diagram.coxeter_group().degree() == 6
+

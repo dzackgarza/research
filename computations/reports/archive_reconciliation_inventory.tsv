@@ -2925,17 +2925,17 @@ preamble/tests/coxeter_tdd_specs/conftest.py	<module>	module	1	0		tests/groups/t
 preamble/tests/coxeter_tdd_specs/conftest.py	test_data_dir	specimen	22	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/conftest.py	expected_finite_orders	function	28	0		tests/groups/test_coxeter_finite_orders_archive.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/fixtures/__init__.py	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	<module>	module	1	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	FINITE_CRYSTALLOGRAPHIC_SCHLAEFLIANS	binding	48	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	ENUMERABLE_ORDERS	binding	66	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_cartan_type_and_its_rooted_realization_agree_on_rank_and_gram	specimen	76	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_a_rooted_diagram_is_recovered_from_its_own_roots	specimen	98	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_coxeter_group_of_a3_is_the_symmetric_group_on_four_letters	specimen	120	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_every_construction_path_reaches_the_same_c3_diagram	specimen	135	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_rank_is_one_number_across_diagram_lattice_and_group	specimen	159	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_finite_crystallographic_types_are_elliptic_of_the_tabulated_schlaeflian	specimen	176	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_diagrams_coxeter_group_has_the_tabulated_order	specimen	200	0			unreviewed
-preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_schlaeflian_sign_separates_elliptic_from_parabolic	specimen	216	0			unreviewed
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	FINITE_CRYSTALLOGRAPHIC_SCHLAEFLIANS	binding	48	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	ENUMERABLE_ORDERS	binding	66	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_cartan_type_and_its_rooted_realization_agree_on_rank_and_gram	specimen	76	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_a_rooted_diagram_is_recovered_from_its_own_roots	specimen	98	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_coxeter_group_of_a3_is_the_symmetric_group_on_four_letters	specimen	120	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_every_construction_path_reaches_the_same_c3_diagram	specimen	135	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_rank_is_one_number_across_diagram_lattice_and_group	specimen	159	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_finite_crystallographic_types_are_elliptic_of_the_tabulated_schlaeflian	specimen	176	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_diagrams_coxeter_group_has_the_tabulated_order	specimen	200	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	test_the_schlaeflian_sign_separates_elliptic_from_parabolic	specimen	216	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/literature/tools/webpage_to_markdown.py	<module>	module	1	0		archives/preamble/tests/coxeter_tdd_specs/literature	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/literature/tools/webpage_to_markdown.py	fetch_and_convert	function	11	0		archives/preamble/tests/coxeter_tdd_specs/literature	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/literature/tools/webpage_to_markdown.py	url	binding	81	0		archives/preamble/tests/coxeter_tdd_specs/literature	reconciled-live-owner
