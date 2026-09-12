@@ -75,6 +75,14 @@ class DiscriminantModules(OwnedCategoryOverBaseRing):
             r"""Return the selected metric dual ``L^#`` covering this quotient."""
             return self._preamble_dual_lattice
 
+        def cover(self):
+            r"""Return the metric dual lattice whose quotient gives this discriminant module."""
+            return self.dual_lattice()
+
+        def correlation(self):
+            r"""Return ``L -> L^#``, the presentation defining the discriminant quotient."""
+            return self.source_lattice().correlation_morphism()
+
         @cached_method
         def projection(self):
             r"""Return the quotient map ``L^# -> A_L`` on the selected dual basis."""

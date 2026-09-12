@@ -9,6 +9,21 @@ from dzack_research.preamble.all import (
     TorsionQuadraticFormModules,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/torsionform/torsion_modules_with_form.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/framed/formed/torsion_form_modules.py",
+    "owner_overrides": {
+        "DiscriminantForms": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.super_categories": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.correlation": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.source_lattice": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.overlattice_from_isotropic_subobject": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+        "DiscriminantForms.ParentMethods.discriminant_form_of_overlattice": "src/dzack_research/preamble/categories/modules/framed/formed/discriminant_modules.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 def _matrix(ring, rows):
     rows = tuple(tuple(row) for row in rows)
     columns = 0 if not rows else len(rows[0])
