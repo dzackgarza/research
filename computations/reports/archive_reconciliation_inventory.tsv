@@ -9,34 +9,34 @@ preamble/catalogue.sage	NegativeDefTwoElementary	binding	545	1	src/dzack_researc
 preamble/catalogue.sage	Involutions	class	894	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
 preamble/catalogue.sage	Embeddings	class	928	1	src/dzack_research/preamble/catalogue.py	src/dzack_research/preamble/catalogue.py	reconciled-live-owner
 preamble/catalogue.sage	Lattices	reexport	1	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
-preamble/categories/abstract_categories/arrow_categories.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	common_category	function	32	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	ArrowCategory	class	55	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	ArrowCategory.ObjectType	method	62	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	ArrowCategory.super_categories	method	65	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	IsoArrowCategory	class	163	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	IsoArrowCategory.ObjectType	method	170	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	IsoArrowCategory.super_categories	method	173	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	MonomorphismArrowCategory	class	190	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	MonomorphismArrowCategory.ObjectType	method	197	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	MonomorphismArrowCategory.super_categories	method	200	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	EpimorphismArrowCategory	class	214	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	EpimorphismArrowCategory.ObjectType	method	221	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	EpimorphismArrowCategory.super_categories	method	224	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	EndArrowCategory	class	238	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	EndArrowCategory.ObjectType	method	245	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	EndArrowCategory.super_categories	method	248	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	AutomorphismArrowCategory	class	262	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	AutomorphismArrowCategory.ObjectType	method	269	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	AutomorphismArrowCategory.super_categories	method	272	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory	class	313	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.ObjectType	method	317	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.ElementType	method	321	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.super_categories	method	324	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.admits	method	330	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.arrow	method	333	0			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	Core	function	374	2			unreviewed
-preamble/categories/abstract_categories/arrow_categories.sage	Isomorphism	function	382	2			unreviewed
+preamble/categories/abstract_categories/arrow_categories.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	common_category	function	32	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	ArrowCategory	class	55	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	ArrowCategory.ObjectType	method	62	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	ArrowCategory.super_categories	method	65	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	IsoArrowCategory	class	163	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	IsoArrowCategory.ObjectType	method	170	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	IsoArrowCategory.super_categories	method	173	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	MonomorphismArrowCategory	class	190	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	MonomorphismArrowCategory.ObjectType	method	197	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	MonomorphismArrowCategory.super_categories	method	200	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	EpimorphismArrowCategory	class	214	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	EpimorphismArrowCategory.ObjectType	method	221	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	EpimorphismArrowCategory.super_categories	method	224	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	EndArrowCategory	class	238	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	EndArrowCategory.ObjectType	method	245	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	EndArrowCategory.super_categories	method	248	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	AutomorphismArrowCategory	class	262	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	AutomorphismArrowCategory.ObjectType	method	269	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	AutomorphismArrowCategory.super_categories	method	272	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory	class	313	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.ObjectType	method	317	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.ElementType	method	321	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.super_categories	method	324	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.admits	method	330	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.arrow	method	333	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	Core	function	374	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/arrow_categories.sage	Isomorphism	function	382	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
 preamble/categories/abstract_categories/cat.sage	<module>	module	1	0			unreviewed
 preamble/categories/abstract_categories/cat.sage	Cat	class	157	2			unreviewed
 preamble/categories/abstract_categories/cat.sage	Cat.super_categories	method	168	0			unreviewed
