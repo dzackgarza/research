@@ -10,6 +10,22 @@ from math import prod
 
 from dzack_research.preamble.all import QQ, ZZ, Lattices
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_discriminant_forms.sage",
+    "live_owner": "tests/forms/test_discriminant_oracles_archive.py",
+    "owner_overrides": {
+        "test_polarization_relates_q_and_b_by_a_factor_of_two": "tests/forms/test_discriminant_convention_archive.py",
+        "test_q_is_quadratic_and_b_is_symmetric_bilinear": "tests/forms/test_discriminant_convention_archive.py",
+        "test_normal_form_is_an_isometry_onto_a_smaller_generating_set": "tests/forms/test_discriminant_normal_forms_archive.py",
+        "test_invariant_factor_form_is_an_isometry_on_invariant_factor_generators": "tests/forms/test_discriminant_normal_forms_archive.py",
+        "test_odd_lattices_have_no_quadratic_discriminant_form": "tests/forms/test_discriminant_refinement_archive.py",
+        "test_correlation_is_the_gram_matrix_into_the_dual": "tests/forms/test_discriminant_normal_forms_archive.py",
+        "test_discriminant_group_of_a_direct_sum_is_the_direct_sum_of_the_groups": "tests/forms/test_discriminant_normal_forms_archive.py",
+        "test_discriminant_form_convention_is_nikulins_not_peters_sterks": "tests/forms/test_discriminant_convention_archive.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _order(form) -> int:
     return prod(int(factor) for factor in form.invariants()) or 1
