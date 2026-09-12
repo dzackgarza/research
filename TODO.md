@@ -321,7 +321,7 @@ Paths in this section are relative to
   **Acceptance:** an explicit comparison isomorphism, not matching dimensions
   or a pair of parents with similar printed equations.
 
-- [ ] **`completion-comparisons`**. **Needs:** `quotient-completion`, `local-module-maps`.
+- [x] **`completion-comparisons`**. **Needs:** `quotient-completion`, `local-module-maps`.
   Define the supported localization/completion and base-change comparisons
   before formal-family consumers use them.
   **Decision:** there is no unrestricted rule that completion commutes with
@@ -1499,4 +1499,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `RING-completion-comparisons-20260912-0021` | completion / completion-comparisons | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/modules/pure/modules.py; tests/rings/test_completion_comparisons.py` (write) | `d323fbb9; ad1b1b30` | 2026-09-12T00:21:00Z |
+| `SING-classification-20260912-0024` | singularities / singularity-classification | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/singularities.py; src/dzack_research/preamble/categories/rings/commutative_algebra.py; tests/schemes/test_singularity_classification_frontier.py` (write) | `19e6c16d; ad1b1b30; df5963ee` | 2026-09-12T00:24:00Z |
