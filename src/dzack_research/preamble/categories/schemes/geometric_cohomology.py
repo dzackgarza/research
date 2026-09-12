@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
+    FreeModule,
     FreshFreeModuleOn,
     ring_as_module,
 )
@@ -250,12 +251,12 @@ def AffineCoverRefinementCohomologyMap(refinement, sheaf, degree):
     )
 
 
-class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
-    r"""Integral singular cohomology of a specified smooth complete toric complex realization."""
+class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
+    r"""Integral singular cohomology groups of specified complex realizations."""
 
     @classmethod
     def _repr_object_names(cls):
-        return "integral singular cohomology groups of smooth complete toric varieties"
+        return "integral singular cohomology groups of specified complex realizations"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -265,6 +266,24 @@ class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
         return [FinitelyPresentedModules(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            topological_scheme,
+            topological_cohomological_degree,
+            topological_cohomology_theory,
+            topological_realization_description,
+            **rest,
+        ) -> None:
+            self._preamble_topological_scheme = topological_scheme
+            self._preamble_topological_cohomological_degree = int(
+                topological_cohomological_degree
+            )
+            self._preamble_topological_cohomology_theory = topological_cohomology_theory
+            self._preamble_topological_realization_description = (
+                topological_realization_description
+            )
+            super().__init__(**rest)
+
         def topological_scheme(self):
             return self._preamble_topological_scheme
 
@@ -275,7 +294,21 @@ class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
             return self.base_ring()
 
         def cohomology_topology(self):
-            return "singular cohomology of the complex analytic realization"
+            return self._preamble_topological_cohomology_theory
+
+        def realization_description(self):
+            return self._preamble_topological_realization_description
+
+
+class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
+    r"""Integral singular cohomology of a specified smooth complete toric complex realization."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "integral singular cohomology groups of smooth complete toric varieties"
+
+    def super_categories(self):
+        return [IntegralSingularCohomologyGroups(self.base_ring())]
 
 
 class ToricFundamentalGroups(Category):
@@ -651,6 +684,132 @@ def QuarticK3IntegralCohomology(scheme, degree):
     return QuarticK3IntegralTopology(scheme).integral_cohomology(degree)
 
 
+
+def _integral_topology_construction_data(scheme, degree, realization):
+    return {
+        "topological_scheme": scheme,
+        "topological_cohomological_degree": int(degree),
+        "topological_cohomology_theory": "ordinary singular cohomology",
+        "topological_realization_description": realization,
+    }
+
+
+def _free_integral_topology_group(scheme, degree, rank, realization):
+    integers = _own_ring(SageZZ)
+    return FreshFreeModuleOn(
+        integers,
+        finite_ordered_set(tuple(f"H{degree}_{index}" for index in range(rank))),
+        _extra_categories=(IntegralSingularCohomologyGroups(integers),),
+        _extra_construction_data=_integral_topology_construction_data(
+            scheme, degree, realization
+        ),
+    )
+
+
+def _zmod2_integral_topology_group(scheme, degree, realization):
+    from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+        FinitelyPresentedModule,
+    )
+
+    integers = _own_ring(SageZZ)
+    source = FreeModule(integers, 1)
+    target = FreeModule(integers, 1)
+    presentation = module_homset(source, target)(
+        {0: integers(2) * target.module_generator(0)}
+    )
+    return FinitelyPresentedModule(
+        presentation,
+        _extra_categories=(IntegralSingularCohomologyGroups(integers),),
+        _extra_construction_data=_integral_topology_construction_data(
+            scheme, degree, realization
+        ),
+    )
+
+
+@cached_function
+def ProjectiveGeneralLinearGroup2():
+    r"""Return ``PGL_2`` over ``QQ`` as ``P^3 - V(ad-bc)``."""
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+
+    base = _own_ring(SageQQ)
+    projective = ProjectiveSpace(3, base, names=("a", "b", "c", "d"))
+    sections = projective.O(2).global_sections()
+    ring = sections.homogeneous_coordinate_ring()
+    a = ring.algebra_generator("a")
+    b = ring.algebra_generator("b")
+    c = ring.algebra_generator("c")
+    d = ring.algebra_generator("d")
+    determinant_quadric = projective.closed_subscheme(a * d - b * c)
+    pgl2 = determinant_quadric.open_complement()
+    pgl2._preamble_pgl2_projective_compactification = projective
+    pgl2._preamble_pgl2_determinant_boundary = determinant_quadric
+    return pgl2
+
+
+class PGL2IntegralTopology(SageObject):
+    r"""Ordinary integral cohomology of ``PGL_2(C)`` via its ``SO(3)`` retract.
+
+    Polar decomposition retracts ``PGL_2(C)`` onto ``PU(2) ~= SO(3) ~= RP^3``.
+    Hence the integral cohomology has ``Z`` in degrees 0 and 3, ``Z/2`` in
+    degree 2, and zero otherwise.  This torsion is deliberately retained and
+    disappears after rational coefficient change.
+    """
+
+    _realization = (
+        "PGL_2(C)=P^3(C)-V(ad-bc), deformation retracted by polar decomposition "
+        "to PU(2) ~= SO(3) ~= RP^3"
+    )
+
+    def __init__(self, scheme=None) -> None:
+        selected = ProjectiveGeneralLinearGroup2() if scheme is None else scheme
+        if selected is not ProjectiveGeneralLinearGroup2():
+            raise ValueError("the selected ordinary-topology model is the represented PGL_2 scheme")
+        self._scheme = selected
+
+    def scheme(self):
+        return self._scheme
+
+    def realization_description(self):
+        return self._realization
+
+    @cached_method
+    def integral_cohomology(self, degree):
+        degree = int(degree)
+        if degree < 0 or degree > 6:
+            raise ValueError("PGL_2 has complex dimension three, so singular cohomology lies in degrees zero through six")
+        if degree == 2:
+            return _zmod2_integral_topology_group(
+                self.scheme(), degree, self.realization_description()
+            )
+        if degree in (0, 3):
+            return _free_integral_topology_group(
+                self.scheme(), degree, 1, self.realization_description()
+            )
+        return _free_integral_topology_group(
+            self.scheme(), degree, 0, self.realization_description()
+        )
+
+    @cached_method
+    def rational_cohomology(self, degree):
+        integers = _own_ring(SageZZ)
+        extension = integers.fraction_field_map()
+        return self.integral_cohomology(degree).base_change(extension)
+
+    @cached_method
+    def coefficient_change_to_rationals(self, degree):
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        integers = _own_ring(SageZZ)
+        extension = integers.fraction_field_map()
+        return Modules(integers).base_change_adjunction(extension).unit(
+            self.integral_cohomology(degree)
+        )
+
+
+def PGL2IntegralCohomology(degree):
+    return PGL2IntegralTopology().integral_cohomology(degree)
+
+
 def _require_smooth_complete_rational_toric_realization(scheme):
     if _engine_ring(scheme.scheme_base_ring()) is not SageQQ:
         raise NotImplementedError(
@@ -676,10 +835,12 @@ def ToricIntegralSingularCohomology(scheme, degree):
     if degree < 0 or degree > 2 * dimension:
         raise ValueError("singular cohomological degree lies between zero and twice the complex dimension")
     integers = _own_ring(SageZZ)
-    construction_data = (
-        ("_preamble_topological_scheme", scheme),
-        ("_preamble_topological_cohomological_degree", degree),
-    )
+    construction_data = {
+        "topological_scheme": scheme,
+        "topological_cohomological_degree": degree,
+        "topological_cohomology_theory": "singular cohomology of the complex analytic realization",
+        "topological_realization_description": "complex analytic realization under the selected QQ-to-CC embedding",
+    }
     if degree % 2:
         return FreshFreeModuleOn(
             integers,
@@ -786,6 +947,10 @@ def ToricHodgeStructure(scheme):
 
 
 __all__ = [
+    "ProjectiveGeneralLinearGroup2",
+    "PGL2IntegralTopology",
+    "PGL2IntegralCohomology",
+    "IntegralSingularCohomologyGroups",
     "QuarticK3IntegralTopology",
     "QuarticK3IntegralCohomology",
     "AffineGeometricCohomology",
