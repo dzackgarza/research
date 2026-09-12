@@ -96,6 +96,12 @@ class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
                 raise ValueError("this weight has zero cohomology in the selected degree")
             return self.injection(weight)
 
+        def cohomology_weight_projection(self, weight):
+            weight = self.cohomology_scheme().character_lattice()(weight)
+            if weight not in self.cohomology_weight_support():
+                raise ValueError("this weight has zero cohomology in the selected degree")
+            return self.projection(weight)
+
 
 class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral singular cohomology of a specified smooth complete toric complex realization."""
@@ -207,6 +213,26 @@ def _matrix_morphism(base, source, target, matrix):
     return module_homset(source, target)(image)
 
 
+def _toric_weight_simplicial_complex(scheme, divisor, weight):
+    r"""Private Sage adapter for the simplicial support ``V_{D,m}``.
+
+    Sage's maintained toric-divisor implementation owns the combinatorial
+    selection of the negative-cone subcomplex.  The private helper is confined
+    here because the public cohomology operation returns only the resulting
+    vector space and does not expose the augmented incidence maps needed by the
+    owned cochain complex.
+    """
+    engine_divisor = scheme._engine_toric_divisor(divisor)
+    return engine_divisor._sheaf_complex(
+        _engine_vector(scheme.character_lattice(), weight)
+    )
+
+
+def _toric_weight_support_hull(scheme, divisor):
+    r"""Private Sage adapter for the finite weight-support hull of ``O_X(D)``."""
+    return scheme._engine_toric_divisor(divisor)._sheaf_cohomology_support()
+
+
 def ToricWeightCohomologyComplex(scheme, divisor, weight):
     r"""Return the finite complex computing ``H^*(X,O_X(D))_weight``.
 
@@ -221,10 +247,7 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
     if not scheme.is_cartier(divisor):
         raise ValueError("the represented toric weight complex requires a Cartier divisor")
     weight = scheme.character_lattice()(weight)
-    engine_divisor = scheme._engine_toric_divisor(divisor)
-    simplicial = engine_divisor._sheaf_complex(
-        _engine_vector(scheme.character_lattice(), weight)
-    )
+    simplicial = _toric_weight_simplicial_complex(scheme, divisor, weight)
 
     if int(simplicial.dimension()) == -1:
         degree_zero = BasedFreeModule(base, 1)
@@ -311,8 +334,7 @@ def ToricLineBundleCohomology(scheme, divisor, degree):
     if not scheme.is_cartier(divisor):
         raise ValueError("the represented geometric cohomology requires a Cartier divisor")
 
-    engine_divisor = scheme._engine_toric_divisor(divisor)
-    support_hull = engine_divisor._sheaf_cohomology_support()
+    support_hull = _toric_weight_support_hull(scheme, divisor)
     characters = scheme.character_lattice()
     candidate_weights = tuple(
         _owned_vector(characters, point)

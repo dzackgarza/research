@@ -41,13 +41,17 @@ def test_nonzero_weight_piece_includes_into_total_cohomology() -> None:
     weight = next(iter(total.cohomology_weight_support()))
     piece = total.cohomology_weight_piece(weight)
     inclusion = total.cohomology_weight_inclusion(weight)
+    projection = total.cohomology_weight_projection(weight)
     cycle_module = piece.cochain_complex().graded_piece(0)
     label = next(iter(cycle_module.module_generating_set()))
     class_ = piece.class_of_cycle(cycle_module.module_generator(label))
 
     assert inclusion.domain() is piece
     assert inclusion.codomain() is total
+    assert projection.domain() is total
+    assert projection.codomain() is piece
     assert inclusion(class_) != total.zero()
+    assert projection(inclusion(class_)) == class_
 
 
 def test_zero_support_and_boundary_degree_keep_the_geometric_complex() -> None:
@@ -62,4 +66,3 @@ def test_zero_support_and_boundary_degree_keep_the_geometric_complex() -> None:
     assert zero_piece.cochain_complex().cohomology_scheme() is plane
     assert zero_piece.cochain_complex().cohomology_divisor() == divisor
     assert zero_piece.cochain_complex().cohomology_weight() == outside
-
