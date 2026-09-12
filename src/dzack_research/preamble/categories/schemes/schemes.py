@@ -530,6 +530,21 @@ class _ProjectiveCoordinateMorphism(SchemeMorphism):
     def homogeneous_coordinates(self):
         return self._preamble_projective_coordinate_sections
 
+    def image_of_point(self, point):
+        r"""Evaluate this retained homogeneous-coordinate map at a represented point."""
+        if point.codomain() is not self.domain():
+            raise ValueError("the evaluated point belongs to a different source scheme")
+        point_coordinates = tuple(point.point_coordinates())
+        values = tuple(
+            _evaluate_owned_homogeneous_polynomial_on_coordinates(
+                coordinate,
+                coordinate.parent(),
+                point_coordinates,
+            )
+            for coordinate in self.homogeneous_coordinates()
+        )
+        return self.codomain().point_morphism(values)
+
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, _ProjectiveCoordinateMorphism)
