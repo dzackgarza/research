@@ -149,6 +149,38 @@ class ModulesOverGroupAlgebra(Modules):
         r"""Maschke's theorem, asked of the group algebra."""
         return self.base_ring().is_semisimple()
 
+    def splitting_field(self):
+        r"""Return a represented cyclotomic field splitting the finite acting group.
+
+        Brauer's theorem gives ``QQ(zeta_|G|)`` as a splitting field.  For
+        groups of order at most two the coefficient fraction field already
+        contains all character values, so it is retained literally.
+        """
+        from dzack_research.preamble.categories.rings.number_fields import (
+            CyclotomicField,
+        )
+
+        group = self.acting_group()
+        if group.is_finite() is not True:
+            raise NotImplementedError(
+                "the selected splitting field is currently represented for finite groups"
+            )
+        fraction_field = self.coefficient_ring().fraction_field()
+        order = int(group.order())
+        if order <= 2:
+            return fraction_field
+        cyclotomic = CyclotomicField(order)
+        if not cyclotomic.has_coerce_map_from(fraction_field):
+            raise NotImplementedError(
+                "the composite of the coefficient fraction field with the cyclotomic splitting field is not represented"
+            )
+        return cyclotomic
+
+    def is_split(self) -> bool:
+        r"""Return whether the coefficient fraction field already contains the selected splitting field."""
+        fraction_field = self.coefficient_ring().fraction_field()
+        return bool(fraction_field.has_coerce_map_from(self.splitting_field()))
+
     # The three scalar-change functors along the augmentation R[G] -> R.
 
     def _augmentation(self):
@@ -411,6 +443,10 @@ class ModulesOverGroupAlgebra(Modules):
             if group_element not in self.group():
                 raise ValueError(f"{group_element} is not an element of {self.group()}")
             return self.action()(group_element)
+
+        def action_matrix(self, group_element):
+            r"""Return the matrix of the selected coefficient-linear action in the retained framing."""
+            return self.action_of(group_element).matrix()
 
         def act(self, group_element, element):
             r"""Act on an ``R[G]``-module element through its coefficient restriction."""

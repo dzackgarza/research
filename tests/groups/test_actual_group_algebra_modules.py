@@ -132,3 +132,19 @@ def test_selected_integral_presentation_belongs_to_the_scalar_restriction() -> N
     assert module.module_rank() == cyclic.module_rank()
     assert module.module_invariants() is cyclic
     assert module.module_coinvariants() is cyclic
+
+
+def test_archived_action_matrix_and_splitting_field_are_owned_group_module_data() -> None:
+    group, group_algebra, line, generator, module = _sign_module(QQ)
+    category = Modules(group_algebra)
+
+    assert module.action_matrix(generator).nrows() == 1
+    assert module.action_matrix(generator).ncols() == 1
+    assert module.action_matrix(generator)[0, 0] == QQ(-1)
+    assert category.splitting_field() is QQ
+    assert category.is_split()
+
+    cubic_group = Groups.C(3)
+    cubic_category = Modules(QQ[cubic_group])
+    assert cubic_category.splitting_field().degree() == 2
+    assert not cubic_category.is_split()
