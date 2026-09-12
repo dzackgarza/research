@@ -3345,6 +3345,53 @@ $\Gamma^2_R(M)$." Then, if pedagogically useful: "On elements this is
 $b(x,y)=b(y,x)$, $b(x,x)=0$, etc., as the evaluation of those equalities
 on $x\otimes y\colon R\to M\otimes M$."
 
+### `PR-44`: "$b$ is *even* if $b(x,x)\in2W$" breaks the value-module abstraction just built
+
+$W$ was introduced as a *parameter* varying over $\mathbf{Mod}_R$ (stably
+$\mathbf{LMod}_R$) via $\operatorname{Hom}_R(M\otimes_RM,W)$ as
+$R$-module ({#thm-mod-closed}, {#def-tensor}) — no elements, no
+"$\in$." "$b(x,x)\in2W$" immediately concretizes that $W$ to
+$U(W)$ with a subset $2W:=\operatorname{im}(2\colon W\to W)$, i.e. the
+$\mathbf{Set}$-shadow of a diagram, meaningless stably (for
+$\mathbf{LMod}_R$, $\mathbf{Sp}$, $\mathcal O_X\text{-}\mathbf{Mod}$
+there is no "$\in$") and tied to $R=\mathbb Z$ with $2\in\mathbb Z$ acting
+via $\mathbb Z\to R$. It re-describes as an element condition what the
+classifier already encodes as a factorization.
+
+This is the general form of PR-43 and PR-37/TERM-9: prose on elements
+that collapses the abstraction just built for $W$-valued forms.
+
+Concrete standard — evenness is a lift of the morphism
+$b\colon M\otimes M\to W$, not a pointwise divisibility:
+
+* **Classifiers (once, fenced):**
+  $\Gamma^2_R(M)\xrightarrow{\gamma}\operatorname{Sym}^2_R(M)
+  \twoheadrightarrow M\otimes_R M$ with $\tau$ on $M\otimes M$ as in
+  PR-43; stably $\mathbf{\Gamma}^2_R(M)\to\mathbf{Sym}^2_R(M)$. Then
+  $\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$,
+  $\operatorname{Sym}_{R,W}(M):=\operatorname{Hom}_R(\operatorname{Sym}^2_R(M),W)$,
+  $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_RM,W)$.
+
+* **$W$-valued symmetric $b\colon M\otimes_RM\to W$ is even** if $b$
+  factors through $\operatorname{Sym}^2_R(M)$ and lifts through
+  $\Gamma^2_R(M)$ — equivalently $b$ is in the image of
+  $\operatorname{Hom}_R(\operatorname{Sym}^2_R(M),W)$ and of
+  $\operatorname{Hom}_R(\Gamma^2_R(M),W)$ via $\gamma^*$. No
+  $b(x,x)\in2W$ to state; its evaluation on $x\colon R\to M$ when
+  $U$ exists is $b(x,x)=2\cdot\tilde b(x)$ for some
+  $\tilde b\in\operatorname{Hom}_R(\Gamma^2_R(M),W)$, whose shadow is
+  "$\in2W$" only for discrete $W$ with $U$.
+
+**Banned:** "$b$ is *even* if $b(x,x)\in2W$ for every $x$" as
+definition while $W$ is the varying value module of
+$\operatorname{Hom}_R(M\otimes_RM,W)$.
+
+**Preferred:** "$b\colon M\otimes_RM\to W$ symmetric is **even** if it
+lifts through $\Gamma^2_R(M)$ (i.e. $b$ is in the image of
+$\operatorname{Hom}_R(\Gamma^2_R(M),W)\xrightarrow{\gamma^*}
+\operatorname{Hom}_R(M\otimes M,W)$)." Then, only after and only for
+discrete $W$ with $U$: "On elements this is $b(x,x)\in2W$."
+
 ### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
 
 Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
@@ -3620,4 +3667,6 @@ $(\otimes,1,\tau)$ that makes it portable (PR-43). Standard is the
 diagram $b\colon M\otimes_RM\to W$, $b\circ\tau=b$ / $b\circ\tau=-b$ /
 $b\circ\Delta=0$ / lift through $\Gamma^2_R(M)$, with element formulas
 only as the evaluation on $x\otimes y\colon R\to M\otimes M$ when $U$
-exists.
+exists. "$b$ is even if $b(x,x)\in2W$" collapses the $W$-parameter
+abstraction just built for $W$-valued forms to $U(W)$ and "$\in2W$"
+(PR-44); even is the lift through $\Gamma^2_R(M)$.
