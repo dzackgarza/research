@@ -918,7 +918,7 @@ monodromy and nearby/vanishing cycles, identify the precise source construction
 and available implementation first; names shared with algebraic operations do
 not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
 
-- [ ] **`dvr-families`**. **Needs:** `localization`, `completion-comparisons`, `scheme-products`.
+- [x] **`dvr-families`**. **Needs:** `localization`, `completion-comparisons`, `scheme-products`.
   Extend `categories/schemes/families.py` to DVR bases through the existing
   scheme slice and scalar-change constructions.
   **Dependencies:** local algebra; corrected completion only for the completed
