@@ -8,6 +8,7 @@ from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Biproduct,
@@ -36,6 +37,57 @@ from dzack_research.preamble.categories.sets.set_categories import (
 )
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class ModuleCokernelCompletionComparison(SageObject):
+    r"""The finite-module comparison ``coker(f)^ ~= coker(f^)``."""
+
+    def __init__(
+        self,
+        source_morphism,
+        completion,
+        completed_morphism,
+        completed_cokernel,
+        cokernel_after_completion,
+        forward,
+        inverse,
+    ) -> None:
+        self._source_morphism = source_morphism
+        self._completion = completion
+        self._completed_morphism = completed_morphism
+        self._completed_cokernel = completed_cokernel
+        self._cokernel_after_completion = cokernel_after_completion
+        self._forward = forward
+        self._inverse = inverse
+
+    def source_morphism(self):
+        return self._source_morphism
+
+    def completion_ring(self):
+        return self._completion
+
+    def completed_morphism(self):
+        return self._completed_morphism
+
+    def completed_cokernel(self):
+        return self._completed_cokernel
+
+    def cokernel_after_completion(self):
+        return self._cokernel_after_completion
+
+    def forward(self):
+        return self._forward
+
+    isomorphism = forward
+
+    def inverse(self):
+        return self._inverse
+
+    def _repr_(self):
+        return (
+            f"Completion of coker({self.source_morphism()}) ~= "
+            f"coker({self.completed_morphism()})"
+        )
 
 
 def _has_finite_free_framing(module) -> bool:
@@ -1025,6 +1077,15 @@ class ModuleMorphism(Morphism):
         if ideal.ring() is not ring:
             raise ValueError("the completion ideal belongs to the morphism scalar ring")
         completion = ring.adic_completion(ideal, precision=precision)
+        return self.base_change_to_completion(completion)
+
+    def base_change_to_completion(self, completion):
+        r"""Return ``self tensor_R R_hat`` for one already selected completion."""
+        ring = self.domain().base_ring()
+        if self.codomain().base_ring() is not ring:
+            raise ValueError("adic completion of a module morphism requires one scalar ring")
+        if completion.completion_source() is not ring:
+            raise ValueError("the completion has the wrong source ring for this morphism")
         source = self.domain().base_change_to_completion(completion)
         target = self.codomain().base_change_to_completion(completion)
 
@@ -1037,6 +1098,57 @@ class ModuleMorphism(Morphism):
         completed._preamble_adic_completion_source_morphism = self
         completed._preamble_adic_completion_ring = completion
         return completed
+
+    def completion_cokernel_comparison(self, ideal, *, precision=20):
+        r"""Return the canonical ``coker(self)^ ~= coker(self^)`` comparison.
+
+        The source ring is required to be in the represented Noetherian
+        regime, where completion is flat.  Both sides use one selected
+        completion parent; the comparison maps are induced by the retained
+        finite presentations, not by dimensions or invariant factors.
+        """
+        ring = self.domain().base_ring()
+        completion = ring.adic_completion(ideal, precision=precision)
+        if not completion.is_flat_over_source():
+            raise ArithmeticError(
+                "cokernel/completion comparison requires flat Noetherian completion"
+            )
+        completed_morphism = self.base_change_to_completion(completion)
+        source_cokernel = self.cokernel()
+        completed_cokernel = source_cokernel.base_change_to_completion(completion)
+        cokernel_after_completion = completed_morphism.cokernel()
+        left_labels = completed_cokernel.module_generating_set()
+        right_labels = cokernel_after_completion.module_generating_set()
+        if left_labels.cardinality() != right_labels.cardinality():
+            raise ArithmeticError(
+                "completion changed the selected cokernel framing cardinality"
+            )
+
+        forward = module_homset(completed_cokernel, cokernel_after_completion)(
+            {
+                label: cokernel_after_completion.module_generator(
+                    right_labels[int(left_labels.ranking_map()(label))]
+                )
+                for label in left_labels
+            }
+        )
+        inverse = module_homset(cokernel_after_completion, completed_cokernel)(
+            {
+                label: completed_cokernel.module_generator(
+                    left_labels[int(right_labels.ranking_map()(label))]
+                )
+                for label in right_labels
+            }
+        )
+        return ModuleCokernelCompletionComparison(
+            self,
+            completion,
+            completed_morphism,
+            completed_cokernel,
+            cokernel_after_completion,
+            forward,
+            inverse,
+        )
 
     def _is_the_identity(self) -> bool:
         r"""Return whether this morphism is its Hom object's identity."""

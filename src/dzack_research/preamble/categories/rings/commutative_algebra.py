@@ -756,6 +756,22 @@ class QuotientRings(OwnedCategory):
             r"""Return ``S^{-1}(R/I) ~= S^{-1}R/S^{-1}I`` with both maps."""
             return quotient_localization_comparison(self, localization_ring)
 
+        def completion_comparison(self, source_ideal, *, precision=20):
+            r"""Return ``(R/J)^ ~= R^/J R^`` for the selected adic topology.
+
+            Here ``self = R/J`` and ``source_ideal`` is the ideal ``I`` of
+            ``R`` whose image defines the topology on ``R/J``.  The supported
+            theorem is the finite-module completion theorem over a Noetherian
+            source; the comparison is built from the two canonical completion
+            maps and the quotient maps rather than from the selected finite
+            computation precision.
+            """
+            return quotient_completion_comparison(
+                self,
+                source_ideal,
+                precision=precision,
+            )
+
         def characteristic(self):
             source = self.quotient_source()
             source_engine = _engine_ring(source)
@@ -1137,6 +1153,64 @@ class QuotientLocalizationComparison(SageObject):
         return (
             f"{self.localized_quotient()} ~= "
             f"{self.quotient_after_localization()}"
+        )
+
+
+class QuotientCompletionComparison(SageObject):
+    r"""The canonical Noetherian comparison ``(R/J)^ ~= R^/J R^``."""
+
+    def __init__(
+        self,
+        source_quotient,
+        source_ideal,
+        source_completion,
+        completed_quotient,
+        quotient_after_completion,
+        extended_defining_ideal,
+        forward,
+        inverse,
+    ) -> None:
+        self._source_quotient = source_quotient
+        self._source_ideal = source_ideal
+        self._source_completion = source_completion
+        self._completed_quotient = completed_quotient
+        self._quotient_after_completion = quotient_after_completion
+        self._extended_defining_ideal = extended_defining_ideal
+        self._forward = forward
+        self._inverse = inverse
+
+    def source_quotient(self):
+        return self._source_quotient
+
+    def source_ideal(self):
+        return self._source_ideal
+
+    def source_completion(self):
+        return self._source_completion
+
+    def completed_quotient(self):
+        r"""Return ``(R/J)^`` completed at the image of ``I``."""
+        return self._completed_quotient
+
+    def quotient_after_completion(self):
+        r"""Return ``R^ / J R^``."""
+        return self._quotient_after_completion
+
+    def extended_defining_ideal(self):
+        return self._extended_defining_ideal
+
+    def forward(self):
+        return self._forward
+
+    isomorphism = forward
+
+    def inverse(self):
+        return self._inverse
+
+    def _repr_(self):
+        return (
+            f"{self.completed_quotient()} ~= "
+            f"{self.quotient_after_completion()}"
         )
 
 
@@ -2334,6 +2408,97 @@ def quotient_localization_comparison(source_quotient, localization_ring):
         forward,
         inverse,
         extended_ideal,
+    )
+
+
+def quotient_completion_comparison(source_quotient, source_ideal, *, precision=20):
+    r"""Return the canonical Noetherian comparison ``(R/J)^ ~= R^/J R^``.
+
+    The topology on ``R/J`` is defined by the image of ``source_ideal``.  The
+    two arrows are assembled from the quotient and completion maps.  Their
+    mathematical existence is the finite-module completion theorem over a
+    Noetherian ring; evaluation away from exact retained source expressions
+    stays at the ordinary completion computational frontier.
+    """
+    if source_quotient not in QuotientRings():
+        raise TypeError("quotient/completion compatibility starts from a represented quotient ring")
+    source = source_quotient.quotient_source()
+    if source not in OwnedNoetherianRings():
+        raise TypeError("the represented quotient/completion comparison requires a Noetherian source")
+    source_ideal = _owned_ideal(source, source_ideal)
+    quotient_map = source_quotient.quotient_map()
+    quotient_ideal = quotient_map.extension_of_ideal(source_ideal)
+
+    source_completion = source.adic_completion(source_ideal, precision=precision)
+    completed_quotient = source_quotient.adic_completion(
+        quotient_ideal,
+        precision=precision,
+    )
+    extended_defining_ideal = source_completion.completion_map().extension_of_ideal(
+        source_quotient.defining_ideal()
+    )
+    quotient_after_completion = source_completion.quotient_ring(
+        extended_defining_ideal
+    )
+    right_quotient_map = quotient_after_completion.quotient_map()
+
+    def quotient_source_to_right(element):
+        representative = _quotient_representative(source_quotient(element))
+        return right_quotient_map(
+            source_completion.completion_map()(representative)
+        )
+
+    source_to_right = ring_morphism(
+        source_quotient,
+        quotient_after_completion,
+        quotient_source_to_right,
+    )
+
+    def forward_image(element):
+        selected = completed_quotient(element)
+        source_expression = selected.exact_source_expression()
+        if source_expression is None:
+            raise AssertionError(
+                "quotient/completion comparison evaluation requires an exact retained source expression"
+            )
+        return source_to_right(source_expression)
+
+    forward = ring_morphism(
+        completed_quotient,
+        quotient_after_completion,
+        forward_image,
+    )
+
+    completion_to_completed_quotient = source_completion.induced_map(
+        quotient_map,
+        completed_quotient,
+    )
+    for generator in extended_defining_ideal.ideal_generators():
+        if completion_to_completed_quotient(generator) != completed_quotient.zero():
+            raise ArithmeticError(
+                "the completed quotient map does not kill the extended defining ideal"
+            )
+
+    def inverse_image(element):
+        representative = _quotient_representative(
+            quotient_after_completion(element)
+        )
+        return completion_to_completed_quotient(representative)
+
+    inverse = ring_morphism(
+        quotient_after_completion,
+        completed_quotient,
+        inverse_image,
+    )
+    return QuotientCompletionComparison(
+        source_quotient,
+        source_ideal,
+        source_completion,
+        completed_quotient,
+        quotient_after_completion,
+        extended_defining_ideal,
+        forward,
+        inverse,
     )
 
 
