@@ -2076,64 +2076,64 @@ preamble/categories/modules/group_modules/group_modules.sage	GroupModules.Parent
 preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.module_invariants	method	434	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.module_coinvariants	method	445	0			unreviewed
 preamble/categories/modules/group_modules/group_modules.sage	GroupModule	function	510	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismModuleParent	class	32	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismModuleParent.Aut	method	33	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup	class	35	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.domain	method	36	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.is_finite	method	37	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.group_generators	method	38	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsetBase	binding	93	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsetBase	binding	95	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	module_homset	function	99	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	endomorphism_ring	function	154	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleMorphism	class	340	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleMorphism.module_generator_morphism	method	411	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	FramingMorphism	class	440	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism	class	465	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism.is_injective	method	482	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism.is_in_image	method	485	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism.lift	method	492	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	framing_morphism	function	507	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphism	class	516	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphism.inverse	method	567	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphism.cyclic_subgroup	method	586	1	src/dzack_research/preamble/categories/group/cyclic_subgroups.py		unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup	class	604	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.is_finite	method	635	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.group_generators	method	636	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.automorphism_subgroup_inclusion	method	660	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.automorphism_subgroup_identity	method	668	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.automorphism_subgroup_element	method	674	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups	class	713	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.super_categories	method	726	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods	class	729	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.conjugacy_classes_representatives	method	734	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.irreducible_characters	method	751	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.character	method	763	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.trivial_character	method	772	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.supergroup	method	822	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.one	method	831	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.subgroup_on	method	836	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.group_generators	method	852	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.is_finite	method	862	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.order	method	865	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroup	function	918	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupAction	class	930	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupAction.parent	method	934	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets	class	937	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.super_categories	method	940	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ParentMethods	class	945	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ParentMethods.module	method	946	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ElementMethods	class	997	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ElementMethods.values	method	1033	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ElementMethods.is_injective	method	1039	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset	class	1056	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset.domain	method	1065	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset.codomain	method	1066	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	group_action_homset	function	1092	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion	class	1101	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion.is_injective	method	1117	0			unreviewed
-preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion.values	method	1120	0			unreviewed
+preamble/categories/modules/module_morphisms/module_morphisms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismModuleParent	class	32	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismModuleParent.Aut	method	33	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup	class	35	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.domain	method	36	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.is_finite	method	37	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	FramedAutomorphismSubgroup.group_generators	method	38	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsetBase	binding	93	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsetBase	binding	95	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	module_homset	function	99	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	endomorphism_ring	function	154	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleMorphism	class	340	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleMorphism.module_generator_morphism	method	411	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	FramingMorphism	class	440	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism	class	465	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism.is_injective	method	482	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism.is_in_image	method	485	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	SubFramingMorphism.lift	method	492	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	framing_morphism	function	507	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphism	class	516	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphism.inverse	method	567	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphism.cyclic_subgroup	method	586	1	src/dzack_research/preamble/categories/group/cyclic_subgroups.py	src/dzack_research/preamble/categories/group/cyclic_subgroups.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup	class	604	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.is_finite	method	635	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.group_generators	method	636	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.automorphism_subgroup_inclusion	method	660	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.automorphism_subgroup_identity	method	668	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroup.automorphism_subgroup_element	method	674	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups	class	713	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.super_categories	method	726	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods	class	729	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.conjugacy_classes_representatives	method	734	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.irreducible_characters	method	751	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.character	method	763	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.trivial_character	method	772	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.supergroup	method	822	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.one	method	831	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.subgroup_on	method	836	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.group_generators	method	852	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.is_finite	method	862	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroups.ParentMethods.order	method	865	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	ModuleAutomorphismGroup	function	918	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupAction	class	930	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupAction.parent	method	934	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets	class	937	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.super_categories	method	940	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ParentMethods	class	945	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ParentMethods.module	method	946	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ElementMethods	class	997	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ElementMethods.values	method	1033	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomsets.ElementMethods.is_injective	method	1039	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset	class	1056	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset.domain	method	1065	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	GroupActionHomset.codomain	method	1066	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	group_action_homset	function	1092	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion	class	1101	0		src/dzack_research/preamble/categories/group/predicate_subgroups.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion.is_injective	method	1117	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
+preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismSubgroupInclusion.values	method	1120	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
 preamble/categories/modules/module_morphisms/morphism_matrices.py	<module>	module	1	0		src/dzack_research/preamble/categories/modules/module_morphisms/morphism_matrices.py	reconciled-live-owner
 preamble/categories/modules/module_morphisms/morphism_matrices.py	row_normal_form	function	27	1	src/dzack_research/preamble/categories/modules/module_morphisms/morphism_matrices.py	src/dzack_research/preamble/categories/modules/module_morphisms/morphism_matrices.py	reconciled-live-owner
 preamble/categories/modules/module_morphisms/morphism_matrices.py	matrix_group	function	45	1	src/dzack_research/preamble/categories/modules/module_morphisms/morphism_matrices.py	src/dzack_research/preamble/categories/modules/module_morphisms/morphism_matrices.py	reconciled-live-owner

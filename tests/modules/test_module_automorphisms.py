@@ -13,7 +13,26 @@ from dzack_research.preamble.all import (
     ZZ,
     module_homset,
 )
+from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
 from dzack_research.preamble.categories.sets import finite_ordered_set
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/module_morphisms/module_morphisms.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py",
+    "owner_overrides": {
+        "FramedAutomorphismSubgroup": "src/dzack_research/preamble/categories/group/predicate_subgroups.py",
+        "AutomorphismSubgroup": "src/dzack_research/preamble/categories/group/predicate_subgroups.py",
+        "ModuleAutomorphismGroups": "src/dzack_research/preamble/categories/rings/ring_foundation.py",
+        "ModuleAutomorphismGroup": "src/dzack_research/preamble/categories/rings/ring_foundation.py",
+        "ModuleAutomorphism.cyclic_subgroup": "src/dzack_research/preamble/categories/group/cyclic_subgroups.py",
+        "GroupAction": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
+        "GroupActionHomsets": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
+        "GroupActionHomset": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
+        "group_action_homset": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
+        "AutomorphismSubgroupInclusion": "src/dzack_research/preamble/categories/group/predicate_subgroups.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 
 def _plane():
@@ -71,3 +90,17 @@ def test_a_non_invertible_endomorphism_has_no_inverse() -> None:
         assert "two-sided inverse" in str(error)
     else:
         raise AssertionError("doubling is not surjective on a free ZZ-module")
+
+
+def test_a_nonidentity_module_automorphism_generates_the_generic_cyclic_subgroup() -> None:
+    plane = _plane()
+    swap = module_homset(plane, plane)(
+        {"a": plane.module_generator("b"), "b": plane.module_generator("a")}
+    ).as_automorphism()
+    generated = cyclic_subgroup(swap)
+
+    assert generated.supergroup() is plane.Aut()
+    assert generated.selected_generator() is swap
+    assert generated.order() == 2
+    assert swap in generated
+    assert plane.Aut().identity_automorphism() in generated
