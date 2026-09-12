@@ -240,6 +240,8 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     ProjectiveJetSpaces,
     ProjectiveLinearSystem,
     ProjectiveLinearSystems,
+    SerreIntersection,
+    SerreIntersectionData,
     SectionRing,
     SectionRings,
     SectionsVanishingAtPoint,

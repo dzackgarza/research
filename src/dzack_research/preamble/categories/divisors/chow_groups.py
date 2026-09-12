@@ -257,6 +257,109 @@ class AffineCodimensionOneChowComparison(SageObject):
         return self._class_to_chow
 
 
+class SerreIntersectionData(SageObject):
+    r"""A supported local intersection represented by its Tor modules and lengths.
+
+    For closed subschemes ``Y,Z`` of a smooth affine space ``X`` meeting only
+    at the selected closed point ``p``, localization gives
+
+    ``Tor_i^{O_X}(O_Y,O_Z)_p = Tor_i^{O_{X,p}}(O_{Y,p},O_{Z,p})``.
+
+    Each global Tor module is then supported at ``p``, so its existing
+    finite-length operation computes the local length.  The Serre intersection
+    multiplicity is their alternating sum.
+    """
+
+    def __init__(self, left, right, point) -> None:
+        from dzack_research.preamble.categories.modules.derived_functors import Tor
+        from dzack_research.preamble.categories.schemes.schemes import AffineSpaces
+
+        ambient = left.inclusion().codomain()
+        if right.inclusion().codomain() is not ambient:
+            raise ValueError("a local intersection is taken inside one ambient scheme")
+        base = ambient.scheme_base_ring()
+        if ambient not in AffineSpaces(base):
+            raise TypeError(
+                "the represented Serre intersection currently requires a smooth affine space"
+            )
+        spectrum = ambient.underlying_space()
+        if getattr(point, "parent", lambda: None)() is not spectrum:
+            point = spectrum(point)
+        if not point.ideal().is_maximal():
+            raise ValueError("the represented Serre intersection is supported at a closed point")
+        meeting = left.intersection(right)
+        if meeting.defining_ideal_owned().radical() != point.ideal():
+            raise ValueError(
+                "the represented Tor intersection must be supported only at the selected closed point"
+            )
+
+        left_module = left.defining_ideal_owned().inclusion().cokernel()
+        right_module = right.defining_ideal_owned().inclusion().cokernel()
+        maximum_degree = int(ambient.relative_dimension())
+        tor_modules = tuple(
+            Tor(degree, left_module, right_module)
+            for degree in range(maximum_degree + 1)
+        )
+        lengths = tuple(
+            _own_ring(SageZZ).zero()
+            if module.is_zero()
+            else module.finite_length_at_closed_point(point)
+            for module in tor_modules
+        )
+        multiplicity = sum(
+            (length if degree % 2 == 0 else -length)
+            for degree, length in enumerate(lengths)
+        )
+
+        self._ambient = ambient
+        self._left = left
+        self._right = right
+        self._point = point
+        self._left_module = left_module
+        self._right_module = right_module
+        self._tor_modules = tor_modules
+        self._tor_lengths = lengths
+        self._multiplicity = _own_ring(SageZZ)(multiplicity)
+
+    def ambient_scheme(self):
+        return self._ambient
+
+    def left_subscheme(self):
+        return self._left
+
+    def right_subscheme(self):
+        return self._right
+
+    def point(self):
+        return self._point
+
+    def left_structure_module(self):
+        return self._left_module
+
+    def right_structure_module(self):
+        return self._right_module
+
+    def tor_module(self, degree):
+        degree = int(degree)
+        if degree < 0 or degree >= len(self._tor_modules):
+            raise ValueError("Tor degree lies between zero and the ambient dimension")
+        return self._tor_modules[degree]
+
+    def tor_length(self, degree):
+        degree = int(degree)
+        if degree < 0 or degree >= len(self._tor_lengths):
+            raise ValueError("Tor degree lies between zero and the ambient dimension")
+        return self._tor_lengths[degree]
+
+    def multiplicity(self):
+        return self._multiplicity
+
+
+def SerreIntersection(left, right, point):
+    r"""Return the supported local Serre intersection of two closed subschemes."""
+    return SerreIntersectionData(left, right, point)
+
+
 def ClosedImmersionCyclePushforward(closed_subscheme, cycle):
     r"""Push a cycle forward along its represented closed immersion.
 
@@ -373,5 +476,7 @@ __all__ = [
     "DistinguishedOpenCyclePullback",
     "ChowGroups",
     "FundamentalCycle",
+    "SerreIntersection",
+    "SerreIntersectionData",
     "TorusInvariantCycleGroups",
 ]

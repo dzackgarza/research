@@ -3965,6 +3965,18 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
 
             return ClosedImmersionCyclePushforward(self, cycle)
 
+        def serre_intersection(self, other, point):
+            r"""Return the supported local Tor intersection with ``other`` at ``point``."""
+            from dzack_research.preamble.categories.divisors.chow_groups import (
+                SerreIntersection,
+            )
+
+            return SerreIntersection(self, other, point)
+
+        def serre_intersection_multiplicity(self, other, point):
+            r"""Return Serre's alternating Tor-length intersection multiplicity."""
+            return self.serre_intersection(other, point).multiplicity()
+
         def intersection_multiplicity(self, other, point):
             r"""``i(p; Z . W)``, the multiplicity of the intersection at ``p``.
 
