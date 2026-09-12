@@ -5,6 +5,9 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FreeModules,
@@ -118,6 +121,65 @@ def AffineCycleGroup(scheme, cycle_dimension):
     )
 
 
+def ClosedImmersionCyclePushforward(closed_subscheme, cycle):
+    r"""Push a cycle forward along its represented closed immersion.
+
+    A closed immersion is proper.  On a prime component it preserves dimension
+    and residue field and sends the point by contraction along the quotient map;
+    hence the coefficient is unchanged.
+    """
+    source = cycle.parent()
+    if source not in AlgebraicCycleGroups(_own_ring(SageZZ)):
+        raise TypeError("proper cycle pushforward starts with a represented algebraic cycle")
+    if source.cycle_scheme() is not closed_subscheme:
+        raise ValueError("the cycle belongs to a different source scheme")
+    ambient = closed_subscheme.inclusion().codomain()
+    target = AffineCycleGroup(ambient, source.cycle_dimension())
+    quotient_map = closed_subscheme.inclusion().coordinate_algebra_morphism()
+    ambient_spectrum = ambient.underlying_space()
+    coefficients = {}
+    for point, coefficient in module_coefficients(cycle, source).items():
+        contracted = quotient_map.contraction_of_ideal(point.ideal())
+        image_point = ambient_spectrum(contracted)
+        coefficients[image_point] = coefficients.get(
+            image_point, target.base_ring().zero()
+        ) + coefficient
+    return target.linear_combination(coefficients)
+
+
+def DistinguishedOpenCyclePullback(open_subscheme, cycle):
+    r"""Pull a cycle back along a represented distinguished open immersion.
+
+    Open immersions are flat of relative dimension zero.  A prime component
+    survives exactly when it meets the open; then its ideal extends to the
+    localization and its multiplicity is unchanged.
+    """
+    source = cycle.parent()
+    if source not in AlgebraicCycleGroups(_own_ring(SageZZ)):
+        raise TypeError("flat cycle pullback starts with a represented algebraic cycle")
+    ambient = open_subscheme.inclusion().codomain()
+    if source.cycle_scheme() is not ambient:
+        raise ValueError("the cycle belongs to a different target scheme")
+    if not open_subscheme.is_distinguished_open():
+        raise NotImplementedError(
+            "the represented flat cycle pullback currently uses a distinguished open immersion"
+        )
+    target = AffineCycleGroup(open_subscheme, source.cycle_dimension())
+    localization_map = open_subscheme.inclusion().coordinate_algebra_morphism()
+    open_ring = open_subscheme.coordinate_algebra()
+    open_spectrum = open_subscheme.underlying_space()
+    coefficients = {}
+    for point, coefficient in module_coefficients(cycle, source).items():
+        extended = localization_map.extension_of_ideal(point.ideal())
+        if extended.contains_ambient_element(open_ring.one()):
+            continue
+        inverse_point = open_spectrum(extended)
+        coefficients[inverse_point] = coefficients.get(
+            inverse_point, target.base_ring().zero()
+        ) + coefficient
+    return target.linear_combination(coefficients)
+
+
 def FundamentalCycle(closed_subscheme):
     r"""Return the fundamental cycle of an affine closed subscheme.
 
@@ -169,6 +231,8 @@ __all__ = [
     "AffineCycleGroup",
     "AlgebraicCycleGroups",
     "ChowGroup",
+    "ClosedImmersionCyclePushforward",
+    "DistinguishedOpenCyclePullback",
     "ChowGroups",
     "FundamentalCycle",
     "TorusInvariantCycleGroups",

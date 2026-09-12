@@ -3957,6 +3957,14 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
 
             return FundamentalCycle(self)
 
+        def proper_pushforward_cycle(self, cycle):
+            r"""Push ``cycle`` to the ambient scheme along this closed immersion."""
+            from dzack_research.preamble.categories.divisors.chow_groups import (
+                ClosedImmersionCyclePushforward,
+            )
+
+            return ClosedImmersionCyclePushforward(self, cycle)
+
         def intersection_multiplicity(self, other, point):
             r"""``i(p; Z . W)``, the multiplicity of the intersection at ``p``.
 
@@ -4160,6 +4168,14 @@ class OpenImmersions(_SchemeSubobjectsOf):
             factor = source.Mor(self)(ring_morphism(open_algebra, source_algebra, factor_pullback))
             assert self.inclusion() * factor == morphism, "the corestriction does not recover the morphism through the inclusion"
             return factor
+
+        def flat_pullback_cycle(self, cycle):
+            r"""Pull ``cycle`` back along this flat open immersion."""
+            from dzack_research.preamble.categories.divisors.chow_groups import (
+                DistinguishedOpenCyclePullback,
+            )
+
+            return DistinguishedOpenCyclePullback(self, cycle)
 
         def inclusion_into(self, larger_open):
             r"""The open immersion ``D(g) -> D(f)`` when ``D(g) <= D(f)`` in one affine scheme.
