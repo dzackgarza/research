@@ -3494,6 +3494,107 @@ In each case delete the noun "…ness / …ivity / …ion" + "condition" + light
 verb, and keep the adjective/verb that already is the claim with its
 named subobject/diagram.
 
+### `TERM-12`: "Quadratic refinements" with no defined refinement relation — fossilized adjective with no map
+
+"Refinement" is plausible because the polar
+$b_q(x,y):=q(x+y)-q(x)-q(y)$ does give a map
+$\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to\operatorname{Bil}_{R,W}(M)$,
+$q\mapsto b_q$, so a $q$ with $b_q=b$ can be called a quadratic refinement
+of $b$. That meaning requires the named $R$-linear
+$\gamma^*\colon\operatorname{Hom}_R(\Gamma^2_R(M),W)\to\operatorname{Hom}_R(M\otimes_RM,W)$
+(induced by $\Gamma^2_R(M)\xrightarrow{\gamma}\operatorname{Sym}^2_R(M)\to M\otimes M$)
+to be defined, with its (non-)injectivity/surjectivity and fiber discussed —
+is a refinement a section, a lift, a fiber over $b$? No $\gamma^*$ was named
+and no $\ker(\gamma^*)/\operatorname{coker}(\gamma^*)$ was stated, so there
+is no sense, even informally, in which either direction could be called a
+refinement, and "quadratic refinements" is just "quadratics" preceded by a
+math-adjacent word with no referent. It is also nonstandard in the
+direction used here: the associated object is the bilinear *polar* $b_q$
+of $q$, not $q$ "refining" $b$ without the map.
+
+Concrete standard — name $\gamma^*$ and its fiber, then "refinement" is
+the fiber:
+
+"::: {#def-quad-polar} **Definition.** Put
+$\operatorname{Quad}_{R,W}(M):=\operatorname{Hom}_R(\Gamma^2_R(M),W)$ and
+$\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_RM,W)$ as
+$R$-modules. The $R$-linear
+$\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to\operatorname{Bil}_{R,W}(M)$
+sends $q$ to its polar $b_q(x,y)=q(x+y)-q(x)-q(y)$. A **quadratic
+refinement** of $b\in\operatorname{Bil}_{R,W}(M)$ is a $q$ with
+$\gamma^*(q)=b$ — i.e. a point in the fiber over $b$. :::"
+
+**Banned:** "quadratic refinements retain …" with no $\gamma^*$,
+no $b$, no fiber.
+
+**Preferred:** "the fiber of $\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to
+\operatorname{Bil}_{R,W}(M)$ over $b$" / "the set of $q$ with $b_q=b$"
+with $\gamma^*$ named; or just "$q\in\operatorname{Quad}_{R,W}(M)$."
+
+### `PR-51`: "Retain additional information" is empty filler — not a submodule, kernel, fiber, or invariant
+
+"Information" is not an $R$-submodule, kernel, cokernel, fiber, or
+invariant, so "retain additional information" cannot be true or false;
+additional *relative to what* — to $\operatorname{EvBil}$, to
+$\operatorname{SymBil}$, to the element condition $b(x,x)\in2W$ just
+declared vacuous? The precise content is the (non-)isomorphism between
+*named* $R$-modules and its obstruction.
+
+Concrete standard — state the (non-)isomorphism and its fiber:
+
+"::: {#prop-quad-vs-bil} **Proposition.** $\gamma^*$ is not an
+isomorphism in general; when $2\colon W\to W$ is invertible,
+$\operatorname{EvBil}_{R,W}(M)=\operatorname{Bil}_{R,W}(M)$ as element
+condition but $\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to
+\operatorname{EvBil}_{R,W}(M)$ still has non-trivial fiber: the set of
+quadratic refinements of $b$ is a torsor under
+$\operatorname{Hom}_R(M,W/2W)$ (discrete case), with obstruction
+$\ker(\gamma^*)/\operatorname{coker}(\gamma^*)$. :::"
+
+**Banned:** "quadratic refinements retain additional information."
+
+**Preferred:** "$\gamma^*$ is not an isomorphism; its fiber over $b$
+(retaining the extra invariant) is …" / "$\ker(\gamma^*)$ is …" — name
+the $R$-module map and its fiber/kernel, not "information."
+
+### `TERM-13`: "Discriminant setting" is not a mathematical object — the object is the category of torsion bilinear/quadratic modules
+
+There is no mathematical object called a "setting." What is meant is a
+*category* — torsion $R$-modules with nondegenerate $W$-valued forms,
+e.g. finite $\mathcal O_X$-modules, $D_L:=L^\vee/L$ with
+$\mathbb Q/\mathbb Z$- or $\mathbb Q/2\mathbb Z$-valued form — which
+has not been defined. Sign-posting it here in a sentence about $2W=W$
+also inverts dependency order and violates theory-of-mind: only
+$\operatorname{Bil}_{R,W}(M)$ for general $M\in\mathbf{Mod}_R$ has been
+defined; lattices, duals $L^\vee:=\operatorname{Hom}_R(L,R)$, finite
+quotients $D_L$, and their induced torsion forms are later, so the
+reader does not yet know what "discriminant" means. A general
+$\operatorname{Bil}/\operatorname{Quad}$ cannot be motivated by a
+specialization that has not been introduced.
+
+Concrete standards:
+
+* **Object, not setting:**
+  "::: {#def-disc-cat} **Definition.** Let $\mathbf{TorBil}_{R,W}$ (resp.
+  $\mathbf{TorQuad}_{R,W}$) be the category whose objects are pairs
+  $(T,\bar b)$ with $T\in\mathbf{Mod}_R$ torsion of finite length and
+  $\bar b\colon T\otimes_R T\to W/\operatorname{Val}$ nondegenerate
+  $W$-valued torsion bilinear (resp. quadratic) form. :::"
+
+* **Discriminant as object of that category, defined later:**
+  "::: {#def-discriminant} For a lattice $L$ with $b\colon L\otimes L\to R$
+  nondegenerate, put $D_L:=L^\vee/L$ and let $\bar b$ / $\bar q\colon
+  D_L\to\mathbb Q/\mathbb Z$ ($\to\mathbb Q/2\mathbb Z$ for quadratic) be
+  the induced torsion form. :::"
+
+**Banned:** "in the discriminant setting."
+
+**Preferred:** name the category
+$\mathbf{TorBil}_{R,W}$ / $\mathbf{TorQuad}_{R,W}$ when it is defined,
+and the object $(D_L,\bar q)$ when $L$ is defined; do not sign-post
+discriminants in the general $\operatorname{Bil}/\operatorname{Quad}$
+section before lattices and $L^\vee/L$ exist.
+
 ### `PR-46`: "For every $x$, a choice of …" for the global functor / bundle / section / natural transformation
 
 "For every $x$, a choice of $b_x$ / basis / complement / $b(x,x)\in2W$ /
@@ -4030,3 +4131,15 @@ $\to$ "is even ($\operatorname{EvBil}=\operatorname{Bil}$)"; "satisfies
 injectivity" $\to$ "is injective"; "satisfies exactness" $\to$ "is
 exact"; "exhibits commutativity" $\to$ "commutes"; "satisfies the
 factorization condition" $\to$ "factors through $\Gamma^2$."
+
+**19. "Quadratic refinements retain additional information in the
+discriminant setting."** "Refinement" with no named
+$\gamma^*\colon\operatorname{Quad}\to\operatorname{Bil}$ has no defined
+relation to check (TERM-12); "retain additional information" names no
+$R$-submodule, kernel, fiber, or invariant and is not falsifiable
+(PR-51); "in the discriminant setting" is not a mathematical object —
+the object is the category $\mathbf{TorBil}_{R,W}$ /
+$\mathbf{TorQuad}_{R,W}$ of torsion forms, with discriminant object
+$D_L:=L^\vee/L$ (TERM-13) — and sign-posting it in the general
+$\operatorname{Bil}/\operatorname{Quad}$ section before lattices and
+$L^\vee/L$ exist inverts dependency order and violates theory-of-mind.
