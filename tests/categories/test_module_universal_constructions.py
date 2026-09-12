@@ -298,6 +298,63 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     assert from_colimit * colimit.costructure_morphism(shape(2)) == from_two
 
 
+def test_colimit_functor_maps_nonidentity_stagewise_transformation_on_representatives() -> None:
+    line = BasedFreeModule(ZZ, finite_ordered_set(("e",)))
+    e = line.module_generator("e")
+
+    source_twice = module_homset(line, line)({"e": 2 * e})
+    source_thrice = module_homset(line, line)({"e": 3 * e})
+    target_fourfold = module_homset(line, line)({"e": 4 * e})
+    target_ninefold = module_homset(line, line)({"e": 9 * e})
+    source = FiniteSequenceDiagram(
+        (line, line, line),
+        (source_twice, source_thrice),
+        line.category(),
+    )
+    target = FiniteSequenceDiagram(
+        (line, line, line),
+        (target_fourfold, target_ninefold),
+        line.category(),
+    )
+    shape = source.domain()
+    assert target.domain() is shape
+
+    stage_maps = (
+        module_homset(line, line)({"e": e}),
+        module_homset(line, line)({"e": 2 * e}),
+        module_homset(line, line)({"e": 6 * e}),
+    )
+    transformation = NaturalTransformation(
+        source,
+        target,
+        lambda index: stage_maps[index.position()],
+    )
+    assert stage_maps[1] * source_twice == target_fourfold * stage_maps[0]
+    assert stage_maps[2] * source_thrice == target_ninefold * stage_maps[1]
+
+    colimits = ColimitsOfCategory(shape, line.category())
+    colimit_functor = colimits.defining_functor()
+    diagrams = colimit_functor.domain()
+    source_object = diagrams(source)
+    target_object = diagrams(target)
+    transformation_morphism = diagrams.Mor(source_object, target_object)(transformation)
+
+    source_colimit = colimits.construction(source)
+    target_colimit = colimits.construction(target)
+    induced = colimit_functor.on_morphism(transformation_morphism)
+    assert induced.domain() is source_colimit.object()
+    assert induced.codomain() is target_colimit.object()
+
+    for stage_index in range(3):
+        stage = shape(stage_index)
+        source_leg = source_colimit.costructure_morphism(stage)
+        target_leg = target_colimit.costructure_morphism(stage)
+        assert induced * source_leg == target_leg * transformation.component(stage)
+        representative = source_leg(e)
+        expected = target_leg(stage_maps[stage_index](e))
+        assert induced(representative) == expected
+
+
 def test_directed_system_on_N_squared_retains_incomparable_indices_and_finite_rectangles() -> None:
     grid = cartesian_product_of((NN, NN))
     index = PosetCategory(

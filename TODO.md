@@ -896,6 +896,9 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   automatic inheritance; it must not duplicate the underlying algorithm.
   **Acceptance:** a nonidentity morphism and inherited operation work through
   the transferred construction without a second mathematical object system.
+  Indexed-colimit transfer must preserve the nonidentity functorial edge: a
+  compatible stagewise natural transformation induces the selected colimit map
+  on representatives and satisfies every universal cocone-leg equation.
   The downstream dependency is declared through the repository's supported
   release route, not a sibling-checkout import. The old local implementation
   remains a removal obligation until all its required callers use the surviving

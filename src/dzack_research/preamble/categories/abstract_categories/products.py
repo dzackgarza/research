@@ -1291,7 +1291,32 @@ class LimitsOfCategory(OwnedCategoryBase):
         return self.construction(diagram).object()
 
 
+class _SelectedColimitFunctor(Functor):
+    r"""The selected colimit functor on one represented diagram category."""
+
+    def __init__(self, colimits: ColimitsOfCategory) -> None:
+        self._colimits = colimits
+        super().__init__(
+            DiagramCategory(colimits.index_category(), colimits.target_category()),
+            colimits.target_category(),
+        )
+
+    @staticmethod
+    def _diagram(diagram_object):
+        return diagram_object.arrow().functor()
+
+    def _apply_object(self, diagram_object):
+        return self._colimits.construction(self._diagram(diagram_object)).object()
+
+    def _apply_morphism(self, transformation_morphism):
+        transformation = transformation_morphism.transformation()
+        source = self._colimits.construction(transformation.source())
+        target = self._colimits.construction(transformation.target())
+        return source.induced_map(transformation, target)
+
+
 class ColimitsOfCategory(LimitsOfCategory):
+    @cached_method(key=lambda self, diagram: id(diagram))
     def construction(self, diagram):
         r"""Return the selected colimit, using coproducts and a coequalizer on finite shapes."""
         from dzack_research.preamble.categories.abstract_categories.constructions import (
@@ -1377,6 +1402,11 @@ class ColimitsOfCategory(LimitsOfCategory):
             return coequalizer.factor(coequalizer_cocone).apex_map()
 
         return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
+
+    @cached_method
+    def defining_functor(self):
+        r"""Return the functor ``[J,C] -> C`` selected by these colimits."""
+        return _SelectedColimitFunctor(self)
 
 
 class ProductsOfCategory(LimitsOfCategory):
