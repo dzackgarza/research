@@ -25,6 +25,12 @@ from dzack_research.preamble.all import (
     scheme_product,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_blowups_and_non_toric_families.sage",
+    "live_owner": "tests/schemes/test_scheme_products_over_a_base.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_the_product_of_two_projective_lines_is_a_projective_surface() -> None:
     line = ProjectiveSpace(1, QQ)
@@ -83,3 +89,24 @@ def test_projective_line_diagonal_uses_the_projective_product_cone() -> None:
     assert diagonal.domain() is line
     assert product.projection(0) * diagonal == line.categorical_identity_morphism()
     assert product.projection(1) * diagonal == line.categorical_identity_morphism()
+
+
+def test_affine_line_times_plane_and_mixed_projective_affine_products_keep_dimensions_and_legs() -> None:
+    line = AffineSpace(1, QQ)
+    affine_plane = AffineSpace(2, QQ)
+    affine_product = scheme_product(line, affine_plane)
+
+    assert affine_product in AffineSchemes(QQ)
+    assert affine_product.relative_dimension() == 3
+    assert affine_product.projection(0).codomain() is line
+    assert affine_product.projection(1).codomain() is affine_plane
+
+    projective_line = ProjectiveSpace(1, QQ)
+    projective_surface = scheme_product(projective_line, projective_line)
+    mixed = scheme_product(projective_surface, affine_plane)
+
+    assert mixed.relative_dimension() == 4
+    assert mixed.projection(0).codomain() is projective_surface
+    assert mixed.projection(1).codomain() is affine_plane
+    assert mixed in QuasiProjectiveSchemes(QQ)
+    assert mixed not in AffineSchemes(QQ)
