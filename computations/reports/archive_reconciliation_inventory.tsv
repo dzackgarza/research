@@ -3036,9 +3036,9 @@ preamble/tests/framework/test_base_change_and_bundles.sage	test_identity_base_ch
 preamble/tests/framework/test_blowups_and_non_toric_families.sage	<module>	module	1	0		tests/schemes/test_scheme_products_over_a_base.py	reconciled-live-owner
 preamble/tests/framework/test_blowups_and_non_toric_families.sage	test_affine_tensored_product_backbone_is_non_toric_affine	specimen	6	0		tests/schemes/test_scheme_products_over_a_base.py	reconciled-live-owner
 preamble/tests/framework/test_blowups_and_non_toric_families.sage	test_projective_and_affine_base_change_products	specimen	16	0		tests/schemes/test_scheme_products_over_a_base.py	reconciled-live-owner
-preamble/tests/framework/test_chow_cohomology_intersections.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/test_chow_cohomology_intersections.sage	test_product_chow_pairing_and_self_intersection	specimen	6	0			unreviewed
-preamble/tests/framework/test_chow_cohomology_intersections.sage	test_bundle_cohomology_dimensions_match_expected_formula	specimen	22	0			unreviewed
+preamble/tests/framework/test_chow_cohomology_intersections.sage	<module>	module	1	0		tests/schemes/test_framework_chow_cohomology_archive.py	reconciled-live-owner
+preamble/tests/framework/test_chow_cohomology_intersections.sage	test_product_chow_pairing_and_self_intersection	specimen	6	0		tests/schemes/test_framework_chow_cohomology_archive.py	reconciled-live-owner
+preamble/tests/framework/test_chow_cohomology_intersections.sage	test_bundle_cohomology_dimensions_match_expected_formula	specimen	22	0		tests/schemes/test_framework_chow_cohomology_archive.py	reconciled-live-owner
 preamble/tests/framework/test_composite_certificates.sage	<module>	module	1	0		tests/schemes/test_horikawa_k3_family.py	reconciled-live-owner
 preamble/tests/framework/test_composite_certificates.sage	test_picard_cycle_linking_linear_system_and_cyclic_cover	specimen	6	0		tests/schemes/test_horikawa_k3_family.py	reconciled-live-owner
 preamble/tests/framework/test_curves_and_singularities.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/singularities.py	reconciled-live-owner
