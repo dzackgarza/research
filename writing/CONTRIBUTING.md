@@ -2721,6 +2721,85 @@ exhibiting $X\times_Y 1$ in {#def-pullback}." Write $\forall$/$\exists$
 and the hypothesis list; do not use "a"/"either"/"relevant"/"some"
 standing for them.
 
+### `PR-30`: Indefinite "a conclusion" with no proposition is unfalsifiable
+
+"A conclusion about $L$" names no proposition: no quantified statement,
+no domain, no codomain, no property (isomorphism, projectivity, rank,
+form, freeness). Any counterexample can be deflected as "not the
+intended conclusion," and any true fact can be claimed ex post as the
+intended one. A mathematical sentence is falsifiable because it states
+which proposition is claimed; an indefinite noun phrase is not.
+
+This is the general form behind PR-28/PR-29 and PR-22 ("some
+$R^n\twoheadrightarrow M$ is surjective") and DEF-31 ("the relevant
+pullbacks"): an English indefinite standing for a quantifier so that no
+checkable claim is made.
+
+**Banned:** "A conclusion about $L$ from either image requires …";
+"A result about $M$ follows from …"
+
+**Preferred:** state the proposition with quantifiers: "For finitely
+presented $M$, $M\simeq0$ iff $S\otimes_R^L M\simeq0$ for faithfully
+flat $R\to S$"; "For $\mathbb Z$-lattices $L,L'$,
+$L\simeq L'$ iff $L\otimes\mathbb Z_p\simeq L'\otimes\mathbb Z_p$ for
+all $p$ and $L\otimes\mathbb Q\simeq L'\otimes\mathbb Q$ compatibly
+over $\mathbb Q_p$." Name the conclusion; do not use "a conclusion" /
+"a result."
+
+### `PR-31`: Tautological "with its hypotheses" does no mathematical work
+
+"With its hypotheses" is true of every stated theorem and adds no
+hypothesis list, no condition, and no check. It occupies the grammatical
+slot where the hypotheses belong while stating none, so the sentence
+cannot be used: a reader cannot verify, apply, or falsify it. It is the
+same device as "under the appropriate conditions" or "where defined"
+standing for the actual conditions.
+
+**Banned:** "requires a stated descent or local-to-global theorem with
+its hypotheses"; "holds with its hypotheses / under its hypotheses."
+
+**Preferred:** either list the hypotheses ("for faithfully flat $R\to S$
+and finitely presented $M$") or state the theorem that carries them
+({#thm-descent} above). Do not add a clause that is true of every
+theorem and therefore says nothing. If no specific hypotheses are meant,
+delete the clause.
+
+### `PR-32`: Internal doctrine and preemptive correction posing as mathematical content
+
+A sentence whose only coherent audience is an internal contributor or
+agent — "requires a stated theorem," "must be justified," "with its
+hypotheses" as a reminder to include them — is contributor governance,
+not mathematics. Importing it into the book leaks runtime control into
+the text. Its rhetoric is a preemptive scolding: it assumes a frame in
+which the reader has made or is about to make a mistake and corrects
+that mistake before it is committed, though the reader never made it or
+thought about making it. It does not address the reader as an equal
+pursuing the mathematics, but as a lesser to be controlled, steered, and
+corrected.
+
+Standard mathematical prose never does this. A textbook states the
+theorem with hypotheses, proves it, and applies it; it does not tell the
+reader that a theorem is required or that hypotheses are required. The
+governance belongs in `CONTRIBUTING.md`, not in the book.
+
+This generalizes PR-24 (self-referential meta-prose about the text's
+structure) and PR-16–18 (strawman negation of a premise no one held):
+here the premise is that the reader would draw a conclusion about $L$
+from one image without a theorem, which no reader in this book's
+audience was going to do.
+
+**Banned:** "A conclusion about $L$ from either image requires a stated
+descent or local-to-global theorem with its hypotheses" in a
+mathematical section; any sentence that tells the reader that a theorem,
+proof, or hypothesis is required instead of giving it.
+
+**Preferred:** in the book, state the mathematics: "::: {#thm-descent}
+**Theorem.** … :::" then "By {#thm-descent}, for finitely presented $L$,
+… holds because $R\to S$ is faithfully flat." In `CONTRIBUTING.md`,
+state the governance once: "Every local-to-global conclusion is a
+fenced Theorem with quantified hypotheses; do not draw it from one image
+alone."
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -2813,3 +2892,15 @@ conclusion" / "either image" and no hypothesis list (PR-28, PR-29); the
 correct form states fpqc descent / Beauville–Laszlo with faithfully flat
 / finitely presented hypotheses, then applies it — and notes that one
 image alone never suffices, only the compatible pair with gluing.
+
+**8. Indefinite referent, tautological qualifier, and doctrine posing as
+content.** "A conclusion" with no proposition is unfalsifiable (PR-30);
+"with its hypotheses" is true of every theorem and adds no hypothesis
+list, so it does no work (PR-31); together they are internal governance
+leaking into the book — runtime control whose only coherent audience is
+contributors/agents, not the mathematical reader, with a preemptive,
+condescending tone that assumes the reader was about to make a mistake
+never committed (PR-32). Standard prose states the theorem with
+hypotheses and applies it; it does not tell the reader that a theorem is
+required. Governance belongs in `CONTRIBUTING.md`, not in the
+mathematical text (cf. PR-24, PR-16–18).
