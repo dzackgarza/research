@@ -1470,4 +1470,5 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| `TOR-EXT-homotopy-20260912-0234` | tor-ext / lift independence | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/modules/pure/modules.py; src/dzack_research/preamble/categories/modules/derived_functors.py; tests/modules/test_derived_functor_lift_independence.py` (write) | `c3584d52` | 2026-09-12T02:34:00Z |
 | `LINE-BUNDLES-projective-20260912-0112` | line-bundles / projective O(d) and section algebra | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py; src/dzack_research/preamble/categories/divisors/section_rings.py; src/dzack_research/preamble/categories/schemes/schemes.py; src/dzack_research/preamble/categories/divisors/__init__.py; src/dzack_research/preamble/all.py; tests/divisors/test_projective_line_bundles_frontier.py` (write) | `8ae1ccaf` | 2026-09-12T01:12:00Z |
