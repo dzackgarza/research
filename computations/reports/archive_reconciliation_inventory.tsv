@@ -1300,48 +1300,48 @@ preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLatti
 preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.ParentMethods	class	42	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/free_lattices.sage	FiniteRankFreeLattices.ParentMethods.gram_matrix	method	47	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/free_lattices.sage	FreeLatticeOfRank	function	85	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams	class	79	1	src/dzack_research/preamble/categories/coxeter_diagrams.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.super_categories	method	91	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.minimal_edge_lattices	method	96	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.from_coxeter_matrix	method	153	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.from_cartan_type	method	169	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.from_roots	method	197	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ElementMethods	class	344	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ElementMethods.parent	method	349	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods	class	357	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.hom	method	430	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.vertex	method	480	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.vertices	method	483	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.num_vertices	method	486	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.vertex_weight	method	496	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.edge_weight	method	500	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.index_set	method	508	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.coxeter_matrix	method	511	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.graph	method	514	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.is_connected	method	530	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.connected_components	method	538	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.coxeter_group	method	557	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.finitely_presented_coxeter_group	method	571	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.Aut	method	591	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.elliptic_subdiagram_orbits	method	607	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.parabolic_subdiagram_orbits	method	650	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.subdiagram_orbit_poset	method	690	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.drawing_conventions	method	727	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_morphism	method	737	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_lattice	method	765	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_realization	method	769	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.roots	method	773	1	src/dzack_research/preamble/categories/definite_lattices.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root	method	783	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_intersection_graph	method	788	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.scaled_cartan_type	method	821	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.component_scaled_cartan_types	method	888	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.preferred_positions	method	900	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.equivariant_positions	method	911	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.node_color	method	1011	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.subdiagram	method	1024	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.plot	method	1049	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.tikz	method	1058	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	<module>	module	1	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams	class	79	1	src/dzack_research/preamble/categories/coxeter_diagrams.py	src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.super_categories	method	91	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.minimal_edge_lattices	method	96	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.from_coxeter_matrix	method	153	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.from_cartan_type	method	169	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.from_roots	method	197	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ElementMethods	class	344	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ElementMethods.parent	method	349	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods	class	357	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.hom	method	430	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.vertex	method	480	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.vertices	method	483	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.num_vertices	method	486	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.vertex_weight	method	496	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.edge_weight	method	500	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.index_set	method	508	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.coxeter_matrix	method	511	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.graph	method	514	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.is_connected	method	530	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.connected_components	method	538	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.coxeter_group	method	557	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.finitely_presented_coxeter_group	method	571	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.Aut	method	591	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.elliptic_subdiagram_orbits	method	607	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.parabolic_subdiagram_orbits	method	650	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.subdiagram_orbit_poset	method	690	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.drawing_conventions	method	727	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_morphism	method	737	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_lattice	method	765	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_realization	method	769	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.roots	method	773	1	src/dzack_research/preamble/categories/definite_lattices.py	src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root	method	783	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.root_intersection_graph	method	788	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.scaled_cartan_type	method	821	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.component_scaled_cartan_types	method	888	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.preferred_positions	method	900	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.equivariant_positions	method	911	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.node_color	method	1011	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.subdiagram	method	1024	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.plot	method	1049	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/coxeter_diagrams.sage	CoxeterDiagrams.ParentMethods.tikz	method	1058	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/definite_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/definite_lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/definite_lattices.sage	DefiniteSubobjectParent	class	38	0		src/dzack_research/preamble/categories/definite_lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/definite_lattices.sage	DefiniteSubobjectParent.embedding	method	41	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner

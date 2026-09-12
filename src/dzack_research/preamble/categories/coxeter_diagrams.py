@@ -162,6 +162,28 @@ class CoxeterDiagrams(OwnedCategory):
             raise TypeError("a Coxeter-diagram morphism requires two Coxeter diagrams")
         return self.HomCategory().Of(domain, codomain)
 
+    @cached_method
+    def minimal_edge_lattices(self):
+        r"""Return the five minimal integral rank-two mirror configurations."""
+        from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+        labels = finite_ordered_set(
+            ("orthogonal", "single", "double", "parallel", "ultraparallel")
+        )
+        grams = {
+            "orthogonal": ((-2, 0), (0, -2)),
+            "single": ((-2, 1), (1, -2)),
+            "double": ((-2, 2), (2, -4)),
+            "parallel": ((-2, 2), (2, -2)),
+            "ultraparallel": ((-2, 3), (3, -2)),
+        }
+        integers = _own_ring(SageZZ)
+        return indexed_family(
+            labels,
+            lambda label: Lattices(integers)(grams[str(label)], names=("r1", "r2")),
+            name="Minimal Coxeter edge lattices",
+        )
+
     class ParentMethods:
         def __init__(
             self,
@@ -202,6 +224,24 @@ class CoxeterDiagrams(OwnedCategory):
 
         def cardinality(self):
             return self._index_set.cardinality()
+
+        def vertex(self, position):
+            return self.index_set()[int(position)]
+
+        def vertices(self):
+            return self.index_set()
+
+        def num_vertices(self):
+            return int(self.cardinality())
+
+        def hom(self, images, codomain):
+            return CoxeterDiagrams().Mor(self, codomain)(images)
+
+        def vertex_weight(self, vertex):
+            return self.vinberg_invariant_matrix().vertex_weight(vertex)
+
+        def edge_weight(self, left, right):
+            return self.vinberg_invariant_matrix().edge_weight(left, right)
 
         def vertex_names(self):
             return self._names
@@ -495,6 +535,10 @@ class CoxeterDiagrams(OwnedCategory):
 
             return Groups.Coxeter(self.coxeter_matrix())
 
+        def finitely_presented_coxeter_group(self):
+            r"""Return the same owned Coxeter group, which retains its defining presentation."""
+            return self.coxeter_group()
+
         @cached_method
         def _bond_preserving_permutation_group(self):
             r"""Return the engine automorphism group of the labelled Coxeter graph.
@@ -653,6 +697,10 @@ class CoxeterDiagrams(OwnedCategory):
 
             return Poset((members, below))
 
+        def subdiagram_orbit_poset(self, orbits):
+            r"""Return the orbit-inclusion poset on the supplied representatives."""
+            return self._subdiagram_orbit_poset_on(tuple(orbits))
+
         def elliptic_subdiagram_orbit_poset(self, *, connected=False):
             r"""Return the elliptic subdiagram orbits in the orbit order."""
             return self._subdiagram_orbit_poset_on(
@@ -697,6 +745,137 @@ class CoxeterDiagrams(OwnedCategory):
             return self.root_lattice().Mor(self.root_realization())(
                 {position: root for position, root in enumerate(roots)}
             )
+
+        def root(self, vertex):
+            r"""Return the selected realizing root attached to ``vertex``."""
+            normalized = self.index_set()(vertex)
+            position = int(self.index_set().ranking_map()(normalized))
+            return self.roots()[position]
+
+        def scaled_cartan_type(self):
+            r"""Recognize a connected elliptic crystallographic rooted diagram as ``(type, scale)``."""
+            if not self.is_rooted() or self.cardinality() == 0:
+                return None
+            if not self.is_connected() or not self.is_elliptic():
+                raise ValueError("scaled Cartan recognition requires a connected elliptic rooted diagram")
+            gram = self.root_gram_tensor()
+            rank = int(self.cardinality())
+            squares = tuple(-SageZZ(gram[index, index]) for index in range(rank))
+            shortest = min(squares)
+            if shortest <= 0 or shortest % 2:
+                raise ValueError("a crystallographic root normalization has shortest square 2 times an integer scale")
+            scale = SageZZ(shortest // 2)
+            coxeter_type = self.coxeter_matrix().coxeter_type()
+            if coxeter_type is self.coxeter_matrix():
+                raise ValueError("the rooted elliptic diagram has no recognized finite Coxeter type")
+            cartan = coxeter_type.cartan_type()
+            if str(cartan[0]) == "H":
+                raise ValueError("H root systems are noncrystallographic and have no integral Cartan scale")
+            if str(cartan[0]) == "B":
+                short_count = sum(square == 2 * scale for square in squares)
+                if rank == 2:
+                    cartan = CartanType(["C", 2])
+                elif short_count == 1:
+                    cartan = CartanType(["B", rank])
+                elif short_count == rank - 1:
+                    cartan = CartanType(["C", rank])
+                else:
+                    raise ArithmeticError("a bond-four chain has neither the B nor C root-length pattern")
+            reference = Lattices.root_lattice(str(cartan[0]), int(cartan[1])).twist(scale)
+            reference_diagram = CoxeterDiagrams().from_roots(tuple(reference.module_generators()))
+            if not self.root_intersection_graph().is_isomorphic(
+                reference_diagram.root_intersection_graph(), edge_labels=True
+            ):
+                raise ArithmeticError("the recognized Cartan type does not recover the rooted Gram data")
+            return cartan, scale
+
+        def component_scaled_cartan_types(self):
+            r"""Return the component-indexed family of scaled Cartan types, retaining multiplicity."""
+            from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+
+            components = self.connected_components()
+            labels = finite_ordered_set(tuple(range(int(components.cardinality()))))
+            return indexed_family(
+                labels,
+                lambda position: components[int(position)].scaled_cartan_type(),
+                name="Scaled Cartan types of Coxeter components",
+            )
+
+        def drawing_conventions(self):
+            return {
+                "root squares": "stored as self-loops in root_intersection_graph(), omitted from TikZ",
+                "ordinary Coxeter bond": "m=3 is drawn without a label",
+                "other Coxeter bonds": "the Coxeter exponent labels the edge",
+            }
+
+        def node_color(self, vertex):
+            r"""Return the archived rooted-diagram fill convention determined by root square."""
+            square = self.root(vertex).q()
+            colors = {-4: "#F8F9FE", -2: "#BFC9CA"}
+            try:
+                return colors[int(square)]
+            except KeyError as error:
+                raise ValueError(f"no Coxeter node color is defined for square {square}") from error
+
+        def equivariant_positions(self, automorphism):
+            r"""Return exact planar positions intertwining a finite diagram automorphism."""
+            from sage.rings.qqbar import QQbar
+            from sage.rings.number_field.number_field import CyclotomicField
+
+            order = int(automorphism.order())
+            if order < 2:
+                raise ValueError("equivariant positioning requires a nonidentity automorphism")
+            unseen = set(self.index_set())
+            orbits = []
+            while unseen:
+                start = next(iter(unseen))
+                orbit = []
+                point = start
+                while point not in orbit:
+                    orbit.append(point)
+                    unseen.discard(point)
+                    point = automorphism(point)
+                if point != start:
+                    raise ArithmeticError("the selected automorphism does not permute this vertex set cyclically")
+                orbits.append(tuple(orbit))
+            zeta = QQbar(CyclotomicField(order).gen())
+            positions = {}
+            if order == 2:
+                imaginary = QQbar(CyclotomicField(4).gen())
+                place = 0
+                for orbit in sorted(orbits, key=len):
+                    if len(orbit) == 1:
+                        positions[orbit[0]] = QQbar(place)
+                    elif len(orbit) == 2:
+                        positions[orbit[0]] = QQbar(place) + imaginary
+                        positions[orbit[1]] = QQbar(place) - imaginary
+                    else:
+                        raise ValueError("an involution has only fixed points and two-cycles")
+                    place += 1
+            else:
+                fixed = tuple(orbit for orbit in orbits if len(orbit) == 1)
+                if any(len(orbit) not in (1, order) for orbit in orbits) or len(fixed) > 1:
+                    raise ValueError("a planar primitive rotation permits free orbits and at most one fixed vertex")
+                radius = 1
+                for orbit in orbits:
+                    if len(orbit) == 1:
+                        positions[orbit[0]] = QQbar.zero()
+                        continue
+                    for exponent, vertex in enumerate(orbit):
+                        positions[vertex] = QQbar(radius) * zeta**exponent
+                    radius += 1
+            return {
+                vertex: (value.real(), value.imag()) for vertex, value in positions.items()
+            }
+
+        def subdiagram(self, vertices):
+            return self.induced_subdiagram(vertices)
+
+        def plot(self, **options):
+            return self.graph().plot(**options)
+
+        def tikz(self, **_options):
+            return self.tikz_picture()
 
         def root_intersection_graph(self):
             r"""Return the graph of root squares and root pairings.
@@ -763,13 +942,20 @@ class CoxeterDiagrams(OwnedCategory):
             )
         return _coxeter_diagram(coxeter_matrix, names=names, positions=positions)
 
-    def from_cartan_type(self, cartan_type, names=None, *, rooted=False, positions=None):
+    def from_cartan_type(self, cartan_type, names=None, *, rooted=False, scale=None, positions=None):
         cartan_type = CartanType(cartan_type)
+        if scale is not None:
+            scale = SageZZ(scale)
+            if scale < 1:
+                raise ValueError("a Coxeter root-lattice scale is a positive integer")
+            rooted = True
         if not rooted:
             return _coxeter_diagram(CoxeterMatrix(cartan_type), names=names, positions=positions)
 
         if str(cartan_type[0]) == "H":
             lattice = Lattices.root_lattice("H", int(cartan_type[1]))
+            if scale is not None and scale != 1:
+                lattice = lattice.twist(scale)
             roots = tuple(lattice.module_generators())
             mirrors = finite_ordered_set(tuple(CoxeterMatrix(cartan_type).index_set()))
             gram = tensor(
@@ -786,6 +972,8 @@ class CoxeterDiagrams(OwnedCategory):
                 positions=positions,
             )
         lattice = Lattices(_own_ring(SageZZ))(cartan_type)
+        if scale is not None and scale != 1:
+            lattice = lattice.twist(scale)
         return self.from_roots(tuple(lattice.module_generators()), names=names, positions=positions)
 
     def from_roots(self, roots, names=None, index_set=None, positions=None):
