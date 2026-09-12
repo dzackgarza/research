@@ -1471,6 +1471,35 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
     return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 
+class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
+    r"""Finite formed modules retained as literal cokernels of a selected module map."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "cokernel torsion forms"
+
+    def super_categories(self):
+        return [FinitelyPresentedTorsionModules(self.base_ring())]
+
+    class ParentMethods:
+        def cover(self):
+            r"""Return the codomain of the selected presentation map."""
+            return self.presentation().codomain()
+
+        @cached_method
+        def projection(self):
+            r"""Return the quotient projection from the cover to this formed cokernel."""
+            unformed_projection = self.presentation().cokernel_projection()
+            if unformed_projection.codomain() is not self.unformed_module():
+                raise ArithmeticError("the retained cokernel presentation changed its quotient object")
+            return self.equip_form_morphism() * unformed_projection
+
+    class ElementMethods:
+        def coset_representative(self):
+            r"""Return the selected lift of this class to the cokernel cover."""
+            return self.parent().projection().lift(self)
+
+
 class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
     r"""Finitely presented torsion modules with a bilinear form."""
 
@@ -1504,6 +1533,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
         _subobject_lift=None,
         _subobject_inclusion_factory=None,
         _subobject_verify_linearity=True,
+        _extra_categories=(),
     ):
         r"""Equip ``module`` with the bilinear form represented by ``gram``.
 
@@ -1520,7 +1550,7 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             raise ValueError("the bilinear form does not descend through the selected relations")
         formed = FormModule(
             BilinearForms(module, value_module)(values),
-            _extra_categories=(self,),
+            _extra_categories=(self, *tuple(_extra_categories)),
             _subobject_ambient=_subobject_ambient,
             _subobject_generator_images=_subobject_generator_images,
             _subobject_lift=_subobject_lift,
@@ -1534,6 +1564,25 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
 
         module = _torsion_module_presented_by_matrix(relations, module_generating_set)
         return self.from_module(module, gram, value_module)
+
+    def cokernel(self, morphism):
+        r"""Return the quotient-valued bilinear form on the literal finite cokernel of ``morphism``."""
+        cover = morphism.codomain()
+        if cover.base_ring() is not self.base_ring():
+            raise ValueError("the cokernel form must stay over the selected base ring")
+        module = morphism.cokernel()
+        values = FractionFieldQuotient(self.base_ring(), 1)
+        generators = tuple(cover.module_generators())
+        gram = tuple(
+            tuple(values(cover.b(left, right)) for right in generators)
+            for left in generators
+        )
+        return self.from_module(
+            module,
+            gram,
+            values,
+            _extra_categories=(CokernelTorsionFormModules(self.base_ring()),),
+        )
 
     @cached_method
     def twist_functor(self, scalar):
@@ -1802,6 +1851,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
         _subobject_lift=None,
         _subobject_inclusion_factory=None,
         _subobject_verify_linearity=True,
+        _extra_categories=(),
     ):
         r"""Equip ``module`` with ``q(x)=x^T gram x`` valued in ``value_module``.
 
@@ -1821,7 +1871,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
             raise ValueError("the quadratic form does not descend through the selected relations")
         formed = FormModule(
             QuadraticForms(module, value_module)(values),
-            _extra_categories=(self,),
+            _extra_categories=(self, *tuple(_extra_categories)),
             _subobject_ambient=_subobject_ambient,
             _subobject_generator_images=_subobject_generator_images,
             _subobject_lift=_subobject_lift,
@@ -1835,6 +1885,25 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
         module = _torsion_module_presented_by_matrix(relations, module_generating_set)
         return self.from_module(module, gram, value_module)
+
+    def cokernel(self, morphism):
+        r"""Return the quotient-valued quadratic form on the literal finite cokernel of ``morphism``."""
+        cover = morphism.codomain()
+        if cover.base_ring() is not self.base_ring():
+            raise ValueError("the cokernel form must stay over the selected base ring")
+        module = morphism.cokernel()
+        values = FractionFieldQuotient(self.base_ring(), 2)
+        generators = tuple(cover.module_generators())
+        gram = tuple(
+            tuple(values(cover.b(left, right)) for right in generators)
+            for left in generators
+        )
+        return self.from_module(
+            module,
+            gram,
+            values,
+            _extra_categories=(CokernelTorsionFormModules(self.base_ring()),),
+        )
 
     @cached_method
     def twist_functor(self, scalar):
@@ -2071,6 +2140,7 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
 
 __all__ = [
+    "CokernelTorsionFormModules",
     "TorsionBilinearFormModules",
     "TorsionFormAutomorphism",
     "TorsionFormIsometry",

@@ -235,3 +235,26 @@ def test_generic_torsion_form_reframing_and_primary_components_are_live_objects(
     assert components[ZZ(3)].cardinality() == 3
     assert gram[0, 0] == QQ(1) / 2
     assert gram[1, 1] == QQ(1) / 3
+
+
+def test_literal_cokernel_forms_retain_the_cover_projection_and_coset_lifts() -> None:
+    correlation = Lattices(ZZ)("A1").correlation_morphism()
+    bilinear = TorsionBilinearFormModules(ZZ).cokernel(correlation)
+    quadratic = TorsionQuadraticFormModules(ZZ).cokernel(correlation)
+
+    for form in (bilinear, quadratic):
+        projection = form.projection()
+        generator = next(iter(form.module_generators()))
+        representative = generator.coset_representative()
+
+        assert form.presentation() is correlation
+        assert form.cover() is correlation.codomain()
+        assert projection.domain() is correlation.codomain()
+        assert projection.codomain() is form
+        assert projection(representative) == generator
+        assert form.cardinality() == 2
+
+    generator = next(iter(bilinear.module_generators()))
+    assert bilinear.b(generator, generator) == bilinear.value_module()(QQ(-1) / 2)
+    q_generator = next(iter(quadratic.module_generators()))
+    assert quadratic.q(q_generator) == quadratic.value_module()(QQ(-1) / 2)
