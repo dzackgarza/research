@@ -15,8 +15,13 @@ def test_finite_cyclic_subgroup_retains_ambient_group_and_selected_generator() -
     ambient = OwnedGroups().C(4)
     generator = ambient.group_generators()[0]
     subgroup = cyclic_subgroup(generator)
+    declared = CyclicGroups()(generator)
 
     assert subgroup in CyclicGroups()
+    assert declared in CyclicGroups()
+    assert declared.supergroup() is ambient
+    assert declared.generator() == generator
+    assert declared.inclusion()(generator) == generator
     assert subgroup in Subgroups(ambient)
     assert subgroup in FiniteAbelianGroups()
     assert subgroup.supergroup() is ambient

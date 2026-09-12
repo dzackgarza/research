@@ -6,8 +6,10 @@ from dzack_research.preamble.categories.group.predicate_subgroups import (
     CentralizerSubgroups,
     IntersectionSubgroups,
     KernelSubgroups,
+    PredicateSubgroups,
     PreimageSubgroups,
     StabilizerSubgroups,
+    predicate_subgroup,
 )
 
 
@@ -71,3 +73,20 @@ def test_stabilizer_centralizer_and_intersection_retain_their_defining_objects()
 
     assert intersection in IntersectionSubgroups(group)
     assert intersection.intersected_subgroups() == (setwise, centralizer)
+
+
+def test_predicate_subgroup_notation_and_structured_routes_use_category_constructors() -> None:
+    _lattice, group = _orthogonal_group()
+    identity = group.one()
+    predicate = lambda element: element * identity == identity * element
+
+    declared = PredicateSubgroups(group)(predicate, "g commutes with 1")
+    notation = predicate_subgroup(group, predicate, "g commutes with 1")
+    centralizer = CentralizerSubgroups(group)(identity)
+
+    assert declared.supergroup() is group
+    assert notation.supergroup() is group
+    assert declared.defining_predicate()(identity)
+    assert notation.defining_predicate()(identity)
+    assert centralizer.centralizing_element() is identity
+    assert centralizer.inclusion().codomain() is group

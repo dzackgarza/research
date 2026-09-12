@@ -377,9 +377,9 @@ restart of the module/algebra/action constructions.
   the responsible category/object methods, `Mor`, and existing private adapters;
   session exports in `all.py`, notation in `lexicon/`, and catalogue entrypoints.
   **Scope:** every surviving public construction family, including those whose
-  feature implementation no longer appears in this queue. Continue with completion,
-  then its scheme, group, lattice, and collection consumers. This is a source-conformance task, not a claim that
-  every family currently violates the contract.
+  feature implementation no longer appears in this queue. Continue with lattice and
+  collection consumers. This is a source-conformance task, not a claim that every
+  family currently violates the contract.
   **Decision:** the constructor's defining datum and maps are authoritative.
   Document its allowed mathematical input forms at the existing declaration
   (`OWN-13`), including the actual inherited or composed general construction
@@ -398,10 +398,10 @@ restart of the module/algebra/action constructions.
   `OWN-05`. A call-site comment, same-file placement, new public raw accessor, or
   helper extraction cannot create an exception. Move raw computation only into
   its designated adapter and keep its raising inside that boundary.
-  **First remaining specimen:** the selected completion construction through
-  its object method and defining comparison maps after the active completion
-  arithmetic release settles. Reuse its specimens rather than commissioning
-  another suite of implementation-shaped checks.
+  **First remaining specimen:** a selected lattice constructed through
+  `Lattices(R)(data)` and the structured refinements that retain its form and
+  framing. Reuse the existing lattice constructor specimens rather than
+  commissioning another suite of implementation-shaped checks.
   **Acceptance:** the family's source routes converge and its public objects
   retain the required data before inherited operations run. The accompanying
   source review covers the actual computation and raising, not only exports or
