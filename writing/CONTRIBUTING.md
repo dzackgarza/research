@@ -4565,6 +4565,75 @@ with $r:=\dim\operatorname{rad}$ via $b^{\sharp}$, and note that for
 $F=\mathbb C$, $\mathbb F_q$, $\mathbb Q_p$ the invariant is not
 $(p,q,r)$.
 
+### `PR-73`: Prefer intrinsic invariants of $\mathcal C$ — $M\in\mathbf{Mod}_R$ as $R$-module, not $M\otimes_RF\in\mathbf{Vect}_F$ — and flag once-removed definitions that need research
+
+When possible an invariant of $M\in\mathcal C$ should be defined
+*intrinsically* as a functor $\mathcal C\to\mathbf{Set}$ / $\mathbf{Card}$
+/ $\mathbf{Ab}$ out of $\mathcal C$ itself, not as an invariant of
+$\mathcal D$ transported via a functor $F\colon\mathcal C\to\mathcal D$.
+Defining it once-removed — $\operatorname{inv}_{\mathcal C}(M):=
+\operatorname{inv}_{\mathcal D}(F(M))$ for $F\colon\mathcal C\to\mathcal D$
+— is sometimes necessary in a pinch (e.g. while $\mathcal C$'s intrinsic
+theory is not yet available), but it is not elegant, it hides the
+$R$-structure, and it makes the special case look primary and the
+general case derived, when it should be the reverse.
+
+The type case is rank. One *can* define, for $R$ a domain with
+$F:=\operatorname{Frac}(R)$,
+$\operatorname{rk}_R(M):=\dim_F(M\otimes_RF)$ for $M\in\mathbf{Mod}_R$.
+This is technically correct when $M\otimes_RF$ is finite-dimensional and
+recovers a "well known" notion from the classical $\dim_F$, but it is
+stylistically poor: it defines an invariant of $R$-modules by bootstrapping
+an invariant of $F$-vector spaces. What is wanted is the reverse — define
+$\operatorname{rk}$ (resp. $\dim$) once, intrinsically for $R$-modules
+(resp. $F$-vector spaces as the special case $R=F$ a field), e.g. via
+localizations $M_{\mathfrak p}$, via $\operatorname{rk}_R(M):=
+\sup\{n\mid R^n\hookrightarrow M\}$ / $\inf\{n\mid M\twoheadrightarrow R^n\}$
+with IBN, or via $M\cong R^n$ when $M$ is finite free — and *recover*
+"$\dim_FV$ is $\operatorname{rk}_F(V)$" as the well-known specialization,
+not the other way around.
+
+The same holds for signatures. One *can* define, while the intrinsic
+$R$-theory is missing, $\operatorname{sig}(L):=\operatorname{sig}(L\otimes_RF,
+b_F)$ for $F=\operatorname{Frac}(R)$ ordered ( PR-72), but the preferred
+form is intrinsic to $R$ — via places/completions $R\to\widehat R_{\mathfrak p}$,
+$R\to R_\sigma$, real places $\sigma\colon R\to\mathbb R$, and the family
+$(p_\sigma,q_\sigma,r_\sigma)$ as invariants of $(L,b)$ in
+$\mathbf{Lat}_R$ itself, with $L\otimes_RF$ as the intermediate step that
+is *not* ideal in a pinch. The once-removed definition is admissible
+temporarily, but it must be flagged.
+
+This requires honest judgement, taste, and usually interactive research,
+and should be flagged *outside* the book when found: it is the
+difference between a definition that will age well and one that will have
+to be rewritten when the intrinsic $R$-theory is supplied.
+
+**Standard:** on first encountering an invariant that is naturally
+$F:=\operatorname{Frac}(R)$ or $F$ a field, ask: can this be defined
+intrinsically for $M\in\mathbf{Mod}_R$ / $(M,b)\in\mathbf{Bil}_{R,W}$ as
+a functor of $R$ (resp. of $(R,W)$) itself — e.g. $\operatorname{rk}_R$,
+$\operatorname{Val}_R(b)\subseteq W$, $(p_\sigma,q_\sigma,r_\sigma)$
+via $R\to\mathbb R$ at $\sigma$ — with $\dim_F$ / $\operatorname{sig}_F$
+as the specialization to $R=F$ a field? If yes, define it intrinsically
+and note $\dim_F:=\operatorname{rk}_F$, $\operatorname{sig}_F$ as the
+field fiber. If the intrinsic form is not yet available and the
+once-removed $M\mapsto\operatorname{inv}_F(M\otimes_RF)$ is used in a
+pinch, flag it outside the book (GitHub issue `needs-research` with the
+label "intrinsic invariant needed") and do not present the $F$-transport
+as the definition.
+
+**Banned:** "$\operatorname{rk}_R(M):=\dim_F(M\otimes_RF)$" as the
+*definition* of rank for $M\in\mathbf{Mod}_R$; "$\operatorname{sig}(L):=
+\operatorname{sig}(L\otimes_RF)$" as the *definition* of signature for
+$L\in\mathbf{Lat}_R$ without flagging that the intrinsic $R$-invariant
+(via $R\to\widehat R_{\mathfrak p}$, $R\to\mathbb R$ at $\sigma$) is owed.
+
+**Preferred:** define $\operatorname{rk}_R$ / $\operatorname{sig}_R$
+intrinsically for $R$-modules / $R$-lattices (with $W$ varying), then
+note "$\dim_FV=\operatorname{rk}_F(V)$ for $F$ a field" and
+"$\operatorname{sig}(L\otimes_RF)$ is the $F$-fiber of
+$\operatorname{sig}_R(L)$" as specializations.
+
 ### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
 
 A fenced `Definition` is an atomic unit with one logical status: it
@@ -5268,6 +5337,18 @@ assumed), $\mathbb Z_p$, $\mathbb Q_p$, $\mathbb C_p$, $\mathbb A$
 (PR-72). State the explicit scope most definitions should be at and flag
 a block that only does the ordered-field finite case outside the book
 until the $R$ Dedekind / $p$-adic / adele generalization is supplied.
+
+**34. Prefer intrinsic invariants of $\mathcal C$ over once-removed via
+$\mathcal C\to\mathcal D$.** $\operatorname{rk}_R(M):=\dim_F(M\otimes_RF)$
+and $\operatorname{sig}(L):=\operatorname{sig}(L\otimes_RF)$ are
+technically correct in a pinch but stylistically poor — they bootstrap a
+classical $F$-invariant to define an $R$-invariant, when the elegant
+form defines $\operatorname{rk}_R$ / $\operatorname{sig}_R$ intrinsically
+for $R$-modules / $R$-lattices (via $R\to\widehat R_{\mathfrak p}$,
+$R\to\mathbb R$ at $\sigma$) and recovers $\dim_F:=\operatorname{rk}_F$
+as the field specialization (PR-73). Flag once-removed definitions
+outside the book until the intrinsic $R$-theory is supplied; they require
+judgement and interactive research.
 
 **29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
 $\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
