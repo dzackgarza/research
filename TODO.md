@@ -734,22 +734,6 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`ade-pairs`**. **Needs:** `divisors`, `relative-spec`, `singularity-classification`, `chambers`.
-  Implement source-defined ADE and toric log pairs through the existing
-  toric, divisor, cyclic-cover and Coxeter owners.
-  **Owner:** `categories/schemes/ade_surfaces.py` and those shared inputs.
-  **Deliver:** equipped pairs `(X,Delta)`; the exact finite/affine ADE type
-  and variant range; decorated integral polygons with distinguished point;
-  toric base and boundary/complementary divisors; branch section/Newton
-  polygon; pyramidal three-polytope and toric threefold; double cover and deck
-  involution; pulled-back boundary; polarizing and Dynkin data.
-  **Decision:** preserve side decorations and parity constraints as actual
-  classification data. ADE base and cover surfaces are equipped geometric
-  objects, not parallel records duplicating a scheme.
-  **Acceptance:** Alexeev--Thompson source examples, singular-orbit and
-  parity-forced cases, and local/global singularity comparisons.
-  Read and cite the source for each classification rule before implementing it.
-
 - [ ] **`bertini-family`**. **Needs:** `singularity-classification`.
   Supply Bertini and general complete-intersection family applications.
   **Inputs:** parameter spaces, evaluation/jet maps, and local smoothness.
@@ -966,7 +950,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

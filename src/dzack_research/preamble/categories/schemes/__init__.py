@@ -245,10 +245,12 @@ _EXPORTS = {
     'horikawa_enriques_surface': ('dzack_research.preamble.categories.schemes.enriques_families', 'horikawa_enriques_surface'),
     'AT21ADEPair': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ADEPair'),
     'AT21ToricADEPair': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ToricADEPair'),
+    'AT21ADEDoubleCover': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ADEDoubleCover'),
 
 }
 
 __all__ = [
+    'AT21ADEDoubleCover',
     'AT21ADEPair',
     'AT21ToricADEPair',
     'horikawa_enriques_surface',
