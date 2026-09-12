@@ -1660,85 +1660,85 @@ preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	vec
 preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	definite_complement_extensions	function	442	1	src/dzack_research/preamble/categories/vector_orbits.py	src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	gluing_route_discriminant_classes	function	511	1	src/dzack_research/preamble/categories/vector_orbits.py	src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage	stable_complement_root_reflections	function	647	1	src/dzack_research/preamble/categories/vector_orbits.py	src/dzack_research/preamble/categories/vector_orbits.py	reconciled-live-owner
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	VertexLabel	binding	113	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectivePointDatum	binding	117	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets	class	132	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.super_categories	method	143	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.ParentMethods	class	146	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.ParentMethods.index_of	method	178	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	X_ref	binding	187	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs	class	195	1	src/dzack_research/preamble/categories/vinberg_invariants.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.super_categories	method	201	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.Symmetric	method	204	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods	class	207	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.vertices	method	211	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.num_vertices	method	216	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.vertex_weight	method	221	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.edge_weight	method	228	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.subdiagram	method	235	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.coxeter_order	method	242	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_symmetric	method	262	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_coxeter	method	274	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_crystallographic	method	296	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_simply_laced	method	317	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_elliptic	method	330	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_parabolic	method	337	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_hyperbolic	method	346	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_compact_hyperbolic	method	364	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_paracompact_hyperbolic	method	377	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.subdiagram_poset	method	390	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.parabolic_subdiagram_poset	method	402	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.maximal_parabolic_subdiagram_poset	method	413	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.elliptic_subdiagram_poset	method	419	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.maximal_elliptic_subdiagram_poset	method	438	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.hyperbolic_subdiagram_poset	method	449	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.find_all_parabolics	method	460	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.find_maximal_parabolics	method	464	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs	class	469	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.super_categories	method	479	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.Coxeter	method	482	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.ParentMethods	class	489	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.ParentMethods.schlafli_matrix	method	492	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.ParentMethods.gram_tensor	method	519	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	to_projective_point	function	565	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices	class	583	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.super_categories	method	594	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods	class	597	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.rank	method	620	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.variable_names	method	624	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.vertices	method	628	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.num_vertices	method	632	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.vertex_weight	method	647	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.edge_weight	method	654	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.projective_space	method	663	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.entries	method	674	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.is_infinity	method	695	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.affine_ratio	method	699	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.coxeter_order	method	706	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.is_valid	method	732	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.to_sage_coxeter_matrix	method	753	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.subdiagram	method	768	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.submatrix	method	786	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.to_digraph	method	790	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.graph	method	806	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.tikz	method	817	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	vinberg_invariant_matrix_from_gram	function	890	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	combinatorial_vinberg_invariant_matrix	function	932	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs	class	966	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.super_categories	method	978	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods	class	981	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.vertices	method	1018	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.num_vertices	method	1022	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.vertex_weight	method	1026	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.edge_weight	method	1031	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.edges	method	1036	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.subdiagram	method	1073	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.subgraph	method	1086	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.to_combinatorial_matrix	method	1090	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.to_vinberg_matrix	method	1112	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.underlying_digraph	method	1116	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	projective_weighted_digraph	function	1135	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	<module>	module	1	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	VertexLabel	binding	113	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectivePointDatum	binding	117	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets	class	132	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.super_categories	method	143	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.ParentMethods	class	146	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ReflectionCosineSets.ParentMethods.index_of	method	178	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	X_ref	binding	187	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs	class	195	1	src/dzack_research/preamble/categories/vinberg_invariants.py	src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.super_categories	method	201	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.Symmetric	method	204	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods	class	207	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.vertices	method	211	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.num_vertices	method	216	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.vertex_weight	method	221	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.edge_weight	method	228	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.subdiagram	method	235	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.coxeter_order	method	242	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_symmetric	method	262	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_coxeter	method	274	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_crystallographic	method	296	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_simply_laced	method	317	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_elliptic	method	330	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_parabolic	method	337	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_hyperbolic	method	346	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_compact_hyperbolic	method	364	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.is_paracompact_hyperbolic	method	377	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.subdiagram_poset	method	390	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.parabolic_subdiagram_poset	method	402	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.maximal_parabolic_subdiagram_poset	method	413	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.elliptic_subdiagram_poset	method	419	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.maximal_elliptic_subdiagram_poset	method	438	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.hyperbolic_subdiagram_poset	method	449	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.find_all_parabolics	method	460	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedGraphs.ParentMethods.find_maximal_parabolics	method	464	0		src/dzack_research/preamble/categories/coxeter_diagrams.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs	class	469	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.super_categories	method	479	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.Coxeter	method	482	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.ParentMethods	class	489	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.ParentMethods.schlafli_matrix	method	492	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	SymmetricProjectiveWeightedGraphs.ParentMethods.gram_tensor	method	519	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	to_projective_point	function	565	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices	class	583	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.super_categories	method	594	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods	class	597	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.rank	method	620	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.variable_names	method	624	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.vertices	method	628	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.num_vertices	method	632	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.vertex_weight	method	647	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.edge_weight	method	654	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.projective_space	method	663	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.entries	method	674	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.is_infinity	method	695	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.affine_ratio	method	699	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.coxeter_order	method	706	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.is_valid	method	732	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.to_sage_coxeter_matrix	method	753	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.subdiagram	method	768	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.submatrix	method	786	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.to_digraph	method	790	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.graph	method	806	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	CombinatorialVinbergInvariantMatrices.ParentMethods.tikz	method	817	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	vinberg_invariant_matrix_from_gram	function	890	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	combinatorial_vinberg_invariant_matrix	function	932	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs	class	966	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.super_categories	method	978	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods	class	981	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.vertices	method	1018	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.num_vertices	method	1022	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.vertex_weight	method	1026	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.edge_weight	method	1031	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.edges	method	1036	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.subdiagram	method	1073	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.subgraph	method	1086	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.to_combinatorial_matrix	method	1090	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.to_vinberg_matrix	method	1112	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	ProjectiveWeightedDiGraphs.ParentMethods.underlying_digraph	method	1116	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage	projective_weighted_digraph	function	1135	0		src/dzack_research/preamble/categories/vinberg_invariants.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/lattice_axioms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices	class	57	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/lattice_axioms.sage	FinitelyGeneratedLattices.extra_super_categories	method	74	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner

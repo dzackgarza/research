@@ -26,6 +26,22 @@ from dzack_research.preamble.categories.vinberg_invariants import (
     projective_weighted_graph,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vinberg_invariants.sage",
+    "live_owner": "src/dzack_research/preamble/categories/vinberg_invariants.py",
+    "owner_overrides": {
+        "ProjectiveWeightedGraphs.ParentMethods.subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.parabolic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.maximal_parabolic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.elliptic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.maximal_elliptic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.hyperbolic_subdiagram_poset": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.find_all_parabolics": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+        "ProjectiveWeightedGraphs.ParentMethods.find_maximal_parabolics": "src/dzack_research/preamble/categories/coxeter_diagrams.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def rooted_diagram(gram_rows):
     r"""Return the rooted diagram of the rank-two lattice with this Gram."""
