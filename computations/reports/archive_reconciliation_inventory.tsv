@@ -3056,9 +3056,9 @@ preamble/tests/framework/test_group_actions_and_isotypics.sage	test_isotypic_dec
 preamble/tests/framework/test_linear_systems_restrictions.sage	<module>	module	1	0		tests/divisors/test_projective_linear_systems.py	reconciled-live-owner
 preamble/tests/framework/test_linear_systems_restrictions.sage	test_complete_linear_system_image_and_base_locus	specimen	6	0		tests/divisors/test_projective_linear_systems.py	reconciled-live-owner
 preamble/tests/framework/test_linear_systems_restrictions.sage	test_restriction_map_has_expected_rank_and_cokernel	specimen	25	0		tests/divisors/test_projective_section_restrictions.py	reconciled-live-owner
-preamble/tests/framework/test_projective_products_picard.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/test_projective_products_picard.sage	test_picard_group_structure_on_product_of_lines	specimen	6	0			unreviewed
-preamble/tests/framework/test_projective_products_picard.sage	test_picard_lattice_matrix_and_duality_data	specimen	18	0			unreviewed
+preamble/tests/framework/test_projective_products_picard.sage	<module>	module	1	0		tests/schemes/test_projective_products_picard_archive.py	reconciled-live-owner
+preamble/tests/framework/test_projective_products_picard.sage	test_picard_group_structure_on_product_of_lines	specimen	6	0		tests/schemes/test_projective_products_picard_archive.py	reconciled-live-owner
+preamble/tests/framework/test_projective_products_picard.sage	test_picard_lattice_matrix_and_duality_data	specimen	18	0		tests/schemes/test_projective_products_picard_archive.py	reconciled-live-owner
 preamble/tests/framework/test_quotients_and_complete_intersections.sage	<module>	module	1	0			unreviewed
 preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_complete_intersection_certificate_for_an_affine_quadric_surface	specimen	6	0			unreviewed
 preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_diagonal_sign_quotient_family_has_global_quotient_data	specimen	29	0			unreviewed
