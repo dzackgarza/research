@@ -3450,6 +3450,50 @@ recurring definition and every later "check $b(x,x)\in2W$ for every $x$."
 Never carry $b(x,x)\in2W$ on every use once $\operatorname{Val}(b)$ is
 available — use the submodule.
 
+### `PR-50`: Nominalizing the adjective/verb — "satisfies the evenness / injectivity / exactness / commutativity condition" for "is even / injective / exact" / "commutes / factors"
+
+"Even" is an adjective on $b$ ($b$ **is even**,
+$b\in\operatorname{EvBil}$); "commutes" / "factors" are verbs on the
+diagram. Nominalizing to "evenness," "injectivity," "exactness,"
+"commutativity," "factorization" + "condition" forces a light verb
+"satisfies / has / exhibits / possesses" to re-predicate it — one
+checkable predicate becomes three words for no new content, with no
+named subobject to check (same device as "with its hypotheses," PR-31).
+Standard is the un-nominalized predicate.
+
+Concrete bad / standard pairs (transcribe, do not invent):
+
+* **Banned:** "When $2W=W$, every bilinear form satisfies the evenness
+  condition."
+  **Preferred:** "When $2W=W$, every $W$-valued bilinear $b$ is even"
+  (i.e. $\operatorname{EvBil}_{R,W}(M)=\operatorname{Bil}_{R,W}(M)$ as
+  $R$-submodules; element shadow "$b(x,x)\in2W$ $\forall x$" vacuous) —
+  or, for the non-vacuous content: "the quadratic refinement
+  $\operatorname{Quad}_{R,W}(M)=\operatorname{Hom}_R(\Gamma^2_R(M),W)$
+  still distinguishes forms via $\gamma^*$." One adjective, one membership
+  $b\in\operatorname{EvBil}$.
+
+* **Banned:** " $f$ satisfies the injectivity condition / satisfies
+  injectivity."
+  **Preferred:** "$f$ is injective" ($f\colon M\hookrightarrow N$ as
+  monomorphism, $\ker f=0$).
+
+* **Banned:** "the sequence satisfies exactness at $M$."
+  **Preferred:** "the sequence is exact at $M$" ($\operatorname{im}=\ker$).
+
+* **Banned:** "the diagram satisfies the commutativity condition /
+  exhibits commutativity."
+  **Preferred:** "the diagram commutes" ($g\circ f = h$).
+
+* **Banned:** " $b$ satisfies the factorization condition through
+  $\Gamma^2$."
+  **Preferred:** "$b$ factors through $\Gamma^2_R(M)$"
+  / "$b$ lifts through $\Gamma^2_R(M)$."
+
+In each case delete the noun "…ness / …ivity / …ion" + "condition" + light
+verb, and keep the adjective/verb that already is the claim with its
+named subobject/diagram.
+
 ### `PR-46`: "For every $x$, a choice of …" for the global functor / bundle / section / natural transformation
 
 "For every $x$, a choice of $b_x$ / basis / complement / $b(x,x)\in2W$ /
@@ -3975,3 +4019,14 @@ $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$, and
 restates $b\colon M\times M\to W$ instead of $b\in\operatorname{Bil}$
 (PR-49) — definitions as objects and containments, not signatures and
 element formulas.
+
+**18. Nominalizing the adjective/verb — "satisfies the evenness
+condition."** "Even" is an adjective ($b$ is even,
+$b\in\operatorname{EvBil}$); nominalizing to "evenness" + "condition" +
+"satisfies" makes one predicate three words with no named subobject to
+check (PR-50). Standard is "is even / injective / exact" / "commutes /
+factors," with bad/standard pairs: "satisfies the evenness condition"
+$\to$ "is even ($\operatorname{EvBil}=\operatorname{Bil}$)"; "satisfies
+injectivity" $\to$ "is injective"; "satisfies exactness" $\to$ "is
+exact"; "exhibits commutativity" $\to$ "commutes"; "satisfies the
+factorization condition" $\to$ "factors through $\Gamma^2$."
