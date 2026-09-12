@@ -121,7 +121,13 @@ def scan_module(path: Path, root: Path) -> list[Notion]:
     scopes_by_line = semantic_scopes(text)
 
     for line_number, line in enumerate(text.splitlines(), 1):
-        scopes = scopes_by_line.get(line_number, ())
+        # A raw line inside a multiline string can begin with text such as
+        # ``class graph ...`` and match the source regex even though it is not
+        # Python/Sage code.  ``semantic_scopes`` records only token-bearing
+        # source lines, so reject lines that the tokenizer never exposed.
+        if line_number not in scopes_by_line:
+            continue
+        scopes = scopes_by_line[line_number]
         functions = tuple(name for kind, name in scopes if kind == "def")
         classes = tuple(name for kind, name in scopes if kind == "class")
         match = DEFINITION.match(line)

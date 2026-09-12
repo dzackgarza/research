@@ -30,6 +30,26 @@ def test_multiline_function_parameters_are_not_module_public_bindings(tmp_path: 
     assert names == ("<module>", "combine")
 
 
+def test_multiline_docstring_text_is_not_a_public_definition(tmp_path: Path) -> None:
+    archive_root = tmp_path / "archives" / "preamble"
+    archive_root.mkdir(parents=True)
+    module = archive_root / "sample.py"
+    module.write_text(
+        'r"""Notes.\n'
+        "\n"
+        "A category may describe its class graph by hand.\n"
+        '"""\n'
+        "class Actual:\n"
+        "    pass\n"
+    )
+
+    scan_module = _inventory_module()["scan_module"]
+    notions = scan_module(module, archive_root)
+    names = tuple(notion.qualified_name for notion in notions)
+
+    assert names == ("<module>", "Actual")
+
+
 def test_one_line_suite_does_not_nest_later_public_declarations(tmp_path: Path) -> None:
     archive_root = tmp_path / "archives" / "preamble"
     archive_root.mkdir(parents=True)
