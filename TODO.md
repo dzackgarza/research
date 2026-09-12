@@ -1470,4 +1470,5 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
+| `GEOMETRIC-COHOMOLOGY-cech-20260912-0243` | geometric-cohomology / distinguished affine Cech complex | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/geometric_cohomology.py; tests/schemes/test_affine_cech_cohomology.py` (write) | `c4792a28; ed9562e5` | 2026-09-12T02:43:00Z |
 | `LINE-BUNDLES-projective-20260912-0112` | line-bundles / projective O(d) and section algebra | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py; src/dzack_research/preamble/categories/divisors/section_rings.py; src/dzack_research/preamble/categories/schemes/schemes.py; src/dzack_research/preamble/categories/divisors/__init__.py; src/dzack_research/preamble/all.py; tests/divisors/test_projective_line_bundles_frontier.py` (write) | `8ae1ccaf` | 2026-09-12T01:12:00Z |
