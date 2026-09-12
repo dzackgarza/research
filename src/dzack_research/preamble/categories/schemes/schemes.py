@@ -153,6 +153,13 @@ class SchemeMorphism(Morphism):
     def codomain(self):
         return self.parent().codomain() if self._preamble_codomain_override is None else self._preamble_codomain_override
 
+    def point_coordinates(self):
+        r"""Return the selected owned coordinate family when this morphism is a represented point."""
+        coordinates = getattr(self, "_preamble_point_coordinates", None)
+        if coordinates is None:
+            raise ValueError("this scheme morphism was not constructed from selected point coordinates")
+        return coordinates
+
     def _call_(self, value):
         native_value = value.native_morphism() if isinstance(value, SchemeMorphism) else value
         return self.native_morphism()(native_value)
@@ -974,9 +981,15 @@ class Schemes(OwnedCategoryOverBaseRing):
 
         def point_morphism(self, coordinates):
             base = self.scheme_base_ring()
-            engine_base = _engine_ring(base)
+            owned_coordinates = tuple(
+                coordinate
+                if getattr(coordinate, "parent", lambda: None)() is base
+                else base(coordinate)
+                for coordinate in coordinates
+            )
             engine_coordinates = tuple(
-                _engine_element(base, coordinate) if getattr(coordinate, "parent", lambda: None)() is base else engine_base(coordinate) for coordinate in coordinates
+                _engine_element(base, coordinate)
+                for coordinate in owned_coordinates
             )
             if self in ProductProjectiveSpaces(base):
                 factors = self.factors()
@@ -1023,6 +1036,10 @@ class Schemes(OwnedCategoryOverBaseRing):
                 base,
                 domain=point_domain,
                 codomain=self,
+            )
+            wrapped._preamble_point_coordinates = finite_family(
+                owned_coordinates,
+                name=f"Selected coordinates of point on {self}",
             )
             if self in AffineSchemes(base):
                 source_algebra = self.coordinate_algebra()

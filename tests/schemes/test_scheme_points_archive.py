@@ -1,6 +1,6 @@
 """Archive reconciliation for scheme points as morphisms in Sch/S."""
 
-from dzack_research.preamble.all import QQ, AffineSpace, Schemes, Spec
+from dzack_research.preamble.all import QQ, AffineSpace, ProjectiveSpace, Schemes, Spec
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/schemes/scheme_points.sage",
@@ -28,3 +28,14 @@ def test_scheme_point_composes_with_the_structure_map_over_the_same_base() -> No
     assert structural_value.domain() is point.domain()
     assert structural_value.codomain() is base
     assert structural_value in Schemes(QQ).Mor(point.domain(), base)
+
+
+def test_projective_point_retains_owned_noncoordinate_homogeneous_coordinates() -> None:
+    plane = ProjectiveSpace(2, QQ)
+    point = plane.point_morphism((1, 2, 3))
+    coordinates = point.point_coordinates()
+
+    assert coordinates.cardinality() == 3
+    assert tuple(coordinates) == (QQ(1), QQ(2), QQ(3))
+    assert all(coordinate.parent() is QQ for coordinate in coordinates)
+    assert point.codomain() is plane
