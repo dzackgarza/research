@@ -185,3 +185,31 @@ def test_bilinear_jordan_form_preserves_the_pairing() -> None:
     for left in form.module_generators():
         for right in form.module_generators():
             assert jordan.b(normalization(left), normalization(right)) == form.b(left, right)
+
+
+def test_generic_bilinear_torsion_form_retains_subobjects_orbits_and_metabolizers() -> None:
+    values = FractionFieldQuotient(ZZ, 1)
+    form = TorsionBilinearFormModules(ZZ).from_relations_and_gram(
+        _matrix(ZZ, [[2, 0], [0, 2]]),
+        _matrix(QQ, [[0, QQ(1) / 2], [QQ(1) / 2, 0]]),
+        values,
+    )
+    first, second = tuple(form.module_generators())
+
+    assert form.is_anisotropic() is False
+    assert form.subobject_generated_by((first,)).cardinality() == 2
+    assert form.orthogonal_subobject(
+        form.subobject_generated_by((first,))
+    ).cardinality() == 2
+
+    lagrangians = form.lagrangian_subobjects()
+    assert lagrangians.cardinality() == 2
+    assert form.is_metabolic()
+    metabolizer = form.metabolizer()
+    assert metabolizer.cardinality() == 2
+    assert form.orthogonal_quotient(metabolizer).cardinality() == 1
+
+    isotropic_orbits = form.orbits_on_isotropic_subobjects()
+    assert sorted(int(orbit.cardinality()) for orbit in isotropic_orbits) == [1, 2]
+    assert form.orbit(first).cardinality() == 2
+    assert second in form.orbit(first)

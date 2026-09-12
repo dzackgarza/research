@@ -456,6 +456,147 @@ def _torsion_form_maximal_isotropic_subobjects(form, *, quadratic: bool):
     )
 
 
+def _torsion_form_all_subobjects(form, *, quadratic: bool):
+    r"""Return every finite form-bearing subobject of ``form`` exactly once."""
+    zero_subobject = _torsion_form_subobject_on(form, (), quadratic=quadratic)
+    seen = {_embedded_elements(zero_subobject)}
+    frontier = [zero_subobject]
+    subobjects = [zero_subobject]
+    elements = tuple(form.elements())
+    while frontier:
+        current = frontier.pop()
+        current_elements = _embedded_elements(current)
+        selected = tuple(current.embedded_module_generators())
+        for element in elements:
+            if element in current_elements:
+                continue
+            candidate = _torsion_form_subobject_on(
+                form,
+                selected + (element,),
+                quadratic=quadratic,
+            )
+            embedded = _embedded_elements(candidate)
+            if embedded in seen:
+                continue
+            seen.add(embedded)
+            frontier.append(candidate)
+            subobjects.append(candidate)
+    return finite_ordered_set(tuple(subobjects))
+
+
+def _torsion_form_orthogonal_subobject(form, subobject, *, quadratic: bool):
+    r"""Return ``S^perp`` as a form-bearing subobject of ``form``."""
+    inclusion = subobject.inclusion()
+    if inclusion.codomain() is not form:
+        raise ValueError("the orthogonal is taken inside this finite form")
+    generators = tuple(subobject.embedded_module_generators())
+    zero = form.associated_bilinear_form().value_module().zero() if quadratic else form.value_module().zero()
+    selected = tuple(
+        element
+        for element in form.elements()
+        if all(form.b(element, generator) == zero for generator in generators)
+    )
+    return _torsion_form_subobject_on(form, selected, quadratic=quadratic)
+
+
+def _torsion_form_lagrangian_subobjects(form, *, quadratic: bool):
+    r"""Return isotropic ``S`` satisfying ``S=S^perp``."""
+    return finite_ordered_set(
+        tuple(
+            subobject
+            for subobject in _torsion_form_isotropic_subobjects(
+                form, quadratic=quadratic
+            )
+            if _embedded_elements(subobject)
+            == _embedded_elements(
+                _torsion_form_orthogonal_subobject(
+                    form, subobject, quadratic=quadratic
+                )
+            )
+        )
+    )
+
+
+def _torsion_form_subobject_orbit(form, subobject, acting, *, quadratic: bool):
+    r"""Return the orbit of one subobject using generators, without enumerating ``acting``."""
+    if subobject.inclusion().codomain() is not form:
+        raise ValueError("the acted subobject must lie in this finite form")
+    generators = tuple(acting.group_generators())
+    seen = {_embedded_elements(subobject)}
+    frontier = [subobject]
+    orbit = [subobject]
+    while frontier:
+        current = frontier.pop()
+        current_generators = tuple(current.embedded_module_generators())
+        for action in generators:
+            image = _torsion_form_subobject_on(
+                form,
+                tuple(action(generator) for generator in current_generators),
+                quadratic=quadratic,
+            )
+            embedded = _embedded_elements(image)
+            if embedded in seen:
+                continue
+            seen.add(embedded)
+            frontier.append(image)
+            orbit.append(image)
+    return finite_ordered_set(tuple(orbit))
+
+
+def _torsion_form_subobject_orbits(form, family, acting, *, quadratic: bool):
+    r"""Return the orbit partition of a finite family of subobjects."""
+    remaining = {
+        _embedded_elements(subobject): subobject
+        for subobject in family
+    }
+    orbits = []
+    while remaining:
+        representative = next(iter(remaining.values()))
+        orbit = _torsion_form_subobject_orbit(
+            form,
+            representative,
+            acting,
+            quadratic=quadratic,
+        )
+        orbits.append(orbit)
+        for member in orbit:
+            remaining.pop(_embedded_elements(member), None)
+    return finite_ordered_set(tuple(orbits))
+
+
+def _torsion_form_subquotient(form, subobject, over, *, quadratic: bool):
+    r"""Return ``K/H`` with descended form for ``H <= K <= H^perp``."""
+    small_inclusion = subobject.inclusion()
+    large_inclusion = over.inclusion()
+    if small_inclusion.codomain() is not form or large_inclusion.codomain() is not form:
+        raise ValueError("a subquotient uses two subobjects of this finite form")
+    small_elements = _embedded_elements(subobject)
+    large_elements = _embedded_elements(over)
+    if not small_elements <= large_elements:
+        raise ValueError("K/H requires H contained in K")
+    if not form.form_vanishes_on(small_elements):
+        raise ValueError("the subquotient form descends only along an isotropic H")
+    perpendicular = _torsion_form_orthogonal_subobject(
+        form, subobject, quadratic=quadratic
+    )
+    if not large_elements <= _embedded_elements(perpendicular):
+        raise ValueError("the subquotient form requires K contained in H^perp")
+
+    images = {
+        label: large_inclusion.lift(
+            small_inclusion(subobject.module_generator(label))
+        )
+        for label in subobject.module_generating_set()
+    }
+    quotient = module_homset(subobject, over)(images).cokernel()
+    generators = tuple(over.module_generators())
+    return _torsion_form_modules(form.base_ring(), quadratic=quadratic).from_module(
+        quotient,
+        _form_gram_on(over, generators, quadratic=quadratic),
+        form.value_module(),
+    )
+
+
 def _form_gram_on(form, generators, *, quadratic: bool):
     r"""Return the Gram data of ``form`` on a selected generating family.
 
@@ -1427,6 +1568,84 @@ class TorsionBilinearFormModules(OwnedCategoryOverBaseRing):
             elements = tuple(elements)
             return all(self.b(left, right) == self.value_module().zero() for left in elements for right in elements)
 
+
+        @cached_method
+        def subobjects(self):
+            r"""Return all form-bearing subobjects of this finite form."""
+            return _torsion_form_all_subobjects(self, quadratic=False)
+
+        def orbit(self, element, group=None):
+            r"""Return the orbit of ``element`` under ``group`` or the full orthogonal group."""
+            acting = self.automorphism_group() if group is None else group
+            return acting.orbit(self(element))
+
+        @cached_method
+        def orbits(self, group=None):
+            r"""Return the orbit partition of the finite underlying module."""
+            acting = self.automorphism_group() if group is None else group
+            unseen = set(self.elements())
+            partition = []
+            while unseen:
+                representative = next(iter(unseen))
+                reached = acting.orbit(representative)
+                partition.append(reached)
+                unseen.difference_update(tuple(reached))
+            return finite_ordered_set(tuple(partition))
+
+        def orbits_on_subobjects(self, group=None):
+            r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
+            acting = self.automorphism_group() if group is None else group
+            return _torsion_form_subobject_orbits(
+                self, self.subobjects(), acting, quadratic=False
+            )
+
+        def orbits_on_isotropic_subobjects(self, group=None):
+            r"""Return the orthogonal-group orbits on isotropic subobjects."""
+            acting = self.automorphism_group() if group is None else group
+            return _torsion_form_subobject_orbits(
+                self, self.isotropic_subobjects(), acting, quadratic=False
+            )
+
+        def is_anisotropic(self) -> bool:
+            zero = self.zero()
+            return all(
+                not self.form_vanishes_on((element,))
+                for element in self.elements()
+                if element != zero
+            )
+
+        def orthogonal_subobject(self, subobject):
+            return _torsion_form_orthogonal_subobject(
+                self, subobject, quadratic=False
+            )
+
+        @cached_method
+        def lagrangian_subobjects(self):
+            return _torsion_form_lagrangian_subobjects(self, quadratic=False)
+
+        def is_metabolic(self) -> bool:
+            return self.lagrangian_subobjects().cardinality() != 0
+
+        def metabolizer(self):
+            lagrangians = self.lagrangian_subobjects()
+            if lagrangians.cardinality() == 0:
+                raise ValueError("this finite form has no metabolizer")
+            return lagrangians[0]
+
+        def restricted_form(self, subobject):
+            if subobject.inclusion().codomain() is not self:
+                raise ValueError("the restricted form requires a subobject of this form")
+            return subobject
+
+        def subquotient_form(self, subobject, over):
+            return _torsion_form_subquotient(
+                self, subobject, over, quadratic=False
+            )
+
+        def orthogonal_quotient(self, subobject):
+            perpendicular = self.orthogonal_subobject(subobject)
+            return self.subquotient_form(subobject, perpendicular)
+
         @cached_method
         def invariant_factor_form(self):
             r"""Return the form-preserving isomorphism to invariant-factor framing."""
@@ -1604,6 +1823,84 @@ class TorsionQuadraticFormModules(OwnedCategoryOverBaseRing):
 
         def form_vanishes_on(self, elements) -> bool:
             return all(self.q(element) == self.value_module().zero() for element in elements)
+
+
+        @cached_method
+        def subobjects(self):
+            r"""Return all form-bearing subobjects of this finite form."""
+            return _torsion_form_all_subobjects(self, quadratic=True)
+
+        def orbit(self, element, group=None):
+            r"""Return the orbit of ``element`` under ``group`` or the full orthogonal group."""
+            acting = self.automorphism_group() if group is None else group
+            return acting.orbit(self(element))
+
+        @cached_method
+        def orbits(self, group=None):
+            r"""Return the orbit partition of the finite underlying module."""
+            acting = self.automorphism_group() if group is None else group
+            unseen = set(self.elements())
+            partition = []
+            while unseen:
+                representative = next(iter(unseen))
+                reached = acting.orbit(representative)
+                partition.append(reached)
+                unseen.difference_update(tuple(reached))
+            return finite_ordered_set(tuple(partition))
+
+        def orbits_on_subobjects(self, group=None):
+            r"""Return the orthogonal-group orbits on all form-bearing subobjects."""
+            acting = self.automorphism_group() if group is None else group
+            return _torsion_form_subobject_orbits(
+                self, self.subobjects(), acting, quadratic=True
+            )
+
+        def orbits_on_isotropic_subobjects(self, group=None):
+            r"""Return the orthogonal-group orbits on isotropic subobjects."""
+            acting = self.automorphism_group() if group is None else group
+            return _torsion_form_subobject_orbits(
+                self, self.isotropic_subobjects(), acting, quadratic=True
+            )
+
+        def is_anisotropic(self) -> bool:
+            zero = self.zero()
+            return all(
+                not self.form_vanishes_on((element,))
+                for element in self.elements()
+                if element != zero
+            )
+
+        def orthogonal_subobject(self, subobject):
+            return _torsion_form_orthogonal_subobject(
+                self, subobject, quadratic=True
+            )
+
+        @cached_method
+        def lagrangian_subobjects(self):
+            return _torsion_form_lagrangian_subobjects(self, quadratic=True)
+
+        def is_metabolic(self) -> bool:
+            return self.lagrangian_subobjects().cardinality() != 0
+
+        def metabolizer(self):
+            lagrangians = self.lagrangian_subobjects()
+            if lagrangians.cardinality() == 0:
+                raise ValueError("this finite form has no metabolizer")
+            return lagrangians[0]
+
+        def restricted_form(self, subobject):
+            if subobject.inclusion().codomain() is not self:
+                raise ValueError("the restricted form requires a subobject of this form")
+            return subobject
+
+        def subquotient_form(self, subobject, over):
+            return _torsion_form_subquotient(
+                self, subobject, over, quadratic=True
+            )
+
+        def orthogonal_quotient(self, subobject):
+            perpendicular = self.orthogonal_subobject(subobject)
+            return self.subquotient_form(subobject, perpendicular)
 
         @cached_method
         def invariant_factor_form(self):
