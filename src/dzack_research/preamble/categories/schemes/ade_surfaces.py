@@ -9,18 +9,14 @@ surface, and the boundary of the toric log pair \((Y,\Delta)\) splits into the
 *blue* divisor \(C\), summing the invariant divisors whose facet of \(Q\)
 contains \(p^*\), and its complement \(C'\).
 
-The polygon table transcribed here is the one the archived preamble recorded
-at ``archives/preamble/categories/schemes/ade_surfaces.sage``, whose stated
-source is Table 1 of Alexeev--Thompson, *ADE surfaces and their moduli*.  It
-has not been re-checked against that paper in this port.
-
-What is **not** here, and why: the branch polynomial \(f\) with Newton polygon
-\(Q\), the double cover \(X=V(z^2+f)\to Y\), its deck involution, and the
-boundary \(D=\pi^*C\) on \(X\).  The archived branch polynomials return one
-polynomial for four different decorated \(A\) families and one for both \(D\)
-families, so they do not distinguish the types they are indexed by and cannot
-be ported as recorded; and the cover itself needs the general cyclic-cover
-construction in the root TODO.md §13, which is not live.
+The low-level polygon constructor retains the archived table for compatibility.
+The source-admitted :class:`AT21ToricADEPair` separately checks the toric shape
+range against Alexeev--Thompson, *ADE surfaces and their moduli*, Theorems 4.8
+and 4.10 and Lemma 3.25, and checks Lemma 3.4's divisor identity
+``L=-2(K_Y+C)=2C'`` on the live toric surface.  Branch sections are elements of
+that actual polarizing linear system; Table 5 normal forms are admitted only
+where their affine-coordinate support has been checked against the retained
+polygon.
 """
 
 from dataclasses import dataclass
@@ -28,6 +24,9 @@ from dataclasses import dataclass
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
@@ -596,3 +595,240 @@ def ADELogPair(dynkin_letter, dynkin_rank, base_ring, variant=(), affine=False):
 
 
 __all__ = ["ADELogPair", "ADELogPairs", "SideDecoration"]
+
+
+class AT21ToricADEPair(SageObject):
+    r"""A source-admitted toric ADE base pair with its branch linear system.
+
+    This is the toric part of Alexeev--Thompson's classification, not a second
+    scheme model.  The underlying :func:`ADELogPair` remains the actual toric
+    surface with its boundary.  Admission uses AT21 Theorems 4.8 and 4.10 for
+    the pure finite/affine shapes and Lemma 3.25 for the primed shapes that
+    remain toric.  In particular ``tilde A`` is not admitted here (AT21
+    Remark 3.11) and there is no affine ``E6`` case.
+
+    ``variant`` is one of ``pure``, ``short``, ``both-short`` or ``prime``.
+    The name records the source shape rather than asking the archive polygon
+    parser to infer parity from a loose token sequence.
+    """
+
+    def __init__(self, dynkin_letter, dynkin_rank, base_ring, *, variant="pure", affine=False) -> None:
+        letter = str(dynkin_letter).upper()
+        rank = int(dynkin_rank)
+        variant = str(variant).lower().replace("_", "-")
+        affine = bool(affine)
+        low_variant = self._validated_low_level_variant(letter, rank, variant, affine)
+        pair = ADELogPair(letter, rank, base_ring, variant=low_variant, affine=affine)
+        branch_class = pair.log_scheme().polarizing_divisor()
+        expected = _own_ring(SageZZ)(2) * pair.complementary_divisor()
+        if branch_class != expected:
+            raise ArithmeticError(
+                "the selected polygon does not satisfy AT21 Lemma 3.4: "
+                "L=-2(K_Y+C)=2C'"
+            )
+        self._base_pair = pair
+        self._source_variant = variant
+        self._branch_divisor_class = branch_class
+        self._branch_line_bundle = pair.log_scheme().invertible_sheaf_of_divisor(branch_class)
+
+    @staticmethod
+    def _validated_low_level_variant(letter, rank, variant, affine):
+        if letter not in ("A", "D", "E"):
+            raise ValueError("an AT21 ADE shape has type A, D or E")
+        if rank < 1:
+            raise ValueError("an AT21 ADE rank is positive")
+        if affine:
+            if variant != "pure":
+                raise ValueError("the represented toric affine shapes are the pure source shapes")
+            if letter == "D" and rank >= 4 and rank % 2 == 0:
+                return ()
+            if letter == "E" and rank in (7, 8):
+                return ()
+            raise ValueError(
+                "AT21 toric affine shapes represented here are tilde D_even, tilde E7 and tilde E8; tilde A is nontoric"
+            )
+        if letter == "A":
+            if variant == "pure" and rank % 2 == 1:
+                return ()
+            if variant == "short" and rank % 2 == 0:
+                return ("long", "short")
+            if variant == "both-short" and rank % 2 == 1:
+                return ("short", "short")
+            if variant == "prime":
+                return ("prime",)
+            raise ValueError(
+                "finite toric A shapes use odd pure A, even one-short A, odd both-short A, or the AT21 toric priming"
+            )
+        if letter == "D":
+            if variant == "pure" and rank >= 4 and rank % 2 == 0:
+                return ()
+            if variant == "short" and rank >= 5 and rank % 2 == 1:
+                return ("short",)
+            if variant == "prime" and rank >= 4 and rank % 2 == 0:
+                return ("prime",)
+            raise ValueError(
+                "finite toric D shapes use even D, odd one-short D, or the even toric priming of AT21 Lemma 3.25"
+            )
+        if rank not in (6, 7, 8) or variant != "pure":
+            raise ValueError("finite toric E shapes are the source E6, E7 and E8 pure shapes")
+        return ()
+
+    def base_pair(self):
+        return self._base_pair
+
+    def scheme(self):
+        return self.base_pair().log_scheme()
+
+    toric_scheme = scheme
+
+    def boundary_divisor(self):
+        return self.base_pair().blue_divisor()
+
+    def complementary_divisor(self):
+        return self.base_pair().complementary_divisor()
+
+    def source_variant(self):
+        return self._source_variant
+
+    def dynkin_letter(self):
+        return self.base_pair().dynkin_letter()
+
+    def dynkin_rank(self):
+        return self.base_pair().dynkin_rank()
+
+    def is_affine_type(self):
+        return self.base_pair().is_affine_type()
+
+    def polygon(self):
+        return self.base_pair().polygon()
+
+    def distinguished_point(self):
+        return self.base_pair().distinguished_point()
+
+    def side_decorations(self):
+        return self.base_pair().side_decorations()
+
+    def coxeter_diagram(self):
+        return self.base_pair().coxeter_diagram()
+
+    def pyramid(self):
+        return self.base_pair().pyramid()
+
+    def cover_toric_threefold(self):
+        return self.base_pair().cover_toric_threefold()
+
+    def branch_divisor_class(self):
+        r"""Return ``L=-2(K_Y+C)=2C'`` from AT21 Lemma 3.4."""
+        return self._branch_divisor_class
+
+    def branch_line_bundle(self):
+        return self._branch_line_bundle
+
+    def branch_section_space(self):
+        return self.scheme().divisor_section_space(self.branch_divisor_class())
+
+    def branch_section(self, character_coefficients):
+        r"""Construct a branch section from coefficients indexed by lattice points of ``Q``."""
+        sections = self.branch_section_space()
+        characters = {
+            tuple(int(coordinate) for coordinate in character): character
+            for character in sections.module_generating_set()
+        }
+        coefficients = {}
+        for coordinates, coefficient in dict(character_coefficients).items():
+            key = tuple(int(value) for value in coordinates)
+            if key not in characters:
+                raise ValueError(f"{key} is not a lattice point of the ADE branch polytope")
+            value = self.scheme().scheme_base_ring()(coefficient)
+            if value != self.scheme().scheme_base_ring().zero():
+                coefficients[characters[key]] = value
+        return sections.linear_combination(coefficients)
+
+    @cached_method
+    def full_newton_branch_section(self):
+        r"""A branch section whose Newton polygon is the whole selected ``Q``."""
+        return self.branch_section(
+            {
+                tuple(int(coordinate) for coordinate in vertex): self.scheme().scheme_base_ring().one()
+                for vertex in self.polygon().vertices()
+            }
+        )
+
+    def branch_newton_polygon(self, section):
+        r"""Return the convex hull of the nonzero character terms of ``section``."""
+        from dzack_research.preamble.categories.schemes.polytopes import LatticePolygon
+
+        sections = self.branch_section_space()
+        coefficients = module_coefficients(sections(section), sections)
+        support = tuple(
+            tuple(int(coordinate) for coordinate in character)
+            for character, coefficient in coefficients.items()
+            if coefficient != sections.base_ring().zero()
+        )
+        if len(support) < 3:
+            raise ValueError("a branch Newton polygon requires two-dimensional support")
+        return LatticePolygon(support, lattice=self.scheme().character_lattice())
+
+    def source_normal_form_section(self, *, constant=1):
+        r"""Return the AT21 Table 5 normal-form specimen in the D/E families.
+
+        With all deformation parameters except ``c_0`` specialized to zero,
+        Table 5 gives
+        ``-x^2y^2/4 + y^2 + x^(n-2) + c_0`` for ``D_n`` and
+        ``-x^2y^2/4 + y^3 + x^(n-3) + c_0`` for ``E_n``.
+        The four exponent vectors are literal character-lattice points of the
+        retained source polygon.  The A-table uses a different affine chart
+        normalization and is deliberately not guessed here.
+        """
+        if self.is_affine_type():
+            raise NotImplementedError("Table 5 normal forms here are represented for finite D/E shapes")
+        rank = int(self.dynkin_rank())
+        if self.dynkin_letter() == "D":
+            terms = {
+                (2, 2): -SageQQ(1) / 4,
+                (0, 2): 1,
+                (rank - 2, 0): 1,
+                (0, 0): constant,
+            }
+        elif self.dynkin_letter() == "E":
+            terms = {
+                (2, 2): -SageQQ(1) / 4,
+                (0, 3): 1,
+                (rank - 3, 0): 1,
+                (0, 0): constant,
+            }
+        else:
+            raise NotImplementedError(
+                "the source A normal form uses its separate affine-chart normalization; use a represented branch section directly"
+            )
+        return self.branch_section(terms)
+
+    def branch_subscheme(self, section):
+        return self.scheme().zero_subscheme_of_divisor_section(
+            self.branch_divisor_class(),
+            section,
+            line_bundle=self.branch_line_bundle(),
+        )
+
+    def _repr_(self):
+        prefix = "affine " if self.is_affine_type() else ""
+        return f"AT21 toric ADE pair of {prefix}type {self.dynkin_letter()}_{self.dynkin_rank()} ({self.source_variant()})"
+
+
+def AT21ADEPair(dynkin_letter, dynkin_rank, base_ring, *, variant="pure", affine=False):
+    r"""Construct the source-admitted toric AT21 base pair."""
+    return AT21ToricADEPair(
+        dynkin_letter,
+        dynkin_rank,
+        base_ring,
+        variant=variant,
+        affine=affine,
+    )
+
+__all__ = [
+    "ADELogPair",
+    "ADELogPairs",
+    "AT21ADEPair",
+    "AT21ToricADEPair",
+    "SideDecoration",
+]
