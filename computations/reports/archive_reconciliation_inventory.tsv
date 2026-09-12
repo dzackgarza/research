@@ -37,71 +37,71 @@ preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.ad
 preamble/categories/abstract_categories/arrow_categories.sage	WideSubcategory.arrow	method	333	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
 preamble/categories/abstract_categories/arrow_categories.sage	Core	function	374	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
 preamble/categories/abstract_categories/arrow_categories.sage	Isomorphism	function	382	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
-preamble/categories/abstract_categories/cat.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat	class	157	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.super_categories	method	168	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods	class	333	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ObjectType	method	343	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ElementType	method	348	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.HomCategory	method	353	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndCategory	method	363	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutCategory	method	373	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsoCategory	method	383	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonoCategory	method	393	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpiCategory	method	403	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.HomCatType	method	413	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndCatType	method	417	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutCatType	method	421	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsoCatType	method	425	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonoCatType	method	429	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpiCatType	method	433	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ArrowType	method	437	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndArrowType	method	441	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutArrowType	method	445	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsoArrowType	method	449	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonoArrowType	method	453	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpiArrowType	method	457	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.is_locally_discrete	method	460	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ArrowCategory	method	469	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.DomainFunctor	method	475	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CodomainFunctor	method	484	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndArrowCategory	method	493	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsomorphismArrowCategory	method	499	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutArrowCategory	method	505	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonomorphismArrowCategory	method	511	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpimorphismArrowCategory	method	517	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.core	method	523	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.WideSubcategory	method	528	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Diagram	method	532	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.DiagonalFunctor	method	537	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.LimitFunctor	method	546	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Limits	method	554	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ColimitFunctor	method	559	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Colimits	method	567	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ProductFunctor	method	572	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Products	method	580	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoproductFunctor	method	585	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Coproducts	method	593	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.FunctorCategory	method	597	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.OppositeCategory	method	602	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ProductCategory	method	611	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ImageOf	method	620	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Hom	method	627	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.End	method	637	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Aut	method	643	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Iso	method	649	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Mono	method	659	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Epi	method	669	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.identity	method	678	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.compose	method	685	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Product	method	701	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Coproduct	method	706	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.SliceOver	method	711	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CosliceUnder	method	716	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Subobjects	method	721	2			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Superobjects	method	726	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoveringObjects	method	731	0			unreviewed
-preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoveredObjects	method	736	0			unreviewed
+preamble/categories/abstract_categories/cat.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat	class	157	2		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.super_categories	method	168	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods	class	333	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ObjectType	method	343	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ElementType	method	348	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.HomCategory	method	353	0		src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndCategory	method	363	0		src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutCategory	method	373	0		src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsoCategory	method	383	0		src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonoCategory	method	393	0		src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpiCategory	method	403	0		src/dzack_research/preamble/categories/abstract_categories/hom_foundation.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.HomCatType	method	413	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndCatType	method	417	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutCatType	method	421	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsoCatType	method	425	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonoCatType	method	429	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpiCatType	method	433	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ArrowType	method	437	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndArrowType	method	441	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutArrowType	method	445	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsoArrowType	method	449	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonoArrowType	method	453	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpiArrowType	method	457	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.is_locally_discrete	method	460	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ArrowCategory	method	469	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.DomainFunctor	method	475	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CodomainFunctor	method	484	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EndArrowCategory	method	493	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.IsomorphismArrowCategory	method	499	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.AutArrowCategory	method	505	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.MonomorphismArrowCategory	method	511	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.EpimorphismArrowCategory	method	517	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.core	method	523	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.WideSubcategory	method	528	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Diagram	method	532	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.DiagonalFunctor	method	537	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.LimitFunctor	method	546	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Limits	method	554	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ColimitFunctor	method	559	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Colimits	method	567	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ProductFunctor	method	572	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Products	method	580	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoproductFunctor	method	585	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Coproducts	method	593	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.FunctorCategory	method	597	2		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.OppositeCategory	method	602	2		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ProductCategory	method	611	2		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.ImageOf	method	620	0		src/dzack_research/preamble/categories/abstract_categories/functor_images.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Hom	method	627	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.End	method	637	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Aut	method	643	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Iso	method	649	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Mono	method	659	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Epi	method	669	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.identity	method	678	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.compose	method	685	0		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Product	method	701	2		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Coproduct	method	706	2		src/dzack_research/preamble/categories/abstract_categories/cat.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.SliceOver	method	711	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CosliceUnder	method	716	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Subobjects	method	721	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.Superobjects	method	726	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoveringObjects	method	731	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/cat.sage	Cat.ParentMethods.CoveredObjects	method	736	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
 preamble/categories/abstract_categories/category_constructions.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
 preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory	class	52	2		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
 preamble/categories/abstract_categories/category_constructions.sage	OppositeCategory.ObjectType	method	56	0		src/dzack_research/preamble/categories/abstract_categories/category_constructions.py	reconciled-live-owner
