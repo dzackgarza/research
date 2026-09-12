@@ -4118,6 +4118,122 @@ Concrete standards:
 
 **Preferred:** for $R$ commutative and $W,M\in\mathbf{Mod}_R$, put $b\in\mathbf{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$ as $W$-valued $(0,2)$-tensor $b_{ij}$ with two down indices; for framed $((M,e),b)$, $e\colon R^n\xrightarrow{\sim}M$, put $G_e(b)_{ij}:=b(e_i,e_j)\in W$ and state $\Phi_e$ and its variance $G_{e'}=P^{\!t}G_eP$ (congruence, not similarity), with kernel/cokernel of $\Phi_e$ as the well-definedness content. Never write $G_{ij}$ for a $(1,1)$-tensor and a $(0,2)$-tensor without distinguishing, and never assume $M=R^{(I)}$ or finite $I$.
 
+### `PR-62`: "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$" smuggles a Riesz theorem and the canonical $\langle v,w\rangle_0:=\sum_ia_ic_i$ on $F=R^{(I)}$ — eliding its hypotheses, completions, and the operator form $b(v,w)=\langle v,Aw\rangle$
+
+The double sum as *definition* of how $b$ is evaluated assumes the
+theorem "$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(R^{(I)}\otimes R^{(I)},W)$ and
+$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$" — i.e. that $b$ is determined by
+$G_{ij}$ and evaluation pulls through the finite $a_i,c_j$. For
+$F:=R^{(I)}$ algebraic free with discrete $W$, $\sum a_iG_{ij}c_j$ is
+finite by finite support, so the statement holds with no convergence.
+For non-free / non-algebraic $M$ it is a Riesz-type identification that
+need not hold without honest hypotheses (finite $I$, $M$ finitely
+generated projective, $W$ discrete, continuity, completeness).
+
+What is elided is that $F$ already carries the *canonical* $R$-bilinear
+$\langle v,w\rangle_0:=\sum_{i\in I}a_ic_i$ for $v=\sum a_ie_i$,
+$w=\sum c_ie_i$ ($G_{ij}=\delta_{ij}$) — itself a $(0,2)$-tensor — well-defined
+only with those finiteness/discreteness hypotheses ($a_i,c_i$ finitely
+supported; for $I$ infinite or after completion to $\widehat F$,
+$\sum a_ic_i$ is an infinite series whose existence *is* convergence in
+$R$'s topology). Given that $\langle\,,\,\rangle_0$, any $b$ is
+$b(v,w)=\langle v,Aw\rangle_0$ where $A\colon F\to F$ is the $R$-linear
+with matrix $G_{ij}$ — $(Aw)_i=\sum_jG_{ij}c_j$ — i.e. $G$ is the
+$(1,1)$-tensor $A$ seen as $(0,2)$ via $\langle\,,\,\rangle_0$:
+$b_{ij}=\langle e_i,Ae_j\rangle_0$. The double sum is the coordinate
+expansion of the single operator evaluation $\langle v,Aw\rangle_0$, and
+"every $(G_{ij})$ arises" is the Riesz identification
+$\mathbf{Bil}_{R,R}(F)\cong\operatorname{Hom}_R(F,F)$ via $\langle\,,\,\rangle_0$,
+which is perfect on $F$.
+
+Riesz as usually stated never writes the double sum: it is
+"$b(v,w)=\langle v,Aw\rangle$ for a unique $A$ with … (symmetric $\iff$
+$A$ self-adjoint, bounded / Hilbert-Schmidt / Fredholm / elliptic per the
+topological hypotheses)," with the map $W^{I\times I}\to\operatorname{Hom}(F\otimes F,W)$
+and its kernel/cokernel, and the convergence/completion hypotheses, made
+explicit. The "$b(v,w)=\sum a_iG_{ij}c_j$ finite by finite support" elides
+all of that, and defers the research extensions — completions,
+topological tensor products, continuity — that will be needed anyway for
+e.g. $(L^2(\mathbb R),\int)$ where $f=\sum\langle f,e_i\rangle e_i$ is
+$L^2$-convergent, not finite.
+
+Concrete standard — make the canonical form and the operator form
+explicit, with hypotheses:
+
+"::: {#rmk-canonical} **Remark.** $F:=R^{(I)}$ carries the tautological
+$\langle v,w\rangle_0:=\sum_{i\in I}a_ic_i$ for $v=\sum a_ie_i$,
+$w=\sum c_ie_i$ with $a_i,c_i$ finitely supported; it is the
+$(0,2)$-tensor $\delta_{ij}$, well-defined only for $F$ algebraic free
+discrete. For $b\in\mathbf{Bil}_{R,R}(F)$, put $A$ with
+$A(e_j):=\sum_iG_{ij}e_i$; then $b(v,w)=\langle v,Aw\rangle_0$. Stably /
+topologically this is $b\in\operatorname{Hom}_{\mathrm{cont}}(\widehat
+F\hat\otimes\widehat F,W)\cong\{\text{matrices with summability}\}$. :::"
+
+**Banned:** "$b(v,w)=\sum_{i,j}a_iG_{ij}c_j$, a finite sum by finite support
+of the coordinates. Every family $(G_{ij})$ arises uniquely" as the
+*definition* of evaluation for $(M,b)\in\mathbf{Bil}_{R,W}$.
+
+**Preferred:** for $F=R^{(I)}$ state the Proposition with honest
+hypotheses — "$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}
+\operatorname{Hom}_R(F\otimes F,W)$ via $G_{ij}=b(e_i,e_j)$ is an iso for
+$F$ free on finite $I$ (resp. algebraic $R^{(I)}$ discrete), with
+$b(v,w)=\langle v,Aw\rangle_0$ for $A$ as above" — and for general
+$(M,b)$ keep $b\colon M\otimes M\to W$ as $(0,2)$-tensor, not a double
+sum.
+
+### `PR-63`: One bilinear setup must simultaneously generalize the arithmetic local, the geometric global, and the analytic — do not overfit to finite / discrete and defer the extensions that will be needed anyway
+
+The Gram block as written is overfit to the arithmetic *finite* free
+$W=R$ case ($M=R^{(I)}$ algebraic, $I$ finite, $W$ discrete,
+$b(v,w)=\sum a_iG_{ij}c_j$ finite) and elides that the same $b\colon
+M\otimes M\to W$ must already work for the geometric and analytic
+specializations that the book will need anyway. Any definition that does
+not immediately generalize to topological groups/modules/algebras,
+schemes/stacks, sheaves, derived categories, infinite-dimensional/rank
+modules should be taken as a sign the definition is overfit.
+
+Philosophy — never overfit to finite / finitely generated / finitely
+presented subcategories, never assume convergence or that topologies are
+discrete (PR-61/PR-62), and always ask if the statement immediately
+generalizes:
+
+* **Arithmetic local theory:** finitely generated $R$-modules, tensors
+  $M\otimes_RM$, $W$-valued forms $b\colon M\otimes M\to W$,
+  $\operatorname{Val}(b)$, $b^{\sharp}$, $M^\vee$, $D_L$, Grothendieck–Witt
+  theory as the study of $(M,b)$ over local $R$ (strict henselizations,
+  completions).
+
+* **Geometric global theory:** schemes/stacks, $\mathrm{QCoh}(X)$,
+  $M\in\mathrm{QCoh}(X)$ with $\mathcal W$-valued $b\colon M\otimes_{\mathcal
+  O_X}M\to\mathcal W$, where taking stalks / local rings recovers the
+  arithmetic theory, or manifolds with bundles $E\to X$ assembling the
+  local $(V,b_V)$ continuously/smoothly — symplectic manifolds as the
+  geometric instance of a nondegenerate alternating $b$ on $TX$, etc.
+
+* **Analytic theory:** functional analysis, $L^p$/Hardy spaces,
+  (partial) differential operators, Banach/Hilbert $R$-modules
+  $(L^2(\mathbb R),\int)$, $b(f,g)=\int fg$, where
+  $b(v,w)=\langle v,Aw\rangle$ is Riesz with $A$ bounded / self-adjoint /
+  Hilbert-Schmidt / Fredholm / elliptic and the double sum is $L^2$-convergent,
+  not finite.
+
+One conjoined general categorical setup — $M\in\mathcal C$ in a closed
+symmetric monoidal $\mathcal C$ with $b\colon M\otimes M\to W$ as
+$W$-valued $(0,2)$-tensor, self-enrichment, $\Gamma^2_R$, etc. — does all
+three at once, and recovers symplectic manifolds as the geometric theory,
+Grothendieck–Witt as the arithmetic local, and Riesz theorems as the
+analytic. Overfitting to $M=R^{(I)}$ finite, $W=R$ discrete with
+$\sum a_iG_{ij}c_j$ finite defers the geometric/analytic extensions that
+will be needed anyway and forces a rewrite.
+
+**Standard:** define $b\in\mathbf{Bil}_{R,W}(M)$ once as above for
+$W,M\in\mathcal C$ arbitrary; prove the finite free $W=R$ Gram matrix
+and the finite-sum evaluation as the *specialization* to
+$M=R^n$ discrete, not as the definition. Then ask of every new statement:
+does it hold for $\mathrm{QCoh}(X)$, for $L^2(\mathbb R)$ with its
+Hilbert topology, and for $M$ not finitely generated? If not, the
+statement is overfit.
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4624,6 +4740,31 @@ is an isomorphism only for $M=R^{(I)}$ discrete; its kernel/cokernel are
 the well-definedness content, and $(L^2(\mathbb R),\int)$ is a valid
 $\mathbb R$-valued bilinear $\mathbb R$-module with no finite $G_{ij}$
 and no finite $\sum a_iG_{ij}c_j$.
+
+**26. The double sum smuggles a Riesz theorem and the canonical
+$\langle v,w\rangle_0$ on $F=R^{(I)}$; the operator form
+$b(v,w)=\langle v,Aw\rangle$ is the honest statement.** "$b(v,w)=\sum
+a_iG_{ij}c_j$" as definition assumes
+$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(F\otimes F,W)$
+and hides that $F$ already carries $\langle v,w\rangle_0:=\sum a_ic_i$
+($\delta_{ij}$) well-defined only for $a_i,c_i$ finitely supported
+discrete; for $\widehat F$ / $L^2$ the sum is infinite and convergence
+in $R$'s topology / completion is the content (PR-62). Standard is
+"$b(v,w)=\langle v,Aw\rangle$ for a unique $A\colon F\to F$ with $A$
+self-adjoint / bounded / Hilbert-Schmidt / Fredholm per the
+topological hypotheses" — the double sum is the coordinate expansion of
+that single operator evaluation.
+
+**27. One setup must do arithmetic local, geometric global, and analytic
+at once.** Overfitting to finite free $W=R$ discrete with $\sum
+a_iG_{ij}c_j$ finite defers the extensions that will be needed anyway
+(PR-63). Always ask if the statement immediately generalizes to
+topological modules/algebras, $\mathrm{QCoh}(X)$ / schemes/stacks /
+sheaves where stalks recover the arithmetic, and $L^p$ / Hilbert /
+Banach with (partial) differential operators — symplectic manifolds as
+the geometric, Grothendieck–Witt as the arithmetic local, Riesz theorems
+as the analytic instance of the same $b\colon M\otimes M\to W$ in a
+closed symmetric monoidal $\mathcal C$.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
