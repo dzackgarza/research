@@ -361,7 +361,7 @@ Paths in this section are relative to
   its raising of ideals, components, and maps rather than implementing local
   normalization, factorization, or length algorithms in the scheme consumer.
 
-- [ ] **`local-module-maps`**. **Needs:** none.
+- [x] **`local-module-maps`**. **Needs:** none.
   Extend local homomorphisms and local-module operations only at their shared
   owners when these consumers require a new supported coefficient regime.
   **Owners:** ring Hom, prime localization, localized ideals and module
@@ -1499,4 +1499,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `RING-local-module-maps-20260912-0019` | local algebra / local-module-maps | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/rings/commutative_ideals.py; src/dzack_research/preamble/categories/modules/pure/modules.py; src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py; tests/rings/test_local_module_maps_frontier.py` (write) | `d323fbb9; 19e6c16d` | 2026-09-12T00:19:00Z |
+| `RING-completion-comparisons-20260912-0021` | completion / completion-comparisons | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/modules/pure/modules.py; tests/rings/test_completion_comparisons.py` (write) | `d323fbb9; ad1b1b30` | 2026-09-12T00:21:00Z |
