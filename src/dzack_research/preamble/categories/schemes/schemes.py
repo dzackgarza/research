@@ -1935,6 +1935,50 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 self._standard_chart_change(target_index, source_index),
             )
 
+        def O(self, degree):
+            r"""Return the standard invertible sheaf ``O(d)`` on this projective space."""
+            from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                ProjectiveO,
+            )
+
+            return ProjectiveO(self, degree)
+
+        @cached_method
+        def canonical_line_bundle(self):
+            r"""Return ``omega_{P^n_R} = O(-n-1)`` in the standard smooth projective regime."""
+            return self.O(-int(self.relative_dimension()) - 1)
+
+        canonical_bundle = canonical_line_bundle
+
+        @cached_method
+        def anticanonical_line_bundle(self):
+            r"""Return ``omega_{P^n_R}^{-1} = O(n+1)``."""
+            return self.O(int(self.relative_dimension()) + 1)
+
+        anticanonical_bundle = anticanonical_line_bundle
+
+        @cached_method
+        def standard_affine_atlas(self):
+            r"""Return the verified standard affine atlas on this exact projective space."""
+            from dzack_research.preamble.categories.schemes.gluing import (
+                FiniteAffineAtlasPresentation,
+            )
+
+            dimension = int(self.relative_dimension())
+            indices = tuple(range(dimension + 1))
+            return FiniteAffineAtlasPresentation(
+                self,
+                tuple(self.standard_affine_chart(index) for index in indices),
+                tuple(
+                    self.standard_chart_transition(left, right)
+                    for left, right in combinations(indices, 2)
+                ),
+                tuple(
+                    _standard_projective_chart_embedding(self, index)
+                    for index in indices
+                ),
+            )
+
         def glued_from_standard_charts(self):
             r"""``P^n_R`` presented as the gluing of its standard affine charts.
 

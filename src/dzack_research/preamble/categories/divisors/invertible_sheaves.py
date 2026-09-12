@@ -15,7 +15,11 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
-from dzack_research.preamble.categories.schemes.gluing import ModuleGluingDatum, _FiniteSchemeGluingDatum
+from dzack_research.preamble.categories.schemes.gluing import (
+    FiniteAffineAtlasPresentation,
+    ModuleGluingDatum,
+    _FiniteSchemeGluingDatum,
+)
 
 
 def _rank_one_generator(module):
@@ -222,8 +226,13 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         section_space=None,
         associated_divisor=None,
     ) -> None:
-        if not isinstance(gluing_datum, _FiniteSchemeGluingDatum):
-            raise TypeError("finite-atlas line-bundle descent requires a represented finite scheme gluing")
+        if not isinstance(
+            gluing_datum,
+            (_FiniteSchemeGluingDatum, FiniteAffineAtlasPresentation),
+        ):
+            raise TypeError(
+                "finite-atlas line-bundle descent requires a represented finite affine atlas"
+            )
         self._finite_gluing_datum = gluing_datum
         self._section_space = section_space
         self._associated_divisor = associated_divisor
@@ -402,6 +411,133 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         return f"Invertible sheaf on finite affine atlas of {self.scheme()}"
 
 
+class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
+    r"""The standard ``O(d)`` on one represented projective space.
+
+    This is a specialization of finite-atlas invertible-sheaf descent.  Its
+    local basis on ``U_i`` has transition ``(x_j/x_i)^d`` to ``U_j``; tensor
+    product therefore adds degrees and duality negates them.
+    """
+
+    def __init__(self, projective_space, degree) -> None:
+        from dzack_research.preamble.categories.divisors.linear_systems import (
+            HomogeneousPolynomialSectionSpace,
+        )
+        from dzack_research.preamble.categories.schemes.schemes import (
+            ProjectiveSpaces,
+        )
+
+        base = projective_space.scheme_base_ring()
+        if projective_space not in ProjectiveSpaces(base):
+            raise TypeError("O(d) is constructed here on a represented projective space")
+        self._projective_space = projective_space
+        self._degree = int(degree)
+        atlas = projective_space.standard_affine_atlas()
+        units = {}
+        for source_index, target_index in atlas.transition_index_set():
+            overlap = atlas.overlap(source_index, target_index)
+            restriction = overlap.inclusion().coordinate_algebra_morphism()
+            ratio = restriction(
+                projective_space._standard_chart_coordinate(
+                    source_index,
+                    target_index,
+                )
+            )
+            units[source_index, target_index] = (
+                ratio**self._degree
+                if self._degree >= 0
+                else ratio.inverse_of_unit() ** (-self._degree)
+            )
+        section_space = (
+            HomogeneousPolynomialSectionSpace(
+                projective_space,
+                self._degree,
+                coordinate_names=projective_space.variable_names(),
+            )
+            if self._degree >= 0
+            else None
+        )
+        super().__init__(atlas, units, section_space=section_space)
+
+    def projective_space(self):
+        return self._projective_space
+
+    def degree(self):
+        return self._degree
+
+    def tensor_product(self, other):
+        if isinstance(other, ProjectiveSpaceLineBundle):
+            if other.projective_space() is not self.projective_space():
+                raise ValueError("projective line-bundle tensor product requires one projective space")
+            return type(self)(self.projective_space(), self.degree() + other.degree())
+        return super().tensor_product(other)
+
+    def tensor_power(self, exponent):
+        return type(self)(self.projective_space(), int(exponent) * self.degree())
+
+    def dual(self):
+        return type(self)(self.projective_space(), -self.degree())
+
+    def is_ample(self) -> bool:
+        return int(self.projective_space().relative_dimension()) == 0 or self.degree() > 0
+
+    def is_basepoint_free(self) -> bool:
+        return self.degree() >= 0
+
+    is_globally_generated = is_basepoint_free
+
+    def homogeneous_polynomial_sections(self):
+        return self.global_sections()
+
+    def homogeneous_polynomial_comparison(self):
+        sections = self.global_sections()
+        identity = module_homset(sections, sections).identity()
+        return Isomorphism(identity, identity)
+
+    def section_multiplication(self, other):
+        from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+
+        if not isinstance(other, ProjectiveSpaceLineBundle):
+            raise TypeError("section multiplication requires two projective-space line bundles")
+        if other.projective_space() is not self.projective_space():
+            raise ValueError("section multiplication requires one projective space")
+        if self.degree() < 0 or other.degree() < 0:
+            raise NotImplementedError(
+                "homogeneous-polynomial global sections are represented here in nonnegative degrees"
+            )
+        target_bundle = self.tensor_product(other)
+        left = self.global_sections()
+        right = other.global_sections()
+        target = target_bundle.global_sections()
+        left_exponents = left._preamble_homogeneous_exponents
+        right_exponents = right._preamble_homogeneous_exponents
+        target_by_exponents = {
+            exponents: monomial
+            for monomial, exponents in target._preamble_homogeneous_exponents.items()
+        }
+
+        def product(left_monomial, right_monomial):
+            exponents = tuple(
+                left_power + right_power
+                for left_power, right_power in zip(
+                    left_exponents[left_monomial],
+                    right_exponents[right_monomial],
+                    strict=True,
+                )
+            )
+            return target.module_generator(target_by_exponents[exponents])
+
+        return BilinearMap(left, right, target, product)
+
+    def _repr_(self):
+        return f"O({self.degree()}) on {self.projective_space()}"
+
+
+def ProjectiveO(projective_space, degree):
+    r"""Return the standard line bundle ``O(d)`` on ``P^n``."""
+    return ProjectiveSpaceLineBundle(projective_space, degree)
+
+
 def TrivialInvertibleSheaf(cover):
     return InvertibleSheaf.trivial(cover)
 
@@ -409,5 +545,7 @@ def TrivialInvertibleSheaf(cover):
 __all__ = [
     "FiniteAtlasInvertibleSheaf",
     "InvertibleSheaf",
+    "ProjectiveO",
+    "ProjectiveSpaceLineBundle",
     "TrivialInvertibleSheaf",
 ]

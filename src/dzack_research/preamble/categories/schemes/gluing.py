@@ -908,6 +908,117 @@ class _FiniteSchemeGluingDatum(SageObject):
         return f"Finite affine scheme gluing datum indexed by {self.chart_index_set()}"
 
 
+class FiniteAffineAtlasPresentation(SageObject):
+    r"""A verified finite affine atlas presenting an already selected scheme.
+
+    The transition/cocycle data are owned by an ordinary finite scheme gluing;
+    this wrapper retains a second, already selected carrier and the actual open
+    chart embeddings into it.  Thus constructions such as line-bundle descent
+    can use the common finite-atlas mathematics without replacing ``P^n`` by a
+    separately glued copy.
+    """
+
+    def __init__(self, scheme, charts, transitions, chart_embeddings) -> None:
+        base = scheme.scheme_base_ring()
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        self._presentation = _FiniteSchemeGluingDatum(
+            Schemes(base),
+            charts,
+            transitions,
+        )
+        self._scheme = scheme
+        raw_embeddings = _family_on_finite_ordered_set(
+            self.chart_index_set(),
+            chart_embeddings,
+            name="Affine-atlas chart embeddings",
+            noun="finite affine-atlas chart embeddings",
+        )
+        self._chart_embeddings = finite_indexed_family(
+            self.chart_index_set(),
+            lambda index: self.chart(index).Mor(scheme)(raw_embeddings[index]),
+            name="Affine-atlas chart embeddings",
+        )
+        self._verify_chart_embeddings()
+
+    def presentation(self):
+        return self._presentation
+
+    def base_ring(self):
+        return self.presentation().base_ring()
+
+    def scheme(self):
+        return self._scheme
+
+    def charts(self):
+        return self.presentation().charts()
+
+    def chart_index_set(self):
+        return self.presentation().chart_index_set()
+
+    def chart_indices(self):
+        return self.chart_index_set()
+
+    def normalize_chart_index(self, index):
+        return self.presentation().normalize_chart_index(index)
+
+    def number_of_charts(self):
+        return self.presentation().number_of_charts()
+
+    def chart(self, index):
+        return self.presentation().chart(index)
+
+    def transition_index_set(self):
+        return self.presentation().transition_index_set()
+
+    def transitions(self):
+        return self.presentation().transitions()
+
+    def transition_between(self, source_index, target_index):
+        return self.presentation().transition_between(source_index, target_index)
+
+    def overlap(self, source_index, target_index):
+        return self.presentation().overlap(source_index, target_index)
+
+    def triple_overlap(self, source_index, middle_index, target_index):
+        return self.presentation().triple_overlap(source_index, middle_index, target_index)
+
+    def transition_on_triple(self, source_index, target_index, third_index):
+        return self.presentation().transition_on_triple(
+            source_index,
+            target_index,
+            third_index,
+        )
+
+    def chart_embedding(self, index):
+        return self._chart_embeddings[self.normalize_chart_index(index)]
+
+    def _verify_chart_embeddings(self) -> None:
+        for index in self.chart_indices():
+            embedding = self.chart_embedding(index)
+            if embedding.domain() is not self.chart(index):
+                raise ValueError("an affine-atlas embedding has the wrong chart domain")
+            if embedding.codomain() is not self.scheme():
+                raise ValueError("an affine-atlas embedding has the wrong scheme codomain")
+        for source_index, target_index in self.transition_index_set():
+            source_overlap = self.overlap(source_index, target_index)
+            target_overlap = self.overlap(target_index, source_index)
+            forward = self.transition_between(source_index, target_index).forward()
+            from_source = self.chart_embedding(source_index) * source_overlap.inclusion()
+            from_target = (
+                self.chart_embedding(target_index)
+                * target_overlap.inclusion()
+                * forward
+            )
+            if from_source != from_target:
+                raise ValueError(
+                    "affine-atlas chart embeddings do not agree through their overlap transition"
+                )
+
+    def _repr_(self):
+        return f"Finite affine atlas of {self.scheme()} indexed by {self.chart_index_set()}"
+
+
 class FiniteAtlasRefinement(SageObject):
     r"""A represented refinement of one finite affine atlas by another.
 
@@ -4103,6 +4214,7 @@ __all__ = [
     "FiniteAtlasAlgebraGluingDatum",
     "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
+    "FiniteAffineAtlasPresentation",
     "FiniteAtlasInvertibleSheafRefinement",
     "FiniteAtlasLineBundlePullbackComparison",
     "FiniteAtlasModulePullbackFunctor",
