@@ -4,72 +4,33 @@ The public objects remain the repository's owned finitely presented modules.
 CAP receives only selected presentation matrices over a supported computable
 coefficient ring and returns a kernel embedding.  This module crosses the
 returned relation and embedding matrices back to the owned coefficient ring;
-no CAP object is part of the public mathematical interface.
+no CAP object is part of the public mathematical interface. Repository-local GAP
+package selection and version validation are delegated to released ``sage-categories``.
 """
 
 from __future__ import annotations
 
-import os
-import re
 from dataclasses import dataclass
 from functools import cache
-from pathlib import Path
 
 from sage.libs.gap.libgap import libgap
 
-_PACKAGE_VERSIONS = {
-    "RingsForHomalg": "2026.05-01",
-    "CAP": "2026.07-04",
-    "ModulePresentationsForCAP": "2026.06-01",
-}
-_PACKAGE_NAME = re.compile(r'PackageName\s*:=\s*"([^"]+)"')
-
-
-def _package_root() -> Path:
-    configured = os.environ.get("DZACK_RESEARCH_GAP_PACKAGE_DIR")
-    if configured:
-        return Path(configured).resolve()
-    return Path(__file__).resolve().parents[5] / ".gap" / "pkg"
-
-
-def _installed_package_paths() -> dict[str, tuple[str, Path]]:
-    root = _package_root()
-    if not root.is_dir():
-        raise RuntimeError(
-            f"the CAP package directory {root} does not exist; run GAP on .gap-packages.g"
-        )
-    result = {}
-    for info in root.glob("*/PackageInfo.g"):
-        if info.parent.name.endswith(".old"):
-            continue
-        text = info.read_text(encoding="utf-8")
-        match = _PACKAGE_NAME.search(text)
-        if match is not None:
-            result[match.group(1).lower()] = (match.group(1), info.parent.resolve())
-    return result
-
-
-@cache
-def _load_packages() -> None:
-    installed = _installed_package_paths()
-    for actual_name, path in installed.values():
-        libgap.SetPackagePath(actual_name, str(path))
-    for name, version in _PACKAGE_VERSIONS.items():
-        installed_entry = installed.get(name.lower())
-        if installed_entry is None:
-            raise RuntimeError(f"the exact CAP provider has no installed {name} under {_package_root()}")
-        actual_name, path = installed_entry
-        loaded = libgap.LoadPackage(actual_name, f"={version}", False)
-        if loaded != libgap.true:
-            raise RuntimeError(f"failed to load {name} {version} from {path}")
-        actual = str(libgap.InstalledPackageVersion(actual_name))
-        if actual != version:
-            raise RuntimeError(f"loaded {name} {actual}, expected {version}")
+from sage_categories.engines.gap import (
+    GapPackage,
+    PRESENTED_MODULE_PACKAGES,
+    load_packages,
+    load_repository_package,
+)
 
 
 @cache
 def _polynomial_ring(variable_names: tuple[str, ...]):
-    _load_packages()
+    # sage-categories owns repository-local GAP package selection and exact
+    # version validation. RingsForHomalg supplies the polynomial coefficient
+    # ring; ModulePresentationsForCAP and its categorical dependencies use the
+    # same selected package root.
+    load_repository_package(GapPackage("RingsForHomalg", "2026.05-01"))
+    load_packages(PRESENTED_MODULE_PACKAGES)
     integers = libgap.HomalgRingOfIntegersInSage()
     return libgap.PolynomialRing(integers, list(variable_names))
 

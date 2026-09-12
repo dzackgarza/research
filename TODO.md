@@ -894,6 +894,10 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   Do not repair all unrelated upstream findings as a precondition for this unit.
   Explicit functor reuse may keep a preamble consumer coherent before full
   automatic inheritance; it must not duplicate the underlying algorithm.
+  The polynomial-module CAP adapter now delegates repository-local GAP package
+  selection and exact-version loading through the released upstream dependency;
+  its remaining local presentation/kernel codec stays in this item until the
+  corresponding upstream computation is released and the consumer is switched.
   **Acceptance:** a nonidentity morphism and inherited operation work through
   the transferred construction without a second mathematical object system.
   Indexed-colimit transfer must preserve the nonidentity functorial edge: a

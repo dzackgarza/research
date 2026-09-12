@@ -9,6 +9,7 @@ from dzack_research.preamble.all import ZZ, PolynomialRing
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,
+    FinitelyPresentedModule,
     CochainComplex,
     cochain_homset,
     module_homset,
@@ -84,3 +85,38 @@ def test_cap_cohomology_is_functorial_on_a_nonidentity_cochain_map() -> None:
     assert nonzero != h1.zero()
     assert induced(nonzero) == h1.zero()
     assert induced != module_homset(h1, h1).identity()
+
+
+def test_transferred_cap_kernel_handles_nonidentity_maps_between_presented_Zx_modules() -> None:
+    ring = PolynomialRing(ZZ, "x")
+    x = ring.algebra_generator("x")
+    source_free = BasedFreeModule(ring, finite_ordered_set(("a",)))
+    source_relations = BasedFreeModule(ring, finite_ordered_set(("r",)))
+    source = FinitelyPresentedModule(
+        module_homset(source_relations, source_free)(
+            {"r": ring(2) * x * source_free.module_generator("a")}
+        )
+    )
+    target_free = BasedFreeModule(ring, finite_ordered_set(("c",)))
+    target_relations = BasedFreeModule(ring, finite_ordered_set(("s",)))
+    target = FinitelyPresentedModule(
+        module_homset(target_relations, target_free)(
+            {"s": ring(2) * target_free.module_generator("c")}
+        )
+    )
+    reduction = module_homset(source, target)(
+        {"a": target.module_generator("c")}
+    )
+
+    kernel = reduction.kernel()
+    inclusion = kernel.inclusion()
+    generator = next(iter(kernel.module_generators()))
+    image = inclusion(generator)
+    coefficient = module_coefficients(image, source).get("a", ring.zero())
+
+    assert coefficient in (ring(2), -ring(2))
+    assert kernel.scalar_multiple(x, generator) == kernel.zero()
+    two_a = source.scalar_multiple(ring(2), source.module_generator("a"))
+    lifted = inclusion.lift(two_a)
+    assert inclusion(lifted) == two_a
+    assert reduction(two_a) == target.zero()
