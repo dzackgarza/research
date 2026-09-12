@@ -251,12 +251,12 @@ def AffineCoverRefinementCohomologyMap(refinement, sheaf, degree):
     )
 
 
-class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
-    r"""Integral singular cohomology groups of specified complex realizations."""
+class IntegralTopologicalCohomologyGroups(OwnedCategoryOverBaseRing):
+    r"""Integral cohomology groups of a specified topological realization/theory."""
 
     @classmethod
     def _repr_object_names(cls):
-        return "integral singular cohomology groups of specified complex realizations"
+        return "integral cohomology groups of specified topological realizations"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -298,6 +298,28 @@ class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
 
         def realization_description(self):
             return self._preamble_topological_realization_description
+
+
+class IntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
+    r"""Ordinary integral singular cohomology of specified complex realizations."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "ordinary integral singular cohomology groups"
+
+    def super_categories(self):
+        return [IntegralTopologicalCohomologyGroups(self.base_ring())]
+
+
+class ResolutionIntegralCohomologyGroups(OwnedCategoryOverBaseRing):
+    r"""Integral cohomology computed on a specified resolution/normalization."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "integral resolution cohomology groups"
+
+    def super_categories(self):
+        return [IntegralTopologicalCohomologyGroups(self.base_ring())]
 
 
 class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
@@ -733,23 +755,41 @@ def QuarticK3IntegralCohomology(scheme, degree):
 
 
 
-def _integral_topology_construction_data(scheme, degree, realization):
+def _integral_topology_construction_data(
+    scheme,
+    degree,
+    realization,
+    theory="ordinary singular cohomology",
+):
     return {
         "topological_scheme": scheme,
         "topological_cohomological_degree": int(degree),
-        "topological_cohomology_theory": "ordinary singular cohomology",
+        "topological_cohomology_theory": theory,
         "topological_realization_description": realization,
     }
 
 
-def _free_integral_topology_group(scheme, degree, rank, realization):
+def _free_integral_topology_group(
+    scheme,
+    degree,
+    rank,
+    realization,
+    *,
+    category=None,
+    theory="ordinary singular cohomology",
+):
     integers = _own_ring(SageZZ)
+    category = (
+        IntegralSingularCohomologyGroups(integers)
+        if category is None
+        else category
+    )
     return FreshFreeModuleOn(
         integers,
         finite_ordered_set(tuple(f"H{degree}_{index}" for index in range(rank))),
-        _extra_categories=(IntegralSingularCohomologyGroups(integers),),
+        _extra_categories=(category,),
         _extra_construction_data=_integral_topology_construction_data(
-            scheme, degree, realization
+            scheme, degree, realization, theory
         ),
     )
 
@@ -772,6 +812,122 @@ def _zmod2_integral_topology_group(scheme, degree, realization):
             scheme, degree, realization
         ),
     )
+
+
+@cached_function
+def NodalCubic():
+    r"""Return the rational nodal cubic ``y^2 z = x^2(x+z)`` in ``P^2``."""
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+
+    base = _own_ring(SageQQ)
+    plane = ProjectiveSpace(2, base, names=("x", "y", "z"))
+    ring = plane.O(3).global_sections().homogeneous_coordinate_ring()
+    x = ring.algebra_generator("x")
+    y = ring.algebra_generator("y")
+    z = ring.algebra_generator("z")
+    curve = plane.closed_subscheme(y**2 * z - x**2 * (x + z))
+    curve._preamble_topological_model_name = "rational nodal cubic"
+    return curve
+
+
+@cached_function
+def NodalCubicNormalization():
+    r"""Return the explicit normalization ``P^1 -> C`` of :func:`NodalCubic`."""
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+
+    curve = NodalCubic()
+    plane = curve.inclusion().codomain()
+    line = ProjectiveSpace(1, curve.scheme_base_ring(), names=("s", "t"))
+    ring = line.O(3).global_sections().homogeneous_coordinate_ring()
+    s = ring.algebra_generator("s")
+    t = ring.algebra_generator("t")
+    ambient = line.projective_morphism_from_coordinates(
+        plane,
+        ((s**2 - t**2) * t, s * (s**2 - t**2), t**3),
+    )
+    normalization = curve.corestriction(ambient)
+    normalization._preamble_normalization_target = curve
+    normalization._preamble_normalization_source = line
+    return normalization
+
+
+class NodalCubicIntegralTopology(SageObject):
+    r"""Ordinary and normalization-resolution cohomology of the rational nodal cubic.
+
+    Analytically, identifying the two preimages of the node in ``P^1`` gives
+    ``C(C) ~= S^2 vee S^1``.  Thus ordinary cohomology has ``H^1=Z``, while
+    resolution cohomology means the ordinary cohomology of the normalization
+    ``P^1`` and has ``H^1=0``.  The normalization morphism supplies the actual
+    contravariant comparison map between the two selected theories.
+    """
+
+    _ordinary_realization = (
+        "ordinary singular cohomology of the complex nodal cubic, topologically S^2 wedge S^1"
+    )
+    _resolution_realization = (
+        "resolution cohomology via the explicit normalization P^1 -> nodal cubic"
+    )
+
+    def __init__(self, scheme=None) -> None:
+        selected = NodalCubic() if scheme is None else scheme
+        if selected is not NodalCubic():
+            raise ValueError("this topology comparison is attached to the represented nodal cubic")
+        self._scheme = selected
+
+    def scheme(self):
+        return self._scheme
+
+    @cached_method
+    def normalization_morphism(self):
+        return NodalCubicNormalization()
+
+    def normalization_scheme(self):
+        return self.normalization_morphism().domain()
+
+    @cached_method
+    def ordinary_cohomology(self, degree):
+        degree = int(degree)
+        if degree < 0:
+            raise ValueError("a cohomological degree is nonnegative")
+        rank = 1 if degree in (0, 1, 2) else 0
+        return _free_integral_topology_group(
+            self.scheme(),
+            degree,
+            rank,
+            self._ordinary_realization,
+            category=IntegralSingularCohomologyGroups(_own_ring(SageZZ)),
+            theory="ordinary singular cohomology",
+        )
+
+    @cached_method
+    def resolution_cohomology(self, degree):
+        degree = int(degree)
+        if degree < 0:
+            raise ValueError("a cohomological degree is nonnegative")
+        rank = 1 if degree in (0, 2) else 0
+        return _free_integral_topology_group(
+            self.scheme(),
+            degree,
+            rank,
+            self._resolution_realization,
+            category=ResolutionIntegralCohomologyGroups(_own_ring(SageZZ)),
+            theory="resolution cohomology via normalization",
+        )
+
+    @cached_method
+    def normalization_pullback(self, degree):
+        r"""Return ``nu^*:H^degree(C,Z)->H^degree(P^1,Z)`` for the normalization."""
+        source = self.ordinary_cohomology(degree)
+        target = self.resolution_cohomology(degree)
+        source_labels = tuple(source.module_generating_set())
+        target_labels = tuple(target.module_generating_set())
+        if len(source_labels) == len(target_labels) == 1:
+            return module_homset(source, target)(
+                {source_labels[0]: target.module_generator(target_labels[0])}
+            )
+        return module_homset(source, target)(
+            {label: target.zero() for label in source_labels}
+        )
 
 
 @cached_function
@@ -995,6 +1151,11 @@ def ToricHodgeStructure(scheme):
 
 
 __all__ = [
+    "NodalCubicIntegralTopology",
+    "NodalCubicNormalization",
+    "NodalCubic",
+    "ResolutionIntegralCohomologyGroups",
+    "IntegralTopologicalCohomologyGroups",
     "ProjectiveGeneralLinearGroup2",
     "PGL2IntegralTopology",
     "PGL2IntegralCohomology",
