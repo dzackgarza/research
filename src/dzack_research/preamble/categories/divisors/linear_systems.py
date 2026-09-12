@@ -3,6 +3,7 @@ r"""Complete linear systems represented by their section spaces."""
 from itertools import product as cartesian_product
 from math import comb
 
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import (
@@ -126,6 +127,40 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
 
         def homogeneous_coordinate_ring(self):
             return self._preamble_homogeneous_coordinate_ring
+
+        @cached_method
+        def factor_coordinate_embedding(self, factor_label):
+            r"""Embed one factor's homogeneous coordinate algebra into the product algebra.
+
+            This is the polynomial-algebra map induced by the inclusion of the
+            factor's coordinate variables into its exact variable block.  The
+            product's retained factor labels, rather than factor equality, select
+            the block, so repeated projective factors keep distinct roles.
+            """
+            product = self.section_scheme()
+            factors = product.factors()
+            indices = factors.index_set()
+            factor_label = indices(factor_label)
+            labels = tuple(indices)
+            position = next(
+                index for index, known in enumerate(labels) if known == factor_label
+            )
+            factor = factors[factor_label]
+            source = factor.O(1).global_sections().homogeneous_coordinate_ring()
+            target = self.homogeneous_coordinate_ring()
+            start, stop = self._preamble_multihomogeneous_block_offsets[position]
+            source_labels = tuple(source.algebra_generating_set())
+            target_labels = tuple(target.algebra_generating_set())
+            if stop - start != len(source_labels):
+                raise ArithmeticError(
+                    "the retained multiprojective coordinate block has the wrong width"
+                )
+            return source.Mor(target)(
+                {
+                    source_label: target.algebra_generator(target_labels[start + offset])
+                    for offset, source_label in enumerate(source_labels)
+                }
+            )
 
 
 class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
