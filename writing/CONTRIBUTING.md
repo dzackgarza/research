@@ -3068,6 +3068,60 @@ M\to W$ be a $W$-valued bilinear form" (PR-37); or "a bilinear form
 valued in $W$" with $W$ quantified in the definition. Do not reify "the
 value module" as a once-fixed object.
 
+### `PR-38`: "With pointwise operations" / "with its $R$-module structure via $W$" does zero work — $\mathbf{Mod}_R$ is enriched over itself
+
+The $R$-module structure on a Hom is not an extra datum imposed pointwise
+via the codomain $W$ that needs to be announced. For commutative $R$,
+$\mathbf{Mod}_R$ is closed symmetric monoidal, hence enriched over
+itself; $\operatorname{Hom}_R(M,N)\in\mathbf{Mod}_R$ is the internal hom,
+full stop (stably $\mathbf{LMod}_R$ is closed symmetric monoidal for
+$\mathbb E_\infty$ $R$; for general $\mathbb E_1$ $R$,
+$\mathbf{LMod}_R$ is enriched over $\mathbf{Sp}$ and tensored over it).
+Its underlying set is the set of $R$-linear maps and its $R$-action is
+the canonical one — no "via $W$" and no alternative to contrast
+"pointwise" with. "With pointwise operations" therefore occupies the slot
+where a non-trivial structure would be specified while specifying no
+choice, and mislocates the structure in the codomain.
+
+This is the general form of PR-31 (tautological "with its hypotheses"):
+a clause that restates what the ambient closed structure already gives,
+so deleting it leaves the mathematics unchanged.
+
+Concrete standard — state the closed structure once as scaffolding, then
+there is nothing to say at the point of use:
+
+* **Scaffolding (once, fenced, in the module-theory setup):**
+  "::: {#thm-mod-closed} **Theorem.** For commutative $R$,
+  $\mathbf{Mod}_R$ (resp. stably $\mathbf{LMod}_R$ for
+  $\mathbb E_\infty$ $R$) is closed symmetric monoidal and self-enriched.
+  In particular $\operatorname{Hom}_R(M,N)\in\mathbf{Mod}_R$ is the
+  internal hom. :::" [@Stacks-0B8A; Lurie HA 4.2.1]
+
+* **At the point of use:** no clause needed:
+  "::: {#def-bil} **Definition.** Let $R$ be commutative and
+  $W,M\in\mathbf{Mod}_R$. Put
+  $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$ as
+  $R$-module. Its elements are the $R$-bilinear $M\times M\to W$. :::"
+  The "as $R$-module" already is the self-enrichment; no "with
+  pointwise operations" and no "structure via $W$."
+
+The missing one-time scaffolding is what forced the filler: without
+{#thm-mod-closed}, every Hom later needs a tautological qualifier to
+compensate. Put the enrichment once where it belongs and every later
+"with pointwise operations" / "with its $R$-module structure" is
+obviated.
+
+**Banned:** "Let $\operatorname{Bil}_{R,W}(M)$ be the $R$-module of
+$R$-bilinear maps $M\times M\to W$, with pointwise operations";
+"with its $R$-module structure via $W$ / induced by $W$."
+
+**Preferred:** state {#thm-mod-closed} once in the module-theory setup;
+then "Let $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R
+M,W)$ be the $R$-module of $R$-bilinear maps $M\times M\to W$." No
+trailing clause. If the reader needs the formula,
+"$(b_1+b_2)(x,y)=b_1(x,y)+b_2(x,y)$" is a property of the internal hom,
+not part of the definition.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3210,3 +3264,14 @@ $W,M\in\mathbf{LMod}_R$; a $W$-valued bilinear form is
 $b\colon M\otimes_R M\to W$" — or a section header that quantifies $R$
 once while $W$ varies; the skeleton is then complete after deleting
 glue.
+
+**12. Tautological "with pointwise operations" for the canonical
+enrichment.** "With pointwise operations" / "with its $R$-module
+structure via $W$" does zero work: for commutative $R$,
+$\mathbf{Mod}_R$ is closed symmetric monoidal and self-enriched, so
+$\operatorname{Hom}_R(M,N)\in\mathbf{Mod}_R$ is the internal hom, full
+stop (PR-38); $\operatorname{Bil}_{R,W}(M)=\operatorname{Hom}_R(M\otimes_R
+M,W)$ already is the $R$-module. The clause mislocates the structure in
+$W$ and restates what the ambient enrichment already gives. Put the
+closed structure once as fenced scaffolding in the module-theory setup
+and every later "with pointwise operations" is obviated.
