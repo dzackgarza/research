@@ -11,6 +11,19 @@ from dzack_research.utilities.polytope_views import (
     _polytope_html_document,
 )
 
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/categories/schemes/svg_2d_viewer.py",
+        "live_owner": "src/dzack_research/utilities/polytope_views.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/categories/schemes/threejs_viewer.py",
+        "live_owner": "src/dzack_research/utilities/polytope_views.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
+
 _A_ONE_TRIANGLE = ((0, 2), (0, 0), (2, 0))
 _A_ONE_BOUNDARY = ((0, 0), (0, 1), (0, 2), (1, 0), (2, 0), (1, 1))
 

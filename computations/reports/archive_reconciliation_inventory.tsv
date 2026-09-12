@@ -2530,10 +2530,10 @@ preamble/categories/schemes/subschemes.sage	OpenSubschemes.super_categories	meth
 preamble/categories/schemes/subschemes.sage	OpenSubschemes.ParentMethods	class	176	0			unreviewed
 preamble/categories/schemes/subschemes.sage	OpenSubschemes.ParentMethods.inclusion	method	179	0			unreviewed
 preamble/categories/schemes/subschemes.sage	install_subschemes	function	184	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	<module>	module	1	0			unreviewed
-preamble/categories/schemes/svg_2d_viewer.py	generate_2d_polygon_svg	function	88	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	<module>	module	1	0			unreviewed
-preamble/categories/schemes/threejs_viewer.py	generate_threejs_polytope_html	function	705	0			unreviewed
+preamble/categories/schemes/svg_2d_viewer.py	<module>	module	1	0		src/dzack_research/utilities/polytope_views.py	reconciled-live-owner
+preamble/categories/schemes/svg_2d_viewer.py	generate_2d_polygon_svg	function	88	0		src/dzack_research/utilities/polytope_views.py	reconciled-live-owner
+preamble/categories/schemes/threejs_viewer.py	<module>	module	1	0		src/dzack_research/utilities/polytope_views.py	reconciled-live-owner
+preamble/categories/schemes/threejs_viewer.py	generate_threejs_polytope_html	function	705	0		src/dzack_research/utilities/polytope_views.py	reconciled-live-owner
 preamble/categories/schemes/toric/__init__.py	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/toric/__init__.py	reconciled-live-owner
 preamble/categories/schemes/toric/__init__.py	ToricSchemes	reexport	1	3		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
 preamble/categories/schemes/toric/__init__.py	ToricScheme	reexport	1	0		src/dzack_research/preamble/categories/schemes/toric/toric_schemes.py	reconciled-live-owner
