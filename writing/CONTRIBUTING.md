@@ -3285,6 +3285,81 @@ for bilinear/symmetric/quadratic never write bare "maps $M\to W$" or
 "$M\times M\to W$" once the classifier ($\otimes$, $\operatorname{Sym}^2$,
 $\Gamma^2$) is defined.
 
+### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
+
+Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
+pedagogically fine *after* the Hom is defined (PR-39/PR-40) — the
+incoherence is not the element formula but the clause that the
+pullback/formula "defines a presheaf."
+
+* **Pullback** is a limit of $A\to C\leftarrow B$ in $\mathcal C$,
+  $A\times_C B$, or as an operation the functor
+  $f^*\colon\mathcal C_{/Y}\to\mathcal C_{/X}$ for $f\colon X\to Y$
+  (more generally $\operatorname{Span}(\mathcal C)\to\mathcal C$). It is
+  not a functor $\mathcal C^{\mathrm{op}}\to\mathbf{Set}$.
+
+* **Presheaf** on $\mathcal C$ is a functor
+  $\mathcal C^{\mathrm{op}}\to\mathbf{Set}$ (stably $\to\mathcal S$);
+  $\mathcal C^{\mathrm{op}}\to\mathbf{Mod}_R$ is an
+  $\mathbf{Mod}_R$-valued / $\mathbf{Mod}_R$-enriched presheaf via
+  {#thm-mod-closed} (TERM-10). A limit / slice functor cannot be a
+  presheaf — types do not match — and a single
+  $f^*b(x,y)=b(fx,fy)$ for one $f$ cannot be a functor
+  $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Set}$ / $\to\mathbf{Mod}_R$.
+
+What is intended is the functoriality already in the Hom:
+$M\mapsto\operatorname{Bil}_{R,W}(M)$ with
+$(f\colon M\to N)\mapsto (f\otimes f)^*$. The element formula is the
+unwrapping of that $(f\otimes f)^*$, not its definition.
+
+Concrete standards [@Stacks-04E9, Tag 04E9; Lurie HTT 6.1] — state the
+functor data explicitly, with types, domains, codomains, and referents:
+
+**Banned:** "Pullback along $f\colon M\to N$ sends $b$ to
+$f^*b(x,y)=b(fx,fy)$, and defines a presheaf
+$\operatorname{Bil}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\mathrm{op}}\to
+R\text{-}\mathbf{Mod}$."
+
+**Preferred:** "Put $\operatorname{Bil}_{R,W}(M):=
+\operatorname{Hom}_R(M\otimes_R M,W)$ as $R$-module. For $f\colon M\to N$
+in $\mathbf{Mod}_R$, put $f^*:=(f\otimes f)^*\colon
+\operatorname{Bil}_{R,W}(N)\to\operatorname{Bil}_{R,W}(M)$. As a
+functor $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$
+($\mathbf{Mod}_R$-valued presheaf via {#thm-mod-closed}) it satisfies
+$\mathrm{id}^*=\mathrm{id}$ and $(g\circ f)^*=f^*\circ g^*$ by Hom. On
+elements, $(f^*b)(x,y)=b(f(x),f(y))$." Name on objects, on morphisms with
+domain/codomain, and the element unwrapping; do not say a pullback or a
+single $f^*$ "defines" the presheaf/functor.
+
+### `PR-42`: Hand-waving a functor without naming types, domains, codomains, and referents
+
+The general form behind PR-41, PR-30/PR-31, PR-37, and SYM-4–11: a
+sentence that says a construction "defines a …" while naming no object
+assignment, no morphism assignment with domain/codomain, no variance, no
+enrichment, and no referent for each symbol ($b\in\operatorname{Bil}(N)$
+vs. $f^*b\in\operatorname{Bil}(M)$, $f\colon M\to N$ in which
+$\mathcal C$). The same device as "with its hypotheses" occupying the
+hypothesis slot while stating none — here occupying the functor-data slot
+while stating only one element formula.
+
+Every functor $\mathcal C^{\mathrm{op}}\to\mathcal D$ owes, fenced where
+it is introduced: (i) on objects $M\mapsto F(M)$ with its type in
+$\mathcal D$, (ii) on morphisms $(f\colon M\to N)\mapsto F(f)\colon
+F(N)\to F(M)$ with domain/codomain, (iii) element formula if
+pedagogically useful as unwrapping of (ii), (iv) $\mathrm{id}$ and
+composition. "Defines a presheaf/functor" with only (iii) for one $f$
+does not define it.
+
+**Banned:** any "…defines a presheaf/functor $\mathcal C^{\mathrm{op}}\to
+\mathcal D$" with only an element formula and no object/morphism
+assignments with types.
+
+**Preferred:** as in PR-41 — state (i)–(iv) with types; reserve
+"presheaf" for $\mathcal C^{\mathrm{op}}\to\mathbf{Set}$ ($\to\mathcal S$
+stably) and otherwise say "$\mathbf{Mod}_R$-valued presheaf" / "functor
+$\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" with the enrichment
+from {#thm-mod-closed} named when needed.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3464,3 +3539,15 @@ classifier $\Gamma^2_R$ already gives $\operatorname{Quad}_{R,W}(M):=
 "maps $M\to W$" or "$M\times M\to W$" once $\otimes$, $\operatorname{Sym}^2$,
 $\Gamma^2$ classify the flavour. Name $\mathbf{Set}$ / $U$ when the map
 is not $R$-linear.
+
+**15. "Pullback defines a presheaf" type error and hand-waving functor
+data.** Pullback is a limit / slice functor, presheaf is
+$\mathcal C^{\mathrm{op}}\to\mathbf{Set}$ — types do not match, and one
+$f^*b(x,y)=b(fx,fy)$ does not define a functor (PR-41). Every functor
+owes on objects with type, on morphisms $(f\colon M\to N)\mapsto
+(f\otimes f)^*\colon\operatorname{Bil}(N)\to\operatorname{Bil}(M)$ with
+domain/codomain, element unwrapping if useful, and
+$\mathrm{id}^*/(g\circ f)^*$ — not "defines a presheaf" with only an
+element formula (PR-42). Unwrapping $f^*b(x,y)=b(fx,fy)$ *after* the
+Hom is pedagogically fine; the incoherence is claiming that formula
+defines the presheaf.
