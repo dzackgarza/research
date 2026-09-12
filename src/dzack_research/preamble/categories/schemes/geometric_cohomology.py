@@ -10,7 +10,11 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     Isomorphism,
 )
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
-from dzack_research.preamble.categories.group.groups import OwnedGroups, _own_group
+from dzack_research.preamble.categories.group.groups import (
+    OwnedGroups,
+    _own_group,
+    group_homset,
+)
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
     CochainComplexes,
@@ -331,6 +335,36 @@ class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
 
     def super_categories(self):
         return [IntegralSingularCohomologyGroups(self.base_ring())]
+
+
+class GeometricFundamentalGroups(Category):
+    r"""Pointed fundamental groups of specified complex scheme realizations."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "fundamental groups of specified pointed geometric realizations"
+
+    def super_categories(self):
+        return [OwnedGroups()]
+
+    class ParentMethods:
+        def topological_scheme(self):
+            return self._preamble_topological_scheme
+
+        def base_point(self):
+            return self._preamble_topological_base_point
+
+        def realization_description(self):
+            return self._preamble_topological_realization_description
+
+
+def _equip_geometric_fundamental_group(group, scheme, base_point, realization):
+    if base_point.codomain() is not scheme:
+        raise ValueError("a pointed fundamental group requires a point of its scheme")
+    group._preamble_topological_scheme = scheme
+    group._preamble_topological_base_point = base_point
+    group._preamble_topological_realization_description = realization
+    return refine(group, GeometricFundamentalGroups())
 
 
 class ToricFundamentalGroups(Category):
@@ -851,6 +885,43 @@ def NodalCubicNormalization():
     return normalization
 
 
+def NodalCubicFundamentalGroup(scheme=None, base_point=None):
+    r"""Return the pointed ``pi_1`` of the rational nodal cubic, an infinite cyclic group."""
+    from dzack_research.preamble.categories.group.cyclic_subgroups import (
+        cyclic_subgroup,
+    )
+
+    selected = NodalCubic() if scheme is None else scheme
+    if selected is not NodalCubic():
+        raise ValueError("this fundamental-group model is attached to the represented nodal cubic")
+    point = selected.point_morphism((0, 1, 0)) if base_point is None else base_point
+    ambient = OwnedGroups().Free(1)
+    generator = next(iter(ambient.group_generators()))
+    group = cyclic_subgroup(generator)
+    return _equip_geometric_fundamental_group(
+        group,
+        selected,
+        point,
+        "nodal cubic complex realization S^2 wedge S^1",
+    )
+
+
+def ProjectiveLineFundamentalGroup(line, base_point):
+    r"""Return the trivial pointed fundamental group of one represented projective line."""
+    from dzack_research.preamble.categories.group.cyclic_subgroups import (
+        cyclic_subgroup,
+    )
+
+    trivial_ambient = OwnedGroups().C(1)
+    group = cyclic_subgroup(trivial_ambient.one())
+    return _equip_geometric_fundamental_group(
+        group,
+        line,
+        base_point,
+        "complex projective line, homeomorphic to S^2",
+    )
+
+
 class NodalCubicIntegralTopology(SageObject):
     r"""Ordinary and normalization-resolution cohomology of the rational nodal cubic.
 
@@ -883,6 +954,40 @@ class NodalCubicIntegralTopology(SageObject):
 
     def normalization_scheme(self):
         return self.normalization_morphism().domain()
+
+    @cached_method
+    def base_point(self):
+        return self.scheme().point_morphism((0, 1, 0))
+
+    @cached_method
+    def normalization_base_point(self):
+        point = self.normalization_scheme().point_morphism((1, 0))
+        image = self.normalization_morphism().image_of_point(point)
+        if tuple(image.point_coordinates()) != tuple(self.base_point().point_coordinates()):
+            raise ArithmeticError("the selected normalization basepoint does not map to the selected nodal basepoint")
+        return point
+
+    @cached_method
+    def fundamental_group(self):
+        return NodalCubicFundamentalGroup(self.scheme(), self.base_point())
+
+    @cached_method
+    def normalization_fundamental_group(self):
+        return ProjectiveLineFundamentalGroup(
+            self.normalization_scheme(),
+            self.normalization_base_point(),
+        )
+
+    @cached_method
+    def normalization_fundamental_group_map(self):
+        r"""Return the induced map ``pi_1(P^1)->pi_1(C)`` of the pointed normalization."""
+        source = self.normalization_fundamental_group()
+        target = self.fundamental_group()
+        induced = group_homset(source, target)(())
+        induced._preamble_pointed_scheme_morphism = self.normalization_morphism()
+        induced._preamble_source_base_point = self.normalization_base_point()
+        induced._preamble_target_base_point = self.base_point()
+        return induced
 
     @cached_method
     def ordinary_cohomology(self, degree):
@@ -950,6 +1055,31 @@ def ProjectiveGeneralLinearGroup2():
     return pgl2
 
 
+def PGL2FundamentalGroup(scheme=None, base_point=None):
+    r"""Return the pointed ``pi_1(PGL_2(C)) ~= C_2``."""
+    from dzack_research.preamble.categories.group.cyclic_subgroups import (
+        cyclic_subgroup,
+    )
+
+    selected = ProjectiveGeneralLinearGroup2() if scheme is None else scheme
+    if selected is not ProjectiveGeneralLinearGroup2():
+        raise ValueError("this fundamental-group model is attached to represented PGL_2")
+    point = (
+        selected.point_morphism((1, 0, 0, 1))
+        if base_point is None
+        else base_point
+    )
+    ambient = OwnedGroups().C(2)
+    generator = next(iter(ambient.group_generators()))
+    group = cyclic_subgroup(generator)
+    return _equip_geometric_fundamental_group(
+        group,
+        selected,
+        point,
+        "PGL_2(C) deformation retracted to PU(2) ~= SO(3)",
+    )
+
+
 class PGL2IntegralTopology(SageObject):
     r"""Ordinary integral cohomology of ``PGL_2(C)`` via its ``SO(3)`` retract.
 
@@ -975,6 +1105,14 @@ class PGL2IntegralTopology(SageObject):
 
     def realization_description(self):
         return self._realization
+
+    @cached_method
+    def base_point(self):
+        return self.scheme().point_morphism((1, 0, 0, 1))
+
+    @cached_method
+    def fundamental_group(self):
+        return PGL2FundamentalGroup(self.scheme(), self.base_point())
 
     @cached_method
     def integral_cohomology(self, degree):
@@ -1151,6 +1289,10 @@ def ToricHodgeStructure(scheme):
 
 
 __all__ = [
+    "ProjectiveLineFundamentalGroup",
+    "PGL2FundamentalGroup",
+    "NodalCubicFundamentalGroup",
+    "GeometricFundamentalGroups",
     "NodalCubicIntegralTopology",
     "NodalCubicNormalization",
     "NodalCubic",
