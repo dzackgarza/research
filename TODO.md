@@ -734,20 +734,6 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`enriques-family`**. **Needs:** none.
-  Construct the Enriques quotient and its lattice comparisons from the
-  preceding K3 action.
-  **Inputs:** an actually fixed-point-free involution, the required field/
-  characteristic hypotheses, quotient descent, integral cohomology and forms.
-  **Deliver:** the quotient morphism and invariant factorization, induced
-  cohomology maps, invariant/anti-invariant sublattices, discriminant gluing,
-  and compatible family quotients.
-  **Decision:** the name Enriques follows the proved geometric hypotheses,
-  not a chosen fixture label or a lattice signature.
-  **Acceptance:** compare fixed loci, representations and the applicable
-  Lefschetz calculation; retain the integral embeddings and gluing maps, not
-  only ranks.
-
 - [ ] **`ade-pairs`**. **Needs:** `divisors`, `relative-spec`, `singularity-classification`, `chambers`.
   Implement source-defined ADE and toric log pairs through the existing
   toric, divisor, cyclic-cover and Coxeter owners.
@@ -980,7 +966,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

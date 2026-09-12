@@ -239,9 +239,18 @@ _EXPORTS = {
      'RelativeAffineFamily'),
     'affine_equation_family': ('dzack_research.preamble.categories.schemes.families',
      'affine_equation_family'),
+    'EnriquesMarkedIntegralCohomology': ('dzack_research.preamble.categories.schemes.enriques_families', 'EnriquesMarkedIntegralCohomology'),
+    'HorikawaEnriquesBaseChangeComparison': ('dzack_research.preamble.categories.schemes.enriques_families', 'HorikawaEnriquesBaseChangeComparison'),
+    'HorikawaEnriquesSurface': ('dzack_research.preamble.categories.schemes.enriques_families', 'HorikawaEnriquesSurface'),
+    'horikawa_enriques_surface': ('dzack_research.preamble.categories.schemes.enriques_families', 'horikawa_enriques_surface'),
+
 }
 
 __all__ = [
+    'horikawa_enriques_surface',
+    'HorikawaEnriquesSurface',
+    'HorikawaEnriquesBaseChangeComparison',
+    'EnriquesMarkedIntegralCohomology',
     'ADELogPair',
     'ADELogPairs',
     'SideDecoration',

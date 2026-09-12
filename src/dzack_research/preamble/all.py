@@ -915,6 +915,10 @@ from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F4
     lorentzian_reduction_complex,
 )
 from dzack_research.preamble.categories.schemes import (  # noqa: F401
+    EnriquesMarkedIntegralCohomology,
+    HorikawaEnriquesBaseChangeComparison,
+    HorikawaEnriquesSurface,
+    horikawa_enriques_surface,
     ADELogPair,
     ADELogPairs,
     AffineGroupSchemeActions,
