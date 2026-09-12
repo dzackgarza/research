@@ -23,10 +23,12 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FreshFreeModuleOn,
+    ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
@@ -531,6 +533,124 @@ def ToricLineBundleCohomology(scheme, divisor, degree):
     return total
 
 
+
+def _require_smooth_quartic_k3_complex_realization(scheme):
+    r"""Require the represented smooth quartic K3 regime over ``QQ``."""
+    from dzack_research.preamble.categories.schemes.complete_intersections import (
+        ProjectiveCompleteIntersections,
+    )
+
+    base = scheme.scheme_base_ring()
+    if _engine_ring(base) is not SageQQ:
+        raise NotImplementedError(
+            "the selected quartic K3 integral realization currently uses the specified QQ-to-CC embedding"
+        )
+    if scheme not in ProjectiveCompleteIntersections(base):
+        raise TypeError("the represented quartic K3 topology requires a projective complete intersection")
+    if int(scheme.expected_dimension()) != 2 or tuple(scheme.defining_degrees()) != (4,):
+        raise ValueError("the represented K3 topology here is for a quartic surface in P^3")
+    if not bool(scheme.is_smooth()):
+        raise ValueError("the quartic K3 integral realization requires a smooth surface")
+
+
+class QuarticK3IntegralTopology(SageObject):
+    r"""Integral singular cohomology of a smooth quartic K3 with one marking.
+
+    Under the selected complex realization, a smooth quartic surface is a K3
+    surface.  Its middle integral cohomology with cup product is the even
+    unimodular K3 lattice ``3U + 2E8(-1)``.  A *marking* is additional data;
+    this object selects the catalogue marking in which the hyperplane class is
+    ``e1 + 2 f1``, a primitive vector of square ``4``.  No toric Chow
+    comparison is used.
+    """
+
+    def __init__(self, scheme) -> None:
+        _require_smooth_quartic_k3_complex_realization(scheme)
+        self._scheme = scheme
+
+    def scheme(self):
+        return self._scheme
+
+    def realization_description(self):
+        return "ordinary singular cohomology of the complex analytic quartic under the selected QQ-to-CC embedding"
+
+    @cached_method
+    def middle_cohomology_lattice(self):
+        from dzack_research.preamble.catalogue import NamedLattices
+
+        return NamedLattices.LK3
+
+    @cached_method
+    def integral_cohomology(self, degree):
+        degree = int(degree)
+        if degree < 0 or degree > 4:
+            raise ValueError("a complex K3 surface has cohomology only in degrees zero through four")
+        integers = _own_ring(SageZZ)
+        if degree == 2:
+            return self.middle_cohomology_lattice()
+        if degree in (1, 3):
+            return FreshFreeModuleOn(integers, finite_ordered_set(()))
+        return FreshFreeModuleOn(
+            integers,
+            finite_ordered_set((f"H{degree}",)),
+        )
+
+    @cached_method
+    def cup_product_pairing(self):
+        middle = self.middle_cohomology_lattice()
+        values = ring_as_module(_own_ring(SageZZ))
+        return BilinearMap(
+            middle,
+            middle,
+            values,
+            lambda left, right: middle.b(
+                middle.module_generator(left),
+                middle.module_generator(right),
+            ),
+        )
+
+    @cached_method
+    def hyperplane_first_chern_class(self):
+        middle = self.middle_cohomology_lattice()
+        e1, f1 = tuple(middle.module_generators())[:2]
+        hyperplane = e1 + 2 * f1
+        if middle.q(hyperplane) != _own_ring(SageZZ)(4):
+            raise ArithmeticError("the selected K3 marking does not give the quartic hyperplane square four")
+        if not hyperplane.is_primitive():
+            raise ArithmeticError("the selected quartic hyperplane class is not primitive")
+        return hyperplane
+
+    @cached_method
+    def hyperplane_c1_embedding(self):
+        from dzack_research.preamble.catalogue import NamedLattices
+
+        source = NamedLattices.Z.twist(4)
+        target = self.middle_cohomology_lattice()
+        hyperplane = self.hyperplane_first_chern_class()
+        return source.Emb(target)(
+            lambda _label: hyperplane
+        )
+
+    def first_chern_class(self, line_bundle):
+        if line_bundle.scheme() is not self.scheme():
+            raise ValueError("the first Chern class belongs to a line bundle on this K3 surface")
+        degree = getattr(line_bundle, "degree", None)
+        if not callable(degree):
+            raise NotImplementedError(
+                "the represented K3 first Chern class currently uses restricted projective O(d) line bundles"
+            )
+        return int(degree()) * self.hyperplane_first_chern_class()
+
+    def middle_cohomology_torsion_free_quotient(self):
+        r"""K3 middle cohomology is already torsion-free."""
+        return self.middle_cohomology_lattice()
+
+
+def QuarticK3IntegralCohomology(scheme, degree):
+    r"""Return ``H^degree(X(CC),ZZ)`` for a represented smooth quartic K3."""
+    return QuarticK3IntegralTopology(scheme).integral_cohomology(degree)
+
+
 def _require_smooth_complete_rational_toric_realization(scheme):
     if _engine_ring(scheme.scheme_base_ring()) is not SageQQ:
         raise NotImplementedError(
@@ -666,6 +786,8 @@ def ToricHodgeStructure(scheme):
 
 
 __all__ = [
+    "QuarticK3IntegralTopology",
+    "QuarticK3IntegralCohomology",
     "AffineGeometricCohomology",
     "AffineGeometricCohomologyComplex",
     "AffineGeometricCohomologyComplexes",

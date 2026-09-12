@@ -973,6 +973,8 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     SpecFunctor,
     StructureSheaf,
     Surfaces,
+    QuarticK3IntegralCohomology,
+    QuarticK3IntegralTopology,
     ToricCycleClassIsomorphism,
     ToricFixedPointBlowup,
     ToricFixedPointBlowups,

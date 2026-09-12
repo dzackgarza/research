@@ -301,6 +301,17 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 return False
             return bool(self.anticanonical_line_bundle().is_ample())
 
+        @cached_method
+        def integral_topology(self):
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                QuarticK3IntegralTopology,
+            )
+
+            return QuarticK3IntegralTopology(self)
+
+        def integral_singular_cohomology(self, degree):
+            return self.integral_topology().integral_cohomology(degree)
+
         def del_pezzo_degree(self):
             r"""Return ``(-K_X)^2`` for a represented del Pezzo complete intersection."""
             if not self.is_del_pezzo():

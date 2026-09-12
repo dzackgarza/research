@@ -1,0 +1,51 @@
+"""A quartic K3 retains its integral middle lattice and divisor inclusion."""
+
+from dzack_research.preamble.all import (
+    NamedLattices,
+    ProjectiveCompleteIntersection,
+    ProjectiveSpace,
+    QQ,
+)
+
+
+def _fermat_quartic():
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    return ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0**4 + x1**4 + x2**4 + x3**4)
+    )
+
+
+def test_quartic_k3_middle_integral_cohomology_is_the_k3_lattice() -> None:
+    quartic = _fermat_quartic()
+    topology = quartic.integral_topology()
+    middle = topology.integral_cohomology(2)
+
+    assert middle is NamedLattices.LK3
+    assert middle.module_rank() == 22
+    signature = middle.signature_pair()
+    assert signature.first() == 3
+    assert signature.second() == 19
+    assert middle.is_even()
+    assert middle.is_unimodular()
+    assert topology.middle_cohomology_torsion_free_quotient() is middle
+    assert topology.integral_cohomology(0).module_rank() == 1
+    assert topology.integral_cohomology(1).module_rank() == 0
+    assert topology.integral_cohomology(3).module_rank() == 0
+    assert topology.integral_cohomology(4).module_rank() == 1
+
+
+def test_quartic_hyperplane_c1_is_primitive_square_four_and_pairing_is_cup_product() -> None:
+    quartic = _fermat_quartic()
+    topology = quartic.integral_topology()
+    middle = topology.middle_cohomology_lattice()
+    hyperplane = topology.hyperplane_first_chern_class()
+    embedding = topology.hyperplane_c1_embedding()
+    pairing = topology.cup_product_pairing()
+
+    assert middle.q(hyperplane) == 4
+    assert hyperplane.is_primitive()
+    assert embedding.codomain() is middle
+    assert embedding.is_primitive()
+    assert pairing(hyperplane, hyperplane) == 4
+    assert topology.first_chern_class(quartic.O(2)) == 2 * hyperplane
