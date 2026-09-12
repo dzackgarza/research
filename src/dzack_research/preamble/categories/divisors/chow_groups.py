@@ -1,12 +1,44 @@
-r"""Owned Chow-group roles for represented algebraic cycles."""
+r"""Owned algebraic-cycle and Chow-group roles."""
 
+from sage.rings.integer_ring import ZZ as SageZZ
+
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreshFreeModuleOn,
+)
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
     FreeModules,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedNoetherianRings,
+    _own_ring,
 )
+from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+
+
+class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
+    r"""Sparse free abelian groups on prime cycle components of one dimension."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "algebraic cycle groups"
+
+    def super_categories(self):
+        return [FreeModules(self.base_ring())]
+
+    class ParentMethods:
+        def cycle_scheme(self):
+            return self._preamble_cycle_scheme
+
+        def cycle_dimension(self):
+            return self._preamble_cycle_dimension
+
+        def cycle_codimension(self):
+            return int(self.cycle_scheme().dimension()) - int(self.cycle_dimension())
+
+        def prime_cycle(self, point):
+            return self.module_generator(point)
 
 
 class ChowGroups(OwnedCategoryOverBaseRing):
@@ -38,17 +70,77 @@ class TorusInvariantCycleGroups(OwnedCategoryOverBaseRing):
         return "torus-invariant cycle groups"
 
     def super_categories(self):
-        return [FreeModules(self.base_ring())]
+        return [AlgebraicCycleGroups(self.base_ring())]
 
     class ParentMethods:
-        def cycle_scheme(self):
-            return self._preamble_cycle_scheme
+        pass
 
-        def cycle_dimension(self):
-            return self._preamble_cycle_dimension
 
-        def cycle_codimension(self):
-            return int(self.cycle_scheme().dimension()) - int(self.cycle_dimension())
+def AffineCycleGroup(scheme, cycle_dimension):
+    r"""Return ``Z_k(X)`` for a represented Noetherian affine scheme ``X``.
+
+    The framing is the condition set of *all* prime points whose closures have
+    dimension ``k``. It is not enumerated; cycle elements remain finite-support
+    sparse sums, as algebraic cycles do mathematically.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import AffineSchemes
+
+    base = scheme.scheme_base_ring()
+    if scheme not in AffineSchemes(base):
+        raise TypeError(
+            "this cycle-group construction requires a represented affine scheme"
+        )
+    ring = scheme.coordinate_algebra()
+    if ring not in OwnedNoetherianRings():
+        raise TypeError(
+            "this cycle-group construction requires a Noetherian coordinate ring"
+        )
+    cycle_dimension = int(cycle_dimension)
+    if cycle_dimension < 0 or cycle_dimension > int(scheme.dimension()):
+        raise ValueError(
+            "cycle dimension lies between zero and the scheme dimension"
+        )
+    spectrum = ring.spectrum()
+    locus = ConditionSet(
+        spectrum,
+        lambda point: point.closure_dimension() == cycle_dimension,
+    )
+    integers = _own_ring(SageZZ)
+    return FreshFreeModuleOn(
+        integers,
+        locus,
+        _extra_categories=(AlgebraicCycleGroups(integers),),
+        _extra_construction_data={
+            "cycle_scheme": scheme,
+            "cycle_dimension": cycle_dimension,
+            "cycle_prime_locus": locus,
+        },
+    )
+
+
+def FundamentalCycle(closed_subscheme):
+    r"""Return the fundamental cycle of an affine closed subscheme.
+
+    If ``Z = V(I)`` has dimension ``d``, its coefficient at a generic point
+    ``eta`` of a ``d``-dimensional irreducible component is
+    ``length(O_{Z,eta})``. Embedded components of smaller dimension are not
+    generic points of the fundamental cycle; nilpotent thickness along a
+    top-dimensional component is retained by the local length.
+    """
+    ambient = closed_subscheme.inclusion().codomain()
+    dimension = int(closed_subscheme.dimension())
+    cycles = AffineCycleGroup(ambient, dimension)
+    ideal = closed_subscheme.defining_ideal_owned()
+    spectrum = ambient.underlying_space()
+    coefficients = {}
+    for prime_ideal in ideal.associated_primes():
+        point = spectrum(prime_ideal)
+        if point.closure_dimension() != dimension:
+            continue
+        multiplicity = point.generic_local_length(ideal)
+        if multiplicity:
+            coefficients[point] = multiplicity
+    return cycles.linear_combination(coefficients)
 
 
 def ChowGroup(module, scheme, cycle_dimension):
@@ -59,7 +151,9 @@ def ChowGroup(module, scheme, cycle_dimension):
 
     ring = module.base_ring()
     if module not in _SelectedFinitePresentationModules(ring):
-        raise TypeError("a represented Chow group requires a selected finite presentation")
+        raise TypeError(
+            "a represented Chow group requires a selected finite presentation"
+        )
     result = module._same_presentation_module(
         module.module_generating_set(),
         _extra_categories=(ChowGroups(ring),),
@@ -71,4 +165,11 @@ def ChowGroup(module, scheme, cycle_dimension):
     return result
 
 
-__all__ = ["ChowGroup", "ChowGroups", "TorusInvariantCycleGroups"]
+__all__ = [
+    "AffineCycleGroup",
+    "AlgebraicCycleGroups",
+    "ChowGroup",
+    "ChowGroups",
+    "FundamentalCycle",
+    "TorusInvariantCycleGroups",
+]

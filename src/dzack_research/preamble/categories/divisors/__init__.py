@@ -2,7 +2,10 @@
 
 from importlib import import_module as _import_module
 
-_EXPORTS = {'CartierDivisorGroup': ('dzack_research.preamble.categories.divisors.cartier_divisor_groups',
+_EXPORTS = {'AffineCycleGroup': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineCycleGroup'),
+ 'AlgebraicCycleGroups': ('dzack_research.preamble.categories.divisors.chow_groups', 'AlgebraicCycleGroups'),
+ 'FundamentalCycle': ('dzack_research.preamble.categories.divisors.chow_groups', 'FundamentalCycle'),
+ 'CartierDivisorGroup': ('dzack_research.preamble.categories.divisors.cartier_divisor_groups',
                          'CartierDivisorGroup'),
  'CartierDivisorGroups': ('dzack_research.preamble.categories.divisors.cartier_divisor_groups',
                           'CartierDivisorGroups'),
@@ -83,6 +86,9 @@ _EXPORTS = {'CartierDivisorGroup': ('dzack_research.preamble.categories.divisors
                        'WeilDivisorGroups')}
 
 __all__ = [
+    'AffineCycleGroup',
+    'AlgebraicCycleGroups',
+    'FundamentalCycle',
     'CartierDivisorGroup',
     'CartierDivisorGroups',
     'ChowGroup',

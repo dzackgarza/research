@@ -1,5 +1,7 @@
 r"""Basic commutative-algebra constructions needed by affine scheme theory."""
 
+from math import factorial
+
 from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
@@ -145,6 +147,75 @@ class PrimeSpectra(OwnedCategory):
                     "the selected point is not represented as a finite residue-field extension"
                 ) from error
             return _own_ring(SageZZ)(degree)
+
+        @cached_method
+        def closure_dimension(self):
+            r"""Return ``dim closure({p}) = dim R/p`` for this prime point."""
+            return int(
+                QuotientRing(self.parent().ring(), self.ideal()).krull_dimension()
+            )
+
+        def generic_local_length(self, ideal):
+            r"""Return ``length_{R_p}((R/I)_p)`` at an associated generic point.
+
+            For a ``p``-primary component ``Q`` in a polynomial algebra over a
+            field, degree is multiplicative with generic length:
+
+            ``deg(R/Q) = length_{R_p}(R_p/Q_p) * deg(R/p)``.
+
+            The maintained polynomial-ideal Hilbert computation supplies both
+            degrees. This is the positive-dimensional analogue of
+            :meth:`local_length`, whose vector-space colength computation is
+            appropriate only when the local quotient is supported at a closed
+            point.
+            """
+            ring = self.parent().ring()
+            if ideal.ring() is not ring:
+                raise ValueError(
+                    "generic local length requires an ideal of this point's ring"
+                )
+            source = ring.quotient_source() if ring in QuotientRings() else ring
+            if not bool(_engine_ring(source.base_ring()).is_field()):
+                raise NotImplementedError(
+                    "generic local length is currently represented for polynomial algebras over a field"
+                )
+
+            def cover_ideal(selected):
+                backend = _engine_ideal(ring, selected)
+                if ring in QuotientRings():
+                    backend = _engine_quotient_cover_ideal(ring, backend)
+                return backend
+
+            def projective_degree(backend):
+                homogeneous = (
+                    backend if backend.is_homogeneous() else backend.homogenize()
+                )
+                polynomial = homogeneous.hilbert_polynomial(algorithm="singular")
+                if not polynomial:
+                    raise ArithmeticError(
+                        "the selected homogenized primary component has zero Hilbert polynomial"
+                    )
+                return SageZZ(
+                    polynomial.leading_coefficient()
+                    * factorial(int(polynomial.degree()))
+                )
+
+            denominator = projective_degree(cover_ideal(self.ideal()))
+            if denominator <= 0:
+                raise ArithmeticError(
+                    "a prime component must have positive projective degree"
+                )
+            total = SageZZ.zero()
+            for primary in ideal.primary_decomposition():
+                if primary.radical() != self.ideal():
+                    continue
+                numerator = projective_degree(cover_ideal(primary))
+                if numerator % denominator:
+                    raise ArithmeticError(
+                        "primary-component degree is not divisible by its reduced support degree"
+                    )
+                total += numerator // denominator
+            return _own_ring(SageZZ)(total)
 
         def local_length(self, ideal):
             r"""Return ``length_{R_p}((R/I)_p)`` for a finite local quotient.

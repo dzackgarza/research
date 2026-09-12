@@ -198,6 +198,8 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
 from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras  # noqa: F401
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams  # noqa: F401
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
+    AffineCycleGroup,
+    AlgebraicCycleGroups,
     CartierDivisorGroup,
     CartierDivisorGroups,
     ChowGroup,
@@ -218,6 +220,7 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     FormalDivisor,
     FormalDivisorGroup,
     FormalDivisorGroups,
+    FundamentalCycle,
     HomogeneousPolynomialSectionSpace,
     HomogeneousPolynomialSectionSpaces,
     ImposedPointMultiplicityLinearSystem,

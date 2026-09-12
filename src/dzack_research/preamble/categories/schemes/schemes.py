@@ -3949,6 +3949,14 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             assert other.inclusion().codomain() is codomain, "a scheme-theoretic intersection is taken inside one scheme"
             return codomain.closed_subscheme((*self.defining_equations(), *other.defining_equations()))
 
+        def fundamental_cycle(self):
+            r"""Return this closed subscheme's cycle with generic local multiplicities."""
+            from dzack_research.preamble.categories.divisors.chow_groups import (
+                FundamentalCycle,
+            )
+
+            return FundamentalCycle(self)
+
         def intersection_multiplicity(self, other, point):
             r"""``i(p; Z . W)``, the multiplicity of the intersection at ``p``.
 
