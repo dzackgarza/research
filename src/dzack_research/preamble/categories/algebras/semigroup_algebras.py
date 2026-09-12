@@ -1,0 +1,112 @@
+r"""Affine semigroup algebras from finite lattice-generator presentations."""
+
+from sage.matrix.constructor import matrix as _engine_matrix
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.schemes.toric.ideal import ToricIdeal as _SageToricIdeal
+
+from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebrasWithChosenFinitePresentation,
+    CommutativeAlgebras,
+)
+from dzack_research.preamble.categories.algebras.free_algebras import (
+    FinitelyPresentedAlgebra,
+    PolynomialRing,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _engine_ring,
+    _own_ring,
+)
+
+
+class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
+    r"""Affine semigroup algebras with one selected finite lattice presentation."""
+
+    def an_object(self):
+        r"""The polynomial algebra ``R[t] = R[NN]``."""
+        return self(((1,),), names=("t",))
+
+    def super_categories(self):
+        return [
+            CommutativeAlgebras(self.base_ring()),
+            AlgebrasWithChosenFinitePresentation(self.base_ring()),
+        ]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "affine semigroup algebras"
+
+    def _call_(
+        self,
+        generator_coordinates,
+        *,
+        names=None,
+        extra_categories=(),
+        extra_construction_data=(),
+    ):
+        coordinates = tuple(
+            tuple(int(entry) for entry in row)
+            for row in generator_coordinates
+        )
+        if not coordinates:
+            raise ValueError("an affine semigroup presentation requires at least one generator")
+        ambient_rank = len(coordinates[0])
+        if any(len(row) != ambient_rank for row in coordinates):
+            raise ValueError("affine semigroup generators must lie in one lattice")
+        if names is None:
+            names = tuple(f"s{position}" for position in range(len(coordinates)))
+        else:
+            names = tuple(names)
+        if len(names) != len(coordinates):
+            raise ValueError("an affine semigroup presentation needs one variable per generator")
+
+        base = self.base_ring()
+        presentation = PolynomialRing(base, names)
+        engine_presentation = _engine_ring(presentation)
+        columns = _engine_matrix(SageZZ, coordinates).transpose()
+        engine_ideal = _SageToricIdeal(
+            columns,
+            names=names,
+            base_ring=_engine_ring(base),
+        )
+        relations = tuple(
+            presentation._from_engine_element(engine_presentation(relation))
+            for relation in engine_ideal.gens()
+        )
+        construction_data = (
+            ("_preamble_affine_semigroup_generator_coordinates", coordinates),
+            *tuple(extra_construction_data),
+        )
+        return FinitelyPresentedAlgebra(
+            presentation,
+            relations,
+            _extra_categories=(self, *tuple(extra_categories)),
+            _extra_construction_data=construction_data,
+        )
+
+
+def AffineSemigroupAlgebra(
+    generator_coordinates,
+    base_ring,
+    *,
+    names=None,
+    extra_categories=(),
+    extra_construction_data=(),
+):
+    r"""Construct the affine semigroup algebra on the selected lattice generators.
+
+    The rows are the chosen lattice generators ``a_i``.  The private Sage
+    ``ToricIdeal`` computation supplies the kernel of
+    ``R[z_i] -> R[t^M]``, ``z_i |-> t^{a_i}``; the public result is the owned
+    finitely presented commutative algebra carrying this selected semigroup
+    presentation.
+    """
+    return AffineSemigroupAlgebras(_own_ring(base_ring))(
+        generator_coordinates,
+        names=names,
+        extra_categories=extra_categories,
+        extra_construction_data=extra_construction_data,
+    )
+
+
+__all__ = ["AffineSemigroupAlgebra", "AffineSemigroupAlgebras"]

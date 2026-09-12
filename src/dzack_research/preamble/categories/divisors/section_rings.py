@@ -4,6 +4,9 @@ from sage.geometry.cone import Cone as _SageCone
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.semigroup_algebras import (
+    AffineSemigroupAlgebra,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
@@ -98,11 +101,7 @@ def SectionRing(scheme, divisor):
         for vertex in polytope.vertices()
     )
     hilbert_basis = tuple(tuple(int(entry) for entry in vector) for vector in _SageCone(cone_rays).Hilbert_basis())
-    from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-        _affine_semigroup_algebra,
-    )
-
-    return _affine_semigroup_algebra(
+    return AffineSemigroupAlgebra(
         hilbert_basis,
         scheme.scheme_base_ring(),
         names=tuple(f"s{position}" for position in range(len(hilbert_basis))),
