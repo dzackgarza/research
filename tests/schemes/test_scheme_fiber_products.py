@@ -61,3 +61,20 @@ def test_the_category_exhibits_a_fibre_product_of_affine_spaces() -> None:
     assert witness in FiberProductSchemes(ZZ)
     assert witness.relative_dimension() == 2
     assert witness.fiber_product_base() is Spec(ZZ, base_ring=ZZ)
+
+
+def test_fiber_of_the_first_projection_over_the_origin_is_an_affine_line() -> None:
+    line, plane = _line_over(QQ)
+    algebra = line.coordinate_algebra()
+    x = algebra.algebra_generator("x")
+    origin = line.closed_subscheme(x)
+    first_projection = plane.fiber_product_projections()[0]
+    fiber = scheme_fiber_product(first_projection, origin.inclusion())
+
+    assert fiber.fiber_product_base() is line
+    assert fiber.left_projection().codomain() is plane
+    assert fiber.right_projection().codomain() is origin
+    assert fiber.relative_dimension() == 1
+    assert first_projection * fiber.left_projection() == (
+        origin.inclusion() * fiber.right_projection()
+    )

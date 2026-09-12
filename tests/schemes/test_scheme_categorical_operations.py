@@ -25,6 +25,15 @@ from dzack_research.preamble.all import (
     scheme_product,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_schemes_pullback.sage",
+    "live_owner": "tests/schemes/test_scheme_categorical_operations.py",
+    "owner_overrides": {
+        "test_fiber_pullback_from_projection_is_one_dimensional": "tests/schemes/test_scheme_fiber_products.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _plane():
     plane = AffineSpace(2, QQ, names=("x", "y"))

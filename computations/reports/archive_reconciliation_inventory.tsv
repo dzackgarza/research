@@ -3062,9 +3062,9 @@ preamble/tests/framework/test_projective_products_picard.sage	test_picard_lattic
 preamble/tests/framework/test_quotients_and_complete_intersections.sage	<module>	module	1	0		tests/schemes/test_complete_intersections.py	reconciled-live-owner
 preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_complete_intersection_certificate_for_an_affine_quadric_surface	specimen	6	0		tests/schemes/test_complete_intersections.py	reconciled-live-owner
 preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_diagonal_sign_quotient_family_has_global_quotient_data	specimen	29	0		tests/schemes/test_horikawa_enriques_family.py	reconciled-live-owner
-preamble/tests/framework/test_schemes_pullback.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/test_schemes_pullback.sage	test_graph_and_fixed_subscheme_for_involution	specimen	6	0			unreviewed
-preamble/tests/framework/test_schemes_pullback.sage	test_fiber_pullback_from_projection_is_one_dimensional	specimen	27	0			unreviewed
+preamble/tests/framework/test_schemes_pullback.sage	<module>	module	1	0		tests/schemes/test_scheme_categorical_operations.py	reconciled-live-owner
+preamble/tests/framework/test_schemes_pullback.sage	test_graph_and_fixed_subscheme_for_involution	specimen	6	0		tests/schemes/test_scheme_categorical_operations.py	reconciled-live-owner
+preamble/tests/framework/test_schemes_pullback.sage	test_fiber_pullback_from_projection_is_one_dimensional	specimen	27	0		tests/schemes/test_scheme_fiber_products.py	reconciled-live-owner
 preamble/tests/test_cardinalities.sage	<module>	module	1	0		tests/sets/test_cardinals_and_ordinals.py	reconciled-live-owner
 preamble/tests/test_cardinalities.sage	test_initial_ordinals_have_the_corresponding_aleph_cardinals	specimen	48	0		tests/sets/test_cardinals_and_ordinals.py	reconciled-live-owner
 preamble/tests/test_cardinalities.sage	test_natural_ordinal_operations_form_the_owned_semiring	specimen	56	0		tests/sets/test_cardinals_and_ordinals.py	reconciled-live-owner
