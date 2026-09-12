@@ -41,6 +41,16 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.powers import DividedSquare
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_constructors_meet_their_obligations.sage",
+    "live_owner": "tests/test_constructors_meet_their_obligations.py",
+    "owner_overrides": {
+        "test_a_form_is_a_morphism_into_the_value_module": "tests/forms/test_constructor_obligations_archive.py",
+        "test_the_scale_submodule_is_generated_by_the_forms_values": "tests/forms/test_constructor_obligations_archive.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _identity_on(source: Parent):
     r"""Return $\mathrm{id}_S$ in the pre-existing owned Hom object."""
