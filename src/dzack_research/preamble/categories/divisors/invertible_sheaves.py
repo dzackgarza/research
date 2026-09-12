@@ -1079,6 +1079,14 @@ class ProductProjectiveSubschemeLineBundle(SageObject):
     def dual(self):
         return type(self)(self.scheme(), self.ambient_line_bundle().dual())
 
+    def is_ample(self) -> bool:
+        r"""Return a theorem-backed positive ampleness decision from the ambient product."""
+        if self.ambient_line_bundle().is_ample():
+            return True
+        raise NotImplementedError(
+            "a non-ample ambient multiprojective bundle can restrict to an ample bundle; this regime needs a separate criterion"
+        )
+
     def _repr_(self):
         degrees = tuple(
             self.multidegree()[label] for label in self.multidegree().index_set()
