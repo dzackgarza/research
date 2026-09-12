@@ -2037,6 +2037,44 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
         return _placed_over_stated_base(candidate, self, AffineSpaces)
 
     class ParentMethods:
+        @cached_method
+        def picard_group(self):
+            r"""Return ``Pic(A^n_k)=0`` over a field."""
+            base = self.scheme_base_ring()
+            if base not in OwnedFields():
+                raise NotImplementedError(
+                    "the represented affine-space Picard group currently requires a field base"
+                )
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            integers = _own_ring(SageZZ)
+            return PicardGroup(
+                BasedFreeModule(integers, finite_ordered_set(())), scheme=self
+            )
+
+        @cached_method
+        def class_group(self):
+            r"""Return ``Cl(A^n_k)=0`` over a field."""
+            base = self.scheme_base_ring()
+            if base not in OwnedFields():
+                raise NotImplementedError(
+                    "the represented affine-space class group currently requires a field base"
+                )
+            from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            integers = _own_ring(SageZZ)
+            return ClassGroup(
+                BasedFreeModule(integers, finite_ordered_set(())), scheme=self
+            )
+
+        def basic_open(self, element):
+            r"""Archived spelling for the distinguished open ``D(element)``."""
+            return self.distinguished_open(element)
+
         def zeta_function(self):
             r"""Return ``Z(A^d/F_q,T)=1/(1-q^d T)``."""
             base = _engine_ring(self.scheme_base_ring())
@@ -2081,6 +2119,55 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         return _placed_over_stated_base(candidate, self, ProjectiveSpaces)
 
     class ParentMethods:
+        @cached_method
+        def fan(self):
+            r"""Return the owned standard fan of ``P^n``."""
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.schemes.toric.fans import RationalPolyhedralFans
+
+            integers = _own_ring(SageZZ)
+            lattice = BasedFreeModule(integers, int(self.relative_dimension()))
+            return RationalPolyhedralFans(lattice).projective_space_fan()
+
+        @cached_method
+        def divisor_class_theory(self):
+            r"""Return ``Pic(P^n_k)=Cl(P^n_k)=ZZ`` with the hyperplane comparison."""
+            base = self.scheme_base_ring()
+            if base not in OwnedFields():
+                raise NotImplementedError(
+                    "the represented projective-space divisor class groups currently require a field base"
+                )
+            from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+            from dzack_research.preamble.categories.divisors.general_divisors import projective_space_divisor_class_theory
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            integers = _own_ring(SageZZ)
+            zero_module = BasedFreeModule(integers, finite_ordered_set(()))
+            base_scheme = self.base_scheme()
+            base_picard = PicardGroup(zero_module, scheme=base_scheme)
+            base_class = ClassGroup(zero_module, scheme=base_scheme)
+            comparison = module_homset(base_picard, base_class)({})
+            return projective_space_divisor_class_theory(
+                self, base_picard, base_class, comparison
+            )
+
+        def picard_group(self):
+            return self.divisor_class_theory().picard_group()
+
+        def class_group(self):
+            return self.divisor_class_theory().class_group()
+
+        def hyperplane(self, index=0):
+            r"""Return the coordinate hyperplane ``V(x_index)``."""
+            return self.closed_subscheme(self.gens()[int(index)])
+
+        def basic_open(self, homogeneous_element):
+            r"""Return ``D_+(homogeneous_element)`` as the complement of its zero locus."""
+            return self.closed_subscheme(homogeneous_element).open_complement()
+
         def _standard_chart_coordinate_name(self, chart_index, numerator_index):
             r"""The name of the coordinate ``x_k / x_i`` on the ``i``-th standard chart."""
             return f"x{int(numerator_index)}_over_x{int(chart_index)}"
