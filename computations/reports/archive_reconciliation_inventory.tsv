@@ -166,111 +166,111 @@ preamble/categories/abstract_categories/functors.sage	CoproductFunctor	class	519
 preamble/categories/abstract_categories/functors.sage	NaturalTransformations	function	538	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
 preamble/categories/abstract_categories/functors.sage	NaturalTransformation	function	546	1	src/dzack_research/preamble/categories/functors/core.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
 preamble/categories/abstract_categories/functors.sage	NaturalIsomorphism	function	555	2		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
-preamble/categories/abstract_categories/hom_categories.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf	class	56	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.inherited_hom_category_families	method	62	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.super_categories	method	69	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.Of	method	81	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.Between	method	95	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods	class	102	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.domain	method	116	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.codomain	method	119	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.hom_category	method	122	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.base_category	method	127	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.super_categories	method	130	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods	class	155	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.hom_category	method	161	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.base_category	method	164	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.domain	method	167	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.codomain	method	170	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.source	method	173	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.target	method	176	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_endomorphism	method	185	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_isomorphism	method	188	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_automorphism	method	191	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_monomorphism	method	194	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_epimorphism	method	197	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction	class	201	3			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction.extra_super_categories	method	204	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction.inherited_hom_category_families	method	207	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction.super_categories	method	210	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf	class	220	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.super_categories	method	226	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.inherited_hom_category_families	method	229	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.Of	method	241	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.Between	method	250	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.ElementMethods	class	258	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.ElementMethods.is_endomorphism	method	259	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf	class	263	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.inherited_hom_category_families	method	269	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.super_categories	method	278	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.Of	method	284	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.Between	method	296	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ParentMethods	class	303	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ParentMethods.identity	method	317	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ParentMethods.compose	method	323	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ElementMethods	class	336	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ElementMethods.underlying_arrow	method	345	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ElementMethods.is_monomorphism	method	348	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf	class	352	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.inherited_hom_category_families	method	358	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.super_categories	method	367	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.Of	method	373	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.Between	method	385	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ParentMethods	class	392	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ParentMethods.identity	method	406	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ParentMethods.compose	method	412	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ElementMethods	class	425	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ElementMethods.underlying_arrow	method	434	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ElementMethods.is_epimorphism	method	437	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf	class	441	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.super_categories	method	447	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.inherited_hom_category_families	method	450	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.Of	method	464	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.Between	method	478	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ParentMethods	class	485	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ParentMethods.identity	method	500	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ParentMethods.compose	method	509	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods	class	524	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.forward	method	535	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.inverse	method	538	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_endomorphism	method	545	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_isomorphism	method	548	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_automorphism	method	551	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_monomorphism	method	554	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_epimorphism	method	557	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf	class	561	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.super_categories	method	567	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.inherited_hom_category_families	method	570	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.Of	method	583	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.Between	method	592	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ParentMethods	class	600	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ParentMethods.identity	method	601	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ParentMethods.compose	method	607	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods	class	614	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods.is_endomorphism	method	615	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods.is_isomorphism	method	618	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods.is_automorphism	method	621	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction	class	625	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction.extra_super_categories	method	628	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction.inherited_hom_category_families	method	631	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction.super_categories	method	637	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction	class	641	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction.extra_super_categories	method	644	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction.inherited_hom_category_families	method	647	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction.super_categories	method	653	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction	class	657	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction.extra_super_categories	method	660	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction.inherited_hom_category_families	method	663	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction.super_categories	method	669	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction	class	673	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction.extra_super_categories	method	676	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction.inherited_hom_category_families	method	679	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction.super_categories	method	685	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction	class	689	2			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.extra_super_categories	method	692	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.inherited_hom_category_families	method	695	0			unreviewed
-preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.super_categories	method	701	0			unreviewed
+preamble/categories/abstract_categories/hom_categories.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf	class	56	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.inherited_hom_category_families	method	62	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.super_categories	method	69	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.Of	method	81	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.Between	method	95	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods	class	102	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.domain	method	116	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.codomain	method	119	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.hom_category	method	122	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.base_category	method	127	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ParentMethods.super_categories	method	130	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods	class	155	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.hom_category	method	161	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.base_category	method	164	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.domain	method	167	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.codomain	method	170	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.source	method	173	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.target	method	176	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_endomorphism	method	185	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_isomorphism	method	188	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_automorphism	method	191	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_monomorphism	method	194	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryOf.ElementMethods.is_epimorphism	method	197	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction	class	201	3		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction.extra_super_categories	method	204	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction.inherited_hom_category_families	method	207	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	HomCategoryConstruction.super_categories	method	210	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf	class	220	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.super_categories	method	226	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.inherited_hom_category_families	method	229	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.Of	method	241	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.Between	method	250	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.ElementMethods	class	258	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryOf.ElementMethods.is_endomorphism	method	259	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf	class	263	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.inherited_hom_category_families	method	269	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.super_categories	method	278	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.Of	method	284	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.Between	method	296	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ParentMethods	class	303	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ParentMethods.identity	method	317	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ParentMethods.compose	method	323	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ElementMethods	class	336	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ElementMethods.underlying_arrow	method	345	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryOf.ElementMethods.is_monomorphism	method	348	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf	class	352	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.inherited_hom_category_families	method	358	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.super_categories	method	367	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.Of	method	373	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.Between	method	385	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ParentMethods	class	392	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ParentMethods.identity	method	406	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ParentMethods.compose	method	412	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ElementMethods	class	425	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ElementMethods.underlying_arrow	method	434	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryOf.ElementMethods.is_epimorphism	method	437	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf	class	441	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.super_categories	method	447	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.inherited_hom_category_families	method	450	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.Of	method	464	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.Between	method	478	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ParentMethods	class	485	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ParentMethods.identity	method	500	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ParentMethods.compose	method	509	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods	class	524	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.forward	method	535	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.inverse	method	538	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_endomorphism	method	545	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_isomorphism	method	548	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_automorphism	method	551	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_monomorphism	method	554	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryOf.ElementMethods.is_epimorphism	method	557	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf	class	561	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.super_categories	method	567	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.inherited_hom_category_families	method	570	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.Of	method	583	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.Between	method	592	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ParentMethods	class	600	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ParentMethods.identity	method	601	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ParentMethods.compose	method	607	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods	class	614	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods.is_endomorphism	method	615	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods.is_isomorphism	method	618	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryOf.ElementMethods.is_automorphism	method	621	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction	class	625	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction.extra_super_categories	method	628	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction.inherited_hom_category_families	method	631	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EndCategoryConstruction.super_categories	method	637	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction	class	641	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction.extra_super_categories	method	644	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction.inherited_hom_category_families	method	647	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	MonoCategoryConstruction.super_categories	method	653	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction	class	657	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction.extra_super_categories	method	660	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction.inherited_hom_category_families	method	663	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	EpiCategoryConstruction.super_categories	method	669	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction	class	673	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction.extra_super_categories	method	676	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction.inherited_hom_category_families	method	679	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	IsoCategoryConstruction.super_categories	method	685	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction	class	689	2		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.extra_super_categories	method	692	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.inherited_hom_category_families	method	695	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/hom_categories.sage	AutCategoryConstruction.super_categories	method	701	0		src/dzack_research/preamble/categories/abstract_categories/hom_categories.py	reconciled-live-owner
 preamble/categories/abstract_categories/products.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
 preamble/categories/abstract_categories/products.sage	ConeParent	class	58	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
 preamble/categories/abstract_categories/products.sage	ConeParent.category	method	59	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
