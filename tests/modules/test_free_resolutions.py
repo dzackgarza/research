@@ -7,6 +7,12 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/pure/finitely_generated/finitely_generated_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_presented_pid_module_has_actual_short_free_resolution() -> None:
     f0 = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
@@ -62,3 +68,24 @@ def test_free_module_has_trivial_free_resolution() -> None:
     for generator in module.module_generators():
         assert resolution.augmentation()(generator) == generator
     assert resolution.is_exact()
+
+
+def test_finite_framing_is_the_term_zero_data_of_the_pid_resolution() -> None:
+    f0 = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
+    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    module = FinitelyPresentedModule(
+        module_homset(relations, f0)(
+            {"r": 5 * f0.module_generator("b")}
+        )
+    )
+    resolution = module.free_resolution()
+
+    assert module.is_finitely_generated()
+    assert module.number_of_module_generators() == 3
+    assert resolution.term(0) is module.presentation().codomain()
+    assert resolution.augmentation().domain() is resolution.term(0)
+    assert resolution.augmentation().codomain() is module
+    for label in module.module_generating_set():
+        assert resolution.augmentation()(resolution.term(0).module_generator(label)) == (
+            module.module_generator(label)
+        )
