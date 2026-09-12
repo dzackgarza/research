@@ -370,22 +370,6 @@ restart of the module/algebra/action constructions.
 
 ### Constructor and ownership convergence
 
-- [ ] **`localization-fraction-field`**. **Needs:** none.
-
-  COMPLAINTS.md, "Localization must define its fraction-field specialization": the
-  specialization is required by consumers and does not exist. Promoted from prose so it can be
-  selected and closed like any other node.
-
-- [ ] **`completion-as-limit`**. **Needs:** none.
-
-  COMPLAINTS.md, "Completion must be a limit rather than one quotient": the current completion
-  is a single quotient, which is not the object the consumers need. Promoted from prose.
-
-- [ ] **`cohomology-boundary-contract`**. **Needs:** none.
-
-  COMPLAINTS.md, "Cohomology needs a common complex contract in boundary degrees": boundary
-  degrees have no shared contract, so each consumer reinvents one. Promoted from prose.
-
 - [ ] **`constructor-convergence`**. **Needs:** none.
   Close the surviving alternate-constructor and private-access paths, one
   mathematical construction family with its consumers per release.
