@@ -3595,6 +3595,72 @@ and the object $(D_L,\bar q)$ when $L$ is defined; do not sign-post
 discriminants in the general $\operatorname{Bil}/\operatorname{Quad}$
 section before lattices and $L^\vee/L$ exist.
 
+### `PR-52`: Weasel mass nouns — "information," "data," "setting," "condition," "property," "structure," "notion," … with no fixed referent
+
+The instances we know today — "information" (PR-51),
+"data" (EV-6, PR-20), "setting" (TERM-13), "condition" / "hypotheses"
+(PR-31, PR-50), "conclusion" (PR-30), "value module" (TERM-9), "torsion
+theory" (TERM-4), "operations / structure via $W$" (PR-38),
+"presheaf" for $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$ (TERM-10) —
+will change. The underlying problem is timeless and is detected by
+semantic indicators, not by a word list: a mass noun with no fixed
+extension in $\mathbf{Mod}_R$ / $\mathbf{Cat}_\infty$ that exploits
+colloquial understanding so the sentence can be defended as "true under
+some interpretation" while naming no $R$-submodule, functor, category, or
+invariant to check.
+
+Timeless indicators that a clause is weasel-wording (any one suffices to
+flag):
+
+* **No fixed referent in the book.** The noun has no fenced definition
+  with a type — no $R$-submodule $\operatorname{Val}(b)\subseteq W$ for
+  "information," no $W\in\mathbf{Mod}_R$ for "value module," no category
+  $\mathbf{TorBil}_{R,W}$ for "setting," no list "$2\colon W\hookrightarrow
+  W$ injective" for "hypotheses."
+
+* **Truth / meaning is context-dependent where the context is never fixed
+  or stated.** "Retain additional information" is true of any true
+  statement; "with its hypotheses" is true of every theorem; "in the
+  discriminant setting" is true in any ambient the reader imagines.
+
+* **Unfalsifiable.** Any counterexample can be deflected as "not the
+  intended information / setting / condition" because no quantified
+  proposition was stated (PR-30).
+
+* **Abuse of colloquial understanding.** The reader is expected to supply
+  the mathematical meaning from ordinary English ("information" = "something
+  true," "setting" = "where this happens") instead of from a defined
+  morphism.
+
+* **Occupies the slot where a named object belongs.** The noun sits where
+  an $R$-submodule, functor, category, or diagram is owed, so the sentence
+  is unfalsifiable without ever being precise (PR-30–32).
+
+Concrete bad / standard pairs are instances of the same timeless check —
+replace the mass noun by the named object that already has a type:
+
+* **Banned:** "quadratic refinements retain additional information."
+  **Preferred:** "$\gamma^*\colon\operatorname{Quad}_{R,W}(M)\to
+  \operatorname{EvBil}_{R,W}(M)$ is not an isomorphism; its fiber over $b$
+  is a torsor under $\operatorname{Hom}_R(M,W/2W)$" (PR-51).
+
+* **Banned:** "is additional data / does not follow from notation."
+  **Preferred:** "$b\in\operatorname{EvBil}_{R,W}(M)$ is the lift through
+  $\Gamma^2_R(M)$" (EV-6, PR-20).
+
+* **Banned:** "in the discriminant setting."
+  **Preferred:** "in $\mathbf{TorQuad}_{R,W}$, for $(D_L,\bar q)$ with
+  $D_L:=L^\vee/L$" (TERM-13).
+
+* **Banned:** "with its hypotheses / satisfies the evenness condition."
+  **Preferred:** "for $2\colon W\hookrightarrow W$ injective" /
+  "$b$ is even ($b\in\operatorname{EvBil}$)" (PR-31, PR-50).
+
+New weasel nouns will appear; audit by the indicators, not the list.
+When a new mass noun is found, replace it by the $R$-submodule / functor /
+category that already has a name, or define that object fenced if it does
+not yet exist — do not add the noun to a list and keep the sentence.
+
 ### `PR-46`: "For every $x$, a choice of …" for the global functor / bundle / section / natural transformation
 
 "For every $x$, a choice of $b_x$ / basis / complement / $b(x,x)\in2W$ /
@@ -4143,3 +4209,8 @@ $\mathbf{TorQuad}_{R,W}$ of torsion forms, with discriminant object
 $D_L:=L^\vee/L$ (TERM-13) — and sign-posting it in the general
 $\operatorname{Bil}/\operatorname{Quad}$ section before lattices and
 $L^\vee/L$ exist inverts dependency order and violates theory-of-mind.
+All three are instances of the timeless weasel mass-noun problem:
+"information," "data," "setting," "condition," … with no fixed referent,
+context-dependent truth where the context is never stated, and no named
+$R$-submodule / functor / category to check (PR-52) — audit by those
+semantic indicators, not by the word list, which will change.
