@@ -4234,6 +4234,16 @@ does it hold for $\mathrm{QCoh}(X)$, for $L^2(\mathbb R)$ with its
 Hilbert topology, and for $M$ not finitely generated? If not, the
 statement is overfit.
 
+### `PR-66`: Every definition must be valid in the functional-analytic setting — finite collapse is a Proposition, not a definition, and is why diagrammatic / categorical definitions are preferable
+
+A definition that is correct for $R^n$ ($W^{I\times I}\to\operatorname{Hom}(R^{(I)}\otimes R^{(I)},W)$ is an iso, $x^{\!t}Ay:=\sum_{i,j}x_iG_{ij}y_j$ finite, every $G$ bounded, symmetric $=$ self-adjoint, $\det$ defined on all $G$) need not be correct for $L^2(\mathbb R)$, $\mathrm{QCoh}(X)$, $\mathbf{Sp}$-modules — where $b(f,g)=\int fg$ has no finite $G_{ij}$, no finite $\sum a_iG_{ij}c_j$, and bounded $\neq$ symmetric $\neq$ self-adjoint $\neq$ normal thread apart, $x^{\!t}Ay$ has no $x_i$, and the matrix is replaced by the kernel $K$ with $b(f,g)=\iint f(x)K(x,y)g(y)$ and $K$ is $L^2$ / distribution per summability (Schwartz kernel theorem). All definitions in this book must work at that precision — i.e. as stated they must be equally valid for $L^2(\mathbb R)$ / $C^0$ / $\mathcal S$ / $\mathrm{QCoh}(X)$ / $\mathbf{LMod}_R$ — and when they do collapse in the finite ($I$ finite, $R^n$ discrete, $M$ finitely generated projective) specialization, that collapse is a *Proposition* to be stated with honest hypotheses and either cited or proved, not the definition.
+
+This is why categorical / diagrammatic definitions are preferable when available: $b\colon M\otimes M\to W$ with $b\circ\tau=b$ / $b^{\sharp}\colon M\to\underline{\operatorname{Hom}}(M,W)$ / $\ker(b^{\sharp})$ / $\Gamma^2_R(M)$ are already valid in every closed symmetric monoidal $\mathcal C$ (arithmetic, geometric, analytic) and their $U$-evaluation on $x\otimes y$ recovers the finite $b(x,y)=b(y,x)$ / $\sum a_iG_{ij}c_j$ as a theorem, not a definition; the converse — defining by the finite sum and hoping it generalizes — does not work.
+
+**Banned:** a definition quantified as "$\forall x\in M$, $b(x,y)=b(y,x)$ / $b(x,x)\in2W$ / $M$ free on $E$, $G_{ij}=b(e_i,e_j)$, $b(v,w)=\sum a_iG_{ij}c_j$" that is correct only for $R^n$ / $R^{(I)}$ discrete and is used as the general $W$-valued bilinear on $M\in\mathbf{Bil}_{R,W}$.
+
+**Preferred:** define $b\colon M\otimes_RM\to W$ as $W$-valued $(0,2)$-tensor, $b^{\sharp}$, $\Gamma^2_R$, $\operatorname{Val}(b)$, $N^{\perp}:=\ker(b^{\sharp})$, etc., diagrammatically in a closed symmetric monoidal $\mathcal C$ so that the statement is valid for $L^2(\mathbb R)$ / $\mathrm{QCoh}(X)$ / $\mathbf{LMod}_R$; then prove as a *Proposition* (with hypotheses: $I$ finite, $M\cong R^n$, $M$ finitely generated projective, $W$ discrete, continuity / boundedness): "$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(R^{(I)}\otimes R^{(I)},W)$ is an iso, every $b$ has a $G_{ij}$, $b(v,w)=\sum a_iG_{ij}c_j$ finite, and $x^{\!t}Ay$ is $b(v,w)=\langle v,Aw\rangle$ with $A$ symmetric $\iff$ self-adjoint," etc. — the finite accident as a theorem, not the definition.
+
 ### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
 
 A fenced `Definition` is an atomic unit with one logical status: it
@@ -4728,7 +4738,7 @@ restates $b\colon M\times M\to W$ instead of $b\in\operatorname{Bil}$
 (PR-49) — definitions as objects and containments, not signatures and
 element formulas.
 
-**28. Free-floating Remark with a calculation but no claim has no
+**29. Free-floating Remark with a calculation but no claim has no
 epistemic status and is not self-contained.** "`**Remark.**` The symmetric
 form on $\mathbb Z^2$ with Gram matrix $\begin{pmatrix}0&1\\1&0\end{pmatrix}$
 has vanishing diagonal and $b(e_1+e_2,e_1+e_2)=2$" gives $G_e(b)$ and two
@@ -4863,6 +4873,20 @@ Banach with (partial) differential operators — symplectic manifolds as
 the geometric, Grothendieck–Witt as the arithmetic local, Riesz theorems
 as the analytic instance of the same $b\colon M\otimes M\to W$ in a
 closed symmetric monoidal $\mathcal C$.
+
+**28. Every definition must work in the functional-analytic setting;
+finite collapse is a Proposition.** A definition correct for $R^n$ with
+finite $G_{ij}$ and $\sum a_iG_{ij}c_j$ need not be correct for
+$L^2(\mathbb R)$ / $\mathrm{QCoh}(X)$ where no finite $G_{ij}$ and no
+finite sum computes $\int fg$, and bounded $\neq$ symmetric $\neq$
+self-adjoint $\neq$ normal thread apart (PR-66). Define diagrammatically
+($b\colon M\otimes M\to W$, $b^{\sharp}$, $\ker$, $\Gamma^2_R$) so the
+statement is valid in every $\mathcal C$; then prove the finite
+specialization ($W^{I\times I}\cong\operatorname{Hom}(R^{(I)}\otimes
+R^{(I)},W)$, $b(v,w)=\langle v,Aw\rangle$ with $A$ symmetric $\iff$
+self-adjoint) as a Proposition with honest hypotheses, not as the
+definition. The diagram is preferable because it already is the general
+case.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
