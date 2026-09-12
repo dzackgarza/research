@@ -3942,6 +3942,61 @@ Then $b$ induces $\bar b\colon\operatorname{coker}(i)\otimes
 Then, only after and only when $U$ exists: "On $U$-points this is
 $\bar b([x],[y])=b(x,y)$ for $[x]=\pi(x)$."
 
+### `PR-57`: "$N^{\perp}$" alone is not well-defined — even when $N$ abstractly a submodule of $M$ — it is $(M,b,i\colon N\hookrightarrow M)^{\perp}$
+
+"$N^{\perp}$" as written suggests a function of the abstract $R$-module
+$N$ (or of $N$ up to isometry as lattice), but
+$N^{\perp}:=\ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))$
+with $b^{\sharp}=b\circ(i\otimes\mathrm{id}_M)$ depends on the triple
+$(M,b,i)$ — the ambient $M$, the $W$-valued
+$b\colon M\otimes M\to W$, and the mono $i\colon N\hookrightarrow M$ that
+makes $N$ a *subobject*, not on $N$ abstractly. Change $b$ or change $i$
+and the kernel moves while abstract $N$ does not. "Abstractly a submodule
+of $M$" (i.e. $N\cong N'$ as $R$-module / as lattice) does not determine
+$i$, and even $N\subseteq M$ as a *subset* (so $i$ is the inclusion) does
+not determine $b$.
+
+Concrete standards — name the triple, and keep $N^{\perp}$ with its
+ambient:
+
+* **Object:** for $i\colon N\hookrightarrow M$ and
+  $b\colon M\otimes M\to W$, put
+  $N^{\perp_{b}}:=N^{\perp_{i}}:=
+  (i\colon N\hookrightarrow(M,b))^{\perp}:=
+  \ker(M\xrightarrow{b^{\sharp}}\underline{\operatorname{Hom}}_R(N,W))\subseteq M$
+  as $R$-submodule of $M$ (stably fiber in $\mathbf{LMod}_R$). Write
+  $N^{\perp_b}$ / $N^{\perp_i}$ / $(i)^{\perp}$, never bare
+  "$N^{\perp}$."
+
+* **Lattices where the distinction matters:**
+
+  — $M=U:=\mathbb Z e\oplus\mathbb Z f$, $b(e,f)=1$, $b(e,e)=0=b(f,f)$.
+  $i_1\colon N_1:=\mathbb Z e\hookrightarrow M$, $N_1\cong\langle0\rangle$
+  isotropic, $N_1^{\perp}=N_1$ ($b(ae+bf,e)=b$).
+  $i_2\colon N_2:=\mathbb Z(e+f)\hookrightarrow M$, $N_2\cong\langle2\rangle$
+  as lattice but $U(N_2)\cong\mathbb Z\cong U(N_1)$ as $\mathbb Z$-module —
+  abstractly the same $N$ — yet
+  $N_2^{\perp}=\mathbb Z(e-f)\cong\langle-2\rangle\neq N_1^{\perp}$.
+
+  — Same $M=\mathbb Z^2$, same $N=\mathbb Z(1,0)\subseteq M$ as subset, but
+  $b_1=\operatorname{diag}(1,1)$ gives $N^{\perp_{b_1}}=\mathbb Z(0,1)$ while
+  hyperbolic $b_2(e_i,e_j)=\delta_{i\neq j}$ gives
+  $N^{\perp_{b_2}}=\mathbb Z(1,-1)$ as $R$-submodules of the same $M$;
+  $N^{\perp}$ moved with $b$ while $N$ did not.
+
+  — Primitive vs. non-primitive embeddings of the same abstract
+  $A_1\langle-2\rangle$ in $U$ or $E_8$ have different $N^{\perp}$ (different
+  rank, different $D_{N^{\perp}}$), so "$N^{\perp}$" without $i$ is
+  ambiguous even up to isometry.
+
+**Banned:** "$N^{\perp}$" with $N\subseteq M$ understood as abstract
+$N$, or "$N^{\perp}$" with $b$ left implicit.
+
+**Preferred:** "$N^{\perp_b}$" / "$N^{\perp_i}$" / "$(i\colon
+N\hookrightarrow(M,b))^{\perp}\subseteq M$ as $R$-submodule" and, when
+quoting the lattice, "the abstract lattice $N\cong\langle2\rangle$ embeds
+via $i_1,i_2$ with $N^{\perp_{i_1}}\not\cong N^{\perp_{i_2}}$."
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4400,6 +4455,18 @@ quotient is the unique factorization of $b$ through
 $\pi\otimes\pi$ for $\pi:=\operatorname{coker}(i)$ when $i^*b=0$ —
 immediate in $\mathrm{QCoh}(X)$, $\mathbf{LMod}_R$, $\mathbf{Sp}$, sheaves,
 where $N\subseteq M$ has no meaning as a subset.
+
+**22. "$N^{\perp}$" alone is not well-defined.** $N^{\perp}$ depends on
+the triple $(M,b,i\colon N\hookrightarrow M)$ — ambient, $W$-valued form,
+and mono making $N$ a subobject — not on abstract $N$ (PR-57).
+$M=U$ with $N_1:=\mathbb Z e$ vs. $N_2:=\mathbb Z(e+f)$ has
+$U(N_1)\cong U(N_2)\cong\mathbb Z$ abstractly but
+$N_1^{\perp}=N_1\cong\langle0\rangle$ vs.
+$N_2^{\perp}=\mathbb Z(e-f)\cong\langle-2\rangle$; same $N\subseteq
+\mathbb Z^2$ has $N^{\perp_{b_1}}\neq N^{\perp_{b_2}}$ for
+$b_1\neq b_2$ on the same $M$. Write $N^{\perp_b}$ /
+$N^{\perp_i}$ / $(i\colon N\hookrightarrow(M,b))^{\perp}\subseteq M$,
+never bare "$N^{\perp}$."
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
