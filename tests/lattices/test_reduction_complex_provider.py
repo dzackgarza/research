@@ -61,6 +61,10 @@ def test_full_adjacency_records_cross_to_cells_stabilizers_and_transporters() ->
         cell
     )
     assert traversal.group_generators().cardinality() >= 2
+    generated = traversal.generation_subgroup()
+    assert generated.supergroup() is lattice.O()
+    assert all(generator in generated for generator in traversal.group_generators())
+    assert traversal.generates_orthogonal_group()
 
 
 def test_provider_prefix_missing_a_facet_is_not_accepted_as_complete() -> None:
