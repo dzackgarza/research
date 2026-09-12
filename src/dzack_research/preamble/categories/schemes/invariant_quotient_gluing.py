@@ -824,6 +824,17 @@ class FiniteGluedInvariantQuotient(SageObject):
 
     factor_through_quotient = factor_invariant_affine_morphism
 
+    def descend_invariant_family(self, family_morphism: SchemeMorphism) -> SchemeMorphism:
+        r"""Descend an invariant family map from the glued source to an affine base.
+
+        The local factors are the affine quotient universal maps and their
+        compatibility on overlaps is already verified by
+        :meth:`factor_invariant_affine_morphism`.  Thus this is the family
+        spelling of the same universal quotient, not an additional descent
+        algorithm.
+        """
+        return self.factor_invariant_affine_morphism(family_morphism)
+
     def _repr_(self) -> str:
         return (
             f"Finite glued invariant quotient over {self.base_ring()} "

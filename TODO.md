@@ -663,22 +663,6 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   products use a multiplication compatible with the differential and descend
   to cycles modulo boundaries.
 
-- [ ] **`geometric-quotients`**. **Needs:** none.
-  Extend fixed loci, quotients and descended maps to the remaining
-  non-affine and family cases.
-  **Owners:** scheme action/equalizer, invariant algebra, and gluing owners.
-  **Decision:** absence of points fixed by the whole group is not freeness;
-  examine nonidentity stabilizers or the appropriate action morphism.
-  In residue characteristic dividing the group order, abstract constant-group
-  reasoning cannot replace group-scheme geometry.
-  **Deliver:** scheme-theoretic fixed ideals, supported emptiness/freeness,
-  universal quotient maps, descended nonidentity morphisms, and precisely
-  qualified base-change comparisons.
-  **Acceptance:** nonreduced fixed data and a group with no common fixed point
-  but a nontrivial point stabilizer distinguish these predicates. Apply
-  Lefschetz formulas only after their geometric/cohomological hypotheses and
-  actions have been established.
-
 ## Families and singularities
 
 **Integration route:** construct a family through the scheme slice; its fibers
@@ -789,7 +773,7 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`k3-family`**. **Needs:** `geometric-quotients`.
+- [ ] **`k3-family`**. **Needs:** none.
   Construct the `(4,4)` double-cover K3 family over `P^1 x P^1` and
   the two lifts of the diagonal sign involution.
   **Inputs:** branch sections, a selected linearization, the existing cyclic

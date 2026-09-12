@@ -918,6 +918,8 @@ from dzack_research.preamble.categories.schemes import (  # noqa: F401
     AffineGroupSchemes,
     AffineGSchemes,
     AffineModuleSheaf,
+    AffineInvariantQuotientBaseChangeComparison,
+    reynolds_invariant_base_change_hypothesis,
     AffineSchemes,
     AffineSpace,
     AffineSpaces,

@@ -284,7 +284,11 @@ def test_glued_quotient_has_the_affine_target_universal_factorization(
     morphism: SchemeMorphism = Schemes(QQ).Mor(source, target)(local_maps)
 
     factor = quotient.factor_invariant_affine_morphism(morphism)
+    family_factor = quotient.descend_invariant_family(morphism)
 
+    assert family_factor.domain() is quotient.quotient_scheme()
+    assert family_factor.codomain() is target
+    assert family_factor * quotient.quotient_morphism() == morphism
     assert factor.domain() is quotient.quotient_scheme()
     assert factor.codomain() is target
     assert factor * quotient.quotient_morphism() == morphism

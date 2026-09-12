@@ -1758,6 +1758,13 @@ class AffineGSchemes(OwnedCategory):
             r"""Return ``Spec(A^G)`` for the supported affine linear action."""
             return Spec(self.invariant_algebra(), base_ring=self.scheme_base_ring())
 
+        def quotient_base_change_comparison(self, ring_map):
+            from dzack_research.preamble.categories.schemes.quotients import (
+                AffineInvariantQuotientBaseChangeComparison,
+            )
+
+            return AffineInvariantQuotientBaseChangeComparison(self, ring_map)
+
         @cached_method
         def quotient_morphism(self: Any) -> SchemeMorphism:
             r"""Return the represented affine quotient map ``Spec(A) -> Spec(A^G)``."""
@@ -1837,6 +1844,16 @@ class AffineGSchemes(OwnedCategory):
             if any(inclusion(factor_pullback(target_algebra.algebra_generator(label))) != pullback(target_algebra.algebra_generator(label)) for label in labels):
                 raise ArithmeticError("the represented quotient factorization disagrees on a target generator")
             return factor
+
+        def descend_invariant_family(self, family_morphism):
+            r"""Descend an invariant affine family map through the quotient.
+
+            A family here is simply a morphism to an affine parameter scheme.
+            If that morphism is invariant, its unique quotient factor is the
+            family carried by ``X/G``; no separate family quotient object is
+            introduced.
+            """
+            return self.factor_through_affine_quotient(family_morphism)
 
 
 class QuasiAffineSchemes(_SchemePropertyCategory):
