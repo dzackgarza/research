@@ -10,6 +10,7 @@ by Prop. 4.3.3.
 import pytest
 
 from dzack_research.preamble.all import (
+    NN,
     QQ,
     ZZ,
     BasedFreeModule,
@@ -476,7 +477,10 @@ def test_projective_plane_line_bundle_cohomology_is_an_owned_vector_space() -> N
     assert h0_line.dimension() == 3
     assert h1_line.dimension() == 0
     assert h2_canonical.dimension() == 1
-    assert plane.line_bundle_cohomology_dimensions(line) == (3, 0, 0)
+    dimensions = plane.line_bundle_cohomology_dimensions(line)
+    assert tuple(int(degree) for degree in dimensions.index_set()) == (0, 1, 2)
+    assert tuple(dimensions) == (NN(3), NN(0), NN(0))
+    assert all(value in NN for value in dimensions)
 
 
 def test_coordinate_hyperplane_restriction_has_the_expected_kernel_and_cokernel() -> None:

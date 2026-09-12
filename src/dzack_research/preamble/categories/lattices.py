@@ -436,9 +436,16 @@ class Genus:
     def representatives(self):
         r"""Return the owned representatives enumerated by the exact backend."""
         integers = _own_ring(SageZZ)
-        return tuple(
-            Lattices(integers)([[integers._from_engine_element(entry) for entry in row] for row in representative.rows()])
-            for representative in self._engine().representatives()
+        return finite_ordered_set(
+            tuple(
+                Lattices(integers)(
+                    [
+                        [integers._from_engine_element(entry) for entry in row]
+                        for row in representative.rows()
+                    ]
+                )
+                for representative in self._engine().representatives()
+            )
         )
 
     def class_number(self):
@@ -1947,7 +1954,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             if not self.is_even() or not self.module_rank().is_finite() or not self.is_nondegenerate():
                 raise ValueError("even overlattice enumeration requires a finite nondegenerate even lattice")
             form = self.discriminant_quadratic_form()
-            return tuple(form.overlattice_from_isotropic_subobject(subgroup) for subgroup in form.isotropic_subgroups())
+            return finite_ordered_set(
+                tuple(
+                    form.overlattice_from_isotropic_subobject(subgroup)
+                    for subgroup in form.isotropic_subgroups()
+                )
+            )
 
         def embeds_in_even_unimodular(self, positive, negative) -> bool:
             r"""Decide primitive embeddability into an even unimodular ``II_{p,q}``.
@@ -3492,7 +3504,9 @@ class RootLattices(OwnedCategory):
             )
 
         def simple_reflections(self):
-            return tuple(self.reflection(root) for root in self.simple_roots())
+            return finite_ordered_set(
+                tuple(self.reflection(root) for root in self.simple_roots())
+            )
 
         def fundamental_weights(self):
             r"""Return the weights dual to the simple coroots."""

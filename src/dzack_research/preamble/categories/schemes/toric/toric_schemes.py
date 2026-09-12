@@ -104,6 +104,10 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
+from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 def _integers():
@@ -1333,10 +1337,16 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             return ToricLineBundleCohomology(self, divisor, degree)
 
         def line_bundle_cohomology_dimensions(self, divisor):
-            r"""Return the dimensions of all represented ``H^i(X,O_X(D))``."""
-            return tuple(
-                int(self.line_bundle_cohomology(divisor, degree).dimension())
-                for degree in range(int(self.dimension()) + 1)
+            r"""Return the degree-indexed dimensions of represented ``H^i(X,O_X(D))``."""
+            degrees = finite_ordered_set(
+                tuple(NN(degree) for degree in range(int(self.dimension()) + 1))
+            )
+            return finite_indexed_family(
+                degrees,
+                lambda degree: NN(
+                    self.line_bundle_cohomology(divisor, int(degree)).dimension()
+                ),
+                name=f"Line-bundle cohomology dimensions of {divisor}",
             )
 
         @cached_method
