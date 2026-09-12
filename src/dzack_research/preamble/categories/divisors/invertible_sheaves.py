@@ -413,6 +413,79 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
         return f"Invertible sheaf on finite affine atlas of {self.scheme()}"
 
 
+def _section_base_change_comparison(source_sections, target_sections, ring_map, exponent_attribute):
+    r"""Compare scalar extension of an exponent-framed section module with the target one."""
+    changed_source = source_sections.base_change(ring_map)
+    source_exponents = getattr(source_sections, exponent_attribute)
+    target_exponents = getattr(target_sections, exponent_attribute)
+    source_by_exponents = {
+        exponents: label for label, exponents in source_exponents.items()
+    }
+    target_by_exponents = {
+        exponents: label for label, exponents in target_exponents.items()
+    }
+    forward = module_homset(changed_source, target_sections)(
+        lambda label: target_sections.module_generator(
+            target_by_exponents[source_exponents[label]]
+        )
+    )
+    inverse = module_homset(target_sections, changed_source)(
+        lambda label: changed_source.module_generator(
+            source_by_exponents[target_exponents[label]]
+        )
+    )
+    return Isomorphism(forward, inverse)
+
+
+def _record_line_bundle_base_change(
+    source_bundle,
+    changed_bundle,
+    ring_map,
+    *,
+    exponent_attribute,
+):
+    changed_bundle._preamble_base_change_source_bundle = source_bundle
+    changed_bundle._preamble_base_change_ring_map = ring_map
+    changed_bundle._preamble_base_change_projection = changed_bundle.scheme().left_projection()
+    try:
+        source_sections = source_bundle.global_sections()
+        target_sections = changed_bundle.global_sections()
+    except NotImplementedError:
+        comparison = None
+    else:
+        comparison = _section_base_change_comparison(
+            source_sections,
+            target_sections,
+            ring_map,
+            exponent_attribute,
+        )
+    changed_bundle._preamble_section_base_change_comparison = comparison
+    return changed_bundle
+
+
+def _base_change_source_bundle(bundle):
+    source = getattr(bundle, "_preamble_base_change_source_bundle", None)
+    if source is None:
+        raise ValueError("this line bundle was not selected as a scalar base change")
+    return source
+
+
+def _base_change_projection(bundle):
+    projection = getattr(bundle, "_preamble_base_change_projection", None)
+    if projection is None:
+        raise ValueError("this line bundle was not selected as a scalar base change")
+    return projection
+
+
+def _section_base_change_comparison_of(bundle):
+    comparison = getattr(bundle, "_preamble_section_base_change_comparison", None)
+    if comparison is None:
+        raise NotImplementedError(
+            "this line-bundle base change has no represented global-section comparison"
+        )
+    return comparison
+
+
 class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     r"""The standard ``O(d)`` on one represented projective space.
 
@@ -530,6 +603,25 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             return target.module_generator(target_by_exponents[exponents])
 
         return BilinearMap(left, right, target, product)
+
+    def base_change(self, ring_map):
+        changed_space = self.projective_space().base_change(ring_map)
+        changed = changed_space.O(self.degree())
+        return _record_line_bundle_base_change(
+            self,
+            changed,
+            ring_map,
+            exponent_attribute="_preamble_homogeneous_exponents",
+        )
+
+    def base_change_source_bundle(self):
+        return _base_change_source_bundle(self)
+
+    def base_change_projection(self):
+        return _base_change_projection(self)
+
+    def section_base_change_comparison(self):
+        return _section_base_change_comparison_of(self)
 
     def _repr_(self):
         return f"O({self.degree()}) on {self.projective_space()}"
@@ -708,6 +800,30 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             return target.module_generator(target_by_exponents[exponents])
 
         return BilinearMap(left, right, target, product)
+
+    def base_change(self, ring_map):
+        changed_product = self.projective_product().base_change(ring_map)
+        changed = changed_product.O(
+            tuple(
+                self.multidegree()[label]
+                for label in self.multidegree().index_set()
+            )
+        )
+        return _record_line_bundle_base_change(
+            self,
+            changed,
+            ring_map,
+            exponent_attribute="_preamble_multihomogeneous_exponents",
+        )
+
+    def base_change_source_bundle(self):
+        return _base_change_source_bundle(self)
+
+    def base_change_projection(self):
+        return _base_change_projection(self)
+
+    def section_base_change_comparison(self):
+        return _section_base_change_comparison_of(self)
 
     def _repr_(self):
         degrees = tuple(self.multidegree()[label] for label in self.multidegree().index_set())

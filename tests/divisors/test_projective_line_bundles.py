@@ -61,3 +61,23 @@ def test_projective_section_multiplication_is_polynomial_multiplication_on_actua
     assert product.parent() is quadratic.global_sections()
     assert comparison.forward()(product) == product
     assert product != quadratic.global_sections().zero()
+
+
+def test_projective_line_bundle_base_change_retains_projection_and_section_comparison() -> None:
+    from dzack_research.preamble.all import QuadraticField
+
+    field = QuadraticField(2, "s")
+    ring_map = QQ.Mor(field)(lambda element: field(element))
+    line = ProjectiveSpace(1, QQ)
+    bundle = line.O(2)
+
+    changed = bundle.base_change(ring_map)
+    comparison = changed.section_base_change_comparison()
+
+    assert changed.scheme().scheme_base_ring() is field
+    assert changed.base_change_source_bundle() is bundle
+    assert changed.base_change_projection() is changed.scheme().left_projection()
+    assert changed.base_change_projection().codomain() is line
+    assert comparison.forward().domain().base_ring() is field
+    assert comparison.forward().codomain() is changed.global_sections()
+    assert comparison.forward().domain().module_rank() == changed.global_sections().module_rank()

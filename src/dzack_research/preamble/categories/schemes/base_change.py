@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     AffineSchemes,
     AffineSpaces,
     FiberProductSchemes,
+    ProductProjectiveSpaces,
     ProjectiveSpaces,
     Schemes,
     Spec,
@@ -52,9 +53,12 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _fresh_affine_space_from_owned_data,
     _fresh_affine_spectrum,
     _normalized_space_names,
+    _native_scheme_homset,
+    categorical_scheme_morphism,
     refine_scheme,
     scheme_fiber_product,
 )
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 def _base_changed_algebra(algebra, ring_map):
@@ -162,6 +166,58 @@ class SchemeBaseChangeFunctor(Functor):
                         )
                     ),
                 )
+            case _ if scheme in ProductProjectiveSpaces(source):
+                factors = scheme.factors()
+                factor_indices = factors.index_set()
+                changed_factors = indexed_family(
+                    factor_indices,
+                    lambda label: self(factors[label]),
+                    name="Base-changed projective factors",
+                )
+                changed = Schemes(target).product(changed_factors)
+                projection = categorical_scheme_morphism(
+                    _native_scheme_homset(changed, scheme)(
+                        list(changed.coordinate_ring().gens()),
+                        check=False,
+                    ),
+                    domain=changed,
+                    codomain=scheme,
+                )
+                scalar_projection = changed.structure_morphism()
+                changed._preamble_fiber_product_cospan = (
+                    scheme.structure_morphism(),
+                    self.base_morphism(),
+                )
+                changed._preamble_fiber_product_projections = (
+                    projection,
+                    scalar_projection,
+                )
+                projection._preamble_fiber_projection_index = 0
+                scalar_projection._preamble_fiber_projection_index = 1
+
+                def factor(to_scheme, to_base):
+                    factor_legs = indexed_family(
+                        factor_indices,
+                        lambda label: self(factors[label]).from_pullback_cone(
+                            scheme.projection(label) * to_scheme,
+                            to_base,
+                        ),
+                        name="Factorwise maps into a multiprojective base change",
+                    )
+                    induced = changed.from_product_cone(factor_legs)
+                    induced._preamble_fiber_product_cone_target = changed
+                    induced._preamble_fiber_product_cone_legs = (
+                        to_scheme,
+                        to_base,
+                    )
+                    return induced
+
+                changed._preamble_fiber_product_scheme_factorization = factor
+                return refine_scheme(
+                    changed,
+                    target,
+                    [FiberProductSchemes(target)],
+                )
             case _ if scheme in ProjectiveSpaces(source):
                 return scheme_fiber_product(
                     scheme.structure_morphism(),
@@ -173,7 +229,10 @@ class SchemeBaseChangeFunctor(Functor):
                     target,
                 )
             case _:
-                assert False, f"base change of {scheme} is represented for affine schemes and projective spaces"
+                assert False, (
+                    f"base change of {scheme} is represented for affine schemes, projective spaces, "
+                    "and finite products of projective spaces"
+                )
         algebra = scheme.coordinate_algebra()
         changed_algebra = changed.coordinate_algebra()
         unit = _base_change_unit(algebra, changed_algebra, self.ring_map())
