@@ -24,7 +24,7 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     _category_homset,
 )
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategoryMixin
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import (
     CompositeFunctor,
     Functor,
@@ -686,7 +686,7 @@ class NaturalTransformationHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = NaturalTransformationHomset
 
 
-class FunctorCategory(OwnedCategoryMixin, FixedHomCategory):
+class FunctorCategory(FixedHomCategory):
     r"""The category ``[C,D]`` of represented functors and natural transformations.
 
     Unverified construction specimens: all Cat Hom entrances select one

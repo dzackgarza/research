@@ -370,38 +370,6 @@ restart of the module/algebra/action constructions.
 
 ### Constructor and ownership convergence
 
-- [ ] **`category-boundaries`**. **Needs:** none.
-  Complete the remaining owned category, Hom, and constructor boundaries.
-  **Owners:** the common owned-category runtime, parameterized category bases,
-  `rings/ring_foundation.py`, and each surviving mathematical category.
-  **Current remaining boundary:** the ordinary ring/divisor/topological role
-  categories now use the owned runtime-category base. Finish the mixed abstract
-  category/Hom constructions that still name Sage's raw `Category` directly.
-  Runtime inheritance alone does not establish a forbidden mathematical edge.
-  **Deliver:** owned semantic supercategories, owned parameter normalization,
-  and owned `Hom`, `End`, `Aut`, joins and property refinements throughout
-  the surviving graph. Keep Sage mathematical membership tests private to
-  engine recognition; public membership and theorem hypotheses use the owned
-  graph. Constructor inputs go through the responsible owned construction,
-  without asking Sage coercion discovery to invent a mathematical map.
-  **Decision:** one object may have several private computational realizations;
-  selecting an engine must not change its mathematical identity or interface.
-  Preserve zero, one, actions, identity morphisms, and inherited operations
-  when removing a semantic engine dependency. Reuse existing realization and
-  functor-image owners instead of introducing another registry.
-  **Reuse decision:** compare the current shared runtime with the actual released
-  `sage-categories` constructor and inheritance interfaces. Keep general compiler
-  fixes at that owner; carry only the necessary current integration here. Sage
-  host primitives are not a reason to adopt Sage mathematical parents or expose
-  their inherited API. Conversely, a different runtime class model is not a
-  reason to replace Sage's maintained arithmetic (`OWN-01`, `OWN-04`, `OWN-06`).
-  **Acceptance:** the full surviving graph has the required ownership, and
-  representative quotient, localization, module, group and lattice objects
-  expose their promised operations and maps. The terminal graph inspection
-  is paired with positive public constructions, never accepted on edge
-  removal alone. Include comparisons across available realizations where
-  the same mathematical construction has more than one engine.
-
 - [x] **`constructor-data`**. **Needs:** none.
   Complete constructor-contract discovery and close the remaining
   variadic/opaque defining-data boundaries.
@@ -1200,7 +1168,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `category-boundaries`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, Sets
 from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
 class DiagramCategory(FunctorCategory):
@@ -1154,7 +1155,7 @@ class CoproductCoconeCategory(CoconeCategory):
         return [CoconeCategory(self.diagram())]
 
 
-class LimitsOfCategory(Category):
+class LimitsOfCategory(OwnedCategoryBase):
     def __init__(self, index_category: Category, target_category: Category) -> None:
         self._index_category = index_category
         self._target_category = target_category
@@ -1432,7 +1433,7 @@ def _two_factors_of(factors, *, name="Selected factors"):
     return family[labels[0]], family[labels[1]]
 
 
-class BiproductCategory(Category):
+class BiproductCategory(OwnedCategoryBase):
     r"""Objects equipped with the selected finite biproduct structure."""
 
     def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:
@@ -1458,7 +1459,7 @@ class BiproductCategory(Category):
 DirectSumCategory = BiproductCategory
 
 
-class TensorProductCategory(Category):
+class TensorProductCategory(OwnedCategoryBase):
     r"""Objects equipped with a chosen tensor-product universal bilinear map."""
 
     def __init__(self, factors: IndexedFamily | Iterable[Parent]) -> None:

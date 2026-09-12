@@ -27,7 +27,8 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import OwnedCategoryMixin, object_of
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 
 
 class CommutativeSquare(Morphism):
@@ -321,7 +322,7 @@ class _EndofunctorAlgebraHomCategory(HomCategoryConstruction):
     FixedCategoryClass = _EndofunctorAlgebraHomset
 
 
-class _EndofunctorAlgebraCategory(Category):
+class _EndofunctorAlgebraCategory(OwnedCategoryBase):
     r"""The category of algebras of an endofunctor ``T : C -> C``.
 
     An object is the exact arrow ``a : T(X) -> X`` in ``C``. The existing
@@ -835,7 +836,7 @@ class SubobjectHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = SubobjectHomset
 
 
-class SubobjectCategory(OwnedCategoryMixin, Category):
+class SubobjectCategory(OwnedCategoryBase):
     r"""The category of represented subobjects of one fixed object.
 
     An object is an object ``A`` of the base category equipped with its chosen
@@ -1001,7 +1002,7 @@ class WideHomCategoryConstruction(RestrictedHomCategoryOf):
         return [category_packet(self.base_category().base_category()).Homs()]
 
 
-class WideSubcategory(Category):
+class WideSubcategory(OwnedCategoryBase):
     r"""A category with the same objects as ``C`` and a selected class of arrows.
 
     The selected arrows must include every identity and be closed under
@@ -1180,7 +1181,7 @@ class CoreHomCategoryConstruction(HomCategoryConstruction):
     FixedCategoryClass = CoreHomset
 
 
-class CoreCategory(Category):
+class CoreCategory(OwnedCategoryBase):
     r"""The maximal subgroupoid (core) of a represented category."""
 
     _HomCategory = CoreHomCategoryConstruction

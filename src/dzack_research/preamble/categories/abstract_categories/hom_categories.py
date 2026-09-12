@@ -40,6 +40,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategoryMixin,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
+from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from dzack_research.preamble.refine import refine
 
 
@@ -160,6 +161,13 @@ class HomArrowIdentity(Morphism):
 
 class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
     r"""A represented Hom object which is both a Sage Homset and a category.
+
+    This mixed runtime parent deliberately retains Sage's raw ``Category`` base.
+    Its ``Parent.category()`` records the Hom object's enrichment placement;
+    replacing that parent role by ``OwnedCategoryObject`` would instead force
+    ``category()`` to be ``Cat()`` and erase the represented Hom-set structure.
+    Pure category objects in this module use :class:`OwnedCategoryBase`; this
+    one is the boundary where the two runtime roles genuinely coincide.
 
     This is the live counterpart of the archived owned Hom-category base.  It
     keeps Sage's hard requirement that every ``Morphism`` be parented by an
@@ -387,7 +395,7 @@ class HomArrowDiscreteHomset(CategoricalHomset):
         return self()
 
 
-class FixedHomCategory(CategoryPacketMethods, Category):
+class FixedHomCategory(CategoryPacketMethods, OwnedCategoryBase):
     r"""The category ``Hom_C(A,B)`` of arrows with fixed endpoints."""
 
     @staticmethod
@@ -826,7 +834,7 @@ class FixedAutCategory(FixedIsoCategory):
         return f"Aut_{self.base_category()}({self.domain_object()})"
 
 
-class HomCategories(Category):
+class HomCategories(OwnedCategoryBase):
     r"""The category of represented fixed-endpoint Hom categories."""
 
     def super_categories(self):
@@ -966,7 +974,7 @@ def category_packet(category: Category) -> CategoryPacket:
     return CategoryPacket(category)
 
 
-class HomCategoryOf(Category):
+class HomCategoryOf(OwnedCategoryBase):
     r"""The family ``(A,B) |-> Hom_C(A,B)`` attached to one category ``C``."""
 
     FixedCategoryClass = FixedHomCategory
