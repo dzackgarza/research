@@ -3285,6 +3285,66 @@ for bilinear/symmetric/quadratic never write bare "maps $M\to W$" or
 "$M\times M\to W$" once the classifier ($\otimes$, $\operatorname{Sym}^2$,
 $\Gamma^2$) is defined.
 
+### `PR-43`: Element-wise $b(x,y)=b(y,x)$, $b(x,x)=0$, $q(rx)=r^2q(x)$ for $b\circ\tau=b$, $b\circ\Delta=0$ — concrete shadow for the categorical diagram
+
+Listing symmetric / skew / alternating / even as equalities on elements
+$x,y\in M$ ties the notion to $\mathbf{Set}$-concrete $M$ with an
+underlying set $U(M)$ and makes it inextensible to non-concrete
+$\mathcal C$ — $\mathcal O_X\text{-}\mathbf{Mod}$, local systems,
+$\mathbf{Sp}$, $\mathbf{Grpd}$, $\infty$-categories,
+$\mathbf{Sch}_{/S}$, etc., where $x,y\colon 1\to M$ may not exist as set
+elements. The element formulas are the *evaluation* of one diagram on
+generalized elements, not the definition, and they elide the single
+non-lax symmetric monoidal structure $(\otimes,1,\tau)$ that makes the
+notion portable.
+
+This is the general form of PR-39/PR-40 and TERM-11: re-describing in
+prose on elements what the tensor classifier and the symmetry already
+encode as a morphism.
+
+Concrete standards — state the diagrammatic notion once via the
+symmetric monoidal structure (non-lax: $\tau\colon M\otimes M\to
+M\otimes M$ is an isomorphism with $\tau^2=\mathrm{id}$, not a lax
+comparison), then derive the element formula as its unwrapping when
+$U$ exists:
+
+* **Scaffolding (once, fenced):** $(\mathbf{Mod}_R,\otimes_R,R,\tau)$
+  (stably $(\mathbf{LMod}_R,\otimes^L_R,R,\tau)$) symmetric monoidal
+  closed and self-enriched {#thm-mod-closed}, with $M\otimes_R M$
+  classifying bilinears {#def-tensor}. Let $\tau_{M,M}\colon M\otimes
+  M\to M\otimes M$ be the symmetry, $\Delta\colon M\to M\otimes M$ the
+  diagonal for alternating, and $\Gamma^2_R(M)\xrightarrow{\gamma}
+  \operatorname{Sym}^2_R(M)\to M\otimes M$ the divided-power classifier
+  for even/quadratic.
+
+* **$W$-valued bilinear $b\colon M\otimes_R M\to W$ is:**
+  — **symmetric** if $b\circ\tau = b\colon M\otimes M\to W$;
+  — **skew-symmetric** if $b\circ\tau = -b$;
+  — **alternating** if $b\circ\Delta =0$ (equivalently $b\circ\tau=-b$
+  and $b\circ\Delta=0$; in $2$ invertible alternating $=$ skew);
+  — **even** if $b$ factors through $\operatorname{Sym}^2_R(M)$ and
+  $b(x,x)\in2W$ is the element shadow of the factorization through
+  $\Gamma^2_R(M)$ — never as primary.
+
+  Stably the same with $\tau$ the symmetric monoidal braiding in
+  $\mathbf{LMod}_R$.
+
+* **Element unwrapping (only after, when $U$ exists):** for $x,y\colon
+  R\to M$ in $\mathbf{Mod}_R$ (i.e. $x,y\in U(M)$), $b\circ\tau=b$
+  evaluates to $b(x,y)=b(y,x)$, etc. This is a property of the diagram,
+  not the definition.
+
+**Banned:** "For $b\colon M\times M\to W$: $b$ is *symmetric* if
+$b(x,y)=b(y,x)$; $b$ is *skew* if $b(x,y)=-b(y,x)$; $b$ is *alternating*
+if $b(x,x)=0$; $b$ is *even* if $b(x,x)\in2W$" as definitions.
+
+**Preferred:** "Let $b\colon M\otimes_R M\to W$ be $W$-valued bilinear.
+$b$ is **symmetric** if $b\circ\tau=b$, **skew** if $b\circ\tau=-b$,
+**alternating** if $b\circ\Delta=0$, **even** if $b$ lifts through
+$\Gamma^2_R(M)$." Then, if pedagogically useful: "On elements this is
+$b(x,y)=b(y,x)$, $b(x,x)=0$, etc., as the evaluation of those equalities
+on $x\otimes y\colon R\to M\otimes M$."
+
 ### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
 
 Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
@@ -3551,3 +3611,13 @@ $\mathrm{id}^*/(g\circ f)^*$ — not "defines a presheaf" with only an
 element formula (PR-42). Unwrapping $f^*b(x,y)=b(fx,fy)$ *after* the
 Hom is pedagogically fine; the incoherence is claiming that formula
 defines the presheaf.
+
+**16. Element-wise $b(x,y)=b(y,x)$ for $b\circ\tau=b$ — concrete shadow
+for the categorical diagram.** $b(x,y)=b(y,x)$, $b(x,x)=0$, $q(rx)=r^2q(x)$
+as definitions tie the notion to $\mathbf{Set}$-concrete $M$ with
+$U(M)$ and hide the single non-lax symmetric monoidal
+$(\otimes,1,\tau)$ that makes it portable (PR-43). Standard is the
+diagram $b\colon M\otimes_RM\to W$, $b\circ\tau=b$ / $b\circ\tau=-b$ /
+$b\circ\Delta=0$ / lift through $\Gamma^2_R(M)$, with element formulas
+only as the evaluation on $x\otimes y\colon R\to M\otimes M$ when $U$
+exists.
