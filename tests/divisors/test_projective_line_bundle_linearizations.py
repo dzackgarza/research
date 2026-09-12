@@ -78,3 +78,31 @@ def test_sign_eigensection_has_invariant_zero_divisor_and_isotypic_piece() -> No
         generator,
         trivial.section_group_module().equip_action_morphism()(alternating),
     ) != trivial.section_group_module().equip_action_morphism()(alternating)
+
+
+def test_nonnegative_projective_line_cohomology_inherits_the_linearized_action() -> None:
+    _line, _bundle, trivial, _sign = _linearizations()
+    h0 = trivial.coherent_cohomology_group_module(0)
+    h1 = trivial.coherent_cohomology_group_module(1)
+
+    assert h0 is trivial.section_group_module()
+    assert h0.coefficient_module_rank() == 2
+    assert h1.coefficient_module_rank() == 0
+    assert h1.is_trivial_action()
+
+
+def test_restriction_to_an_eigensection_divisor_is_an_equivariant_h0_map() -> None:
+    _line, bundle, trivial, _sign = _linearizations()
+    group = trivial.acting_group()
+    sections = bundle.global_sections()
+    ring = sections.homogeneous_coordinate_ring()
+    x = ring.algebra_generator("x")
+    y = ring.algebra_generator("y")
+    alternating = sections.section_from_homogeneous_polynomial(x - y)
+    sign_character = lambda element: QQ.one() if element == group.one() else -QQ.one()
+    divisor = trivial.eigensection_divisor(alternating, sign_character)
+    restriction = trivial.equivariant_section_restriction(divisor)
+
+    assert restriction.domain() is trivial.coherent_cohomology_group_module(0)
+    assert restriction.codomain().coefficient_module_rank() == 1
+    assert restriction.parent().is_equivariant(restriction) is True

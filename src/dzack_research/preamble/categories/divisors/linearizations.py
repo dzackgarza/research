@@ -25,7 +25,13 @@ from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
     group_module_homset,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    FreshFreeModuleOn,
+)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.schemes.schemes import Schemes
 
 
@@ -188,6 +194,61 @@ class ProjectiveLineBundleLinearization(SageObject):
 
     def isotypic_decomposition(self):
         return self.section_group_module().isotypic_decomposition()
+
+    @cached_method
+    def coherent_cohomology_group_module(self, degree):
+        r"""Return the induced ``G``-action on represented ``H^degree(P,O(d))``.
+
+        For ``d >= 0`` on projective space, the represented global-section
+        module is ``H^0``.  On a projective line the only other coherent
+        cohomology group is ``H^1``, which vanishes in this nonnegative regime;
+        its zero module carries the unique trivial action.  Negative-degree
+        nonzero higher cohomology is left to the later general projective
+        cohomology owner rather than inferred from a dimension formula here.
+        """
+        degree = int(degree)
+        if degree < 0:
+            raise ValueError("a coherent cohomology degree is nonnegative")
+        if degree == 0:
+            return self.section_group_module()
+        if int(self.projective_space().relative_dimension()) == 1 and degree == 1 and self.line_bundle().degree() >= 0:
+            base = self.projective_space().scheme_base_ring()
+            zero = FreshFreeModuleOn(base, finite_ordered_set(()))
+            return Modules(base).trivial_action(self.acting_group())(zero)
+        raise NotImplementedError(
+            "this linearization currently represents coherent cohomology actions on H^0 and the vanishing H^1 of nonnegative O(d) on P^1"
+        )
+
+    def equivariant_section_restriction(self, divisor):
+        r"""Restrict sections equivariantly to an invariant eigensection divisor.
+
+        The underlying map is the exact image-valued section restriction.  The
+        divisor is invariant because it is the zero locus of an eigensection,
+        so its restriction kernel is stable.  Acting on a target section means
+        choosing any source preimage, acting there, and restricting again;
+        stability of the kernel makes that independent of the preimage.
+        """
+        if not self.is_eigensection_divisor(divisor):
+            raise ValueError("equivariant restriction here requires an invariant eigensection divisor of this linearization")
+        restriction = self.line_bundle().restriction_map(divisor)
+        source = self.section_group_module()
+        target_unacted = restriction.codomain()
+        group_algebra = source.group_algebra()
+
+        def target_action(group_element, element):
+            preimage = restriction.preimage(element)
+            return restriction(
+                self.section_action_of(group_element)(preimage)
+            )
+
+        target = Modules(group_algebra)(target_unacted, target_action)
+        images = {
+            label: target.equip_action_morphism()(
+                restriction(source.unacted_module().module_generator(label))
+            )
+            for label in source.module_generating_set()
+        }
+        return group_module_homset(source, target)(images)
 
     def is_eigensection(self, section, character) -> bool:
         sections = self.line_bundle().global_sections()
