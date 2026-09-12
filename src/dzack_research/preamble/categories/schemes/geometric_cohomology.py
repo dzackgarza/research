@@ -120,6 +120,9 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
         def geometric_scheme(self):
             return self.geometric_sheaf().scheme()
 
+        def geometric_cover(self):
+            return getattr(self, "_preamble_geometric_cover", None)
+
         def acyclicity_reason(self):
             return (
                 "quasi-coherent sheaves on an affine scheme have no higher "
@@ -134,7 +137,7 @@ class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
             ).identity()
 
 
-def AffineGeometricCohomologyComplex(sheaf):
+def AffineGeometricCohomologyComplex(sheaf, cover=None):
     r"""Return the one-chart affine complex computing ``H^*(X,sheaf)``.
 
     The represented sheaf must be an affine module sheaf ``M~``.  The cover
@@ -148,16 +151,27 @@ def AffineGeometricCohomologyComplex(sheaf):
 
     if not isinstance(sheaf, AffineModuleSheaf):
         raise TypeError("affine geometric cohomology requires an affine module sheaf")
+    if cover is not None:
+        if cover.ambient_scheme() is not sheaf.scheme():
+            raise ValueError("the selected affine cover belongs to a different scheme")
+        one = sheaf.scheme().coordinate_algebra().one()
+        if any(cover.defining_element(index) != one for index in cover.atlas()):
+            raise NotImplementedError(
+                "the represented contracted Cech comparison currently requires unit charts D(1)"
+            )
     module = sheaf.global_sections()
     base = module.base_ring()
     zero = FreshFreeModuleOn(base, finite_ordered_set(()))
+    construction_data = {"geometric_sheaf": sheaf}
+    if cover is not None:
+        construction_data["geometric_cover"] = cover
     return CochainComplex(
         base,
         {0: module, 1: zero},
         {0: module_homset(module, zero).zero()},
         name=f"Affine Cech complex of {sheaf}",
         extra_categories=(AffineGeometricCohomologyComplexes(base),),
-        extra_construction_data={"geometric_sheaf": sheaf},
+        extra_construction_data=construction_data,
     )
 
 
@@ -166,12 +180,72 @@ def AffineGeometricCohomology(sheaf, degree):
     return Cohomology(AffineGeometricCohomologyComplex(sheaf), int(degree))
 
 
-def AffineGeometricScalarCohomologyMap(sheaf, degree, scalar):
+def AffineGeometricScalarCohomologyMap(sheaf, degree, scalar, *, cover=None):
     r"""Return the cohomology map induced by scalar multiplication on ``sheaf``."""
-    complex_ = AffineGeometricCohomologyComplex(sheaf)
+    complex_ = AffineGeometricCohomologyComplex(sheaf, cover=cover)
     scalar = complex_.base_ring()(scalar)
     cochain_map = scalar * cochain_homset(complex_, complex_).identity()
     return cohomology_functor(complex_.base_ring(), int(degree))(cochain_map)
+
+
+class AffineCoverRefinementCohomologyComparison(SageObject):
+    r"""The cochain/cohomology comparison induced by a represented unit-cover refinement."""
+
+    def __init__(self, refinement, sheaf, degree) -> None:
+        if refinement.ambient_scheme() is not sheaf.scheme():
+            raise ValueError("the cover refinement belongs to a different affine scheme")
+        self._refinement = refinement
+        self._sheaf = sheaf
+        self._degree = int(degree)
+        source = AffineGeometricCohomologyComplex(
+            sheaf,
+            cover=refinement.coarse_cover(0),
+        )
+        target = AffineGeometricCohomologyComplex(
+            sheaf,
+            cover=refinement.fine_cover(),
+        )
+        degree_zero = module_homset(
+            source.graded_piece(0),
+            target.graded_piece(0),
+        ).identity()
+        self._source_complex = source
+        self._target_complex = target
+        self._cochain_map = cochain_homset(source, target)({0: degree_zero})
+        self._cohomology_map = cohomology_functor(
+            source.base_ring(),
+            self._degree,
+        )(self._cochain_map)
+
+    def refinement(self):
+        return self._refinement
+
+    def sheaf(self):
+        return self._sheaf
+
+    def degree(self):
+        return self._degree
+
+    def source_complex(self):
+        return self._source_complex
+
+    def target_complex(self):
+        return self._target_complex
+
+    def cochain_map(self):
+        return self._cochain_map
+
+    def cohomology_map(self):
+        return self._cohomology_map
+
+
+def AffineCoverRefinementCohomologyMap(refinement, sheaf, degree):
+    r"""Return the represented refinement comparison in degree ``degree``."""
+    return AffineCoverRefinementCohomologyComparison(
+        refinement,
+        sheaf,
+        degree,
+    )
 
 
 class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
@@ -596,6 +670,8 @@ __all__ = [
     "AffineGeometricCohomologyComplex",
     "AffineGeometricCohomologyComplexes",
     "AffineGeometricScalarCohomologyMap",
+    "AffineCoverRefinementCohomologyComparison",
+    "AffineCoverRefinementCohomologyMap",
     "ToricCycleClassIsomorphism",
     "ToricGeometricLineBundleCohomologySpaces",
     "ToricIntegralSingularCohomology",
