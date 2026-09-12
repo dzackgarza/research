@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    LocalizationRings,
     OwnedFields,
     _engine_ring,
 )
@@ -30,6 +31,8 @@ def _complete_intersection_base_supported(base) -> bool:
     r"""Return whether the selected regular base regime justifies the CI criterion."""
     if base in OwnedFields():
         return True
+    if base in LocalizationRings():
+        return _complete_intersection_base_supported(base.localization_source())
     try:
         coefficient_base = base.algebra_base_ring()
     except AttributeError:

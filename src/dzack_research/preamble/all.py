@@ -915,6 +915,8 @@ from dzack_research.preamble.categories.reduction_complexes import (  # noqa: F4
     lorentzian_reduction_complex,
 )
 from dzack_research.preamble.categories.schemes import (  # noqa: F401
+    HesseBertiniFamily,
+    hesse_bertini_family,
     AT21ADEDoubleCover,
     AT21ADEPair,
     AT21ToricADEPair,

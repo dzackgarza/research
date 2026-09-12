@@ -734,15 +734,6 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`bertini-family`**. **Needs:** `singularity-classification`.
-  Supply Bertini and general complete-intersection family applications.
-  **Inputs:** parameter spaces, evaluation/jet maps, and local smoothness.
-  **Decision:** generic smoothness or a nonempty open good-parameter locus does
-  not make every member smooth. Keep basepoint and characteristic hypotheses.
-  **Deliver:** the parameter family and the actual condition/locus asserted
-  by the selected theorem, together with base-change and restriction maps.
-  **Acceptance:** a valid general member and an explicit exceptional singular
-  member coexist in the same parameter construction.
 
 ## Arithmetic and reflection geometry
 
@@ -950,7 +941,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

@@ -246,10 +246,14 @@ _EXPORTS = {
     'AT21ADEPair': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ADEPair'),
     'AT21ToricADEPair': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ToricADEPair'),
     'AT21ADEDoubleCover': ('dzack_research.preamble.categories.schemes.ade_surfaces', 'AT21ADEDoubleCover'),
+    'HesseBertiniFamily': ('dzack_research.preamble.categories.schemes.bertini_families', 'HesseBertiniFamily'),
+    'hesse_bertini_family': ('dzack_research.preamble.categories.schemes.bertini_families', 'hesse_bertini_family'),
 
 }
 
 __all__ = [
+    'HesseBertiniFamily',
+    'hesse_bertini_family',
     'AT21ADEDoubleCover',
     'AT21ADEPair',
     'AT21ToricADEPair',
