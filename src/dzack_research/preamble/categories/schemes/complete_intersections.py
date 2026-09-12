@@ -1,5 +1,11 @@
 r"""Projective complete intersections with their selected defining multidegree."""
 
+from sage.misc.cachefunc import cached_method
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+    ProjectiveSubschemeLineBundleIsomorphism,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_ring,
@@ -12,6 +18,53 @@ from dzack_research.preamble.categories.schemes.schemes import (
     refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
+
+
+class CompleteIntersectionAdjunctionComparison(SageObject):
+    r"""The adjunction comparison ``omega_X ~= (omega_P tensor det N)_X``.
+
+    Every line bundle in the comparison is an actual pullback ``O_X(d)``.
+    The determinant of the normal bundle is ``O_X(sum d_i)`` for the selected
+    regular sequence, while ``omega_P=O_P(-n-1)``.
+    """
+
+    def __init__(self, complete_intersection) -> None:
+        self._scheme = complete_intersection
+        ambient = complete_intersection.complete_intersection_ambient()
+        normal_degree = sum(int(value) for value in complete_intersection.defining_degrees())
+        canonical = complete_intersection.O(
+            complete_intersection.adjunction_twist_degree()
+        )
+        ambient_canonical = ambient.canonical_line_bundle().restrict_to(
+            complete_intersection
+        )
+        normal_determinant = complete_intersection.O(normal_degree)
+        adjunction_target = ambient_canonical.tensor_product(normal_determinant)
+        self._canonical = canonical
+        self._ambient_canonical = ambient_canonical
+        self._normal_determinant = normal_determinant
+        self._target = adjunction_target
+        self._isomorphism = ProjectiveSubschemeLineBundleIsomorphism(
+            canonical, adjunction_target
+        )
+
+    def scheme(self):
+        return self._scheme
+
+    def canonical_line_bundle(self):
+        return self._canonical
+
+    def restricted_ambient_canonical_bundle(self):
+        return self._ambient_canonical
+
+    def normal_determinant_line_bundle(self):
+        return self._normal_determinant
+
+    def adjunction_target(self):
+        return self._target
+
+    def isomorphism(self):
+        return self._isomorphism
 
 
 class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
@@ -66,9 +119,9 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             r"""Return ``sum(d_i) - n - 1`` in ``K_X = O_X(sum d_i-n-1)``.
 
             This is the integer in the projective complete-intersection
-            adjunction formula.  It is deliberately kept distinct from an
-            actual line bundle until arbitrary projective closed subschemes
-            support restriction of ``O(d)``.
+            adjunction formula.  The actual canonical bundle and comparison
+            map are returned separately by :meth:`canonical_line_bundle` and
+            :meth:`adjunction_isomorphism`.
             """
             ambient_dimension = int(self.complete_intersection_ambient().relative_dimension())
             return sum(self._preamble_complete_intersection_degrees) - ambient_dimension - 1
@@ -110,19 +163,38 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
             r"""Return ``n + 1 - sum(d_i)`` for ``-K_X``."""
             return -self.adjunction_twist_degree()
 
+        @cached_method
+        def adjunction_comparison(self):
+            return CompleteIntersectionAdjunctionComparison(self)
+
+        def adjunction_isomorphism(self):
+            return self.adjunction_comparison().isomorphism()
+
+        @cached_method
+        def canonical_line_bundle(self):
+            return self.adjunction_comparison().canonical_line_bundle()
+
+        canonical_bundle = canonical_line_bundle
+
+        @cached_method
+        def anticanonical_line_bundle(self):
+            return self.canonical_line_bundle().dual()
+
+        anticanonical_bundle = anticanonical_line_bundle
+
         def is_del_pezzo(self) -> bool:
             r"""Decide the del Pezzo condition for a smooth complete-intersection surface.
 
-            In this represented regime ``-K_X = O_X(c)`` with
-            ``c = n+1-sum(d_i)``.  The restriction of ``O(1)`` is ample, so
-            ``-K_X`` is ample exactly when ``c > 0``.  Smoothness is decided
-            by Sage's exact projective-subscheme Jacobian calculation.
+            In this represented regime adjunction constructs ``-K_X`` as an
+            actual restricted projective line bundle.  Smoothness is decided
+            by Sage's exact projective-subscheme Jacobian calculation and the
+            ampleness question is delegated to that line-bundle object.
             """
             if int(self.expected_dimension()) != 2:
                 return False
             if not bool(self.is_smooth()):
                 return False
-            return self.anticanonical_twist_degree() > 0
+            return bool(self.anticanonical_line_bundle().is_ample())
 
         def del_pezzo_degree(self):
             r"""Return ``(-K_X)^2`` for a represented del Pezzo complete intersection."""
@@ -155,4 +227,8 @@ def ProjectiveCompleteIntersection(subscheme):
     return refine_scheme(subscheme, base, [ProjectiveCompleteIntersections(base)])
 
 
-__all__ = ["ProjectiveCompleteIntersection", "ProjectiveCompleteIntersections"]
+__all__ = [
+    "CompleteIntersectionAdjunctionComparison",
+    "ProjectiveCompleteIntersection",
+    "ProjectiveCompleteIntersections",
+]

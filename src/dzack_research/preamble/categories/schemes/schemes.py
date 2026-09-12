@@ -3949,6 +3949,15 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             assert other.inclusion().codomain() is codomain, "a scheme-theoretic intersection is taken inside one scheme"
             return codomain.closed_subscheme((*self.defining_equations(), *other.defining_equations()))
 
+        @cached_method
+        def O(self, degree):
+            r"""Return ``O_X(d)=i^*O_P(d)`` for a projective closed subscheme."""
+            ambient = self.inclusion().codomain()
+            base = self.scheme_base_ring()
+            if ambient not in ProjectiveSpaces(base):
+                raise TypeError("O_X(d) here requires a projective-space ambient")
+            return ambient.O(degree).restrict_to(self)
+
         def fundamental_cycle(self):
             r"""Return this closed subscheme's cycle with generic local multiplicities."""
             from dzack_research.preamble.categories.divisors.chow_groups import (

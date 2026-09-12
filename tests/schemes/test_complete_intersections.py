@@ -80,3 +80,38 @@ def test_a_singular_complete_intersection_curve_is_not_normal() -> None:
     assert not cusp.is_smooth()
     assert not cusp.is_normal()
     assert cusp.is_gorenstein()
+
+
+def test_complete_intersection_adjunction_is_an_actual_line_bundle_isomorphism() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    curve = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0 * x1 - x2**2, x0**3 + x1**3 + x3**3)
+    )
+    comparison = curve.adjunction_comparison()
+    isomorphism = comparison.isomorphism()
+
+    assert comparison.scheme() is curve
+    assert comparison.canonical_line_bundle().scheme() is curve
+    assert comparison.canonical_line_bundle().degree() == 1
+    assert comparison.restricted_ambient_canonical_bundle().degree() == -4
+    assert comparison.normal_determinant_line_bundle().degree() == 5
+    assert comparison.adjunction_target().degree() == 1
+    assert isomorphism.domain() is comparison.canonical_line_bundle()
+    assert isomorphism.codomain() is comparison.adjunction_target()
+    assert isomorphism.inverse().domain() is comparison.adjunction_target()
+    assert curve.canonical_line_bundle() is comparison.canonical_line_bundle()
+
+
+def test_del_pezzo_complete_intersection_uses_actual_anticanonical_ampleness() -> None:
+    space = ProjectiveSpace(3, QQ)
+    x0, x1, x2, x3 = space.gens()
+    cubic = ProjectiveCompleteIntersection(
+        space.closed_subscheme(x0**3 + x1**3 + x2**3 + x3**3)
+    )
+
+    anticanonical = cubic.anticanonical_line_bundle()
+    assert anticanonical.scheme() is cubic
+    assert anticanonical.degree() == 1
+    assert anticanonical.is_ample()
+    assert cubic.is_del_pezzo()

@@ -1,5 +1,6 @@
 r"""Invertible sheaves represented by rank-one affine module descent data."""
 
+from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
@@ -571,6 +572,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
         return ProjectiveSectionRestriction(self, closed_subscheme)
 
+    def restrict_to(self, closed_subscheme):
+        r"""Return ``i^* O(d)`` for a represented projective closed immersion ``i``."""
+        return ProjectiveSubschemeLineBundle(closed_subscheme, self)
+
     def linear_system(self, sections=None):
         from dzack_research.preamble.categories.divisors.linear_systems import (
             ProjectiveLinearSystem,
@@ -671,6 +676,133 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     def _repr_(self):
         return f"O({self.degree()}) on {self.projective_space()}"
 
+
+
+class ProjectiveSubschemeLineBundle(SageObject):
+    r"""The pullback ``i^* O_P(d)`` along a projective closed immersion.
+
+    The defining datum is the actual closed immersion together with the
+    ambient projective line bundle.  No second projective-coordinate sheaf is
+    built on the subscheme.  This is the line-bundle object needed by
+    adjunction and strict-transform comparisons; computations of sections may
+    use the existing image-valued restriction map separately.
+    """
+
+    def __init__(self, closed_subscheme, ambient_line_bundle) -> None:
+        from dzack_research.preamble.categories.schemes.schemes import (
+            ClosedSubschemes,
+            ProjectiveSpaces,
+        )
+
+        base = closed_subscheme.scheme_base_ring()
+        if closed_subscheme not in ClosedSubschemes(base):
+            raise TypeError("a restricted projective line bundle requires a closed subscheme")
+        ambient = closed_subscheme.inclusion().codomain()
+        if ambient not in ProjectiveSpaces(base):
+            raise TypeError("the selected O_X(d) construction requires projective-space ambient")
+        if not isinstance(ambient_line_bundle, ProjectiveSpaceLineBundle):
+            raise TypeError("the ambient bundle must be a represented projective O(d)")
+        if ambient_line_bundle.projective_space() is not ambient:
+            raise ValueError("the ambient line bundle belongs to a different projective space")
+        self._scheme = closed_subscheme
+        self._ambient_line_bundle = ambient_line_bundle
+        self._pullback_morphism = closed_subscheme.inclusion()
+
+    def scheme(self):
+        return self._scheme
+
+    def pullback_morphism(self):
+        return self._pullback_morphism
+
+    inclusion = pullback_morphism
+
+    def ambient_line_bundle(self):
+        return self._ambient_line_bundle
+
+    def degree(self):
+        return self.ambient_line_bundle().degree()
+
+    def tensor_product(self, other):
+        if not isinstance(other, ProjectiveSubschemeLineBundle):
+            raise TypeError("restricted projective tensor product requires two O_X(d) bundles")
+        if other.scheme() is not self.scheme():
+            raise ValueError("restricted line-bundle tensor product requires one scheme")
+        return type(self)(
+            self.scheme(),
+            self.ambient_line_bundle().tensor_product(other.ambient_line_bundle()),
+        )
+
+    def tensor_power(self, exponent):
+        exponent = _own_ring(SageZZ)(exponent)
+        if exponent == 1:
+            return self
+        return type(self)(
+            self.scheme(),
+            self.ambient_line_bundle().tensor_power(exponent),
+        )
+
+    def dual(self):
+        return type(self)(self.scheme(), self.ambient_line_bundle().dual())
+
+    def is_ample(self) -> bool:
+        r"""Decide ampleness for restrictions of ``O(d)`` to projective subschemes."""
+        if int(self.scheme().dimension()) == 0:
+            return True
+        return self.degree() > 0
+
+    def section_restriction_map(self):
+        return self.ambient_line_bundle().restriction_map(self.scheme())
+
+    def represented_global_section_image(self):
+        return self.section_restriction_map().codomain()
+
+    def _repr_(self):
+        return f"O({self.degree()}) restricted to {self.scheme()}"
+
+
+class ProjectiveSubschemeLineBundleIsomorphism(SageObject):
+    r"""The selected identity of two represented ``O_X(d)`` pullback presentations.
+
+    Two objects here carry the same closed immersion and the same integer
+    degree but may have arisen by different tensor constructions.  Their
+    canonical comparison is induced by the identity of ``O_P(d)`` before
+    pullback.  The source and target remain distinct construction objects.
+    """
+
+    def __init__(self, source, target) -> None:
+        if not isinstance(source, ProjectiveSubschemeLineBundle) or not isinstance(
+            target, ProjectiveSubschemeLineBundle
+        ):
+            raise TypeError("this line-bundle isomorphism compares two represented O_X(d) bundles")
+        if source.scheme() is not target.scheme():
+            raise ValueError("a line-bundle isomorphism lies over one scheme")
+        if source.degree() != target.degree():
+            raise ValueError("the selected projective line-bundle comparison requires equal degrees")
+        self._source = source
+        self._target = target
+
+    def domain(self):
+        return self._source
+
+    source = domain
+
+    def codomain(self):
+        return self._target
+
+    target = codomain
+
+    def inverse(self):
+        return type(self)(self.codomain(), self.domain())
+
+    def __mul__(self, other):
+        if not isinstance(other, ProjectiveSubschemeLineBundleIsomorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return type(self)(other.domain(), self.codomain())
+
+    def _repr_(self):
+        return f"Line-bundle isomorphism {self.domain()} ~= {self.codomain()}"
 
 def ProjectiveO(projective_space, degree):
     r"""Return the standard line bundle ``O(d)`` on ``P^n``."""
@@ -892,6 +1024,8 @@ __all__ = [
     "InvertibleSheaf",
     "ProductProjectiveLineBundle",
     "ProjectiveO",
+    "ProjectiveSubschemeLineBundle",
+    "ProjectiveSubschemeLineBundleIsomorphism",
     "ProjectiveSpaceLineBundle",
     "TrivialInvertibleSheaf",
 ]
