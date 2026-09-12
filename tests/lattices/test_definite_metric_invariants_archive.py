@@ -12,6 +12,17 @@ from sage.symbolic.constants import pi
 
 from dzack_research.preamble.all import QQ, RR, ZZ, Lattices
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/definite_lattices.sage",
+    "live_owner": "src/dzack_research/preamble/categories/definite_lattices.py",
+    "owner_overrides": {
+        "DefiniteSubobjectParent.embedding": "src/dzack_research/preamble/categories/lattices.py",
+        "DefiniteLattices.Subobjects.ParentMethods.sum": "src/dzack_research/preamble/categories/lattices.py",
+        "DefiniteLattices.Subobjects.ParentMethods.intersection": "src/dzack_research/preamble/categories/lattices.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_square_lattice_metric_invariants_are_exact() -> None:
     lattice = Lattices(ZZ)(2)
