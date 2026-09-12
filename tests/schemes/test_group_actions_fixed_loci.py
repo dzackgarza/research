@@ -4,6 +4,7 @@ import pytest
 
 from dzack_research.preamble.all import (
     QQ,
+    ProjectiveSpace,
     AffineGSchemes,
     AffineSchemes,
     GObjects,
@@ -13,6 +14,13 @@ from dzack_research.preamble.all import (
     Spec,
     SpecFunctor,
 )
+
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_fixed_loci.sage",
+    "live_owner": "tests/schemes/test_group_actions_fixed_loci.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def _coordinate_swap_action() -> tuple:
@@ -102,3 +110,24 @@ def test_gobjects_of_schemes_has_a_trivial_affine_specimen() -> None:
     assert acted in category
     assert acted in AffineSchemes(QQ)
     assert acted.fixed_ideal() == algebra.ideal(algebra.zero())
+
+
+def test_projective_product_sign_and_swap_fixed_loci_keep_archive_dimensions() -> None:
+    line = ProjectiveSpace(1, QQ, names=("x0", "x1"))
+    product = line.product_with(line)
+    x0, x1 = line.coordinate_ring().gens()
+    sign = line.projective_morphism_from_coordinates(line, (x0, -x1))
+
+    diagonal_sign = product.from_product_cone(
+        (sign * product.projection(0), sign * product.projection(1))
+    )
+    fixed_sign = diagonal_sign.fixed_subscheme()
+    assert fixed_sign.dimension() == 0
+    assert len(fixed_sign.rational_points()) == 4
+
+    factor_swap = product.from_product_cone(
+        (product.projection(1), product.projection(0))
+    )
+    fixed_swap = factor_swap.fixed_subscheme()
+    assert fixed_swap.dimension() == 1
+    assert factor_swap * factor_swap == product.categorical_identity_morphism()

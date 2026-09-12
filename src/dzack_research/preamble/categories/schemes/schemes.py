@@ -352,11 +352,47 @@ class SchemeMorphism(Morphism):
         return self.domain().closed_subscheme(equations)
 
     def fixed_subscheme(self):
-        r"""``X^f = Eq(f, id_X)``, the fixed subscheme of an endomorphism."""
+        r"""``X^f = Eq(f, id_X)``, the fixed subscheme of an endomorphism.
+
+        On a product of projective spaces a retained product-cone map
+        ``f=(f_i)`` is fixed exactly when ``f_i(x)=pi_i(x)`` in every factor.
+        Equality of two projective points is cut out by the ``2 x 2`` minors
+        of their homogeneous coordinate pairs, so these minors give the
+        scheme-theoretic equalizer without choosing affine charts.
+        """
         assert self.domain() is self.codomain(), "a fixed subscheme is that of an endomorphism"
-        return Schemes(self.domain().scheme_base_ring()).equalizer(
+        domain = self.domain()
+        base = domain.scheme_base_ring()
+        if domain in ProductProjectiveSpaces(base):
+            target = getattr(self, "_preamble_product_cone_target", None)
+            legs = getattr(self, "_preamble_product_cone_legs", None)
+            if target is domain and legs is not None:
+                equations = []
+                for label in domain.factors().index_set():
+                    moved = legs[label].native_morphism()
+                    fixed = domain.projection(label).native_morphism()
+                    moved_coordinates = getattr(moved, "defining_polynomials", None)
+                    fixed_coordinates = getattr(fixed, "defining_polynomials", None)
+                    if moved_coordinates is None or fixed_coordinates is None:
+                        raise NotImplementedError(
+                            "projective-product fixed loci require retained homogeneous coordinate legs"
+                        )
+                    moved_values = tuple(moved_coordinates())
+                    fixed_values = tuple(fixed_coordinates())
+                    if len(moved_values) != len(fixed_values):
+                        raise ArithmeticError(
+                            "parallel projective maps expose different coordinate arities"
+                        )
+                    equations.extend(
+                        moved_values[left] * fixed_values[right]
+                        - moved_values[right] * fixed_values[left]
+                        for left in range(len(moved_values))
+                        for right in range(left + 1, len(moved_values))
+                    )
+                return domain.closed_subscheme(tuple(equations))
+        return Schemes(base).equalizer(
             self,
-            self.domain().categorical_identity_morphism(),
+            domain.categorical_identity_morphism(),
         )
 
     def _engine_pullback_with_trivial_base_map(self):
