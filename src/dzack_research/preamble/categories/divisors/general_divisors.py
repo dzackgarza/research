@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import biproduct_morphism
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     _engine_ideal,
     _owned_ideal,
@@ -215,6 +216,130 @@ class FiniteAtlasCartierDivisor(SageObject):
         return f"Cartier divisor on {self.scheme()} from finite-atlas local equations"
 
 
+class DivisorClassTheory(SageObject):
+    r"""The comparison ``Pic(X) -> Cl(X)`` for one represented scheme.
+
+    This is deliberately class-level data, not a replacement for the full
+    Cartier and Weil divisor groups.  It retains the two class groups and the
+    actual comparison morphism between them, so a locally factorial example
+    may have an isomorphism here while a singular normal example need not.
+    """
+
+    def __init__(self, scheme, picard_group, class_group, picard_to_class) -> None:
+        if picard_group.picard_scheme() is not scheme:
+            raise ValueError("the Picard group belongs to a different scheme")
+        if class_group.class_group_scheme() is not scheme:
+            raise ValueError("the Weil class group belongs to a different scheme")
+        if picard_to_class.domain() is not picard_group:
+            raise ValueError("the Picard-to-class comparison has the wrong domain")
+        if picard_to_class.codomain() is not class_group:
+            raise ValueError("the Picard-to-class comparison has the wrong codomain")
+        self._scheme = scheme
+        self._picard_group = picard_group
+        self._class_group = class_group
+        self._picard_to_class = picard_to_class
+
+    def scheme(self):
+        return self._scheme
+
+    def picard_group(self):
+        return self._picard_group
+
+    def class_group(self):
+        return self._class_group
+
+    def picard_to_class_group_morphism(self):
+        return self._picard_to_class
+
+    def _repr_(self):
+        return f"Divisor-class theory of {self.scheme()}"
+
+
+def projective_space_divisor_class_theory(
+    projective_space,
+    base_picard_group,
+    base_class_group,
+    base_picard_to_class,
+):
+    r"""Return the projective-bundle formulas for ``Pic`` and ``Cl``.
+
+    For the represented projective space ``P^n_S`` the supplied base groups
+    are transported through
+
+    ``Pic(P^n_S)=Pic(S) + ZZ[O(1)]`` and
+    ``Cl(P^n_S)=Cl(S) + ZZ[H]``.
+
+    The comparison is the supplied ``Pic(S)->Cl(S)`` on the base summand and
+    the identity on the hyperplane summand.  Requiring the base class group and
+    its comparison map prevents this construction from silently replacing a
+    nontrivial base contribution by zero.
+    """
+    if base_picard_to_class.domain() is not base_picard_group:
+        raise ValueError("the base Picard-to-class morphism has the wrong domain")
+    if base_picard_to_class.codomain() is not base_class_group:
+        raise ValueError("the base Picard-to-class morphism has the wrong codomain")
+    base_scheme = projective_space.base_scheme()
+    if base_picard_group.picard_scheme() is not base_scheme:
+        raise ValueError("the supplied Picard group is not attached to the projective base")
+    if base_class_group.class_group_scheme() is not base_scheme:
+        raise ValueError("the supplied class group is not attached to the projective base")
+
+    integers = _integers()
+    picard_hyperplane = FreshFreeModuleOn(
+        integers,
+        finite_ordered_set(("O(1)",)),
+    )
+    class_hyperplane = FreshFreeModuleOn(
+        integers,
+        finite_ordered_set(("H",)),
+    )
+    picard_biproduct = Biproduct(base_picard_group, picard_hyperplane)
+    class_biproduct = Biproduct(base_class_group, class_hyperplane)
+    picard = PicardGroup(
+        picard_biproduct,
+        scheme=projective_space,
+        construction_data={
+            "projective_base_picard_group": base_picard_group,
+            "projective_hyperplane_factor": picard_hyperplane,
+            "projective_picard_biproduct": picard_biproduct,
+        },
+    )
+    classes = ClassGroup(class_biproduct, scheme=projective_space)
+    picard_hyperplane_label = picard_hyperplane.module_generating_set()[0]
+    class_hyperplane_label = class_hyperplane.module_generating_set()[0]
+    hyperplane_map = module_homset(picard_hyperplane, class_hyperplane)(
+        {picard_hyperplane_label: class_hyperplane.module_generator(class_hyperplane_label)}
+    )
+    raw_comparison = biproduct_morphism(
+        base_picard_to_class,
+        hyperplane_map,
+        source=picard_biproduct,
+        target=class_biproduct,
+    )
+    forget_picard_role = module_homset(picard, picard_biproduct)(
+        {
+            label: picard_biproduct.module_generator(label)
+            for label in picard.module_generating_set()
+        }
+    )
+    equip_class_role = module_homset(class_biproduct, classes)(
+        {
+            label: classes.module_generator(label)
+            for label in class_biproduct.module_generating_set()
+        }
+    )
+    comparison = equip_class_role * raw_comparison * forget_picard_role
+    theory = DivisorClassTheory(projective_space, picard, classes, comparison)
+    weil_hyperplane = equip_class_role(
+        class_biproduct.right_inclusion()(
+            class_hyperplane.module_generator(class_hyperplane_label)
+        )
+    )
+    if comparison(picard.hyperplane_class()) != weil_hyperplane:
+        raise ArithmeticError("the hyperplane class did not map to the Weil hyperplane class")
+    return theory
+
+
 def projective_space_picard_group(projective_space, base_picard_group):
     r"""Return ``Pic(P^n_S) = Pic(S) direct_sum ZZ[O(1)]`` from represented ``Pic(S)``.
 
@@ -338,10 +463,12 @@ class DivisorClassComparison(SageObject):
 
 
 __all__ = [
+    "DivisorClassTheory",
     "DivisorClassComparison",
     "FiniteAtlasCartierDivisor",
     "affine_normal_weil_divisor_group",
     "principal_weil_divisor",
+    "projective_space_divisor_class_theory",
     "projective_space_picard_group",
     "trivial_picard_group",
 ]
