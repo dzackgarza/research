@@ -1,0 +1,347 @@
+"""General divisor data and divisor-class quotient constructions.
+
+This module keeps concrete divisor data separate from class presentations.
+On a represented normal Noetherian affine integral scheme, the Weil divisor
+group is the sparse free abelian group on *all* height-one points.  Principal
+divisors have finite support, computed from primary decomposition and local
+lengths.  Cartier data on a finite affine atlas retain their local rational
+equations and the unit transition ratios, hence their associated line bundle.
+
+Class groups are obtained from explicit principal-divisor presentations.  A
+presentation may be finite even when the full Weil divisor group is not; the
+presentation is retained rather than identified with the full divisor group.
+"""
+
+from sage.structure.sage_object import SageObject
+from sage.rings.integer_ring import ZZ as SageZZ
+
+from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
+from dzack_research.preamble.categories.divisors.cartier_divisor_groups import CartierDivisorGroup
+from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
+from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
+from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup
+from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_homset,
+)
+from dzack_research.preamble.categories.rings.commutative_algebra import (
+    _engine_ideal,
+    _owned_ideal,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedIntegralDomains,
+    OwnedNoetherianRings,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+
+
+def _integers():
+    return _own_ring(SageZZ)
+
+
+def affine_normal_weil_divisor_group(scheme):
+    r"""Return ``WDiv(X)`` for a represented normal Noetherian affine integral scheme.
+
+    The basis is the actual height-one locus of ``Spec(A)``.  It is generally
+    infinite; elements remain finite-support sparse sums.
+    """
+    ring = scheme.coordinate_algebra()
+    if ring not in OwnedIntegralDomains():
+        raise TypeError("Weil divisors in this construction require an integral affine scheme")
+    if ring not in OwnedNoetherianRings():
+        raise TypeError("Weil divisors in this construction require a Noetherian coordinate ring")
+    if not ring.is_normal():
+        raise TypeError("Weil divisors in this construction require a normal coordinate ring")
+    spectrum = ring.spectrum()
+    prime_locus = ConditionSet(spectrum, lambda point: point.height() == 1)
+    return FreshFreeModuleOn(
+        _integers(),
+        prime_locus,
+        _extra_categories=(WeilDivisorGroups(),),
+        _extra_construction_data={
+            "divisor_scheme": scheme,
+            "prime_divisor_locus": prime_locus,
+            "affine_divisor_coordinate_ring": ring,
+        },
+    )
+
+
+def _effective_principal_coefficients(group, function):
+    ring = group.affine_divisor_coordinate_ring()
+    function = ring(function)
+    if function.is_zero():
+        raise ValueError("the divisor of the zero rational function is not a Weil divisor")
+    ideal = ring.ideal(function)
+    engine_ideal = _engine_ideal(ring, ideal)
+    try:
+        if bool(engine_ideal.is_one()):
+            return {}
+    except (AttributeError, TypeError):
+        pass
+    coefficients = {}
+    for primary in engine_ideal.primary_decomposition():
+        radical = primary.radical()
+        prime = group.divisor_scheme().underlying_space()(_owned_ideal(ring, radical))
+        if prime.height() != 1:
+            continue
+        local_ring = prime.local_ring()
+        local_maximal = local_ring.maximal_ideal()
+        uniformizers = local_maximal.minimal_module_generators()
+        if uniformizers.cardinality() != 1:
+            raise ArithmeticError(
+                "a height-one local ring of a normal Noetherian domain must be a DVR"
+            )
+        uniformizer = next(iter(uniformizers))
+        multiplicity = local_ring(function).valuation(uniformizer)
+        if multiplicity:
+            coefficients[prime] = coefficients.get(prime, _integers().zero()) + multiplicity
+    return coefficients
+
+
+def principal_weil_divisor(group, rational_function):
+    r"""Return ``div(f)`` in a represented affine-normal Weil divisor group."""
+    ring = group.affine_divisor_coordinate_ring()
+    field = ring.fraction_field()
+    function = field(rational_function)
+    numerator = ring(function.numerator())
+    denominator = ring(function.denominator())
+    coefficients = _effective_principal_coefficients(group, numerator)
+    for prime, multiplicity in _effective_principal_coefficients(group, denominator).items():
+        value = coefficients.get(prime, _integers().zero()) - multiplicity
+        if value:
+            coefficients[prime] = value
+        else:
+            coefficients.pop(prime, None)
+    return group.linear_combination(coefficients)
+
+
+def _fraction_pullback(ring_morphism, fraction):
+    target_ring = ring_morphism.codomain()
+    target_field = target_ring.fraction_field()
+    return target_field.fraction(
+        ring_morphism(fraction.numerator()),
+        ring_morphism(fraction.denominator()),
+    )
+
+
+class FiniteAtlasCartierDivisor(SageObject):
+    r"""A Cartier divisor given by local rational equations on a finite affine atlas."""
+
+    def __init__(self, gluing_datum, local_equations) -> None:
+        self._gluing_datum = gluing_datum
+        supplied = dict(local_equations)
+        if set(supplied) != set(gluing_datum.chart_indices()):
+            raise ValueError("a Cartier datum requires one local equation on every atlas chart")
+        self._local_equations = {}
+        for index in gluing_datum.chart_indices():
+            ring = gluing_datum.chart(index).coordinate_algebra()
+            equation = ring.fraction_field()(supplied[index])
+            if equation.is_zero():
+                raise ValueError("a Cartier local equation is a nonzero rational function")
+            self._local_equations[index] = equation
+        self._transition_units = {
+            pair: self._compute_transition_unit(*pair)
+            for pair in gluing_datum.transition_index_set()
+        }
+
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def scheme(self):
+        return self.gluing_datum().scheme()
+
+    def local_equation(self, index):
+        index = self.gluing_datum().normalize_chart_index(index)
+        return self._local_equations[index]
+
+    def _restricted_equation(self, source_index, target_index):
+        overlap = self.gluing_datum().overlap(source_index, target_index)
+        restriction = overlap.inclusion().coordinate_algebra_morphism()
+        return _fraction_pullback(restriction, self.local_equation(source_index))
+
+    def _compute_transition_unit(self, source_index, target_index):
+        datum = self.gluing_datum()
+        source_equation = self._restricted_equation(source_index, target_index)
+        target_equation = self._restricted_equation(target_index, source_index)
+        transition = datum.transition_between(source_index, target_index).forward()
+        target_on_source = _fraction_pullback(
+            transition.coordinate_algebra_morphism(),
+            target_equation,
+        )
+        field = datum.overlap(source_index, target_index).coordinate_algebra().fraction_field()
+        ratio = field.fraction(
+            source_equation.numerator() * target_on_source.denominator(),
+            source_equation.denominator() * target_on_source.numerator(),
+        )
+        overlap_ring = datum.overlap(source_index, target_index).coordinate_algebra()
+        try:
+            unit = overlap_ring(ratio)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                "Cartier local equations must have a regular transition ratio on every overlap"
+            ) from error
+        if not unit.is_unit():
+            raise ValueError("Cartier local equations must differ by a unit on every overlap")
+        return unit
+
+    def transition_unit(self, source_index, target_index):
+        datum = self.gluing_datum()
+        source_index = datum.normalize_chart_index(source_index)
+        target_index = datum.normalize_chart_index(target_index)
+        pair = next(
+            pair
+            for pair in datum.transition_index_set()
+            if {pair[0], pair[1]} == {source_index, target_index}
+        )
+        unit = self._transition_units[pair]
+        if pair == (source_index, target_index):
+            return unit
+        reverse = datum.transition_between(source_index, target_index).forward()
+        return reverse.coordinate_algebra_morphism()(unit.inverse_of_unit())
+
+    def associated_invertible_sheaf(self):
+        return FiniteAtlasInvertibleSheaf(
+            self.gluing_datum(),
+            self._transition_units,
+            associated_divisor=self,
+        )
+
+    line_bundle = associated_invertible_sheaf
+
+    def _repr_(self):
+        return f"Cartier divisor on {self.scheme()} from finite-atlas local equations"
+
+
+def projective_space_picard_group(projective_space, base_picard_group):
+    r"""Return ``Pic(P^n_S) = Pic(S) direct_sum ZZ[O(1)]`` from represented ``Pic(S)``.
+
+    The base Picard group is required input.  In particular this construction
+    never replaces it by zero merely because the total space is projective.
+    """
+    integers = _integers()
+    if base_picard_group.base_ring() is not integers:
+        raise TypeError("a Picard group is an abelian group over ZZ")
+    hyperplane = FreshFreeModuleOn(integers, finite_ordered_set(("O(1)",)))
+    decomposition = Biproduct(base_picard_group, hyperplane)
+    return PicardGroup(
+        decomposition,
+        scheme=projective_space,
+        construction_data={
+            "projective_base_picard_group": base_picard_group,
+            "projective_hyperplane_factor": hyperplane,
+            "projective_picard_biproduct": decomposition,
+        },
+    )
+
+
+def trivial_picard_group(scheme):
+    r"""Return the represented zero Picard group of a scheme whose triviality is known."""
+    return PicardGroup(FreshFreeModuleOn(_integers(), finite_ordered_set(())), scheme=scheme)
+
+
+class DivisorClassComparison(SageObject):
+    r"""The quotient square from principal, Cartier and Weil divisor presentations."""
+
+    def __init__(
+        self,
+        scheme,
+        principal_source,
+        cartier_group,
+        weil_group,
+        principal_to_cartier,
+        principal_to_weil,
+        cartier_to_weil,
+    ) -> None:
+        if principal_to_cartier.domain() is not principal_source:
+            raise ValueError("the Cartier principal-divisor map has the wrong source")
+        if principal_to_weil.domain() is not principal_source:
+            raise ValueError("the Weil principal-divisor map has the wrong source")
+        if principal_to_cartier.codomain() is not cartier_group:
+            raise ValueError("the Cartier principal-divisor map has the wrong target")
+        if principal_to_weil.codomain() is not weil_group:
+            raise ValueError("the Weil principal-divisor map has the wrong target")
+        if cartier_to_weil.domain() is not cartier_group or cartier_to_weil.codomain() is not weil_group:
+            raise ValueError("the Cartier-to-Weil comparison has the wrong endpoints")
+        for label in principal_source.module_generating_set():
+            generator = principal_source.module_generator(label)
+            if cartier_to_weil(principal_to_cartier(generator)) != principal_to_weil(generator):
+                raise ValueError("the principal/Cartier/Weil comparison square does not commute")
+        self._scheme = scheme
+        self._principal_source = principal_source
+        self._cartier_group = cartier_group
+        self._weil_group = weil_group
+        self._principal_to_cartier = principal_to_cartier
+        self._principal_to_weil = principal_to_weil
+        self._cartier_to_weil = cartier_to_weil
+        cartier_cokernel = principal_to_cartier.cokernel()
+        weil_cokernel = principal_to_weil.cokernel()
+        self._picard_group = PicardGroup(cartier_cokernel, scheme=scheme)
+        self._class_group = ClassGroup(weil_cokernel, scheme=scheme)
+        self._cartier_class_projection = self._projection_to_role(
+            cartier_cokernel.cokernel_projection(),
+            cartier_cokernel,
+            self._picard_group,
+        )
+        self._weil_class_projection = self._projection_to_role(
+            weil_cokernel.cokernel_projection(),
+            weil_cokernel,
+            self._class_group,
+        )
+        self._picard_to_class = module_homset(
+            self._picard_group,
+            self._class_group,
+        )(
+            {
+                label: self._weil_class_projection(
+                    cartier_to_weil(cartier_group.module_generator(label))
+                )
+                for label in self._picard_group.module_generating_set()
+            }
+        )
+
+    @staticmethod
+    def _projection_to_role(projection, cokernel, role):
+        copy = module_homset(cokernel, role)(
+            {label: role.module_generator(label) for label in cokernel.module_generating_set()}
+        )
+        return copy * projection
+
+    def scheme(self):
+        return self._scheme
+
+    def cartier_divisor_group(self):
+        return self._cartier_group
+
+    def weil_divisor_group(self):
+        return self._weil_group
+
+    def picard_group(self):
+        return self._picard_group
+
+    def class_group(self):
+        return self._class_group
+
+    def cartier_to_weil_morphism(self):
+        return self._cartier_to_weil
+
+    def cartier_class_projection(self):
+        return self._cartier_class_projection
+
+    def weil_class_projection(self):
+        return self._weil_class_projection
+
+    def picard_to_class_group_morphism(self):
+        return self._picard_to_class
+
+
+__all__ = [
+    "DivisorClassComparison",
+    "FiniteAtlasCartierDivisor",
+    "affine_normal_weil_divisor_group",
+    "principal_weil_divisor",
+    "projective_space_picard_group",
+    "trivial_picard_group",
+]

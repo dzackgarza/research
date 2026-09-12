@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
-def _module_in_role(module, category, message):
+def _module_in_role(module, category, message, *, construction_data=None):
     r"""Return a fresh represented module born in the stated divisor role."""
     constructor = getattr(module, "_same_presentation_module", None)
     if constructor is None:
@@ -27,6 +27,7 @@ def _module_in_role(module, category, message):
     return constructor(
         module.module_generating_set(),
         _extra_categories=(category,),
+        _extra_construction_data=construction_data,
     )
 
 

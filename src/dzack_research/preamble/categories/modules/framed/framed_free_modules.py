@@ -69,7 +69,11 @@ def _finitely_generated_free_placement(ring, module_generating_set):
     categories = [_SparseFramedFreeModules(ring)]
     if ring in OwnedFields():
         categories.append(VectorSpaces(ring))
-    if module_generating_set.cardinality().is_finite():
+    try:
+        finite = module_generating_set.cardinality().is_finite()
+    except (AttributeError, NotImplementedError, TypeError, ValueError):
+        finite = False
+    if finite:
         categories.append(FinitelyGeneratedFreeModules(ring))
     return categories
 

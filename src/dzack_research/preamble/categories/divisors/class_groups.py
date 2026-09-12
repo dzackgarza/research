@@ -17,8 +17,15 @@ class ClassGroups(Category):
 
         return [FramedModules(_own_ring(SageZZ))]
 
+    class ParentMethods:
+        def class_group_scheme(self):
+            scheme = getattr(self, "_preamble_class_group_scheme", None)
+            if scheme is None:
+                raise TypeError("this class-group role has no selected scheme")
+            return scheme
 
-def ClassGroup(module):
+
+def ClassGroup(module, scheme=None):
     category = ClassGroups()
     if module not in category.super_categories()[0]:
         raise TypeError("a class group must carry its quotient framing")
@@ -26,4 +33,5 @@ def ClassGroup(module):
         module,
         category,
         "a class group requires a represented framed-module presentation",
+        construction_data=None if scheme is None else {"class_group_scheme": scheme},
     )

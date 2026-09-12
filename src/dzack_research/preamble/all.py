@@ -214,8 +214,10 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     CoordinatePointJetEvaluation,
     CoxRing,
     CoxRings,
+    DivisorClassComparison,
     DivisorGroup,
     DivisorGroups,
+    FiniteAtlasCartierDivisor,
     FiniteAtlasInvertibleSheaf,
     FormalDivisor,
     FormalDivisorGroup,
@@ -237,6 +239,9 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     TorusInvariantCycleGroups,
     WeilDivisorGroup,
     WeilDivisorGroups,
+    affine_normal_weil_divisor_group,
+    projective_space_picard_group,
+    trivial_picard_group,
 )
 from dzack_research.preamble.categories.forms import (  # noqa: F401
     BilinearForm,
