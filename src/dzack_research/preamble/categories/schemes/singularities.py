@@ -5,7 +5,9 @@ from sage.libs.singular.function import singular_function
 from sage.matrix.constructor import matrix
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
@@ -62,6 +64,57 @@ def _ade_normal_form_equation(polynomial_ring, ade_type):
                     raise ValueError("the exceptional simple plane curves are E6, E7 and E8")
         case _:
             raise ValueError("a supported simple plane curve has type A, D or E")
+
+
+class PlaneLinearRightEquivalence(SageObject):
+    r"""An explicit linear right-equivalence between two plane-curve germs.
+
+    This is the supported equivalence notion used here: an automorphism of the
+    selected polynomial ring carrying the source equation to the target
+    equation.  Both directions are retained as owned algebra morphisms.  This
+    does not claim to decide arbitrary formal or analytic right-equivalence.
+    """
+
+    def __init__(self, source, target, forward, inverse) -> None:
+        if source.polynomial_ring() is not target.polynomial_ring():
+            raise ValueError("a represented linear right-equivalence uses one polynomial ring")
+        ring = source.polynomial_ring()
+        if forward.domain() is not ring or forward.codomain() is not ring:
+            raise ValueError("the forward coordinate change is an automorphism of the plane ring")
+        if inverse.domain() is not ring or inverse.codomain() is not ring:
+            raise ValueError("the inverse coordinate change is an automorphism of the plane ring")
+        for generator in ring.algebra_generators():
+            if inverse(forward(generator)) != generator:
+                raise ValueError("the selected coordinate maps are not inverse on the generators")
+            if forward(inverse(generator)) != generator:
+                raise ValueError("the selected coordinate maps are not inverse on the generators")
+        if forward(source.equation()) != target.equation():
+            raise ValueError("the coordinate change does not carry the source equation to the target equation")
+        self._source = source
+        self._target = target
+        self._forward = forward
+        self._inverse = inverse
+
+    def source(self):
+        return self._source
+
+    def target(self):
+        return self._target
+
+    def forward(self):
+        return self._forward
+
+    coordinate_change = forward
+
+    def inverse(self):
+        return self._inverse
+
+    def ade_type(self):
+        r"""Return the target ADE normal-form label, when the target is one."""
+        return self.target().ade_normal_form_type()
+
+    def _repr_(self):
+        return f"Linear right-equivalence {self.source()} -> {self.target()}"
 
 
 class IsolatedHypersurfaceSingularity:
@@ -130,6 +183,44 @@ class IsolatedHypersurfaceSingularity:
             if self.equation() == _ade_normal_form_equation(ring, candidate):
                 return candidate
         return None
+
+    def linear_right_equivalence_to(self, target, forward_images, inverse_images):
+        r"""Return an explicit linear right-equivalence to ``target``.
+
+        ``forward_images`` and ``inverse_images`` are the images of the chosen
+        polynomial generators under mutually inverse linear coordinate
+        changes.  The algebra-Hom owner verifies the maps; this method then
+        verifies the inverse identities and the equation itself.
+        """
+        ring = self.polynomial_ring()
+        if target.polynomial_ring() is not ring:
+            raise ValueError("linear right-equivalence currently uses one selected plane ring")
+        forward = algebra_homset(ring, ring)(forward_images)
+        inverse = algebra_homset(ring, ring)(inverse_images)
+        return PlaneLinearRightEquivalence(self, target, forward, inverse)
+
+    def ade_type_via_linear_right_equivalence(self, forward_images, inverse_images):
+        r"""Recognize an ADE normal form after one supplied linear coordinate change.
+
+        The changed equation is classified only when it is literally one of
+        the selected ADE normal forms.  The returned object retains the
+        coordinate-change morphism proving that statement.
+        """
+        ring = self.polynomial_ring()
+        forward = algebra_homset(ring, ring)(forward_images)
+        changed = IsolatedHypersurfaceSingularity(ring, forward(self.equation()))
+        ade_type = changed.ade_normal_form_type()
+        if ade_type is None:
+            return None
+        target = IsolatedHypersurfaceSingularity(
+            ring,
+            _ade_normal_form_equation(ring, ade_type),
+        )
+        return self.linear_right_equivalence_to(
+            target,
+            forward_images,
+            inverse_images,
+        )
 
     def jacobian_generators(self):
         ring = self.polynomial_ring()
@@ -310,4 +401,4 @@ class IsolatedHypersurfaceSingularity:
         return curve_conductor.extension_to_localization(local_ring)
 
 
-__all__ = ["IsolatedHypersurfaceSingularity"]
+__all__ = ["IsolatedHypersurfaceSingularity", "PlaneLinearRightEquivalence"]
