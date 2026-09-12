@@ -1120,7 +1120,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   and nontrivial gluing, plus decorated sublattice/flag orbit representatives
   and transporter morphisms.
 
-- [ ] **`reduction-complexes`**. **Needs:** `transporters`.
+- [x] **`reduction-complexes`**. **Needs:** `transporters`.
   Complete exact rational polyhedral and reduction-complex constructions.
   **Owners:** existing polytope/cone, pairing-configuration, and lattice-action
   owners; Normaliz, cddlib, PPL or the existing bridge computes polyhedra.
