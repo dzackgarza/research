@@ -1435,6 +1435,22 @@ class AdicCompletions(Category):
     def super_categories(self):
         return [OwnedAdicallyCompleteRings()]
 
+    def _call_(self, ring, ideal, *, precision=20):
+        r"""Construct the adic completion from its authoritative defining datum.
+
+        Public notation and ring methods both route through this category
+        constructor.  The private cached constructor receives only owned data,
+        so repeated routes to the same ``(R,I,precision)`` return the same
+        mathematical parent rather than parallel completion objects.
+        """
+        source = _own_ring(ring)
+        defining = _owned_ideal(source, ideal)
+        return _adic_completion_from_owned_data(
+            source,
+            defining,
+            int(precision),
+        )
+
     class ParentMethods:
         def completion_source(self):
             return self._preamble_completion_source
@@ -2663,19 +2679,23 @@ def _prime_localization(source, prime_ideal):
     return _localization_at_submonoid(source, complement)
 
 
-def AdicCompletion(ring, ideal, *, precision=20):
-    r"""Return the represented adic completion ``R^``.
+@cached_function
+def _adic_completion_from_owned_data(source, defining, precision):
+    r"""Private implementation of the represented adic completion ``R^``.
 
-    The mathematical parent records ``R``, the owned ideal of definition and
-    the inverse system ``R/I^n``.  ``precision`` is computational metadata; it
-    is never imposed as an additional relation in the completion.
+    ``source`` and ``defining`` are already owned and normalized by
+    :class:`AdicCompletions`.  This is the sole implementation factory for the
+    family; public notation is defined below and delegates back to the category
+    constructor.
     """
-    source = _own_ring(ring)
-    defining = _owned_ideal(source, ideal)
     if source in PrimeLocalizations() and defining == source.maximal_ideal():
         bottom = source.localization_source()
         prime = source.localized_prime()
-        bottom_completion = AdicCompletion(bottom, prime, precision=precision)
+        bottom_completion = AdicCompletions()(
+            bottom,
+            prime,
+            precision=precision,
+        )
         local_to_completion = source.induced_morphism(
             bottom_completion.completion_map()
         )
@@ -2865,6 +2885,17 @@ def AdicCompletion(ring, ideal, *, precision=20):
         arithmetic_mode="exact_lazy",
         completion_map_kernel=zero_ideal if source in OwnedIntegralDomains() else None,
     )
+
+
+def AdicCompletion(ring, ideal, *, precision=20):
+    r"""Return the category-owned adic completion ``R^``.
+
+    The mathematical parent records ``R``, the owned ideal of definition and
+    the inverse system ``R/I^n``.  ``precision`` is computational metadata; it
+    is never imposed as an additional relation in the completion.  This
+    notation is deliberately only a route to :class:`AdicCompletions`.
+    """
+    return AdicCompletions()(ring, ideal, precision=precision)
 
 
 class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
