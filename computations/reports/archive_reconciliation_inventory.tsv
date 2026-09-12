@@ -2268,41 +2268,41 @@ preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethod
 preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.zero	method	105	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.ParentMethods.inclusion	method	108	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/rings/predicate_subrings.sage	predicate_subring	function	129	2		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
-preamble/categories/rings/rings.sage	<module>	module	1	0			unreviewed
-preamble/categories/rings/rings.sage	BaseRingParent	class	38	0			unreviewed
-preamble/categories/rings/rings.sage	BaseRingParent.base	method	42	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedSemirings	class	84	2			unreviewed
-preamble/categories/rings/rings.sage	OwnedSemirings.super_categories	method	91	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRngs	class	95	2			unreviewed
-preamble/categories/rings/rings.sage	OwnedRngs.super_categories	method	102	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings	class	106	2			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings.super_categories	method	113	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings.ElementMethods	class	116	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings.ParentMethods	class	133	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.engine	method	146	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.cardinality	method	152	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.is_central	method	219	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.ring_center	method	251	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedDivisionRings	class	314	2			unreviewed
-preamble/categories/rings/rings.sage	OwnedDivisionRings.super_categories	method	321	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedFields	class	325	2			unreviewed
-preamble/categories/rings/rings.sage	OwnedFields.super_categories	method	332	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedFields.ParentMethods	class	335	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedFields.ParentMethods.absolute_galois_group	method	337	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py		unreviewed
-preamble/categories/rings/rings.sage	OwnedCategoryOverBaseRing	class	376	2			unreviewed
-preamble/categories/rings/rings.sage	SESSION_RING_NAMES	binding	401	0			unreviewed
-preamble/categories/rings/rings.sage	SESSION_OWNED_ENGINE_CONSTRUCTORS	binding	407	0			unreviewed
-preamble/categories/rings/rings.sage	PrimeFields	class	410	2			unreviewed
-preamble/categories/rings/rings.sage	PrimeFields.super_categories	method	428	0			unreviewed
-preamble/categories/rings/rings.sage	PrimeField	function	431	2			unreviewed
-preamble/categories/rings/rings.sage	install_rings	function	440	0			unreviewed
-preamble/categories/rings/rings.sage	engine_ring	function	570	0			unreviewed
-preamble/categories/rings/rings.sage	install_session_rings	function	581	0			unreviewed
-preamble/categories/rings/rings.sage	owned_ring_named	function	620	0			unreviewed
-preamble/categories/rings/rings.sage	own_ring	function	627	0			unreviewed
-preamble/categories/rings/rings.sage	owned_ring_view	function	645	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedBaseRing	class	651	0			unreviewed
-preamble/categories/rings/rings.sage	OwnedBaseRing.base_ring	method	669	0			unreviewed
+preamble/categories/rings/rings.sage	<module>	module	1	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	BaseRingParent	class	38	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	BaseRingParent.base	method	42	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedSemirings	class	84	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedSemirings.super_categories	method	91	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRngs	class	95	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRngs.super_categories	method	102	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings	class	106	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings.super_categories	method	113	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings.ElementMethods	class	116	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings.ParentMethods	class	133	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.engine	method	146	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.cardinality	method	152	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.is_central	method	219	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedRings.ParentMethods.ring_center	method	251	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedDivisionRings	class	314	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedDivisionRings.super_categories	method	321	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedFields	class	325	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedFields.super_categories	method	332	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedFields.ParentMethods	class	335	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedFields.ParentMethods.absolute_galois_group	method	337	1	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedCategoryOverBaseRing	class	376	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	SESSION_RING_NAMES	binding	401	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	SESSION_OWNED_ENGINE_CONSTRUCTORS	binding	407	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	PrimeFields	class	410	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	PrimeFields.super_categories	method	428	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	PrimeField	function	431	2		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	install_rings	function	440	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	engine_ring	function	570	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	install_session_rings	function	581	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	owned_ring_named	function	620	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	own_ring	function	627	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	owned_ring_view	function	645	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedBaseRing	class	651	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
+preamble/categories/rings/rings.sage	OwnedBaseRing.base_ring	method	669	0		src/dzack_research/preamble/categories/rings/rings.py	reconciled-live-owner
 preamble/categories/schemes/ade_surfaces.sage	<module>	module	1	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	LOG_DIVISOR_COEFFICIENT_RING	binding	93	0			unreviewed
 preamble/categories/schemes/ade_surfaces.sage	EPSILON	binding	94	0			unreviewed

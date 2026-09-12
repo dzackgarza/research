@@ -15,7 +15,17 @@ from dzack_research.preamble.all import (
     OwnedRings,
     PrimeField,
     PrimeFields,
+
 )
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/rings/rings.sage",
+    "live_owner": "src/dzack_research/preamble/categories/rings/rings.py",
+    "owner_overrides": {
+        "OwnedFields.ParentMethods.absolute_galois_group": "src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 
 def test_archived_ring_polynomial_and_module_constructions_are_live_operations() -> None:
