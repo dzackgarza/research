@@ -23,6 +23,8 @@ from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedFields,
+    _engine_element,
+    _engine_ring,
     _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -106,6 +108,28 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
                 ),
                 ring.zero(),
             )
+
+        def section_from_homogeneous_polynomial(self, polynomial):
+            r"""Return the section represented by one homogeneous polynomial of this degree."""
+            ring = self.homogeneous_coordinate_ring()
+            polynomial = ring(polynomial)
+            backend = _engine_element(ring, polynomial)
+            engine = _engine_ring(ring)
+            base = self.base_ring()
+            engine_base = _engine_ring(base)
+            by_exponents = {
+                tuple(exponents): monomial
+                for monomial, exponents in self._preamble_homogeneous_exponents.items()
+            }
+            coefficients = {}
+            for exponent, coefficient in engine(backend).monomial_coefficients().items():
+                powers = (int(exponent),) if not isinstance(exponent, tuple) else tuple(int(value) for value in exponent)
+                if powers not in by_exponents:
+                    raise ValueError("the polynomial is not homogeneous of this section-space degree")
+                coefficients[by_exponents[powers]] = base._from_engine_element(
+                    engine_base(coefficient)
+                )
+            return self.linear_combination(coefficients)
 
 
 class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):

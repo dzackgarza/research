@@ -941,6 +941,10 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     is_globally_generated = is_basepoint_free
 
+    def restrict_to(self, closed_subscheme):
+        r"""Return the restricted multiprojective line bundle on ``closed_subscheme``."""
+        return ProductProjectiveSubschemeLineBundle(closed_subscheme, self)
+
     def homogeneous_polynomial_sections(self):
         return self.global_sections()
 
@@ -1015,6 +1019,115 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
         return f"O{degrees} on {self.projective_product()}"
 
 
+
+class ProductProjectiveSubschemeLineBundle(SageObject):
+    r"""The pullback of ``O(d_1,...,d_r)`` to a closed multiprojective subscheme."""
+
+    def __init__(self, closed_subscheme, ambient_line_bundle) -> None:
+        from dzack_research.preamble.categories.schemes.schemes import (
+            ClosedSubschemes,
+            ProductProjectiveSpaces,
+        )
+
+        base = closed_subscheme.scheme_base_ring()
+        if closed_subscheme not in ClosedSubschemes(base):
+            raise TypeError("a restricted multiprojective bundle requires a closed subscheme")
+        ambient = closed_subscheme.inclusion().codomain()
+        if ambient not in ProductProjectiveSpaces(base):
+            raise TypeError("this restricted bundle requires a product-projective ambient")
+        if not isinstance(ambient_line_bundle, ProductProjectiveLineBundle):
+            raise TypeError("the ambient bundle must be a represented multiprojective O(d_1,...,d_r)")
+        if ambient_line_bundle.projective_product() is not ambient:
+            raise ValueError("the ambient line bundle belongs to a different projective product")
+        self._scheme = closed_subscheme
+        self._ambient_line_bundle = ambient_line_bundle
+        self._pullback_morphism = closed_subscheme.inclusion()
+
+    def scheme(self):
+        return self._scheme
+
+    def pullback_morphism(self):
+        return self._pullback_morphism
+
+    inclusion = pullback_morphism
+
+    def ambient_line_bundle(self):
+        return self._ambient_line_bundle
+
+    def multidegree(self):
+        return self.ambient_line_bundle().multidegree()
+
+    def tensor_product(self, other):
+        if not isinstance(other, ProductProjectiveSubschemeLineBundle):
+            raise TypeError("restricted multiprojective tensor product requires two line bundles")
+        if other.scheme() is not self.scheme():
+            raise ValueError("restricted line-bundle tensor product requires one scheme")
+        return type(self)(
+            self.scheme(),
+            self.ambient_line_bundle().tensor_product(other.ambient_line_bundle()),
+        )
+
+    def tensor_power(self, exponent):
+        exponent = _own_ring(SageZZ)(exponent)
+        if exponent == 1:
+            return self
+        return type(self)(
+            self.scheme(),
+            self.ambient_line_bundle().tensor_power(exponent),
+        )
+
+    def dual(self):
+        return type(self)(self.scheme(), self.ambient_line_bundle().dual())
+
+    def _repr_(self):
+        degrees = tuple(
+            self.multidegree()[label] for label in self.multidegree().index_set()
+        )
+        return f"O{degrees} restricted to {self.scheme()}"
+
+
+class ProductProjectiveSubschemeLineBundleIsomorphism(SageObject):
+    r"""The canonical comparison of equal-multidegree restricted line bundles."""
+
+    def __init__(self, source, target) -> None:
+        if not isinstance(source, ProductProjectiveSubschemeLineBundle) or not isinstance(
+            target, ProductProjectiveSubschemeLineBundle
+        ):
+            raise TypeError("this comparison requires restricted multiprojective line bundles")
+        if source.scheme() is not target.scheme():
+            raise ValueError("a line-bundle comparison lies over one scheme")
+        source_degrees = source.multidegree()
+        target_degrees = target.multidegree()
+        if source_degrees.index_set() is not target_degrees.index_set():
+            raise ValueError("the two line bundles use different factor index sets")
+        if any(
+            source_degrees[label] != target_degrees[label]
+            for label in source_degrees.index_set()
+        ):
+            raise ValueError("the selected line-bundle comparison requires equal multidegrees")
+        self._source = source
+        self._target = target
+
+    def domain(self):
+        return self._source
+
+    source = domain
+
+    def codomain(self):
+        return self._target
+
+    target = codomain
+
+    def inverse(self):
+        return type(self)(self.codomain(), self.domain())
+
+    def __mul__(self, other):
+        if not isinstance(other, ProductProjectiveSubschemeLineBundleIsomorphism):
+            return NotImplemented
+        if other.codomain() is not self.domain():
+            return NotImplemented
+        return type(self)(other.domain(), self.codomain())
+
 def TrivialInvertibleSheaf(cover):
     return InvertibleSheaf.trivial(cover)
 
@@ -1023,6 +1136,8 @@ __all__ = [
     "FiniteAtlasInvertibleSheaf",
     "InvertibleSheaf",
     "ProductProjectiveLineBundle",
+    "ProductProjectiveSubschemeLineBundle",
+    "ProductProjectiveSubschemeLineBundleIsomorphism",
     "ProjectiveO",
     "ProjectiveSubschemeLineBundle",
     "ProjectiveSubschemeLineBundleIsomorphism",

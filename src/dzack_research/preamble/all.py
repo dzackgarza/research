@@ -237,6 +237,8 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     PicardGroups,
     ProjectivePointJetEvaluation,
     ProjectiveSectionRestriction,
+    ProductProjectiveSubschemeLineBundle,
+    ProductProjectiveSubschemeLineBundleIsomorphism,
     ProjectiveSubschemeLineBundle,
     ProjectiveSubschemeLineBundleIsomorphism,
     ProjectiveJetSpaces,
