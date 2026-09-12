@@ -759,6 +759,111 @@ class Lattices(OwnedCategoryOverBaseRing):
         r"""The hyperbolic plane U."""
         return self("U")
 
+    @staticmethod
+    def root_lattice(kind, rank, names=None):
+        r"""Return the negative-definite simply-laced root lattice of type ``kind_rank``."""
+        kind = str(kind)
+        rank = int(rank)
+        if kind not in {"A", "D", "E"}:
+            raise ValueError(f"unknown simply-laced root family {kind!r}")
+        return Lattices(_own_ring(SageZZ))(f"{kind}{rank}", names=names)
+
+    @staticmethod
+    def IPQ(positive, negative):
+        r"""Return the odd unimodular lattice ``I_(positive,negative)``."""
+        positive = int(positive)
+        negative = int(negative)
+        if positive < 0 or negative < 0 or positive + negative == 0:
+            raise ValueError("I_(p,q) requires p,q >= 0 and positive total rank")
+        diagonal = [1] * positive + [-1] * negative
+        gram = [
+            [entry if row == column else 0 for column, entry in enumerate(diagonal)]
+            for row in range(len(diagonal))
+        ]
+        return Lattices(_own_ring(SageZZ))(gram)
+
+    @staticmethod
+    def IIPQ(positive, negative):
+        r"""Return the indefinite even unimodular lattice ``II_(positive,negative)``.
+
+        Such a lattice exists exactly when both inertia indices are positive and
+        ``positive-negative`` is divisible by eight.  With the repository's
+        negative-definite ``E8`` convention it is the orthogonal sum of
+        hyperbolic planes and the required signed ``E8`` blocks.
+        """
+        positive = int(positive)
+        negative = int(negative)
+        if positive < 1 or negative < 1:
+            raise ValueError("II_(p,q) here denotes an indefinite even unimodular lattice")
+        if (positive - negative) % 8:
+            raise ValueError("an even unimodular lattice has signature divisible by eight")
+        integers = _own_ring(SageZZ)
+        category = Lattices(integers)
+        summands = [category("U") for _ in range(min(positive, negative))]
+        if negative > positive:
+            summands.extend(category("E8") for _ in range((negative - positive) // 8))
+        elif positive > negative:
+            positive_e8 = category("E8").twist(-1)
+            summands.extend(positive_e8 for _ in range((positive - negative) // 8))
+        return orthogonal_sum(tuple(summands))
+
+    @staticmethod
+    def rank_one_negative(scale):
+        r"""Return the rank-one lattice ``<-2 scale>``."""
+        integers = _own_ring(SageZZ)
+        return Lattices(integers)(1).twist(integers(-2 * int(scale)))
+
+    @staticmethod
+    def LK3_2d(degree):
+        r"""Return ``<-2d> + U^2 + E8^2``, the degree-``2d`` K3 complement lattice."""
+        degree = int(degree)
+        if degree < 1:
+            raise ValueError("the polarized K3 degree parameter d is positive")
+        integers = _own_ring(SageZZ)
+        category = Lattices(integers)
+        return orthogonal_sum(
+            (
+                Lattices.rank_one_negative(degree),
+                category("U"),
+                category("U"),
+                category("E8"),
+                category("E8"),
+            )
+        )
+
+    @staticmethod
+    def hyperkaehler_lattice(deformation_type, n=2):
+        r"""Return the Beauville--Bogomolov--Fujiki lattice of a standard deformation type.
+
+        ``K3`` means ``K3^[n]`` and ``Kum`` the generalized Kummer series;
+        ``OG6`` and ``OG10`` are the two O'Grady types.  The formulas are the
+        standard integral BBF lattices and use the existing owned ``U``, ``E8``
+        and ``A2`` constructors rather than a second lattice representation.
+        """
+        deformation_type = str(deformation_type)
+        n = int(n)
+        if deformation_type not in {"K3", "Kum", "OG6", "OG10"}:
+            raise ValueError(f"unknown hyperkähler deformation type {deformation_type!r}")
+        integers = _own_ring(SageZZ)
+        category = Lattices(integers)
+        hyperbolic = (category("U"), category("U"), category("U"))
+        if deformation_type == "K3":
+            if n < 2:
+                raise ValueError("the K3^[n] series here requires n >= 2")
+            return orthogonal_sum(
+                (*hyperbolic, category("E8"), category("E8"), category(1).twist(2 - 2 * n))
+            )
+        if deformation_type == "Kum":
+            if n < 2:
+                raise ValueError("the generalized Kummer series here requires n >= 2")
+            return orthogonal_sum((*hyperbolic, category(1).twist(-2 - 2 * n)))
+        if deformation_type == "OG6":
+            minus_two = category(1).twist(-2)
+            return orthogonal_sum((*hyperbolic, minus_two, minus_two))
+        return orthogonal_sum(
+            (*hyperbolic, category("E8"), category("E8"), category("A2"))
+        )
+
     @cached_method
     def super_categories(self):
         r"""
