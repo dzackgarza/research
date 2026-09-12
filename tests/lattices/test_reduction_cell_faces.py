@@ -35,3 +35,19 @@ def test_face_stabilizer_retains_the_cell_face_incidence() -> None:
     assert identity in stabilizer
     assert swap in cell.stabilizer(orthogonal)
     assert swap not in stabilizer
+
+
+def test_face_incidence_retains_face_cell_and_pair_stabilizer() -> None:
+    lattice = Lattices(ZZ)(ZZ**2)
+    cell = rational_reduction_cell(lattice, ((1, 0), (0, 1)))
+    orthogonal = lattice.O()
+
+    incidences = cell.face_incidences(1, orthogonal)
+    assert incidences.cardinality() == 2
+    for face in incidences.index_set():
+        incidence = incidences[face]
+        assert incidence.face() is face
+        assert incidence.cell() is cell
+        assert incidence.codimension() == 1
+        assert incidence.stabilizer().supergroup() is orthogonal
+        assert orthogonal.one() in incidence.stabilizer()

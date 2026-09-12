@@ -363,6 +363,24 @@ class RationalReductionCell(SageObject):
         face_stabilizer = face.stabilizer(group)
         return cell_stabilizer.intersection(face_stabilizer)
 
+    def face_incidences(self, dimension, group):
+        r"""Return the represented incidences with faces of ``dimension``.
+
+        Every record owns the embedded face and the subgroup stabilizing the
+        pair ``face <= cell``.  This is the incidence datum consumed by an
+        exact reduction-complex traversal when assembling quotient cells.
+        """
+        faces = self.faces(dimension)
+        return finite_indexed_family(
+            faces,
+            lambda face: ReductionFaceIncidence(
+                face,
+                self,
+                self.face_stabilizer(face, group),
+            ),
+            name=f"Face incidences of dimension {dimension} in {self}",
+        )
+
     def _repr_(self):
         return (
             f"{self.dimension()}-dimensional rational reduction cell in "
@@ -419,6 +437,53 @@ class ReductionCellAdjacency(SageObject):
 
     def _repr_(self):
         return f"Reduction-cell adjacency {self.source()} -> {self.target()}"
+
+
+class ReductionFaceIncidence(SageObject):
+    r"""One exact face inclusion inside a rational reduction cell.
+
+    The incidence retains both mathematical cells and, when requested through
+    :meth:`RationalReductionCell.face_incidences`, the subgroup preserving the
+    pair.  It is therefore stronger than a dimension pair or an engine face
+    index and can be transported through the lattice action without losing the
+    actual embedded face.
+    """
+
+    def __init__(self, face, cell, stabilizer) -> None:
+        if face.lattice() is not cell.lattice() or not face.is_face_of(cell):
+            raise ValueError("a reduction-face incidence is an actual face inclusion")
+        self._face = face
+        self._cell = cell
+        self._stabilizer = stabilizer
+
+    def face(self):
+        return self._face
+
+    def cell(self):
+        return self._cell
+
+    def lattice(self):
+        return self.cell().lattice()
+
+    def stabilizer(self):
+        return self._stabilizer
+
+    def codimension(self):
+        return self.cell().dimension() - self.face().dimension()
+
+    def transported_by(self, isometry):
+        transported_cell = self.cell().transported_by(isometry)
+        transported_face = self.face().transported_by(isometry)
+        return ReductionFaceIncidence(
+            transported_face,
+            transported_cell,
+            transported_cell.face_stabilizer(
+                transported_face, self.stabilizer().supergroup()
+            ),
+        )
+
+    def _repr_(self):
+        return f"Reduction-face incidence {self.face()} <= {self.cell()}"
 
 
 class MarkedReductionCell(SageObject):
@@ -948,6 +1013,7 @@ __all__ = [
     "MarkedReductionCellAdjacency",
     "PerfectDomainOrbitAdjacency",
     "RationalReductionComplexExploration",
+    "ReductionFaceIncidence",
     "ReductionCellAdjacency",
     "RationalReductionCell",
     "lorentzian_reduction_complex",
