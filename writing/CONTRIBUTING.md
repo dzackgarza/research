@@ -3783,6 +3783,95 @@ $\Gamma^2_R(M)$)." Then, if pedagogically useful and only when
 $U$ exists: "On $U$-points this is $b(x,y)=b(y,x)$ $\forall x,y\in
 U(M)$."
 
+### `PR-53`: A definition is a general building block, not the minimal element condition that lets the next paragraph type-check
+
+"$\{x\mid b(x,N)=0\}$ / $b(x,x)=0$ / $\forall x\in M$" is the cheapest
+sentence that lets this page proceed for $\mathbf{Mod}_R$ and matches the
+classical $b(x,N)=0$ literature, but it is not a building block — it
+names no $R$-linear $b^{\sharp}\colon M\to\underline{\operatorname{Hom}}(M,W)$,
+no kernel, no dual, no $\operatorname{Val}(b)$, no $\Gamma^2_R$ — so every later
+notion (radical, nondegenerate, $L^\vee$, $D_L$, discriminant form) must
+be rebuilt elementwise and cannot be transported to
+$\mathrm{QCoh}(X)$, $\mathbf{Sp}$, sheaves, $\infty\text{-}\mathbf{Cat}$,
+$\mathbf{Sch}_{/S}$ without re-defining. The time saved today is the
+applicability lost tomorrow, next week, and across a research career.
+
+A definition in a long-form book is the reusable interface the rest of
+the book *and* future work build on: state it once, diagrammatically,
+with its universal property, so that later definitions are instances and
+element formulas are shadows, not re-definitions.
+
+Concrete standard — name the adjoint and its kernel as the building
+blocks (all do the work of the elementwise $N^{\perp}$ / isotropic), then
+later theory is immediate:
+
+* **Scaffolding (once, fenced):**
+  $\operatorname{Hom}_R(M\otimes_RM,W)\cong\operatorname{Hom}_R(M,
+  \underline{\operatorname{Hom}}_R(M,W))$ via the closed structure
+  {#thm-mod-closed} / {#def-tensor}. For $b\colon M\otimes_RM\to W$ put
+  $b^{\sharp_{\!L}},b^{\sharp_{\!R}}\colon M\to\underline{\operatorname{Hom}}_R(M,W)$,
+  $x\mapsto b(x,-)$ and $x\mapsto b(-,x)$, the two adjoints. When $b$
+  symmetric they agree and are written $b^{\sharp}$.
+
+* **Then, as $R$-submodules / kernels (no $x$):**
+  $N^{\perp_{\!L}}:=\ker(M\xrightarrow{b^{\sharp_{\!L}}}
+  \underline{\operatorname{Hom}}_R(N,W))$ (and $\perp_{\!R}$ via the other
+  adjoint), the $R$-submodule classified by the universal property for
+  "$b(x,N)=0$";
+  $Q_{R,W}(M):=\ker(M\xrightarrow{\Delta}M\otimes M\xrightarrow{b}W)$ for
+  $q:=b\circ\Delta$ (quadratic diagonal) — $x$ isotropic iff
+  $x\in\ker(q)$ as $U$-shadow, and $b$ anisotropic iff $\ker(q)=0$ as
+  subobject of $M$ (not "$0$ is the only isotropic element");
+  $M$ nondegenerate iff $b^{\sharp}$ is iso; $M^\vee:=
+  \underline{\operatorname{Hom}}_R(M,R)$; $D_L:=L^\vee/L$ with
+  $\bar b$ / $\bar q$ induced via $b^{\sharp}$ — all as kernels /
+  cokernels of the named $b^{\sharp}$, not as sets $\{x\mid\ldots\}$.
+
+* **Element shadow (only after, when $U$ exists):** for $x\colon R\to M$
+  ($x\in U(M)$), $x\in N^{\perp}$ evaluates to $\forall n\in U(N)$,
+  $b(x,n)=0$, and $x\in\ker(q)$ to $b(x,x)=0$.
+
+**Banned:** "$N^{\perp}:=\{x\in M\mid b(x,N)=0\}$" / "$x$ isotropic if
+$b(x,x)=0$, $b$ anisotropic if $0$ is its only isotropic element" as the
+*definitions* that later theory must reuse.
+
+**Preferred:** define $b^{\sharp}$ once, then
+$N^{\perp}:=\ker(b^{\sharp})$, " $x$ isotropic if $x\in\ker(b\circ\Delta)$,"
+"$b$ anisotropic if $\ker(b\circ\Delta)=0$ as subobject of $M$." The element
+formulas are the $U$-evaluation of those kernels, proved as a property,
+not the building block.
+
+### `PR-54`: Long-term general applicability is an explicit design goal — write it down or no agent will know it
+
+The implicit goal behind PR-43/PR-47/PR-53 — one definition that works
+in every symmetric monoidal abelian $\mathcal C$ at once ($\mathbf{Mod}_R$,
+$\mathbf{LMod}_R$, $\mathrm{QCoh}(X)$, $\mathbf{Sp}$-modules, sheaves,
+$\infty\text{-}\mathbf{Cat}$, $\mathbf{Sch}_{/S}$) so that later theory
+($\operatorname{Val}(b)$, $b^{\sharp}$, $M^\vee$, $D_L$, discriminant
+forms) is an instance, not a re-definition — is not inferable from the
+current page's minimal needs. No agent can know it unless it is written
+down in this document and in the book's scaffolding section.
+
+When a definition admits an easy, no-harder generalization that
+immediately recovers the classical element formula (here
+$b\circ\tau=b$ for $b(x,y)=b(y,x)$, $b^{\sharp}$ for $N^{\perp}$,
+$\ker(b\circ\Delta)$ for isotropic) and drastically increases
+applicability down the line, the general form *is* the definition.
+Saving time today with the minimal "$\forall x\in M$" costs re-definition
+for every future $\mathcal C$ and degrades a forward-thinking research
+program that will live with these interfaces for years.
+
+**Standard:** in the book's introduction / scaffolding preamble and in
+this `CONTRIBUTING.md`, state explicitly: "All bilinear/quadratic
+notions are defined diagrammatically via $(\otimes,1,\tau)$ and
+$b^{\sharp}$ in a closed symmetric monoidal abelian $\mathcal C$, so as
+to apply to $\mathbf{Mod}_R$, $\mathrm{QCoh}(X)$, $\mathbf{Sp}$, etc.,
+with element formulas only as the $U$-evaluation when $\mathcal C$ is
+$\mathbf{Set}$-concrete. Minimal elementwise definitions are not the
+goal; reusable building blocks are." Then enforce it: every new
+definition is reviewed against that stated goal, not against the cheapest
+sentence that lets the next paragraph proceed.
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4170,7 +4259,12 @@ C\to\mathbf{Set}$ and blocks the one general concept from applying to
 $\mathcal O_X\text{-}\mathbf{Mod}$, $\mathbf{Sp}$, stacks, etc., where
 no such $U(M)$ exists (PR-47) — the diagram $b\circ\tau=b$ works in every
 symmetric monoidal $\mathcal C$, the element formula only in the concrete
-ones.
+ones. A definition is not the minimal element condition that lets the next
+paragraph proceed; it is the general building block — $b^{\sharp}$,
+$\ker(b^{\sharp})$, $\ker(b\circ\Delta)=0$ — that later theory
+($N^{\perp}$, isotropic, anisotropic, $M^\vee$, $D_L$) reuses in every
+$\mathcal C$ (PR-53), and that long-term applicability must be written
+down or no agent will know it (PR-54).
 
 **17. Mixing Lemma/Proposition into the Definition and not naming the
 subobjects and the map $2_*$ between them.** "Alternating $\Rightarrow$
