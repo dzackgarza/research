@@ -32,7 +32,17 @@ and is not enumerated here.
 import pytest
 from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
-from dzack_research.preamble.all import CoxeterDiagrams
+from dzack_research.preamble.all import CoxeterDiagrams, Lattices, ZZ
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage",
+    "live_owner": "tests/lattices/test_coxeter_literature.py",
+    "owner_overrides": {
+        "test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form": "tests/lattices/test_coxeter.py",
+        "test_b3_root_gram_matrix_is_symmetric_with_one_double_bond": "tests/lattices/test_coxeter.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 
 def bracket_diagram(*bonds: int):
@@ -303,3 +313,16 @@ def test_an_extended_diagram_is_parabolic_with_vanishing_schlaeflian(cartan_type
     assert diagram.schlaflian() == 0
     assert diagram.zero_inertia_index() == 1
     assert diagram.negative_inertia_index() == 0
+
+
+def test_archived_a2_root_gram_is_the_live_negative_definite_root_lattice() -> None:
+    diagram = CoxeterDiagrams().from_cartan_type(["A", 2], rooted=True)
+    lattice = Lattices(ZZ)("A2")
+    gram = diagram.root_gram_tensor()
+
+    assert gram == lattice.gram_tensor()
+    assert gram[0, 0] == -2
+    assert gram[1, 1] == -2
+    assert gram[0, 1] == gram[1, 0] == 1
+    assert diagram.coxeter_entry(0, 1) == 3
+    assert diagram.schlafli_tensor()[0, 1] == -AA(1) / AA(2)

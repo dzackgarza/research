@@ -3014,14 +3014,14 @@ preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_triangle_grou
 preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_square_group_is_the_dihedral_group_of_order_eight	specimen	181	0			unreviewed
 preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a_gram_matrix_must_be_symmetric	specimen	198	0			unreviewed
 preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_an_integral_lattice_must_have_integral_gram_entries	specimen	208	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	<module>	module	1	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_a2_root_gram_matrix_is_two_cosine_of_the_coxeter_angles	specimen	28	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_root_gram_matrix_is_the_negated_schlafli_matrix	specimen	49	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_commuting_roots_give_a_zero_entry_and_two_components	specimen	67	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form	specimen	89	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_a1_is_the_rank_one_diagram	specimen	111	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_b3_root_gram_matrix_is_symmetric_with_one_double_bond	specimen	126	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_diagram_roots_have_negative_square	specimen	145	0			unreviewed
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_a2_root_gram_matrix_is_two_cosine_of_the_coxeter_angles	specimen	28	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_root_gram_matrix_is_the_negated_schlafli_matrix	specimen	49	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_commuting_roots_give_a_zero_entry_and_two_components	specimen	67	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_parallel_mirrors_give_the_entry_two_and_a_degenerate_form	specimen	89	0		tests/lattices/test_coxeter.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_a1_is_the_rank_one_diagram	specimen	111	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_b3_root_gram_matrix_is_symmetric_with_one_double_bond	specimen	126	0		tests/lattices/test_coxeter.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_diagram_roots_have_negative_square	specimen	145	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/framework/__init__.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/framework/conftest.py	<module>	module	1	0		tests/conftest.py	reconciled-live-owner
 preamble/tests/framework/conftest.py	projective_framework	function	11	0		tests/conftest.py	reconciled-live-owner
