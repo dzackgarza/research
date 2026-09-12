@@ -548,7 +548,10 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         return super().tensor_product(other)
 
     def tensor_power(self, exponent):
-        return type(self)(self.projective_space(), int(exponent) * self.degree())
+        exponent = _own_ring(SageZZ)(exponent)
+        if exponent == 1:
+            return self
+        return type(self)(self.projective_space(), exponent * self.degree())
 
     def dual(self):
         return type(self)(self.projective_space(), -self.degree())
@@ -603,6 +606,12 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
             return target.module_generator(target_by_exponents[exponents])
 
         return BilinearMap(left, right, target, product)
+
+    @cached_method
+    def section_ring(self):
+        from dzack_research.preamble.categories.divisors.section_rings import SectionRing
+
+        return SectionRing(self)
 
     def base_change(self, ring_map):
         changed_space = self.projective_space().base_change(ring_map)
@@ -735,6 +744,8 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
 
     def tensor_power(self, exponent):
         exponent = _own_ring(SageZZ)(exponent)
+        if exponent == 1:
+            return self
         return type(self)(
             self.projective_product(),
             tuple(
@@ -800,6 +811,12 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
             return target.module_generator(target_by_exponents[exponents])
 
         return BilinearMap(left, right, target, product)
+
+    @cached_method
+    def section_ring(self):
+        from dzack_research.preamble.categories.divisors.section_rings import SectionRing
+
+        return SectionRing(self)
 
     def base_change(self, ring_map):
         changed_product = self.projective_product().base_change(ring_map)
