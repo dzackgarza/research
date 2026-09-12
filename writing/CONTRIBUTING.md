@@ -3122,6 +3122,65 @@ trailing clause. If the reader needs the formula,
 "$(b_1+b_2)(x,y)=b_1(x,y)+b_2(x,y)$" is a property of the internal hom,
 not part of the definition.
 
+### `PR-39`: Prose "the $R$-module of $R$-bilinear maps $M\times M\to W$" for $\operatorname{Hom}_R(M\otimes_R M,W)$
+
+One symbol already is the $R$-module with its structure; the prose
+paraphrase re-spells it in English and then needs a filler clause to
+rebuild the structure (PR-38).
+
+**Banned:** "Let $\operatorname{Bil}_{R,W}(M)$ be the $R$-module of
+$R$-bilinear maps $M\times M\to W$, with pointwise operations."
+
+**Preferred:** "Put $\operatorname{Bil}_{R,W}(M):=
+\operatorname{Hom}_R(M\otimes_R M,W)$ as $R$-module" — or, if a name is
+unneeded, just $\operatorname{Hom}_R(M\otimes_R M,W)$. Domain
+($M\otimes_RM$), codomain ($W$), linearity, and $R$-module structure via
+the self-enrichment ({#thm-mod-closed}) are already in the symbol; no
+"$R$-bilinear," no "$M\times M\to W$," no "with pointwise operations"
+to add. Stably
+$\operatorname{Bil}_{R,W}(M):=\mathbf{RHom}_R(M\otimes^L_RM,W)$. This is
+the standard: Stacks, Bourbaki, Lurie HA define $W$-valued bilinears as
+the hom object from the tensor square and stop (PR-27 is the general
+form: concise notation obviates prose).
+
+### `PR-40`: Discussing "$R$-bilinear maps $M\times M\to W$" instead of standing on the tensor product
+
+$R$-bilinear $M\times M\to W$ is not a primitive notion to re-describe
+on each use; it is classified by the tensor product, defined once with
+its universal property. Re-describing bilinears in prose on every
+occurrence — checking "$R$-bilinear," listing "$M\times M\to W$," adding
+"with pointwise operations" to make the set an $R$-module — chooses not
+to stand on that one-time scaffolding and replicates it each time.
+
+Concrete standards — state the scaffolding once, then use homs from the
+tensor to encode bilinearity from then on:
+
+* **Scaffolding (once, fenced, before any form):**
+  "::: {#def-tensor} **Definition/Theorem.** For $M,N\in\mathbf{Mod}_R$
+  there is $M\otimes_R N\in\mathbf{Mod}_R$ with a universal $R$-bilinear
+  $M\times N\to M\otimes_R N$, i.e.
+  $\operatorname{Hom}_R(M\otimes_R N,W)\cong R\text{-Bil}(M\times N,W)$
+  naturally in $W\in\mathbf{Mod}_R$. :::"
+  [@Stacks-0B8A; Lurie HA 4.2.1]
+
+* **From then on, no "bilinear maps" prose:** a $W$-valued bilinear
+  form on $M$ is a morphism $b\colon M\otimes_R M\to W$; its $R$-module
+  of all such is $\operatorname{Hom}_R(M\otimes_R M,W)$ as $R$-module.
+  Bilinearity, domain, codomain, and $R$-module structure are already in
+  the Hom from the tensor; nothing to spell out, no clause to add.
+
+Stably the same: $M\otimes^L_RM$ classifies derived bilinears,
+$\mathbf{RHom}_R(M\otimes^L_RM,W)$ is the $R$-module of them.
+
+**Banned:** "the $R$-module of $R$-bilinear maps $M\times M\to W$" as a
+recurring definition; "$R$-bilinear maps $M\times M\to W$ with pointwise
+operations" (PR-38) on each use.
+
+**Preferred:** define $M\otimes_R M$ once via {#def-tensor}; then
+"a $W$-valued bilinear form on $M$ is $b\colon M\otimes_R M\to W$"
+and "$\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$."
+Never re-describe bilinearity in prose once the tensor classifies it.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3275,3 +3334,14 @@ M,W)$ already is the $R$-module. The clause mislocates the structure in
 $W$ and restates what the ambient enrichment already gives. Put the
 closed structure once as fenced scaffolding in the module-theory setup
 and every later "with pointwise operations" is obviated.
+
+**13. Hom notation vs. prose paraphrase, and tensor product as
+scaffolding.** "The $R$-module of $R$-bilinear maps $M\times M\to W$,
+with pointwise operations" is prose for one symbol that already is that
+$R$-module with its structure — $\operatorname{Hom}_R(M\otimes_RM,W)$
+(PR-39, PR-27 general form). $R$-bilinear $M\times M\to W$ is not
+primitive to re-describe each time; it is classified by $M\otimes_RM$
+defined once with its universal property $\operatorname{Hom}_R(M\otimes_R
+M,W)\cong R\text{-Bil}(M\times M,W)$, and from then on a $W$-valued
+form is just $b\colon M\otimes_RM\to W$ (PR-40). Define the tensor
+once, then use homs from the tensor to encode bilinearity implicitly.
