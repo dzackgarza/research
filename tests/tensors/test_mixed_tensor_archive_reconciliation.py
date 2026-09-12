@@ -3,22 +3,41 @@ r"""Archive reconciliation for mixed tensor contraction, trace and products."""
 from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.tensors import tensor
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/test_tensors.sage",
-    "live_owner": "tests/tensors/test_tensors.py",
-    "owner_overrides": {
-        "test_the_gram_matrix_is_the_forms_covariant_tensor": "tests/lattices/test_module_generators.py",
-        "test_a_unimodular_form_raises_and_lowers_an_index": "tests/tensors/test_tensor_index_archive_reconciliation.py",
-        "test_raising_an_integral_index_requires_unimodularity": "tests/tensors/test_tensor_index_archive_reconciliation.py",
-        "test_a_nondegenerate_lattice_raises_indices_after_rationalization": "tests/tensors/test_tensor_index_archive_reconciliation.py",
-        "test_the_correlation_is_an_isomorphism_exactly_when_unimodular": "tests/tensors/test_tensor_index_archive_reconciliation.py",
-        "test_mixed_tensors_are_the_homogeneous_pieces_of_one_bigraded_algebra": "tests/tensors/test_mixed_tensor_algebra_archive.py",
-        "test_covariant_slots_use_the_dual_module": "src/dzack_research/preamble/tensors/tensor.py",
-        "test_a_tensor_piece_is_the_tensor_product_of_powers_of_a_module_and_its_dual": "src/dzack_research/preamble/tensors/tensor.py",
-        "test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square": "src/dzack_research/preamble/categories/algebras/framed_free_algebras.py",
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/tests/test_tensors.sage",
+        "live_owner": "tests/tensors/test_tensors.py",
+        "owner_overrides": {
+            "test_the_gram_matrix_is_the_forms_covariant_tensor": "tests/lattices/test_module_generators.py",
+            "test_a_unimodular_form_raises_and_lowers_an_index": "tests/tensors/test_tensor_index_archive_reconciliation.py",
+            "test_raising_an_integral_index_requires_unimodularity": "tests/tensors/test_tensor_index_archive_reconciliation.py",
+            "test_a_nondegenerate_lattice_raises_indices_after_rationalization": "tests/tensors/test_tensor_index_archive_reconciliation.py",
+            "test_the_correlation_is_an_isomorphism_exactly_when_unimodular": "tests/tensors/test_tensor_index_archive_reconciliation.py",
+            "test_mixed_tensors_are_the_homogeneous_pieces_of_one_bigraded_algebra": "tests/tensors/test_mixed_tensor_algebra_archive.py",
+            "test_covariant_slots_use_the_dual_module": "src/dzack_research/preamble/tensors/tensor.py",
+            "test_a_tensor_piece_is_the_tensor_product_of_powers_of_a_module_and_its_dual": "src/dzack_research/preamble/tensors/tensor.py",
+            "test_the_degree_two_piece_of_the_tensor_algebra_is_the_tensor_square": "src/dzack_research/preamble/categories/algebras/framed_free_algebras.py",
+        },
+        "disposition": "reconciled-live-owner",
     },
-    "disposition": "reconciled-live-owner",
-}
+    {
+        "archive_module": "preamble/categories/modules/tensors.sage",
+        "live_owner": "src/dzack_research/preamble/tensors/tensor.py",
+        "owner_overrides": {
+            "TensorPower": "src/dzack_research/preamble/categories/modules/powers.py",
+            "SymmetricPower": "src/dzack_research/preamble/categories/modules/powers.py",
+            "AlternatingPower": "src/dzack_research/preamble/categories/modules/powers.py",
+            "DividedPower": "src/dzack_research/preamble/categories/modules/powers.py",
+            "DividedSquare": "src/dzack_research/preamble/categories/modules/powers.py",
+            "divided_power_invariant_inclusion": "src/dzack_research/preamble/categories/modules/powers.py",
+            "tensor_power_polarization": "src/dzack_research/preamble/categories/modules/powers.py",
+            "tensor_power_permutation": "src/dzack_research/preamble/categories/modules/powers.py",
+            "divided_square_invariant_inclusion": "src/dzack_research/preamble/categories/modules/powers.py",
+            "tensor_square_polarization": "src/dzack_research/preamble/categories/modules/powers.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def test_archive_trace_of_identity_is_rank() -> None:

@@ -2205,59 +2205,59 @@ preamble/categories/modules/pure/torsion_modules.sage	TorsionModules	class	14	2	
 preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.super_categories	method	21	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
 preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.ParentMethods	class	24	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
 preamble/categories/modules/pure/torsion_modules.sage	TorsionModules.ParentMethods.is_torsion	method	25	0		src/dzack_research/preamble/categories/modules/pure/torsion_modules.py	reconciled-live-owner
-preamble/categories/modules/tensors.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/tensors.sage	Components	binding	56	0			unreviewed
-preamble/categories/modules/tensors.sage	DualModule	function	126	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorProductModule	function	162	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorPower	function	292	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	SymmetricPower	function	302	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	AlternatingPower	function	312	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	DividedPower	function	322	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	TensorSquare	function	338	2			unreviewed
-preamble/categories/modules/tensors.sage	DividedSquare	function	357	0			unreviewed
-preamble/categories/modules/tensors.sage	divided_square_element	function	370	0			unreviewed
-preamble/categories/modules/tensors.sage	divided_power_invariant_inclusion	function	415	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	tensor_power_polarization	function	457	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	tensor_power_permutation	function	487	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	divided_square_invariant_inclusion	function	522	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	tensor_square_polarization	function	527	1	src/dzack_research/preamble/categories/modules/powers.py		unreviewed
-preamble/categories/modules/tensors.sage	TensorModules	class	532	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.super_categories	method	539	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods	class	545	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.module	method	564	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.valence	method	568	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.degree	method	572	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.base_ring	method	576	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.dual_module	method	579	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.intrinsic_module	method	582	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.zero	method	666	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.mixed_tensor_algebra	method	669	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods	class	673	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.base_changed	method	686	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.components	method	701	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.contract	method	777	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.trace	method	824	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.tensor_product	method	844	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.raise_index	method	869	0			unreviewed
-preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.lower_index	method	902	0			unreviewed
-preamble/categories/modules/tensors.sage	Tensor	function	939	2			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras	class	950	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.super_categories	method	957	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods	class	963	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.module	method	980	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.base_ring	method	983	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.dual_module	method	986	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.vector_tensor_algebra	method	989	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.covector_tensor_algebra	method	994	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.homogeneous_piece	method	999	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.include	method	1003	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.zero	method	1014	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.one	method	1017	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods	class	1034	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.valences	method	1054	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.homogeneous_component	method	1057	0			unreviewed
-preamble/categories/modules/tensors.sage	MixedTensorAlgebra	function	1111	2			unreviewed
-preamble/categories/modules/tensors.sage	tensor	function	1119	2			unreviewed
+preamble/categories/modules/tensors.sage	<module>	module	1	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	Components	binding	56	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	DualModule	function	126	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorProductModule	function	162	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorPower	function	292	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	SymmetricPower	function	302	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	AlternatingPower	function	312	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	DividedPower	function	322	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorSquare	function	338	2		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	DividedSquare	function	357	0		src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	divided_square_element	function	370	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	divided_power_invariant_inclusion	function	415	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	tensor_power_polarization	function	457	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	tensor_power_permutation	function	487	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	divided_square_invariant_inclusion	function	522	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	tensor_square_polarization	function	527	1	src/dzack_research/preamble/categories/modules/powers.py	src/dzack_research/preamble/categories/modules/powers.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules	class	532	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.super_categories	method	539	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods	class	545	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.module	method	564	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.valence	method	568	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.degree	method	572	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.base_ring	method	576	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.dual_module	method	579	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.intrinsic_module	method	582	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.zero	method	666	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ParentMethods.mixed_tensor_algebra	method	669	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods	class	673	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.base_changed	method	686	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.components	method	701	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.contract	method	777	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.trace	method	824	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.tensor_product	method	844	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.raise_index	method	869	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	TensorModules.ElementMethods.lower_index	method	902	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	Tensor	function	939	2		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras	class	950	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.super_categories	method	957	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods	class	963	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.module	method	980	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.base_ring	method	983	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.dual_module	method	986	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.vector_tensor_algebra	method	989	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.covector_tensor_algebra	method	994	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.homogeneous_piece	method	999	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.include	method	1003	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.zero	method	1014	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ParentMethods.one	method	1017	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods	class	1034	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.valences	method	1054	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebras.ElementMethods.homogeneous_component	method	1057	0		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	MixedTensorAlgebra	function	1111	2		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
+preamble/categories/modules/tensors.sage	tensor	function	1119	2		src/dzack_research/preamble/tensors/tensor.py	reconciled-live-owner
 preamble/categories/rings/predicate_subrings.sage	<module>	module	1	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/rings/predicate_subrings.sage	PredicateSubrings	class	45	2		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/rings/predicate_subrings.sage	PredicateSubrings.super_categories	method	57	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
