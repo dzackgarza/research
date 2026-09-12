@@ -49,6 +49,14 @@ ARCHIVE_RECONCILIATIONS = (
         "live_owner": "tests/lattices/test_coxeter_literature.py",
         "disposition": "reconciled-live-owner",
     },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "owner_overrides": {
+            "test_a_schlafli_symbol_names_a_polytope_whose_symmetry_group_is_its_coxeter_group": "tests/schemes/test_polytopes.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
 )
 
 

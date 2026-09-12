@@ -2982,21 +2982,21 @@ preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_t
 preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_rank_two_schlaeflian_is_four_sine_squared	specimen	273	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_two_three_seven_triangle_is_a_lanner_simplex	specimen	293	0		tests/lattices/test_coxeter_hyperbolic_tdd_archive.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/system/test_classification_examples.sage	test_the_three_infinity_triangle_is_quasi_lanner	specimen	338	0		tests/lattices/test_coxeter_hyperbolic_tdd_archive.py	reconciled-live-owner
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	<module>	module	1	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	BRACKET_ORDERS	binding	59	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_bracket_notation_names_a_finite_group_of_the_tabulated_order	specimen	72	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_two_orderings_of_the_rank_three_double_bond_are_one_group	specimen	85	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	strict	binding	104	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	reason	binding	105	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_a_schlafli_symbol_names_a_polytope_whose_symmetry_group_is_its_coxeter_group	specimen	113	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	PRESENTED_ORDERS	binding	135	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_coxeter_presentation_presents_the_coxeter_group	specimen	139	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_weyl_group_of_type_a_is_the_symmetric_group	specimen	164	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_weyl_groups_of_types_b_and_c_coincide	specimen	178	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	DIAGRAM_INVARIANTS	binding	203	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_diagram_invariants_match_the_literature	specimen	211	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_weyl_orders_of_the_small_diagram_invariant_rows	specimen	228	0			unreviewed
-preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_extended_diagrams_are_the_affine_roster	specimen	253	0			unreviewed
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	BRACKET_ORDERS	binding	59	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_bracket_notation_names_a_finite_group_of_the_tabulated_order	specimen	72	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_two_orderings_of_the_rank_three_double_bond_are_one_group	specimen	85	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	strict	binding	104	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	reason	binding	105	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_a_schlafli_symbol_names_a_polytope_whose_symmetry_group_is_its_coxeter_group	specimen	113	0		tests/schemes/test_polytopes.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	PRESENTED_ORDERS	binding	135	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_coxeter_presentation_presents_the_coxeter_group	specimen	139	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_weyl_group_of_type_a_is_the_symmetric_group	specimen	164	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_weyl_groups_of_types_b_and_c_coincide	specimen	178	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	DIAGRAM_INVARIANTS	binding	203	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_diagram_invariants_match_the_literature	specimen	211	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_weyl_orders_of_the_small_diagram_invariant_rows	specimen	228	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_extended_diagrams_are_the_affine_roster	specimen	253	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/test_index.py	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/test_index.py	analyze_test_file	function	15	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/test_index.py	generate_test_index	function	64	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
