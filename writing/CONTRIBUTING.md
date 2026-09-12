@@ -4052,6 +4052,53 @@ class a matrix.
 **Preferred:** always name $e$: "$G_e(b)$," "$G_{e'}(b)=P^{\!t}G_e(b)P$ for
 $P\in\operatorname{GL}_n(R)$," "the isometry class $[G_e(b)]$."
 
+### `PR-60`: When a construction *chooses* data, state how it varies with the choice — or form the category whose objects carry the choice
+
+Choosing an ordered basis $e$, a generating set $S$, a presentation
+$F_2\to F_1\to X$, a point $x_0\in X$, a trivialization, etc., is not an
+innocent "let $e$ be …" — it is extra data. The standard pattern is
+always one of the two, stated explicitly:
+
+* **(A) Comment on the choice:** after $G_e(b):=e^*b$, state how $G_e(b)$
+  varies — $G_{e'}(b)=P^{\!t}G_e(b)P$ for $e'=e\circ P$, so $G_e(b)$ is
+  well-defined up to $\operatorname{GL}_n(R)$-congruence (similarity,
+  conjugacy, isometry, etc., per flavour), and invariants ($\det$,
+  isometry class $[G_e(b)]$, $\operatorname{Val}(b)$) are independent of
+  $e$. Without that, "$\operatorname{Gram}(b)$" with no $e$ is ill-typed
+  (PR-58/PR-59).
+
+* **(B) Form the category whose objects *carry* the choice, define the
+  construction there, and study fibers/sections:** the Grothendieck
+  construction whose objects are $(M,e)$ with $e$ the chosen data — e.g.
+  framed $R$-modules $\mathbf{FMod}_R^{\mathrm{fr}}$ (objects $(M,e\colon
+  R^n\xrightarrow{\sim}M)$), based modules (objects $(M,e)$ with $e$ a
+  basis), pointed spaces $(X,x_0)$, presented modules/algebras/groups
+  ($F_2\to F_1\to X$ with $X=\operatorname{coker}(F_2\to F_1)$), etc. Define
+  e.g. $G\colon\mathbf{FMod}_R^{\mathrm{fr}}\to M_n(W)$,
+  $((M,e),b)\mapsto G_e(b)$, then well-definedness on
+  $\mathbf{Mod}_R$ is the study of the fiber over $M$ (the
+  $\operatorname{GL}_n(R)$-torsor of frames) and its $\operatorname{GL}_n$-orbits,
+  sections picking a frame, descent for the construction.
+
+Either (A) or (B) is required whenever a construction chooses data.
+Stating "$\operatorname{Gram}(b)$," "choose a presentation," "choose a
+point" with no variance clause and no named $\mathbf{FMod}^{\mathrm{fr}}$ /
+$\mathbf{PresMod}$ to host it leaves the construction ill-defined and its
+dependence on the choice unfalsifiable.
+
+**Banned:** "Put $G(b):=(b(e_i,e_j))$" with no $e$ and no
+"$G_{e'}=P^{\!t}G_eP$ / well-defined up to $\operatorname{GL}_n$-congruence";
+"choose a presentation $F_1\to X$ and define …" with no category whose
+objects are $(X,F_1\to X)$ and no fiber/section discussion.
+
+**Preferred:** (A) "For ordered basis $e\colon R^n\xrightarrow{\sim}M$, put
+$G_e(b):=e^*b$. For $e'=e\circ P$, $G_{e'}(b)=P^{\!t}G_e(b)P$, so $[G_e(b)]$
+is well-defined up to $\operatorname{GL}_n(R)$-congruence." Or (B) "Let
+$\mathbf{FMod}_R^{\mathrm{fr}}\xrightarrow{U}\mathbf{Mod}_R$,
+$(M,e)\mapsto M$ be the Grothendieck construction for frames. Define
+$G\colon\mathbf{FMod}_R^{\mathrm{fr}}\to M_n(W)$ by $G((M,e),b):=G_e(b)$.
+Then $G$ factors through $U$-fibers as $[G_e(b)]\in M_n(W)/\operatorname{GL}_n$."
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4531,6 +4578,18 @@ $e\colon R^n\xrightarrow{\sim}M$, and without $e$ is well-defined only
 up to $\operatorname{GL}_n(R)$-congruence $G_{e'}=P^{\!t}G_eP$ (PR-58,
 PR-59). Write $G_e(b)$ and $[G_e(b)]$, never "$\operatorname{Gram}(b)$"
 for $(M,b)$.
+
+**24. Choosing data in a construction requires the variance clause or the
+category that carries the choice.** Any construction that chooses an
+ordered basis $e$, generating set $S$, presentation $F_2\to F_1\to X$,
+point $x_0$, trivialization, etc., owes either (A) how the result varies
+with the choice — well-defined up to $\operatorname{GL}_n$-congruence /
+similarity / conjugacy, with invariants independent of the choice — or
+(B) the Grothendieck construction whose objects are $(M,e)$ / $(X,F_1\to X)$
+/ $(X,x_0)$ on which the construction is a functor, with well-definedness
+as the study of its fibers / $\operatorname{GL}_n$-orbits / sections
+(PR-60). Without (A) or (B) the construction is ill-defined and its
+dependence on the choice unfalsifiable.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
