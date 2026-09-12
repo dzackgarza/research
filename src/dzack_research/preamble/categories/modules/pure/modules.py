@@ -2274,7 +2274,7 @@ class RestrictedScalarsModuleView(Parent):
             return True
         try:
             return value in self._preamble_extension_module
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
 
     def module_generating_set(self):
@@ -3063,7 +3063,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             columns = self.parent().column_index_set()
             try:
                 column_label = columns(column_label)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 column_label = columns[int(column_label)]
             generator_image = self.__dict__.get("_generator_image")
             image = generator_image(column_label) if generator_image is not None else self(self.domain().module_generator(column_label))
@@ -3074,11 +3074,11 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             columns = self.parent().column_index_set()
             try:
                 row_label = rows(row_label)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 row_label = rows[int(row_label)]
             try:
                 column_label = columns(column_label)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 column_label = columns[int(column_label)]
             return self._matrix_column_coefficients(column_label).get(
                 row_label,
@@ -3095,7 +3095,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             rows = self.parent().row_index_set()
             try:
                 row_label = rows(row_label)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 row_label = rows[int(row_label)]
             dual = self.domain().dual_module()
             return dual.linear_combination(
@@ -3106,7 +3106,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             columns = self.parent().column_index_set()
             try:
                 column_label = columns(column_label)
-            except TypeError, ValueError:
+            except (TypeError, ValueError):
                 column_label = columns[int(column_label)]
             return self(self.domain().module_generator(column_label))
 
