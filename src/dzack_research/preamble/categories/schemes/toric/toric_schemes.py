@@ -1023,6 +1023,109 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 lattice=self.character_lattice(),
             )
 
+        @cached_method
+        def polarizing_divisor(self):
+            r"""Return the torus-invariant Cartier divisor whose polytope is the selected ``P``.
+
+            If ``P`` has normal fan ``Sigma`` then its support numbers are
+            ``a_rho=-min_{m in P}<m,u_rho>``.  Thus
+            ``P=P_D`` for ``D=sum a_rho D_rho``.  This is the inverse direction
+            to :meth:`divisor_polytope` for a toric variety constructed from a
+            chosen lattice polytope.
+            """
+            if not self.is_polarized():
+                raise ValueError("a polarizing divisor requires the polytope selected at construction")
+            polytope = self.polarizing_polytope()
+            characters = self.character_lattice()
+            group = self.torus_invariant_divisor_group()
+            coefficients = {}
+            for ray in self.fan().cones(1):
+                values = tuple(
+                    _pairing_on_ray(self.fan(), characters(vertex), ray)
+                    for vertex in polytope.vertices()
+                )
+                coefficients[ray] = -min(values)
+            divisor = group.linear_combination(coefficients)
+            if not self.is_cartier(divisor):
+                raise ArithmeticError("the divisor reconstructed from a lattice polytope is not Cartier")
+            return divisor
+
+        def compatible_divisor_section(self, divisor, section, *, line_bundle=None):
+            r"""Descend one character-basis section of ``O(D)`` to the toric affine atlas.
+
+            On ``U_sigma`` the Cartier datum ``m_sigma`` trivializes ``O(D)``.
+            Hence the global character ``chi^m`` has local coefficient
+            ``chi^(m-m_sigma)``.  The common finite-atlas equalizer verifies
+            these coefficients against the line-bundle transition functions.
+            """
+            divisor = self.torus_invariant_divisor_group()(divisor)
+            if not self.is_cartier(divisor):
+                raise ValueError("character-section descent requires a Cartier divisor")
+            selected_line = self.invertible_sheaf_of_divisor(divisor) if line_bundle is None else line_bundle
+            if selected_line.scheme() is not self:
+                raise ValueError("the selected line bundle belongs to a different toric scheme")
+            if selected_line.associated_divisor() != divisor:
+                raise ValueError("the selected line bundle represents a different toric divisor")
+            sections = self.divisor_section_space(divisor)
+            section = sections(section)
+            coefficients = module_coefficients(section, sections)
+            module_sheaf = selected_line.module_sheaf()
+            local_components = {}
+            for cone in self.gluing_datum().chart_indices():
+                chart = self.affine_chart(cone)
+                chart_ring = chart.coordinate_algebra()
+                scalar_map = chart_ring.algebra_structure_morphism()
+                cartier = self.cartier_datum(divisor, cone)
+                local_coefficient = chart_ring.zero()
+                for character, coefficient in coefficients.items():
+                    shifted = self.character_lattice()(character) - cartier
+                    if not cone.dual_cone_contains(shifted):
+                        raise ArithmeticError("a global toric section is not regular in one Cartier trivialization")
+                    local_coefficient += scalar_map(coefficient) * _character_monomial(
+                        shifted,
+                        cone,
+                        chart,
+                    )
+                module = module_sheaf.sections_on_chart(cone)
+                generator = module.module_generator(next(iter(module.module_generating_set())))
+                local_components[cone] = module.scalar_multiple(local_coefficient, generator)
+            compatible = selected_line.compatible_sections()(local_components)
+            compatible._preamble_global_section_source = section
+            compatible._preamble_toric_divisor = divisor
+            return compatible
+
+        def zero_subscheme_of_divisor_section(self, divisor, section, *, line_bundle=None):
+            r"""Return the effective Cartier zero scheme of a represented toric section."""
+            from dzack_research.preamble.categories.schemes.gluing import (
+                chartwise_closed_subscheme,
+            )
+
+            divisor = self.torus_invariant_divisor_group()(divisor)
+            selected_line = self.invertible_sheaf_of_divisor(divisor) if line_bundle is None else line_bundle
+            compatible = self.compatible_divisor_section(
+                divisor,
+                section,
+                line_bundle=selected_line,
+            )
+            local_closed = {}
+            for cone in self.gluing_datum().chart_indices():
+                module = selected_line.module_sheaf().sections_on_chart(cone)
+                label = next(iter(module.module_generating_set()))
+                coefficient = module_coefficients(compatible.component(cone), module).get(
+                    label,
+                    module.base_ring().zero(),
+                )
+                local_closed[cone] = self.affine_chart(cone).closed_subscheme(coefficient)
+            closed = chartwise_closed_subscheme(
+                self,
+                local_closed,
+                name="Zero scheme of a toric divisor section",
+            )
+            closed._preamble_defining_toric_section = section
+            closed._preamble_defining_toric_divisor = divisor
+            closed._preamble_defining_line_bundle = selected_line
+            return closed
+
         def divisor_section_characters(self, divisor):
             r"""The characters spanning ``H^0(X, O_X(D))`` (CLS Prop. 4.3.3).
 

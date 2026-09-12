@@ -4381,6 +4381,73 @@ class GluedAlgebraSheaf(SageObject):
         return f"Glued algebra sheaf on {self.scheme()} from {self.cover()}"
 
 
+
+def chartwise_closed_subscheme(glued_scheme, local_closed_subschemes, *, name="Chartwise closed subscheme"):
+    r"""Glue compatible closed subschemes of one finite affine atlas.
+
+    A closed immersion is local on the target.  Each supplied ``Z_i -> U_i``
+    is therefore restricted to the represented pair overlap and transported
+    through the ambient atlas transition.  Corestriction into ``Z_j`` is the
+    compatibility check; once every pair passes, the local closed schemes glue
+    and their inclusions glue to one closed immersion into ``glued_scheme``.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import (
+        ClosedSubschemes,
+        Schemes,
+        refine_scheme,
+    )
+
+    datum = glued_scheme.gluing_datum()
+    indices = datum.chart_index_set()
+    local_closed = _family_on_finite_ordered_set(
+        indices,
+        local_closed_subschemes,
+        name=f"Affine pieces of {name}",
+        noun="a chartwise closed subscheme",
+    )
+    for index in indices:
+        closed = local_closed[index]
+        if closed.inclusion().codomain() is not datum.chart(index):
+            raise ValueError("each chartwise closed subscheme lies in its selected ambient chart")
+
+    def closed_overlap(source_index, target_index):
+        closed = local_closed[source_index]
+        ambient_overlap = datum.overlap(source_index, target_index)
+        element = ambient_overlap.distinguished_open_element()
+        restricted = closed.inclusion().coordinate_algebra_morphism()(element)
+        return closed.distinguished_open(restricted)
+
+    def closed_transition(source_index, target_index):
+        source = closed_overlap(source_index, target_index)
+        target = closed_overlap(target_index, source_index)
+        source_ambient_overlap = datum.overlap(source_index, target_index)
+        into_source_chart = local_closed[source_index].inclusion() * source.inclusion()
+        into_source_overlap = source_ambient_overlap.corestriction(into_source_chart)
+        across = datum.transition_between(source_index, target_index).forward() * into_source_overlap
+        into_target_chart = datum.overlap(target_index, source_index).inclusion() * across
+        into_target_closed = local_closed[target_index].corestriction(into_target_chart)
+        return target.corestriction(into_target_closed)
+
+    transitions = {
+        (left, right): Isomorphism(
+            closed_transition(left, right),
+            closed_transition(right, left),
+        )
+        for left, right in datum.transition_index_set()
+    }
+    base = glued_scheme.scheme_base_ring()
+    glued = Schemes(base).glue_affine_atlas(local_closed, transitions)
+    inclusion = glued.Mor(glued_scheme)(
+        {
+            index: datum.chart_embedding(index) * local_closed[index].inclusion()
+            for index in indices
+        }
+    )
+    glued._preamble_inclusion = inclusion
+    glued._preamble_local_closed_subschemes = local_closed
+    return refine_scheme(glued, base, (ClosedSubschemes(base),))
+
+
 def chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
     r"""Glue the fixed subschemes of a chart-preserving automorphism.
 
@@ -4488,6 +4555,7 @@ __all__ = [
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
     "finite_atlas_module_pullback_functor",
+    "chartwise_closed_subscheme",
     "chartwise_fixed_subscheme",
     "finite_atlas_line_bundle_module_sheaf",
     "compare_finite_atlas_line_bundle_pullback",
