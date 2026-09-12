@@ -1006,7 +1006,7 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   **Acceptance:** a sourced family with nonidentity monodromy and a singular
   fiber; maps preserve the applicable pairing and action.
 
-- [ ] **`singularity-classification`**. **Needs:** `normalization`, `local-module-maps`.
+- [x] **`singularity-classification`**. **Needs:** `normalization`, `local-module-maps`.
   Extend local singularity classification beyond selected coordinate
   normal-form recognition.
   **Owners:** `categories/schemes/singularities.py`, pointed local rings,
@@ -1499,4 +1499,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `SING-classification-20260912-0024` | singularities / singularity-classification | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/singularities.py; src/dzack_research/preamble/categories/rings/commutative_algebra.py; tests/schemes/test_singularity_classification_frontier.py` (write) | `19e6c16d; ad1b1b30; df5963ee` | 2026-09-12T00:24:00Z |
+| `CURVE-genus-20260912-0027` | curves / curve-genus | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/varieties.py; src/dzack_research/preamble/categories/rings/commutative_algebra.py; tests/schemes/test_curve_genus_frontier.py` (write) | `19e6c16d; c3f4930c; 1bf827cc` | 2026-09-12T00:27:00Z |
