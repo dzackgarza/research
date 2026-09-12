@@ -498,22 +498,6 @@ Retain existing fan/subdivision and toric-divisor engines for the toric cases.
 Do not make an engine's affine or toric specialization the public definition
 of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 
-- [ ] **`adjunction-blowups`**. **Needs:** `relative-spec`.
-  Turn complete-intersection adjunction data into actual canonical-bundle
-  maps, and extend blowups beyond torus-fixed surface centers.
-  **Owners:** complete intersections, invertible sheaves, blowups, and local
-  presentations.
-  **Deliver:** adjunction isomorphisms, exceptional divisors, total and strict
-  transforms, Picard pullback and intersection comparisons for the selected
-  non-toric center; general complete-intersection family data.
-  **Decision:** a stored adjunction twist is not the line bundle or its
-  comparison map. Strict transform, total transform, and inverse image are
-  distinct. Use the blowup/Rees-algebra construction at its general owner
-  before a non-toric consumer; reuse existing fan subdivision in the toric case.
-  **Acceptance:** a curve through the center with nontrivial multiplicity,
-  the exceptional contribution, and canonical-bundle comparison; del Pezzo
-  claims require the applicable smoothness and anticanonical ampleness facts,
-  not positive degree alone.
 
 ## Cohomology and equivariance
 
@@ -844,7 +828,7 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`k3-family`**. **Needs:** `linearizations`, `geometric-quotients`, `adjunction-blowups`.
+- [ ] **`k3-family`**. **Needs:** `linearizations`, `geometric-quotients`.
   Construct the `(4,4)` double-cover K3 family over `P^1 x P^1` and
   the two lifts of the diagonal sign involution.
   **Inputs:** branch sections, a selected linearization, the existing cyclic
@@ -889,7 +873,7 @@ definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
   parity-forced cases, and local/global singularity comparisons.
   Read and cite the source for each classification rule before implementing it.
 
-- [ ] **`bertini-family`**. **Needs:** `adjunction-blowups`, `singularity-classification`.
+- [ ] **`bertini-family`**. **Needs:** `singularity-classification`.
   Supply Bertini and general complete-intersection family applications.
   **Inputs:** parameter spaces, evaluation/jet maps, and local smoothness.
   **Decision:** generic smoothness or a nonempty open good-parameter locus does
