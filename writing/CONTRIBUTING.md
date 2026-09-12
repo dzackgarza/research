@@ -2887,6 +2887,41 @@ finite generation is a property of $\pi_0M$ after truncating.
 $\mathbb Z$)" or "for $M$ finitely presented" — name which finiteness,
 in which category, and whether derived or discrete, at each use.
 
+### `PR-35`: Stating the complement of a positive coincidence theorem is obviated
+
+Once $A$ and $B$ are presented as distinct constructions — here
+$-\otimes_{\mathbb Z}^L\mathbb Z_p$ and $\widehat{(-)}_p$ with different
+definitions — their distinctness as definitions is already established;
+no sentence is needed to say they are distinct. Stating the positive
+quantified theorem with the comparison map (PR-33) — "$c_M\colon
+M\otimes^L\mathbb Z_p\to\widehat M_p$ is an equivalence for $M$ perfect
+(in particular discrete finitely generated over Noetherian $\mathbb Z$)"
+— already makes the complement implicit and obvious to any reader: without
+$H$, the theorem does not apply and $c_M$ need not be an equivalence.
+Adding "Without $H$, $A$ and $B$ are distinct" is structurally redundant:
+it repeats what presentation already shows and what the quantified
+theorem already delimits.
+
+This is the general scaffolding principle behind SEC-8 and PR-33/PR-34:
+present distinct objects as distinct, state when the canonical comparison
+is an equivalence with quantified $H$ and the map, and stop — the
+failure outside $H$ is then understood without being stated, and a
+counterexample is given only when it teaches (e.g. $M=\bigoplus_{\mathbb
+N}\mathbb Z$, $M=\mathbb Q$ in PR-33), not as a separate tautological
+sentence.
+
+**Banned:** "Without the finite-generation hypothesis, scalar extension
+and completion are distinct constructions" alongside the definitions and
+"For finitely generated $M$, $M\otimes\mathbb Z_p\simeq\widehat M_p$."
+
+**Preferred:** present the two functors with different definitions (hence
+distinct), then state one quantified theorem with the map:
+"::: {#thm-complete-vs-basechange} **Theorem.** … $c_M$ is an
+equivalence for $M$ perfect … :::" No additional sentence is needed to
+say they differ without $H$; the quantified theorem already obviates it.
+Give a counterexample only as an illustration of the boundary, not as a
+restatement that the definitions are distinct.
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3002,4 +3037,6 @@ says nothing, with unquantified $H$ (finitely generated vs. presented
 vs. perfect) and no map or counterexample (PR-34, PR-33). State the
 quantified theorem ($c_M$ an iso for perfect $M$) and the quantified
 failure with a counterexample ($\bigoplus_{\mathbb N}\mathbb Z$,
-$\mathbb Q$), not that the definitions are distinct.
+$\mathbb Q$), not that the definitions are distinct. Once the distinct
+definitions and the positive theorem are stated, the complement without
+$H$ is implicit and obvious and needs no separate sentence (PR-35).
