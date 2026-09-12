@@ -442,6 +442,12 @@ class DivisorClassComparison(SageObject):
     def weil_divisor_group(self):
         return self._weil_group
 
+    def principal_divisor_source(self):
+        return self._principal_source
+
+    def principal_to_weil_morphism(self):
+        return self._principal_to_weil
+
     def picard_group(self):
         return self._picard_group
 

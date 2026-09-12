@@ -1,12 +1,19 @@
 r"""Owned algebraic-cycle and Chow-group roles."""
 
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    Isomorphism,
+    _isomorphism_from_known_inverse_pair,
+)
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
+    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyPresentedModules,
@@ -121,6 +128,135 @@ def AffineCycleGroup(scheme, cycle_dimension):
     )
 
 
+def AffineWeilCycleIsomorphism(scheme):
+    r"""Identify Weil divisors with codimension-one cycles on normal affine ``scheme``.
+
+    Both groups are free abelian on the height-one points of the same spectrum;
+    the comparison changes only the mathematical role attached to that common
+    sparse framing.
+    """
+    from dzack_research.preamble.categories.divisors.general_divisors import (
+        affine_normal_weil_divisor_group,
+    )
+
+    weil = affine_normal_weil_divisor_group(scheme)
+    cycles = AffineCycleGroup(scheme, int(scheme.dimension()) - 1)
+    forward = module_homset(weil, cycles)(
+        lambda point: cycles.prime_cycle(point)
+    )
+    inverse = module_homset(cycles, weil)(
+        lambda point: weil.prime_divisor(point)
+    )
+    return _isomorphism_from_known_inverse_pair(forward, inverse)
+
+
+class AffineCodimensionOneChowComparison(SageObject):
+    r"""The selected comparison ``Cl(X) ~= CH_{dim(X)-1}(X)``.
+
+    A finite Weil-divisor presentation is embedded into the full Weil group.
+    Through :func:`AffineWeilCycleIsomorphism` it becomes a finite presentation
+    inside the full codimension-one cycle group.  The *same* principal-divisor
+    morphism then presents both the class group and the Chow quotient.
+    """
+
+    def __init__(self, divisor_classes, presentation_into_full_weil) -> None:
+        scheme = divisor_classes.scheme()
+        finite_weil = divisor_classes.weil_divisor_group()
+        if presentation_into_full_weil.domain() is not finite_weil:
+            raise ValueError(
+                "the Weil presentation embedding has the wrong source"
+            )
+        full_weil = presentation_into_full_weil.codomain()
+        if full_weil.divisor_scheme() is not scheme:
+            raise ValueError(
+                "the full Weil-divisor group belongs to a different scheme"
+            )
+
+        divisor_cycle = AffineWeilCycleIsomorphism(scheme)
+        into_full_cycles = divisor_cycle.forward() * presentation_into_full_weil
+        cycle_presentation = into_full_cycles.image()
+        cycle_inclusion = cycle_presentation.inclusion()
+        weil_to_cycles = module_homset(finite_weil, cycle_presentation)(
+            {
+                label: cycle_inclusion.lift(
+                    into_full_cycles(finite_weil.module_generator(label))
+                )
+                for label in finite_weil.module_generating_set()
+            }
+        )
+        principal_to_cycles = (
+            weil_to_cycles * divisor_classes.principal_to_weil_morphism()
+        )
+        chow_cokernel = principal_to_cycles.cokernel()
+        chow = ChowGroup(
+            chow_cokernel,
+            scheme,
+            int(scheme.dimension()) - 1,
+        )
+        equip_chow = module_homset(chow_cokernel, chow)(
+            {
+                label: chow.module_generator(label)
+                for label in chow_cokernel.module_generating_set()
+            }
+        )
+        cycle_class_projection = (
+            equip_chow * principal_to_cycles.cokernel_projection()
+        )
+
+        classes = divisor_classes.class_group()
+        class_projection = divisor_classes.weil_class_projection()
+        class_to_chow = module_homset(classes, chow)(
+            {
+                label: cycle_class_projection(
+                    weil_to_cycles(finite_weil.module_generator(label))
+                )
+                for label in classes.module_generating_set()
+            }
+        )
+        cycles_to_weil = weil_to_cycles.inverse()
+        chow_to_class = module_homset(chow, classes)(
+            {
+                label: class_projection(
+                    cycles_to_weil(cycle_presentation.module_generator(label))
+                )
+                for label in chow.module_generating_set()
+            }
+        )
+
+        self._scheme = scheme
+        self._divisor_classes = divisor_classes
+        self._divisor_cycle_isomorphism = divisor_cycle
+        self._cycle_presentation = cycle_presentation
+        self._principal_to_cycles = principal_to_cycles
+        self._chow_group = chow
+        self._cycle_class_projection = cycle_class_projection
+        self._class_to_chow = Isomorphism(class_to_chow, chow_to_class)
+
+    def scheme(self):
+        return self._scheme
+
+    def divisor_class_comparison(self):
+        return self._divisor_classes
+
+    def divisor_cycle_isomorphism(self):
+        return self._divisor_cycle_isomorphism
+
+    def cycle_presentation(self):
+        return self._cycle_presentation
+
+    def rational_equivalence_morphism(self):
+        return self._principal_to_cycles
+
+    def chow_group(self):
+        return self._chow_group
+
+    def cycle_class_projection(self):
+        return self._cycle_class_projection
+
+    def class_to_chow_isomorphism(self):
+        return self._class_to_chow
+
+
 def ClosedImmersionCyclePushforward(closed_subscheme, cycle):
     r"""Push a cycle forward along its represented closed immersion.
 
@@ -229,6 +365,8 @@ def ChowGroup(module, scheme, cycle_dimension):
 
 __all__ = [
     "AffineCycleGroup",
+    "AffineCodimensionOneChowComparison",
+    "AffineWeilCycleIsomorphism",
     "AlgebraicCycleGroups",
     "ChowGroup",
     "ClosedImmersionCyclePushforward",

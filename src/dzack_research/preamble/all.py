@@ -198,7 +198,9 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
 from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras  # noqa: F401
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams  # noqa: F401
 from dzack_research.preamble.categories.divisors import (  # noqa: F401
+    AffineCodimensionOneChowComparison,
     AffineCycleGroup,
+    AffineWeilCycleIsomorphism,
     AlgebraicCycleGroups,
     CartierDivisorGroup,
     CartierDivisorGroups,

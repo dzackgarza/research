@@ -2,7 +2,9 @@
 
 from importlib import import_module as _import_module
 
-_EXPORTS = {'AffineCycleGroup': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineCycleGroup'),
+_EXPORTS = {'AffineCodimensionOneChowComparison': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineCodimensionOneChowComparison'),
+ 'AffineWeilCycleIsomorphism': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineWeilCycleIsomorphism'),
+ 'AffineCycleGroup': ('dzack_research.preamble.categories.divisors.chow_groups', 'AffineCycleGroup'),
  'AlgebraicCycleGroups': ('dzack_research.preamble.categories.divisors.chow_groups', 'AlgebraicCycleGroups'),
  'FundamentalCycle': ('dzack_research.preamble.categories.divisors.chow_groups', 'FundamentalCycle'),
  'ClosedImmersionCyclePushforward': ('dzack_research.preamble.categories.divisors.chow_groups', 'ClosedImmersionCyclePushforward'),
@@ -88,6 +90,8 @@ _EXPORTS = {'AffineCycleGroup': ('dzack_research.preamble.categories.divisors.ch
                        'WeilDivisorGroups')}
 
 __all__ = [
+    'AffineCodimensionOneChowComparison',
+    'AffineWeilCycleIsomorphism',
     'AffineCycleGroup',
     'AlgebraicCycleGroups',
     'FundamentalCycle',
