@@ -2,6 +2,15 @@ r"""Selected projective linear systems retain base loci and rational-map domains
 
 from dzack_research.preamble.all import OpenImmersions, ProjectiveSpace, QQ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_linear_systems_restrictions.sage",
+    "live_owner": "tests/divisors/test_projective_linear_systems.py",
+    "owner_overrides": {
+        "test_restriction_map_has_expected_rank_and_cokernel": "tests/divisors/test_projective_section_restrictions.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _coordinate_sections(bundle):
     sections = bundle.global_sections()
@@ -41,3 +50,20 @@ def test_complete_hyperplane_system_has_empty_base_locus_and_everywhere_defined_
     assert system.domain_of_definition() is plane
     assert system.associated_morphism().domain() is plane
     assert system.associated_morphism().codomain() is system
+
+
+def test_complete_quadrics_and_restriction_to_a_line_keep_expected_dimensions() -> None:
+    plane = ProjectiveSpace(2, QQ, names=("x", "y", "z"))
+    bundle = plane.O(2)
+    system = bundle.linear_system()
+    ring = bundle.global_sections().homogeneous_coordinate_ring()
+    line = plane.closed_subscheme(ring.algebra_generator("x"))
+    restriction = bundle.restriction_map(line)
+
+    assert system.is_basepoint_free()
+    assert system.projective_dimension() == 5
+    assert system.associated_morphism().domain() is plane
+    assert restriction.domain() is bundle.global_sections()
+    assert restriction.domain().dimension() == 6
+    assert restriction.codomain().dimension() == 3
+    assert restriction.kernel().dimension() == 3
