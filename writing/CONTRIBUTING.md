@@ -3572,6 +3572,105 @@ $\Gamma^2_R(M)$)." Then, if pedagogically useful and only when
 $U$ exists: "On $U$-points this is $b(x,y)=b(y,x)$ $\forall x,y\in
 U(M)$."
 
+### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
+
+"Alternating $\Rightarrow$ skew" is not a definition and not a comment —
+it is a Lemma ($\operatorname{AltBil}\subseteq\operatorname{SkewBil}$ as
+$R$-submodules, proved from $\tau$ and $\Delta$: $b\circ\Delta=0\Rightarrow
+b\circ\tau=-b$ via $b(x+y,x+y)$). "Converse holds when $2$ injective on
+$W$" and "when $2W=W$ every $b$ is even; quadratic refinements retain
+…" are a more nuanced Proposition / Remark about the map induced by
+$2\colon W\to W$ and its obstruction to being iso — each warrants its
+own fenced block with quantified hypothesis and proof, not two sentences
+appended to `{#def-form-axioms}`.
+
+This is the general form of DEF-15/DEF-19 and SEC-6: one fenced block per
+notion with one logical status. A Definition block defines; implications
+between defined subobjects are Lemmas/Propositions with proofs; side
+observations are Remarks.
+
+Concrete standard — define the four named $R$-submodules once, then
+containments are $R$-submodule inclusions and the $2$-discussion is a map
+between named objects:
+
+* **Scaffolding (once, fenced):**
+  $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_RM,W)$ as
+  $R$-module. Put
+  $\operatorname{SymBil}_{R,W}(M):=\ker(\tau^*-\mathrm{id})$,
+  $\operatorname{SkewBil}_{R,W}(M):=\ker(\tau^*+\mathrm{id})$,
+  $\operatorname{AltBil}_{R,W}(M):=\ker(\Delta^*)$,
+  $\operatorname{EvBil}_{R,W}(M):=
+  \operatorname{im}(\operatorname{Hom}_R(\operatorname{Sym}^2_R(M),W)\to
+  \operatorname{Bil})$ (i.e. image of
+  $\operatorname{Hom}_R(\Gamma^2_R(M),W)\xrightarrow{\gamma^*}\operatorname{Bil}$
+  for the even lift), all $R$-submodules of $\operatorname{Bil}_{R,W}(M)$
+  via $b\mapsto b\circ\tau$, $b\mapsto b\circ\Delta$.
+
+* **Then, separate fenced units:**
+  "::: {#lem-alt-skew} **Lemma.** $\operatorname{AltBil}_{R,W}(M)
+  \subseteq\operatorname{SkewBil}_{R,W}(M)$ as $R$-submodules. *Proof.*
+  … :::"
+  "::: {#prop-skew-alt} **Proposition.** The $R$-linear
+  $2_*\colon\operatorname{Bil}_{R,W}(M)\to\operatorname{Bil}_{R,W}(M)$,
+  $(2_*b)(x,y)=2b(x,y)$ induced by $2\colon W\to W$, controls the converse:
+  $\operatorname{SkewBil}=\operatorname{AltBil}$ iff $2\colon W\to W$ is
+  injective; the obstruction to
+  $\operatorname{EvBil}\xrightarrow{\sim}\operatorname{Bil}$ is
+  $\ker/\operatorname{coker}(2_*)$. In particular if $2W=W$ then every
+  $b$ is even as an element condition, but the quadratic refinement
+  $\operatorname{Quad}_{R,W}(M)=\operatorname{Hom}_R(\Gamma^2_R(M),W)$
+  retains information via $\gamma^*$. :::"
+
+  No Lemma/Proposition inside the Definition; no "Alternating forms are
+  skew" as a comment.
+
+**Banned:** the three sentences appended to `{#def-form-axioms}` — neither
+fenced nor proved, with no named $\operatorname{AltBil}$ /
+$\operatorname{SkewBil}$ / $\operatorname{EvBil}$ or $2_*$ to refer to.
+
+**Preferred:** keep `{#def-form-axioms}` to the four diagrammatic
+definitions $b\circ\tau=b$ / $b\circ\tau=-b$ / $b\circ\Delta=0$ / lift
+through $\Gamma^2$; then separate `Lemma` for
+$\operatorname{Alt}\subseteq\operatorname{Skew}$ and `Proposition/Remark`
+for the $2$-obstruction with the named $R$-submodules and the map
+$2_*$ between named objects.
+
+### `PR-49`: Pithy prose that avoids naming $\operatorname{Bil}^{ev}$, $\operatorname{AltBil}$, $\operatorname{SkewBil}$, $\operatorname{SymBil}$ and the map $2_*$ between them, and restates $b\colon M\times M\to W$ instead of $b\in\operatorname{Bil}$
+
+Once $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_RM,W)$ is
+named, membership $b\in\operatorname{Bil}_{R,W}(M)$ *is* the signature
+$b\colon M\otimes_RM\to W$ — no "$b\colon M\times M\to W$" to restate.
+More generally, definitions should state objects and $R$-submodule
+containments, not signatures. Pithy prose "Alternating forms are skew;
+converse holds when $2$ injective; when $2W=W$ every $b$ is even"
+avoids ever naming
+$\operatorname{AltBil}_{R,W}(M)$, $\operatorname{SkewBil}_{R,W}(M)$,
+$\operatorname{SymBil}_{R,W}(M)$, $\operatorname{EvBil}_{R,W}(M)$ and the
+$R$-linear $2_*\colon\operatorname{Bil}\to\operatorname{Bil}$
+(resp. $\operatorname{Hom}_R(\Gamma^2,W)\xrightarrow{\gamma^*}
+\operatorname{Bil}$) induced by $2\colon W\to W$, whose (non-)isomorphism
+is the actual content. The categorical definitions are then phrased as
+$R$-submodule isomorphisms/equalities of those named objects, not as
+element conditions on an unwrapped $b$.
+
+This is the general form of PR-40/PR-45 and PR-30: eliding the governing
+object that would make the statement checkable, so hand-waving can occupy
+its place.
+
+**Banned:** "For $b\colon M\times M\to W$: $b$ is symmetric if …;
+Alternating forms are skew-symmetric. The converse holds when $2$
+injective …" with no named $\operatorname{AltBil}$ / $\operatorname{SkewBil}$
+/ $\operatorname{EvBil}$ and no $2_*$.
+
+**Preferred:** "Let $b\in\operatorname{Bil}_{R,W}(M)$. $b$ is
+**symmetric** if $b\in\operatorname{SymBil}_{R,W}(M)$ ($b\circ\tau=b$),
+**skew** if $b\in\operatorname{SkewBil}_{R,W}(M)$, **alternating** if
+$b\in\operatorname{AltBil}_{R,W}(M)$, **even** if
+$b\in\operatorname{EvBil}_{R,W}(M)$." Then
+"$\operatorname{AltBil}\subseteq\operatorname{SkewBil}\subseteq\operatorname{Bil}$
+as $R$-submodules; $2_*$ induces …; $\operatorname{EvBil}= \operatorname{Bil}$
+iff …" — objects and containments, not signatures and element formulas.
+
 ### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
 
 Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
@@ -3861,3 +3960,18 @@ $\mathcal O_X\text{-}\mathbf{Mod}$, $\mathbf{Sp}$, stacks, etc., where
 no such $U(M)$ exists (PR-47) — the diagram $b\circ\tau=b$ works in every
 symmetric monoidal $\mathcal C$, the element formula only in the concrete
 ones.
+
+**17. Mixing Lemma/Proposition into the Definition and not naming the
+subobjects and the map $2_*$ between them.** "Alternating $\Rightarrow$
+skew" is a Lemma
+$\operatorname{AltBil}\subseteq\operatorname{SkewBil}$ as $R$-submodules,
+and "converse when $2$ injective" / "when $2W=W$ every $b$ even" is a
+Proposition about $2_*\colon\operatorname{Bil}\to\operatorname{Bil}$
+induced by $2\colon W\to W$ and its obstruction (PR-48); neither belongs
+in the Definition block. Pithy prose avoids naming
+$\operatorname{SymBil}$, $\operatorname{SkewBil}$, $\operatorname{AltBil}$,
+$\operatorname{EvBil}$ and $2_*$ between named $R$-submodules of
+$\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$, and
+restates $b\colon M\times M\to W$ instead of $b\in\operatorname{Bil}$
+(PR-49) — definitions as objects and containments, not signatures and
+element formulas.
