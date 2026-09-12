@@ -1470,5 +1470,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `DIVISORS-local-cartier-20260912-0151` | divisors / prime Weil local Cartier criterion | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/general_divisors.py; src/dzack_research/preamble/categories/divisors/weil_divisor_groups.py; tests/divisors/test_general_divisors_frontier.py` (write) | `7db9a445; 8b3a0d4c` | 2026-09-12T01:51:00Z |
 | `LINE-BUNDLES-projective-20260912-0112` | line-bundles / projective O(d) and section algebra | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py; src/dzack_research/preamble/categories/divisors/section_rings.py; src/dzack_research/preamble/categories/schemes/schemes.py; src/dzack_research/preamble/categories/divisors/__init__.py; src/dzack_research/preamble/all.py; tests/divisors/test_projective_line_bundles_frontier.py` (write) | `8ae1ccaf` | 2026-09-12T01:12:00Z |
