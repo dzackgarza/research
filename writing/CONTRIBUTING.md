@@ -4244,6 +4244,92 @@ This is why categorical / diagrammatic definitions are preferable when available
 
 **Preferred:** define $b\colon M\otimes_RM\to W$ as $W$-valued $(0,2)$-tensor, $b^{\sharp}$, $\Gamma^2_R$, $\operatorname{Val}(b)$, $N^{\perp}:=\ker(b^{\sharp})$, etc., diagrammatically in a closed symmetric monoidal $\mathcal C$ so that the statement is valid for $L^2(\mathbb R)$ / $\mathrm{QCoh}(X)$ / $\mathbf{LMod}_R$; then prove as a *Proposition* (with hypotheses: $I$ finite, $M\cong R^n$, $M$ finitely generated projective, $W$ discrete, continuity / boundedness): "$\Phi_e\colon W^{I\times I}\xrightarrow{\sim}\operatorname{Hom}_R(R^{(I)}\otimes R^{(I)},W)$ is an iso, every $b$ has a $G_{ij}$, $b(v,w)=\sum a_iG_{ij}c_j$ finite, and $x^{\!t}Ay$ is $b(v,w)=\langle v,Aw\rangle$ with $A$ symmetric $\iff$ self-adjoint," etc. — the finite accident as a theorem, not the definition.
 
+### `PR-67`: Twist is any $\varphi\colon W\to W'$ — $\mathbf{Bil}_R(-)$ is functorial in $W$ — not just $\lambda\in R$ and not just $\lambda\in R^\times$ / $\mathbf{Pic}$
+
+For $R$ commutative, $\mathbf{Bil}_{R,W}$ is functorial in the *value
+module* $W\in\mathbf{Mod}_R$: any $R$-linear $\varphi\colon W\to W'$
+induces $\varphi_*\colon\mathbf{Bil}_{R,W}\to\mathbf{Bil}_{R,W'}$,
+$(M,b\colon M\otimes M\to W)\mapsto(M,\varphi\circ b\colon M\otimes M\to W')$
+by post-composition. When $W'=W$, an endomorphism $\varphi\colon W\to W$
+induces an endofunctor $\varphi_*$ on $\mathbf{Bil}_{R,W}$; *any*
+$\varphi\in\operatorname{End}_R(W)$ defines a twist. The usual
+"$\lambda b$" is the specialization $\varphi:=\lambda\cdot_W\colon W\to W$,
+$w\mapsto\lambda w$ via the $R$-action $R\to\operatorname{End}_R(W)$ — one
+endomorphism among all $\operatorname{End}_R(W)$, and not requiring
+$W=R$ or $\lambda$ invertible.
+
+Stating twist as "$\lambda\in R$, $b(\lambda):=\lambda b$ on the same
+$M$, $G\mapsto\lambda G$" fixes $W=R$ and a global element $\lambda$ and
+hides the functoriality that is already in the type $b\colon M\otimes M\to W$.
+
+Concrete standard — name $\varphi$ and $\varphi_*$:
+
+"::: {#def-twist} **Definition.** For $\varphi\colon W\to W'$ in
+$\mathbf{Mod}_R$, put
+$\varphi_*\colon\mathbf{Bil}_{R,W}\to\mathbf{Bil}_{R,W'}$,
+$\varphi_*(M,b):=(M,\varphi\circ b)$. When $W'=W$, $\varphi_*$ is the
+**twist by $\varphi$** of the $W$-valued form. In particular for
+$\lambda\in R$, $\varphi:=\lambda\cdot_W$ gives $(M,b)(\lambda):=
+(M,\lambda b)$ with $\lambda b:=\varphi\circ b$ and
+$G_e(\lambda b)=\lambda G_e(b)$, $(\lambda b)^{\sharp}=\lambda\cdot b^{\sharp}$.
+:::"
+
+**Banned:** "For $\lambda\in R$ the twist $b(\lambda)$ of $(M,b)$ is
+$\lambda b$ on the same module, $M(\lambda)$, with $\lambda G$ and
+$\det(b(\lambda))=\lambda^n\det(b)$" as the *definition* of twist for
+$(M,b)\in\mathbf{Bil}_{R,W}$.
+
+**Preferred:** define $\varphi_*$ for any $\varphi\colon W\to W'$ as above;
+then note $\lambda\cdot_W$ as the case $\varphi:=\lambda\cdot_W$, and
+prove $G_e(\lambda b)=\lambda G_e(b)$ and, only for framed finite free
+$M\cong R^n$ with $W=R$, $\det(G_e(\lambda b))=\lambda^n\det(G_e(b))$ as a
+*consequence* with hypotheses, not as the definition.
+
+### `PR-68`: Heuristic that makes the generalization obvious — read the type of every parameter as an object, then ask variance
+
+The twist generalization is not a trick to remember — it is forced by
+one habit: read every parameter of a definition as an *object* of a
+category, then ask how the construction varies functorially in that
+parameter. That habit, applied systematically, rediscovers the
+generalisations in this document without remembering them.
+
+Timeless heuristics that generalize (use on every new definition):
+
+* **Functoriality in the parameter.** $b\colon M\otimes M\to W$ exhibits
+  $W$ as the codomain object $W\in\mathbf{Mod}_R$ of
+  $\operatorname{Hom}_R(M\otimes M,W)=\mathbf{Bil}_{R,W}(M)$. Any
+  $R$-linear $\varphi\colon W\to W'$ post-composes to
+  $\varphi_*\colon\operatorname{Hom}(M\otimes M,W)\to\operatorname{Hom}(M\otimes M,W')$,
+  $b\mapsto\varphi\circ b$. So $\mathbf{Bil}_R(-)$ is a functor
+  $\mathbf{Mod}_R\to\mathbf{Cat}$ in $W$ by definition — $W\mapsto\mathbf{Bil}_{R,W}$,
+  $\varphi\mapsto\varphi_*$ — and a twist is $\varphi_*$ when $W'=W$.
+
+* **Element $\to$ morphism.** "$\lambda\in R$" acting as "$\lambda b(x,y)$"
+  is the shadow of the morphism $\varphi:=\lambda\cdot_W\colon W\to W$
+  in $\mathbf{Mod}_R$ ($R\to\operatorname{End}_R(W)$). Replace the element
+  by the morphism it names; the general is any $\varphi\in\operatorname{End}_R(W)$,
+  not just $\lambda\cdot_W$.
+
+* **Variance.** $\mathbf{Bil}_{R,W}(M)=\operatorname{Hom}_R(M\otimes M,W)$ is
+  covariant in $W$ (post-composition) and contravariant in $M$
+  ($(f\otimes f)^*$), so $W\to W'$ gives $\mathbf{Bil}_W\to\mathbf{Bil}_{W'}$
+  and $f\colon M\to N$ gives $\mathbf{Bil}(N)\to\mathbf{Bil}(M)$.
+
+* **Grothendieck construction for the parameter.** The categories
+  $\mathbf{Bil}_{R,W}$ assemble to the fibered category
+  $\int_{W\in\mathbf{Mod}_R}\mathbf{Bil}_{R,W}$ whose fiber over $W$ is
+  $\mathbf{Bil}_{R,W}$ and whose cartesian transport is $\varphi_*$. A
+  definition that fixes $W$ and $\lambda$ is the fiber at one $W$ with one
+  $\varphi$.
+
+To rediscover a forgotten generalization: re-read the definition as a Hom
+in its codomain, list the categories of its parameters ($W\in\mathbf{Mod}_R$,
+$M\in\mathbf{Mod}_R$, $b\in\operatorname{Hom}(M\otimes M,W)$), and ask "what
+$\operatorname{Hom}$-maps in those categories could act here?" The answer is
+forced by type: $W\to W'$ must act by $\varphi\circ b$, $M\to N$ by
+$b\circ(f\otimes f)$, and the special $\lambda$ is the single $\varphi$
+coming from $R\to\operatorname{End}(W)$.
+
 ### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
 
 A fenced `Definition` is an atomic unit with one logical status: it
@@ -4887,6 +4973,25 @@ R^{(I)},W)$, $b(v,w)=\langle v,Aw\rangle$ with $A$ symmetric $\iff$
 self-adjoint) as a Proposition with honest hypotheses, not as the
 definition. The diagram is preferable because it already is the general
 case.
+
+**29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
+$\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
+gives $\varphi_*\colon(M,b\colon M\otimes M\to W)\mapsto(M,\varphi\circ
+b)$ by post-composition, and a twist is $\varphi_*$ when $W'=W$
+(PR-67); $\lambda b$ is the case $\varphi:=\lambda\cdot_W$. State
+$\varphi_*$ for any $\varphi$, then note $\lambda\cdot_W$ as a
+specialization.
+
+**30. Heuristic: read every parameter as an object and ask variance.**
+The twist is forced by reading $W$ as $W\in\mathbf{Mod}_R$ and
+$b\in\operatorname{Hom}_R(M\otimes M,W)$ and asking how $\operatorname{Hom}$
+varies covariantly in $W$ ($\varphi\circ b$) and contravariantly in $M$
+($b\circ(f\otimes f)$) — i.e. replace "$\lambda\in R$" / "$\forall x\in
+M$" by the morphisms $\varphi\colon W\to W'$ / $x\colon1\to M$ they
+shadow (PR-68). That habit rediscovers $\varphi_*\colon\mathbf{Bil}_W\to
+\mathbf{Bil}_{W'}$, $W\mapsto\mathbf{Bil}_{R,W}$ as a fibered category,
+and the element $\lambda$ as the single $\varphi:=\lambda\cdot_W$ among
+all $\operatorname{End}_R(W)$ without remembering it.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
