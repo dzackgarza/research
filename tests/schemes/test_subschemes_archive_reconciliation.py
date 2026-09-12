@@ -13,9 +13,16 @@ from dzack_research.preamble.all import (
     AffineSpace,
     ClosedEmbeddings,
     ClosedSubschemes,
+    OpenImmersions,
     ProjectiveSpace,
     Schemes,
 )
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/schemes/subschemes.sage",
+    "live_owner": "src/dzack_research/preamble/categories/schemes/schemes.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def test_affine_equation_defined_subscheme_is_the_live_closed_subobject() -> None:
@@ -64,3 +71,16 @@ def test_scheme_theoretic_intersection_is_cut_out_by_the_sum_of_equation_ideals(
     assert ideal.contains(x)
     assert ideal.contains(y)
     assert origin.codimension() == 2
+
+
+def test_archived_open_subscheme_is_the_live_open_immersion_complement() -> None:
+    plane = AffineSpace(2, QQ, names=("x", "y"))
+    x, y = plane.coordinate_ring().algebra_generators()
+    parabola = plane.closed_subscheme(y - x**2)
+    complement = parabola.open_complement()
+
+    assert complement in OpenImmersions(plane)
+    assert complement.inclusion().domain() is complement
+    assert complement.inclusion().codomain() is plane
+    assert complement.is_distinguished_open()
+    assert complement.distinguished_open_element() == y - x**2
