@@ -3181,6 +3181,52 @@ operations" (PR-38) on each use.
 and "$\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes_R M,W)$."
 Never re-describe bilinearity in prose once the tensor classifies it.
 
+### `TERM-10`: "Presheaf" overloaded for $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$ / "$R$-module of maps" functor
+
+A presheaf on $\mathcal C$ is a functor $\mathcal C^{\mathrm{op}}\to
+\mathbf{Set}$ (stably $\mathcal C^{\mathrm{op}}\to\mathcal S$). An
+$R$-module-valued functor $\mathcal C^{\mathrm{op}}\to\mathbf{Mod}_R$
+is an $\mathbf{Mod}_R$-valued presheaf, or an $\mathbf{Mod}_R$-enriched
+presheaf when the enrichment from {#thm-mod-closed} is meant — not a
+"presheaf" unqualified. Overloading the generic name hides which
+enrichment and which $\operatorname{Bil}$ is named (the $R$-module
+$\operatorname{Bil}_{R,W}(M)$ vs. the functor
+$M\mapsto\operatorname{Bil}_{R,W}(M)$) and adds no content beyond
+"functor," since
+$\operatorname{Bil}_{R,W}(M)=\operatorname{Hom}_R(M\otimes_R M,W)$ is
+already functorial in $M$ by the Hom — $f\mapsto (f\otimes f)^*$.
+
+Concrete standards:
+
+* **Presheaf:** $\operatorname{PSh}(\mathcal C):=
+  \operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathbf{Set})$, stably
+  $\operatorname{Fun}(\mathcal C^{\mathrm{op}},\mathcal S)$ [@Stacks-00VG;
+  Lurie HTT 0.6.5].
+
+* **$R$-module-valued:** a functor $\mathbf{Mod}_R^{\mathrm{op}}\to
+  \mathbf{Mod}_R$ is an $\mathbf{Mod}_R$-valued presheaf on
+  $\mathbf{Mod}_R$, equivalently an $\mathbf{Mod}_R$-enriched presheaf via
+  the self-enrichment {#thm-mod-closed}. Name the enrichment when it
+  matters.
+
+* **At the point of use:** no "defines a presheaf" to name functoriality
+  that is already the Hom's.
+
+**Banned:** "Pullback along $f\colon M\to N$ sends $b$ to
+$f^*b(x,y)=b(fx,fy)$, and defines a presheaf
+$\operatorname{Bil}_{R,W}\colon(R\text{-}\mathbf{Mod})^{\mathrm{op}}\to
+R\text{-}\mathbf{Mod}$."
+
+**Preferred:** "$\operatorname{Bil}_{R,W}(M):=
+\operatorname{Hom}_R(M\otimes_R M,W)$ as $R$-module, functorial in $M$
+by $(f\colon M\to N)\mapsto (f\otimes f)^*\colon
+\operatorname{Hom}_R(N\otimes_R N,W)\to\operatorname{Hom}_R(M\otimes_R
+M,W)$, $f^*b(x,y)=b(fx,fy)$ as the element formula for $(f\otimes f)^*b$."
+If the word is needed, "as an $\mathbf{Mod}_R$-valued presheaf on
+$\mathbf{Mod}_R$ (resp. $\mathbf{Mod}_R$-enriched presheaf via
+{#thm-mod-closed})"; otherwise just "as a functor
+$\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$."
+
 ## Contributing to this document
 
 When reading the corpus, audit for new instances of the general patterns
@@ -3345,3 +3391,8 @@ defined once with its universal property $\operatorname{Hom}_R(M\otimes_R
 M,W)\cong R\text{-Bil}(M\times M,W)$, and from then on a $W$-valued
 form is just $b\colon M\otimes_RM\to W$ (PR-40). Define the tensor
 once, then use homs from the tensor to encode bilinearity implicitly.
+Calling the resulting functoriality "defines a presheaf
+$\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" overloads the generic
+name for $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Set}$ and adds no
+content beyond "functor" — name the enrichment when needed as
+$\mathbf{Mod}_R$-valued / $\mathbf{Mod}_R$-enriched presheaf (TERM-10).
