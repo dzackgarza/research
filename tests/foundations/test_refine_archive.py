@@ -23,11 +23,25 @@ from dzack_research.preamble.categories.lattices import (
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.refine import refine
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/refine.sage",
-    "live_owner": "src/dzack_research/preamble/refine.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/refine.sage",
+        "live_owner": "src/dzack_research/preamble/refine.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/test_preamble_refine.sage",
+        "live_owner": "tests/foundations/test_refine_archive.py",
+        "owner_overrides": {
+            "test_unequal_rank_hom_from_generator_images": "tests/modules/test_morphism_matrices_archive.py",
+            "test_cython_parents_refuse_refinement_and_so_keep_their_underlying_set": "tests/foundations/test_canonical_object_identity_archive.py",
+            "test_a_polynomial_ring_is_the_free_algebra_the_notebook_receives": "tests/algebras/test_framed_free_algebra_comparisons_archive.py",
+            "test_real_roots_come_from_the_algebraic_closure": "tests/foundations/test_refine_archive.py",
+            "test_the_noncrystallographic_coxeter_groups_have_their_orders": "tests/foundations/test_refine_archive.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def test_refinement_preserves_the_owned_parent_identity() -> None:
@@ -87,3 +101,26 @@ def test_archived_noncrystallographic_H4_group_has_order_14400() -> None:
     from sage.combinat.root_system.coxeter_group import CoxeterGroup
 
     assert CoxeterGroup(["H", 4]).cardinality() == 14400
+
+
+def test_module_zero_and_unequal_rank_hom_survive_owned_refinement() -> None:
+    from dzack_research.preamble.all import BasedFreeModule, ZZ, module_homset
+    from dzack_research.preamble.categories.sets import finite_ordered_set
+
+    source = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    target = BasedFreeModule(ZZ, finite_ordered_set(("a", "b", "c")))
+    morphism = module_homset(source, target)(
+        {
+            "x": target.module_generator("b"),
+            "y": target.module_generator("a") + target.module_generator("c"),
+        }
+    )
+
+    assert source(0) == source.zero()
+    assert target(0) == target.zero()
+    assert morphism.domain() is source
+    assert morphism.codomain() is target
+    assert morphism(source.module_generator("x")) == target.module_generator("b")
+    assert morphism(source.module_generator("y")) == (
+        target.module_generator("a") + target.module_generator("c")
+    )
