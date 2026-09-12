@@ -4269,6 +4269,54 @@ four related definitions), then separate
 `::: {.Remark} When 2W=W the element condition is vacuous; the content
 is the fiber of γ^* … :::` — one status per block.
 
+### `PR-65`: A free-floating "`**Remark.**` … $G_e(b)=\begin{pmatrix}0&1\\1&0\end{pmatrix}$ … $b(e_1+e_2,e_1+e_2)=2$" with no claim has almost no epistemic status and is not self-contained
+
+A fenced unit has epistemic status only as an instance or counterexample
+*to* a quantified proposition. The block as written gives data
+$((\mathbb Z^2,e),b)$ with $G_e(b)=\begin{pmatrix}0&1\\1&0\end{pmatrix}$
+and computes $b(e_i,e_i)=0$ ($G_{ii}=0$) and $b(e_1+e_2,e_1+e_2)=2$, but
+states no universal it exemplifies — not "there exists $b$ symmetric with
+$G_{ii}=0$ but $b\notin\operatorname{AltBil}$," not "vanishing on a basis
+does not imply $b\circ\Delta=0$," not
+"$\{b\mid\forall i\,b(e_i,e_i)=0\}\not\subseteq\operatorname{AltBil}$ as
+$R$-submodules" — so deleting it leaves the skeleton unchanged (SEC-6) and
+meeting it alone a reader cannot tell why the calculation is being done or
+what it shows.
+
+It is also not self-contained: a self-contained `Example` states what it
+is an example *of*, why the calculation is done, and what it shows,
+without external prose. And it repeats the $((M,e),b)$ vs. $(M,b)$
+conflation (PR-58/60): "$\operatorname{Gram}$" with no $e$, "$\mathbb Z^2$
+with Gram matrix …" instead of "$((\mathbb Z^2,e),b)$ with
+$G_e(b)=\dots$," and "$b(e_1+e_2,e_1+e_2)=2$" as the $U$-evaluation of
+$b\circ\Delta\neq0$ instead of "$b\notin\operatorname{AltBil}$."
+
+Concrete standard — fenced, labelled, with the quantified claim and its
+negated containment made explicit:
+
+"::: {#exm-U-not-alternating} **Example.** Vanishing on a basis does not
+imply alternating. Let $e=(e_1,e_2)\colon\mathbb Z^2\xrightarrow{\sim}
+\mathbb Z^2$ be the standard ordered basis and put
+$G_e(b):=\begin{pmatrix}0&1\\1&0\end{pmatrix}=e^*b\in M_2(\mathbb Z)$ for
+$b\colon\mathbb Z^2\otimes\mathbb Z^2\to\mathbb Z$. Then $b$ is symmetric
+($b\circ\tau=b$) with $G_{ii}=b(e_i,e_i)=0$ for $i=1,2$, but
+$b\notin\operatorname{AltBil}_{\mathbb Z,\mathbb Z}(\mathbb Z^2)$ since
+$(b\circ\Delta)(e_1+e_2)=b(e_1+e_2,e_1+e_2)=2\neq0$. Hence
+$\{b\mid\forall i\,b(e_i,e_i)=0\}\not\subseteq\operatorname{AltBil}$ as
+$R$-submodules. :::"
+
+A `Remark` is secondary pedagogy *after* the primary Definition/Lemma/
+Proposition/Example it remarks on, not a primary Example smuggled as a
+bold-`Remark.` sentence.
+
+**Banned:** "`**Remark.**` The symmetric form on $\mathbb Z^2$ with Gram
+matrix $\begin{pmatrix}0&1\\1&0\end{pmatrix}$ has vanishing diagonal and
+$b(e_1+e_2,e_1+e_2)=2$."
+
+**Preferred:** the fenced `Example` above — names $((\mathbb Z^2,e),b)$ and
+$G_e(b)$, states the quantified universal it refutes, shows
+$b\notin\operatorname{AltBil}$ via $b\circ\Delta$, and is self-contained.
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4679,6 +4727,19 @@ $\operatorname{Bil}_{R,W}(M):=\operatorname{Hom}_R(M\otimes M,W)$, and
 restates $b\colon M\times M\to W$ instead of $b\in\operatorname{Bil}$
 (PR-49) — definitions as objects and containments, not signatures and
 element formulas.
+
+**28. Free-floating Remark with a calculation but no claim has no
+epistemic status and is not self-contained.** "`**Remark.**` The symmetric
+form on $\mathbb Z^2$ with Gram matrix $\begin{pmatrix}0&1\\1&0\end{pmatrix}$
+has vanishing diagonal and $b(e_1+e_2,e_1+e_2)=2$" gives $G_e(b)$ and two
+equalities but states no quantified universal it exemplifies — not
+"$\exists b$ symmetric with $G_{ii}=0$ but $b\notin\operatorname{AltBil}$"
+(PR-65). It is not a Definition, Lemma, or Example, contributes no
+fenced unit to the skeleton, and is not self-contained (does not say what
+it is an example *of* or what the calculation shows). Standard is a fenced,
+labelled `Example` that names $((\mathbb Z^2,e),b)$ and $G_e(b)$, states
+"vanishing on a basis does not imply $b\circ\Delta=0$," and shows
+$b\notin\operatorname{AltBil}$ via $b\circ\Delta$.
 
 **18. Nominalizing the adjective/verb — "satisfies the evenness
 condition."** "Even" is an adjective ($b$ is even,
