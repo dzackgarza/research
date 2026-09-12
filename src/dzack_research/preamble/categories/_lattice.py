@@ -1193,8 +1193,8 @@ def lattice_latex(lattice: Lattice, ring_tex: str) -> str:
     return "\n".join(lines)
 
 
-def _finite_simply_laced_cartan_type(data):
-    r"""Return the finite simply-laced Cartan type named by ``data``."""
+def _finite_crystallographic_cartan_type(data):
+    r"""Return the finite crystallographic Cartan type named by ``data``."""
     match data:
         case CartanType_abstract():
             cartan_type = data
@@ -1204,8 +1204,8 @@ def _finite_simply_laced_cartan_type(data):
             cartan_type = CartanType(list(data))
         case _:
             raise TypeError(f"{data} is not a Cartan type")
-    if not cartan_type.is_finite() or not cartan_type.is_simply_laced():
-        raise TypeError(f"{cartan_type} is not a finite simply-laced Cartan type")
+    if not cartan_type.is_finite() or not cartan_type.is_crystallographic():
+        raise TypeError(f"{cartan_type} is not a finite crystallographic Cartan type")
     return cartan_type
 
 
@@ -1223,16 +1223,25 @@ def _hyperbolic_plane_gram_tensor(ring) -> Tensor:
 
 
 def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
-    r"""Return the Gram tensor of the simply-laced root lattice.
+    r"""Return the negative Gram tensor of a finite crystallographic root lattice.
 
-    In the simple-root basis the pairing is the negative of the Cartan
-    form.  That form is type $(0,2)$; Sage's Cartan matrix is only the
-    array of those pairing components.
+    If ``A`` is the Cartan matrix and ``D`` its minimal positive integral
+    symmetrizer, then ``D A`` is the simple-root Gram matrix: its ``i``-th
+    diagonal entry is the square of the ``i``-th root.  The repository uses
+    negative-definite root lattices, hence ``-D A``.  In the simply-laced
+    case ``D=1`` and this is the existing ``-A`` construction.
     """
-    pairings = cartan_type.cartan_matrix()
+    cartan = cartan_type.cartan_matrix()
+    symmetrizer = cartan_type.symmetrizer()
+    if symmetrizer is None:
+        raise TypeError(f"{cartan_type} has no integral Cartan symmetrizer")
+    indices = tuple(cartan_type.index_set())
     rank = int(cartan_type.rank())
     components = [
-        tuple(-ring._from_engine_element(pairings[i, j]) for j in range(rank))
+        tuple(
+            -ring._from_engine_element(symmetrizer[indices[i]] * cartan[i, j])
+            for j in range(rank)
+        )
         for i in range(rank)
     ]
     gram_tensor = tensor(ring, (), (rank, rank), components)
@@ -1422,7 +1431,7 @@ def lattice(
                 category,
             )
         case str():
-            cartan_type = _finite_simply_laced_cartan_type(data)
+            cartan_type = _finite_crystallographic_cartan_type(data)
             return _lattice_from_gram_tensor(
                 _root_cartan_gram_tensor(ring, cartan_type),
                 ring,
@@ -1432,7 +1441,7 @@ def lattice(
                 root_cartan_type=cartan_type,
             )
         case CartanType_abstract():
-            cartan_type = _finite_simply_laced_cartan_type(data)
+            cartan_type = _finite_crystallographic_cartan_type(data)
             return _lattice_from_gram_tensor(
                 _root_cartan_gram_tensor(ring, cartan_type),
                 ring,
@@ -1450,7 +1459,7 @@ def lattice(
                 category,
             )
         case list() | tuple() if data and isinstance(data[0], str):
-            cartan_type = _finite_simply_laced_cartan_type(data)
+            cartan_type = _finite_crystallographic_cartan_type(data)
             return _lattice_from_gram_tensor(
                 _root_cartan_gram_tensor(ring, cartan_type),
                 ring,

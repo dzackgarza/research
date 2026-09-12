@@ -761,11 +761,11 @@ class Lattices(OwnedCategoryOverBaseRing):
 
     @staticmethod
     def root_lattice(kind, rank, names=None):
-        r"""Return the negative-definite simply-laced root lattice of type ``kind_rank``."""
+        r"""Return the negative-definite crystallographic root lattice of type ``kind_rank``."""
         kind = str(kind)
         rank = int(rank)
-        if kind not in {"A", "D", "E"}:
-            raise ValueError(f"unknown simply-laced root family {kind!r}")
+        if kind not in {"A", "B", "C", "D", "E", "F", "G"}:
+            raise ValueError(f"unknown finite crystallographic root family {kind!r}")
         return Lattices(_own_ring(SageZZ))(f"{kind}{rank}", names=names)
 
     @staticmethod

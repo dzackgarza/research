@@ -65,3 +65,16 @@ def test_leech_lattice_uses_the_rootless_even_unimodular_archive_contract() -> N
     assert leech.is_even()
     assert abs(leech.gram_matrix().determinant()) == 1
     assert leech.roots().cardinality() == 0
+
+
+def test_non_simply_laced_root_lattices_use_the_integral_cartan_symmetrizer() -> None:
+    f4 = Lattices.root_lattice("F", 4)
+    g2 = Lattices.root_lattice("G", 2)
+
+    assert f4.module_rank() == 4
+    assert f4.gram_matrix().determinant() == ZZ(4)
+    assert tuple(abs(f4.b(root, root)) for root in f4.simple_roots()) == (4, 4, 2, 2)
+
+    assert g2.module_rank() == 2
+    assert g2.gram_matrix().determinant() == ZZ(3)
+    assert tuple(abs(g2.b(root, root)) for root in g2.simple_roots()) == (6, 2)
