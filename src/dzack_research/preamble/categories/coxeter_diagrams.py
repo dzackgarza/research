@@ -768,6 +768,23 @@ class CoxeterDiagrams(OwnedCategory):
         if not rooted:
             return _coxeter_diagram(CoxeterMatrix(cartan_type), names=names, positions=positions)
 
+        if str(cartan_type[0]) == "H":
+            lattice = Lattices.root_lattice("H", int(cartan_type[1]))
+            roots = tuple(lattice.module_generators())
+            mirrors = finite_ordered_set(tuple(CoxeterMatrix(cartan_type).index_set()))
+            gram = tensor(
+                lattice.base_ring(),
+                (),
+                (mirrors.cardinality(), mirrors.cardinality()),
+                [[left.b(right) for right in roots] for left in roots],
+            )
+            return _coxeter_diagram(
+                CoxeterMatrix(cartan_type),
+                names=names,
+                roots=roots,
+                root_gram=gram,
+                positions=positions,
+            )
         lattice = Lattices(_own_ring(SageZZ))(cartan_type)
         return self.from_roots(tuple(lattice.module_generators()), names=names, positions=positions)
 

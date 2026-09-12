@@ -372,3 +372,23 @@ def test_archived_e6_rank_agrees_across_diagram_and_root_realization() -> None:
     assert diagram.root_realization().module_rank() == 6
     assert diagram.coxeter_group().degree() == 6
 
+
+def test_icosahedral_root_lattices_live_over_the_golden_integer_ring() -> None:
+    h3 = Lattices.root_lattice("H", 3)
+    h4 = Lattices.root_lattice("H", 4)
+
+    assert h3.base_ring() is h4.base_ring()
+    assert h3.base_ring() is not ZZ
+    assert int(h3.base_ring().fraction_field().degree()) == 2
+    assert h3.module_rank() == 3
+    assert h4.module_rank() == 4
+    assert h3.roots().cardinality() == 30
+    assert h4.roots().cardinality() == 120
+    assert h3.coxeter_number() == 10
+    assert h4.coxeter_number() == 30
+
+    rooted = CoxeterDiagrams().from_cartan_type(["H", 3], rooted=True)
+    assert rooted.root_realization().base_ring() is h3.base_ring()
+    assert rooted.root_gram_tensor().base_ring() is h3.base_ring()
+    assert rooted.coxeter_matrix() == CoxeterMatrix(["H", 3])
+
