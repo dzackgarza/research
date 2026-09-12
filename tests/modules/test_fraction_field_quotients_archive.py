@@ -2,6 +2,12 @@ r"""Archive reconciliation for ``QQ / n ZZ`` as an owned module quotient."""
 
 from dzack_research.preamble.all import QQ, ZZ, FractionFieldQuotient
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/fraction_field_quotients.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/framed/fraction_field_quotients.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_fraction_field_quotient_retains_projection_lift_and_factorial_framing() -> None:
     quotient = FractionFieldQuotient(ZZ, 6)
