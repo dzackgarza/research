@@ -9,11 +9,23 @@ Coxeter mathematics remains in ordinary collected tests.
 import tomllib
 from pathlib import Path
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/coxeter_tdd_specs/run_tests.py",
-    "live_owner": "pyproject.toml",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/run_tests.py",
+        "live_owner": "pyproject.toml",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/fixtures/__init__.py",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/test_index.py",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def test_repository_pytest_policy_replaces_the_custom_coxeter_runner() -> None:

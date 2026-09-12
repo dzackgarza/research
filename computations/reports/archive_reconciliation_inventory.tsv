@@ -2921,10 +2921,10 @@ preamble/symbols.py	<module>	module	1	0		src/dzack_research/preamble/all.py	reco
 preamble/symbols.py	import_statement_for	function	36	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/symbols.py	synthetic_imports	function	63	0		src/dzack_research/preamble/all.py	reconciled-live-owner
 preamble/tests/conftest.py	<module>	module	1	0		tests/conftest.py	reconciled-live-owner
-preamble/tests/coxeter_tdd_specs/conftest.py	<module>	module	1	0			unreviewed
-preamble/tests/coxeter_tdd_specs/conftest.py	test_data_dir	specimen	22	0			unreviewed
-preamble/tests/coxeter_tdd_specs/conftest.py	expected_finite_orders	function	28	0			unreviewed
-preamble/tests/coxeter_tdd_specs/fixtures/__init__.py	<module>	module	1	0			unreviewed
+preamble/tests/coxeter_tdd_specs/conftest.py	<module>	module	1	0		tests/groups/test_coxeter_finite_orders_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/conftest.py	test_data_dir	specimen	22	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/conftest.py	expected_finite_orders	function	28	0		tests/groups/test_coxeter_finite_orders_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/fixtures/__init__.py	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	FINITE_CRYSTALLOGRAPHIC_SCHLAEFLIANS	binding	48	0			unreviewed
 preamble/tests/coxeter_tdd_specs/integration/test_constructor_integration.sage	ENUMERABLE_ORDERS	binding	66	0			unreviewed
@@ -2997,9 +2997,9 @@ preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	DIAGRAM_IN
 preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_diagram_invariants_match_the_literature	specimen	211	0			unreviewed
 preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_weyl_orders_of_the_small_diagram_invariant_rows	specimen	228	0			unreviewed
 preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_extended_diagrams_are_the_affine_roster	specimen	253	0			unreviewed
-preamble/tests/coxeter_tdd_specs/test_index.py	<module>	module	1	0			unreviewed
-preamble/tests/coxeter_tdd_specs/test_index.py	analyze_test_file	function	15	0			unreviewed
-preamble/tests/coxeter_tdd_specs/test_index.py	generate_test_index	function	64	0			unreviewed
+preamble/tests/coxeter_tdd_specs/test_index.py	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/test_index.py	analyze_test_file	function	15	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/test_index.py	generate_test_index	function	64	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	<module>	module	1	0			unreviewed
 preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a2_determinant_signature_and_discriminant	specimen	33	0			unreviewed
 preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a2_eigenvalues_are_the_negatives_of_the_schlafli_eigenvalues	specimen	51	0			unreviewed

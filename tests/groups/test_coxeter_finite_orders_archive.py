@@ -13,6 +13,15 @@ orders used by the archived literature corpus.
 
 from dzack_research.preamble.all import Groups
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/coxeter_tdd_specs/conftest.py",
+    "live_owner": "tests/groups/test_coxeter_finite_orders_archive.py",
+    "owner_overrides": {
+        "test_data_dir": "tests/lattices/test_coxeter_literature.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 FINITE_COXETER_ORDERS = {
     ("A", 1): 2,
     ("A", 2): 6,
@@ -44,3 +53,8 @@ def test_archived_finite_coxeter_orders_use_the_live_owned_groups() -> None:
     for cartan_type, expected_order in FINITE_COXETER_ORDERS.items():
         group = Groups.Coxeter(list(cartan_type))
         assert group.order() == expected_order
+
+
+def test_archived_exceptional_order_oracles_include_large_nonclassical_cases() -> None:
+    assert Groups.Coxeter(["H", 4]).order() == FINITE_COXETER_ORDERS[("H", 4)] == 14400
+    assert Groups.Coxeter(["E", 8]).order() == FINITE_COXETER_ORDERS[("E", 8)] == 696729600
