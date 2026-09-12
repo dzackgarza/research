@@ -1214,6 +1214,44 @@ class QuotientCompletionComparison(SageObject):
         )
 
 
+class MaximalAdicLocalizationCompletionComparison(SageObject):
+    r"""The canonical comparison ``R^_m ~= (R_m)^`` for Noetherian ``R``."""
+
+    def __init__(
+        self,
+        source_completion,
+        local_ring,
+        local_completion,
+        forward,
+        inverse,
+    ) -> None:
+        self._source_completion = source_completion
+        self._local_ring = local_ring
+        self._local_completion = local_completion
+        self._forward = forward
+        self._inverse = inverse
+
+    def source_completion(self):
+        return self._source_completion
+
+    def local_ring(self):
+        return self._local_ring
+
+    def local_completion(self):
+        return self._local_completion
+
+    def forward(self):
+        return self._forward
+
+    isomorphism = forward
+
+    def inverse(self):
+        return self._inverse
+
+    def _repr_(self):
+        return f"{self.source_completion()} ~= {self.local_completion()}"
+
+
 
 
 
@@ -1577,6 +1615,38 @@ class AdicCompletions(Category):
                 )
 
             return ring_morphism(self, target_completion, image)
+
+        @cached_method
+        def maximal_localization_comparison(self):
+            r"""Return ``R^_m ~= (R_m)^`` when the ideal of definition is maximal.
+
+            For Noetherian ``R`` completion at a maximal ideal agrees with
+            completion after localizing at that maximal ideal.  Both arrows
+            are assembled from the localization/completion universal maps;
+            this method does not assert any analogous comparison for an
+            arbitrary localization.
+            """
+            source = self.completion_source()
+            maximal = self.ideal_of_definition()
+            if source not in OwnedNoetherianRings():
+                raise TypeError("the maximal-adic localization comparison requires a Noetherian source")
+            if not bool(maximal.is_maximal()):
+                raise TypeError("the localization/completion isomorphism here is maximal-adic")
+            local = source.localize_at_prime(maximal)
+            local_completion = local.adic_completion(
+                local.maximal_ideal(),
+                precision=self.computation_precision(),
+            )
+            forward = self.induced_map(local.localization_map(), local_completion)
+            local_to_completion = local.induced_morphism(self.completion_map())
+            inverse = local_completion.induced_map(local_to_completion, self)
+            return MaximalAdicLocalizationCompletionComparison(
+                self,
+                local,
+                local_completion,
+                forward,
+                inverse,
+            )
 
         @cached_method
         def residue_map(self):
@@ -2602,10 +2672,79 @@ def AdicCompletion(ring, ideal, *, precision=20):
     """
     source = _own_ring(ring)
     defining = _owned_ideal(source, ideal)
+    if source in PrimeLocalizations() and defining == source.maximal_ideal():
+        bottom = source.localization_source()
+        prime = source.localized_prime()
+        bottom_completion = AdicCompletion(bottom, prime, precision=precision)
+        local_to_completion = source.induced_morphism(
+            bottom_completion.completion_map()
+        )
+        completion_engine = _engine_ring(bottom_completion)
+        bottom_projection_lift = getattr(
+            bottom_completion,
+            "_preamble_projection_lift",
+            None,
+        )
+        if bottom_projection_lift is None:
+            raise NotImplementedError(
+                "the selected source completion has no maintained finite-stage lift"
+            )
+
+        def completion_image(element):
+            return _engine_element(
+                bottom_completion,
+                local_to_completion(source(element)),
+            )
+
+        def projection_lift(value, exponent):
+            return source.localization_map()(
+                bottom_projection_lift(value, exponent)
+            )
+
+        completed_ideal_generators = tuple(
+            completion_image(generator)
+            for generator in defining.ideal_generators()
+        )
+        return _AdicCompletionAlgebraParent(
+            completion_engine,
+            source,
+            defining,
+            precision,
+            completed_ideal_generators=completed_ideal_generators,
+            projection_lift=projection_lift,
+            arithmetic_mode=bottom_completion.completion_arithmetic_mode(),
+            completion_image=completion_image,
+            completion_map_kernel=source.ideal(source.zero()),
+        )
     defining_engine = _engine_ideal(source, defining)
     generators = tuple(defining_engine.gens())
     engine = _engine_ring(source)
     zero_ideal = source.ideal(source.zero())
+    unit_ideal = source.ideal(source.one())
+    if defining == unit_ideal:
+        zero_quotient = source.quotient_ring(unit_ideal)
+        zero_engine = getattr(zero_quotient, "_preamble_engine_ring", None)
+        if zero_engine is None:
+            raise NotImplementedError(
+                "the unit-adic zero completion needs the represented zero quotient engine"
+            )
+
+        def completion_image(_element):
+            return zero_engine.zero()
+
+        def projection_lift(_value, _exponent):
+            return source.zero()
+
+        return _AdicCompletionAlgebraParent(
+            zero_engine,
+            source,
+            defining,
+            precision,
+            projection_lift=projection_lift,
+            arithmetic_mode="exact_backend",
+            completion_image=completion_image,
+            completion_map_kernel=unit_ideal,
+        )
     if defining == zero_ideal:
         def projection_lift(value, _exponent):
             return source._from_engine_element(engine(value))
