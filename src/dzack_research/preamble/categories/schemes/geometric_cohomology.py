@@ -14,7 +14,9 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
     CochainComplexes,
     Cohomology,
+    cochain_homset,
 )
+from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     BilinearForm,
 )
@@ -271,6 +273,31 @@ def ToricWeightCohomology(scheme, divisor, weight, degree):
     )
 
 
+def ToricWeightScalarCochainMap(scheme, divisor, weight, scalar):
+    r"""Return multiplication by ``scalar`` on the selected toric weight complex.
+
+    This is the cochain map induced by the scalar endomorphism of the line
+    bundle ``O_X(D)``.  It is represented on the actual complex computing the
+    chosen character weight, so the induced cohomology map is obtained by the
+    shared cohomology functor rather than by scalar multiplication on a
+    separately recomputed vector space.
+    """
+    complex_ = ToricWeightCohomologyComplex(scheme, divisor, weight)
+    scalar = complex_.base_ring()(scalar)
+    return scalar * cochain_homset(complex_, complex_).identity()
+
+
+def ToricWeightScalarCohomologyMap(scheme, divisor, weight, degree, scalar):
+    r"""Return the map on one weight cohomology induced by scalar multiplication."""
+    cochain_map = ToricWeightScalarCochainMap(
+        scheme,
+        divisor,
+        weight,
+        scalar,
+    )
+    return cohomology_functor(scheme.scheme_base_ring(), int(degree))(cochain_map)
+
+
 def ToricLineBundleCohomology(scheme, divisor, degree):
     r"""Assemble ``H^degree(X,O_X(D))`` as the direct sum of its weight cohomologies."""
     from dzack_research.preamble.categories.modules.pure.modules import Modules
@@ -469,4 +496,6 @@ __all__ = [
     "ToricWeightCohomology",
     "ToricWeightCohomologyComplex",
     "ToricWeightCohomologyComplexes",
+    "ToricWeightScalarCochainMap",
+    "ToricWeightScalarCohomologyMap",
 ]
