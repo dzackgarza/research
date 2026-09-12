@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     PrincipalIdealDomains,
     _engine_element,
     _engine_ring,
+    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
@@ -494,6 +495,58 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def support(self):
             r"""Return ``Supp(M)=V(Fitt_0(M))`` in ``Spec(R)``."""
             return self.base_ring().spectrum().V(self.fitting_ideal(0))
+
+        def finite_length_at_closed_point(self, point):
+            r"""Return ``length_{R_p}(M_p)`` when ``M`` is supported only at ``p``.
+
+            In the represented polynomial-over-a-field regime, Singular's
+            ``vdim`` computes the base-field dimension of the quotient of the
+            selected free cover by the selected relation module. If the support
+            is the single closed point ``p``, every composition factor is
+            ``kappa(p)``, so dividing by ``[kappa(p):k]`` gives the local
+            composition length.
+            """
+            from sage.libs.singular.function import singular_function
+
+            if self.is_zero():
+                return _own_ring(SageZZ).zero()
+            ring = self.base_ring()
+            spectrum = ring.spectrum()
+            if getattr(point, "parent", lambda: None)() is not spectrum:
+                point = spectrum(point)
+            if not point.ideal().is_maximal():
+                raise ValueError(
+                    "finite local module length here is taken at a closed point"
+                )
+            support_ideal = self.fitting_ideal(0).radical()
+            if support_ideal != point.ideal():
+                raise ValueError(
+                    "the represented module is not supported only at the selected closed point"
+                )
+            engine = _engine_ring(ring)
+            try:
+                field_coefficients = bool(engine.base_ring().is_field())
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                field_coefficients = False
+            if not field_coefficients or "multi_polynomial" not in type(engine).__module__:
+                raise NotImplementedError(
+                    "finite module length currently uses Singular over a multivariate polynomial algebra over a field"
+                )
+            relations = _engine_matrix(self.presentation_matrix()).transpose()
+            standard_basis = singular_function("std")(relations, ring=engine)
+            vector_dimension = int(
+                singular_function("vdim")(standard_basis, ring=engine)
+            )
+            if vector_dimension < 0:
+                raise ValueError(
+                    "the represented module does not have finite base-field dimension"
+                )
+            residue_degree = int(point.residue_degree())
+            if residue_degree <= 0 or vector_dimension % residue_degree:
+                raise ArithmeticError(
+                    "module vector-space dimension is incompatible with the point residue degree"
+                )
+            return _own_ring(SageZZ)(vector_dimension // residue_degree)
 
         def minimal_module_generators(self):
             r"""Return a minimal selected generating set over a local base ring.
