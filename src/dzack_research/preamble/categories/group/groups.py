@@ -53,6 +53,7 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
@@ -62,7 +63,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     _category_homset,
     category_packet,
 )
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
@@ -819,6 +819,17 @@ def _owned_group_constructor(constructor):
     return staticmethod(construct)
 
 
+def _nilpotent_group_constructor(*args, **kwargs):
+    from sage.groups.lie_gps.catalog import Nilpotent as SageNilpotent
+
+    return _own_group(
+        SageNilpotent(
+            *tuple(_group_constructor_argument(argument) for argument in args),
+            **{name: _group_constructor_argument(argument) for name, argument in kwargs.items()},
+        )
+    )
+
+
 def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **kwds):
     from sage.groups.misc_gps.misc_groups_catalog import Free as SageFree
 
@@ -1473,7 +1484,6 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     """Groups whose notebook-facing group interface is owned by the preamble."""
 
     from sage.groups.abelian_gps.abelian_group import AbelianGroup as _SageAbelianGroup
-    from sage.groups.lie_gps.catalog import Nilpotent as _SageNilpotent
     from sage.groups.misc_gps.misc_groups_catalog import (
         Artin as _SageArtin,
     )
@@ -1592,7 +1602,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
     SemimonomialTransformation = staticmethod(_SemimonomialTransformation)
     Affine = staticmethod(_Affine)
     Euclidean = staticmethod(_Euclidean)
-    Nilpotent = _owned_group_constructor(_SageNilpotent)
+    Nilpotent = staticmethod(_nilpotent_group_constructor)
     SmallGroup = staticmethod(_SmallGroup)
     ComplexReflection = _owned_group_constructor(_SageComplexReflection)
     Mathieu = _owned_group_constructor(_SageMathieu)
@@ -1860,11 +1870,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 and are read on the chosen conjugacy-class representatives,
                 in the order GAP's ``Irr`` lists them.
                 """
-                from dzack_research.preamble.categories.group.class_functions import (
-                    finite_group_class_function,
-                )
                 from dzack_research.preamble.categories.group.characters import (
                     character_from_class_function,
+                )
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
                 )
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,
@@ -1903,11 +1913,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 the owned character object; the finite class-function carrier
                 remains the existing private representation boundary.
                 """
-                from dzack_research.preamble.categories.group.class_functions import (
-                    finite_group_class_function,
-                )
                 from dzack_research.preamble.categories.group.characters import (
                     character_from_class_function,
+                )
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
                 )
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,
@@ -1968,11 +1978,11 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 element of the same owned character set and composes with the
                 existing character arithmetic without a separate value model.
                 """
-                from dzack_research.preamble.categories.group.class_functions import (
-                    finite_group_class_function,
-                )
                 from dzack_research.preamble.categories.group.characters import (
                     character_from_class_function,
+                )
+                from dzack_research.preamble.categories.group.class_functions import (
+                    finite_group_class_function,
                 )
                 from dzack_research.preamble.categories.rings.number_fields import (
                     CyclotomicField,

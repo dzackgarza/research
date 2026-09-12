@@ -45,6 +45,10 @@ from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
@@ -71,10 +75,6 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    Objects,
-    OwnedCategory,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,

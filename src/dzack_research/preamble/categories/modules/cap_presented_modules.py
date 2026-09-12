@@ -17,7 +17,6 @@ from pathlib import Path
 
 from sage.libs.gap.libgap import libgap
 
-
 _PACKAGE_VERSIONS = {
     "RingsForHomalg": "2026.05-01",
     "CAP": "2026.07-04",

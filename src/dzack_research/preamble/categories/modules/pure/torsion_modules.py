@@ -9,11 +9,6 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.misc_c import prod
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    _engine_ring,
-    _own_ring,
-)
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
@@ -28,12 +23,19 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     Modules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    _engine_ring,
+    _own_ring,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import refine
+
+
 class TorsionModules(OwnedCategoryOverBaseRing):
     _certifying_predicate = "is_torsion"
 

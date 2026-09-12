@@ -12,9 +12,14 @@ from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.internal_hom import (
     InternalHom,
     internal_hom_morphism,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+    module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedModules,
@@ -23,16 +28,11 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     RestrictedScalarsModuleView,
     restrict_scalars,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-    module_homset,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
     ring_morphism,
 )
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
 
 
 class ScalarExtensionFunctor(Functor):

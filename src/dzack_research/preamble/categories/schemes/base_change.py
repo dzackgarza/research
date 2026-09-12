@@ -36,7 +36,6 @@ from dzack_research.preamble.categories.functors.algebra_scalar_change import (
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedRings,
     _engine_element,
     _engine_ring,
     _owned_ring,

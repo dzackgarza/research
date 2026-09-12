@@ -100,10 +100,7 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         centralizer = decorated_lattice.centralizer_group()
         elements = _finite_supergroup_elements(centralizer)
         self._centralizer_elements = tuple(elements)
-        remaining = {
-            tuple(vector.to_tuple()): vector
-            for vector in decorated_lattice.lattice().vectors_of_square(self._square)
-        }
+        remaining = {tuple(vector.to_tuple()): vector for vector in decorated_lattice.lattice().vectors_of_square(self._square)}
         orbits = []
         while remaining:
             _coordinates, representative = next(iter(remaining.items()))
@@ -130,9 +127,7 @@ class EquivariantVectorOrbitDecomposition(SageObject):
         return self._orbits
 
     def representatives(self):
-        return finite_ordered_set(
-            tuple(orbit.representative() for orbit in self.orbits())
-        )
+        return finite_ordered_set(tuple(orbit.representative() for orbit in self.orbits()))
 
     def orbit_of(self, vector):
         lattice = self.decorated_lattice().lattice()
@@ -218,10 +213,7 @@ def _same_equivariant_flag(left, right) -> bool:
     right_terms = tuple(right.terms())
     if len(left_terms) != len(right_terms):
         return False
-    return all(
-        _same_embedded_sublattice(source, target)
-        for source, target in zip(left_terms, right_terms, strict=True)
-    )
+    return all(_same_embedded_sublattice(source, target) for source, target in zip(left_terms, right_terms, strict=True))
 
 
 def _transport_equivariant_flag(automorphism, flag):
@@ -261,9 +253,7 @@ class _EquivariantFiniteOrbit(SageObject):
             self.group(),
             representative,
             "on the represented finite family",
-            lambda automorphism: decomposition.same(
-                decomposition.act(automorphism, representative), representative
-            ),
+            lambda automorphism: decomposition.same(decomposition.act(automorphism, representative), representative),
             description=f"g fixes {representative}",
         )
 
@@ -281,17 +271,13 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
         self._decorated_lattice = decorated_lattice
         self._action = action
         self._equality = equality
-        self._centralizer_elements = tuple(
-            _finite_supergroup_elements(decorated_lattice.centralizer_group())
-        )
+        self._centralizer_elements = tuple(_finite_supergroup_elements(decorated_lattice.centralizer_group()))
 
         for candidate in candidates:
             for automorphism in self._centralizer_elements:
                 image = self.act(automorphism, candidate)
                 if not any(self.same(image, target) for target in candidates):
-                    raise ValueError(
-                        "the supplied finite family is not stable under the full centralizer"
-                    )
+                    raise ValueError("the supplied finite family is not stable under the full centralizer")
 
         remaining = list(candidates)
         orbits = []
@@ -299,16 +285,9 @@ class EquivariantFiniteOrbitDecomposition(SageObject):
             representative = remaining.pop(0)
             members = []
             for candidate in candidates:
-                if any(
-                    self.same(self.act(automorphism, representative), candidate)
-                    for automorphism in self._centralizer_elements
-                ):
+                if any(self.same(self.act(automorphism, representative), candidate) for automorphism in self._centralizer_elements):
                     members.append(candidate)
-            remaining = [
-                candidate
-                for candidate in remaining
-                if not any(self.same(candidate, member) for member in members)
-            ]
+            remaining = [candidate for candidate in remaining if not any(self.same(candidate, member) for member in members)]
             orbits.append(_EquivariantFiniteOrbit(self, representative, members))
         self._orbits = finite_ordered_set(tuple(orbits))
 
@@ -391,20 +370,13 @@ class CyclotomicDecomposition(SageObject):
             lambda divisor: isometry.cyclotomic_summand(int(divisor)),
             name=f"Cyclotomic summands of {isometry}",
         )
-        nonzero = tuple(
-            divisor
-            for divisor in self._divisors
-            if int(self._summands[divisor].module_rank()) != 0
-        )
+        nonzero = tuple(divisor for divisor in self._divisors if int(self._summands[divisor].module_rank()) != 0)
         if not nonzero:
             raise ArithmeticError("a finite-order isometry has no nonzero cyclotomic summand")
         self._nonzero_divisors = finite_ordered_set(nonzero)
 
         lattice = self.lattice()
-        total_rank = sum(
-            int(self._summands[divisor].module_rank())
-            for divisor in self._nonzero_divisors
-        )
+        total_rank = sum(int(self._summands[divisor].module_rank()) for divisor in self._nonzero_divisors)
         if total_rank != int(lattice.module_rank()):
             raise ArithmeticError("the cyclotomic summands do not span the ambient rational lattice")
         ring = lattice.base_ring()
@@ -414,9 +386,7 @@ class CyclotomicDecomposition(SageObject):
             for right_divisor in tuple(self._nonzero_divisors)[left_position + 1 :]:
                 right = self._summands[right_divisor]
                 if any(
-                    lattice.b(left_vector, right_vector) != zero
-                    for left_vector in left.embedded_module_generators()
-                    for right_vector in right.embedded_module_generators()
+                    lattice.b(left_vector, right_vector) != zero for left_vector in left.embedded_module_generators() for right_vector in right.embedded_module_generators()
                 ):
                     raise ArithmeticError("distinct cyclotomic summands are not orthogonal")
 
@@ -460,9 +430,7 @@ class CyclotomicDecomposition(SageObject):
         for divisor in self.nonzero_divisors():
             summand = self.summand(divisor)
             inclusion = summand.inclusion()
-            images.extend(
-                inclusion(generator) for generator in summand.module_generators()
-            )
+            images.extend(inclusion(generator) for generator in summand.module_generators())
         return self.orthogonal_sum().Emb(self.lattice())(tuple(images))
 
     def index(self):
@@ -479,9 +447,7 @@ class CyclotomicDecomposition(SageObject):
         equipped = self.decorated_lattice()
         return finite_indexed_family(
             self.nonzero_divisors(),
-            lambda divisor: equipped.equivariant_sublattice(
-                self.summand(divisor)
-            ).isometry(),
+            lambda divisor: equipped.equivariant_sublattice(self.summand(divisor)).isometry(),
             name=f"Cyclotomic restrictions of {self.isometry()}",
         )
 
@@ -491,9 +457,7 @@ class CyclotomicDecomposition(SageObject):
         restrictions = self.component_isometries()
         return finite_indexed_family(
             self.nonzero_divisors(),
-            lambda divisor: self.summand(divisor).O().centralizer(
-                restrictions[divisor]
-            ),
+            lambda divisor: self.summand(divisor).O().centralizer(restrictions[divisor]),
             name=f"Cyclotomic component centralizers of {self.isometry()}",
         )
 
@@ -517,14 +481,7 @@ class CyclotomicDecomposition(SageObject):
         def restrict(divisor):
             summand = self.summand(divisor)
             inclusion = summand.inclusion()
-            component = summand.O()(
-                {
-                    label: inclusion.lift(
-                        automorphism(inclusion(summand.module_generator(label)))
-                    )
-                    for label in summand.module_generating_set()
-                }
-            )
+            component = summand.O()({label: inclusion.lift(automorphism(inclusion(summand.module_generator(label)))) for label in summand.module_generating_set()})
             if component * restrictions[divisor] != restrictions[divisor] * component:
                 raise ArithmeticError("an ambient centralizer restriction does not commute with f_d")
             if component not in centralizers[divisor]:
@@ -567,19 +524,11 @@ class CyclotomicDecomposition(SageObject):
             summand = self.summand(divisor)
             inclusion = summand.inclusion()
             component = components[divisor]
-            moved_images.extend(
-                inclusion(component(generator))
-                for generator in summand.module_generators()
-            )
+            moved_images.extend(inclusion(component(generator)) for generator in summand.module_generators())
         moved = module_homset(self.orthogonal_sum(), lattice)(tuple(moved_images))
 
         scalar = lattice.base_ring()(int(self.index().finite_value()))
-        scaling = module_homset(lattice, lattice)(
-            tuple(
-                lattice.scalar_multiple(scalar, generator)
-                for generator in lattice.module_generators()
-            )
-        )
+        scaling = module_homset(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
         inclusion = self.orthogonal_sum_inclusion()
 
         def image(label):
@@ -688,16 +637,12 @@ class EquivariantLattice(SageObject):
                     return candidate
             return None
         if empty is Unknown:
-            raise NotImplementedError(
-                "the underlying indefinite isometry homset is not decided exactly"
-            )
+            raise NotImplementedError("the underlying indefinite isometry homset is not decided exactly")
 
         witness = homset.an_element()
         if witness * self.isometry() == other.isometry() * witness:
             return witness
-        raise NotImplementedError(
-            "the underlying lattices are isometric, but no exhaustive indefinite equivariant-isometry classifier is available"
-        )
+        raise NotImplementedError("the underlying lattices are isometric, but no exhaustive indefinite equivariant-isometry classifier is available")
 
     def equivariant_vector_orbit_representatives(self, square):
         r"""Return vector-orbit representatives under ``O(L,f)`` in the supported regime."""
@@ -816,18 +761,12 @@ class IsometryPrimitiveExtension:
 
     def __init__(self, isometry) -> None:
         lattice = isometry.domain()
-        assert isometry.codomain() is lattice, (
-            "a primitive extension is cut out by an automorphism of one lattice"
-        )
-        assert lattice.module_rank().is_finite() and lattice.is_nondegenerate(), (
-            "the invariant and coinvariant lattices span L only when L is a "
-            "finite nondegenerate lattice"
-        )
+        assert isometry.codomain() is lattice, "a primitive extension is cut out by an automorphism of one lattice"
+        assert lattice.module_rank().is_finite() and lattice.is_nondegenerate(), "the invariant and coinvariant lattices span L only when L is a finite nondegenerate lattice"
         invariant = isometry.invariant_lattice()
         coinvariant = isometry.formed_coinvariants()
         assert invariant.module_rank() + coinvariant.module_rank() == lattice.module_rank(), (
-            "the invariant lattice and its orthogonal complement do not have "
-            "complementary rank; f is not of finite order on this lattice"
+            "the invariant lattice and its orthogonal complement do not have complementary rank; f is not of finite order on this lattice"
         )
 
         self.isometry = isometry
@@ -878,36 +817,27 @@ class IsometryPrimitiveExtension:
         centralizer.
         """
         if not self.acts_as_negation_on_coinvariants():
-            raise NotImplementedError(
-                "the coinvariant extension subgroup is currently represented for involutions"
-            )
+            raise NotImplementedError("the coinvariant extension subgroup is currently represented for involutions")
 
         glue = self.glue()
         invariant_form = self.invariant.discriminant_group()
         coinvariant_form = self.coinvariant.discriminant_group()
         glue_source = glue.domain()
         glue_target = glue.codomain()
-        source_inclusion = glue_source.inclusion()
+        glue_source.inclusion()
         target_inclusion = glue_target.inclusion()
-        twisted_coinvariant_form = target_inclusion.codomain()
+        target_inclusion.codomain()
 
         if glue_source.cardinality() != invariant_form.cardinality():
-            raise NotImplementedError(
-                "the represented primitive extension does not glue the full invariant discriminant form"
-            )
+            raise NotImplementedError("the represented primitive extension does not glue the full invariant discriminant form")
         if glue_target.cardinality() != coinvariant_form.cardinality():
-            raise NotImplementedError(
-                "the represented primitive extension does not glue the full coinvariant discriminant form"
-            )
+            raise NotImplementedError("the represented primitive extension does not glue the full coinvariant discriminant form")
 
         invariant_image = self.invariant.discriminant_image()
         coinvariant_orthogonal_group = coinvariant_form.O()
 
         allowed_discriminant_image = coinvariant_orthogonal_group.subgroup_on(
-            tuple(
-                self._coinvariant_discriminant_from_invariant(generator)
-                for generator in invariant_image.group_generators()
-            )
+            tuple(self._coinvariant_discriminant_from_invariant(generator) for generator in invariant_image.group_generators())
         )
         return self.coinvariant.O().discriminant_preimage(allowed_discriminant_image)
 
@@ -930,13 +860,9 @@ class IsometryPrimitiveExtension:
         twisted_coinvariant_form = target_inclusion.codomain()
 
         if glue_source.cardinality() != invariant_form.cardinality():
-            raise NotImplementedError(
-                "conjugating the invariant discriminant action is currently represented only for full gluing"
-            )
+            raise NotImplementedError("conjugating the invariant discriminant action is currently represented only for full gluing")
         if glue_target.cardinality() != coinvariant_form.cardinality():
-            raise NotImplementedError(
-                "conjugating the coinvariant discriminant action is currently represented only for full gluing"
-            )
+            raise NotImplementedError("conjugating the coinvariant discriminant action is currently represented only for full gluing")
 
         invariant_automorphism = invariant_form.O()(invariant_automorphism)
         images = {}
@@ -951,9 +877,7 @@ class IsometryPrimitiveExtension:
             moved_source = source_inclusion.lift(moved_invariant_class)
             moved_target = glue.forward()(moved_source)
             moved_twisted = target_inclusion(moved_target)
-            moved_unformed = twisted_coinvariant_form.forget_form_morphism()(
-                moved_twisted
-            )
+            moved_unformed = twisted_coinvariant_form.forget_form_morphism()(moved_twisted)
             images[label] = coinvariant_form.equip_form_morphism()(moved_unformed)
         morphism = module_homset(coinvariant_form, coinvariant_form)(images)
         return coinvariant_form.O()(morphism)
@@ -970,9 +894,7 @@ class IsometryPrimitiveExtension:
         """
         subgroup = self.coinvariant_extension_subgroup()
         if coinvariant_part not in subgroup:
-            raise ValueError(
-                "the selected coinvariant isometry does not preserve the primitive gluing"
-            )
+            raise ValueError("the selected coinvariant isometry does not preserve the primitive gluing")
         coinvariant_part = self.coinvariant.O()(coinvariant_part)
         target_action = coinvariant_part.discriminant_morphism()
         invariant_group = self.invariant.O()
@@ -986,15 +908,11 @@ class IsometryPrimitiveExtension:
             if invariant_part is not None:
                 break
         if invariant_part is None:
-            raise ArithmeticError(
-                "a glue-compatible coinvariant action had no retained invariant discriminant lift"
-            )
+            raise ArithmeticError("a glue-compatible coinvariant action had no retained invariant discriminant lift")
 
         lifted = self.centralizer_element(invariant_part, coinvariant_part)
         if self.coinvariant_restriction(lifted) != coinvariant_part:
-            raise ArithmeticError(
-                "the ambient centralizer lift restricts to the wrong coinvariant isometry"
-            )
+            raise ArithmeticError("the ambient centralizer lift restricts to the wrong coinvariant isometry")
         return lifted
 
     def coinvariant_isotropic_orbit_representatives(self, rank, *, flag=False):
@@ -1022,23 +940,13 @@ class IsometryPrimitiveExtension:
         return self.lift_coinvariant_extension_element(coinvariant_witness)
 
     def _restriction(self, automorphism, subobject):
-        assert automorphism.domain() is self.lattice, (
-            "a restriction of the centralizer is taken of an automorphism of L"
-        )
+        assert automorphism.domain() is self.lattice, "a restriction of the centralizer is taken of an automorphism of L"
         assert automorphism * self.isometry == self.isometry * automorphism, (
-            "restriction along this decomposition is defined on O(L,f); the "
-            "stated automorphism does not commute with f"
+            "restriction along this decomposition is defined on O(L,f); the stated automorphism does not commute with f"
         )
         inclusion = subobject.inclusion()
         summand = inclusion.domain()
-        return summand.Aut()(
-            {
-                label: inclusion.lift(
-                    automorphism(inclusion(summand.module_generator(label)))
-                )
-                for label in summand.module_generating_set()
-            }
-        )
+        return summand.Aut()({label: inclusion.lift(automorphism(inclusion(summand.module_generator(label)))) for label in summand.module_generating_set()})
 
     def invariant_restriction(self, automorphism):
         r"""Return ``g|_{L^f}`` in ``O(L^f)`` for ``g`` in the centralizer.
@@ -1062,10 +970,7 @@ class IsometryPrimitiveExtension:
         ``V_pm = ker(f -+ 1)`` makes.
         """
         inclusion = self.coinvariant.inclusion()
-        return all(
-            self.isometry(inclusion(generator)) == -inclusion(generator)
-            for generator in inclusion.domain().module_generators()
-        )
+        return all(self.isometry(inclusion(generator)) == -inclusion(generator) for generator in inclusion.domain().module_generators())
 
     @cached_method
     def orthogonal_sum_inclusion(self):
@@ -1084,14 +989,8 @@ class IsometryPrimitiveExtension:
         coinvariant_summand = coinvariant_inclusion.domain()
         summands = invariant_summand + coinvariant_summand
         return summands.Emb(self.lattice)(
-            tuple(
-                invariant_inclusion(generator)
-                for generator in invariant_summand.module_generators()
-            )
-            + tuple(
-                coinvariant_inclusion(generator)
-                for generator in coinvariant_summand.module_generators()
-            )
+            tuple(invariant_inclusion(generator) for generator in invariant_summand.module_generators())
+            + tuple(coinvariant_inclusion(generator) for generator in coinvariant_summand.module_generators())
         )
 
     def glue_graph(self):
@@ -1107,12 +1006,7 @@ class IsometryPrimitiveExtension:
         gluing = glue.domain()
         into_invariant = gluing.inclusion()
         into_coinvariant = glue.codomain().inclusion()
-        return finite_ordered_set(
-            tuple(
-                (into_invariant(element), into_coinvariant(glue(element)))
-                for element in gluing.elements()
-            )
-        )
+        return finite_ordered_set(tuple((into_invariant(element), into_coinvariant(glue(element))) for element in gluing.elements()))
 
     def _discriminant_action(self, automorphism, ambient, element):
         r"""Return the image of a class of ``ambient`` under ``Disc(automorphism)``.
@@ -1127,11 +1021,7 @@ class IsometryPrimitiveExtension:
         forgetting the ambient form, applying the induced automorphism, and
         equipping the ambient form again.
         """
-        return ambient.equip_form_morphism()(
-            automorphism.discriminant_morphism()(
-                ambient.forget_form_morphism()(element)
-            )
-        )
+        return ambient.equip_form_morphism()(automorphism.discriminant_morphism()(ambient.forget_form_morphism()(element)))
 
     def pair_preserves_glue_graph(self, invariant_part, coinvariant_part) -> bool:
         r"""Return whether ``(g_+, g_-)`` carries the graph of ``gamma`` onto itself.
@@ -1156,12 +1046,8 @@ class IsometryPrimitiveExtension:
         graph = self.glue_graph()
         return all(
             (
-                self._discriminant_action(
-                    invariant_part, invariant_ambient, invariant_class
-                ),
-                self._discriminant_action(
-                    coinvariant_part, coinvariant_ambient, coinvariant_class
-                ),
+                self._discriminant_action(invariant_part, invariant_ambient, invariant_class),
+                self._discriminant_action(coinvariant_part, coinvariant_ambient, coinvariant_class),
             )
             in graph
             for invariant_class, coinvariant_class in graph
@@ -1191,24 +1077,14 @@ class IsometryPrimitiveExtension:
         coinvariant_inclusion = self.coinvariant.inclusion()
         invariant_summand = invariant_inclusion.domain()
         coinvariant_summand = coinvariant_inclusion.domain()
-        assert invariant_part.parent() is invariant_summand.Aut(), (
-            "the invariant half of the pair is an element of O(L^f)"
-        )
-        assert coinvariant_part.parent() is coinvariant_summand.Aut(), (
-            "the coinvariant half of the pair is an element of O((L^f)^perp)"
-        )
+        assert invariant_part.parent() is invariant_summand.Aut(), "the invariant half of the pair is an element of O(L^f)"
+        assert coinvariant_part.parent() is coinvariant_summand.Aut(), "the coinvariant half of the pair is an element of O((L^f)^perp)"
         coinvariant_isometry = self.coinvariant_restriction(self.isometry)
-        assert (
-            coinvariant_part * coinvariant_isometry
-            == coinvariant_isometry * coinvariant_part
-        ), (
-            "an element of O(L,f) restricts on (L^f)^perp to the centralizer "
-            "of f there; the stated g_- does not commute with f"
+        assert coinvariant_part * coinvariant_isometry == coinvariant_isometry * coinvariant_part, (
+            "an element of O(L,f) restricts on (L^f)^perp to the centralizer of f there; the stated g_- does not commute with f"
         )
         assert self.pair_preserves_glue_graph(invariant_part, coinvariant_part), (
-            "the stated pair does not preserve the graph of the glue "
-            "anti-isometry, so it is an isometry of L^f + (L^f)^perp that does "
-            "not extend to L"
+            "the stated pair does not preserve the graph of the glue anti-isometry, so it is an isometry of L^f + (L^f)^perp that does not extend to L"
         )
 
         ring = lattice.base_ring()
@@ -1216,21 +1092,10 @@ class IsometryPrimitiveExtension:
         inclusion = self.orthogonal_sum_inclusion()
         summands = inclusion.domain()
         moved = module_homset(summands, lattice)(
-            tuple(
-                invariant_inclusion(invariant_part(generator))
-                for generator in invariant_summand.module_generators()
-            )
-            + tuple(
-                coinvariant_inclusion(coinvariant_part(generator))
-                for generator in coinvariant_summand.module_generators()
-            )
+            tuple(invariant_inclusion(invariant_part(generator)) for generator in invariant_summand.module_generators())
+            + tuple(coinvariant_inclusion(coinvariant_part(generator)) for generator in coinvariant_summand.module_generators())
         )
-        scaling = module_homset(lattice, lattice)(
-            tuple(
-                lattice.scalar_multiple(scalar, generator)
-                for generator in lattice.module_generators()
-            )
-        )
+        scaling = module_homset(lattice, lattice)(tuple(lattice.scalar_multiple(scalar, generator) for generator in lattice.module_generators()))
 
         def image(label):
             scaled = lattice.scalar_multiple(scalar, lattice.module_generator(label))
@@ -1277,9 +1142,7 @@ def cyclotomic_summand(isometry, order):
     of ``L`` with the rational subspace ``V_{Phi_d}``.
     """
     lattice = isometry.domain()
-    assert isometry.codomain() is lattice, (
-        "a cyclotomic summand is cut out by an automorphism of one lattice"
-    )
+    assert isometry.codomain() is lattice, "a cyclotomic summand is cut out by an automorphism of one lattice"
     ring = lattice.base_ring()
     from sage.rings.polynomial.cyclotomic import cyclotomic_coeffs
 
@@ -1293,9 +1156,7 @@ def cyclotomic_summand(isometry, order):
             iterate = isometry(iterate)
         return total
 
-    evaluated = module_homset(lattice, lattice)(
-        {label: image(label) for label in lattice.module_generating_set()}
-    )
+    evaluated = module_homset(lattice, lattice)({label: image(label) for label in lattice.module_generating_set()})
     return evaluated.kernel()
 
 

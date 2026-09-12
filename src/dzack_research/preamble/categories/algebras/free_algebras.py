@@ -5,12 +5,13 @@ from typing import Any, cast
 from sage.algebras.free_algebra import FreeAlgebra as _SageFreeAlgebra
 from sage.all import (
     LaurentPolynomialRing as _SageLaurentPolynomialRing,
+)
+from sage.all import (
     PolynomialRing as _SagePolynomialRing,
 )
-from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from sage.misc.cachefunc import cached_function
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.ideal import Ideal_generic
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
@@ -20,27 +21,34 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebraMorphism,
     Algebras,
     AlgebrasWithChosenFinitePresentation,
-    AlgebraMorphism,
     CommutativeAlgebraCoproducts,
     CommutativeAlgebraPushouts,
     CommutativeAlgebras,
     FinitelyPresentedAlgebras,
     FramedAlgebras,
-    OwnedAlgebras,
-    _OwnedAlgebraParent,
     _AlgebraHomsetCommonMethods,
-    _default_structure_map,
+    _OwnedAlgebraParent,
     algebra_homset,
     refine_algebra,
 )
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
+from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
+from dzack_research.preamble.categories.modules.powers import (
+    AlternatingPower,
+    DividedPower,
+    SymmetricPower,
+    TensorPower,
+)
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
-    OwnedRings,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -56,16 +64,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.graded_commutative_algebras import StrictlyGradedCommutativeAlgebras
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
-from dzack_research.preamble.categories.modules.powers import (
-    AlternatingPower,
-    DividedPower,
-    SymmetricPower,
-    TensorPower,
-)
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 
 
 def _finite_labels(labels):

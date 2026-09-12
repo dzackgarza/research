@@ -34,9 +34,9 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _OwnedAlgebraParent,
     refine_algebra,
 )
-from dzack_research.preamble.categories.algebras.free_algebras import SymmetricAlgebras
-from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
+from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing, SymmetricAlgebras
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.functors.module_localization import module_localization_functor
 from dzack_research.preamble.categories.group.submonoids import (
     Submonoids,
     generated_submonoid,
@@ -66,8 +66,8 @@ from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
-    FiniteSets,
     NN,
+    FiniteSets,
     PartiallyOrderedSets,
     SetInclusion,
 )

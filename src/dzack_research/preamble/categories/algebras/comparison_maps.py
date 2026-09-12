@@ -1,12 +1,12 @@
 r"""Canonical comparison morphisms among tensor, symmetric, exterior, and divided powers."""
 
+from sage.arith.misc import factorial
+from sage.categories.morphism import Morphism
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
-from sage.arith.misc import factorial
-from sage.categories.morphism import Morphism
-
 from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.framed_free_algebras import (
     AlternatingAlgebraOf,

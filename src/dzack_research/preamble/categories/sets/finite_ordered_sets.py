@@ -4,27 +4,22 @@ from collections.abc import Callable
 from itertools import islice
 from typing import TypeVar
 
-from sage.categories.category import Category
-from sage.categories.finite_enumerated_sets import FiniteEnumeratedSets
-from sage.categories.posets import Posets
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalIsomorphism,
 )
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import (
     EnumeratedSets,
-    NN,
     Sets,
     TotallyOrderedSets,
     finite_ordinal_set,
     ranking_isomorphism,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
-
+from dzack_research.preamble.owned_category import object_of
 
 IndexT = TypeVar("IndexT")
 PointT = TypeVar("PointT")
@@ -84,8 +79,12 @@ def _finite_ordered_presentation(elements):
         # The source states its own enumeration, so this reads it off rather
         # than searching: both directions come from that one isomorphism.
         source_ranking = elements.ranking_map()
-        element_at = lambda position: source_ranking.inverse()(int(position))
-        index_of = lambda element: source_ranking(element)
+
+        def element_at(position):
+            return source_ranking.inverse()(int(position))
+
+        def index_of(element):
+            return source_ranking(element)
     else:
         def element_at(position):
             try:
@@ -104,7 +103,7 @@ def _finite_ordered_presentation(elements):
 
 
 
-def ordered_enumerated_set(
+def ordered_enumerated_set[IndexT, PointT](
     index_set: Parent,
     element_at: Callable[[IndexT], PointT],
     *,
@@ -123,7 +122,7 @@ def ordered_enumerated_set(
     )
 
 
-def finite_ordered_image(
+def finite_ordered_image[IndexT, PointT](
     index_set: Parent,
     element_at: Callable[[IndexT], PointT],
     *,
@@ -141,7 +140,7 @@ def finite_ordered_image(
     )
 
 
-def finite_ordered_filter(
+def finite_ordered_filter[PointT](
     source: Parent,
     predicate: Callable[[PointT], bool],
     *,
@@ -190,9 +189,8 @@ class OrderedEnumeratedSets(OwnedCategory):
             self._name = name
             super().__init__(facade=True, **rest)
             if finite:
-                from dzack_research.preamble.refine import refine
-
                 from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+                from dzack_research.preamble.refine import refine
 
                 refine(self, FiniteSets())
 
@@ -456,7 +454,7 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         def _repr_(self):
             return self._filtered_name or f"Ordered subset of {self.source()}"
 
-def finite_ordered_set(
+def finite_ordered_set[PointT](
     elements: Parent | tuple[PointT, ...] | list[PointT] | range,
 ) -> Parent:
     r"""Transport one known finite ordered enumeration to an owned set."""

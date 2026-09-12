@@ -19,8 +19,8 @@ asked to go; over a polynomial ring it continues by syzygies.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
+from dzack_research.preamble.categories.functors.tensor_hom import TensorByFunctor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
     Cohomology,

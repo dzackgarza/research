@@ -5,6 +5,8 @@ categories remain the domain and codomain; this module adds no parallel
 category graph and no registry of relationships.
 """
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import overload

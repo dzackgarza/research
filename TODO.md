@@ -37,34 +37,19 @@ Read the generated `docs/preamble-megadoc.md` before preamble implementation
 under the governing `AGENTS.md` prerequisites. This queue does not authorize
 running preamble tests, QC, Sage, or notebooks before terminal T.
 
-### Take a ready node that nobody is on before extending the one you are on
+### Select from the live dependency graph
 
-Fourteen open nodes currently have every prerequisite satisfied, and eleven of those are
-not optional: `localization`, `normalization`, `local-module-maps`,
-`universal-constructions`, `constructor-convergence`, `complexes`, `framework-transfer`
-and `archive-reconciliation` need nothing at all; `category-boundaries`, `sheaf-operations`
-and `reduction-complexes` need only delivered nodes. (`optional-display`,
-`optional-database` and `optional-engine` are the other three.) Thirty-eight nodes are
-blocked behind them, and `acceptance` is behind all of it.
-
-Between 2026-09-10 and 2026-09-11 every authored hour went into one of those fourteen and
-the node count did not move: sixty-three nodes, eleven delivered, at both ends of the day.
-The work was real — forty-six new archive reconciliations landed in that window — but it
-was all inside a single node, so nothing closed and nothing became available.
-
-Check this list against the graph before selecting, since it changes as nodes deliver:
+The queue is the scheduling surface. Recompute the ready frontier from the current rows
+before selecting work; do not preserve dated frontier counts or a private list of what was
+ready in an earlier turn:
 
 ```sh
 grep -nE '^- \[[ x]\] \*\*`[a-z0-9-]+`\*\*\. \*\*Needs:\*\*' TODO.md
 ```
 
-Two consequences for selection. First, take the ready frontier in dependency order and
-carry each selected node through delivery before moving on — a node that closes unblocks
-its dependents, and a node that merely grows does not. Second, this repository is currently
-worked by one stream: an active claim records that stream's in-progress ownership and must
-not make another ready node appear unavailable to the same stream. Stale claims from an
-earlier turn must be released before frontier selection; do not infer concurrent ownership
-from a claim row unless another live worker actually exists.
+Take the ready frontier in dependency order and carry each selected node through delivery
+before moving on. A node that closes unblocks its dependents; a node that merely grows does
+not. This repository has one worker, so selection has no claim or reservation layer.
 
 ### Contents
 
@@ -81,7 +66,6 @@ from a claim row unless another live worker actually exists.
 - [Framework transfer and organization](#framework-transfer-and-organization)
 - [Final verification](#final-verification)
 - [Optional research consumers](#optional-research-consumers)
-- [Work coordination](#work-coordination)
 
 ### Execution decisions for every item
 
@@ -385,33 +369,6 @@ restart of the module/algebra/action constructions.
 ### Shared diagrams and universal constructions
 
 ### Constructor and ownership convergence
-
-- [ ] **`ruff-autofix-mechanism`**. **Needs:** none.
-
-  The shared gate runs `ruff check --fix` on every commit with `fixable = ["ALL"]` and `select`
-  including `I`, so anything reverted by hand is reapplied next commit. 324 files of autofix
-  output accumulated uncommitted rather than being resolved.
-
-  There is **no import-order dependency to protect**. `preamble/all.py` calls
-  `language_runtime.install()` at line 754, and `install()` only registers a `.sage` preparser
-  extension — consumed when a `.sage` file is loaded at runtime, never during a `.py` import.
-  `_sage_load` is bound at line 16 but called only inside `load()`. The autofix already moved
-  the install to the bottom of the module and nothing broke. The single `# noqa: E402` in
-  `src/` is vestigial from an earlier structure.
-
-  So the work is not exclusion and not restructuring. Verify the autofix output the way its
-  one real risk requires — whether any import it removed existed for a side effect rather than
-  for a name — bank it, and delete the vestigial `E402` suppression. **Acceptance:** `src/`
-  contains no `# noqa: E402`, the tree is clean, and running the gate twice produces no diff.
-
-- [ ] **`gate-ruff-paydown`**. **Needs:** `ruff-autofix-mechanism`.
-
-  The commit gate is red on `ruff check found issues in project code`, independently of what
-  any single commit stages. While it stays red, every worker either endures it as a
-  pre-existing condition or reaches for a bypass, and the gate stops distinguishing this
-  commit from the hundred before it. Clear the findings at their owners — not by widening
-  excludes, adding per-file ignores, or annotating commit subjects — so the gate carries
-  information again. First encounter with it is the current unit, ahead of new mathematics.
 
 - [ ] **`localization-fraction-field`**. **Needs:** none.
 
@@ -1368,8 +1325,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   `computations/scripts/archive_reconciliation_inventory.py`. Reconcile its notions
   by archived module; record the established live owner and disposition as each notion
   is settled, and remove reconciled work from the remaining queue. Modules are
-  independent, so concurrent streams need no further coordination beyond the existing
-  claim protocol.
+  independent; the single-worker repository needs no additional coordination record.
 
 ## Final verification
 
@@ -1510,50 +1466,3 @@ These are not prerequisites for the required mathematics or terminal T.
   this optional list. Only additional research capabilities with no required
   consumer belong here; moving a dependency here does not unblock or complete
   its consumer.
-
-## Work coordination
-
-### Claim and release
-
-Use the existing shared-checkout transaction mutex before editing this queue
-or staging/committing in a shared index:
-
-```sh
-flock -n -E 75 /home/dzack/research/.git/preamble-coordination.lock bash --noprofile --norc
-```
-
-Keep that shell alive through the transaction, then exit it to release the OS
-lock. Exit 75 means the transaction is occupied; it is not a mathematical
-blocker. Under the mutex, reread this queue and inspect `git status --short`,
-`git diff --cached --name-only`, `git rev-parse HEAD`, and
-`git worktree list`. Do not stage another writer's changes.
-
-Reserve exact files or directory paths ending in `/`, with write/read mode,
-owner, checkout, dependency revision and UTC update. Overlapping reads can
-coexist; an overlapping write conflicts. Reserve both paths for a rename.
-Acquire a claim's resources together or none. Include export and generated
-files only when the work will edit them. A live kernel is a separate resource.
-
-Claims are active coordination, not completed work. A timestamp is not a lease
-expiry. Do not remove a reservation without release/handoff by its owner or
-an explicit ownership decision. A claim does not grant permission to overwrite
-uncommitted work. Preserve dirty paths with unidentified owners.
-
-When waiting on a dependency, release resources no longer being edited.
-Coordinate shared-contract changes with affected consumers; a path lock alone
-does not keep their input interface stable. Readers in separate worktrees use
-their pinned dependency; shared-checkout readers wait for the relevant
-contract edit, not for unrelated workstreams.
-
-At delivery, commit the construction and its unverified specimens, remove the
-delivered TODO item or only its delivered obligations, and remove the released
-claim under the mutex. Put evidence and reasoning in the commit.
-Do not add a completed row or release-history section. If a new regression is
-found later, write a new task from the then-current source and its desired
-behavior.
-
-### Active claims
-
-| Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
-| --- | --- | --- | --- | --- | --- |
-| `LINE-BUNDLES-projective-20260912-0112` | line-bundles / projective O(d) and section algebra | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py; src/dzack_research/preamble/categories/divisors/section_rings.py; src/dzack_research/preamble/categories/schemes/schemes.py; src/dzack_research/preamble/categories/divisors/__init__.py; src/dzack_research/preamble/all.py; tests/divisors/test_projective_line_bundles_frontier.py` (write) | `8ae1ccaf` | 2026-09-12T01:12:00Z |

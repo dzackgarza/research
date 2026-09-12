@@ -1,40 +1,20 @@
 r"""Ideals and fractional ideals as modules represented by their inclusions."""
 
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from functools import reduce
 
-from sage.categories.morphism import SetMorphism
-from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import ModuleElement
-from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    OwnedOrders,
-    OwnedRings,
-    _engine_element,
-    _engine_ring,
-    _own_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-)
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleOn,
     MatrixSpace,
     ring_as_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    framing_morphism,
+    ModuleEmbedding,
     module_coefficients,
     module_homset,
 )
@@ -47,7 +27,19 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     restrict_scalars,
 )
 from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedOrders,
+    OwnedRings,
+    _engine_element,
+    _own_ring,
+    _owned_ring,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     _engine_component_vector,
     tensor,

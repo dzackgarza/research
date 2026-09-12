@@ -48,8 +48,10 @@ from sage.categories.category import Category, JoinCategory
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import AbstractMethod
 from sage.misc.cachefunc import CachedMethod
-from sage.structure.parent import Parent
 from sage.structure.element import Element
+from sage.structure.parent import Parent
+
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 
 
 @runtime_checkable
@@ -61,8 +63,6 @@ class WrapsAFunction(Protocol):
     """
 
     f: Callable[..., object]
-
-from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 
 # What a class dictionary holds: a plain function, or one of the descriptors
 # Sage wraps one in.  The survey reads these to report a category's operations.

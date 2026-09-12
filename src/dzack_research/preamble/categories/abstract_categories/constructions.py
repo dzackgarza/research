@@ -9,6 +9,7 @@ from collections.abc import Sequence
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.structure.parent import Parent
+
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectCategory
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_families import finite_family

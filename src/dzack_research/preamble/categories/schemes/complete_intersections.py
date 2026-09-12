@@ -7,8 +7,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.schemes import (
     ClosedSubschemes,
     ProjectiveSchemes,
-    ProjectiveSpaces,
     ProjectiveSpace,
+    ProjectiveSpaces,
     refine_scheme,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family

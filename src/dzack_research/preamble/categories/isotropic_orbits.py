@@ -10,11 +10,9 @@ provider arrives.
 
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.tensors.tensor import tensor
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import ConditionSet
+from dzack_research.preamble.engine_capabilities import engine_capabilities
 
 
 def _held(lattice, element):

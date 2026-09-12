@@ -11,6 +11,7 @@ Algebra*, §6.1).  The functors here are the scalar-change functors of
 represented equalizer and coequalizer as the computation.
 """
 
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.core import (
     Functor,
     NaturalTransformation,
@@ -22,12 +23,11 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     RestrictionOfScalarsFunctor,
     ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    group_module_homset,
     _trivial_action,
+    group_module_homset,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 

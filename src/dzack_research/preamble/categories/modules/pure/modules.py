@@ -25,8 +25,8 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
-    CoproductCoconeCategory,
     ConeCategory,
+    CoproductCoconeCategory,
     ParallelPairDiagram,
     ProductConeCategory,
     SelectedColimitConstruction,

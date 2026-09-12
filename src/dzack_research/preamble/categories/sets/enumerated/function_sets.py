@@ -11,16 +11,16 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
-    EnumeratedSets,
-    InfiniteEnumeratedSets,
-)
-from dzack_research.preamble.categories.sets.cardinals import aleph0
-from dzack_research.preamble.categories.sets.set_categories import NN, ranking_isomorphism
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalIsomorphism,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.sets.cardinals import aleph0
+from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import (
+    EnumeratedSets,
+    InfiniteEnumeratedSets,
+)
+from dzack_research.preamble.categories.sets.set_categories import NN, ranking_isomorphism
 
 
 def _nonnegative_integer(value, *, error_type):

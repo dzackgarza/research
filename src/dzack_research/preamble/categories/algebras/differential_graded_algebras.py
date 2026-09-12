@@ -2,7 +2,6 @@ r"""Differential graded algebra categories and their morphisms."""
 
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -12,7 +11,6 @@ from dzack_research.preamble.categories.algebras.derivations import (
     GradedDerivation,
     GradedDerivations,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.graded_commutative_algebras import (
     GradedCommutativeAlgebras,
@@ -24,7 +22,9 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class DegreewiseLinearMorphism(Morphism):
@@ -56,7 +56,6 @@ class DegreewiseLinearMorphism(Morphism):
         return self._call_(element)
 
     def represented_module_morphism(self):
-        from sage.rings.integer_ring import ZZ as SageZZ
 
         source = self.domain()
         target = self.codomain()

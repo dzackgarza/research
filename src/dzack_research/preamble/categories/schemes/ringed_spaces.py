@@ -633,9 +633,10 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
 
     def an_object(self):
         r"""The affine ringed space ``Spec(ZZ)``."""
+        from sage.rings.integer_ring import ZZ as SageZZ
+
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
         from dzack_research.preamble.categories.schemes.schemes import Spec
-        from sage.rings.integer_ring import ZZ as SageZZ
 
         return Spec(_own_ring(SageZZ))
 

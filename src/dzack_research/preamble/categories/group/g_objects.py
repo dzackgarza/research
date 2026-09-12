@@ -56,10 +56,7 @@ def _verify_relators(action, group, endomorphisms) -> None:
         for letter in relator.Tietze():
             generator = generators[abs(int(letter)) - 1]
             composite = composite * action(generator if int(letter) > 0 else ~generator)
-        assert composite == identity, (
-            f"the generator images do not satisfy the relator {relator}, "
-            f"so they define no left action of {group}"
-        )
+        assert composite == identity, f"the generator images do not satisfy the relator {relator}, so they define no left action of {group}"
 
 
 class EquivariantMorphism(Morphism):
@@ -90,9 +87,7 @@ class EquivariantMorphism(Morphism):
         if other.codomain() is not self.domain():
             return NotImplemented
         homset = self.parent().hom_family().Of(other.domain(), self.codomain())
-        return homset._from_equivariant_arrow(
-            self.underlying_arrow() * other.underlying_arrow()
-        )
+        return homset._from_equivariant_arrow(self.underlying_arrow() * other.underlying_arrow())
 
     def __eq__(self, other) -> bool:
         r"""Equal when the underlying morphisms of ``C`` are; ``other`` may be either."""
@@ -121,9 +116,7 @@ class GObjectHomset(CategoricalHomset):
     Element = EquivariantMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        assert domain.acting_group() is codomain.acting_group(), (
-            "equivariant morphisms require one acting group"
-        )
+        assert domain.acting_group() is codomain.acting_group(), "equivariant morphisms require one acting group"
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def underlying_homset(self):
@@ -136,11 +129,7 @@ class GObjectHomset(CategoricalHomset):
         if group not in GroupsWithChosenFiniteGeneratingSet():
             return Unknown
         arrow = self.underlying_homset()(arrow)
-        return all(
-            arrow * self.domain().action_of(generator)
-            == self.codomain().action_of(generator) * arrow
-            for generator in group.group_generators()
-        )
+        return all(arrow * self.domain().action_of(generator) == self.codomain().action_of(generator) * arrow for generator in group.group_generators())
 
     def _from_equivariant_arrow(self, arrow):
         r"""Wrap an arrow whose equivariance follows from its construction."""
@@ -149,9 +138,7 @@ class GObjectHomset(CategoricalHomset):
     def _element_constructor_(self, datum):
         arrow = self.underlying_homset()(datum)
         if self.is_equivariant(arrow) is not True:
-            raise ValueError(
-                f"{arrow} does not commute with the {self.domain().acting_group()}-actions"
-            )
+            raise ValueError(f"{arrow} does not commute with the {self.domain().acting_group()}-actions")
         return self._from_equivariant_arrow(arrow)
 
     def identity(self):
@@ -215,10 +202,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
     def _call_(self, action_functor):
         r"""Construct a ``G``-object from an actual functor ``BG -> C``."""
         if action_functor not in self.functor_category():
-            raise TypeError(
-                f"a {self.acting_group()}-object in {self.underlying_category()} "
-                "is constructed from a functor BG -> C"
-            )
+            raise TypeError(f"a {self.acting_group()}-object in {self.underlying_category()} is constructed from a functor BG -> C")
         return self.functor_category()(action_functor)
 
     def Mor(self, source, target):
@@ -242,9 +226,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             TransportGroupActionFunctor,
         )
 
-        assert functor.domain() == self.underlying_category(), (
-            "transport must start in the underlying category"
-        )
+        assert functor.domain() == self.underlying_category(), "transport must start in the underlying category"
         return TransportGroupActionFunctor(self.acting_group(), functor)
 
     def restriction(self, group_morphism):
@@ -258,10 +240,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             RestrictionOfGroupActionFunctor,
         )
 
-        assert group_morphism.codomain() is self.acting_group(), (
-            f"{group_morphism} does not land in {self.acting_group()}, "
-            "so it restricts no action of that group"
-        )
+        assert group_morphism.codomain() is self.acting_group(), f"{group_morphism} does not land in {self.acting_group()}, so it restricts no action of that group"
         return RestrictionOfGroupActionFunctor(
             group_morphism,
             self.underlying_category(),
@@ -286,16 +265,13 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             case Schemes():
                 return AffineQuotientFunctor(self.acting_group(), category.base_ring())
             case other:
-                assert False, (
-                    f"the affine quotient functor is a construction on schemes; "
-                    f"{other} has no owned quotient by a group action"
-                )
+                assert False, f"the affine quotient functor is a construction on schemes; {other} has no owned quotient by a group action"
 
     def an_object(self):
         r"""The trivial action on an object of the underlying category."""
         from dzack_research.preamble.categories.group.g_sets import trivial_g_set
         from dzack_research.preamble.categories.modules.pure.modules import Modules
-        from dzack_research.preamble.categories.schemes.schemes import Schemes
+        from dzack_research.preamble.categories.schemes.schemes import AffineGSchemes, Schemes
 
         category = self.underlying_category()
         sample = category.an_object()
@@ -303,12 +279,8 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             return trivial_g_set(sample, self.acting_group())
         match category:
             case Schemes():
-                return AffineGSchemes(
-                    self.acting_group(), category.base_ring()
-                ).an_object()
-        assert category.is_subcategory(Modules(category.base_ring())), (
-            f"no owned constructor equips an object of {category} with a group action"
-        )
+                return AffineGSchemes(self.acting_group(), category.base_ring()).an_object()
+        assert category.is_subcategory(Modules(category.base_ring())), f"no owned constructor equips an object of {category} with a group action"
         return Modules(category.base_ring()).trivial_action(self.acting_group())(sample)
 
     class ParentMethods:
@@ -364,16 +336,12 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             classifying = functor.domain()
             point = classifying.an_object()
             arrows = classifying.Mor(point, point)
-            return Sets().Mor(self.acting_group(), endomorphisms)(
-                lambda group_element: functor(arrows(group_element))
-            )
+            return Sets().Mor(self.acting_group(), endomorphisms)(lambda group_element: functor(arrows(group_element)))
 
         @cached_method
         def action_of(self, group_element):
             r"""Return the automorphism of ``X`` in ``C`` induced by ``group_element``."""
-            assert group_element in self.acting_group(), (
-                f"{group_element} is not an element of {self.acting_group()}"
-            )
+            assert group_element in self.acting_group(), f"{group_element} is not an element of {self.acting_group()}"
             return self.action()(group_element)
 
         def act(self, group_element, element):
@@ -398,9 +366,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                     pass
                 case other:
                     assert False, (
-                        "the fixed locus of a single group element is constructed "
-                        f"for schemes; {other} supplies no owned equalizer of an "
-                        "automorphism with the identity"
+                        f"the fixed locus of a single group element is constructed for schemes; {other} supplies no owned equalizer of an automorphism with the identity"
                     )
             return self.restrict_action(cyclic_subgroup(group_element).inclusion())
 
@@ -425,10 +391,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             where a quotient singularity of the orbit space can appear.
             """
             group = self.acting_group()
-            assert group.is_finite() is True, (
-                f"the union of the fixed loci of {group} is taken over its "
-                "nonidentity elements, which requires a group decided finite"
-            )
+            assert group.is_finite() is True, f"the union of the fixed loci of {group} is taken over its nonidentity elements, which requires a group decided finite"
             identity = group.one()
             ideal = None
             for group_element in group:
@@ -437,9 +400,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 fixed = self._cyclic_restriction(group_element).fixed_ideal()
                 ideal = fixed if ideal is None else ideal.intersection(fixed)
             if ideal is None:
-                ideal = self.coordinate_algebra().ideal(
-                    self.coordinate_algebra().one()
-                )
+                ideal = self.coordinate_algebra().ideal(self.coordinate_algebra().one())
             return self.closed_subscheme(tuple(ideal.ideal_generators()))
 
         def action_is_free(self):
@@ -475,10 +436,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             group = self.acting_group()
             if group not in GroupsWithChosenFiniteGeneratingSet():
                 return Unknown
-            return all(
-                self.act(generator, element) == element
-                for generator in group.group_generators()
-            )
+            return all(self.act(generator, element) == element for generator in group.group_generators())
 
 
 __all__ = [

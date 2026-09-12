@@ -9,7 +9,6 @@ square commutes.  This is the scheme-valued notion of Stacks Project, Tags
 the latter is an action of an abstract group through a functor ``BG -> Sch_R``.
 """
 
-from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.parent import Parent
@@ -383,7 +382,7 @@ class AffineGroupSchemeActionHomset(CategoricalHomset):
         target = self.codomain().scheme()
         schemes = Schemes(self.domain().group_scheme().base_ring())
         arrow = schemes.Mor(source, target)(arrow)
-        group = self.domain().group_scheme().scheme()
+        self.domain().group_scheme().scheme()
         source_product = self.domain().action_morphism().domain()
         target_product = self.codomain().action_morphism().domain()
         group_leg = source_product.projection(0)

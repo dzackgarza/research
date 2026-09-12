@@ -1,5 +1,7 @@
 r"""Arrow categories, commuting squares, cores, and slice-style categories."""
 
+from __future__ import annotations
+
 from typing import Any
 
 from sage.categories.category import Category

@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.functors.algebra_modules import (
     algebra_underlying_module_functor,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.modules.graded_direct_sums import (
     GradedDirectSumModule,
 )
@@ -31,6 +30,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 

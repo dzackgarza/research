@@ -4,16 +4,6 @@ from sage.misc.cachefunc import cached_function
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import SubobjectsOf
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    LocalizationRings,
-    OwnedIntegralDomains,
-    OwnedCategoryOverBaseRing,
-    _engine_element,
-    _engine_quotient_cover_ideal,
-    _engine_ring,
-    _own_ring,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
@@ -28,9 +18,18 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
-    ModuleSubobjects,
     Modules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
+    OwnedCategoryOverBaseRing,
+    OwnedIntegralDomains,
+    _engine_element,
+    _engine_quotient_cover_ideal,
+    _engine_ring,
+    _own_ring,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -200,7 +199,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                         for generator in self.ideal_generators()
                     )
                 )
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
+            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
                 raise NotImplementedError(
                     "this ideal has no active engine-ideal realization"
                 ) from error
@@ -217,7 +216,7 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             backend = self._engine_ideal()
             try:
                 return bool(backend.is_prime())
-            except (AttributeError, NotImplementedError, TypeError, ValueError) as error:
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
                 try:
                     return bool(
                         _engine_quotient_cover_ideal(self.ring(), backend).is_prime()

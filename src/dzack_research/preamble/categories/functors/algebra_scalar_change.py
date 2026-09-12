@@ -12,15 +12,15 @@ on algebra morphisms, and the represented adjunction supplies the actual Hom
 bijection, unit, and counit on that executable subdomain.
 """
 
+from sage.categories.homset import Hom as _SageHom
 from sage.categories.morphism import SetMorphism
 from sage.categories.rings import Rings as SageRings
-from sage.categories.homset import Hom as _SageHom
 from sage.misc.cachefunc import cached_function
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings as _OwnedRings
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
+    FramedAlgebras,
     algebra_homset,
 )
 from dzack_research.preamble.categories.algebras.finitely_presented_algebras import AlgebrasWithChosenFinitePresentation
@@ -32,7 +32,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.algebras.algebras import FramedAlgebras
 
 
 def _engine_ring_map(ring_map):

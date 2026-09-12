@@ -7,8 +7,8 @@ exact irreducible constituents.  GAP remains private to the finite group
 engine and is used here only for conjugacy-class sizes.
 """
 
-from sage.structure.element import Element
 from sage.misc.cachefunc import cached_function
+from sage.structure.element import Element
 
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,

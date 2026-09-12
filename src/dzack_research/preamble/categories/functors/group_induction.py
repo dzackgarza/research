@@ -11,6 +11,7 @@ scalar-change functors of ``scalar_change`` specialized to that hypothesis,
 with the transversal as the represented datum.
 """
 
+from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
 from dzack_research.preamble.categories.functors.scalar_change import (
     BaseChangeAdjunction,
     CoextensionOfScalarsFunctor,
@@ -18,27 +19,25 @@ from dzack_research.preamble.categories.functors.scalar_change import (
     RestrictionOfScalarsFunctor,
     ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebras
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    _equip_action,
-    group_module_homset,
-)
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    BasedFreeModule,
-)
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
     _presentation_from_relation_rows,
     _presentation_matrix,
 )
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+    BasedFreeModule,
+    MatrixSpace,
+)
+from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+    _equip_action,
+    group_module_homset,
+)
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
-from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_image
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+from dzack_research.preamble.categories.sets.set_categories import CartesianProductOfFamily, Sets
 
 
 def is_group_algebra_map_of_subgroup_inclusion(ring_map) -> bool:

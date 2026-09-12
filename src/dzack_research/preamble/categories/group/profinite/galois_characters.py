@@ -5,9 +5,9 @@ from typing import Any, cast
 
 from sage.categories.morphism import Morphism
 from sage.groups.perm_gps.permgroup_named import CyclicPermutationGroup
+from sage.misc.functional import cyclotomic_polynomial
 from sage.rings.finite_rings.integer_mod_ring import Integers
 from sage.rings.integer_ring import ZZ
-from sage.misc.functional import cyclotomic_polynomial
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.group.groups import _own_group

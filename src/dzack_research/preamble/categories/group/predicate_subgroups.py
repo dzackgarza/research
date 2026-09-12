@@ -383,7 +383,8 @@ def preimage_subgroup(
 ):
     group = _owned_group(morphism.domain())
     if predicate is None:
-        predicate = lambda element: morphism(element) in subgroup
+        def predicate(element):
+            return morphism(element) in subgroup
     if description is None:
         description = f"{morphism}(g) lies in {subgroup}"
     return object_of(

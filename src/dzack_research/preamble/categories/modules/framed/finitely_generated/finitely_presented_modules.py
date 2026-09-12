@@ -37,7 +37,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _biproduct_label,
     _engine_matrix,
     _refine_matrix_hom,
-    restrict_scalars,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,

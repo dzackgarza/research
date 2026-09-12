@@ -7,10 +7,6 @@ from dataclasses import dataclass
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
-)
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumObjects
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -19,7 +15,11 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     _span_basis_elements,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+    _own_ring,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 

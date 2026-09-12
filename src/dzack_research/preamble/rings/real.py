@@ -14,12 +14,12 @@ enough to contain transcendental expressions.  A relation that is not decided
 immediately is returned as a predicate and can be evaluated by ``ask(...)``.
 """
 
+from __future__ import annotations
+
 import operator
 
-from sage.categories.fields import Fields
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
-from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.qqbar import AA, QQbar
 from sage.rings.rational_field import QQ
@@ -27,7 +27,8 @@ from sage.rings.real_arb import RealBallField
 from sage.rings.real_lazy import CLF, RLF
 from sage.rings.real_mpfr import (
     RealField,
-    RealNumber as _RealApproximationNumber,
+)
+from sage.rings.real_mpfr import (
     create_RealNumber as _create_real_approximation,
 )
 from sage.rings.ring import Field
@@ -37,7 +38,6 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.logic import Predicate
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedRings,
@@ -45,10 +45,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
-from dzack_research.preamble.logic import ask
+from dzack_research.preamble.logic import Predicate, ask
+from dzack_research.preamble.refine import realize_owned_category
 
 
 def RealApproximation(value):
@@ -214,15 +214,15 @@ class RealRelation(Predicate):
 
     __slots__ = ("_left", "_right", "_relation")
 
-    def __init__(self, left: "ExactRealNumber", right: "ExactRealNumber", relation):
+    def __init__(self, left: ExactRealNumber, right: ExactRealNumber, relation):
         self._left = left
         self._right = right
         self._relation = relation
 
-    def left(self) -> "ExactRealNumber":
+    def left(self) -> ExactRealNumber:
         return self._left
 
-    def right(self) -> "ExactRealNumber":
+    def right(self) -> ExactRealNumber:
         return self._right
 
     def operator(self):
@@ -263,7 +263,7 @@ class ExactRealNumber(FieldElement):
 
     __hash__ = None
 
-    def __init__(self, parent: "ExactRealField", expression: Expression) -> None:
+    def __init__(self, parent: ExactRealField, expression: Expression) -> None:
         self._expression = expression
         FieldElement.__init__(self, parent)
 
@@ -447,7 +447,7 @@ class ExactRealField(UniqueRepresentation, Field):
     def __init__(self) -> None:
         Field.__init__(
             self,
-            base=self,
+            base_ring=self,
             category=Cat().meet((OwnedFields(), UncountableSets())),
         )
         realize_owned_category(self)

@@ -35,18 +35,19 @@ from sage.misc.latex import latex
 from sage.rings.fraction_field import FractionField_generic
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
-from sage.rings.polynomial.laurent_polynomial import LaurentPolynomial
-from sage.rings.polynomial.polynomial_element import Polynomial
-from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.laurent_series_ring_element import LaurentSeries
 from sage.rings.lazy_series import LazyPowerSeries
 from sage.rings.lazy_series_ring import LazyPowerSeriesRing
-from sage.rings.power_series_ring_element import PowerSeries
+from sage.rings.polynomial.laurent_polynomial import LaurentPolynomial
+from sage.rings.polynomial.polynomial_element import Polynomial
+from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
 from sage.rings.power_series_ring import PowerSeriesRing
+from sage.rings.power_series_ring_element import PowerSeries
 from sage.rings.qqbar import AA
 from sage.rings.rational_field import QQ
 from sage.rings.semirings.non_negative_integer_semiring import NN
-from sage.structure.element import Element, ModuleElement, parent as element_parent
+from sage.structure.element import Element, ModuleElement
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
@@ -56,10 +57,7 @@ from sage.symbolic.integration.integral import integrate
 from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
 
-from dzack_research.preamble.categories.sets.cardinals import continuum
-from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.categories.algebras.algebras import (
-    Algebras,
     CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.forms.forms import BilinearForms, Pairings
@@ -70,6 +68,8 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
 )
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.cardinals import continuum
+from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.rings.real import RR, ExactRealNumber
 
 

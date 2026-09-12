@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.owned_category import object_of
 
-
 IndexT = TypeVar("IndexT")
 
 
@@ -38,18 +37,18 @@ class _FiniteCardinal:
 
 @dataclass(frozen=True)
 class _AlephCardinal:
-    index: "Ordinal"
+    index: Ordinal
 
 
 @dataclass(frozen=True)
 class _PowerCardinal:
-    base: "Cardinal"
-    exponent: "Cardinal"
+    base: Cardinal
+    exponent: Cardinal
 
 
 @dataclass(frozen=True)
 class _SupremumCardinal:
-    terms: tuple["Cardinal", ...]
+    terms: tuple[Cardinal, ...]
 
 
 @dataclass(frozen=True)
@@ -64,14 +63,7 @@ class _IndexedProductCardinal:
     factors: Callable
 
 
-_CardinalExpression = (
-    _FiniteCardinal
-    | _AlephCardinal
-    | _PowerCardinal
-    | _SupremumCardinal
-    | _IndexedSumCardinal
-    | _IndexedProductCardinal
-)
+_CardinalExpression = _FiniteCardinal | _AlephCardinal | _PowerCardinal | _SupremumCardinal | _IndexedSumCardinal | _IndexedProductCardinal
 
 
 class CardinalComparison(Enum):
@@ -84,7 +76,7 @@ class CardinalComparison(Enum):
 
 
 class CardinalityMorphism(Morphism):
-    def __init__(self, parent: "CardinalityHomset") -> None:
+    def __init__(self, parent: CardinalityHomset) -> None:
         Morphism.__init__(self, parent)
 
     def is_identity(self) -> bool:
@@ -110,7 +102,7 @@ class CardinalityHomset(CategoricalHomset):
     ) -> None:
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
-    def cardinality(self) -> "Cardinalities.ObjectType":
+    def cardinality(self) -> Cardinalities.ObjectType:
         return cardinal(1 if Cardinalities().le(self.domain(), self.codomain()) else 0)
 
     @cached_method
@@ -138,7 +130,7 @@ class CardinalityHomCategoryConstruction(HomCategoryConstruction):
 class Cardinalities(OwnedCategory):
     r"""The thin category associated to the represented cardinal order."""
 
-    def an_object(self) -> "Cardinalities.ObjectType":
+    def an_object(self) -> Cardinalities.ObjectType:
         r"""The cardinal three."""
         return cardinal(3)
 
@@ -152,12 +144,10 @@ class Cardinalities(OwnedCategory):
 
     def Mor(
         self,
-        domain: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        codomain: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        domain: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        codomain: Cardinalities.ObjectType | SupportsInt | AnInfinity,
     ) -> CardinalityHomset:
-        return CardinalityHomCategoryConstruction(self).Of(
-            cardinal(domain), cardinal(codomain)
-        )
+        return CardinalityHomCategoryConstruction(self).Of(cardinal(domain), cardinal(codomain))
 
     class ParentMethods:
         def __init__(self, expression: _CardinalExpression, **rest) -> None:
@@ -167,7 +157,7 @@ class Cardinalities(OwnedCategory):
         def expression(self) -> _CardinalExpression:
             return self._expression
 
-        def cardinality(self) -> "Cardinalities.ObjectType":
+        def cardinality(self) -> Cardinalities.ObjectType:
             return self
 
         def sort_key(self) -> tuple[int, str]:
@@ -243,9 +233,7 @@ class Cardinalities(OwnedCategory):
         def is_finite(self) -> bool:
             expression = self.expression()
             if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
-                raise NotImplementedError(
-                    "finiteness of an arbitrary indexed cardinal family is not decidable"
-                )
+                raise NotImplementedError("finiteness of an arbitrary indexed cardinal family is not decidable")
             return isinstance(expression, _FiniteCardinal)
 
         def is_infinite(self) -> bool:
@@ -256,11 +244,7 @@ class Cardinalities(OwnedCategory):
 
         def is_continuum(self) -> bool:
             expression = self.expression()
-            return bool(
-                isinstance(expression, _PowerCardinal)
-                and expression.base == 2
-                and expression.exponent.is_countably_infinite()
-            )
+            return bool(isinstance(expression, _PowerCardinal) and expression.base == 2 and expression.exponent.is_countably_infinite())
 
         def is_countable(self) -> bool:
             return self.is_finite() or self.is_countably_infinite()
@@ -268,9 +252,7 @@ class Cardinalities(OwnedCategory):
         def is_uncountable(self) -> bool:
             expression = self.expression()
             if isinstance(expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
-                raise NotImplementedError(
-                    "countability of an arbitrary indexed cardinal family is not decidable"
-                )
+                raise NotImplementedError("countability of an arbitrary indexed cardinal family is not decidable")
             if self.is_finite() or self.is_countably_infinite():
                 return False
             if isinstance(expression, _SupremumCardinal):
@@ -327,25 +309,26 @@ class Cardinalities(OwnedCategory):
             from sage.rings.rational_field import QQ as SageQQ
 
             return SageQQ(self._finite_int())
+
         def Mor(
             self,
-            codomain: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+            codomain: Cardinalities.ObjectType | SupportsInt | AnInfinity,
             category: Category | None = None,
         ) -> CardinalityHomset:
             if category is not None and category is not Cardinalities():
                 raise TypeError("a cardinal morphism lies in Cardinalities")
             return Cardinalities().Mor(self, codomain)
 
-    def zero(self) -> "Cardinalities.ObjectType":
+    def zero(self) -> Cardinalities.ObjectType:
         return cardinal(0)
 
-    def one(self) -> "Cardinalities.ObjectType":
+    def one(self) -> Cardinalities.ObjectType:
         return cardinal(1)
 
     def sum(
         self,
-        *summands: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-    ) -> "Cardinalities.ObjectType":
+        *summands: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+    ) -> Cardinalities.ObjectType:
         result = self.zero()
         for summand in map(cardinal, summands):
             if result.is_finite() and summand.is_finite():
@@ -358,8 +341,8 @@ class Cardinalities(OwnedCategory):
 
     def product(
         self,
-        *factors: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-    ) -> "Cardinalities.ObjectType":
+        *factors: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+    ) -> Cardinalities.ObjectType:
         result = self.one()
         for factor in map(cardinal, factors):
             if result == 0 or factor == 0:
@@ -375,10 +358,8 @@ class Cardinalities(OwnedCategory):
     def indexed_sum(
         self,
         index_set: Parent,
-        summands: Callable[
-            [IndexT], "Cardinalities.ObjectType | SupportsInt | AnInfinity"
-        ],
-    ) -> "Cardinalities.ObjectType":
+        summands: Callable[[IndexT], Cardinalities.ObjectType | SupportsInt | AnInfinity],
+    ) -> Cardinalities.ObjectType:
         size = cardinal(index_set.cardinality())
         if size.is_finite():
             return self.sum(*(summands(index) for index in index_set))
@@ -387,10 +368,8 @@ class Cardinalities(OwnedCategory):
     def indexed_product(
         self,
         index_set: Parent,
-        factors: Callable[
-            [IndexT], "Cardinalities.ObjectType | SupportsInt | AnInfinity"
-        ],
-    ) -> "Cardinalities.ObjectType":
+        factors: Callable[[IndexT], Cardinalities.ObjectType | SupportsInt | AnInfinity],
+    ) -> Cardinalities.ObjectType:
         size = cardinal(index_set.cardinality())
         if size.is_finite():
             return self.product(*(factors(index) for index in index_set))
@@ -398,9 +377,9 @@ class Cardinalities(OwnedCategory):
 
     def power(
         self,
-        base: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        exponent: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-    ) -> "Cardinalities.ObjectType":
+        base: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        exponent: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+    ) -> Cardinalities.ObjectType:
         cardinal_base = cardinal(base)
         cardinal_exponent = cardinal(exponent)
         if cardinal_exponent == 0:
@@ -417,14 +396,10 @@ class Cardinalities(OwnedCategory):
             cardinal_base = cardinal(2)
         exponent_expression = cardinal_exponent.expression()
         if isinstance(exponent_expression, _SupremumCardinal):
-            return self.supremum(
-                *(self.power(cardinal_base, term) for term in exponent_expression.terms)
-            )
+            return self.supremum(*(self.power(cardinal_base, term) for term in exponent_expression.terms))
         base_expression = cardinal_base.expression()
         if isinstance(base_expression, _SupremumCardinal):
-            return self.supremum(
-                *(self.power(term, cardinal_exponent) for term in base_expression.terms)
-            )
+            return self.supremum(*(self.power(term, cardinal_exponent) for term in base_expression.terms))
         if isinstance(base_expression, _PowerCardinal):
             return self.power(
                 base_expression.base,
@@ -457,9 +432,7 @@ class Cardinalities(OwnedCategory):
     ) -> CardinalityMorphism:
         r"""Apply exponentiation to comparisons when the source base is nonzero."""
         if not self.le(1, base_morphism.domain()):
-            raise ValueError(
-                "cardinal exponentiation is monotone in the exponent only for a nonzero source base"
-            )
+            raise ValueError("cardinal exponentiation is monotone in the exponent only for a nonzero source base")
         source = self.power(
             base_morphism.domain(),
             exponent_morphism.domain(),
@@ -472,8 +445,8 @@ class Cardinalities(OwnedCategory):
 
     def supremum(
         self,
-        *cardinal_numbers: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-    ) -> "Cardinalities.ObjectType":
+        *cardinal_numbers: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+    ) -> Cardinalities.ObjectType:
         terms: list[Cardinalities.ParentMethods] = []
         for cardinal_number in map(cardinal, cardinal_numbers):
             expression = cardinal_number.expression()
@@ -496,8 +469,8 @@ class Cardinalities(OwnedCategory):
 
     def le(
         self,
-        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
     ) -> bool:
         left = cardinal(source)
         right = cardinal(target)
@@ -509,9 +482,7 @@ class Cardinalities(OwnedCategory):
             return all(self.le(term, right) for term in left_expression.terms)
         if isinstance(right_expression, _SupremumCardinal):
             return any(self.le(left, term) for term in right_expression.terms)
-        if isinstance(left_expression, (_IndexedSumCardinal, _IndexedProductCardinal)) or isinstance(
-            right_expression, (_IndexedSumCardinal, _IndexedProductCardinal)
-        ):
+        if isinstance(left_expression, (_IndexedSumCardinal, _IndexedProductCardinal)) or isinstance(right_expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
             return False
         if left.is_finite():
             if right.is_finite():
@@ -528,20 +499,16 @@ class Cardinalities(OwnedCategory):
         if isinstance(right_expression, _PowerCardinal):
             if self.le(left, right_expression.base):
                 return True
-            if self.le(cardinal(2), right_expression.base) and self.le(
-                left, right_expression.exponent
-            ):
+            if self.le(cardinal(2), right_expression.base) and self.le(left, right_expression.exponent):
                 return True
             if isinstance(left_expression, _PowerCardinal):
-                return self.le(left_expression.base, right_expression.base) and self.le(
-                    left_expression.exponent, right_expression.exponent
-                )
+                return self.le(left_expression.base, right_expression.base) and self.le(left_expression.exponent, right_expression.exponent)
         return False
 
     def lt(
         self,
-        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
     ) -> bool:
         left = cardinal(source)
         right = cardinal(target)
@@ -553,9 +520,7 @@ class Cardinalities(OwnedCategory):
             return all(self.lt(term, right) for term in left_expression.terms)
         if isinstance(right_expression, _SupremumCardinal):
             return any(self.lt(left, term) for term in right_expression.terms)
-        if isinstance(left_expression, (_IndexedSumCardinal, _IndexedProductCardinal)) or isinstance(
-            right_expression, (_IndexedSumCardinal, _IndexedProductCardinal)
-        ):
+        if isinstance(left_expression, (_IndexedSumCardinal, _IndexedProductCardinal)) or isinstance(right_expression, (_IndexedSumCardinal, _IndexedProductCardinal)):
             return False
         if left.is_finite():
             if right.is_finite():
@@ -568,29 +533,27 @@ class Cardinalities(OwnedCategory):
         if left.is_countably_infinite() and right.is_uncountable():
             return True
         if isinstance(right_expression, _PowerCardinal):
-            return self.le(cardinal(2), right_expression.base) and self.le(
-                left, right_expression.exponent
-            )
+            return self.le(cardinal(2), right_expression.base) and self.le(left, right_expression.exponent)
         return False
 
     def ge(
         self,
-        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
     ) -> bool:
         return self.le(target, source)
 
     def gt(
         self,
-        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
     ) -> bool:
         return self.lt(target, source)
 
     def compare(
         self,
-        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
     ) -> CardinalComparison:
         left = cardinal(source)
         right = cardinal(target)
@@ -608,12 +571,13 @@ class Cardinalities(OwnedCategory):
 
     def are_incomparable(
         self,
-        source: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-        target: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
+        source: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+        target: Cardinalities.ObjectType | SupportsInt | AnInfinity,
     ) -> bool:
         return not self.le(source, target) and not self.le(target, source)
 
 
+Cardinal = Cardinalities().ObjectType
 
 
 @dataclass(frozen=True)
@@ -623,46 +587,38 @@ class _FiniteOrdinal:
 
 @dataclass(frozen=True)
 class _InitialOrdinal:
-    index: "Ordinal"
+    index: Ordinal
 
 
 @dataclass(frozen=True)
 class _NaturalSum:
-    terms: tuple["Ordinal", ...]
+    terms: tuple[Ordinal, ...]
 
 
 @dataclass(frozen=True)
 class _NaturalProduct:
-    factors: tuple["Ordinal", ...]
+    factors: tuple[Ordinal, ...]
 
 
 @dataclass(frozen=True)
 class _OrdinalSum:
-    left: "Ordinal"
-    right: "Ordinal"
+    left: Ordinal
+    right: Ordinal
 
 
 @dataclass(frozen=True)
 class _OrdinalProduct:
-    left: "Ordinal"
-    right: "Ordinal"
+    left: Ordinal
+    right: Ordinal
 
 
 @dataclass(frozen=True)
 class _OrdinalPower:
-    base: "Ordinal"
-    exponent: "Ordinal"
+    base: Ordinal
+    exponent: Ordinal
 
 
-_OrdinalExpression = (
-    _FiniteOrdinal
-    | _InitialOrdinal
-    | _NaturalSum
-    | _NaturalProduct
-    | _OrdinalSum
-    | _OrdinalProduct
-    | _OrdinalPower
-)
+_OrdinalExpression = _FiniteOrdinal | _InitialOrdinal | _NaturalSum | _NaturalProduct | _OrdinalSum | _OrdinalProduct | _OrdinalPower
 
 
 class OrdinalSemiringMorphism(Morphism):
@@ -670,7 +626,7 @@ class OrdinalSemiringMorphism(Morphism):
 
     def __init__(
         self,
-        parent: "OrdinalSemiringHomset",
+        parent: OrdinalSemiringHomset,
         function: Callable[[Ordinal], Ordinal],
     ) -> None:
         Morphism.__init__(self, parent)
@@ -692,9 +648,7 @@ class OrdinalSemiringMorphism(Morphism):
             return other
         if other.is_identity():
             return self
-        return OrdinalSemirings().Mor(other.domain(), self.codomain())(
-            lambda element: self(other(element))
-        )
+        return OrdinalSemirings().Mor(other.domain(), self.codomain())(lambda element: self(other(element)))
 
     def is_identity(self) -> bool:
         return self._preamble_is_identity
@@ -717,7 +671,11 @@ class OrdinalSemiringHomset(CategoricalHomset):
                 raise ValueError("the ordinal-semiring morphism has the wrong endpoints")
             if function.parent() is self:
                 return function
-            function = lambda element, morphism=function: morphism(element)
+            morphism = function
+
+            def function(element):
+                return morphism(element)
+
         return self.element_class(self, function)
 
     def identity(self) -> OrdinalSemiringMorphism:
@@ -789,9 +747,7 @@ class OrdinalSemirings(OwnedCategory):
             right = self.parent()(other)
             left_expression = self.expression()
             right_expression = right.expression()
-            if isinstance(left_expression, _FiniteOrdinal) and isinstance(
-                right_expression, _FiniteOrdinal
-            ):
+            if isinstance(left_expression, _FiniteOrdinal) and isinstance(right_expression, _FiniteOrdinal):
                 return self.parent()(left_expression.value + right_expression.value)
             if right == 0:
                 return self
@@ -803,9 +759,7 @@ class OrdinalSemirings(OwnedCategory):
             right = self.parent()(other)
             left_expression = self.expression()
             right_expression = right.expression()
-            if isinstance(left_expression, _FiniteOrdinal) and isinstance(
-                right_expression, _FiniteOrdinal
-            ):
+            if isinstance(left_expression, _FiniteOrdinal) and isinstance(right_expression, _FiniteOrdinal):
                 return self.parent()(left_expression.value * right_expression.value)
             if self == 0 or right == 0:
                 return self.parent().zero()
@@ -819,10 +773,8 @@ class OrdinalSemirings(OwnedCategory):
             power = self.parent()(exponent)
             base_expression = self.expression()
             exponent_expression = power.expression()
-            if isinstance(base_expression, _FiniteOrdinal) and isinstance(
-                exponent_expression, _FiniteOrdinal
-            ):
-                return self.parent()(base_expression.value ** exponent_expression.value)
+            if isinstance(base_expression, _FiniteOrdinal) and isinstance(exponent_expression, _FiniteOrdinal):
+                return self.parent()(base_expression.value**exponent_expression.value)
             if power == 0:
                 return self.parent().one()
             if self == 0:
@@ -840,29 +792,19 @@ class OrdinalSemirings(OwnedCategory):
                 raise ValueError(f"{self} is not an initial ordinal")
             return expression.index
 
-        def cardinality(self) -> "Cardinalities.ObjectType":
+        def cardinality(self) -> Cardinalities.ObjectType:
             expression = self.expression()
             if isinstance(expression, _FiniteOrdinal):
                 return cardinal(expression.value)
             if isinstance(expression, _InitialOrdinal):
                 return aleph(expression.index)
             if isinstance(expression, (_NaturalSum, _OrdinalSum)):
-                terms = (
-                    expression.terms
-                    if isinstance(expression, _NaturalSum)
-                    else (expression.left, expression.right)
-                )
+                terms = expression.terms if isinstance(expression, _NaturalSum) else (expression.left, expression.right)
                 return Cardinalities().sum(*(term.cardinality() for term in terms))
             if isinstance(expression, (_NaturalProduct, _OrdinalProduct)):
-                factors = (
-                    expression.factors
-                    if isinstance(expression, _NaturalProduct)
-                    else (expression.left, expression.right)
-                )
+                factors = expression.factors if isinstance(expression, _NaturalProduct) else (expression.left, expression.right)
                 return Cardinalities().product(*(factor.cardinality() for factor in factors))
-            return Cardinalities().power(
-                expression.base.cardinality(), expression.exponent.cardinality()
-            )
+            return Cardinalities().power(expression.base.cardinality(), expression.exponent.cardinality())
 
         def _repr_(self) -> str:
             expression = self.expression()
@@ -907,7 +849,6 @@ class OrdinalSemirings(OwnedCategory):
         return OrdinalSemiringHomCategoryConstruction(self).Of(domain, codomain)
 
     class ParentMethods:
-
         def __init__(self, **rest) -> None:
             super().__init__(**rest)
 
@@ -963,12 +904,7 @@ class OrdinalSemirings(OwnedCategory):
                 if isinstance(expression, _NaturalSum):
                     preceding = ordinal_factors[:index]
                     following = ordinal_factors[index + 1 :]
-                    return self.natural_sum(
-                        *(
-                            self.natural_product(*preceding, term, *following)
-                            for term in expression.terms
-                        )
-                    )
+                    return self.natural_sum(*(self.natural_product(*preceding, term, *following) for term in expression.terms))
             normalized: list[Ordinal] = []
             finite_part = ZZ.one()
             for factor in ordinal_factors:
@@ -1005,11 +941,10 @@ class OrdinalSemirings(OwnedCategory):
                 return True
             if isinstance(target_expression, _FiniteOrdinal):
                 return False
-            if isinstance(source_expression, _InitialOrdinal) and isinstance(
-                target_expression, _InitialOrdinal
-            ):
+            if isinstance(source_expression, _InitialOrdinal) and isinstance(target_expression, _InitialOrdinal):
                 return self.proves_le(source_expression.index, target_expression.index)
             return False
+
         def Mor(
             self,
             codomain: OrdinalSemiring,
@@ -1020,8 +955,8 @@ class OrdinalSemirings(OwnedCategory):
             return OrdinalSemirings().Mor(self, codomain)
 
 
-
-
+OrdinalSemiring = OrdinalSemirings().ObjectType
+Ordinal = OrdinalSemirings().ElementType
 
 
 @cached_function
@@ -1041,13 +976,13 @@ omega0 = omega(0)
 
 
 @cached_function
-def _cardinal_with_expression(expression) -> "Cardinalities.ObjectType":
+def _cardinal_with_expression(expression) -> Cardinalities.ObjectType:
     return object_of(Cardinalities(), expression=expression)
 
 
 def cardinal(
-    value: "Cardinalities.ObjectType | SupportsInt | AnInfinity",
-) -> "Cardinalities.ObjectType":
+    value: Cardinalities.ObjectType | SupportsInt | AnInfinity,
+) -> Cardinalities.ObjectType:
     if value in Cardinalities():
         return value
     if value == Infinity:
@@ -1066,7 +1001,7 @@ def cardinal(
     return _cardinal_with_expression(_FiniteCardinal(integer))
 
 
-def aleph(index: Ordinal | SupportsInt) -> "Cardinalities.ObjectType":
+def aleph(index: Ordinal | SupportsInt) -> Cardinalities.ObjectType:
     return _cardinal_with_expression(_AlephCardinal(ordinal(index)))
 
 

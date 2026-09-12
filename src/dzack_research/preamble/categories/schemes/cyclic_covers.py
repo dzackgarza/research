@@ -51,9 +51,6 @@ algebra against the invertible sheaves of the divisor layer.
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-    Isomorphism,
-)
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     CYCLIC_COVER_VARIABLE,
@@ -73,7 +70,6 @@ from dzack_research.preamble.categories.schemes.group_schemes import (
 from dzack_research.preamble.categories.schemes.schemes import (
     AffineGSchemes,
     AffineSchemes,
-    Schemes,
     Spec,
     _affine_morphism_from_pullback,
     affine_spec_morphism,
@@ -140,7 +136,7 @@ def relative_cyclic_deck_transformation(cyclic_algebra, root_of_unity):
     local_maps = {}
     for index in cyclic_algebra.cover().atlas():
         local_algebra = cyclic_algebra.local_algebra(index)
-        local_scheme = glued.chart(index)
+        glued.chart(index)
         local_base = cyclic_algebra.cover().open(index).coordinate_algebra()
         scalar = local_algebra.algebra_structure_morphism()(local_base(root))
         z = local_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)

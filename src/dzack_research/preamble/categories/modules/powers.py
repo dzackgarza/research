@@ -37,6 +37,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModulesWithChosenFinitePresentation,
     _module_tensor_product_with_data,
 )
+from dzack_research.preamble.categories.modules.tensor_products import (
+    _flatten_tensor_label,
+    _nested_tensor_label,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -784,12 +788,6 @@ def _divided_power_nontrivial(module, degree):
             "power_degree": degree,
         },
     )
-
-
-from dzack_research.preamble.categories.modules.tensor_products import (
-    _flatten_tensor_label,
-    _nested_tensor_label,
-)
 
 
 def tensor_power_permutation(module, degree, positions):

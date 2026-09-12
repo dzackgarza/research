@@ -128,7 +128,7 @@ class RationalPolyhedralCones(OwnedCategory):
             return CoxeterDiagrams().from_roots(tuple(self._wall_roots))
 
         def _transport_covector(self, covector, isometry):
-            source = self.ambient_lattice()
+            self.ambient_lattice()
             target = isometry.codomain()
             inverse = ~isometry
             target_dual = target.dual_module()

@@ -2,8 +2,8 @@
 
 from sage.categories.category import Category
 
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.divisors.divisor_groups import _module_in_role
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 

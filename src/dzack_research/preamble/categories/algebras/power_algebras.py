@@ -39,13 +39,13 @@ from dzack_research.preamble.categories.modules.powers import (
 )
 from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_ring as _engine_ring,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _owned_ring,
     predicate_subring,
     ring_morphism,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_ring as _engine_ring,
 )
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets

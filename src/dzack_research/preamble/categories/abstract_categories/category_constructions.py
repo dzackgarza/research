@@ -1,5 +1,7 @@
 r"""Opposite categories and binary products of categories."""
 
+from __future__ import annotations
+
 from typing import Any
 
 from sage.categories.category import Category

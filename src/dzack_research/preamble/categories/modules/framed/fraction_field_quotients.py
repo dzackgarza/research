@@ -5,12 +5,12 @@ The owned quotient is a parent built through the owned module chain; Sage's
 shape of the owned ring views.
 """
 
-from sage.categories.category import Category
-from sage.categories.morphism import SetMorphism
 from sage.arith.functions import lcm
 from sage.arith.misc import gcd
+from sage.categories.category import Category
+from sage.categories.morphism import SetMorphism
 from sage.groups.additive_abelian.qmodnz import QmodnZ
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -19,7 +19,15 @@ from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.sage_object import SageObject
 
-from dzack_research.preamble.owned_category import object_of
+from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+    FinitelyPresentedModule,
+)
+from dzack_research.preamble.categories.modules.pure.modules import FramedModules
+from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+    TorsionModules,
+    _torsion_module_presented_by_matrix,
+    refine_finitely_presented_torsion_module,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -27,20 +35,9 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
 )
-from dzack_research.preamble.refine import realize_owned_category
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModuleOn
-from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
-    FinitelyPresentedModule,
-)
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import framing_morphism
-from dzack_research.preamble.categories.modules.pure.modules import FramedModules
-from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-    TorsionModules,
-    _torsion_module_presented_by_matrix,
-    refine_finitely_presented_torsion_module,
-)
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import object_of
 
 
 class FractionFieldQuotients(OwnedCategoryOverBaseRing):
@@ -80,7 +77,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         _rmul_ = _lmul_
 
         def _richcmp_(self, other, op):
-            if not other.parent() is self.parent() or other.parent() is not self.parent():
+            if other.parent() is not self.parent() or other.parent() is not self.parent():
                 return NotImplemented
             return richcmp(self._backend(), other._backend(), op)
 

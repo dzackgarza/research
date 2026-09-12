@@ -50,10 +50,9 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from sage.categories.morphism import Morphism
     from sage.rings.polynomial.polynomial_element import Polynomial
-    from sage.categories.modules import Module
     from sage.rings.ring import Ring
+
     from dzack_research.preamble.lexicon import Element
     from dzack_research.preamble.owned_category import ConstructionData
 
@@ -65,10 +64,10 @@ from sage.functions.hyperbolic import cosh, sech, sinh, tanh
 from sage.functions.log import exp
 from sage.functions.other import abs_symbolic
 from sage.functions.trig import arctan, cos, sin
+from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA
-from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element as SageElement
 from sage.structure.parent import Parent
 from sage.symbolic.expression import Expression
@@ -77,8 +76,8 @@ from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+from dzack_research.preamble.owned_category import object_of
 
 if TYPE_CHECKING:
     # What a module of functions is offered as an element: a symbolic
@@ -138,7 +137,7 @@ def _decays_like_a_gaussian(expression: Expression, variable: Expression) -> boo
     return (
         exponent.is_polynomial(variable)
         and exponent.degree(variable) == 2
-        and bool(exponent.coefficient(variable, 2r) < 0)
+        and bool(exponent.coefficient(variable, 2) < 0)
     )
 
 
@@ -166,7 +165,7 @@ def _is_schwartz(expression: Expression, variable: Expression) -> bool:
     )
 
 
-def _real_polynomial(expression: Expression, variable: Expression) -> "Polynomial | None":
+def _real_polynomial(expression: Expression, variable: Expression) -> Polynomial | None:
     r"""Return ``expression`` as an exact real polynomial, or ``None``.
 
     Exact means coefficients in the real algebraic numbers, which is what makes
@@ -184,7 +183,7 @@ def _real_polynomial(expression: Expression, variable: Expression) -> "Polynomia
 
 def _as_rational_function(
     expression: Expression, variable: Expression
-) -> "tuple[Polynomial, Polynomial] | None":
+) -> tuple[Polynomial, Polynomial] | None:
     r"""Return $(p,q)$ in lowest terms with $p/q$ the expression, or ``None``.
 
     Lowest terms matters for what the caller does with it: an uncancelled
@@ -352,7 +351,7 @@ def _square_integrability(expression: Expression, variable: Expression) -> str:
     return _integral_verdict(expression, variable)
 
 
-def _certify_membership(kind: str, domain_name: str, function: "Function") -> None:
+def _certify_membership(kind: str, domain_name: str, function: Function) -> None:
     r"""Certify, refuse, or record that the proposed element is trusted.
 
     The refusal is an assertion because it is a theorem about the function
@@ -411,7 +410,7 @@ class FunctionModules(OwnedCategoryOverBaseRing):
             self: Self,
             kind: str,
             domain_name: str,
-            **rest: "ConstructionData",
+            **rest: ConstructionData,
         ) -> None:
             r"""Add the kind and the domain to the module below.
 
@@ -423,21 +422,21 @@ class FunctionModules(OwnedCategoryOverBaseRing):
             self._domain_name = domain_name
             super().__init__(**rest)
 
-        def base_ring(self: Self) -> "Ring":
+        def base_ring(self: Self) -> Ring:
             return self.base()
 
         def _element_constructor_(
-            self: Self, function: "Function | Element"
-        ) -> "Element":
+            self: Self, function: Function | Element
+        ) -> Element:
             if isinstance(function, SageElement) and function.parent() is self:
                 return function
             _certify_membership(self._kind, self._domain_name, function)
-            member: "Element" = self.element_class(self, function)
+            member: Element = self.element_class(self, function)
             return member
 
-        def zero(self: Self) -> "Element":
+        def zero(self: Self) -> Element:
             r"""Return the zero function, a member of anything by closure."""
-            zero_function: "Element" = self.element_class(self, SR.zero())
+            zero_function: Element = self.element_class(self, SR.zero())
             return zero_function
 
         def _repr_(self: Self) -> str:
@@ -452,8 +451,8 @@ class FunctionModules(OwnedCategoryOverBaseRing):
         def __init__(
             self: Self,
             parent: Parent,
-            function: "Function",
-            **rest: "ConstructionData",
+            function: Function,
+            **rest: ConstructionData,
         ) -> None:
             assert isinstance(function, Expression) or callable(function), (
                 f"an element of {parent} is a function, got {function!r}"
@@ -461,7 +460,7 @@ class FunctionModules(OwnedCategoryOverBaseRing):
             self._function = function
             super().__init__(parent, **rest)
 
-        def __call__(self: Self, point: "Element") -> "Element":
+        def __call__(self: Self, point: Element) -> Element:
             r"""Return the value at ``point``; such an element is a function.
 
             A symbolic expression is evaluated by substituting for its variable,
@@ -475,7 +474,7 @@ class FunctionModules(OwnedCategoryOverBaseRing):
                 })
             return self._function(point)
 
-        def _by_closure(self: Self, function: "Function") -> "Element":
+        def _by_closure(self: Self, function: Function) -> Element:
             r"""Return an element of the same module, without certifying it.
 
             A module is closed under its own operations, so a sum, a negative or a
@@ -483,20 +482,20 @@ class FunctionModules(OwnedCategoryOverBaseRing):
             this goes around the certifier instead of asking it again.
             """
             parent = self.parent()
-            member: "Element" = parent.element_class(parent, function)
+            member: Element = parent.element_class(parent, function)
             return member
 
-        def _add_(self: Self, other: Self) -> "Element":
+        def _add_(self: Self, other: Self) -> Element:
             if isinstance(self._function, Expression) and isinstance(other._function, Expression):
                 return self._by_closure(self._function + other._function)
             return self._by_closure(lambda point: self(point) + other(point))
 
-        def _neg_(self: Self) -> "Element":
+        def _neg_(self: Self) -> Element:
             if isinstance(self._function, Expression):
                 return self._by_closure(-self._function)
             return self._by_closure(lambda point: -self(point))
 
-        def _lmul_(self: Self, scalar: "Element") -> "Element":
+        def _lmul_(self: Self, scalar: Element) -> Element:
             if isinstance(self._function, Expression):
                 return self._by_closure(scalar * self._function)
             return self._by_closure(lambda point: scalar * self(point))
@@ -508,7 +507,7 @@ class FunctionModules(OwnedCategoryOverBaseRing):
 
 
 @cached_function
-def FunctionModule(base_ring: "Ring", kind: str, domain_name: str) -> Parent:
+def FunctionModule(base_ring: Ring, kind: str, domain_name: str) -> Parent:
     r"""Return the $R$-module of functions of a stated kind on a stated domain.
 
     Cached on its arguments: one module per $(R,\text{kind},\text{domain})$, or
@@ -521,13 +520,13 @@ def FunctionModule(base_ring: "Ring", kind: str, domain_name: str) -> Parent:
     )
 
 
-def smooth_functions(base_ring: "Ring", domain_name: str = _THE_REAL_LINE) -> Parent:
+def smooth_functions(base_ring: Ring, domain_name: str = _THE_REAL_LINE) -> Parent:
     r"""Return $C^\infty$ on the named domain, as an $R$-module."""
     return FunctionModule(base_ring, _SMOOTH, domain_name)
 
 
 def square_integrable_functions(
-    base_ring: "Ring", domain_name: str = _THE_REAL_LINE
+    base_ring: Ring, domain_name: str = _THE_REAL_LINE
 ) -> Parent:
     r"""Return $L^2$ on the named domain, as an $R$-module."""
     return FunctionModule(base_ring, _SQUARE_INTEGRABLE, domain_name)

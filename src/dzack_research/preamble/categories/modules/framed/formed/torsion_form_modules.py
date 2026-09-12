@@ -23,16 +23,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     IsoCategoryConstruction,
     category_packet,
 )
-from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-    FinitelyPresentedTorsionModules,
-    refine_finitely_presented_torsion_module,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
-from dzack_research.preamble.refine import realize_owned_category
-from dzack_research.preamble.tensors.tensor import tensor
-from dzack_research.preamble.tensors.tensor import (
-    _engine_component_matrix,
-)
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
@@ -61,8 +51,13 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
-from dzack_research.preamble.categories.modules.pure.torsion_modules import _torsion_module_presented_by_matrix
+from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+    FinitelyPresentedTorsionModules,
+    _torsion_module_presented_by_matrix,
+    refine_finitely_presented_torsion_module,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
     _engine_element,
     _engine_ring,
     _own_ring,
@@ -74,7 +69,14 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import (
     Sets,
+)
+from dzack_research.preamble.categories.sets.set_categories import (
     Sets as OwnedSets,
+)
+from dzack_research.preamble.refine import realize_owned_category
+from dzack_research.preamble.tensors.tensor import (
+    _engine_component_matrix,
+    tensor,
 )
 
 

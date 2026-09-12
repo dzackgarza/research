@@ -1,13 +1,13 @@
 r"""Cox rings of represented toric schemes, with their divisor-class grading."""
 
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.abstract_categories.objects import (
-    OwnedParameterizedCategory,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import _engine_element
 from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
     RepresentedToricSchemes,

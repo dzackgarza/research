@@ -73,10 +73,6 @@ from sage.categories.category_with_axiom import (
 from sage.categories.covariant_functorial_construction import (
     CovariantConstructionCategory as SageCovariantConstructionCategory,
 )
-
-from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
-    CategoryPacketMethods,
-)
 from sage.categories.covariant_functorial_construction import (
     FunctorialConstructionCategory as SageFunctorialConstructionCategory,
 )
@@ -115,6 +111,9 @@ from sage.misc.constant_function import ConstantFunction
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.hom_foundation import (
+    CategoryPacketMethods,
+)
 from dzack_research.preamble.owned_category import (
     OwnedCategoryMixin,
     OwnedCategoryObject,
@@ -122,6 +121,7 @@ from dzack_research.preamble.owned_category import (
 
 if TYPE_CHECKING:
     from sage.categories.morphism import Morphism
+    from sage.structure.category_object import CategoryObject
     from sage.structure.element import Element as CategoryElement
 
 
@@ -358,10 +358,10 @@ class HomCategoryConstruction(
         ``super().__init__`` runs off the end into ``object``.  This states
         the missing edge once for every category using this backend.
         """
-        from dzack_research.preamble.categories.sets.owned_sets import Sets
         from dzack_research.preamble.categories.abstract_categories.hom_categories import (
             HomCategoryOf,
         )
+        from dzack_research.preamble.categories.sets.owned_sets import Sets
 
         owned_sets = Sets()
         categorical_hom = HomCategoryOf(self.base_category())

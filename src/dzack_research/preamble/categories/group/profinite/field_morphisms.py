@@ -7,10 +7,6 @@ cross precisely that boundary without replacing an embedding by a numerical
 approximation or by descriptive metadata.
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-)
 from typing import Any, cast
 
 from sage.categories.fields import Fields as SageFields
@@ -20,6 +16,10 @@ from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import AlgebraicField_common
 
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _engine_element, _engine_ring, _own_ring
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 

@@ -5,7 +5,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
-
 from dzack_research.preamble.categories.modules.cochain_complexes import CochainComplexes
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 

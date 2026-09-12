@@ -1,66 +1,57 @@
 """Free modules with their canonical framing."""
 
-from itertools import islice
 
-from sage.combinat.free_module import CombinatorialFreeModule
 from sage.misc.cachefunc import cached_function, cached_method
-from sage.misc.latex import latex
 from sage.modules.free_module import FreeModule as _SageFreeModule
-from sage.modules.free_module import FreeModule_generic
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    OwnedRings,
-    _engine_element,
-    _engine_numeral,
-    _engine_ring,
-    _owned_ring,
-)
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
-)
-from dzack_research.preamble.categories.modules.pure.modules import (
-    BiproductModules,
-    FinitelyGeneratedFreeModules,
-    VectorSpaces,
-)
+from dzack_research.preamble.categories.modules.base_change import base_change_codomain
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
     FinitelyPresentedModule,
 )
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.modules.base_change import base_change_codomain
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     _solve_left_integrally,
     framing_morphism,
     module_coefficients,
-    module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
+    BiproductModules,
+    FinitelyGeneratedFreeModules,
     FramedModules,
     FreeModules,
-    ModuleSubobjects,
     Modules,
+    ModuleSubobjects,
+    VectorSpaces,
     _refine_matrix_hom,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     IntegralDomains,
+    OwnedCategoryOverBaseRing,
     OwnedFields,
+    OwnedRings,
     PrincipalIdealDomains,
+    _engine_element,
+    _engine_numeral,
+    _engine_ring,
     _own_ring,
+    _owned_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
 )
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
+from dzack_research.preamble.owned_category import object_of
 
 
 def _finitely_generated_free_placement(ring, module_generating_set):

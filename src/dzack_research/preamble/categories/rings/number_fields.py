@@ -1,22 +1,36 @@
 r"""Owned number fields and their selected primitive-element presentations."""
 
-from sage.misc.cachefunc import cached_function, cached_method
 from sage.all import (
     CyclotomicField as _SageCyclotomicField,
+)
+from sage.all import (
     NumberField as _SageNumberField,
+)
+from sage.all import (
     QuadraticField as _SageQuadraticField,
 )
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories._lattice import signature_pair
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.group.groups import _own_group
+from dzack_research.preamble.categories.modules.fractional_ideals import (
+    FractionalIdeal,
+    Ideal,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
 from dzack_research.preamble.categories.rings.embeddings import (
     NumberFieldHomset,
     order_homset,
@@ -28,33 +42,19 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_numeral,
     _engine_ring,
+    _own_ring,
     _owned_engine_ring,
 )
-from dzack_research.preamble.refine import refine
-from dzack_research.preamble.categories.algebras.algebras import Algebras
-from dzack_research.preamble.categories.group.groups import _own_group
-from dzack_research.preamble.categories.modules.fractional_ideals import (
-    FractionalIdeal,
-    Ideal,
-)
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleOn,
-)
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    framing_morphism,
-    module_homset,
-)
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     indexed_family,
 )
+from dzack_research.preamble.refine import refine
 
 
 def _own_number_field(engine):
@@ -335,8 +335,11 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 primitive = from_absolute(absolute.gen())
                 polynomial = absolute.defining_polynomial()
                 labels = finite_ordered_set(("absolute_generator",))
-                presentation_lift = lambda element: to_absolute(element).lift()
-                finite_free_coordinates = lambda element: tuple(to_absolute(element))
+                def presentation_lift(element):
+                    return to_absolute(element).lift()
+
+                def finite_free_coordinates(element):
+                    return tuple(to_absolute(element))
                 degree = int(engine.absolute_degree())
             else:
                 primitive = engine.gen()

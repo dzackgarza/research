@@ -15,6 +15,8 @@ odd meaning ``eps(p) = 1``; this distinction is essential over rings with
 from sage.misc.cachefunc import cached_function
 from sage.rings.integer_ring import ZZ as SageZZ
 
+from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.modules.graded_modules import (
     require_grading_monoid,
 )
@@ -24,8 +26,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     ring_morphism,
 )
-from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.refine import refine
 
 

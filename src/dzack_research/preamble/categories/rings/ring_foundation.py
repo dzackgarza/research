@@ -38,12 +38,12 @@ from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.sage_object import SageObject
 from sage.structure.unique_representation import UniqueRepresentation
 
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     CategoryPacketMethods,
     HomCategoryConstruction,
 )
-from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,

@@ -9,6 +9,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
+from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.group.groups import OwnedGroups, _own_group
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplex,
@@ -16,7 +17,6 @@ from dzack_research.preamble.categories.modules.cochain_complexes import (
     Cohomology,
     cochain_homset,
 )
-from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     BilinearForm,
 )

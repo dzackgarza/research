@@ -4,16 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.modules.free_module_element import vector as engine_vector
+from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.qqbar import AA
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
-from dzack_research.preamble.tensors.tensor import tensor
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
+
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_coefficients
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -32,6 +30,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
 
 
 def _definite_sign(lattice):
@@ -437,6 +436,7 @@ def _target_coordinates(lattice, target):
 def closest_vector(lattice, target):
     r"""Return the exact closest lattice vector to a rational target."""
     from itertools import product
+
     from sage.functions.other import ceil, floor, sqrt
 
     point = _target_coordinates(lattice, target)

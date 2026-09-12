@@ -1,22 +1,18 @@
 r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
+from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.unknown import Unknown
-from sage.matrix.constructor import matrix as engine_matrix
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleEmbedding,
-    ModuleMorphism,
-)
+from dzack_research.preamble.categories import lattice_engines
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     category_packet,
 )
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.group.cyclic_subgroups import cyclic_subgroup
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFinitePresentation,
@@ -26,7 +22,6 @@ from dzack_research.preamble.categories.group.groups import (
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     intersection_subgroup,
     kernel_subgroup,
-    predicate_subgroup,
     preimage_subgroup,
     stabilizer_subgroup,
 )
@@ -39,15 +34,17 @@ from dzack_research.preamble.categories.isotropic_orbits import (
     isotropic_orbit_representatives,
     isotropic_stabilizer_generators,
 )
-from dzack_research.preamble.categories import lattice_engines
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import form_embedding
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import torsion_form_isometry
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleEmbedding,
+    ModuleMorphism,
     module_coefficients,
     module_embedding,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_image,
@@ -843,7 +840,7 @@ class LatticeHomset(CategoricalHomset):
     Element = LatticeMorphism
 
     def __init__(self, hom_family, domain, codomain) -> None:
-        ring = domain.base_ring()
+        domain.base_ring()
         lattices = domain.lattice_category()
         if domain not in lattices or codomain not in lattices:
             raise TypeError("a lattice homset has lattices as its domain and codomain")
@@ -1469,15 +1466,14 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
             raise ValueError("the subgroup must lie in O(A_L)")
 
         if int(subgroup.cardinality()) == 1:
-
             form = target.domain()
             identity = module_homset(form, form).identity()
-            predicate = (
-                lambda automorphism: automorphism._discriminant_forward_morphism()
-                == identity
-            )
+
+            def predicate(automorphism):
+                return automorphism._discriminant_forward_morphism() == identity
         else:
-            predicate = lambda automorphism: automorphism.discriminant_morphism() in subgroup
+            def predicate(automorphism):
+                return automorphism.discriminant_morphism() in subgroup
         return preimage_subgroup(
             self.discriminant_representation(),
             subgroup,
@@ -1665,7 +1661,7 @@ class LatticeIsometryHomset(LatticeEmbeddingHomset):
         codomain = self.codomain()
         ring = codomain.base_ring()
         generators = tuple(codomain.module_generators())
-        rank = len(generators)
+        len(generators)
         images = []
         for source_position in range(int(self.domain().module_rank())):
             row = row_action_matrix[source_position]

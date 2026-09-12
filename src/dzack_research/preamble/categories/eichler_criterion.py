@@ -242,9 +242,10 @@ class TwoUEichlerModel(SageObject):
     """
 
     def __init__(self, orthogonal_complement) -> None:
+        from sage.rings.integer_ring import ZZ as SageZZ
+
         from dzack_research.preamble.categories.lattices import Lattices
         from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-        from sage.rings.integer_ring import ZZ as SageZZ
 
         ZZ = _own_ring(SageZZ)
         if orthogonal_complement.base_ring() is not ZZ:

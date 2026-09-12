@@ -2,18 +2,6 @@ r"""Cohomology functors for represented cochain complexes and de Rham DGAs."""
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor,
-    Functor,
-    category_inclusion,
-)
-from dzack_research.preamble.categories.modules.cochain_complexes import (
-    CochainComplexes,
-    Cohomology,
-)
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 from dzack_research.preamble.categories.algebras.cohomology_algebras import (
     CohomologyAlgebra,
     CohomologyAlgebras,
@@ -23,7 +11,19 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     DifferentialGradedAlgebras,
     StrictlyCommutativeDifferentialGradedAlgebras,
 )
+from dzack_research.preamble.categories.functors.core import (
+    CompositeFunctor,
+    Functor,
+    category_inclusion,
+)
 from dzack_research.preamble.categories.functors.de_rham import de_rham_functor
+from dzack_research.preamble.categories.modules.cochain_complexes import (
+    CochainComplexes,
+    Cohomology,
+)
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
+from dzack_research.preamble.categories.modules.pure.modules import FinitelyPresentedModules
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 class CohomologyFunctor(Functor):

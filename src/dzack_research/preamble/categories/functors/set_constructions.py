@@ -1,8 +1,6 @@
 r"""Functorial Set constructions: exponentials and finite/power subsets."""
 
 from sage.categories.morphism import SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
-from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -18,9 +16,10 @@ from dzack_research.preamble.categories.sets.set_categories import (
     ExponentialOfSets,
     FiniteSubsets,
     PowerSet,
+    Sets,
     SubsetsOfSize,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import Sets as _OwnedSets
 
 
 class ExponentialFunctor(Functor):

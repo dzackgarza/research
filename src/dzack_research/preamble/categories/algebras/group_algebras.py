@@ -16,9 +16,9 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
+    CommutativeAlgebras,
     _unit_morphism_from_element,
     algebra_homset,
-    CommutativeAlgebras,
 )
 from dzack_research.preamble.categories.algebras.augmented_algebras import AugmentedAlgebras
 from dzack_research.preamble.categories.functors.core import Functor

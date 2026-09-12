@@ -9,18 +9,16 @@ through owned facades that hold the Sage parent as a private engine.
 
 from collections.abc import Iterable, Iterator
 from contextlib import contextmanager
-from typing import TypeVar
 
 from sage.categories.category import Category
-from sage.structure.category_object import CategoryObject
 from sage.categories.morphism import Morphism
+from sage.structure.category_object import CategoryObject
 from sage.structure.dynamic_class import dynamic_class
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 _PREAMBLE_PACKAGE = __name__.rpartition(".")[0] + "."
-SageObjectT = TypeVar("SageObjectT", bound=SageObject)
 
 
 # A methods class naming one of these among its bases is an implementation
@@ -138,7 +136,7 @@ def _assert_certifying_predicates_hold(obj: SageObject, category: Category) -> N
         )
 
 
-def realize_owned_category(obj: SageObjectT) -> SageObjectT:
+def realize_owned_category[SageObjectT: SageObject](obj: SageObjectT) -> SageObjectT:
     r"""Realize the owned methods of the category already chosen at construction.
 
     This is runtime plumbing, not mathematical refinement.  In particular it
@@ -194,7 +192,7 @@ def run_construction_hooks(obj: SageObject, reached: set[type]) -> None:
             provider.__init_extra__(obj)
 
 
-def refine(
+def refine[SageObjectT: SageObject](
     obj: SageObjectT,
     category: Category | Iterable[Category],
 ) -> SageObjectT:

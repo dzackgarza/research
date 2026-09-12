@@ -1,32 +1,21 @@
 r"""Modules equipped with exact bilinear or quadratic forms."""
 
+from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.parent import Parent
+
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+    _category_homset,
+    category_packet,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
     OwnedParameterizedCategory,
 )
-from sage.categories.homset import Homset
-from sage.categories.modules import Modules as SageModules
-from sage.categories.morphism import Morphism
-from sage.categories.sets_cat import Sets as SageSets
-from sage.misc.cachefunc import cached_function, cached_method
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.parent import Parent
-
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    OwnedRings,
-    _engine_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    _category_homset,
-    CategoricalHomset,
-    HomCategoryConstruction,
-    category_packet,
-)
-from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
-from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
@@ -57,6 +46,7 @@ from dzack_research.preamble.categories.modules.hodge import (
     MultivectorHodgeStar,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
     module_coefficients,
     module_embedding,
     module_homset,
@@ -73,8 +63,15 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 from dzack_research.preamble.categories.modules.pure.torsion_modules import (
     FinitelyPresentedTorsionModules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedRings,
+    _engine_ring,
+    _owned_ring,
+)
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-
+from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
+from dzack_research.preamble.refine import realize_owned_category
 
 
 def _normalize_value_module(value_module):
@@ -116,11 +113,6 @@ def _is_bilinear_form(form) -> bool:
 def _is_quadratic_form(form) -> bool:
 
     return is_quadratic_form(form)
-
-
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
-)
 
 
 @cached_function

@@ -6,17 +6,16 @@ from sage.categories.category import Category
 from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreshFreeModuleOn
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules, FreshFreeModuleOn
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _own_ring,
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 def _module_in_role(module, category, message, *, construction_data=None):

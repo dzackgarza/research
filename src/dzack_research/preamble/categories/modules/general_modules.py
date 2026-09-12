@@ -16,8 +16,8 @@ import operator
 from sage.structure.element import ModuleElement
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -27,7 +27,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.set_categories import Set
 from dzack_research.preamble.owned_category import object_of
-
 
 _LOGGER = logging.getLogger(__name__)
 

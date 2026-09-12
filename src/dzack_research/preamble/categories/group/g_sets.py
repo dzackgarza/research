@@ -24,8 +24,8 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.functors.core import NaturalTransformation
+from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _engine_group,

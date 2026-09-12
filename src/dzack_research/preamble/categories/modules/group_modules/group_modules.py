@@ -31,20 +31,20 @@ from dzack_research.preamble.categories.algebras.group_algebras import (
     GroupAlgebra,
     GroupAlgebras,
 )
+from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.functors.scalar_change import (
     ScalarExtensionFunctor,
 )
-from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.group.class_functions import (
     finite_group_class_function,
 )
 from dzack_research.preamble.categories.group.g_objects import GObjectHomset, GObjects
-from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _engine_group,
     _owned_group,
 )
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
 from dzack_research.preamble.categories.modules.group_modules.isotypic import (
     _split_irreducible_characters,

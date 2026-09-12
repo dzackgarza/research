@@ -18,21 +18,22 @@ graded augmentation of the pointwise algebra is the projection onto the
 unit piece \(A\to L^\infty=A_u\).
 """
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-)
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from sage.misc.cachefunc import cached_function
 from sage.rings.infinity import Infinity
-from sage.structure.element import ModuleElement, parent as element_parent
+from sage.structure.element import ModuleElement
+from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
@@ -56,10 +57,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _owned_ring,
 )
-from dzack_research.preamble.rings.real import RR
+from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
+from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.rings.unit_interval import UnitInterval
-from dzack_research.preamble.categories.abstract_categories.products import _finite_factor_family
 
 
 def _real_ring():
@@ -453,7 +454,7 @@ def _lebesgue_multiplication(module, piece_product):
 
 
 def _transport_multiplication(multiplication, algebra):
-    module = multiplication.codomain()
+    multiplication.codomain()
     tensor = GradedTensorSquare(algebra)
     module_tensor = multiplication.domain()
 

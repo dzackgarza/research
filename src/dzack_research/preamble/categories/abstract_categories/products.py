@@ -1,5 +1,7 @@
 r"""Diagrams, cones, cocones, and selected finite product constructions."""
 
+from __future__ import annotations
+
 from collections.abc import Callable, Iterable
 from typing import Any
 
@@ -1235,7 +1237,7 @@ class LimitsOfCategory(Category):
             raise ValueError("an arrow endpoint is not one of the indexing category's objects")
 
         p_shape = product_objects.diagram().domain()
-        q_shape = product_arrows.diagram().domain()
+        product_arrows.diagram().domain()
 
         def compatibility_map(use_diagram_arrow):
             cone = ConeCategory(product_arrows.diagram()).cone(
@@ -1323,7 +1325,7 @@ class ColimitsOfCategory(LimitsOfCategory):
                     return label
             raise ValueError("an arrow endpoint is not one of the indexing category's objects")
 
-        a_shape = coproduct_arrows.diagram().domain()
+        coproduct_arrows.diagram().domain()
         b_shape = coproduct_objects.diagram().domain()
 
         def compatibility_map(use_diagram_arrow):

@@ -12,11 +12,10 @@ presentation may be finite even when the full Weil divisor group is not; the
 presentation is retained rather than identified with the full divisor group.
 """
 
-from sage.structure.sage_object import SageObject
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.constructions import Biproduct
-from dzack_research.preamble.categories.divisors.cartier_divisor_groups import CartierDivisorGroup
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.invertible_sheaves import FiniteAtlasInvertibleSheaf
 from dzack_research.preamble.categories.divisors.picard_groups import PicardGroup

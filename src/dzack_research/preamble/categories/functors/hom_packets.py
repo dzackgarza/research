@@ -2,7 +2,6 @@ r"""Functorial transport of Hom/End/Aut category packets."""
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
-    Isomorphism,
     _isomorphism_from_known_inverse_pair,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (

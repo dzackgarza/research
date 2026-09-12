@@ -66,7 +66,7 @@ def write_group_file(file_name, l_gen, n_act):
 
 def ast_read(file_name):
     assert os.path.exists(file_name), f"Output file {file_name} does not exist"
-    f = open(file_name, 'r')
+    f = open(file_name)
     content = f.read()
     f.close()
     return ast.literal_eval(content)
@@ -346,7 +346,7 @@ def lorentzian_perfect_domain_traversal(M, option="total"):
         assert result.returncode == 0, (
             "LORENTZ_MPI_PerfectLorentzian failed: " + result.stderr[:500]
         )
-        with open(output_file, "r", encoding="utf-8") as stream:
+        with open(output_file, encoding="utf-8") as stream:
             return stream.read()
 
 

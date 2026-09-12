@@ -18,11 +18,11 @@ from sage.arith.misc import factor
 from sage.categories.category import Category
 from sage.categories.infinite_enumerated_sets import InfiniteEnumeratedSets
 from sage.combinat.root_system.cartan_type import CartanType, CartanType_abstract
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
 from sage.modules.free_module_element import FreeModuleElement
 from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
 from sage.rings.integer import Integer
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -36,28 +36,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
-    _own_ring,
-)
-from dzack_research.static_types import ProductOfNaturalNumbers
-from dzack_research.preamble.categories.sets.set_categories import (
-    EnumeratedSets,
-    NN,
-    Sets,
-    ranking_isomorphism,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    finite_ordered_image,
-    finite_ordered_set,
-)
-from dzack_research.preamble.tensors.tensor import (
-    Tensor,
-    TensorModule,
-    tensor,
-)
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 from dzack_research.preamble.categories.abstract_categories.category_constructions import ProductCategory
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FramedFreeModules,
@@ -66,15 +44,34 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
     FreshFreeModuleOn,
     MatrixSpace,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+)
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
     aleph0,
     cardinal,
 )
-from dzack_research.preamble.tensors.tensor import (
-    _component_shape,
-    _tensor_richcmp,
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
+    finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.set_categories import (
+    NN,
+    EnumeratedSets,
+    Sets,
+    ranking_isomorphism,
+)
+from dzack_research.preamble.tensors.tensor import (
+    Tensor,
+    TensorModule,
+    _component_shape,
+    _engine_component_matrix,
+    _tensor_richcmp,
+    tensor,
+)
+from dzack_research.static_types import ProductOfNaturalNumbers
 
 
 def _formal_symbol(index):

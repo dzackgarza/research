@@ -12,24 +12,19 @@ only restricts the scalar ring.
 
 from sage.misc.cachefunc import cached_function
 
-from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-    module_homset,
-)
 from dzack_research.preamble.categories.algebras.group_algebras import GroupAlgebra
-from dzack_research.preamble.categories.modules.pure.modules import Modules, restrict_scalars
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-
-    _equip_action,
-    group_module_homset,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.functors.scalar_change import (
     RestrictionOfScalarsFunctor,
     ScalarExtensionFunctor,
     base_change_adjunction,
 )
+from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+    _equip_action,
+    group_module_homset,
+)
+from dzack_research.preamble.categories.modules.pure.modules import Modules, restrict_scalars
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
 
 
 def _unacted_module(group_module):

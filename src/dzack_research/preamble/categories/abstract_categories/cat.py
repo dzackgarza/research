@@ -1,5 +1,7 @@
 r"""A represented category ``Cat`` of categories, functors, and natural transformations."""
 
+from __future__ import annotations
+
 from collections.abc import Iterable
 from typing import Any, overload
 

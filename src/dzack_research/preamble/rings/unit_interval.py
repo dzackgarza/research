@@ -8,17 +8,18 @@ monoid (identity ``one()``, not ``zero()``).
 """
 
 from sage.rings.rational_field import QQ
-from sage.structure.element import Element, parent as sage_parent
+from sage.structure.element import Element
+from sage.structure.element import parent as sage_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
-from dzack_research.preamble.categories.group.magmas import Monoids
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.group.magmas import Monoids
+from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.refine import realize_owned_category
 from dzack_research.preamble.rings.real import RR
-from dzack_research.preamble.categories.sets.cardinals import continuum
 
 
 class UnitIntervalElement(Element):

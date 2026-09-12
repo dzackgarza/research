@@ -22,10 +22,10 @@ site rather than assumed, and the roots come back negated because negating the
 form reverses every half-space condition \(b(x,r)\leq 0\).
 """
 
-from sage.arith.misc import divisors
 from importlib.util import find_spec
 from pathlib import Path
 
+from sage.arith.misc import divisors
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
@@ -47,7 +47,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.engine_capabilities import engine_capabilities
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix
-
 
 _VINAL_PROVISIONING = (
     "install VinAl into the Sage environment with "

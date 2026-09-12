@@ -1,39 +1,33 @@
 """Free algebra constructions on a chosen set of generators."""
 
-from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import (
     CommutativeAlgebras,
     refine_algebra,
 )
+from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
 from dzack_research.preamble.categories.algebras.free_algebras import (
-    FreeAlgebraOn,
+    FinitelyPresentedAlgebra,
     FreeAlgebras,
     GradedFreeAlgebras,
     PolynomialRing,
     SymmetricAlgebraOn,
     SymmetricAlgebras,
     TensorAlgebraOn,
-    TensorAlgebras,
     _finite_labels,
     _variable_names,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    _engine_element,
-    _engine_ring,
-    _owned_ring,
-)
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    FiniteOrderedSets,
-    finite_ordered_set,
-)
-from dzack_research.preamble.categories.algebras.finitely_presented_algebras import _tensor_algebra_from_module_presentation
-from dzack_research.preamble.categories.algebras.free_algebras import FinitelyPresentedAlgebra
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.algebras.power_algebras import (
     AlternatingAlgebraOf as _alternating_algebra_of,
+)
+from dzack_research.preamble.categories.algebras.power_algebras import (
     AlternatingAlgebraOn as _alternating_algebra_on,
+)
+from dzack_research.preamble.categories.algebras.power_algebras import (
     DividedPowerAlgebraOf as _divided_power_algebra_of,
+)
+from dzack_research.preamble.categories.algebras.power_algebras import (
     DividedPowerAlgebraOn as _divided_power_algebra_on,
 )
 from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
@@ -42,6 +36,10 @@ from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import _presentation_matrix
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _engine_ring,
+)
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
 

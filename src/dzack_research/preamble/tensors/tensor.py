@@ -23,24 +23,24 @@ from sage.matrix.constructor import matrix as _sage_matrix
 from sage.misc.latex import latex
 from sage.modules.free_module_element import vector as _sage_vector
 from sage.rings.infinity import Infinity
-from dzack_research.static_types import ProductOfNaturalNumbers
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE, richcmp
 from sage.structure.unique_representation import UniqueRepresentation
 
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
+from dzack_research.preamble.categories.modules.pure.modules import (
+    MatrixSpaces,
+    Modules,
+)
+from dzack_research.preamble.categories.modules.pure.modules import (
+    _engine_matrix as _engine_module_matrix,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_ring,
     _own_ring,
-)
-from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import FreeModule
-from dzack_research.preamble.categories.modules.pure.modules import (
-    MatrixSpaces,
-    Modules,
-    _engine_matrix as _engine_module_matrix,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -48,8 +48,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-from dzack_research.preamble.categories.sets.set_categories import Sets
-
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+from dzack_research.static_types import ProductOfNaturalNumbers
 
 _Rings = OwnedRings()
 

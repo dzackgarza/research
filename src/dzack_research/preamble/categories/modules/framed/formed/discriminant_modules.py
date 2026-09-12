@@ -1,21 +1,14 @@
 r"""Discriminant modules and their quotient-valued forms."""
 
-from sage.arith.misc import factor
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-    FinitelyPresentedTorsionModules,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    _engine_ring,
-)
 from dzack_research.preamble.categories.forms.forms import (
     BilinearForms,
     QuadraticForms,
 )
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import FinitelyPresentedModule
+from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
@@ -28,14 +21,18 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
 )
 from dzack_research.preamble.categories.modules.framed.fraction_field_quotients import FractionFieldQuotient
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import BasedFreeModule
-from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModule
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+    FinitelyPresentedTorsionModules,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
     Zmod,
     _engine_element,
+    _engine_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_filter,

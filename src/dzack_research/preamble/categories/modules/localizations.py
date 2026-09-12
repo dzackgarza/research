@@ -139,9 +139,8 @@ class LocalizedModules(OwnedCategoryOverBaseRing):
                 # Localization chooses no new framing: it carries the source
                 # generators to their images in S^{-1}M.
                 module_generating_set = source_module.module_generating_set()
-                module_generator_function = lambda label: self.fraction(
-                    source_module.module_generator(label)
-                )
+                def module_generator_function(label):
+                    return self.fraction(source_module.module_generator(label))
                 self._preamble_module_coefficient_function = self._framing_coefficients
                 super().__init__(
                     base_ring=localization_ring,

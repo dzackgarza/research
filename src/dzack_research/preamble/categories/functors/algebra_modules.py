@@ -39,6 +39,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FramedModules,
     Modules,
 )
+from dzack_research.preamble.categories.modules.tensor_products import (
+    _flatten_tensor_label,
+    _nested_tensor_label,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _engine_element,
@@ -46,12 +50,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.owned_category import object_of
-
-
-from dzack_research.preamble.categories.modules.tensor_products import (
-    _flatten_tensor_label,
-    _nested_tensor_label,
-)
 
 
 class _UnderlyingAlgebraModules(OwnedCategoryOverBaseRing):

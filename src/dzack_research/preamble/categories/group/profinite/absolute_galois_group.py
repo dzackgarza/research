@@ -1,21 +1,16 @@
 r"""The realized parent (G_K=\operatorname{Aut}_K(\bar K))."""
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    RestrictedHomCategoryOf,
-    RestrictedHomCategoryParent,
-    category_packet,
-)
 from typing import cast
 
 from sage.categories.finite_fields import FiniteFields
-from sage.categories.number_fields import NumberFields
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
+from sage.categories.number_fields import NumberFields
+from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ as SageQQ
-from sage.misc.classcall_metaclass import typecall
 from sage.structure.element import Element
 from sage.structure.sage_object import SageObject
 
@@ -23,31 +18,22 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     CosliceCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    RestrictedHomCategoryOf,
+    RestrictedHomCategoryParent,
+    category_packet,
+)
 from dzack_research.preamble.categories.group.profinite.absolute_galois_groups import (
     OpenAbsoluteGaloisSubgroups,
     absolute_galois_group_category,
 )
 from dzack_research.preamble.categories.group.profinite.field_morphisms import (
     ExactFieldMorphism,
+    _exact_field_morphism_from_engine,
     exact_embeddings,
     exact_field_homset,
-    _exact_field_morphism_from_engine,
     field_generators,
     first_exact_embedding,
-)
-from dzack_research.preamble.categories.group.profinite.galois_quotient import (
-    FiniteExtensionAutomorphismGroup,
-    FiniteGaloisAutomorphism,
-    FiniteGaloisExtension,
-    FiniteGaloisQuotient,
-    GaloisRestrictionMap,
-    LiftCoset,
-    continuous_group_homset,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedFields,
-    _engine_ring,
-    _own_ring,
 )
 from dzack_research.preamble.categories.group.profinite.galois_characters import (
     CyclotomicCharacter,
@@ -60,7 +46,21 @@ from dzack_research.preamble.categories.group.profinite.galois_decomposition imp
     FrobeniusConjugacyClass,
     InertiaGroupConjugacyClass,
 )
-from dzack_research.preamble.categories.group.profinite.galois_quotient import _relative_degree
+from dzack_research.preamble.categories.group.profinite.galois_quotient import (
+    FiniteExtensionAutomorphismGroup,
+    FiniteGaloisAutomorphism,
+    FiniteGaloisExtension,
+    FiniteGaloisQuotient,
+    GaloisRestrictionMap,
+    LiftCoset,
+    _relative_degree,
+    continuous_group_homset,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
+    _engine_ring,
+    _own_ring,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 

@@ -15,13 +15,13 @@ from sage.libs.gap.libgap import libgap
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.group.groups import group_homset
 from dzack_research.preamble.categories.group.groups import (
     OwnedAbelianGroups,
     OwnedFiniteAbelianGroups,
     OwnedGroups,
     _gap_model,
     _own_group,
+    group_homset,
 )
 from dzack_research.preamble.refine import refine
 

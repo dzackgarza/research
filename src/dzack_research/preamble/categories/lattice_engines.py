@@ -1,11 +1,24 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
+import shutil
 from functools import partial
 from importlib import import_module
 from importlib.util import find_spec
 from pathlib import Path
-import shutil
 
+from sage.libs.gap.libgap import libgap
+from sage.quadratic_forms.quadratic_form import QuadraticForm
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
+
+from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
+from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.engine_capabilities import engine_capabilities
+from dzack_research.preamble.tensors.tensor import (
+    Tensor,
+    _engine_component_matrix,
+    tensor,
+)
 from py_polyhedral.binaries import (
     binary_available,
     indefinite_form_automorphism_group,
@@ -18,19 +31,6 @@ from py_polyhedral.binaries import (
     indefinite_form_test_equivalence_vector,
     lorentzian_perfect_domain_traversal,
 )
-from sage.libs.gap.libgap import libgap
-from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.rings.integer_ring import ZZ as SageZZ
-from sage.rings.rational_field import QQ as SageQQ
-
-from dzack_research.preamble.engine_capabilities import engine_capabilities
-from dzack_research.preamble.tensors.tensor import (
-    Tensor,
-    tensor,
-)
-from dzack_research.preamble.tensors.tensor import _engine_component_matrix
-from dzack_research.preamble.categories.sets.set_categories import NN
-from dzack_research.preamble.categories.modules.framed.framed_free_modules import MatrixSpace
 
 
 def rational_positive_vector(gram):

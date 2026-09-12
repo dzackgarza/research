@@ -1,25 +1,23 @@
 r"""Finite-support direct sums of a represented family of graded modules."""
 
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from typing import Any
 
-from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import ModuleElement
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.modules.pure.modules import (
-    FramedModules,
-)
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FramedModules,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _engine_ring as _engine_ring
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.sets.set_categories import NN, CoproductOfFamily
 from dzack_research.preamble.refine import realize_owned_category
-from dzack_research.preamble.categories.sets.set_categories import CoproductOfFamily
-from dzack_research.preamble.categories.sets.set_categories import NN
 
 
 class GradedDirectSumElement(ModuleElement):

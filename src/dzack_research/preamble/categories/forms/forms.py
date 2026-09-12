@@ -7,22 +7,11 @@ not represented retain an extensional callable form object; that fallback never
 pretends to be a second Hom implementation and has no coordinate presentation.
 """
 
-from sage.misc.cachefunc import cached_function
 from sage.categories.sets_cat import Sets
+from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.sets.coordinate_families import (
-    coerce_family_value as _coerce_value,
-    coordinate_family as _coordinate_family,
-    coordinate_family_from_function as _coordinate_family_from_function,
-    coordinate_pair as _coordinate_pair,
-    finite_framing as _finite_framing,
-)
-from dzack_research.preamble.categories.rings.ring_foundation import (
-    OwnedCategoryOverBaseRing,
-    OwnedRings,
-)
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     TensorProductModuleMorphism,
@@ -36,6 +25,25 @@ from dzack_research.preamble.categories.modules.powers import (
 from dzack_research.preamble.categories.modules.pure.modules import (
     InternalHomModules,
     Modules,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+    OwnedRings,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coerce_family_value as _coerce_value,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coordinate_family as _coordinate_family,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coordinate_family_from_function as _coordinate_family_from_function,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    coordinate_pair as _coordinate_pair,
+)
+from dzack_research.preamble.categories.sets.coordinate_families import (
+    finite_framing as _finite_framing,
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.tensors.tensor import tensor
@@ -553,16 +561,7 @@ def QuadraticForms(module, value_module):
     return _callable_form_space(module, module, value_module, "quadratic")
 
 
-from dzack_research.preamble.categories.modules.powers import (
-    QuadraticModuleHomset as QuadraticFormHomset,
-    QuadraticModuleMorphism as QuadraticFormMorphism,
-)
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    TensorProductModuleHomset as BilinearFormHomset,
-    TensorProductModuleMorphism as BilinearFormMorphism,
-    TensorProductModuleMorphism as PairingMorphism,
-)
-
+QuadraticFormMorphism = QuadraticModuleMorphism
 QuadraticMapMorphism = QuadraticFormMorphism
 
 

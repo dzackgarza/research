@@ -1,50 +1,44 @@
 r"""Basic categorical functors used by the abstract construction layer."""
 
+from __future__ import annotations
+
 from collections.abc import Callable
 from typing import TypeVar, overload
 
-from dzack_research.preamble.categories.abstract_categories.hom_categories import (
-    CategoricalHomset,
-    HomCategoryConstruction,
-    _category_homset,
-)
 from sage.categories.category import Category
+from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.categories.map import Map
-from sage.categories.morphism import Morphism, SetMorphism
-from sage.categories.sets_cat import Sets as SageSets
-from sage.structure.parent import Parent
 from sage.structure.dynamic_class import DynamicMetaclass
+from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     ArrowCategory,
 )
-from dzack_research.preamble.categories.functors.core import (
-    CompositeFunctor,
-    Functor,
-    IdentityFunctor,
-    NaturalTransformation,
-)
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
-from dzack_research.preamble.owned_category import object_of
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
 from dzack_research.preamble.categories.abstract_categories.category_constructions import (
     OppositeCategory,
     OppositeMorphism,
     ProductCategory,
 )
-from dzack_research.preamble.categories.abstract_categories.constructions import (
-    Coproduct,
-    Product,
-    _CoproductMorphism,
-    _ProductMorphism,
+from dzack_research.preamble.categories.abstract_categories.hom_categories import (
+    CategoricalHomset,
+    HomCategoryConstruction,
+    _category_homset,
+)
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.functors.core import (
+    CompositeFunctor,
+    Functor,
+    IdentityFunctor,
+    NaturalTransformation,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
-
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import object_of
 
 SourcePointT = TypeVar("SourcePointT")
 TargetPointT = TypeVar("TargetPointT")
@@ -205,7 +199,7 @@ class CodomainFunctor(Functor):
 class DiscreteMorphism(Morphism):
     r"""The unique identity arrow of a discrete-category object."""
 
-    def __init__(self, parent: "DiscreteHomset") -> None:
+    def __init__(self, parent: DiscreteHomset) -> None:
         Morphism.__init__(self, parent)
         if self.domain() is not self.codomain():
             raise ValueError("a discrete category has no arrow between distinct objects")
@@ -238,7 +232,7 @@ class DiscreteHomset(CategoricalHomset):
             self, family, domain, codomain
         )
 
-    def discrete_category(self) -> "DiscreteCategory":
+    def discrete_category(self) -> DiscreteCategory:
         return self.base_category()
 
     def cardinality(self) -> Parent:
@@ -308,7 +302,7 @@ class DiscreteCategory(OwnedCategory):
             self._value = value
             super().__init__(**rest)
 
-        def discrete_category(self) -> "DiscreteCategory":
+        def discrete_category(self) -> DiscreteCategory:
             return self.category()
 
         def value(self):

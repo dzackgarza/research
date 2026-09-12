@@ -7,15 +7,15 @@ through a finite-rank GAP presentation.
 """
 
 from sage.categories.morphism import SetMorphism
-from dzack_research.preamble.categories.sets.set_categories import Sets
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.group.groups import group_homset
 from dzack_research.preamble.categories.group.groups import (
     Groups,
     OwnedGroups,
+    group_homset,
 )
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 class FreeGroupFunctor(Functor):

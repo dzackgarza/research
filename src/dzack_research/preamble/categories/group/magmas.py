@@ -1,12 +1,14 @@
 """The owned operation spine below groups."""
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from sage.categories.morphism import Morphism
+
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
     HomCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+
 
 class Magmas(OwnedCategory):
     def super_categories(self):

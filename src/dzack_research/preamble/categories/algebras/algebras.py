@@ -14,6 +14,7 @@ from sage.structure.richcmp import op_EQ, op_NE
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     EndofunctorAlgebras,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Subobjects,
     TensorProduct,
@@ -24,7 +25,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
     _category_homset,
 )
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.products import (
     _finite_factor_family,
     _two_factors_of,

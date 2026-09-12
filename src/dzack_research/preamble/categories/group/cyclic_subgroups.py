@@ -5,21 +5,19 @@ from sage.misc.unknown import Unknown
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.group.groups import (
-    GroupsWithChosenFiniteGeneratingSet,
-    OwnedAbelianGroups,
     FiniteAbelianGroups,
     FiniteGroups,
+    GroupsWithChosenFiniteGeneratingSet,
+    OwnedAbelianGroups,
     Subgroups,
     _owned_group,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-
-
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.owned_category import object_of
 
 
 def cyclic_subgroup(generator):
