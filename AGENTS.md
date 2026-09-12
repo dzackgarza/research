@@ -195,6 +195,40 @@ These are mathematical threading requirements for the selected consumer, not
 authorization to build every conceivable foundation first. Record actual gaps
 under `DEV-59`, and implement the remaining shared requirement with its consumer.
 
+## A claim is not work, and neither is releasing one (always-on)
+
+Claiming a node, widening a claim, releasing a claim, marking a frontier: none of it builds
+anything, and none of it earns a commit of its own. Each one spends a full gate run to move a
+marker, and a history of marker commits reads as steady progress while the repository gains no
+mathematics. On 2026-09-12 this repository produced fifty-five commits in five hours of which
+thirty-two were under five lines of pure claim bookkeeping — more than half the session's
+commits built nothing.
+
+Reconcile the TODO item in the same commit as the delivery it describes. If a record change has
+no mathematics to ride with, it is bookkeeping that should not be happening at all.
+
+The claim protocol itself exists for concurrent streams working one repository. That is no
+longer how this repository is worked — it has one worker — so claiming ahead of doing is pure
+overhead, and a node you are about to implement does not need announcing to anybody. Take the
+node, implement it, and reconcile its row in the commit that delivers it.
+
+## Review your own workstream for drift (always-on)
+
+At every node closure, before selecting the next one, check that the work is still the work:
+
+- Does the delivered/pending count in `TODO.md` actually reflect what is in the tree? A ledger
+  that has stopped moving while commits land means the commits are not delivering nodes.
+- Are the last several commits carrying mathematics, or records, claims and reformatting? If the
+  latter, the session has drifted into administration and the next commit must carry content.
+- Is the scheduling surface still answering? A document that has stopped listing next units, a
+  count that no longer changes, a generated report emitting empty sections — these fail silently
+  and leave a worker to pick its own direction.
+
+When one of these is broken, repair it at its owner before continuing the mathematics. A defect
+in the tooling that selects work is more expensive than any single node, because every later
+worker inherits the same silence and drifts the same way. Routing around it — picking units by
+hand, keeping a private list, working from memory — hides the defect and guarantees it recurs.
+
 ## Using and maintaining TODO.md (always-on)
 
 **TODO.md says what to do next, never what was done.** Apply

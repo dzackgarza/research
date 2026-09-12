@@ -1,15 +1,12 @@
 """Subgroups specified by a membership predicate rather than generators."""
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedParameterizedCategory
-
-from dzack_research.preamble.owned_category import object_of
 from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     Subgroups,
     _canonical_subgroup_inclusion,
     _owned_group,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.orthogonal_quotients import (
     OrthogonalCharacterQuotient,
     subgroup_isotropic_are_equivalent,
@@ -17,6 +14,8 @@ from dzack_research.preamble.categories.orthogonal_quotients import (
     subgroup_vector_orbit_representatives,
     subgroup_vectors_are_equivalent,
 )
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.owned_category import object_of
 
 
 class PredicateSubgroups(OwnedParameterizedCategory):

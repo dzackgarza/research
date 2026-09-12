@@ -1188,7 +1188,9 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   **Higher Witt index:** `U + U(2) + E8(-2)`, with its represented line/plane
   orbits, stabilizers, full-orthogonal Tits-building incidence, and generic
   character-defined subgroup cusp/flag splitting with actual subgroup
-  transporters; instantiate the intended `H <= O(A_L)` and retain the resulting
+  transporters, obtained by left-adjusting a full-orthogonal witness by the
+  target stabilizer inside the finite character quotient; instantiate the
+  intended `H <= O(A_L)` and retain the resulting
   application maps.
   **Equivariant:** the K3 lattice with an Enriques involution, its integral
   invariant/anti-invariant decomposition and gluing, full centralizer,

@@ -3,8 +3,8 @@ r"""Finite-character orbit decisions retain actual subgroup transporters."""
 import pytest
 
 from dzack_research.preamble.all import (
-    Lattices,
     ZZ,
+    Lattices,
     predicate_subgroup,
     primitive_isotropic,
 )
