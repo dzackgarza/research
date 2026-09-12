@@ -3049,8 +3049,8 @@ preamble/tests/framework/test_cyclic_covers_and_involutions.sage	test_cyclic_cov
 preamble/tests/framework/test_cyclic_covers_and_involutions.sage	test_involution_lifts_of_cyclic_cover	specimen	38	0			unreviewed
 preamble/tests/framework/test_fixed_loci.sage	<module>	module	1	0			unreviewed
 preamble/tests/framework/test_fixed_loci.sage	test_fixed_locus_for_product_sign_and_swap_actions	specimen	6	0			unreviewed
-preamble/tests/framework/test_graded_algebra_sections.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/test_graded_algebra_sections.sage	test_cox_ring_structure_and_section_space_roundtrip	specimen	6	0			unreviewed
+preamble/tests/framework/test_graded_algebra_sections.sage	<module>	module	1	0		tests/schemes/test_framework_graded_sections_archive.py	reconciled-live-owner
+preamble/tests/framework/test_graded_algebra_sections.sage	test_cox_ring_structure_and_section_space_roundtrip	specimen	6	0		tests/schemes/test_framework_graded_sections_archive.py	reconciled-live-owner
 preamble/tests/framework/test_group_actions_and_isotypics.sage	<module>	module	1	0		tests/schemes/test_horikawa_k3_family.py	reconciled-live-owner
 preamble/tests/framework/test_group_actions_and_isotypics.sage	test_isotypic_decomposition_of_quadratic_involution_action	specimen	6	0		tests/schemes/test_horikawa_k3_family.py	reconciled-live-owner
 preamble/tests/framework/test_linear_systems_restrictions.sage	<module>	module	1	0		tests/divisors/test_projective_linear_systems.py	reconciled-live-owner
