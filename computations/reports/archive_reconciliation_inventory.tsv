@@ -2713,77 +2713,77 @@ preamble/categories/sets/owned_sets.py	install_poset_display	function	1685	0			u
 preamble/categories/sets/owned_sets.py	TotallyOrderedSets	class	1707	2			unreviewed
 preamble/categories/sets/owned_sets.py	TotallyOrderedSets.extra_super_categories	method	1712	0			unreviewed
 preamble/categories/sets/owned_sets.py	placement_of	function	1726	2			unreviewed
-preamble/categories/sets/sets.sage	<module>	module	1	0			unreviewed
-preamble/categories/sets/sets.sage	Set	function	69	2			unreviewed
-preamble/categories/sets/sets.sage	ConditionSet	function	87	2			unreviewed
-preamble/categories/sets/sets.sage	ImageSet	function	97	2			unreviewed
-preamble/categories/sets/sets.sage	ObjectSetFunctor	class	168	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/sets/sets.sage	CartesianProductFunctor	class	187	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/sets/sets.sage	DisjointUnionFunctor	class	209	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/sets/sets.sage	ExponentialFunctor	class	231	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/sets.sage	InverseImagePowerSetFunctor	class	266	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSetFunctor	class	290	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSetFunctor.image_cardinality	method	299	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsetFunctor	class	331	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsetFunctor.subset_cardinality	method	340	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsetFunctor.image_cardinality	method	346	0			unreviewed
-preamble/categories/sets/sets.sage	CartesianProductOfFamily	function	384	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	CartesianProductOfSets	function	394	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	CartesianProductMorphismOfFamily	function	404	0			unreviewed
-preamble/categories/sets/sets.sage	cartesian_product_morphism	function	428	0			unreviewed
-preamble/categories/sets/sets.sage	CoproductOfFamily	function	438	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	CoproductOfSets	function	448	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	CoproductMorphismOfFamily	function	458	0			unreviewed
-preamble/categories/sets/sets.sage	coproduct_morphism	function	478	0			unreviewed
-preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories	class	488	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories.super_categories	method	494	0			unreviewed
-preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories.ParentMethods	class	500	0			unreviewed
-preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories.ParentMethods.discrete_category	method	501	0			unreviewed
-preamble/categories/sets/sets.sage	object_set_functor	function	519	0			unreviewed
-preamble/categories/sets/sets.sage	ObjectSet	function	525	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialsOfSets	class	531	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialsOfSets.super_categories	method	534	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods	class	540	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.base	method	541	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.exponent	method	544	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.hom_category	method	547	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.cardinality	method	559	0			unreviewed
-preamble/categories/sets/sets.sage	ExponentialOfSets	function	574	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	SubsetsOfSet	class	593	0			unreviewed
-preamble/categories/sets/sets.sage	SubsetsOfSet.super_categories	method	606	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets	class	622	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	PowerSets.super_categories	method	634	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods	class	640	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.base_set	method	643	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.characteristic_hom_category	method	646	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.from_predicate	method	744	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.from_characteristic_morphism	method	751	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.top	method	765	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.bottom	method	769	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.inverse_image_morphism	method	773	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.direct_image_morphism	method	788	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.cardinality	method	825	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSets.ParentMethods.cardinality_comparison	method	830	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsets	class	845	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsets.super_categories	method	853	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods	class	859	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.source	method	862	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.power_set	method	866	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.cardinality	method	869	0			unreviewed
-preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.subset_cardinality	method	878	0			unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSets	class	941	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSets.super_categories	method	951	0			unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods	class	957	0			unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.source	method	960	0			unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.power_set	method	964	0			unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.cardinality	method	967	0			unreviewed
-preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.index	method	992	0			unreviewed
-preamble/categories/sets/sets.sage	PowerSet	function	1028	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	SubsetsOfSize	function	1039	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	FiniteSubsets	function	1052	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/sets.sage	E	binding	1058	1	src/dzack_research/preamble/categories/schemes/ade_surfaces.py		unreviewed
-preamble/categories/sets/sets.sage	finite_ordered_set	function	1065	1	src/dzack_research/preamble/categories/sets/finite_ordered_sets.py		unreviewed
-preamble/categories/sets/sets.sage	ordered_set_owned_by	function	1120	0			unreviewed
+preamble/categories/sets/sets.sage	<module>	module	1	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	Set	function	69	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ConditionSet	function	87	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ImageSet	function	97	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ObjectSetFunctor	class	168	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	CartesianProductFunctor	class	187	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	DisjointUnionFunctor	class	209	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialFunctor	class	231	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	InverseImagePowerSetFunctor	class	266	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSetFunctor	class	290	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSetFunctor.image_cardinality	method	299	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsetFunctor	class	331	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsetFunctor.subset_cardinality	method	340	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsetFunctor.image_cardinality	method	346	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	CartesianProductOfFamily	function	384	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	CartesianProductOfSets	function	394	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	CartesianProductMorphismOfFamily	function	404	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	cartesian_product_morphism	function	428	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	CoproductOfFamily	function	438	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	CoproductOfSets	function	448	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	CoproductMorphismOfFamily	function	458	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	coproduct_morphism	function	478	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories	class	488	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories.super_categories	method	494	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories.ParentMethods	class	500	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ObjectSetsOfDiscreteCategories.ParentMethods.discrete_category	method	501	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	object_set_functor	function	519	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ObjectSet	function	525	0		src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialsOfSets	class	531	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialsOfSets.super_categories	method	534	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods	class	540	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.base	method	541	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.exponent	method	544	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.hom_category	method	547	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialsOfSets.ParentMethods.cardinality	method	559	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ExponentialOfSets	function	574	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	SubsetsOfSet	class	593	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	SubsetsOfSet.super_categories	method	606	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets	class	622	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.super_categories	method	634	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods	class	640	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.base_set	method	643	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.characteristic_hom_category	method	646	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.from_predicate	method	744	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.from_characteristic_morphism	method	751	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.top	method	765	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.bottom	method	769	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.inverse_image_morphism	method	773	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.direct_image_morphism	method	788	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.cardinality	method	825	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSets.ParentMethods.cardinality_comparison	method	830	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsets	class	845	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsets.super_categories	method	853	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods	class	859	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.source	method	862	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.power_set	method	866	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.cardinality	method	869	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FixedCardinalitySubsets.ParentMethods.subset_cardinality	method	878	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSets	class	941	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSets.super_categories	method	951	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods	class	957	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.source	method	960	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.power_set	method	964	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.cardinality	method	967	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FinitePowerSets.ParentMethods.index	method	992	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	PowerSet	function	1028	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	SubsetsOfSize	function	1039	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	FiniteSubsets	function	1052	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	E	binding	1058	1	src/dzack_research/preamble/categories/schemes/ade_surfaces.py	src/dzack_research/preamble/categories/schemes/ade_surfaces.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	finite_ordered_set	function	1065	1	src/dzack_research/preamble/categories/sets/finite_ordered_sets.py	src/dzack_research/preamble/categories/sets/finite_ordered_sets.py	reconciled-live-owner
+preamble/categories/sets/sets.sage	ordered_set_owned_by	function	1120	0		src/dzack_research/preamble/categories/sets/finite_ordered_sets.py	reconciled-live-owner
 preamble/coble.sage	<module>	module	1	0		src/dzack_research/preamble/coble.py	reconciled-live-owner
 preamble/coble.sage	Coble	class	56	1	src/dzack_research/preamble/coble.py	src/dzack_research/preamble/coble.py	reconciled-live-owner
 preamble/coble.sage	Coble.isotropic_vectors	method	64	0		src/dzack_research/preamble/coble.py	reconciled-live-owner

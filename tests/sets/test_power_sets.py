@@ -17,6 +17,26 @@ from dzack_research.preamble.categories.sets.set_categories import (
     FunctionSets,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/sets/sets.sage",
+    "live_owner": "src/dzack_research/preamble/categories/sets/set_categories.py",
+    "owner_overrides": {
+        "ObjectSetFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "CartesianProductFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "DisjointUnionFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "ExponentialFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "InverseImagePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "FinitePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "FixedCardinalitySubsetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "object_set_functor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "ObjectSet": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "finite_ordered_set": "src/dzack_research/preamble/categories/sets/finite_ordered_sets.py",
+        "ordered_set_owned_by": "src/dzack_research/preamble/categories/sets/finite_ordered_sets.py",
+        "E": "src/dzack_research/preamble/categories/schemes/ade_surfaces.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_power_set_elements_are_subobjects_with_characteristic_morphisms() -> None:
     finite_ordinal = Sets.Δ[5]
@@ -112,3 +132,25 @@ def test_set_collection_notation_routes_through_owning_categories() -> None:
     assert PowerSet(source).base_set() is source
     assert SubsetsOfSize(source, 2).source() is source
     assert FiniteSubsets(source).source() is source
+
+
+def test_power_set_functors_transport_a_nonidentity_injection_both_ways() -> None:
+    from dzack_research.preamble.categories.functors.set_constructions import (
+        finite_power_set_functor,
+        inverse_image_power_set_functor,
+    )
+
+    source = Sets.Δ[1]
+    target = Sets.Δ[2]
+    injection = Sets().Mor(source, target)(
+        lambda point: target(0) if point == source(0) else target(2)
+    )
+
+    direct = finite_power_set_functor()(injection)
+    selected = FiniteSubsets(source)({source(0), source(1)})
+    assert direct(selected) == FiniteSubsets(target)({target(0), target(2)})
+
+    inverse_functor = inverse_image_power_set_functor()
+    opposite = inverse_functor.opposite_morphism(injection)
+    inverse = inverse_functor(opposite)
+    assert inverse(PowerSet(target)({target(2)})) == PowerSet(source)({source(1)})
