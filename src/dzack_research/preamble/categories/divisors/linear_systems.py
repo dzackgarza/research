@@ -131,6 +131,37 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
                 )
             return self.linear_combination(coefficients)
 
+        def pullback_by_projective_automorphism(self, morphism):
+            r"""Return ``morphism^*:H^0(P,O(d))->H^0(P,O(d))`` by homogeneous substitution.
+
+            The retained projective-coordinate morphism gives one linear
+            homogeneous coordinate for each target coordinate.  Substitution
+            is therefore an endomorphism of the owned homogeneous coordinate
+            algebra, and restricting it to the degree-``d`` piece is the
+            contravariant pullback on sections.
+            """
+            scheme = self.section_scheme()
+            if morphism.domain() is not scheme or morphism.codomain() is not scheme:
+                raise ValueError("section pullback here requires a projective automorphism of the section scheme")
+            coordinates = tuple(morphism.homogeneous_coordinates())
+            ring = self.homogeneous_coordinate_ring()
+            labels = tuple(ring.algebra_generating_set())
+            if len(coordinates) != len(labels):
+                raise ValueError("a projective automorphism needs one homogeneous coordinate per variable")
+            if any(getattr(coordinate, "parent", lambda: None)() is not ring for coordinate in coordinates):
+                raise ValueError("projective automorphism coordinates must lie in the section homogeneous-coordinate ring")
+            substitution = ring.Mor(ring)(
+                {label: coordinate for label, coordinate in zip(labels, coordinates, strict=True)}
+            )
+            return module_homset(self, self)(
+                {
+                    monomial: self.section_from_homogeneous_polynomial(
+                        substitution(self.homogeneous_polynomial(self.module_generator(monomial)))
+                    )
+                    for monomial in self.module_generating_set()
+                }
+            )
+
 
 class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
     r"""Finite multihomogeneous section spaces on products of projective spaces."""
