@@ -20,6 +20,15 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.schemes.cyclic_covers import CyclicCovers
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_cyclic_covers_and_involutions.sage",
+    "live_owner": "tests/schemes/test_cyclic_covers.py",
+    "owner_overrides": {
+        "test_involution_lifts_of_cyclic_cover": "tests/schemes/test_cyclic_covers_linearization.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _hyperelliptic_double_cover():
     r"""``z^2 = x^4 - 1`` over ``QQ``: a genus-one curve branched at four points."""
@@ -65,6 +74,9 @@ def test_the_branch_subscheme_of_the_double_cover_is_four_points() -> None:
     algebra, x, _covers, cover = _hyperelliptic_double_cover()
     branch = cover.branch_subscheme()
 
+    assert cover.relative_dimension() == 1
+    assert branch.relative_dimension() == 0
+    assert cover.ramification_support_subscheme().relative_dimension() == 0
     assert branch.ambient_scheme() is cover.base_scheme()
     assert branch.defining_ideal_owned() == algebra.ideal(x**4 - algebra.one())
     # k[x]/(x^4 - 1) is free of rank four over the scalars: four branch points.

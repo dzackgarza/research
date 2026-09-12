@@ -3044,9 +3044,9 @@ preamble/tests/framework/test_composite_certificates.sage	test_picard_cycle_link
 preamble/tests/framework/test_curves_and_singularities.sage	<module>	module	1	0		src/dzack_research/preamble/categories/schemes/singularities.py	reconciled-live-owner
 preamble/tests/framework/test_curves_and_singularities.sage	test_curve_singularity_local_invariants_match_A1_and_A3	specimen	6	0		src/dzack_research/preamble/categories/schemes/singularities.py	reconciled-live-owner
 preamble/tests/framework/test_curves_and_singularities.sage	test_smooth_curve_points_are_nonsingular	specimen	33	0		src/dzack_research/preamble/categories/schemes/singularities.py	reconciled-live-owner
-preamble/tests/framework/test_cyclic_covers_and_involutions.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/test_cyclic_covers_and_involutions.sage	test_cyclic_cover_datum_and_cover_morphism	specimen	6	0			unreviewed
-preamble/tests/framework/test_cyclic_covers_and_involutions.sage	test_involution_lifts_of_cyclic_cover	specimen	38	0			unreviewed
+preamble/tests/framework/test_cyclic_covers_and_involutions.sage	<module>	module	1	0		tests/schemes/test_cyclic_covers.py	reconciled-live-owner
+preamble/tests/framework/test_cyclic_covers_and_involutions.sage	test_cyclic_cover_datum_and_cover_morphism	specimen	6	0		tests/schemes/test_cyclic_covers.py	reconciled-live-owner
+preamble/tests/framework/test_cyclic_covers_and_involutions.sage	test_involution_lifts_of_cyclic_cover	specimen	38	0		tests/schemes/test_cyclic_covers_linearization.py	reconciled-live-owner
 preamble/tests/framework/test_fixed_loci.sage	<module>	module	1	0			unreviewed
 preamble/tests/framework/test_fixed_loci.sage	test_fixed_locus_for_product_sign_and_swap_actions	specimen	6	0			unreviewed
 preamble/tests/framework/test_graded_algebra_sections.sage	<module>	module	1	0		tests/schemes/test_framework_graded_sections_archive.py	reconciled-live-owner
