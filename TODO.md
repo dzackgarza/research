@@ -1451,6 +1451,47 @@ These are not prerequisites for the required mathematics or terminal T.
   Add further notebook/rich-display examples only for a named research
   question using live objects. Use existing polygon, Three.js, and diagram
   rendering owners; do not install implicit global display hooks.
+- [ ] **`refactor-audit`**. **Needs:** `terminal-session`.
+
+  Audit the whole repository for messy, disorganized or duplicated code and carry out the
+  refactorings that consolidate sources of truth and restore proper encapsulation. The public
+  mathematical API need not change and should not change incidentally; this is about the
+  inside.
+
+  **This node explodes.** Every refactor the audit identifies becomes its own node in this DAG,
+  with its own `Needs` edges, and every one of them terminates back into this node. Do not
+  carry a list of intended refactorings in prose or in your head — a refactoring that is not a
+  node is one nobody will do. Recurse: a refactor that turns out to contain several
+  independent ones explodes in turn.
+
+  **Acceptance:** the audit is complete and every finding it produced exists as a node. At
+  that point this node is done — it is a scheduling node, not a work node, and it may be
+  marked skippable once the plan is fully exploded.
+
+- [ ] **`type-paydown`**. **Needs:** `refactor-audit`.
+
+  Pay down type errors where doing so is reasonable, and not one step further. Every typing
+  decision must improve the legibility of the code, the ability to understand what it does, and
+  the ability to reason statically about whether it is correct. That is the standard the change
+  is judged against, not the error count.
+
+  Golfing the code into oblivion — distortions that exist only to silence a checker — is the
+  failure mode. Where a contortion is genuinely warranted, it must be judged as significantly
+  serving the goal above, and the argument for it recorded explicitly in the commit message,
+  not in a comment and not left implicit. A type annotation nobody can read has made the code
+  worse even when the checker is quieter.
+
+- [ ] **`bloat-audit-loop`**. **Needs:** `type-paydown`.
+
+  The terminal node, and it loops rather than closing. Continually audit the codebase for
+  unnecessary bloat, bad style and non-idiomatic constructions, opportunities to reduce lines
+  of code, and anything hand-rolled that could be offloaded to a dependency — Python or
+  otherwise, inside Sage or outside it. Append every finding to `COMPLAINTS.md` as it is found.
+
+  Findings accumulate there; they do not have to be fixed in the same pass, and the audit is
+  never declared finished. When there are no findings in a pass, record nothing and run it
+  again later.
+
 - [ ] **`optional-database`**. **Needs:** none.
   Add a database/classification example when it supplies data needed by
   research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or
