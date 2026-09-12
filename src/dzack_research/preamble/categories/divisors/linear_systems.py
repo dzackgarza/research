@@ -1,5 +1,9 @@
 r"""Complete linear systems represented by their section spaces."""
 
+from itertools import product as cartesian_product
+
+from sage.rings.integer_ring import ZZ as SageZZ
+
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
@@ -10,8 +14,10 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    _own_ring,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
+    ProductProjectiveSpaces,
     ProjectiveSchemes,
     ProjectiveSpace,
     Schemes,
@@ -19,6 +25,10 @@ from dzack_research.preamble.categories.schemes.schemes import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    IndexedFamily,
+    finite_indexed_family,
 )
 
 
@@ -68,6 +78,27 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
 
         def homogeneous_degree(self):
             return self._preamble_homogeneous_degree
+
+        def homogeneous_coordinate_ring(self):
+            return self._preamble_homogeneous_coordinate_ring
+
+
+class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
+    r"""Finite multihomogeneous section spaces on products of projective spaces."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "multihomogeneous polynomial section spaces"
+
+    def super_categories(self):
+        return [VectorSpaces(self.base_ring())]
+
+    class ParentMethods:
+        def section_scheme(self):
+            return self._preamble_section_scheme
+
+        def multidegree(self):
+            return self._preamble_multihomogeneous_degree
 
         def homogeneous_coordinate_ring(self):
             return self._preamble_homogeneous_coordinate_ring
@@ -171,6 +202,88 @@ def HomogeneousPolynomialSectionSpace(projective_scheme, degree, *, coordinate_n
         ),
     )
     return space
+
+
+def MultiHomogeneousPolynomialSectionSpace(projective_product, degrees):
+    r"""Return ``H^0(prod P^{n_i}, O(d_i))`` for nonnegative multidegree.
+
+    Basis labels are the actual multihomogeneous monomials in one owned
+    polynomial coordinate algebra.  The degree is retained on the exact factor
+    index set, so repeated isomorphic factors keep distinct roles.
+    """
+    base = projective_product.scheme_base_ring()
+    if projective_product not in ProductProjectiveSpaces(base):
+        raise TypeError("a multihomogeneous section space requires a product of projective spaces")
+    factors = projective_product.factors()
+    factor_indices = factors.index_set()
+    factor_labels = tuple(factor_indices)
+    if isinstance(degrees, IndexedFamily):
+        if degrees.index_set() is not factor_indices:
+            raise ValueError("a multidegree is indexed by the product's exact factor index set")
+        degree_values = tuple(
+            _own_ring(SageZZ)(degrees[label]) for label in factor_labels
+        )
+    else:
+        degree_values = tuple(_own_ring(SageZZ)(value) for value in degrees)
+        if len(degree_values) != len(factor_labels):
+            raise ValueError("a multidegree has one degree for every projective factor")
+    if any(degree < 0 for degree in degree_values):
+        raise ValueError("multihomogeneous polynomial degrees are nonnegative")
+    multidegree = finite_indexed_family(
+        factor_indices,
+        lambda label: degree_values[
+            next(
+                position
+                for position, known_label in enumerate(factor_labels)
+                if known_label == label
+            )
+        ],
+        name="Projective multidegree",
+    )
+    widths = tuple(
+        int(factors[label].relative_dimension()) + 1
+        for label in factor_labels
+    )
+    coordinate_names = tuple(
+        f"x{factor_position}_{coordinate}"
+        for factor_position, width in enumerate(widths)
+        for coordinate in range(width)
+    )
+    ring = PolynomialRing(base, coordinate_names)
+    ring_labels = tuple(ring.algebra_generating_set())
+    block_offsets = []
+    offset = 0
+    for width in widths:
+        block_offsets.append((offset, offset + width))
+        offset += width
+
+    monomials = []
+    exponent_data = {}
+    block_exponents = tuple(
+        tuple(_weak_compositions(int(degree), width))
+        for degree, width in zip(degree_values, widths, strict=True)
+    )
+    for blocks in cartesian_product(*block_exponents):
+        flat = tuple(power for block in blocks for power in block)
+        monomial = ring.one()
+        for position, exponent in enumerate(flat):
+            if exponent:
+                monomial *= ring.algebra_generator(ring_labels[position]) ** exponent
+        monomials.append(monomial)
+        exponent_data[monomial] = tuple(tuple(block) for block in blocks)
+
+    return FreshFreeModuleOn(
+        base,
+        finite_ordered_set(tuple(monomials)),
+        _extra_categories=(MultihomogeneousPolynomialSectionSpaces(base),),
+        _extra_construction_data=(
+            ("_preamble_section_scheme", projective_product),
+            ("_preamble_multihomogeneous_degree", multidegree),
+            ("_preamble_homogeneous_coordinate_ring", ring),
+            ("_preamble_multihomogeneous_exponents", exponent_data),
+            ("_preamble_multihomogeneous_block_offsets", tuple(block_offsets)),
+        ),
+    )
 
 
 def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_index):

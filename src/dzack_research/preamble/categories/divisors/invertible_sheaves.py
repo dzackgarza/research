@@ -1,5 +1,6 @@
 r"""Invertible sheaves represented by rank-one affine module descent data."""
 
+from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -15,6 +16,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlasPresentation,
     ModuleGluingDatum,
@@ -431,7 +433,7 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         if projective_space not in ProjectiveSpaces(base):
             raise TypeError("O(d) is constructed here on a represented projective space")
         self._projective_space = projective_space
-        self._degree = int(degree)
+        self._degree = _own_ring(SageZZ)(degree)
         atlas = projective_space.standard_affine_atlas()
         units = {}
         for source_index, target_index in atlas.transition_index_set():
@@ -444,9 +446,9 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
                 )
             )
             units[source_index, target_index] = (
-                ratio**self._degree
+                ratio ** int(self._degree)
                 if self._degree >= 0
-                else ratio.inverse_of_unit() ** (-self._degree)
+                else ratio.inverse_of_unit() ** int(-self._degree)
             )
         section_space = (
             HomogeneousPolynomialSectionSpace(
@@ -538,6 +540,180 @@ def ProjectiveO(projective_space, degree):
     return ProjectiveSpaceLineBundle(projective_space, degree)
 
 
+class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
+    r"""The standard ``O(d_1,...,d_r)`` on a product of projective spaces."""
+
+    def __init__(self, projective_product, degrees) -> None:
+        from dzack_research.preamble.categories.divisors.linear_systems import (
+            MultiHomogeneousPolynomialSectionSpace,
+        )
+        from dzack_research.preamble.categories.schemes.schemes import (
+            ProductProjectiveSpaces,
+        )
+        from dzack_research.preamble.categories.sets.indexed_families import (
+            IndexedFamily,
+            finite_indexed_family,
+        )
+
+        base = projective_product.scheme_base_ring()
+        if projective_product not in ProductProjectiveSpaces(base):
+            raise TypeError("O(d_1,...,d_r) requires a product of projective spaces")
+        factors = projective_product.factors()
+        factor_indices = factors.index_set()
+        factor_labels = tuple(factor_indices)
+        if isinstance(degrees, IndexedFamily):
+            if degrees.index_set() is not factor_indices:
+                raise ValueError("a line-bundle multidegree uses the exact factor index set")
+            degree_values = tuple(
+                _own_ring(SageZZ)(degrees[label]) for label in factor_labels
+            )
+        else:
+            degree_values = tuple(_own_ring(SageZZ)(degree) for degree in degrees)
+            if len(degree_values) != len(factor_labels):
+                raise ValueError("a line-bundle multidegree has one degree per projective factor")
+        self._projective_product = projective_product
+        self._multidegree = finite_indexed_family(
+            factor_indices,
+            lambda label: degree_values[
+                next(
+                    position
+                    for position, known_label in enumerate(factor_labels)
+                    if known_label == label
+                )
+            ],
+            name="Line-bundle multidegree",
+        )
+        atlas = projective_product.standard_affine_atlas()
+        positions = {label: position for position, label in enumerate(factor_labels)}
+        units = {}
+        for source_choice, target_choice in atlas.transition_index_set():
+            overlap = atlas.overlap(source_choice, target_choice)
+            overlap_restriction = overlap.inclusion().coordinate_algebra_morphism()
+            chart = atlas.chart(source_choice)
+            unit = overlap.coordinate_algebra().one()
+            for label in factor_labels:
+                position = positions[label]
+                source_index = source_choice[position]
+                target_index = target_choice[position]
+                if source_index == target_index:
+                    continue
+                factor = factors[label]
+                chart_pullback = chart.projection(label).coordinate_algebra_morphism()
+                ratio = overlap_restriction(
+                    chart_pullback(
+                        factor._standard_chart_coordinate(source_index, target_index)
+                    )
+                )
+                degree = self.multidegree()[label]
+                unit *= (
+                    ratio ** int(degree)
+                    if degree >= 0
+                    else ratio.inverse_of_unit() ** int(-degree)
+                )
+            units[source_choice, target_choice] = unit
+        section_space = (
+            MultiHomogeneousPolynomialSectionSpace(
+                projective_product,
+                self.multidegree(),
+            )
+            if all(self.multidegree()[label] >= 0 for label in factor_labels)
+            else None
+        )
+        super().__init__(atlas, units, section_space=section_space)
+
+    def projective_product(self):
+        return self._projective_product
+
+    def multidegree(self):
+        return self._multidegree
+
+    def tensor_product(self, other):
+        if isinstance(other, ProductProjectiveLineBundle):
+            if other.projective_product() is not self.projective_product():
+                raise ValueError("multiprojective line-bundle tensor product requires one scheme")
+            labels = tuple(self.multidegree().index_set())
+            return type(self)(
+                self.projective_product(),
+                tuple(
+                    self.multidegree()[label] + other.multidegree()[label]
+                    for label in labels
+                ),
+            )
+        return super().tensor_product(other)
+
+    def tensor_power(self, exponent):
+        exponent = _own_ring(SageZZ)(exponent)
+        return type(self)(
+            self.projective_product(),
+            tuple(
+                exponent * self.multidegree()[label]
+                for label in self.multidegree().index_set()
+            ),
+        )
+
+    def dual(self):
+        return self.tensor_power(-1)
+
+    def is_ample(self) -> bool:
+        factors = self.projective_product().factors()
+        return all(
+            int(factors[label].relative_dimension()) == 0
+            or self.multidegree()[label] > 0
+            for label in factors.index_set()
+        )
+
+    def is_basepoint_free(self) -> bool:
+        return all(
+            self.multidegree()[label] >= 0
+            for label in self.multidegree().index_set()
+        )
+
+    is_globally_generated = is_basepoint_free
+
+    def homogeneous_polynomial_sections(self):
+        return self.global_sections()
+
+    def homogeneous_polynomial_comparison(self):
+        sections = self.global_sections()
+        identity = module_homset(sections, sections).identity()
+        return Isomorphism(identity, identity)
+
+    def section_multiplication(self, other):
+        from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+
+        if not isinstance(other, ProductProjectiveLineBundle):
+            raise TypeError("multihomogeneous section multiplication requires two multiprojective line bundles")
+        if other.projective_product() is not self.projective_product():
+            raise ValueError("multihomogeneous section multiplication requires one scheme")
+        target_bundle = self.tensor_product(other)
+        left = self.global_sections()
+        right = other.global_sections()
+        target = target_bundle.global_sections()
+        left_exponents = left._preamble_multihomogeneous_exponents
+        right_exponents = right._preamble_multihomogeneous_exponents
+        target_by_exponents = {
+            exponents: monomial
+            for monomial, exponents in target._preamble_multihomogeneous_exponents.items()
+        }
+
+        def product(left_monomial, right_monomial):
+            exponents = tuple(
+                tuple(a + b for a, b in zip(left_block, right_block, strict=True))
+                for left_block, right_block in zip(
+                    left_exponents[left_monomial],
+                    right_exponents[right_monomial],
+                    strict=True,
+                )
+            )
+            return target.module_generator(target_by_exponents[exponents])
+
+        return BilinearMap(left, right, target, product)
+
+    def _repr_(self):
+        degrees = tuple(self.multidegree()[label] for label in self.multidegree().index_set())
+        return f"O{degrees} on {self.projective_product()}"
+
+
 def TrivialInvertibleSheaf(cover):
     return InvertibleSheaf.trivial(cover)
 
@@ -545,6 +721,7 @@ def TrivialInvertibleSheaf(cover):
 __all__ = [
     "FiniteAtlasInvertibleSheaf",
     "InvertibleSheaf",
+    "ProductProjectiveLineBundle",
     "ProjectiveO",
     "ProjectiveSpaceLineBundle",
     "TrivialInvertibleSheaf",

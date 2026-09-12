@@ -2188,6 +2188,166 @@ class ProductProjectiveSpaces(OwnedCategoryOverBaseRing):
     def __contains__(self, candidate) -> bool:
         return _placed_over_stated_base(candidate, self, ProductProjectiveSpaces)
 
+    class ParentMethods:
+        @cached_method
+        def standard_affine_atlas(self):
+            r"""Return the product of the factors' standard affine atlases."""
+            from dzack_research.preamble.categories.schemes.gluing import (
+                FiniteAffineAtlasPresentation,
+            )
+
+            factors = self.factors()
+            factor_indices = factors.index_set()
+            factor_labels = tuple(factor_indices)
+            positions = {label: position for position, label in enumerate(factor_labels)}
+            choices = tuple(
+                cartesian_product(
+                    *(
+                        range(int(factors[label].relative_dimension()) + 1)
+                        for label in factor_labels
+                    )
+                )
+            )
+            charts = {}
+            embeddings = {}
+            for choice in choices:
+                local_factors = indexed_family(
+                    factor_indices,
+                    lambda label, choice=choice: factors[label].standard_affine_chart(
+                        choice[positions[label]]
+                    ),
+                    name="Standard affine factors of a multiprojective chart",
+                )
+                chart = scheme_product(local_factors)
+                charts[choice] = chart
+                chart_algebra = chart.coordinate_algebra()
+                engine_coordinates = []
+                for label in factor_labels:
+                    factor = factors[label]
+                    selected = choice[positions[label]]
+                    pullback = chart.projection(label).coordinate_algebra_morphism()
+                    for coordinate in range(int(factor.relative_dimension()) + 1):
+                        value = (
+                            chart_algebra.one()
+                            if coordinate == selected
+                            else pullback(
+                                factor._standard_chart_coordinate(selected, coordinate)
+                            )
+                        )
+                        engine_coordinates.append(_engine_element(chart_algebra, value))
+                embeddings[choice] = categorical_scheme_morphism(
+                    _native_scheme_homset(chart, self)(engine_coordinates, check=False),
+                    domain=chart,
+                    codomain=self,
+                )
+
+            overlap_cache = {}
+
+            def overlap(source_choice, target_choice):
+                key = (source_choice, target_choice)
+                cached = overlap_cache.get(key)
+                if cached is not None:
+                    return cached
+                chart = charts[source_choice]
+                element = chart.coordinate_algebra().one()
+                for label in factor_labels:
+                    position = positions[label]
+                    source_index = source_choice[position]
+                    target_index = target_choice[position]
+                    if source_index == target_index:
+                        continue
+                    factor = factors[label]
+                    pullback = chart.projection(label).coordinate_algebra_morphism()
+                    element *= pullback(
+                        factor._standard_chart_coordinate(source_index, target_index)
+                    )
+                cached = chart.distinguished_open(element)
+                overlap_cache[key] = cached
+                return cached
+
+            def transition(source_choice, target_choice):
+                source_chart = charts[source_choice]
+                source_open = overlap(source_choice, target_choice)
+                inclusion = source_open.inclusion()
+
+                def leg(label):
+                    position = positions[label]
+                    factor = factors[label]
+                    source_index = source_choice[position]
+                    target_index = target_choice[position]
+                    local_projection = source_chart.projection(label) * inclusion
+                    if source_index == target_index:
+                        return local_projection
+                    source_factor_overlap = factor.standard_chart_overlap(
+                        source_index,
+                        target_index,
+                    )
+                    into_factor_overlap = source_factor_overlap.corestriction(
+                        local_projection
+                    )
+                    changed = (
+                        factor._standard_chart_change(source_index, target_index)
+                        * into_factor_overlap
+                    )
+                    return (
+                        factor.standard_chart_overlap(target_index, source_index).inclusion()
+                        * changed
+                    )
+
+                into_target = charts[target_choice].from_product_cone(
+                    indexed_family(
+                        factor_indices,
+                        leg,
+                        name="Coordinatewise multiprojective chart transition legs",
+                    )
+                )
+                return overlap(target_choice, source_choice).corestriction(into_target)
+
+            transitions = {
+                (left, right): Isomorphism(
+                    transition(left, right),
+                    transition(right, left),
+                )
+                for left, right in combinations(choices, 2)
+            }
+            return FiniteAffineAtlasPresentation(
+                self,
+                charts,
+                transitions,
+                embeddings,
+            )
+
+        def O(self, *degrees):
+            r"""Return ``O(d_1,...,d_r)`` on this product of projective spaces."""
+            from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+                ProductProjectiveLineBundle,
+            )
+
+            degree_data = degrees[0] if len(degrees) == 1 and isinstance(degrees[0], (tuple, list, IndexedFamily)) else degrees
+            return ProductProjectiveLineBundle(self, degree_data)
+
+        @cached_method
+        def canonical_line_bundle(self):
+            return self.O(
+                *(
+                    -int(factor.relative_dimension()) - 1
+                    for factor in self.factors()
+                )
+            )
+
+        canonical_bundle = canonical_line_bundle
+
+        @cached_method
+        def anticanonical_line_bundle(self):
+            return self.O(
+                *(
+                    int(factor.relative_dimension()) + 1
+                    for factor in self.factors()
+                )
+            )
+
+        anticanonical_bundle = anticanonical_line_bundle
+
 
 def _algebra_generator_label(algebra, generator):
     r"""The label of an element that is one of the algebra's chosen generators."""
