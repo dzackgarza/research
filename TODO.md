@@ -389,20 +389,20 @@ restart of the module/algebra/action constructions.
 - [ ] **`ruff-autofix-mechanism`**. **Needs:** none.
 
   The shared gate runs `ruff check --fix` on every commit with `fixable = ["ALL"]` and `select`
-  including `I` (isort), so anything reverted by hand is reapplied on the next commit. That is
-  how 324 files of reordering accumulated uncommitted rather than being resolved.
+  including `I`, so anything reverted by hand is reapplied next commit. 324 files of autofix
+  output accumulated uncommitted rather than being resolved.
 
-  The repository-side cause is one file. `preamble/all.py` calls
-  `language_runtime.install()` at module level between its imports, which makes the imports
-  after it order-dependent and forces the only `# noqa: E402` in `src/`. Nothing else in the
-  tree carries that suppression. The remedy is to remove the dependency, not to exempt the
-  file: move the install so it happens on import of a dedicated module that `all.py` imports
-  first, so every import in `all.py` can sit at the top and isort has nothing left to break.
+  There is **no import-order dependency to protect**. `preamble/all.py` calls
+  `language_runtime.install()` at line 754, and `install()` only registers a `.sage` preparser
+  extension — consumed when a `.sage` file is loaded at runtime, never during a `.py` import.
+  `_sage_load` is bound at line 16 but called only inside `load()`. The autofix already moved
+  the install to the bottom of the module and nothing broke. The single `# noqa: E402` in
+  `src/` is vestigial from an earlier structure.
 
-  **Acceptance:** `src/` contains no `# noqa: E402`, and running the gate twice in a row
-  produces no diff. Only then judge the remaining autofix output — with that one file fixed,
-  the rest is ordinary import sorting and unused-import removal, and the question for it is
-  narrower: whether any removed import existed for a side effect.
+  So the work is not exclusion and not restructuring. Verify the autofix output the way its
+  one real risk requires — whether any import it removed existed for a side effect rather than
+  for a name — bank it, and delete the vestigial `E402` suppression. **Acceptance:** `src/`
+  contains no `# noqa: E402`, the tree is clean, and running the gate twice produces no diff.
 
 - [ ] **`gate-ruff-paydown`**. **Needs:** `ruff-autofix-mechanism`.
 
