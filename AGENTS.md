@@ -212,6 +212,19 @@ longer how this repository is worked — it has one worker — so claiming ahead
 overhead, and a node you are about to implement does not need announcing to anybody. Take the
 node, implement it, and reconcile its row in the commit that delivers it.
 
+## TODO.md is a product, not a description (always-on)
+
+The DAG in `TODO.md` is the instrument that selects work: node IDs, `Needs` edges, and the
+acceptance each one carries. When it stops being able to answer "what is ready", the repository
+does not stall visibly — selection falls back to whoever is reading it, and the program drifts
+toward whatever is nearest rather than whatever unblocks the most.
+
+So it is maintained as a deliverable, to the same standard as the constructions. A node's row
+is reconciled in the commit that delivers it. An edge that no longer describes a real
+dependency is corrected when you find it. A node whose acceptance text has drifted from what
+the node now means is rewritten before it is worked. And a defect in the DAG outranks the node
+you were about to take, because every later worker inherits the same wrong answer.
+
 ## Review your own workstream for drift (always-on)
 
 At every node closure, before selecting the next one, check that the work is still the work:
