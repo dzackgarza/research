@@ -591,17 +591,6 @@ with the item that requires it (`OWN-08`, `OWN-09`, `DEV-56`).
   **Acceptance:** a nontrivial base change of an invertible sheaf agrees via a
   constructed comparison with pulling back its transition data.
 
-- [ ] **`relative-spec`**. **Needs:** `sheaf-functors`.
-  Extend relative Spec beyond the existing finite cyclic-cover construction.
-  **Owners:** algebra sheaves, their affine spectra, and scheme gluing.
-  **Deliver:** `Spec_X(A)` for the supported quasi-coherent algebra
-  presentations, its map to `X`, nonidentity algebra-map contravariance,
-  affine mapping property, and base-change comparison.
-  **Decision:** a finite cover algebra is one case, not the definition of
-  relative Spec. Retain the algebra's actual underlying module and its
-  multiplication under restriction.
-  **Acceptance:** a non-cyclic algebra example and a chart-refinement
-  comparison use the same owner as cyclic covers.
 
 ## Divisors and relative geometry
 
