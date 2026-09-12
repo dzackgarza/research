@@ -16,17 +16,45 @@ from dzack_research.preamble.categories.modules import BasedFreeModule, module_h
 from dzack_research.preamble.categories.sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/test_functor_codomains.sage",
-    "live_owner": "tests/categories/test_free_forgetful_adjunction_archive.py",
-    "owner_overrides": {
-        "test_underlying_set_of_group_functor_lands_in_sets": "tests/groups/test_functors_out_of_groups.py",
-        "test_group_ring_module_functor_lands_in_modules": "tests/algebras/test_group_algebra_functor_archive.py",
-        "test_group_ring_over_many_base_rings": "tests/algebras/test_group_algebra_functor_archive.py",
-        "test_group_ring_is_noncommutative_exactly_when_the_group_is": "tests/algebras/test_group_algebra_functor_archive.py",
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/tests/test_functor_codomains.sage",
+        "live_owner": "tests/categories/test_free_forgetful_adjunction_archive.py",
+        "owner_overrides": {
+            "test_underlying_set_of_group_functor_lands_in_sets": "tests/groups/test_functors_out_of_groups.py",
+            "test_group_ring_module_functor_lands_in_modules": "tests/algebras/test_group_algebra_functor_archive.py",
+            "test_group_ring_over_many_base_rings": "tests/algebras/test_group_algebra_functor_archive.py",
+            "test_group_ring_is_noncommutative_exactly_when_the_group_is": "tests/algebras/test_group_algebra_functor_archive.py",
+        },
+        "disposition": "reconciled-live-owner",
     },
-    "disposition": "reconciled-live-owner",
-}
+    {
+        "archive_module": "preamble/categories/functors/free_forgetful_adjunction.sage",
+        "live_owner": "src/dzack_research/preamble/categories/functors/free_forgetful.py",
+        "owner_overrides": {
+            "ModuleAlgebraFunctor": "src/dzack_research/preamble/categories/functors/free_algebras.py",
+            "FreeAlgebraFunctor": "src/dzack_research/preamble/categories/functors/free_algebras.py",
+            "FreeAlgebraFunctor.unit": "src/dzack_research/preamble/categories/functors/free_algebras.py",
+            "TensorAlgebraFunctor": "src/dzack_research/preamble/categories/functors/free_algebras.py",
+            "SymmetricAlgebraFunctor": "src/dzack_research/preamble/categories/functors/free_algebras.py",
+            "AlternatingAlgebraFunctor": "src/dzack_research/preamble/categories/functors/free_algebras.py",
+            "DividedPowerAlgebraFunctor": "src/dzack_research/preamble/categories/functors/free_algebras.py",
+            "UnderlyingSetOfGroupFunctor": "src/dzack_research/preamble/categories/functors/free_groups.py",
+            "GroupRingFunctor": "src/dzack_research/preamble/categories/algebras/group_algebras.py",
+            "GroupRingFunctor.base_ring": "src/dzack_research/preamble/categories/algebras/group_algebras.py",
+            "FreeModuleOnGroupFunctor": "src/dzack_research/preamble/categories/algebras/group_algebras.py",
+            "FreeModuleOnGroupFunctor.base_ring": "src/dzack_research/preamble/categories/algebras/group_algebras.py",
+            "Adjunction": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.left_adjoint": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.right_adjoint": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.unit": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.counit": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.hom_set_isomorphism_forward": "src/dzack_research/preamble/categories/functors/core.py",
+            "Adjunction.hom_set_isomorphism_inverse": "src/dzack_research/preamble/categories/functors/core.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def test_archived_hom_bijection_is_the_live_adjunction_transpose() -> None:
@@ -93,3 +121,21 @@ def test_free_and_underlying_functors_land_in_declared_codomains_on_a_nonidentit
     assert forgotten.domain() is source_module
     assert forgotten.codomain() is target_module
     assert forgotten(source_module.module_generator("x")) == target_module.module_generator("b")
+
+
+def test_archived_unit_is_natural_on_a_nonidentity_set_map() -> None:
+    adjunction = free_forgetful_adjunction(ZZ)
+    source = finite_ordered_set(("x", "y"))
+    target = finite_ordered_set(("a", "b", "c"))
+    morphism = Sets().Mor(source, target)(
+        lambda label: target("b") if label == source("x") else target("c")
+    )
+    free = adjunction.left_adjoint()
+    underlying = adjunction.right_adjoint()
+
+    left = underlying(free(morphism)) * adjunction.unit(source)
+    right = adjunction.unit(target) * morphism
+
+    assert left == right
+    assert left(source("x")) == free(target).module_generator("b")
+    assert left(source("y")) == free(target).module_generator("c")

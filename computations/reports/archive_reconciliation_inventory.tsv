@@ -818,33 +818,33 @@ preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunct
 preamble/categories/functors/form_forgetful_adjunction.sage	FormForgetfulAdjunction.hom_set_isomorphism_inverse	method	195	0		src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
 preamble/categories/functors/form_forgetful_adjunction.sage	BilinearFormForgetfulAdjunction	class	207	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
 preamble/categories/functors/form_forgetful_adjunction.sage	QuadraticFormForgetfulAdjunction	class	217	1	src/dzack_research/preamble/categories/functors/free_forms.py	src/dzack_research/preamble/categories/functors/free_forms.py	reconciled-live-owner
-preamble/categories/functors/free_forgetful_adjunction.sage	<module>	module	1	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	ModuleAlgebraFunctor	class	59	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeAlgebraFunctor	class	164	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeAlgebraFunctor.unit	method	184	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	TensorAlgebraFunctor	function	207	1	src/dzack_research/preamble/categories/functors/free_algebras.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	SymmetricAlgebraFunctor	function	211	1	src/dzack_research/preamble/categories/functors/free_algebras.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	AlternatingAlgebraFunctor	function	215	1	src/dzack_research/preamble/categories/functors/free_algebras.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	DividedPowerAlgebraFunctor	function	220	1	src/dzack_research/preamble/categories/functors/free_algebras.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleFunctorClass	class	232	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	UnderlyingSetOfGroupFunctor	class	278	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	GroupRingFunctor	class	304	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	GroupRingFunctor.base_ring	method	332	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleOnGroupFunctor	class	367	1	src/dzack_research/preamble/categories/algebras/group_algebras.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleOnGroupFunctor.base_ring	method	391	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	ForgetfulFunctorClass	class	403	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction	class	430	1	src/dzack_research/preamble/categories/functors/core.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.left_adjoint	method	437	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.right_adjoint	method	441	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.unit	method	446	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.counit	method	451	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.hom_set_isomorphism_forward	method	456	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.hom_set_isomorphism_inverse	method	461	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction	class	468	1	src/dzack_research/preamble/categories/functors/free_forgetful.py		unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.unit	method	483	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.counit	method	492	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.hom_set_isomorphism_forward	method	500	0			unreviewed
-preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.hom_set_isomorphism_inverse	method	512	0			unreviewed
+preamble/categories/functors/free_forgetful_adjunction.sage	<module>	module	1	0		src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	ModuleAlgebraFunctor	class	59	0		src/dzack_research/preamble/categories/functors/free_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeAlgebraFunctor	class	164	0		src/dzack_research/preamble/categories/functors/free_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeAlgebraFunctor.unit	method	184	0		src/dzack_research/preamble/categories/functors/free_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	TensorAlgebraFunctor	function	207	1	src/dzack_research/preamble/categories/functors/free_algebras.py	src/dzack_research/preamble/categories/functors/free_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	SymmetricAlgebraFunctor	function	211	1	src/dzack_research/preamble/categories/functors/free_algebras.py	src/dzack_research/preamble/categories/functors/free_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	AlternatingAlgebraFunctor	function	215	1	src/dzack_research/preamble/categories/functors/free_algebras.py	src/dzack_research/preamble/categories/functors/free_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	DividedPowerAlgebraFunctor	function	220	1	src/dzack_research/preamble/categories/functors/free_algebras.py	src/dzack_research/preamble/categories/functors/free_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleFunctorClass	class	232	0		src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	UnderlyingSetOfGroupFunctor	class	278	0		src/dzack_research/preamble/categories/functors/free_groups.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	GroupRingFunctor	class	304	0		src/dzack_research/preamble/categories/algebras/group_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	GroupRingFunctor.base_ring	method	332	0		src/dzack_research/preamble/categories/algebras/group_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleOnGroupFunctor	class	367	1	src/dzack_research/preamble/categories/algebras/group_algebras.py	src/dzack_research/preamble/categories/algebras/group_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeModuleOnGroupFunctor.base_ring	method	391	0		src/dzack_research/preamble/categories/algebras/group_algebras.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	ForgetfulFunctorClass	class	403	0		src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction	class	430	1	src/dzack_research/preamble/categories/functors/core.py	src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.left_adjoint	method	437	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.right_adjoint	method	441	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.unit	method	446	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.counit	method	451	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.hom_set_isomorphism_forward	method	456	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	Adjunction.hom_set_isomorphism_inverse	method	461	0		src/dzack_research/preamble/categories/functors/core.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction	class	468	1	src/dzack_research/preamble/categories/functors/free_forgetful.py	src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.unit	method	483	0		src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.counit	method	492	0		src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.hom_set_isomorphism_forward	method	500	0		src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
+preamble/categories/functors/free_forgetful_adjunction.sage	FreeForgetfulAdjunction.hom_set_isomorphism_inverse	method	512	0		src/dzack_research/preamble/categories/functors/free_forgetful.py	reconciled-live-owner
 preamble/categories/functors/ring_centers.sage	<module>	module	1	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/functors/ring_centers.sage	RingCenterFunctor	class	36	1	src/dzack_research/preamble/categories/rings/ring_foundation.py	src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
 preamble/categories/functors/ring_centers.sage	RingCenterFunctor.domain	method	48	0		src/dzack_research/preamble/categories/rings/ring_foundation.py	reconciled-live-owner
