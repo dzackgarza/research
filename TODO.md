@@ -498,20 +498,6 @@ Retain existing fan/subdivision and toric-divisor engines for the toric cases.
 Do not make an engine's affine or toric specialization the public definition
 of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 
-- [ ] **`jets`**. **Needs:** none.
-  Extend linear-system restrictions and jets to general represented closed
-  subschemes and points.
-  **Owners:** line bundles, section modules, local ideals and their powers.
-  **Deliver:** evaluation and restriction maps, kernels for imposed
-  multiplicities, base loci, basepoint-freeness, and parameter spaces.
-  **Decision:** use the stalk/residue field and the quotient by the appropriate
-  power of the point ideal. Selected toric monomial coordinates are a
-  computation, not a definition of arbitrary jets.
-  The associated projective map is a morphism only where the sections have
-  no common zero; otherwise retain its actual domain of definition.
-  **Acceptance:** non-coordinate points, nonreduced imposed conditions,
-  and a linear system with a nonempty base locus distinguish these cases.
-
 - [ ] **`cycles`**. **Needs:** `divisors`, `tor-ext`.
   Construct non-toric cycles, rational equivalence and intersection operations
   through their local multiplicities and morphisms.
@@ -872,7 +858,7 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`k3-family`**. **Needs:** `linearizations`, `geometric-quotients`, `jets`, `adjunction-blowups`.
+- [ ] **`k3-family`**. **Needs:** `linearizations`, `geometric-quotients`, `adjunction-blowups`.
   Construct the `(4,4)` double-cover K3 family over `P^1 x P^1` and
   the two lifts of the diagonal sign involution.
   **Inputs:** branch sections, a selected linearization, the existing cyclic
@@ -917,7 +903,7 @@ definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
   parity-forced cases, and local/global singularity comparisons.
   Read and cite the source for each classification rule before implementing it.
 
-- [ ] **`bertini-family`**. **Needs:** `jets`, `adjunction-blowups`, `singularity-classification`.
+- [ ] **`bertini-family`**. **Needs:** `adjunction-blowups`, `singularity-classification`.
   Supply Bertini and general complete-intersection family applications.
   **Inputs:** parameter spaces, evaluation/jet maps, and local smoothness.
   **Decision:** generic smoothness or a nonempty open good-parameter locus does

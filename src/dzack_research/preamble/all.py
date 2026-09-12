@@ -229,6 +229,7 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     PicardGroup,
     PicardGroups,
     ProjectivePointJetEvaluation,
+    ProjectiveSectionRestriction,
     ProjectiveJetSpaces,
     ProjectiveLinearSystem,
     ProjectiveLinearSystems,

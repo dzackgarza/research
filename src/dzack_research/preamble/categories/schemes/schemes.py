@@ -1891,6 +1891,8 @@ class ProjectiveSchemes(_SchemePropertyCategory):
             )
             engine_equations = []
             retain_owned_equations = True
+            ambient_engine = self.coordinate_ring()
+            ambient_variables = tuple(ambient_engine.gens())
             for equation in equations:
                 if not equation.is_homogeneous():
                     raise ValueError(
@@ -1898,10 +1900,17 @@ class ProjectiveSchemes(_SchemePropertyCategory):
                     )
                 parent = getattr(equation, "parent", lambda: None)()
                 try:
-                    engine_equations.append(_engine_element(parent, equation))
+                    backend = _engine_element(parent, equation)
                 except (AttributeError, TypeError, ValueError):
-                    engine_equations.append(equation)
+                    backend = equation
                     retain_owned_equations = False
+                engine_equations.append(
+                    _copy_polynomial_by_exponents(
+                        backend,
+                        ambient_engine,
+                        ambient_variables,
+                    )
+                )
             return refine_closed_subscheme(
                 self.subscheme(tuple(engine_equations)),
                 self,
@@ -3838,6 +3847,34 @@ class ClosedEmbeddings(_SchemeSubobjectsOf):
             if selected is not None:
                 return finite_family(selected, name="Defining equations")
             return finite_family(self.defining_polynomials(), name="Defining equations")
+
+        def homogeneous_defining_equations(self, coordinate_ring):
+            r"""Raise projective defining equations into a selected owned coordinate algebra."""
+            codomain = self.inclusion().codomain()
+            base = codomain.scheme_base_ring()
+            if codomain not in ProjectiveSpaces(base):
+                raise TypeError("homogeneous defining equations require a projective-space ambient")
+            if coordinate_ring.base_ring() is not base:
+                raise ValueError("homogeneous coordinates and the projective ambient must share a scalar base")
+            engine_target = _engine_ring(coordinate_ring)
+            target_variables = tuple(engine_target.gens())
+            raised = []
+            for equation in self.defining_equations():
+                parent = getattr(equation, "parent", lambda: None)()
+                try:
+                    backend = _engine_element(parent, equation)
+                except (AttributeError, TypeError, ValueError):
+                    backend = equation
+                copied = _copy_polynomial_by_exponents(
+                    backend,
+                    engine_target,
+                    target_variables,
+                )
+                raised.append(coordinate_ring._from_engine_element(copied))
+            return finite_family(
+                tuple(raised),
+                name=f"Homogeneous defining equations of {self}",
+            )
 
         @cached_method
         def defining_ideal_owned(self):

@@ -5,11 +5,15 @@ from math import comb
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
+from dzack_research.preamble.categories.algebras.algebras import (
+    AlgebrasWithChosenFinitePresentation,
+)
 from dzack_research.preamble.categories.algebras.free_algebras import PolynomialRing
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleMorphism,
     module_coefficients,
     module_embedding,
     module_homset,
@@ -157,6 +161,14 @@ class ProjectiveLinearSystems(OwnedCategoryOverBaseRing):
                 source.module_generating_set(),
                 lambda label: embedding(source.module_generator(label)),
                 name="Selected sections of the linear system",
+            )
+
+        def restriction_map(self, closed_subscheme):
+            return _projective_section_restriction(
+                self.line_bundle(),
+                closed_subscheme,
+                source=self.selected_section_space(),
+                into_complete=self.section_embedding(),
             )
 
         def base_locus(self):
@@ -448,6 +460,125 @@ def CoordinateHyperplaneSectionRestriction(projective_space, degree, coordinate_
     return restriction
 
 
+class ProjectiveSectionRestrictionMap(ModuleMorphism):
+    r"""The exact image-valued restriction of a represented projective section space."""
+
+    def __init__(
+        self,
+        parent,
+        images,
+        *,
+        line_bundle,
+        closed_subscheme,
+        coordinate_quotient,
+        ambient_normal_form_space,
+        image_inclusion,
+    ) -> None:
+        self._line_bundle = line_bundle
+        self._closed_subscheme = closed_subscheme
+        self._coordinate_quotient = coordinate_quotient
+        self._ambient_normal_form_space = ambient_normal_form_space
+        self._image_inclusion = image_inclusion
+        ModuleMorphism.__init__(self, parent, images)
+
+    def line_bundle(self):
+        return self._line_bundle
+
+    def closed_subscheme(self):
+        return self._closed_subscheme
+
+    def coordinate_quotient(self):
+        return self._coordinate_quotient
+
+    def ambient_normal_form_space(self):
+        return self._ambient_normal_form_space
+
+    def restriction_image_inclusion(self):
+        return self._image_inclusion
+
+
+def _projective_section_restriction(
+    line_bundle,
+    closed_subscheme,
+    *,
+    source=None,
+    into_complete=None,
+):
+    r"""Restrict a represented section space to a projective closed subscheme.
+
+    The codomain is the exact image of the selected source under restriction,
+    not an assertion that the homogeneous coordinate quotient computes all of
+    ``H^0(Z,L|_Z)``.  The closed subscheme's homogeneous equations define a
+    chosen quotient of the homogeneous coordinate algebra.  Canonical normal
+    forms in that quotient supply a finite ambient monomial space, and the
+    module image construction corestricts to the true restriction image.
+    """
+    scheme = line_bundle.projective_space()
+    if closed_subscheme.inclusion().codomain() is not scheme:
+        raise ValueError("a section restriction is taken to a closed subscheme of its projective space")
+    base = scheme.scheme_base_ring()
+    if base not in OwnedFields():
+        raise TypeError("the represented projective restriction-image computation requires a field base")
+    complete = line_bundle.global_sections()
+    source = complete if source is None else source
+    if source is complete:
+        into_complete = module_homset(complete, complete).identity()
+    elif into_complete is None:
+        raise ValueError("a selected section source requires its embedding into the complete section space")
+    if into_complete.domain() is not source or into_complete.codomain() is not complete:
+        raise ValueError("the selected section embedding has the wrong endpoints")
+
+    coordinate_ring = complete.homogeneous_coordinate_ring()
+    equations = closed_subscheme.homogeneous_defining_equations(coordinate_ring)
+    quotient = AlgebrasWithChosenFinitePresentation(base)(
+        coordinate_ring,
+        tuple(equations),
+    )
+
+    normal_forms = {}
+    monomials = []
+    for label in source.module_generating_set():
+        section = into_complete(source.module_generator(label))
+        polynomial = complete.homogeneous_polynomial(section)
+        terms = quotient.presentation_normal_form_terms(quotient(polynomial))
+        normal_forms[label] = terms
+        for monomial in terms:
+            if not any(monomial == known for known in monomials):
+                monomials.append(monomial)
+
+    ambient = FreshFreeModuleOn(
+        base,
+        finite_ordered_set(tuple(monomials)),
+    )
+    ambient_map = module_homset(source, ambient)(
+        {
+            label: ambient.linear_combination(normal_forms[label])
+            for label in source.module_generating_set()
+        }
+    )
+    image = ambient_map.image()
+    restriction_images = {
+        label: image.inclusion().lift(
+            ambient_map(source.module_generator(label))
+        )
+        for label in source.module_generating_set()
+    }
+    return ProjectiveSectionRestrictionMap(
+        module_homset(source, image),
+        restriction_images,
+        line_bundle=line_bundle,
+        closed_subscheme=closed_subscheme,
+        coordinate_quotient=quotient,
+        ambient_normal_form_space=ambient,
+        image_inclusion=image.inclusion(),
+    )
+
+
+def ProjectiveSectionRestriction(line_bundle, closed_subscheme):
+    r"""Return the exact image-valued restriction map for ``H^0(P,L) -> H^0(Z,L|_Z)``."""
+    return _projective_section_restriction(line_bundle, closed_subscheme)
+
+
 def ProjectiveLinearSystem(line_bundle, sections):
     r"""Return the projective linear system spanned by independent sections of ``line_bundle``."""
     scheme = line_bundle.projective_space()
@@ -736,6 +867,7 @@ __all__ = [
     "ProjectiveLinearSystem",
     "ProjectiveLinearSystems",
     "ProjectivePointJetEvaluation",
+    "ProjectiveSectionRestriction",
     "SectionsVanishingAtPoint",
     "SectionsVanishingToOrder",
 ]

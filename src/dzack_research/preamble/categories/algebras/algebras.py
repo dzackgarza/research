@@ -1694,6 +1694,33 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         def lift_to_presentation(self, element):
             return self._preamble_lift_to_presentation(element)
 
+        def presentation_normal_form_terms(self, element):
+            r"""Return the selected reduced presentation representative as owned monomial terms.
+
+            The chosen finite presentation fixes a polynomial representative
+            for every quotient element.  Its computational normal form is
+            private; this method raises that representative to a finite mapping
+            from owned presentation monomials to owned scalar coefficients.
+            """
+            presentation = self.presentation_ring()
+            representative = self.lift_to_presentation(self(element))
+            backend = _engine_element(presentation, representative)
+            labels = tuple(presentation.algebra_generating_set())
+            base = self.base_ring()
+            engine_base = _engine_ring(base)
+            terms = {}
+            for exponent, coefficient in backend.monomial_coefficients().items():
+                try:
+                    powers = tuple(int(value) for value in exponent)
+                except TypeError:
+                    powers = (int(exponent),)
+                monomial = presentation.one()
+                for label, power in zip(labels, powers, strict=True):
+                    if power:
+                        monomial *= presentation.algebra_generator(label) ** power
+                terms[monomial] = base._from_engine_element(engine_base(coefficient))
+            return terms
+
         def base_change(self, ring_map):
             operation = self.__dict__.get("_preamble_base_change_selected_presentation")
             if operation is None:

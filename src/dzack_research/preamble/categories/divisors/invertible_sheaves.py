@@ -564,6 +564,13 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
 
     is_globally_generated = is_basepoint_free
 
+    def restriction_map(self, closed_subscheme):
+        from dzack_research.preamble.categories.divisors.linear_systems import (
+            ProjectiveSectionRestriction,
+        )
+
+        return ProjectiveSectionRestriction(self, closed_subscheme)
+
     def linear_system(self, sections=None):
         from dzack_research.preamble.categories.divisors.linear_systems import (
             ProjectiveLinearSystem,
