@@ -386,7 +386,22 @@ restart of the module/algebra/action constructions.
 
 ### Constructor and ownership convergence
 
-- [ ] **`gate-ruff-paydown`**. **Needs:** none.
+- [ ] **`ruff-autofix-mechanism`**. **Needs:** none.
+
+  The shared gate runs `ruff check --fix` on every commit with `fixable = ["ALL"]` in
+  `ai-review-ci/tool-configs/ruff-global.toml`, and `select` includes `I` (isort). In this
+  repository import order is load-bearing — `preamble/all.py` carries a comment saying
+  `language_runtime.install()` must run before the imports that follow it, and the autofix
+  moved it anyway. Curating the result by hand cannot hold: the fix regenerates on the next
+  commit, which is how 324 files of reordering accumulated uncommitted.
+
+  Fix the mechanism, not the output. Identify every module here whose import order or import
+  side effects are semantically required, and make the autofix unable to reorder them — a
+  scoped `I001` exclusion for those files, or an explicit ordering the rule already agrees
+  with. The acceptance is that running the gate twice in a row produces no diff on those files.
+  Only then curate whatever autofix output remains.
+
+- [ ] **`gate-ruff-paydown`**. **Needs:** `ruff-autofix-mechanism`.
 
   The commit gate is red on `ruff check found issues in project code`, independently of what
   any single commit stages. While it stays red, every worker either endures it as a
