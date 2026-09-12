@@ -5,6 +5,7 @@ from sage.schemes.generic.scheme import Scheme
 from sage.structure.element import Element
 
 from dzack_research.preamble.all import (
+    GF,
     QQ,
     AffineGSchemes,
     FiniteGluedInvariantQuotient,
@@ -382,3 +383,61 @@ def test_glued_quotient_rejects_a_nonequivariant_source_transition() -> None:
             source_transitions,
             quotient_transitions,
         )
+
+
+def test_glued_swap_action_detects_nonfree_stabilizers_chartwise(
+    glued_swap_quotient: _GluedSwapQuotient,
+) -> None:
+    quotient = glued_swap_quotient.quotient
+    generator = quotient.acting_group().group_generators()[0]
+
+    assert quotient.fixed_locus_is_empty(generator) is False
+    assert quotient.common_fixed_locus_is_empty() is False
+    assert quotient.nontrivial_stabilizer_locus_is_empty() is False
+    assert quotient.action_is_free() is False
+
+
+def test_one_chart_artin_schreier_glued_quotient_is_free() -> None:
+    field = GF(2)
+    group = Groups.C(2)
+    algebra = PolynomialRing(field, "x")
+    x = algebra.algebra_generator("x")
+    chart = Spec(algebra)
+    translation = SpecFunctor(field)(
+        algebra.Mor(algebra)({"x": x + algebra.one()})
+    )
+    identity = chart.categorical_identity_morphism()
+    acted = AffineGSchemes(group, field)(
+        chart,
+        lambda element: identity if element == group.one() else translation,
+    )
+    indices = finite_ordered_set((0,))
+    acted_charts = finite_indexed_family(
+        indices,
+        lambda _index: acted,
+        name="One-chart Artin-Schreier quotient atlas",
+    )
+    empty_pairs = finite_ordered_set(())
+    source_transitions = finite_indexed_family(
+        empty_pairs,
+        lambda _pair: None,
+        name="Empty source transition family",
+    )
+    quotient_transitions = finite_indexed_family(
+        empty_pairs,
+        lambda _pair: None,
+        name="Empty quotient transition family",
+    )
+    quotient = FiniteGluedInvariantQuotient(
+        field,
+        group,
+        acted_charts,
+        source_transitions,
+        quotient_transitions,
+    )
+    generator = group.group_generators()[0]
+
+    assert quotient.fixed_locus_is_empty(generator)
+    assert quotient.common_fixed_locus_is_empty()
+    assert quotient.nontrivial_stabilizer_locus_is_empty()
+    assert quotient.action_is_free()

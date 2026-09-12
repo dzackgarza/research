@@ -686,6 +686,43 @@ class FiniteGluedInvariantQuotient(SageObject):
         action_morphism: SchemeMorphism = self.action()(group_element)
         return action_morphism
 
+    def fixed_locus_is_empty(self, group_element) -> bool:
+        r"""Decide emptiness of ``X^g`` on the invariant affine atlas.
+
+        The source atlas is preserved by the global action, so the fixed locus
+        is empty exactly when its intersection with every affine chart is
+        empty.  Each chart computes the full scheme-theoretic fixed ideal; no
+        reduction is taken here.
+        """
+        normalized = self.acting_group()(group_element)
+        return all(
+            self.acted_chart(index).fixed_subobject_of(normalized).is_empty()
+            for index in self.chart_index_set()
+        )
+
+    def common_fixed_locus_is_empty(self) -> bool:
+        r"""Decide whether ``X^G`` is empty by the represented invariant atlas."""
+        return all(
+            self.acted_chart(index).fixed_subscheme().is_empty()
+            for index in self.chart_index_set()
+        )
+
+    def nontrivial_stabilizer_locus_is_empty(self) -> bool:
+        r"""Decide whether every nonidentity stabilizer locus misses every chart."""
+        return all(
+            self.acted_chart(index).nontrivial_stabilizer_subscheme().is_empty()
+            for index in self.chart_index_set()
+        )
+
+    def action_is_free(self):
+        r"""Decide freeness locally on the represented invariant affine cover.
+
+        Freeness is local on the source.  This deliberately tests the union of
+        all nonidentity fixed loci chartwise, rather than the common fixed
+        locus ``X^G``.
+        """
+        return self.nontrivial_stabilizer_locus_is_empty()
+
     def quotient_morphism(self) -> SchemeMorphism:
         if self._quotient_morphism is None:
             local_maps = finite_indexed_family(
