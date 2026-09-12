@@ -1433,6 +1433,114 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
             ).presentation_category()
             return category(self.presentation())
 
+        def adic_completion(self, ideal, *, precision=20):
+            r"""Return ``M tensor_R R_hat`` along the represented ``I``-adic completion."""
+            ring = self.base_ring()
+            if ideal.ring() is not ring:
+                raise ValueError("module completion requires an ideal of the module base ring")
+            completion = ring.adic_completion(ideal, precision=precision)
+            return self.base_change_to_completion(completion)
+
+        def base_change_to_completion(self, completion):
+            r"""Return ``M tensor_R R_hat`` for one already selected completion."""
+            ring = self.base_ring()
+            if completion.completion_source() is not ring:
+                raise ValueError("the completion has the wrong source ring for this module")
+            ideal = completion.ideal_of_definition()
+            return self.base_change(
+                completion.completion_map(),
+                _extra_construction_data={
+                    "completion_source_module": self,
+                    "completion_defining_ideal": ideal,
+                    "completion_ring": completion,
+                },
+            )
+
+        def is_adically_completed_module(self) -> bool:
+            return getattr(self, "_preamble_completion_source_module", None) is not None
+
+        def completion_source_module(self):
+            source = getattr(self, "_preamble_completion_source_module", None)
+            if source is None:
+                raise ValueError("this module was not constructed by adic completion")
+            return source
+
+        def completion_defining_ideal(self):
+            ideal = getattr(self, "_preamble_completion_defining_ideal", None)
+            if ideal is None:
+                raise ValueError("this module was not constructed by adic completion")
+            return ideal
+
+        def completion_ring(self):
+            completion = getattr(self, "_preamble_completion_ring", None)
+            if completion is None:
+                raise ValueError("this module was not constructed by adic completion")
+            return completion
+
+        @cached_method
+        def completion_unit(self):
+            r"""Return the canonical ``R``-linear map ``M -> Res_R(M_hat)``."""
+            source = self.completion_source_module()
+            ring_map = self.completion_ring().completion_map()
+            adjunction = Modules(source.base_ring()).base_change_adjunction(ring_map)
+            adjunction.left_adjoint().adopt_object_image(source, self)
+            return adjunction.unit(source)
+
+        @cached_method
+        def adic_module_truncation(self, exponent):
+            r"""Return ``M tensor_R R/I^exponent`` from the same selected presentation."""
+            source = self.completion_source_module()
+            quotient = self.completion_ring().adic_truncation(exponent)
+            return source.base_change(quotient.quotient_map())
+
+        @cached_method
+        def adic_module_projection(self, exponent):
+            r"""Return ``M_hat -> Res(M/I^exponent M)`` over ``R_hat``."""
+            target = self.adic_module_truncation(exponent)
+            ring_map = self.completion_ring().adic_projection(exponent)
+            restricted = restrict_scalars(target, ring_map)
+            labels = self.module_generating_set()
+            target_labels = target.module_generating_set()
+            if labels.cardinality() != target_labels.cardinality():
+                raise ArithmeticError("adic base change changed the selected module framing cardinality")
+            return module_homset(self, restricted)(
+                {
+                    label: restricted(
+                        target.module_generator(
+                            target_labels[int(labels.ranking_map()(label))]
+                        )
+                    )
+                    for label in labels
+                }
+            )
+
+        @cached_method
+        def adic_module_transition_map(self, higher_exponent, lower_exponent):
+            r"""Return ``M/I^higher M -> Res(M/I^lower M)``."""
+            higher_exponent = int(higher_exponent)
+            lower_exponent = int(lower_exponent)
+            higher = self.adic_module_truncation(higher_exponent)
+            lower = self.adic_module_truncation(lower_exponent)
+            ring_map = self.completion_ring().adic_transition_map(
+                higher_exponent,
+                lower_exponent,
+            )
+            restricted = restrict_scalars(lower, ring_map)
+            higher_labels = higher.module_generating_set()
+            lower_labels = lower.module_generating_set()
+            if higher_labels.cardinality() != lower_labels.cardinality():
+                raise ArithmeticError("adic transition changed the selected module framing cardinality")
+            return module_homset(higher, restricted)(
+                {
+                    label: restricted(
+                        lower.module_generator(
+                            lower_labels[int(higher_labels.ranking_map()(label))]
+                        )
+                    )
+                    for label in higher_labels
+                }
+            )
+
 
 @dataclass(frozen=True)
 class FreeResolution:

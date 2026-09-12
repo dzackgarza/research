@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _biproduct_label,
     _engine_matrix,
     _refine_matrix_hom,
+    restrict_scalars,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
@@ -1149,64 +1150,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=_extra_construction_data,
             )
 
-        def adic_completion(self, ideal, *, precision=20):
-            r"""Return ``M tensor_R R_hat`` along the represented ``I``-adic completion.
-
-            The selected presentation is transported by the ordinary scalar-
-            extension constructor.  The result retains the source module,
-            defining ideal, and completion ring so the canonical map and every
-            finite truncation are reconstructed from the same ring maps.
-            """
-            ring = self.base_ring()
-            if ideal.ring() is not ring:
-                raise ValueError("module completion requires an ideal of the module base ring")
-            completion = ring.adic_completion(ideal, precision=precision)
-            completed = self.base_change(
-                completion.completion_map(),
-                _extra_construction_data={
-                    "completion_source_module": self,
-                    "completion_defining_ideal": ideal,
-                    "completion_ring": completion,
-                },
-            )
-            return completed
-
-        def is_adically_completed_module(self) -> bool:
-            return getattr(self, "_preamble_completion_source_module", None) is not None
-
-        def completion_source_module(self):
-            source = getattr(self, "_preamble_completion_source_module", None)
-            if source is None:
-                raise ValueError("this module was not constructed by adic completion")
-            return source
-
-        def completion_defining_ideal(self):
-            ideal = getattr(self, "_preamble_completion_defining_ideal", None)
-            if ideal is None:
-                raise ValueError("this module was not constructed by adic completion")
-            return ideal
-
-        def completion_ring(self):
-            completion = getattr(self, "_preamble_completion_ring", None)
-            if completion is None:
-                raise ValueError("this module was not constructed by adic completion")
-            return completion
-
-        @cached_method
-        def completion_unit(self):
-            r"""Return the canonical ``R``-linear map ``M -> Res_R(M_hat)``."""
-            source = self.completion_source_module()
-            ring_map = self.completion_ring().completion_map()
-            adjunction = Modules(source.base_ring()).base_change_adjunction(ring_map)
-            adjunction.left_adjoint().adopt_object_image(source, self)
-            return adjunction.unit(source)
-
-        @cached_method
-        def adic_module_truncation(self, exponent):
-            r"""Return ``M tensor_R R/I^exponent`` from the same selected presentation."""
-            source = self.completion_source_module()
-            quotient = self.completion_ring().adic_truncation(exponent)
-            return source.base_change(quotient.quotient_map())
 
 
 def _module_invariant_factor_form(module):

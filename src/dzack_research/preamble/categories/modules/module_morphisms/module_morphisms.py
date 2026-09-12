@@ -332,7 +332,7 @@ class ModuleMorphism(Morphism):
 
         try:
             source_finite = bool(domain.is_finite())
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             source_finite = False
 
         if not source_finite:
@@ -346,7 +346,7 @@ class ModuleMorphism(Morphism):
 
         try:
             source_elements = tuple(domain)
-        except AttributeError, TypeError:
+        except (AttributeError, TypeError):
             self._check_elementwise_zero_when_possible()
             _LOGGER.debug(
                 "Elementwise module morphism %s -> %s accepted without exhaustive linearity verification; finite source has no represented enumeration",
@@ -371,7 +371,7 @@ class ModuleMorphism(Morphism):
             if not label_set.cardinality().is_finite():
                 return None
             labels = tuple(label_set)
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return None
         scalars = _enumerated_ring_elements(ring)
         if scalars is None:
@@ -435,7 +435,7 @@ class ModuleMorphism(Morphism):
             source_zero = self.domain().zero()
             target_zero = self.codomain().zero()
             image = self._element_function(source_zero)
-        except AttributeError, NotImplementedError, TypeError, ValueError:
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
             return
         if image != target_zero:
             raise ValueError("an elementwise module morphism must send zero to zero")
@@ -521,7 +521,7 @@ class ModuleMorphism(Morphism):
         r"""Use the canonical pointwise scalar action of the Hom module."""
         try:
             scalar = self.parent().base_ring()(actor)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return None
         return self.parent().scalar_multiple(scalar, self)
 
@@ -582,6 +582,32 @@ class ModuleMorphism(Morphism):
     @cached_method
     def kernel(self):
         r"""Return ``ker(self)`` as a subobject of the domain."""
+        completion_source = getattr(
+            self,
+            "_preamble_adic_completion_source_morphism",
+            None,
+        )
+        if completion_source is not None:
+            completion = self._preamble_adic_completion_ring
+            if not completion.is_flat_over_source():
+                raise ArithmeticError(
+                    "the retained completion map was expected to be flat over its Noetherian source"
+                )
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            source_kernel = completion_source.kernel()
+            extension = Modules(
+                completion_source.domain().base_ring()
+            ).scalar_extension(completion.completion_map())
+            extension.adopt_object_image(completion_source.domain(), self.domain())
+            completed_kernel = extension(source_kernel)
+            completed_inclusion = extension(source_kernel.inclusion())
+            if completed_inclusion.codomain() is not self.domain():
+                raise ArithmeticError(
+                    "the completed source-kernel inclusion has the wrong ambient module"
+                )
+            return completed_inclusion.image()
+
         localization_functor = self._preamble_localization_functor
         if localization_functor is not None:
             from dzack_research.preamble.categories.modules.pure.modules import (
@@ -699,7 +725,7 @@ class ModuleMorphism(Morphism):
 
     def is_injective(self) -> bool:
         r"""Return whether ``ker(self)=0`` when the kernel is computable."""
-        return self.kernel().module_rank() == 0
+        return self.kernel().is_zero()
 
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""
@@ -919,7 +945,7 @@ class ModuleMorphism(Morphism):
         r"""Return whether ``element`` has a preimage when the lift is decidable."""
         try:
             self.lift(element)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         return True
 
@@ -986,6 +1012,32 @@ class ModuleMorphism(Morphism):
             }
         )
 
+    def adic_completion(self, ideal, *, precision=20):
+        r"""Return ``self tensor_R R_hat`` using one shared completion parent.
+
+        The endpoint objects are the same completed modules returned by their
+        module constructors; the scalar-extension functor adopts those exact
+        images before transporting this morphism.
+        """
+        ring = self.domain().base_ring()
+        if self.codomain().base_ring() is not ring:
+            raise ValueError("adic completion of a module morphism requires one scalar ring")
+        if ideal.ring() is not ring:
+            raise ValueError("the completion ideal belongs to the morphism scalar ring")
+        completion = ring.adic_completion(ideal, precision=precision)
+        source = self.domain().base_change_to_completion(completion)
+        target = self.codomain().base_change_to_completion(completion)
+
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        extension = Modules(ring).scalar_extension(completion.completion_map())
+        extension.adopt_object_image(self.domain(), source)
+        extension.adopt_object_image(self.codomain(), target)
+        completed = extension(self)
+        completed._preamble_adic_completion_source_morphism = self
+        completed._preamble_adic_completion_ring = completion
+        return completed
+
     def _is_the_identity(self) -> bool:
         r"""Return whether this morphism is its Hom object's identity."""
         if self.domain() is not self.codomain():
@@ -1013,12 +1065,26 @@ class ModuleMorphism(Morphism):
             )
         try:
             return self.parent().scalar_multiple(other, self)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return NotImplemented
 
     @cached_method
     def cokernel(self):
         r"""Return the selected quotient ``codomain(self) / image(self)``."""
+        completion_source = getattr(
+            self,
+            "_preamble_adic_completion_source_morphism",
+            None,
+        )
+        if completion_source is not None:
+            completion = self._preamble_adic_completion_ring
+            source_cokernel = completion_source.cokernel()
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            extension = Modules(
+                completion_source.domain().base_ring()
+            ).scalar_extension(completion.completion_map())
+            return extension(source_cokernel)
         quotient = self.codomain()._represented_cokernel_of_morphism(self)
         if quotient is NotImplemented:
             quotient = self.domain()._represented_cokernel_of_morphism(self)
@@ -1668,7 +1734,7 @@ class TensorProductModuleHomset(ModuleHomset):
 
             parameters = signature(function)
             parameters.bind(None, None)
-        except TypeError, ValueError:
+        except (TypeError, ValueError):
             return False
         try:
             parameters.bind(None)
