@@ -307,7 +307,7 @@ Paths in this section are relative to
   route cannot escape the same obligation. Also use a free-plus-torsion
   module; an already annihilated torsion example alone cannot test completion.
 
-- [ ] **`quotient-completion`**. **Needs:** `module-completion`.
+- [x] **`quotient-completion`**. **Needs:** `module-completion`.
   Implement quotient/completion comparisons with hypotheses and actual maps.
   **Owner:** ring quotient, module quotient, and completion functors.
   **Decision:** in the Noetherian finite regime, construct the comparison
@@ -337,6 +337,29 @@ Paths in this section are relative to
   relabeling a finite truncation.
 
 ### Local algebra extensions
+
+- [ ] **`normalization`**. **Needs:** none.
+  Extend normalization and local-length operations beyond the represented
+  integral affine and selected plane-curve regimes needed below.
+  **Owners:** `rings/commutative_algebra.py`, `rings/commutative_ideals.py`,
+  their normalization adapter, and `schemes/singularities.py`.
+  **Deliver:** total quotient rings for supported reduced rings, regular-element
+  tests, normalization maps componentwise when required, conductor ideals,
+  height-one valuations, and finite local lengths with residue-field degree
+  accounted for. Preserve minimal primes, components, and support.
+  **Decision:** normalization is a ring/scheme map, not a selected polynomial
+  normal form; a list of normalized components is not yet the glued
+  normalization. Local invariants name a point; global delta cannot be
+  substituted for delta at that point.
+  **Acceptance:** a reducible reduced curve, a singular integral curve, and
+  a nonrational closed point exercise the required maps and local lengths.
+  Reuse the existing integral normalization and local `deltaLoc` operations.
+  **Capability question:** which operation in the existing Singular normalization
+  adapter supplies the reduced/componentwise case, conductor, and comparison
+  maps? Inspect the corresponding OSCAR/Macaulay2 operations only for obligations
+  the current adapter cannot discharge. Retain that choice at the adapter; extend
+  its raising of ideals, components, and maps rather than implementing local
+  normalization, factorization, or length algorithms in the scheme consumer.
 
 - [ ] **`local-module-maps`**. **Needs:** none.
   Extend local homomorphisms and local-module operations only at their shared
@@ -1476,4 +1499,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `MODULE-quotient-completion-20260912-0014` | completion / quotient-completion | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/modules/pure/modules.py; src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py; tests/modules/test_quotient_completion.py` (write) | `f1638c64` | 2026-09-12T00:14:00Z |
+| `RING-normalization-20260912-0017` | local algebra / normalization | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/rings/commutative_algebra.py; src/dzack_research/preamble/categories/rings/commutative_ideals.py; src/dzack_research/preamble/categories/schemes/singularities.py; tests/rings/test_normalization_frontier.py` (write) | `d323fbb9` | 2026-09-12T00:17:00Z |
