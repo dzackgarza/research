@@ -128,6 +128,7 @@ class GradedDirectSumModule(Parent):
         from_realization=None,
         degree_index_set=None,
         extra_categories=(),
+        extra_construction_data=None,
     ) -> None:
         self._base_ring = _owned_ring(base_ring)
         self._preamble_base_ring = self._base_ring
@@ -137,6 +138,8 @@ class GradedDirectSumModule(Parent):
         self._realized_object = realized_object
         self._from_realization = from_realization
         self._degree_index_set = NN if degree_index_set is None else degree_index_set
+        for key, value in dict(extra_construction_data or {}).items():
+            setattr(self, f"_preamble_{key}", value)
         self._pieces: dict[int, Any] = {}
         self._indices = None
         categories = [

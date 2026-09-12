@@ -140,7 +140,14 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 _extra_construction_data=_extra_construction_data,
             )
 
-        def _presented_biproduct_over(self, labels, factors):
+        def _presented_biproduct_over(
+            self,
+            labels,
+            factors,
+            *,
+            extra_categories=(),
+            extra_construction_data=None,
+        ):
             r"""Return the finite-presentation realization of $\bigoplus_{i \in I} M_i$.
 
             A relation of one factor is a relation of the biproduct, read at
@@ -179,6 +186,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return FinitelyPresentedModule(
                 presentation,
                 _biproduct_factors=factors,
+                _extra_categories=extra_categories,
+                _extra_construction_data=extra_construction_data,
             )
 
         @cached_method

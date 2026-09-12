@@ -257,6 +257,12 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
             {0: degree_zero, 1: degree_one},
             {0: module_homset(degree_zero, degree_one)({0: degree_one.zero()})},
             name="Toric weight cohomology complex",
+            extra_categories=(ToricWeightCohomologyComplexes(base),),
+            extra_construction_data={
+                "geometric_cohomology_scheme": scheme,
+                "geometric_cohomology_divisor": divisor,
+                "geometric_cohomology_weight": weight,
+            },
         )
     else:
         engine = simplicial.chain_complex(
@@ -280,12 +286,14 @@ def ToricWeightCohomologyComplex(scheme, divisor, weight):
             pieces,
             differentials,
             name="Toric weight cohomology complex",
+            extra_categories=(ToricWeightCohomologyComplexes(base),),
+            extra_construction_data={
+                "geometric_cohomology_scheme": scheme,
+                "geometric_cohomology_divisor": divisor,
+                "geometric_cohomology_weight": weight,
+            },
         )
-
-    complex_._preamble_geometric_cohomology_scheme = scheme
-    complex_._preamble_geometric_cohomology_divisor = divisor
-    complex_._preamble_geometric_cohomology_weight = weight
-    return refine(complex_, ToricWeightCohomologyComplexes(base))
+    return complex_
 
 
 def ToricWeightCohomology(scheme, divisor, weight, degree):
@@ -351,22 +359,31 @@ def ToricLineBundleCohomology(scheme, divisor, degree):
     }
     weights = finite_ordered_set(tuple(pieces))
     base = scheme.scheme_base_ring()
+    construction_data = {
+        "cohomology_scheme": scheme,
+        "cohomology_divisor": divisor,
+        "cohomological_degree": degree,
+        "cohomology_weight_support": weights,
+        "cohomology_weight_pieces": pieces,
+    }
     if weights.cardinality() == 0:
-        total = BasedFreeModule(base, 0)
+        total = FreshFreeModuleOn(
+            base,
+            finite_ordered_set(()),
+            _extra_categories=(ToricGeometricLineBundleCohomologySpaces(base),),
+            _extra_construction_data=construction_data,
+        )
     else:
         total = Modules(base).biproduct(
             finite_indexed_family(
                 weights,
                 lambda weight: pieces[weight],
                 name="Nonzero toric cohomology weight pieces",
-            )
+            ),
+            extra_categories=(ToricGeometricLineBundleCohomologySpaces(base),),
+            extra_construction_data=construction_data,
         )
-    total._preamble_cohomology_scheme = scheme
-    total._preamble_cohomology_divisor = divisor
-    total._preamble_cohomological_degree = degree
-    total._preamble_cohomology_weight_support = weights
-    total._preamble_cohomology_weight_pieces = pieces
-    return refine(total, ToricGeometricLineBundleCohomologySpaces(base))
+    return total
 
 
 def _require_smooth_complete_rational_toric_realization(scheme):

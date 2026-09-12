@@ -51,7 +51,15 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
         free = Modules(ring).an_object()
         return self({0: free}, {})
 
-    def _call_(self, pieces, differentials, name=None):
+    def _call_(
+        self,
+        pieces,
+        differentials,
+        name=None,
+        *,
+        extra_categories=(),
+        extra_construction_data=None,
+    ):
         r"""Construct a finite-support cochain complex from its defining data.
 
         A dictionary of pieces is a declaration that every unlisted integer
@@ -71,6 +79,8 @@ class CochainComplexes(OwnedCategoryOverBaseRing):
             pieces,
             differentials,
             name=name,
+            extra_categories=extra_categories,
+            extra_construction_data=extra_construction_data,
         )
 
     def from_family(self, pieces, differentials, name=None):
@@ -251,6 +261,8 @@ class CochainComplexObject(GradedDirectSumModule):
         name=None,
         *,
         degree_index_set=None,
+        extra_categories=(),
+        extra_construction_data=None,
     ) -> None:
         integer_degrees = _own_ring(SageZZ)
         self._finite_support = isinstance(pieces, dict)
@@ -302,7 +314,8 @@ class CochainComplexObject(GradedDirectSumModule):
             piece,
             name=name or "Cochain complex",
             degree_index_set=degree_index_set,
-            extra_categories=(CochainComplexes(base_ring),),
+            extra_categories=(CochainComplexes(base_ring), *tuple(extra_categories)),
+            extra_construction_data=extra_construction_data,
         )
         self._zero_module = zero_module
         self._preamble_differential = CochainDifferential(self)
@@ -616,9 +629,23 @@ def cochain_homset(domain, codomain):
     return category.Mor(domain, codomain)
 
 
-def CochainComplex(base_ring, pieces, differentials, name=None):
+def CochainComplex(
+    base_ring,
+    pieces,
+    differentials,
+    name=None,
+    *,
+    extra_categories=(),
+    extra_construction_data=None,
+):
     r"""Notebook notation for ``CochainComplexes(base_ring)(pieces, differentials)``."""
-    return CochainComplexes(base_ring)(pieces, differentials, name=name)
+    return CochainComplexes(base_ring)(
+        pieces,
+        differentials,
+        name=name,
+        extra_categories=extra_categories,
+        extra_construction_data=extra_construction_data,
+    )
 
 
 def CochainComplexFromFamily(base_ring, pieces, differentials, name=None):

@@ -388,7 +388,13 @@ class Modules(OwnedCategoryOverBaseRing):
         def _categorical_tensor_product(self, left, right):
             return self.tensor_product((left, right))
 
-        def biproduct(self, factors):
+        def biproduct(
+            self,
+            factors,
+            *,
+            extra_categories=(),
+            extra_construction_data=None,
+        ):
             r"""Return $\bigoplus_{i \in I} M_i$ for an indexed family of modules.
 
             The biproduct is taken over the index set: its generating set is
@@ -400,6 +406,12 @@ class Modules(OwnedCategoryOverBaseRing):
             assert all(factor in self for factor in family), (
                 "a module biproduct requires modules over one ring"
             )
+            if extra_categories or extra_construction_data:
+                return _module_biproduct_with_data(
+                    family,
+                    extra_categories=extra_categories,
+                    extra_construction_data=extra_construction_data,
+                )
             return _module_biproduct(family)
 
         def _categorical_biproduct(self, left, right):
@@ -782,12 +794,26 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = point
             return NotImplemented
 
-        def _free_biproduct_over(self, labels, factors):
-            _ = (labels, factors)
+        def _free_biproduct_over(
+            self,
+            labels,
+            factors,
+            *,
+            extra_categories=(),
+            extra_construction_data=None,
+        ):
+            _ = (labels, factors, extra_categories, extra_construction_data)
             return NotImplemented
 
-        def _presented_biproduct_over(self, labels, factors):
-            _ = (labels, factors)
+        def _presented_biproduct_over(
+            self,
+            labels,
+            factors,
+            *,
+            extra_categories=(),
+            extra_construction_data=None,
+        ):
+            _ = (labels, factors, extra_categories, extra_construction_data)
             return NotImplemented
 
         def _presented_module_from_relation_rows(
@@ -2905,6 +2931,16 @@ class BiproductModules(OwnedCategoryOverBaseRing):
 @cached_function(key=lambda factors: (factors.index_set(), tuple(factors)))
 def _module_biproduct(factors):
     r"""Return $\bigoplus_{i \in I} M_i$ over the family's own index set."""
+    return _module_biproduct_with_data(factors)
+
+
+def _module_biproduct_with_data(
+    factors,
+    *,
+    extra_categories=(),
+    extra_construction_data=None,
+):
+    r"""Construct a represented biproduct with additional owned structure."""
     values = tuple(factors)
     assert values, "a biproduct is taken over a nonempty family of factors"
     ring = _owned_ring(values[0].base_ring())
@@ -2913,9 +2949,19 @@ def _module_biproduct(factors):
     )
 
     labels = _biproduct_label_set(factors)
-    result = values[0]._free_biproduct_over(labels, factors)
+    result = values[0]._free_biproduct_over(
+        labels,
+        factors,
+        extra_categories=extra_categories,
+        extra_construction_data=extra_construction_data,
+    )
     if result is NotImplemented:
-        result = values[0]._presented_biproduct_over(labels, factors)
+        result = values[0]._presented_biproduct_over(
+            labels,
+            factors,
+            extra_categories=extra_categories,
+            extra_construction_data=extra_construction_data,
+        )
     if result is NotImplemented:
         raise NotImplementedError("the represented module factors provide no biproduct realization")
     return result
