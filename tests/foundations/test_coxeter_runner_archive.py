@@ -25,6 +25,11 @@ ARCHIVE_RECONCILIATIONS = (
         "live_owner": "tests/lattices/test_coxeter_literature.py",
         "disposition": "reconciled-live-owner",
     },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/literature/tools/webpage_to_markdown.py",
+        "live_owner": "archives/preamble/tests/coxeter_tdd_specs/literature",
+        "disposition": "reconciled-live-owner",
+    },
 )
 
 
@@ -37,3 +42,18 @@ def test_repository_pytest_policy_replaces_the_custom_coxeter_runner() -> None:
     assert "--durations=0" in addopts
     assert "--junit-xml=tests/.report/junit.xml" in addopts
     assert "--report-log=tests/.report/run.jsonl" in addopts
+
+
+def test_vendored_coxeter_web_captures_retain_source_revision_metadata() -> None:
+    literature = Path("archives/preamble/tests/coxeter_tdd_specs/literature")
+    captures = tuple(sorted((literature / "wikipedia").glob("*.md"))) + tuple(
+        sorted((literature / "wikiwand").glob("*.md"))
+    )
+
+    assert captures
+    for capture in captures:
+        header = "\n".join(capture.read_text().splitlines()[:8])
+        assert "**Source**:" in header, capture
+        assert "**Retrieved**:" in header, capture
+        assert "**Citation Key**:" in header, capture
+        assert "**Revision**:" in header, capture
