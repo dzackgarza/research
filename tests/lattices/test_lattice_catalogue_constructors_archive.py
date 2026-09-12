@@ -8,6 +8,16 @@ built through the live owned lattice category and its orthogonal sums.
 
 from dzack_research.preamble.all import Lattices, ZZ
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/lattices.sage",
+    "live_owner": "src/dzack_research/preamble/categories/lattices.py",
+    "owner_overrides": {
+        "Lattices.namespace": "src/dzack_research/preamble/all.py",
+        "Lattices.install": "src/dzack_research/preamble/all.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_odd_and_even_unimodular_signature_constructors_keep_their_forms() -> None:
     odd = Lattices.IPQ(2, 1)
