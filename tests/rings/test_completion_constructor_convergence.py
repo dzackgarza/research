@@ -1,6 +1,13 @@
 r"""Every public adic-completion route uses the category-owned constructor."""
 
-from dzack_research.preamble.all import AdicCompletion, AdicCompletions, PolynomialRing, QQ
+from dzack_research.preamble.all import (
+    AdicCompletion,
+    AdicCompletions,
+    FormalPowerSeriesRings,
+    PolynomialRing,
+    PowerSeriesRing,
+    QQ,
+)
 
 
 def test_adic_completion_routes_share_one_owned_parent_and_maps() -> None:
@@ -36,3 +43,21 @@ def test_completion_precision_is_part_of_the_computational_constructor_key() -> 
     assert fifth is not eighth
     assert fifth.completion_source() is eighth.completion_source()
     assert fifth.ideal_of_definition() == eighth.ideal_of_definition()
+
+
+def test_power_series_notation_is_the_same_selected_completion() -> None:
+    polynomial = PolynomialRing(QQ, "t")
+    t = polynomial.algebra_generator("t")
+    defining = polynomial.ideal(t)
+
+    completion = polynomial.adic_completion(defining)
+    notation = PowerSeriesRing(QQ, "t")
+    declared = FormalPowerSeriesRings(QQ)("t")
+
+    assert completion is notation
+    assert completion is declared
+    assert completion in FormalPowerSeriesRings(QQ)
+    assert completion.base_ring() is QQ
+    assert completion.completion_source() is polynomial
+    assert completion.completion_map().domain() is polynomial
+    assert completion.completion_map().codomain() is completion
