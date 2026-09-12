@@ -576,6 +576,17 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
         r"""Return ``i^* O(d)`` for a represented projective closed immersion ``i``."""
         return ProjectiveSubschemeLineBundle(closed_subscheme, self)
 
+    def linearize(self, scheme_action_functor, character):
+        from dzack_research.preamble.categories.divisors.linearizations import (
+            ProjectiveLineBundleLinearization,
+        )
+
+        return ProjectiveLineBundleLinearization(
+            self,
+            scheme_action_functor,
+            character,
+        )
+
     def linear_system(self, sections=None):
         from dzack_research.preamble.categories.divisors.linear_systems import (
             ProjectiveLinearSystem,

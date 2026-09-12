@@ -1,0 +1,80 @@
+"""Character twists change projective section actions without changing the line bundle."""
+
+from dzack_research.preamble.all import C2ProjectiveLineLinearization, ProjectiveSpace, QQ
+
+
+def _linearizations():
+    line = ProjectiveSpace(1, QQ, names=("x", "y"))
+    bundle = line.O(1)
+    trivial = C2ProjectiveLineLinearization(bundle, 1)
+    sign = C2ProjectiveLineLinearization(bundle, -1)
+    return line, bundle, trivial, sign
+
+
+def test_two_character_twists_keep_same_bundle_but_swap_section_eigenspaces() -> None:
+    _line, bundle, trivial, sign = _linearizations()
+    group = trivial.acting_group()
+    generator = next(iter(group.group_generators()))
+    sections = bundle.global_sections()
+    ring = sections.homogeneous_coordinate_ring()
+    x = ring.algebra_generator("x")
+    y = ring.algebra_generator("y")
+    symmetric = sections.section_from_homogeneous_polynomial(x + y)
+    alternating = sections.section_from_homogeneous_polynomial(x - y)
+
+    assert trivial.line_bundle() is bundle
+    assert sign.line_bundle() is bundle
+    assert trivial.scheme_action_functor() is sign.scheme_action_functor()
+    assert trivial.character_value(generator) == 1
+    assert sign.character_value(generator) == -1
+    assert trivial.section_action_of(generator)(symmetric) == symmetric
+    assert trivial.section_action_of(generator)(alternating) == -alternating
+    assert sign.section_action_of(generator)(symmetric) == -symmetric
+    assert sign.section_action_of(generator)(alternating) == alternating
+    assert trivial.cocycle_holds(generator, generator)
+    assert sign.cocycle_holds(generator, generator)
+
+
+def test_fixed_point_fiber_evaluation_is_equivariant_and_detects_character_twist() -> None:
+    line, _bundle, trivial, sign = _linearizations()
+    point = line.point_morphism((1, 1))
+    group = trivial.acting_group()
+    generator = next(iter(group.group_generators()))
+    trivial_evaluation = trivial.fixed_point_fiber_evaluation(point)
+    sign_evaluation = sign.fixed_point_fiber_evaluation(point)
+    trivial_fiber = trivial_evaluation.codomain()
+    sign_fiber = sign_evaluation.codomain()
+    trivial_label = next(iter(trivial_fiber.module_generating_set()))
+    sign_label = next(iter(sign_fiber.module_generating_set()))
+    trivial_generator = trivial_fiber.module_generator(trivial_label)
+    sign_generator = sign_fiber.module_generator(sign_label)
+
+    assert trivial.point_is_fixed(point)
+    assert sign.point_is_fixed(point)
+    assert trivial_fiber.act(generator, trivial_generator) == trivial_generator
+    assert sign_fiber.act(generator, sign_generator) == -sign_generator
+    assert trivial_evaluation.parent().is_equivariant(trivial_evaluation) is True
+    assert sign_evaluation.parent().is_equivariant(sign_evaluation) is True
+
+
+def test_sign_eigensection_has_invariant_zero_divisor_and_isotypic_piece() -> None:
+    _line, bundle, trivial, _sign = _linearizations()
+    group = trivial.acting_group()
+    generator = next(iter(group.group_generators()))
+    sections = bundle.global_sections()
+    ring = sections.homogeneous_coordinate_ring()
+    x = ring.algebra_generator("x")
+    y = ring.algebra_generator("y")
+    alternating = sections.section_from_homogeneous_polynomial(x - y)
+    sign_character = lambda element: QQ.one() if element == group.one() else -QQ.one()
+    divisor = trivial.eigensection_divisor(alternating, sign_character)
+    decomposition = trivial.isotypic_decomposition()
+
+    assert divisor.inclusion().codomain() is trivial.projective_space()
+    assert trivial.is_eigensection_divisor(divisor)
+    assert trivial.is_eigensection(alternating, sign_character)
+    assert decomposition.nontrivial_components()
+    assert trivial.section_group_module().act(
+        generator,
+        trivial.section_group_module().equip_action_morphism()(alternating),
+    ) != trivial.section_group_module().equip_action_morphism()(alternating)
