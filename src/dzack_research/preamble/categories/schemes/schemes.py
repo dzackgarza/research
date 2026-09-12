@@ -5,7 +5,7 @@ from typing import Any, cast
 
 from sage.categories.category import Category
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.schemes.affine.affine_space import AffineSpace as _SageAffineSpace
@@ -1261,6 +1261,11 @@ class AffineSchemes(_SchemePropertyCategory):
         ring = self.base_ring()
         return AffineSpecFunctor(ring)(CommutativeAlgebras(ring).an_object())
 
+    def _call_(self, algebra):
+        r"""Construct ``Spec(A)`` over this category's represented scalar base."""
+        algebra = _own_ring(algebra)
+        return _affine_spectrum_from_owned_algebra(algebra, self.base_ring())
+
     class ParentMethods:
         def is_regular_at(self, point) -> bool:
             r"""Return whether ``O_{X,p}`` is a regular local ring."""
@@ -1906,6 +1911,14 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
 
         return AffineSpace(1, self.base_ring())
 
+    def _call_(self, dimension, names=None):
+        r"""Construct the selected affine space over this category's base."""
+        return _affine_space_from_owned_data(
+            self.base_ring(),
+            int(_engine_numeral(SageZZ, dimension)),
+            _normalized_space_names(names),
+        )
+
     def _repr_object_names(self):
         return f"affine spaces over {self.base_ring()}"
 
@@ -1944,6 +1957,14 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
         from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
 
         return ProjectiveSpace(1, self.base_ring())
+
+    def _call_(self, dimension, names=None):
+        r"""Construct the selected projective space over this category's base."""
+        return _projective_space_from_owned_data(
+            self.base_ring(),
+            int(_engine_numeral(SageZZ, dimension)),
+            _normalized_space_names(names),
+        )
 
     def _repr_object_names(self):
         return f"projective spaces over {self.base_ring()}"
@@ -2329,8 +2350,30 @@ def _fresh_affine_spectrum(algebra, base, *, extra_categories=()):
     )
 
 
+@cached_function
+def _affine_spectrum_from_owned_algebra(algebra, base):
+    r"""Private constructor for one selected affine spectrum over ``base``."""
+    cache_key = (id(algebra), id(base))
+    cached = _AFFINE_SPECTRA.get(cache_key)
+    if (
+        cached is not None
+        and cached.coordinate_algebra() is algebra
+        and cached.scheme_base_ring() is base
+    ):
+        return cached
+
+    scheme = _initialize_owned_affine_spectrum(
+        _SageSpec(_engine_ring(algebra), _engine_ring(base)),
+        algebra,
+        base,
+        is_base_scheme=algebra is base,
+    )
+    _AFFINE_SPECTRA[cache_key] = scheme
+    return scheme
+
+
 def Spec(ring_or_algebra, base_ring=None):
-    r"""Return the affine scheme ``Spec(A)`` over the represented scalar base.
+    r"""Return the category-owned affine scheme ``Spec(A)`` over its scalar base.
 
     If ``A`` is an owned commutative ``R``-algebra, the returned object lies in
     ``Schemes(R)`` and its structure morphism is induced contravariantly by
@@ -2359,23 +2402,7 @@ def Spec(ring_or_algebra, base_ring=None):
     else:
         base = _own_ring(base_ring)
 
-    cache_key = (id(algebra), id(base))
-    cached = _AFFINE_SPECTRA.get(cache_key)
-    if (
-        cached is not None
-        and cached.coordinate_algebra() is algebra
-        and cached.scheme_base_ring() is base
-    ):
-        return cached
-
-    scheme = _initialize_owned_affine_spectrum(
-        _SageSpec(_engine_ring(algebra), _engine_ring(base)),
-        algebra,
-        base,
-        is_base_scheme=algebra is base,
-    )
-    _AFFINE_SPECTRA[cache_key] = scheme
-    return scheme
+    return AffineSchemes(base)(algebra)
 
 
 def _selected_or_rebuilt_engine_morphism(pullback):
@@ -2754,10 +2781,15 @@ def affine_spec_morphism(algebra_morphism):
     return morphism
 
 
-def AffineSpace(dimension, base_ring, names=None):
-    r"""Return the owned affine space ``A^n_R``."""
-    base = _own_ring(base_ring)
-    engine_dimension = int(_engine_numeral(SageZZ, dimension))
+def _normalized_space_names(names):
+    if names is None or isinstance(names, str):
+        return names
+    return tuple(names)
+
+
+@cached_function
+def _affine_space_from_owned_data(base, engine_dimension, names):
+    r"""Private constructor for the selected affine space."""
     if names is None:
         scheme = _SageAffineSpace(engine_dimension, _engine_ring(base))
     else:
@@ -2814,10 +2846,14 @@ def AffineSpace(dimension, base_ring, names=None):
     return scheme
 
 
-def ProjectiveSpace(dimension, base_ring, names=None):
-    r"""Return the owned projective space ``P^n_R``."""
-    base = _own_ring(base_ring)
-    engine_dimension = int(_engine_numeral(SageZZ, dimension))
+def AffineSpace(dimension, base_ring, names=None):
+    r"""Return the category-owned affine space ``A^n_R``."""
+    return AffineSpaces(_own_ring(base_ring))(dimension, names=names)
+
+
+@cached_function
+def _projective_space_from_owned_data(base, engine_dimension, names):
+    r"""Private constructor for the selected projective space."""
     if names is None:
         scheme = _SageProjectiveSpace(engine_dimension, _engine_ring(base))
     else:
@@ -2828,6 +2864,11 @@ def ProjectiveSpace(dimension, base_ring, names=None):
     if _normal_placement(base):
         categories.append(NormalSchemes(base))
     return refine_scheme(scheme, base, categories)
+
+
+def ProjectiveSpace(dimension, base_ring, names=None):
+    r"""Return the category-owned projective space ``P^n_R``."""
+    return ProjectiveSpaces(_own_ring(base_ring))(dimension, names=names)
 
 
 def _product_projection(product, factor, coordinates):
