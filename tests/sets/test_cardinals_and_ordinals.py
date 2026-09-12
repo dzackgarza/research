@@ -7,7 +7,19 @@ from dzack_research.preamble.all import (
     cardinal,
     continuum,
     omega,
+
 )
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/test_cardinalities.sage",
+    "live_owner": "tests/sets/test_cardinals_and_ordinals.py",
+    "owner_overrides": {
+        "test_cardinality_functor_preserves_set_coproducts_and_products": "tests/sets/test_cardinality_construction_comparisons.py",
+        "test_power_set_of_naturals_and_real_line_have_the_continuum": "tests/sets/test_cardinality_construction_comparisons.py",
+        "test_standard_mathematical_objects_have_their_exact_cardinals": "tests/sets/test_standard_cardinals_archive.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
 
 
 def test_initial_ordinals_have_the_corresponding_aleph_cardinals() -> None:
