@@ -1723,6 +1723,86 @@ class FreeResolutionMorphism:
             return selected
         return module_homset(self.domain().term(degree), self.codomain().term(degree)).zero()
 
+    def chain_homotopy_to(self, other):
+        r"""Return a chain homotopy from this lift to ``other``.
+
+        Two chain maps between free resolutions lifting the same module map are
+        homotopic.  The homotopy is constructed degree by degree using exactness
+        of the target resolution, exactly as :meth:`FreeResolution.lift_morphism`
+        constructs a lift by projectivity of the free source terms.
+        """
+        if other.domain() is not self.domain() or other.codomain() is not self.codomain():
+            raise ValueError("chain homotopy compares maps between the same resolutions")
+        if other.module_morphism() is not self.module_morphism():
+            raise ValueError("chain homotopy here compares lifts of one selected module morphism")
+        source = self.domain()
+        target = self.codomain()
+        components = {}
+        for degree in range(source.length() + 1):
+            source_term = source.term(degree)
+            target_next = target.term(degree + 1)
+            target_differential = target.differential(degree + 1)
+
+            def residual(generator, degree=degree):
+                value = self.component(degree)(generator) - other.component(degree)(generator)
+                if degree > 0:
+                    previous_homotopy = components[degree - 1]
+                    value -= previous_homotopy(source.differential(degree)(generator))
+                return value
+
+            components[degree] = module_homset(source_term, target_next)(
+                {
+                    label: target_differential.preimage(
+                        residual(source_term.module_generator(label))
+                    )
+                    for label in source_term.module_generating_set()
+                }
+            )
+        return FreeResolutionHomotopy(self, other, components)
+
+
+@dataclass(frozen=True)
+class FreeResolutionHomotopy:
+    r"""A selected homotopy ``h`` with ``f-g = d h + h d``."""
+
+    _source: FreeResolutionMorphism
+    _target: FreeResolutionMorphism
+    _components: dict
+
+    def __post_init__(self):
+        source_resolution = self._source.domain()
+        target_resolution = self._source.codomain()
+        for degree in range(source_resolution.length() + 1):
+            source_term = source_resolution.term(degree)
+            for label in source_term.module_generating_set():
+                generator = source_term.module_generator(label)
+                right = target_resolution.differential(degree + 1)(
+                    self.component(degree)(generator)
+                )
+                if degree > 0:
+                    right += self.component(degree - 1)(
+                        source_resolution.differential(degree)(generator)
+                    )
+                left = self._source.component(degree)(generator) - self._target.component(degree)(generator)
+                if left != right:
+                    raise ValueError(f"the selected maps are not homotopic in degree {degree}")
+
+    def source(self):
+        return self._source
+
+    def target(self):
+        return self._target
+
+    def component(self, degree):
+        degree = int(degree)
+        selected = self._components.get(degree)
+        if selected is not None:
+            return selected
+        return module_homset(
+            self.source().domain().term(degree),
+            self.source().codomain().term(degree + 1),
+        ).zero()
+
 
 def free_resolution(module, steps=None):
     return module.free_resolution(steps)

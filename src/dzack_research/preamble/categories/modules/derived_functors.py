@@ -100,7 +100,7 @@ def Ext(degree, module, other):
     return Cohomology(dualized, degree)
 
 
-def TorMap(degree, morphism, other, *, argument=1):
+def TorMap(degree, morphism, other, *, argument=1, lift=None):
     r"""Return the map on ``Tor_degree`` induced by ``morphism`` in one argument.
 
     With ``argument=1`` this is the existing covariance in the resolved
@@ -119,12 +119,22 @@ def TorMap(degree, morphism, other, *, argument=1):
             steps = degree + 1
             source_resolution = free_resolution(morphism.domain(), steps)
             target_resolution = free_resolution(morphism.codomain(), steps)
-            lifted = source_resolution.lift_morphism(morphism, target_resolution)
+            lifted = (
+                source_resolution.lift_morphism(morphism, target_resolution)
+                if lift is None
+                else lift
+            )
+            if lifted.domain() is not source_resolution or lifted.codomain() is not target_resolution:
+                raise ValueError("the selected Tor lift uses different resolutions")
+            if lifted.module_morphism() is not morphism:
+                raise ValueError("the selected Tor lift lies over a different module morphism")
             tensor = TensorByFunctor(other)
             component = tensor(lifted.component(degree))
             source = Tor(degree, morphism.domain(), other)
             target = Tor(degree, morphism.codomain(), other)
         case 2:
+            if lift is not None:
+                raise ValueError("an explicit resolution lift applies only to Tor's first argument")
             steps = degree + 1
             resolution = free_resolution(other, steps)
             term = resolution.term(degree)
@@ -148,7 +158,7 @@ def TorMap(degree, morphism, other, *, argument=1):
     )
 
 
-def ExtMap(degree, morphism, other, *, argument=1):
+def ExtMap(degree, morphism, other, *, argument=1, lift=None):
     r"""Return the map on ``Ext^degree`` induced by ``morphism`` in one argument.
 
     The first variable is contravariant and the second is covariant.  Both
@@ -163,7 +173,15 @@ def ExtMap(degree, morphism, other, *, argument=1):
             steps = degree + 1
             source_resolution = free_resolution(morphism.domain(), steps)
             target_resolution = free_resolution(morphism.codomain(), steps)
-            lifted = source_resolution.lift_morphism(morphism, target_resolution)
+            lifted = (
+                source_resolution.lift_morphism(morphism, target_resolution)
+                if lift is None
+                else lift
+            )
+            if lifted.domain() is not source_resolution or lifted.codomain() is not target_resolution:
+                raise ValueError("the selected Ext lift uses different resolutions")
+            if lifted.module_morphism() is not morphism:
+                raise ValueError("the selected Ext lift lies over a different module morphism")
             identity = module_homset(other, other).identity()
             source_internal = InternalHom(target_resolution.term(degree), other)
             target_internal = InternalHom(source_resolution.term(degree), other)
@@ -176,6 +194,8 @@ def ExtMap(degree, morphism, other, *, argument=1):
             source = Ext(degree, morphism.codomain(), other)
             target = Ext(degree, morphism.domain(), other)
         case 2:
+            if lift is not None:
+                raise ValueError("an explicit resolution lift applies only to Ext's first argument")
             steps = degree + 1
             resolution = free_resolution(other, steps)
             term = resolution.term(degree)
