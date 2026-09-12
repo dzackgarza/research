@@ -3890,6 +3890,58 @@ With those named, hygiene is: every definition is membership in a named $R$-subm
 
 **Preferred:** state the scaffolding once; then every bilinear/quadratic notion is a named $R$-submodule / kernel / image with its universal property, every implication is a Lemma/Proposition about containments of those named subobjects or about $\gamma^*$ / $2_*$ between named objects with quantified hypotheses and proof, and element formulas appear only as "on $U$-points $x\colon R\to M$ this is $b(x,y)=b(y,x)$."
 
+### `PR-56`: "$N\subseteq M$ be a submodule" / "$M/N$" for $i\colon N\hookrightarrow M$ and $\operatorname{coker}(i)$ — subobjects as monos and quotients as cokernels
+
+"$N\subseteq M$" is the $\mathbf{Set}$-shadow of a mono $i\colon
+N\hookrightarrow M$ ($U(i)\colon U(N)\hookrightarrow U(M)$ injective for
+$U\colon\mathbf{Mod}_R\to\mathbf{Set}$), and "$M/N$" the shadow of its
+cokernel $M\twoheadrightarrow\operatorname{coker}(i)$ (the set of cosets
+$[x]=x+N$). The elementwise induced form
+"$\bar b([x],[y]):=b(x,y)$ well-defined iff $b(N,M)=0$" re-spells the
+universal property of the cokernel on representatives $x,y\in U(M)$.
+
+Stated with $i$ and $\operatorname{coker}(i)$ the notion is one diagram
+in any abelian $\mathcal C$ (stably any stable $\mathcal C$) — no $U$,
+no representatives — and $N$ need not be a subset: a subobject is an
+equivalence class of monos, not $N\subseteq U(M)$ ($\mathrm{QCoh}(X)$,
+$\mathbf{LMod}_R$ stably, $\mathbf{Sp}$-modules, sheaves have no
+underlying set $M/N$).
+
+Concrete standards — name the mono and its cokernel, then the induced
+form is the unique factorization through $\pi\otimes\pi$:
+
+* **Scaffolding (once, fenced):** in abelian $\mathcal C$, a subobject of
+  $M$ is a mono $i\colon N\hookrightarrow M$ up to iso over $M$; its
+  **quotient** is $\operatorname{coker}(i)\colon M\twoheadrightarrow
+  \operatorname{coker}(i)$ with universal property: $f\colon M\to T$
+  factors uniquely through $\operatorname{coker}(i)$ iff $f\circ i=0$.
+
+* **Forms on quotients:** for $b\colon M\otimes M\to W$ symmetric (or
+  any $b$), and $i\colon N\hookrightarrow M$, the **restriction** is
+  $i^*b:=b\circ(i\otimes i)\colon N\otimes N\to W$; $i$ is **isotropic**
+  ($N\subseteq N^{\perp}$) iff $b\circ(i\otimes\mathrm{id}_M)=0\colon
+  N\otimes M\to W$ (i.e. $i^*b$ and the cross terms vanish as $b\circ
+  (i\otimes\mathrm{id})=0$). Then $b$ **induces** $\bar b\colon
+  \operatorname{coker}(i)\otimes\operatorname{coker}(i)\to W$ iff
+  $i^*b=0$ in that sense, and $\bar b$ is the unique $R$-linear with
+  $\bar b\circ(\pi\otimes\pi)=b$ for $\pi:=\operatorname{coker}(i)$. No
+  $[x]$ to choose, no well-definedness to check.
+
+  Stably $\operatorname{cofib}(i)$ for $i\colon N\to M$ in
+  $\mathbf{LMod}_R$.
+
+**Banned:** "Let $b$ be symmetric on $M$ and let $N\subseteq M$ be a
+submodule. … forms on quotients $M/N$ … $\bar b([x],[y])=b(x,y)$."
+
+**Preferred:** "Let $b\colon M\otimes M\to W$ be symmetric and let
+$i\colon N\hookrightarrow M$ be a mono (a subobject). Put
+$\pi\colon M\twoheadrightarrow\operatorname{coker}(i)$ for the quotient.
+Then $b$ induces $\bar b\colon\operatorname{coker}(i)\otimes
+\operatorname{coker}(i)\to W$ iff $i^*b=0$ (i.e. $b\circ(i\otimes
+\mathrm{id}_M)=0$), uniquely with $\bar b\circ(\pi\otimes\pi)=b$."
+Then, only after and only when $U$ exists: "On $U$-points this is
+$\bar b([x],[y])=b(x,y)$ for $[x]=\pi(x)$."
+
 ### `PR-48`: Mixing a Lemma / Proposition / Remark about $\operatorname{Alt}\Rightarrow\operatorname{Skew}$ and $2$-obstructions into the definition block
 
 "Alternating $\Rightarrow$ skew" is not a definition and not a comment —
@@ -4337,6 +4389,17 @@ building block ($b^{\sharp}$, $\ker$, $\operatorname{Val}$) that later
 theory and every non-concrete $\mathcal C$ would reuse, and trades
 applicability tomorrow for the minimal sentence that lets this page
 proceed — the opposite of long-term hygiene.
+
+**21. Submodules and set quotients $N\subseteq M$, $M/N$ vs. monos and
+cokernels $i\colon N\hookrightarrow M$, $\operatorname{coker}(i)$.** "$N\subseteq
+M$ be a submodule" is the $U$-shadow of a mono, "$M/N$" of its cokernel;
+the elementwise $\bar b([x],[y])=b(x,y)$ re-spells the universal property
+of the cokernel on representatives (PR-56). Stated with $i$ and
+$\operatorname{coker}(i)$, the induced $W$-valued form $\bar b$ on the
+quotient is the unique factorization of $b$ through
+$\pi\otimes\pi$ for $\pi:=\operatorname{coker}(i)$ when $i^*b=0$ —
+immediate in $\mathrm{QCoh}(X)$, $\mathbf{LMod}_R$, $\mathbf{Sp}$, sheaves,
+where $N\subseteq M$ has no meaning as a subset.
 All three are instances of the timeless weasel mass-noun problem:
 "information," "data," "setting," "condition," … with no fixed referent,
 context-dependent truth where the context is never stated, and no named
