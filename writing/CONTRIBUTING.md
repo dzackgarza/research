@@ -3392,6 +3392,64 @@ $\operatorname{Hom}_R(\Gamma^2_R(M),W)\xrightarrow{\gamma^*}
 \operatorname{Hom}_R(M\otimes M,W)$)." Then, only after and only for
 discrete $W$ with $U$: "On elements this is $b(x,x)\in2W$."
 
+### `PR-45`: Carrying $b(x,x)\in2W$ on every use instead of naming the governing $R$-submodule $\operatorname{Val}(b)\subseteq W$ — local thinking for a global object
+
+The element condition is the unpacked shadow of one global $R$-submodule
+of $W$. Carrying the shadow on every occurrence — "for every $x$,
+$b(x,x)\in2W$," "check $b(x,x)\in2W$," etc. — never names the object that
+governs the condition, so every argument must drop to $U(M)$ and re-check
+at a point $x$. That re-expansion is where hand-waving enters: is $x$ in
+$M$, in $U(M)$, in $M\otimes_R\kappa(p)$? Is $2W$ the image
+$2\colon W\to W$ or the subset? Does it vary functorially in $W$? With
+no $\operatorname{Val}(b)$ as an $R$-submodule there is nothing to make
+precise, and the quantifier "for every $x$" can slide, exactly as "a
+conclusion from either image" slid.
+
+Naming the object once is the scaffolding that lets a long-form textbook
+not drop to first principles cognitively: the abstraction is introduced,
+internalized, and then carries the load — like a scheme for its points,
+a section of the tangent bundle for a "continuously varying choice," a
+groupoid for a group.
+
+Concrete standard — name the value / scale submodule once, fenced, as a
+categorical image, then evenness and all later uses are containments of
+$R$-submodules, not pointwise checks:
+
+* **Scaffolding (once, fenced):**
+  "::: {#def-val} **Definition.** Let $R$ be commutative and $b\colon
+  M\otimes_RM\to W$ $W$-valued bilinear. Put
+  $\operatorname{Val}(b):=\langle b(x,x)\mid x\in M\rangle_R\subseteq W$
+  the $R$-submodule spanned by the diagonal — equivalently the image
+  $R$-submodule of $b\circ\Delta\colon M\to W$ for
+  $\Delta\colon M\to M\otimes M$, i.e. the image of
+  $\operatorname{Hom}_R(\Gamma^2_R(M),W)\xrightarrow{\gamma^*}W$ under
+  evaluation. It is an $R$-submodule of $W$, functorial in $W$ via
+  $\operatorname{Hom}$. :::" Stably the image $R$-submodule of
+  $b\colon M\otimes^L_RM\to W$ in $\mathbf{LMod}_R$.
+
+  Similarly $\mathfrak s(b)$, $N(b)$, $\operatorname{scale}(b)$ per
+  flavour; the name is the point — one governing object.
+
+* **From then on:** "$b$ is **even** if $\operatorname{Val}(b)\subseteq
+  2W$ as $R$-submodules of $W$" (for $2W:=\operatorname{im}(2\colon
+  W\to W)$). No $x$, no "for every $x$," no "$\in$." Functoriality
+  $\operatorname{Val}(f^*b)\subseteq\operatorname{Val}(b)$,
+  $\operatorname{Val}(b\perp b')$, containments, etc., are then statements
+  about $R$-submodules, not re-expansions.
+
+This is the global (scheme / Hom from $\Gamma^2$ / $\operatorname{Val}$)
+versus local (set of points $x\in U(M)$) move: collect all points once
+as the object, then work with the object — 50+ years standard since
+Grothendieck.
+
+**Banned:** " $b$ is *even* if $b(x,x)\in2W$ for every $x$" as the
+recurring definition and every later "check $b(x,x)\in2W$ for every $x$."
+
+**Preferred:** define $\operatorname{Val}(b)\subseteq W$ once via
+{#def-val}; then "$b$ is **even** if $\operatorname{Val}(b)\subseteq2W$."
+Never carry $b(x,x)\in2W$ on every use once $\operatorname{Val}(b)$ is
+available — use the submodule.
+
 ### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
 
 Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
@@ -3669,4 +3727,6 @@ $b\circ\Delta=0$ / lift through $\Gamma^2_R(M)$, with element formulas
 only as the evaluation on $x\otimes y\colon R\to M\otimes M$ when $U$
 exists. "$b$ is even if $b(x,x)\in2W$" collapses the $W$-parameter
 abstraction just built for $W$-valued forms to $U(W)$ and "$\in2W$"
-(PR-44); even is the lift through $\Gamma^2_R(M)$.
+(PR-44); even is the lift through $\Gamma^2_R(M)$, and carrying
+$b(x,x)\in2W$ everywhere instead of naming $\operatorname{Val}(b)\subseteq
+W$ once is local thinking for a global object (PR-45).
