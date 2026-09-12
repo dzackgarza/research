@@ -1,6 +1,6 @@
 """Cartier divisor groups."""
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 
 from dzack_research.preamble.categories.divisors.divisor_groups import _module_in_role
 from dzack_research.preamble.categories.modules.pure.modules import FramedModules

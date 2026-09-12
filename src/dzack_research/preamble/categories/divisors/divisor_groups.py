@@ -2,7 +2,7 @@
 
 from collections.abc import Mapping
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 

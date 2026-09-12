@@ -1,6 +1,6 @@
 r"""Geometric cochain complexes and comparison-owned cohomology constructions."""
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.groups.free_group import FreeGroup
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ

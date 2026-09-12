@@ -1,6 +1,6 @@
 """Weil divisor groups."""
 
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 
 from dzack_research.preamble.categories.divisors.divisor_groups import (
     DivisorGroups,

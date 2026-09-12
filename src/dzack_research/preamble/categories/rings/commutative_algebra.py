@@ -9,7 +9,7 @@ from sage.all import (
 from sage.all import (
     Zp as _SageZp,
 )
-from sage.categories.category import Category
+from dzack_research.preamble.owned_category_bases import Category
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity

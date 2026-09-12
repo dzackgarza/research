@@ -1,6 +1,7 @@
 r"""Archive reconciliation for the five divisor-group role categories."""
 
 from dzack_research.preamble.all import (
+    Cat,
     ZZ,
     CartierDivisorGroup,
     CartierDivisorGroups,
@@ -63,6 +64,15 @@ def test_divisor_roles_preserve_the_archived_module_distinctions() -> None:
     assert cartier in CartierDivisorGroups()
     assert picard in PicardGroups()
     assert classes in ClassGroups()
+    for category in (
+        DivisorGroups(),
+        WeilDivisorGroups(),
+        CartierDivisorGroups(),
+        PicardGroups(),
+        ClassGroups(),
+    ):
+        assert category in Cat()
+        assert category.category() is Cat()
     assert divisors.module_generating_set() == free.module_generating_set()
     assert weil.module_generating_set() == free.module_generating_set()
     assert cartier.module_generating_set() == free.module_generating_set()

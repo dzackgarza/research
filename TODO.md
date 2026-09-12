@@ -370,34 +370,13 @@ restart of the module/algebra/action constructions.
 
 ### Constructor and ownership convergence
 
-- [x] **`category-order`**. **Needs:** none.
-  Integrate a construction-order-independent owned category ordering across
-  the actual session graph.
-  **Owners:** `owned_category.py`, `owned_category_bases.py`,
-  `refine.py`, `categories/lattices.py::RootLattices`,
-  `categories/schemes/ringed_spaces.py`, and `all.py`.
-  **Current boundary:** `all.py` still realizes exported categories over
-  `ZZ` in a fixed order; that mechanism does not cover every parameterized,
-  unexported, Hom, End, Aut, join, or axiom category.
-  **Decision:** establish the class-ordering contract at the common owner and
-  cover every category participating in it. Reuse a still-applicable
-  implementation from repository history only after reconciling it with the
-  current tree; do not merge a historical branch wholesale.
-  **Specimens:** construct affine opens, matrix Homs, lattice ranks, the
-  discriminant group of `A2`, and an isotropic overlattice in different
-  orders over the relevant bases.
-  **Acceptance:** the construction protocol explains the same category and
-  Hom behavior without enumerating a growing list of startup examples.
-  Source integration comes before the terminal-T construction-order executions.
-
-- [ ] **`category-boundaries`**. **Needs:** `category-order`.
+- [ ] **`category-boundaries`**. **Needs:** none.
   Complete the remaining owned category, Hom, and constructor boundaries.
   **Owners:** the common owned-category runtime, parameterized category bases,
   `rings/ring_foundation.py`, and each surviving mathematical category.
-  **Current starting point:** `AdicCompletions` still directly uses Sage's
-  runtime `Category` base. `RingedSpaces`, `LocallyRingedSpaces`, and the
-  profinite/absolute-Galois hierarchy already use the owned category graph;
-  continue the surviving direct-Sage category scan from the remaining owners.
+  **Current remaining boundary:** the ordinary ring/divisor/topological role
+  categories now use the owned runtime-category base. Finish the mixed abstract
+  category/Hom constructions that still name Sage's raw `Category` directly.
   Runtime inheritance alone does not establish a forbidden mathematical edge.
   **Deliver:** owned semantic supercategories, owned parameter normalization,
   and owned `Hom`, `End`, `Aut`, joins and property refinements throughout

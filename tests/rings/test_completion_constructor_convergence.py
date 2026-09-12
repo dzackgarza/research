@@ -1,6 +1,7 @@
 r"""Every public adic-completion route uses the category-owned constructor."""
 
 from dzack_research.preamble.all import (
+    Cat,
     QQ,
     ZZ,
     AdicCompletion,
@@ -18,6 +19,8 @@ def test_adic_completion_routes_share_one_owned_parent_and_maps() -> None:
     y = ring.algebra_generator("y")
     ideal = ring.ideal(x, y)
     category = AdicCompletions()
+    assert category in Cat()
+    assert category.category() is Cat()
 
     declared = category(ring, ideal, precision=7)
     notation = AdicCompletion(ring, ideal, precision=7)

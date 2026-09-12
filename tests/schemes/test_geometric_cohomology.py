@@ -1,6 +1,7 @@
 r"""H1 geometric complexes for supported toric line-bundle cohomology."""
 
 from dzack_research.preamble.all import (
+    Cat,
     QQ,
     ZZ,
     BasedFreeModule,
@@ -115,6 +116,8 @@ def test_projective_plane_has_a_pointed_trivial_fundamental_group() -> None:
     fundamental = plane.fundamental_group(cone)
 
     assert fundamental in ToricFundamentalGroups()
+    assert ToricFundamentalGroups() in Cat()
+    assert ToricFundamentalGroups().category() is Cat()
     assert fundamental.topological_scheme() is plane
     assert fundamental.base_point_cone() is cone
     assert fundamental.group_generators().cardinality() == 0
