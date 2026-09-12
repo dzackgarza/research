@@ -1,6 +1,7 @@
 r"""H1 geometric complexes for supported toric line-bundle cohomology."""
 
 from dzack_research.preamble.all import (
+    NN,
     Cat,
     QQ,
     ZZ,
@@ -140,3 +141,18 @@ def test_hirzebruch_zero_has_hodge_number_h11_two() -> None:
     surface = fans.hirzebruch_surface_fan(0).toric_variety(QQ)
 
     assert surface.hodge_structure().hodge_number(1, 1) == 2
+
+
+def test_toric_hodge_degree_family_has_owned_bidegrees_and_values() -> None:
+    plane = _projective_plane()
+    hodge = plane.hodge_structure()
+    degree_two = hodge.degree_hodge_numbers(2)
+
+    assert degree_two.cardinality() == 3
+    assert all(value in NN for value in degree_two)
+    assert tuple(
+        tuple(int(component) for component in bidegree)
+        for bidegree in degree_two.index_set()
+    ) == ((0, 2), (1, 1), (2, 0))
+    assert tuple(degree_two) == (NN(0), NN(1), NN(0))
+    assert degree_two[degree_two.index_set()[1]] == NN(1)

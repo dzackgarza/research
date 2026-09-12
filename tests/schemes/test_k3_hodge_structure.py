@@ -1,6 +1,6 @@
 """The quartic K3 Hodge structure is attached to adjunction and the K3 lattice."""
 
-from dzack_research.preamble.all import ProjectiveCompleteIntersection, ProjectiveSpace, QQ
+from dzack_research.preamble.all import NN, ProjectiveCompleteIntersection, ProjectiveSpace, QQ
 
 
 def _quartic():
@@ -22,7 +22,18 @@ def test_quartic_k3_hodge_numbers_have_off_diagonal_holomorphic_two_forms() -> N
     assert hodge.hodge_number(0, 2) == 1
     assert hodge.hodge_number(1, 1) == 20
     assert hodge.middle_betti_number() == 22
-    assert hodge.degree_hodge_numbers(2) == ((0, 2, 1), (1, 1, 20), (2, 0, 1))
+
+    degree_two = hodge.degree_hodge_numbers(2)
+    assert degree_two.cardinality() == 3
+    bidegrees = tuple(degree_two.index_set())
+    assert tuple(tuple(int(component) for component in bidegree) for bidegree in bidegrees) == (
+        (0, 2),
+        (1, 1),
+        (2, 0),
+    )
+    assert tuple(degree_two) == (NN(1), NN(20), NN(1))
+    assert all(value in NN for value in degree_two)
+    assert sum(int(value) for value in degree_two) == int(hodge.integral_cohomology(2).module_rank())
 
 
 def test_quartic_hodge_polarization_is_the_integral_hyperplane_class() -> None:

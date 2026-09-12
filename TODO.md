@@ -924,12 +924,8 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   Extend this inspection to every surviving public family under the constructor
   scope above; the target list supplies traversal starting points, not exceptions
   for unlisted mathematics (`OWN-04`).
-  **First concrete repair boundary:** inspect the geometric cohomology outputs
-  and `ToricHodgeData.degree_hodge_numbers` alongside the toric item. That method
-  currently constructs tuple-valued degree data with Python integer values.
-  Express the mathematical indexing and values through the existing owned
-  family/scalar owners; preserve its actual grading and source cohomology.
-  Also follow a cohomology representative through inclusion and arithmetic, and
+  **Remaining concrete repair boundary:** follow a cohomology representative
+  through inclusion and arithmetic, and
   a localized module element through its scalar action. Correctness of an outer
   module or family does not establish ownership of these evaluated results.
   **Integration decision:** raising belongs inside the selected adapter and

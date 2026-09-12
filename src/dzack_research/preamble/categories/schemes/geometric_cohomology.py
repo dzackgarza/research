@@ -45,6 +45,7 @@ from dzack_research.preamble.categories.schemes.toric.fans import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
+from dzack_research.preamble.categories.sets.set_categories import NN, cartesian_product_of
 from dzack_research.preamble.refine import refine
 
 
@@ -389,6 +390,30 @@ class ToricFundamentalGroups(Category):
             return "complex analytic realization under the selected QQ-to-CC embedding"
 
 
+def _degree_hodge_number_family(hodge_data, degree, p_values, q_bound):
+    r"""Return ``(h^{p,q})_{p+q=degree}`` as an owned indexed family.
+
+    The index is a finite owned subset of ``NN x NN`` and every value is a
+    point of ``NN``.  Thus the grading pair and the Hodge number both remain
+    mathematical set elements rather than Python tuple/integer payloads.
+    """
+    bidegrees = cartesian_product_of((NN, NN))
+    labels = finite_ordered_set(
+        tuple(
+            bidegrees((NN(p), NN(degree - p)))
+            for p in p_values
+            if 0 <= degree - p <= q_bound
+        )
+    )
+    return finite_indexed_family(
+        labels,
+        lambda bidegree: NN(
+            hodge_data.hodge_number(int(bidegree[0]), int(bidegree[1]))
+        ),
+        name=f"Hodge numbers in degree {degree}",
+    )
+
+
 class ToricHodgeData(SageObject):
     r"""Pure Hodge numbers tied to the live integral cohomology of one toric realization."""
 
@@ -409,21 +434,16 @@ class ToricHodgeData(SageObject):
         p = int(p)
         q = int(q)
         dimension = int(self.scheme().dimension())
-        if p < 0 or q < 0 or p > dimension or q > dimension:
-            return 0
-        if p != q:
-            return 0
-        return int(self.integral_cohomology(2 * p).module_rank())
+        if p < 0 or q < 0 or p > dimension or q > dimension or p != q:
+            return NN(0)
+        return NN(self.integral_cohomology(2 * p).module_rank())
 
     def degree_hodge_numbers(self, degree):
         degree = int(degree)
-        if degree < 0 or degree > 2 * int(self.scheme().dimension()):
+        dimension = int(self.scheme().dimension())
+        if degree < 0 or degree > 2 * dimension:
             raise ValueError("Hodge degree lies between zero and twice the complex dimension")
-        return tuple(
-            (p, degree - p, self.hodge_number(p, degree - p))
-            for p in range(degree + 1)
-            if 0 <= degree - p <= int(self.scheme().dimension())
-        )
+        return _degree_hodge_number_family(self, degree, range(degree + 1), dimension)
 
     def _repr_(self):
         return f"Pure toric Hodge data of {self.scheme()}"
@@ -823,26 +843,22 @@ class QuarticK3HodgeData(SageObject):
         p = int(p)
         q = int(q)
         if p < 0 or q < 0 or p > 2 or q > 2:
-            return 0
+            return NN(0)
         if (p, q) == (0, 0) or (p, q) == (2, 2):
-            return 1
+            return NN(1)
         if p + q != 2:
-            return 0
+            return NN(0)
         holomorphic = int(self.holomorphic_two_form_space().dimension())
         if (p, q) in ((2, 0), (0, 2)):
-            return holomorphic
+            return NN(holomorphic)
         middle_rank = int(self.integral_cohomology(2).module_rank())
-        return middle_rank - 2 * holomorphic
+        return NN(middle_rank - 2 * holomorphic)
 
     def degree_hodge_numbers(self, degree):
         degree = int(degree)
         if degree < 0 or degree > 4:
             raise ValueError("a K3 surface has Hodge degrees zero through four")
-        return tuple(
-            (p, degree - p, self.hodge_number(p, degree - p))
-            for p in range(3)
-            if 0 <= degree - p <= 2
-        )
+        return _degree_hodge_number_family(self, degree, range(3), 2)
 
     def middle_betti_number(self):
         return int(self.integral_cohomology(2).module_rank())
