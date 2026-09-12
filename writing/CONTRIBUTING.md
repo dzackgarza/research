@@ -3512,6 +3512,66 @@ $\mathbf{Bun}_X$, natural transformation $\eta\colon F\Rightarrow G$);
 then, only after and only when $U$ exists: "On $U$-points this is for
 every $x$, $b(x,x)\in2W$ / $b_x$ / $f^*b(x,y)=b(fx,fy)$."
 
+### `PR-47`: Element quantifiers $\forall x\in M$ in the *definition* are anathema to generalization — $b\circ\tau=b$ works in every symmetric monoidal $\mathcal C$, $b(x,y)=b(y,x)$ only in $\mathbf{Set}$-concrete $\mathcal C$
+
+"$\forall x\in M$, $b(x,y)=b(y,x)$ / $b(x,x)=0$ / $q(rx)=r^2q(x)$ /
+$b(x,x)\in2W$" presupposes a concretization
+$U\colon\mathcal C\to\mathbf{Set}$ with points $x\colon1\to M$
+($x\in U(M)$) and the definition *is* that concretization. There is then
+nothing to interpret when $U$ does not exist — $\mathrm{QCoh}(X)$ has no
+underlying set of global points, $\mathbf{Sp}$ has no elements $x$, a
+stack / $\infty$-category / sheaf has $U$-points only over a test
+object — so the notion must be re-defined separately for
+$\mathcal O_X\text{-}\mathbf{Mod}$, local systems, $\mathbf{Sp}$,
+$\mathbf{Grpd}$, $\infty\text{-}\mathbf{Cat}$, $\mathbf{Sch}_{/S}$, and
+functoriality / base change proved anew each time.
+
+The diagram $b\colon M\otimes M\to W$ with $b\circ\tau=b$ /
+$b\circ\tau=-b$ / $b\circ\Delta=0$ / lift through $\Gamma^2_R(M)$ names
+no $x$ and no $U$ — it is a commuting diagram in the non-lax symmetric
+monoidal $(\mathcal C,\otimes,1,\tau)$ ($\tau\colon M\otimes M\to M\otimes
+M$ an isomorphism, $\tau^2=\mathrm{id}$). It *is* the definition in every
+symmetric monoidal $\mathcal C$ at once, and its evaluation on
+$U$-points $x\otimes y\colon1\to M\otimes M$ when $U$ *does* exist
+recovers the element formula as a theorem, not a definition, so one
+general concept does the work everywhere.
+
+This is the general form behind PR-43/PR-44 and PR-39/PR-40/TERM-11: the
+tensor classifier $M\otimes M$ and $\tau$ already encode bilinears and
+symmetry; re-spelling them as "$\forall x,y\in M$" concretizes the
+abstraction just built.
+
+Concrete standards — define diagrammatically once, derive elements as
+shadow when $U$ exists:
+
+* **Scaffolding (once, fenced):** $(\mathbf{Mod}_R,\otimes_R,R,\tau)$
+  (stably $(\mathbf{LMod}_R,\otimes^L_R,R,\tau)$) symmetric monoidal
+  closed and self-enriched {#thm-mod-closed}, with $M\otimes_RM$
+  classifying bilinears {#def-tensor} and $\tau_{M,M}$ the symmetry,
+  $\Delta$, $\Gamma^2_R$ as in PR-43. The same structure exists in
+  $(\mathrm{QCoh}(X),\otimes_{\mathcal O_X},\mathcal O_X,\tau)$,
+  $(\mathbf{Sp},\wedge,\mathbb S,\tau)$, etc. — no $U$ needed.
+
+* **$W$-valued $b\colon M\otimes_RM\to W$ is symmetric / skew /
+  alternating / even** as in PR-43: $b\circ\tau=b$, $b\circ\tau=-b$,
+  $b\circ\Delta=0$, lift through $\Gamma^2_R(M)$. No $x,y$.
+
+* **Element shadow (only after, when $U\colon\mathcal C\to\mathbf{Set}$
+  exists):** for $x,y\colon1\to M$ (i.e. $x,y\in U(M)$),
+  $b\circ\tau=b$ evaluates to $b(x,y)=b(y,x)$, etc. This is a property of
+  the diagram, proved by applying $U$ to $x\otimes y\colon1\to M\otimes
+  M$, not the definition.
+
+**Banned:** definitions quantified as "for every $x\in M$, $b(x,y)=b(y,x)$
+/ $b(x,x)=0$ / $q(rx)=r^2q(x)$ / $b(x,x)\in2W$ for every $x$."
+
+**Preferred:** "Let $b\colon M\otimes_RM\to W$ be $W$-valued bilinear. $b$
+is **symmetric** if $b\circ\tau=b$ (resp. skew if $b\circ\tau=-b$,
+alternating if $b\circ\Delta=0$, even if it lifts through
+$\Gamma^2_R(M)$)." Then, if pedagogically useful and only when
+$U$ exists: "On $U$-points this is $b(x,y)=b(y,x)$ $\forall x,y\in
+U(M)$."
+
 ### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
 
 Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
@@ -3794,4 +3854,10 @@ $b(x,x)\in2W$ everywhere instead of naming $\operatorname{Val}(b)\subseteq
 W$ once is local thinking for a global object (PR-45). In general "for
 every $x$, a choice of …" is the unwrapping of one global functor /
 bundle / section / natural transformation / $R$-submodule; name it once
-and "for every $x$" is its evaluation on $U$-points (PR-46).
+and "for every $x$" is its evaluation on $U$-points (PR-46). Quantifying
+$\forall x\in M$ in the *definition* presupposes $U\colon\mathcal
+C\to\mathbf{Set}$ and blocks the one general concept from applying to
+$\mathcal O_X\text{-}\mathbf{Mod}$, $\mathbf{Sp}$, stacks, etc., where
+no such $U(M)$ exists (PR-47) — the diagram $b\circ\tau=b$ works in every
+symmetric monoidal $\mathcal C$, the element formula only in the concrete
+ones.
