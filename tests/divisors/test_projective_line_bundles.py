@@ -81,3 +81,38 @@ def test_projective_line_bundle_base_change_retains_projection_and_section_compa
     assert comparison.forward().domain().base_ring() is field
     assert comparison.forward().codomain() is changed.global_sections()
     assert comparison.forward().domain().module_rank() == changed.global_sections().module_rank()
+
+
+def test_projective_O_pullback_uses_generic_finite_atlas_refinement() -> None:
+    from dzack_research.preamble.categories.schemes.gluing import (
+        FiniteAtlasRefinement,
+        compare_finite_atlas_line_bundle_pullback,
+    )
+
+    line = ProjectiveSpace(1, QQ)
+    bundle = line.O(1)
+    coarse = bundle.gluing_datum()
+    fine = coarse.presentation()
+    indices = tuple(coarse.chart_indices())
+    refinement = FiniteAtlasRefinement(
+        coarse,
+        fine,
+        {index: index for index in indices},
+        {
+            index: coarse.chart(index).categorical_identity_morphism()
+            for index in indices
+        },
+    )
+    comparison = compare_finite_atlas_line_bundle_pullback(refinement, bundle)
+    pulled = comparison.line_bundle_refinement().refined_bundle()
+
+    assert refinement.comparison_morphism().domain() is fine.scheme()
+    assert refinement.comparison_morphism().codomain() is line
+    assert refinement.comparison_morphism().domain() is not line
+    assert comparison.line_bundle() is bundle
+    assert pulled.scheme() is fine.scheme()
+    assert pulled.gluing_datum() is fine
+    for index in fine.chart_indices():
+        local = comparison.line_bundle_refinement().local_isomorphism(index)
+        assert local.forward().domain().base_ring() is fine.chart(index).coordinate_algebra()
+        assert local.forward().codomain() is pulled.local_module(index)

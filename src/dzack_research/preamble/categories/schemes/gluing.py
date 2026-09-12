@@ -1019,6 +1019,10 @@ class FiniteAffineAtlasPresentation(SageObject):
         return f"Finite affine atlas of {self.scheme()} indexed by {self.chart_index_set()}"
 
 
+def _is_finite_affine_atlas_datum(datum) -> bool:
+    return isinstance(datum, (_FiniteSchemeGluingDatum, FiniteAffineAtlasPresentation))
+
+
 class FiniteAtlasRefinement(SageObject):
     r"""A represented refinement of one finite affine atlas by another.
 
@@ -1034,10 +1038,10 @@ class FiniteAtlasRefinement(SageObject):
     """
 
     def __init__(self, coarse_datum, fine_datum, index_map, chart_maps) -> None:
-        if not isinstance(coarse_datum, _FiniteSchemeGluingDatum):
-            raise TypeError("the coarse atlas of a finite refinement is a represented affine gluing")
-        if not isinstance(fine_datum, _FiniteSchemeGluingDatum):
-            raise TypeError("the fine atlas of a finite refinement is a represented affine gluing")
+        if not _is_finite_affine_atlas_datum(coarse_datum):
+            raise TypeError("the coarse atlas of a finite refinement is a represented finite affine atlas")
+        if not _is_finite_affine_atlas_datum(fine_datum):
+            raise TypeError("the fine atlas of a finite refinement is a represented finite affine atlas")
         if coarse_datum.base_ring() is not fine_datum.base_ring():
             raise ValueError("a finite-atlas refinement keeps the scheme base ring")
         self._coarse_datum = coarse_datum
@@ -1727,8 +1731,8 @@ class FiniteAtlasModuleGluingDatum(SageObject):
     """
 
     def __init__(self, gluing_datum, local_modules, transitions) -> None:
-        if not isinstance(gluing_datum, _FiniteSchemeGluingDatum):
-            raise TypeError("finite-atlas module descent requires a represented finite scheme gluing")
+        if not _is_finite_affine_atlas_datum(gluing_datum):
+            raise TypeError("finite-atlas module descent requires a represented finite affine atlas")
         self._gluing_datum = gluing_datum
         indices = gluing_datum.chart_index_set()
         self._local_modules = _family_on_finite_ordered_set(

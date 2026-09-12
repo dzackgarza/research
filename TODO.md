@@ -498,21 +498,7 @@ Retain existing fan/subdivision and toric-divisor engines for the toric cases.
 Do not make an engine's affine or toric specialization the public definition
 of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 
-- [ ] **`line-bundles`**. **Needs:** `divisors`, `sheaf-functors`.
-  Complete line-bundle functors and section maps outside the current toric
-  computations.
-  **Deliver:** `O(d_1,...,d_r)`, tensor products, inverse line bundles,
-  powers, pullback/base change, canonical and anticanonical bundles,
-  exact ampleness in supported regimes, graded section rings, and their
-  homogeneous-component maps.
-  **Decision:** section-ring and Cox gradings retain the actual grading group;
-  homogeneous pieces are not just dimension values. A choice of coordinates
-  or linearization must remain explicit.
-  **Acceptance:** a nonidentity pullback/restriction and a nontrivial graded
-  multiplication use the actual section modules and compose with the
-  homogeneous-polynomial comparison.
-
-- [ ] **`jets`**. **Needs:** `line-bundles`.
+- [ ] **`jets`**. **Needs:** none.
   Extend linear-system restrictions and jets to general represented closed
   subschemes and points.
   **Owners:** line bundles, section modules, local ideals and their powers.
@@ -540,7 +526,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   multiplicity; a supported Tor intersection and the divisor/Chow comparison
   use the same local and homological owners.
 
-- [ ] **`adjunction-blowups`**. **Needs:** `line-bundles`, `relative-spec`.
+- [ ] **`adjunction-blowups`**. **Needs:** `relative-spec`.
   Turn complete-intersection adjunction data into actual canonical-bundle
   maps, and extend blowups beyond torus-fixed surface centers.
   **Owners:** complete intersections, invertible sheaves, blowups, and local
@@ -745,7 +731,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   **Acceptance:** a sourced nontrivial fundamental-group or off-diagonal
   Hodge example forces the new geometric computation to do real work.
 
-- [ ] **`linearizations`**. **Needs:** `line-bundles`, `geometric-cohomology`.
+- [ ] **`linearizations`**. **Needs:** `geometric-cohomology`.
   Construct line-bundle linearizations and induced section/cohomology
   actions before equivariant geometric applications.
   **Owners:** invertible sheaves, their pullback functors, section/cohomology
