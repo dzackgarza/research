@@ -2045,37 +2045,37 @@ preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.Pare
 preamble/categories/modules/group_modules/group_lattices.sage	GroupLattices.ParentMethods.coinvariant_lattice	method	146	0		src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
 preamble/categories/modules/group_modules/group_lattices.sage	group_lattice_homset	function	277	1	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
 preamble/categories/modules/group_modules/group_lattices.sage	group_lattice	function	350	1	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	src/dzack_research/preamble/categories/modules/group_modules/group_lattices.py	reconciled-live-owner
-preamble/categories/modules/group_modules/group_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	EquivariantAssignment	binding	52	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent	class	54	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.base_ring	method	62	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.rank	method	63	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.group	method	64	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.action_matrix	method	65	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.Hom	method	66	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules	class	69	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.base_ring	method	95	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.acting_group	method	98	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.super_categories	method	104	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.is_semisimple	method	110	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.splitting_field	method	137	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.is_split	method	171	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods	class	187	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.action	method	304	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.group	method	307	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.action_of	method	310	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.action_matrix	method	321	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.character	method	324	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.Hom	method	354	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.act	method	369	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.is_invariant	method	374	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.subobject_on	method	390	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.hom	method	393	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.isotypic_decomposition	method	428	1	src/dzack_research/preamble/categories/modules/group_modules/isotypic.py		unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.isotypic_component	method	431	1	src/dzack_research/preamble/categories/modules/group_modules/isotypic.py		unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.module_invariants	method	434	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.module_coinvariants	method	445	0			unreviewed
-preamble/categories/modules/group_modules/group_modules.sage	GroupModule	function	510	0			unreviewed
+preamble/categories/modules/group_modules/group_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	EquivariantAssignment	binding	52	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent	class	54	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.base_ring	method	62	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.rank	method	63	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.group	method	64	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.action_matrix	method	65	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModuleParent.Hom	method	66	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules	class	69	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.base_ring	method	95	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.acting_group	method	98	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.super_categories	method	104	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.is_semisimple	method	110	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.splitting_field	method	137	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.is_split	method	171	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods	class	187	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.action	method	304	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.group	method	307	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.action_of	method	310	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.action_matrix	method	321	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.character	method	324	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.Hom	method	354	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.act	method	369	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.is_invariant	method	374	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.subobject_on	method	390	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.hom	method	393	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.isotypic_decomposition	method	428	1	src/dzack_research/preamble/categories/modules/group_modules/isotypic.py	src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.isotypic_component	method	431	1	src/dzack_research/preamble/categories/modules/group_modules/isotypic.py	src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.module_invariants	method	434	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModules.ParentMethods.module_coinvariants	method	445	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
+preamble/categories/modules/group_modules/group_modules.sage	GroupModule	function	510	0		src/dzack_research/preamble/categories/modules/group_modules/group_modules.py	reconciled-live-owner
 preamble/categories/modules/module_morphisms/module_morphisms.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
 preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismModuleParent	class	32	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
 preamble/categories/modules/module_morphisms/module_morphisms.sage	AutomorphismModuleParent.Aut	method	33	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner

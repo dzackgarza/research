@@ -19,6 +19,12 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/group_modules/group_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/group_modules/group_modules.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def _sign_module(ring):
     group = Groups.C(2)
@@ -148,3 +154,15 @@ def test_archived_action_matrix_and_splitting_field_are_owned_group_module_data(
     cubic_category = Modules(QQ[cubic_group])
     assert cubic_category.splitting_field().degree() == 2
     assert not cubic_category.is_split()
+
+
+def test_nontrivial_sign_module_invariants_use_the_retained_action() -> None:
+    _group, _group_algebra, line, _generator, module = _sign_module(QQ)
+    label = line.module_generating_set()[0]
+    vector = module.module_generator(label)
+    invariants = module.module_invariants()
+
+    assert not module.is_invariant(vector)
+    assert module.is_invariant(module.zero())
+    assert invariants.module_rank() == 0
+    assert module.module_coinvariants().module_rank() == 0
