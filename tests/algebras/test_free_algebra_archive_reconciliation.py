@@ -17,14 +17,32 @@ from dzack_research.preamble.all import (
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/categories/algebras/free_algebras.sage",
-    "live_owner": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
-    "owner_overrides": {
-        "TensorAlgebras.ParentMethods.center_embedding": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/categories/algebras/free_algebras.sage",
+        "live_owner": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
+        "owner_overrides": {
+            "TensorAlgebras.ParentMethods.center_embedding": "src/dzack_research/preamble/categories/algebras/free_algebras.py",
+        },
+        "disposition": "reconciled-live-owner",
     },
-    "disposition": "reconciled-live-owner",
-}
+    {
+        "archive_module": "preamble/tests/test_free_constructions.sage",
+        "live_owner": "tests/algebras/test_free_algebra_archive_reconciliation.py",
+        "owner_overrides": {
+            "test_tensor_and_divided_squares_respect_a_module_presentation": "tests/algebras/test_power_algebras.py",
+            "test_the_divided_square_classifies_quadratic_maps": "tests/forms/test_classifier_vocabulary.py",
+            "test_divided_squares_are_symmetric_tensor_invariants": "tests/algebras/test_tensor_symmetric_adjunctions.py",
+            "test_higher_divided_powers_are_symmetric_tensor_invariants": "tests/algebras/test_tensor_symmetric_adjunctions.py",
+            "test_the_free_constructions_are_related_by_the_canonical_maps": "tests/algebras/test_power_algebra_extensions_archive.py",
+            "test_tensor_and_symmetric_freeness_are_homset_bijections": "tests/algebras/test_tensor_symmetric_adjunctions.py",
+            "test_the_four_free_algebra_functors_preserve_identities_and_composition": "tests/algebras/test_functor_adjunctions.py",
+            "test_the_free_algebra_units_are_natural_on_presented_modules": "tests/algebras/test_functor_adjunctions.py",
+            "test_free_algebra_functors_preserve_their_characteristic_operations": "tests/algebras/test_power_algebra_extensions_archive.py",
+        },
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def _two_labels():
