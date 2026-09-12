@@ -3450,6 +3450,68 @@ recurring definition and every later "check $b(x,x)\in2W$ for every $x$."
 Never carry $b(x,x)\in2W$ on every use once $\operatorname{Val}(b)$ is
 available — use the submodule.
 
+### `PR-46`: "For every $x$, a choice of …" for the global functor / bundle / section / natural transformation
+
+"For every $x$, a choice of $b_x$ / basis / complement / $b(x,x)\in2W$ /
+isomorphism $M_x\simeq N_x$" is the element-wise unwrapping of one global
+object that already has a name. Carrying the unwrapping instead of naming
+the object leaves the quantifier, topology/continuity, and functoriality
+($x\mapsto b_x$ natural in $x$, $f\mapsto f^*$) unspecified, so there is
+nothing to check — exactly where hand-waving enters. It is the local
+(points $x\in U(M)$) for global (scheme / Hom from $\Gamma^2$ /
+$\operatorname{Val}$ / section) move, 50+ years standard since
+Grothendieck (PR-45 is the case $\operatorname{Val}(b)$).
+
+This is the general form of PR-37/PR-43/PR-45 and PR-30/PR-41: prose on
+elements that collapses the abstraction just built for a $W$-valued,
+$\mathbf{Mod}_R$-valued, or sheaf-valued construction.
+
+Concrete standards — name the global object once, fenced, then "for every
+$x$" is its evaluation on $U$-points $x\colon 1\to M$ when $U$ exists:
+
+* **Functor, not family:** $M\mapsto\operatorname{Bil}_{R,W}(M):=
+  \operatorname{Hom}_R(M\otimes_RM,W)$ as functor
+  $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$ with
+  $f\mapsto(f\otimes f)^*$ — not "for every $M$, the $R$-module …
+  and for every $f\colon M\to N$, $f^*b(x,y)=b(fx,fy)$."
+
+* **Submodule, not pointwise membership:** $\operatorname{Val}(b)\subseteq
+  W$ as $R$-submodule for $b\colon M\otimes M\to W$ — not "for every
+  $x$, $b(x,x)\in2W$."
+
+* **Section, not pointwise choice:** a "continuously varying choice of
+  basis / complement / $b_x$ for every $x\in X$" is a section of the
+  frame / Grassmann / Hom-bundle $\operatorname{Fr}(E)\to X$ /
+  $\underline{\operatorname{Hom}}(E,F)\to X$ — an object in
+  $\mathbf{Bun}_X$, not a family $x\mapsto b_x$.
+
+* **Sheaf morphism, not stalkwise isomorphisms:** "for every $x$, an
+  isomorphism $M_x\simeq N_x$" is an isomorphism $M\simeq N$ in
+  $\mathbf{Sh}(X)$ (stalkwise iso + gluing), not a family on stalks.
+
+* **Natural transformation, not pointwise maps:** "for every $x$, a map
+  $F(x)\to G(x)$" functorial in $x$ is a natural transformation
+  $F\Rightarrow G$ / morphism in $\operatorname{Fun}(\mathcal C,\mathcal D)$.
+
+In each case $x$ is a $U$-point $x\colon 1\to M$ (or $x\colon\ast\to X$)
+for $U\colon\mathcal C\to\mathbf{Set}$ ($\to\mathcal S$ stably). State
+the global object with its type in $\mathcal C$ ($R$-submodule, functor,
+bundle, section, natural transformation), then "for every $x$" is its
+evaluation, if pedagogically useful.
+
+**Banned:** "for every $x$, choose $b_x$ / $b(x,x)\in2W$ / a complement /
+an isomorphism $M_x\simeq N_x$" as the definition and every later use
+without ever naming the functor / bundle / section / $R$-submodule /
+natural transformation that it unwraps.
+
+**Preferred:** name the global object once, fenced, with its category and
+universal property ( $\operatorname{Val}(b)\subseteq W$ as $R$-submodule,
+$\operatorname{Bil}_{R,W}\colon\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$
+as functor, section $s\colon X\to\operatorname{Fr}(E)$ as object in
+$\mathbf{Bun}_X$, natural transformation $\eta\colon F\Rightarrow G$);
+then, only after and only when $U$ exists: "On $U$-points this is for
+every $x$, $b(x,x)\in2W$ / $b_x$ / $f^*b(x,y)=b(fx,fy)$."
+
 ### `PR-41`: "Pullback … defines a presheaf $\mathbf{Mod}_R^{\mathrm{op}}\to\mathbf{Mod}_R$" is incoherent — pullback is not a presheaf, and one $f^*$ is not a functor
 
 Unwrapping the abstract $(f\otimes f)^*$ as $f^*b(x,y)=b(fx,fy)$ is
@@ -3729,4 +3791,7 @@ exists. "$b$ is even if $b(x,x)\in2W$" collapses the $W$-parameter
 abstraction just built for $W$-valued forms to $U(W)$ and "$\in2W$"
 (PR-44); even is the lift through $\Gamma^2_R(M)$, and carrying
 $b(x,x)\in2W$ everywhere instead of naming $\operatorname{Val}(b)\subseteq
-W$ once is local thinking for a global object (PR-45).
+W$ once is local thinking for a global object (PR-45). In general "for
+every $x$, a choice of …" is the unwrapping of one global functor /
+bundle / section / natural transformation / $R$-submodule; name it once
+and "for every $x$" is its evaluation on $U$-points (PR-46).
