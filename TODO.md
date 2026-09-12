@@ -498,20 +498,6 @@ Retain existing fan/subdivision and toric-divisor engines for the toric cases.
 Do not make an engine's affine or toric specialization the public definition
 of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 
-- [ ] **`cycles`**. **Needs:** `divisors`, `tor-ext`.
-  Construct non-toric cycles, rational equivalence and intersection operations
-  through their local multiplicities and morphisms.
-  **Deliver:** fundamental cycles of supported closed subschemes,
-  codimension-graded cycle and Chow groups, proper pushforward, flat pullback,
-  and the applicable intersection products.
-  **Decision:** finite-support cycles need not have a finite set of possible
-  prime components. Preserve residue degrees, dimension shifts and hypotheses.
-  The local-colength formula for proper surface hypersurface intersections
-  does not replace Serre's Tor-length definition in other regimes.
-  **Acceptance:** an embedded/nonreduced component contributes its actual
-  multiplicity; a supported Tor intersection and the divisor/Chow comparison
-  use the same local and homological owners.
-
 - [ ] **`adjunction-blowups`**. **Needs:** `relative-spec`.
   Turn complete-intersection adjunction data into actual canonical-bundle
   maps, and extend blowups beyond torus-fixed surface centers.
@@ -693,7 +679,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   products use a multiplication compatible with the differential and descend
   to cycles modulo boundaries.
 
-- [ ] **`integral-topology`**. **Needs:** `cycles`.
+- [ ] **`integral-topology`**. **Needs:** none.
   Extend integral topology, cycle classes and cup-product comparisons beyond
   smooth complete toric examples.
   **Deliver:** specified complex realizations, integral cohomology with
