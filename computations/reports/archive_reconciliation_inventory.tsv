@@ -1132,31 +1132,31 @@ preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.pri
 preamble/categories/modules/fractional_ideals.sage	OwnedIdeals.ParentMethods.as_submodule	method	159	0		src/dzack_research/preamble/categories/modules/fractional_ideals.py	reconciled-live-owner
 preamble/categories/modules/fractional_ideals.sage	FractionalIdeal	function	210	1	src/dzack_research/preamble/categories/modules/fractional_ideals.py	src/dzack_research/preamble/categories/modules/fractional_ideals.py	reconciled-live-owner
 preamble/categories/modules/fractional_ideals.sage	own_ideal	function	215	0		src/dzack_research/preamble/categories/modules/fractional_ideals.py	reconciled-live-owner
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	GeneratorAssignment	binding	51	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent	class	53	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.base_ring	method	58	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.module_generating_set	method	59	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.module_generators	method	60	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.number_of_module_generators	method	61	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.is_zero	method	62	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.zero	method	63	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.rank	method	64	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.Hom	method	65	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules	class	77	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.super_categories	method	84	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ElementMethods	class	95	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ElementMethods.parent	method	111	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods	class	190	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.zero	method	242	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.rank	method	249	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.relations	method	300	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.is_torsion	method	312	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.Aut	method	316	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.subobject_on	method	323	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.hom	method	332	0			unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	BasedFreeModule	function	364	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py		unreviewed
-preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	Free_ZZ	function	382	0			unreviewed
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	GeneratorAssignment	binding	51	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent	class	53	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.base_ring	method	58	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.module_generating_set	method	59	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.module_generators	method	60	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.number_of_module_generators	method	61	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.is_zero	method	62	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.zero	method	63	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.rank	method	64	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FiniteFreeModuleParent.Hom	method	65	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules	class	77	1	src/dzack_research/preamble/categories/modules/pure/modules.py	src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.super_categories	method	84	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ElementMethods	class	95	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ElementMethods.parent	method	111	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods	class	190	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.zero	method	242	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.rank	method	249	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.relations	method	300	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.is_torsion	method	312	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.Aut	method	316	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.subobject_on	method	323	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	FinitelyGeneratedFreeModules.ParentMethods.hom	method	332	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	BasedFreeModule	function	364	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
+preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage	Free_ZZ	function	382	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent	class	141	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.sage	PresentedModuleParent.base_ring	method	146	0		src/dzack_research/preamble/categories/modules/framed/finitely_generated/finitely_presented_modules.py	reconciled-live-owner

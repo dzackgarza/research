@@ -9,6 +9,16 @@ from dzack_research.preamble.categories.modules import (
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/finitely_generated/finitely_generated_free_modules.sage",
+    "live_owner": "src/dzack_research/preamble/categories/modules/pure/modules.py",
+    "owner_overrides": {
+        "BasedFreeModule": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py",
+        "Free_ZZ": "src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_archived_based_free_module_is_the_live_free_module_on_ordered_labels() -> None:
     labels = finite_ordered_set(("e", "f"))
