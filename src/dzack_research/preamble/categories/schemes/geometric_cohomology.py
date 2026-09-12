@@ -103,6 +103,77 @@ class ToricGeometricLineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
             return self.projection(weight)
 
 
+class AffineGeometricCohomologyComplexes(OwnedCategoryOverBaseRing):
+    r"""The affine-acyclic complex computing a represented quasi-coherent sheaf."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "affine geometric cohomology complexes"
+
+    def super_categories(self):
+        return [CochainComplexes(self.base_ring())]
+
+    class ParentMethods:
+        def geometric_sheaf(self):
+            return self._preamble_geometric_sheaf
+
+        def geometric_scheme(self):
+            return self.geometric_sheaf().scheme()
+
+        def acyclicity_reason(self):
+            return (
+                "quasi-coherent sheaves on an affine scheme have no higher "
+                "cohomology; this is the one-chart affine Cech resolution"
+            )
+
+        def augmentation(self):
+            r"""Return the identification of degree zero with global sections."""
+            return module_homset(
+                self.graded_piece(0),
+                self.geometric_sheaf().global_sections(),
+            ).identity()
+
+
+def AffineGeometricCohomologyComplex(sheaf):
+    r"""Return the one-chart affine complex computing ``H^*(X,sheaf)``.
+
+    The represented sheaf must be an affine module sheaf ``M~``.  The cover
+    consists of the single affine chart ``X`` itself, whose finite
+    intersections are affine; quasi-coherent affine acyclicity therefore
+    identifies the Cech complex with ``M`` in degree zero and zero elsewhere.
+    """
+    from dzack_research.preamble.categories.schemes.ringed_spaces import (
+        AffineModuleSheaf,
+    )
+
+    if not isinstance(sheaf, AffineModuleSheaf):
+        raise TypeError("affine geometric cohomology requires an affine module sheaf")
+    module = sheaf.global_sections()
+    base = module.base_ring()
+    zero = FreshFreeModuleOn(base, finite_ordered_set(()))
+    return CochainComplex(
+        base,
+        {0: module, 1: zero},
+        {0: module_homset(module, zero).zero()},
+        name=f"Affine Cech complex of {sheaf}",
+        extra_categories=(AffineGeometricCohomologyComplexes(base),),
+        extra_construction_data={"geometric_sheaf": sheaf},
+    )
+
+
+def AffineGeometricCohomology(sheaf, degree):
+    r"""Return ``H^degree(X,sheaf)`` from the represented affine complex."""
+    return Cohomology(AffineGeometricCohomologyComplex(sheaf), int(degree))
+
+
+def AffineGeometricScalarCohomologyMap(sheaf, degree, scalar):
+    r"""Return the cohomology map induced by scalar multiplication on ``sheaf``."""
+    complex_ = AffineGeometricCohomologyComplex(sheaf)
+    scalar = complex_.base_ring()(scalar)
+    cochain_map = scalar * cochain_homset(complex_, complex_).identity()
+    return cohomology_functor(complex_.base_ring(), int(degree))(cochain_map)
+
+
 class ToricIntegralSingularCohomologyGroups(OwnedCategoryOverBaseRing):
     r"""Integral singular cohomology of a specified smooth complete toric complex realization."""
 
@@ -521,6 +592,10 @@ def ToricHodgeStructure(scheme):
 
 
 __all__ = [
+    "AffineGeometricCohomology",
+    "AffineGeometricCohomologyComplex",
+    "AffineGeometricCohomologyComplexes",
+    "AffineGeometricScalarCohomologyMap",
     "ToricCycleClassIsomorphism",
     "ToricGeometricLineBundleCohomologySpaces",
     "ToricIntegralSingularCohomology",
