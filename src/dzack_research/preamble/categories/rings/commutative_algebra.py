@@ -2985,25 +2985,14 @@ class FormalPowerSeriesRings(OwnedCategoryOverBaseRing):
 
 
 def Zp(*args, **kwargs):
-    engine = _SageZp(*args, **kwargs)
+    parser = _SageZp(*args, **kwargs)
     prime = SageZZ(args[0] if args else kwargs.get("p"))
     source = _own_ring(SageZZ)
     defining = source.ideal(source(prime))
-    precision = int(engine.precision_cap())
-
-    def projection_lift(value, exponent):
-        if exponent > precision:
-            raise NotImplementedError(
-                "the selected p-adic engine has not computed enough digits for this projection"
-            )
-        return source(int(value.lift()))
-
-    return _AdicCompletionAlgebraParent(
-        engine,
+    return AdicCompletions()(
         source,
         defining,
-        precision,
-        projection_lift=projection_lift,
+        precision=int(parser.precision_cap()),
     )
 
 

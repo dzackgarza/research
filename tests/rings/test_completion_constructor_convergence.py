@@ -7,6 +7,8 @@ from dzack_research.preamble.all import (
     PolynomialRing,
     PowerSeriesRing,
     QQ,
+    ZZ,
+    Zp,
 )
 
 
@@ -60,4 +62,19 @@ def test_power_series_notation_is_the_same_selected_completion() -> None:
     assert completion.base_ring() is QQ
     assert completion.completion_source() is polynomial
     assert completion.completion_map().domain() is polynomial
+    assert completion.completion_map().codomain() is completion
+
+
+def test_p_adic_notation_is_the_same_selected_adic_completion() -> None:
+    ideal = ZZ.ideal(ZZ(5))
+
+    completion = ZZ.adic_completion(ideal, precision=12)
+    notation = Zp(5, prec=12)
+    declared = AdicCompletions()(ZZ, ideal, precision=12)
+
+    assert completion is notation
+    assert completion is declared
+    assert completion.completion_source() is ZZ
+    assert completion.ideal_of_definition() == ideal
+    assert completion.completion_map().domain() is ZZ
     assert completion.completion_map().codomain() is completion
