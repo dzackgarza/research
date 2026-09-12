@@ -817,6 +817,10 @@ class LorentzianPerfectDomainTraversal(SageObject):
             for adjacency in self._adjacencies
         ):
             raise ValueError("a quotient adjacency targets a retained representative orbit")
+        if self.unpaired_facets().cardinality() != 0:
+            raise ValueError(
+                "a completed perfect-domain traversal must account for every facet of every orbit representative"
+            )
 
     def lattice(self):
         return self._lattice
@@ -829,6 +833,28 @@ class LorentzianPerfectDomainTraversal(SageObject):
 
     def is_complete(self) -> bool:
         return True
+
+    def unpaired_facets(self):
+        r"""Return representative facets missing from the quotient adjacency list.
+
+        A provider result is complete only when every irredundant facet of
+        every retained orbit representative occurs as the source-side common
+        face of a quotient adjacency.  This check prevents a finite traversal
+        prefix from being promoted to a complete reduction domain merely
+        because it used the ``total`` provider entry point.
+        """
+        missing = []
+        for cell in self.cells():
+            source_faces = tuple(
+                adjacency.common_face()
+                for adjacency in self.adjacencies()
+                if adjacency.source() is cell
+            )
+            for wall in cell.facets():
+                facet = cell.facet(wall)
+                if not any(facet.is_equal_to(face) for face in source_faces):
+                    missing.append(facet)
+        return finite_ordered_set(tuple(missing))
 
     def cell_stabilizer_generators(self, cell):
         if cell not in self.cells():
