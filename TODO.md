@@ -498,27 +498,6 @@ Retain existing fan/subdivision and toric-divisor engines for the toric cases.
 Do not make an engine's affine or toric specialization the public definition
 of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
 
-- [ ] **`scheme-products`**. **Needs:** `universal-constructions`, `general-descent`.
-  Extend scheme products, fiber products and closed/open subobjects beyond
-  the represented affine and projective-product cases.
-  **Owners:** `categories/schemes/schemes.py`, affine Spec, gluing,
-  algebra pushouts, and generic diagram constructions.
-  **Deliver:** mixed/non-affine products with projections; successive and
-  projective closed embeddings with ideal sheaves and homogeneous relations;
-  inverse images, graphs, diagonals and equalizers through the shared
-  constructions wherever the extended regime permits them.
-  **Decision:** products consume an indexed family; general pullbacks/pushouts
-  consume their diagrams. Preserve factor roles even for repeated isomorphic
-  factors. Scheme-theoretic image uses its defining factorization, not only
-  a point-set image.
-  **Acceptance:** a repeated `P^1` product, a non-affine base change, and
-  successive equations over `ZZ` retain their maps and scalar bases.
-  Extend exact property placement with these constructors: separated,
-  finite-type, integral, normal, smooth, quasi-affine and quasi-projective
-  hypotheses must survive the relevant construction before its consumer uses
-  them. Preserve the existing variety, curve and surface categories; a chosen
-  dimension or an affine chart alone does not establish their other hypotheses.
-
 - [ ] **`line-bundles`**. **Needs:** `divisors`, `sheaf-functors`.
   Complete line-bundle functors and section maps outside the current toric
   computations.
@@ -533,7 +512,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   multiplication use the actual section modules and compose with the
   homogeneous-polynomial comparison.
 
-- [ ] **`jets`**. **Needs:** `line-bundles`, `scheme-products`.
+- [ ] **`jets`**. **Needs:** `line-bundles`.
   Extend linear-system restrictions and jets to general represented closed
   subschemes and points.
   **Owners:** line bundles, section modules, local ideals and their powers.
@@ -547,7 +526,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   **Acceptance:** non-coordinate points, nonreduced imposed conditions,
   and a linear system with a nonempty base locus distinguish these cases.
 
-- [ ] **`cycles`**. **Needs:** `divisors`, `tor-ext`, `scheme-products`.
+- [ ] **`cycles`**. **Needs:** `divisors`, `tor-ext`.
   Construct non-toric cycles, rational equivalence and intersection operations
   through their local multiplicities and morphisms.
   **Deliver:** fundamental cycles of supported closed subschemes,
@@ -561,7 +540,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   multiplicity; a supported Tor intersection and the divisor/Chow comparison
   use the same local and homological owners.
 
-- [ ] **`adjunction-blowups`**. **Needs:** `line-bundles`, `scheme-products`, `relative-spec`.
+- [ ] **`adjunction-blowups`**. **Needs:** `line-bundles`, `relative-spec`.
   Turn complete-intersection adjunction data into actual canonical-bundle
   maps, and extend blowups beyond torus-fixed surface centers.
   **Owners:** complete intersections, invertible sheaves, blowups, and local
@@ -781,7 +760,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   different section actions while the underlying line bundle is unchanged.
   Reuse the group-module scalar-change and restricted-action owners.
 
-- [ ] **`geometric-quotients`**. **Needs:** `scheme-products`.
+- [ ] **`geometric-quotients`**. **Needs:** none.
   Extend fixed loci, quotients and descended maps to the remaining
   non-affine and family cases.
   **Owners:** scheme action/equalizer, invariant algebra, and gluing owners.
@@ -810,7 +789,7 @@ monodromy and nearby/vanishing cycles, identify the precise source construction
 and available implementation first; names shared with algebraic operations do
 not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
 
-- [x] **`dvr-families`**. **Needs:** `localization`, `completion-comparisons`, `scheme-products`.
+- [x] **`dvr-families`**. **Needs:** `localization`, `completion-comparisons`.
   Extend `categories/schemes/families.py` to DVR bases through the existing
   scheme slice and scalar-change constructions.
   **Dependencies:** local algebra; corrected completion only for the completed
@@ -841,7 +820,7 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   without changing the formal object; compatible truncation data is connected
   to the completed algebra by actual maps.
 
-- [ ] **`analytic-families`**. **Needs:** `scheme-products`.
+- [ ] **`analytic-families`**. **Needs:** none.
   Add analytic-disc families and their specified comparison with algebraic
   or formal models.
   **Decision:** use the analytic category and its topology. A formal power

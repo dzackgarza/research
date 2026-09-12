@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_o
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
-
 def test_the_affine_plane_is_the_line_multiplied_by_the_line() -> None:
     line = AffineSpace(1, ZZ)
     plane = line.product_with(line)
@@ -79,3 +78,19 @@ def test_named_product_data_does_not_overwrite_an_earlier_product() -> None:
     assert second.factors().index_set() is second_labels
     assert first.projections().index_set() is first_labels
     assert second.projections().index_set() is second_labels
+
+
+def test_projective_product_cone_recovers_both_repeated_factor_legs() -> None:
+    labels = finite_ordered_set(("left", "right"))
+    line = ProjectiveSpace(1, QQ)
+    family = indexed_family(labels, lambda _label: line)
+    product = Schemes(QQ).product(family)
+    identity = line.categorical_identity_morphism()
+    legs = indexed_family(labels, lambda _label: identity)
+
+    diagonal = product.from_product_cone(legs)
+
+    assert diagonal.domain() is line
+    assert diagonal.codomain() is product
+    assert product.projection("left") * diagonal is identity
+    assert product.projection("right") * diagonal is identity
