@@ -1753,6 +1753,45 @@ class AffineGSchemes(OwnedCategory):
             r"""Return the represented inclusion ``A^G -> A``."""
             return self._invariant_algebra_data()[1]
 
+        def invariant_algebra_element(self: Any, element: Any) -> Any:
+            r"""Express one verified invariant element of ``A`` in ``A^G``.
+
+            The same invariant-ring backend used by the affine quotient returns
+            a polynomial certificate in its selected invariant generators.  The
+            certificate is evaluated in the owned invariant algebra, so callers
+            can descend stable principal opens without reaching into Singular.
+            """
+            source_algebra = self.coordinate_algebra()
+            element = source_algebra(element)
+            group_generators = tuple(self.acting_group().group_generators())
+            if any(
+                self.action_of(group_generator).coordinate_algebra_morphism()(element)
+                != element
+                for group_generator in group_generators
+            ):
+                raise ValueError("the selected coordinate-algebra element is not invariant")
+            invariant_algebra, _inclusion, engine_invariants = self._invariant_algebra_data()
+            if not engine_invariants:
+                return invariant_algebra(element)
+            engine_source = _engine_ring(source_algebra)
+            engine_element = engine_source(_engine_element(source_algebra, element))
+            certificate = engine_element.in_subalgebra(
+                engine_invariants,
+                algorithm="groebner",
+                certificate="invariant",
+            )
+            if certificate is None:
+                raise ArithmeticError(
+                    "the invariant-ring backend did not express a verified invariant in its selected generators"
+                )
+            result = _evaluate_polynomial_in_algebra(
+                certificate,
+                invariant_algebra,
+            )
+            if self.invariant_algebra_inclusion()(result) != element:
+                raise ArithmeticError("the invariant-algebra certificate does not map back to the selected element")
+            return result
+
         @cached_method
         def affine_quotient(self: Any) -> Any:
             r"""Return ``Spec(A^G)`` for the supported affine linear action."""
@@ -1808,30 +1847,12 @@ class AffineGSchemes(OwnedCategory):
             if pullback.domain() is not target_algebra or pullback.codomain() is not source_algebra:
                 raise ValueError("the affine morphism has the wrong represented coordinate pullback")
 
-            invariant_algebra, inclusion, engine_invariants = self._invariant_algebra_data()
-            group_generators = tuple(self.acting_group().group_generators())
-            engine_source = _engine_ring(source_algebra)
+            invariant_algebra, inclusion, _engine_invariants = self._invariant_algebra_data()
 
             generator_images = {}
             for label in labels:
                 image = pullback(target_algebra.algebra_generator(label))
-                if any(self.action_of(group_generator).coordinate_algebra_morphism()(image) != image for group_generator in group_generators):
-                    raise ValueError("the stated affine morphism is not invariant under the represented group action")
-                if not engine_invariants:
-                    generator_images[label] = invariant_algebra(image)
-                    continue
-                engine_image = engine_source(_engine_element(source_algebra, image))
-                certificate = engine_image.in_subalgebra(
-                    engine_invariants,
-                    algorithm="groebner",
-                    certificate="invariant",
-                )
-                if certificate is None:
-                    raise ArithmeticError("the invariant-ring backend did not express a verified invariant in its selected generators")
-                generator_images[label] = _evaluate_polynomial_in_algebra(
-                    certificate,
-                    invariant_algebra,
-                )
+                generator_images[label] = self.invariant_algebra_element(image)
 
             factor_pullback = target_algebra.Mor(invariant_algebra)(generator_images)
             factor = _affine_morphism_from_pullback(
