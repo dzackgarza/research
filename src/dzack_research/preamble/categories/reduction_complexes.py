@@ -174,6 +174,25 @@ class RationalReductionCell(SageObject):
             )
         )
 
+    def faces(self, dimension):
+        r"""Return the exact faces of the selected dimension.
+
+        Faces are returned as reduction cells in the same ambient lattice, so
+        incidences, stabilizers and transporters use the same mathematical
+        carrier as the ambient cell rather than private engine face handles.
+        """
+        dimension = int(dimension)
+        if dimension < 0 or dimension > self.dimension():
+            return finite_ordered_set(())
+        return finite_ordered_set(
+            tuple(
+                RationalReductionCell._from_engine(
+                    self.lattice(), face.as_polyhedron()
+                )
+                for face in self._engine.faces(dimension)
+            )
+        )
+
     def facet(self, wall):
         r"""Return the codimension-one face cut out by one irredundant wall."""
         wall = _owned_rational_vector(_coordinates(wall))
@@ -329,6 +348,20 @@ class RationalReductionCell(SageObject):
             preserves_cell,
             f"g preserves the rational reduction cell {self}",
         )
+
+    def face_stabilizer(self, face, group):
+        r"""Return the subgroup preserving this cell and ``face`` setwise.
+
+        This is the cell-face stabilizer occurring in reduction-complex group
+        generation.  Requiring membership in the cell stabilizer is essential:
+        the ambient orthogonal group may preserve the lower-dimensional cone
+        while moving the chosen perfect domain to another cell.
+        """
+        if not isinstance(face, RationalReductionCell) or not face.is_face_of(self):
+            raise ValueError("a face stabilizer is attached to an actual face of this cell")
+        cell_stabilizer = self.stabilizer(group)
+        face_stabilizer = face.stabilizer(group)
+        return cell_stabilizer.intersection(face_stabilizer)
 
     def _repr_(self):
         return (
