@@ -61,13 +61,9 @@ from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
     cyclic_cover_presentation,
 )
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    module_coefficients,
-)
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
-    ring_morphism,
 )
 from dzack_research.preamble.categories.schemes.affine_spec import SpecFunctor
 from dzack_research.preamble.categories.schemes.group_schemes import (
@@ -88,138 +84,15 @@ from dzack_research.preamble.refine import refine
 _ROOT_OF_UNITY_VARIABLE = "t"
 
 
-def _cover_overlap(cyclic_algebra, source_index, target_index):
-    r"""Return the distinguished overlap in ``Spec(B_source)`` above ``U_source∩U_target``."""
-    cover = cyclic_algebra.cover()
-    source_index = cover.chart_label(source_index)
-    target_index = cover.chart_label(target_index)
-    source_base = cover.open(source_index).coordinate_algebra()
-    source_algebra = cyclic_algebra.local_algebra(source_index)
-    source_scheme = Spec(source_algebra)
-    ambient_element = cover.defining_element(target_index)
-    source_element = source_base.localization_map()(ambient_element)
-    lifted = source_algebra.algebra_structure_morphism()(source_element)
-    return source_scheme.distinguished_open(lifted)
-
-
-def _overlap_base_to_cover_overlap(
-    cyclic_algebra,
-    source_index,
-    target_index,
-    source_open,
-):
-    r"""Map ``O(U_source∩U_target)`` into the source cover-overlap algebra."""
-    cover = cyclic_algebra.cover()
-    source_index = cover.chart_label(source_index)
-    target_index = cover.chart_label(target_index)
-    ambient = cover.ambient_scheme().coordinate_algebra()
-    source_base = cover.open(source_index).coordinate_algebra()
-    source_algebra = cyclic_algebra.local_algebra(source_index)
-    source_open_algebra = source_open.coordinate_algebra()
-    ambient_to_source = (
-        source_open_algebra.localization_map()
-        * source_algebra.algebra_structure_morphism()
-        * source_base.localization_map()
-    )
-    overlap_base = cover.overlap(source_index, target_index).coordinate_algebra()
-
-    def image(element):
-        numerator, denominator = overlap_base.localization_fraction_data(element)
-        return (
-            ambient_to_source(ambient(numerator))
-            * ambient_to_source(ambient(denominator)).inverse_of_unit()
-        )
-
-    return ring_morphism(overlap_base, source_open_algebra, image)
-
-
-def _cyclic_cover_transition_morphism(cyclic_algebra, source_index, target_index):
-    r"""Return the scheme transition from one cyclic-cover overlap to the other."""
-    cover = cyclic_algebra.cover()
-    source_index = cover.chart_label(source_index)
-    target_index = cover.chart_label(target_index)
-    source_open = _cover_overlap(cyclic_algebra, source_index, target_index)
-    target_open = _cover_overlap(cyclic_algebra, target_index, source_index)
-    source_open_algebra = source_open.coordinate_algebra()
-    target_open_algebra = target_open.coordinate_algebra()
-    source_algebra = cyclic_algebra.local_algebra(source_index)
-    target_algebra = cyclic_algebra.local_algebra(target_index)
-    source_z = source_open_algebra.localization_map()(
-        source_algebra.algebra_generator(CYCLIC_COVER_VARIABLE)
-    )
-    overlap_to_source = _overlap_base_to_cover_overlap(
-        cyclic_algebra,
-        source_index,
-        target_index,
-        source_open,
-    )
-    target_base_to_source = overlap_to_source * cover.structure_sheaf_restriction(
-        target_index,
-        source_index,
-    )
-    unit = cyclic_algebra.line_bundle().transition_unit(source_index, target_index)
-    unit_in_source = overlap_to_source(unit)
-
-    def target_algebra_image(element):
-        coefficients = module_coefficients(target_algebra(element), target_algebra)
-        result = source_open_algebra.zero()
-        for label, coefficient in coefficients.items():
-            result += (
-                target_base_to_source(coefficient)
-                * (unit_in_source * source_z) ** int(label)
-            )
-        return result
-
-    def target_open_image(element):
-        numerator, denominator = target_open_algebra.localization_fraction_data(element)
-        return (
-            target_algebra_image(numerator)
-            * target_algebra_image(denominator).inverse_of_unit()
-        )
-
-    pullback = ring_morphism(
-        target_open_algebra,
-        source_open_algebra,
-        target_open_image,
-    )
-    return _affine_morphism_from_pullback(source_open, target_open, pullback)
-
-
-def _cyclic_cover_transition(cyclic_algebra, left_index, right_index):
-    return Isomorphism(
-        _cyclic_cover_transition_morphism(cyclic_algebra, left_index, right_index),
-        _cyclic_cover_transition_morphism(cyclic_algebra, right_index, left_index),
-    )
-
-
 def relative_cyclic_cover(cyclic_algebra):
-    r"""Return ``Spec_X(⊕ L^{-i}) -> X`` from cyclic algebra descent data."""
+    r"""Return the cyclic cover through the general relative-Spec owner."""
     if not isinstance(cyclic_algebra, CyclicCoverAlgebra):
         raise TypeError("relative cyclic cover requires cyclic-cover algebra descent data")
-    cover = cyclic_algebra.cover()
-    indices = tuple(cover.atlas())
-    base_scheme = cyclic_algebra.scheme()
-    base_ring = base_scheme.scheme_base_ring()
-    charts = {
-        index: Spec(cyclic_algebra.local_algebra(index))
-        for index in indices
-    }
-    transitions = {
-        (left, right): _cyclic_cover_transition(cyclic_algebra, left, right)
-        for position, left in enumerate(indices)
-        for right in indices[position + 1 :]
-    }
-    glued = Schemes(base_ring).glue_affine_atlas(charts, transitions)
-    local_maps = {}
-    for index in indices:
-        local_to_base_chart = affine_spec_morphism(
-            cyclic_algebra.local_algebra(index).algebra_structure_morphism()
-        )
-        local_maps[index] = cover.open(index).inclusion() * local_to_base_chart
-    cover_morphism = glued.Mor(base_scheme)(local_maps)
+    relative = cyclic_algebra.gluing_datum().relative_spectrum()
+    glued = relative.arrow().domain()
     glued._preamble_cyclic_cover_algebra = cyclic_algebra
-    glued._preamble_cyclic_cover_morphism = cover_morphism
-    return glued.scheme_category().SliceOver(base_scheme)(cover_morphism)
+    glued._preamble_cyclic_cover_morphism = relative.arrow()
+    return relative
 
 
 def local_relative_cyclic_deck_action(cyclic_algebra, chart_index):

@@ -2404,6 +2404,31 @@ def refine_algebra(
     )
 
 
+
+@cached_function(key=lambda ring, structure_map: (id(ring), id(structure_map)))
+def algebra_structure_view(ring, structure_map):
+    r"""Return ``ring`` read as an algebra through the explicit map ``R -> ring``.
+
+    The view is a scalar-structure object, not a second authoritative ring.
+    Its elements use the same private computation ring while its owned algebra
+    structure morphism has the exact supplied source and the view itself as
+    codomain.  This is the construction needed when a ring acquires a new
+    scalar structure by a universal property, for example an overlap
+    localization regarded as an algebra over the overlap section ring.
+    """
+    selected_ring = _own_ring(ring)
+    if structure_map.codomain() is not selected_ring:
+        raise ValueError("an algebra-structure view requires a ring map into the selected ring")
+    base = _own_ring(structure_map.domain())
+    view = _OwnedAlgebraParent(_engine_ring(selected_ring), base, None)
+    view._preamble_structure_map = ring_morphism(
+        base,
+        view,
+        lambda scalar: view(structure_map(base(scalar))),
+    )
+    view._preamble_algebra_structure_ring = selected_ring
+    return view
+
 def _require_endomorphism_multiplication(multiplication, ring):
     from sage.categories.map import Map
 
@@ -2677,6 +2702,7 @@ __all__ = [
     "FramedAlgebras",
     "OwnedAlgebras",
     "algebra_from_multiplication",
+    "algebra_structure_view",
     "algebra_homset",
     "commutative_algebra_coproduct",
     "commutative_algebra_pushout",

@@ -3288,6 +3288,14 @@ class AlgebraGluingDatum(Parent):
     def Mor(self, target):
         return self.category().Mor(self, target)
 
+    def relative_spectrum(self):
+        r"""Return ``Spec_X(A)`` for this represented quasi-coherent algebra datum."""
+        from dzack_research.preamble.categories.schemes.relative_spec import (
+            relative_spectrum,
+        )
+
+        return relative_spectrum(self)
+
     def _repr_(self):
         return f"Algebra gluing datum on {self.cover()}"
 
@@ -3348,6 +3356,14 @@ class AlgebraGluingMorphism(Morphism):
             set_map = SetMorphism(Sets().Mor(source, target), image)
             self._global_sections_map = source.Mor(target)(set_map)
         return self._global_sections_map
+
+    def relative_spectrum_morphism(self):
+        r"""Return the contravariant morphism of relative spectra induced by this algebra map."""
+        from dzack_research.preamble.categories.schemes.relative_spec import (
+            relative_spectrum_morphism,
+        )
+
+        return relative_spectrum_morphism(self)
 
     def then(self, other):
         if other.domain() is not self.codomain():
@@ -4068,6 +4084,10 @@ class GluedAlgebraSheaf(SageObject):
 
     def underlying_module_sheaf(self):
         return self.gluing_datum().underlying_module_datum().sheaf()
+
+    def relative_spectrum(self):
+        r"""Return the relative spectrum of this algebra sheaf."""
+        return self.gluing_datum().relative_spectrum()
 
     def _repr_(self):
         return f"Glued algebra sheaf on {self.scheme()} from {self.cover()}"
