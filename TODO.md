@@ -638,24 +638,6 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   them. Preserve the existing variety, curve and surface categories; a chosen
   dimension or an affine chart alone does not establish their other hypotheses.
 
-- [ ] **`divisors`**. **Needs:** `normalization`, `sheaf-operations`.
-  Extend divisor and class-group computations from toric presentations to
-  the required general and relative schemes.
-  **Owners:** `categories/divisors/`, scheme sheaves and local algebra.
-  **Deliver:** Cartier local equations and units, Weil prime-divisor
-  multiplicities, principal divisors, associated invertible sheaves, and
-  Cartier/Picard/Weil/class comparison maps under their stated hypotheses.
-  **Decision:** keep the full group of divisors distinct from the torus-invariant
-  presentation used by a toric algorithm. Keep `Pic`, the Neron-Severi group,
-  and numerical classes distinct, with quotient maps.
-  **Specimens:** projective space over a field and over a base contributing
-  nontrivial Picard data; a singular normal example where Cartier and Weil
-  divisors are not automatically interchangeable.
-  **Acceptance:** do not infer `Pic(P^n_S)=ZZ` over arbitrary `S`;
-  do not infer singular local factoriality from failure of the regularity
-  criterion. Compute geometric relations before equipping the resulting
-  group with module or form structure.
-
 - [ ] **`line-bundles`**. **Needs:** `divisors`, `sheaf-functors`.
   Complete line-bundle functors and section maps outside the current toric
   computations.
@@ -1499,4 +1481,3 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `DIVISORS-general-20260912-0030` | divisors / general divisor comparison | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/; src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py; src/dzack_research/preamble/all.py; tests/divisors/test_general_divisors_frontier.py` (write) | `19e6c16d; 541e10d9` | 2026-09-12T00:30:00Z |
