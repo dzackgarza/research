@@ -867,42 +867,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
 
 ### Organization findings
 
-- [ ] **`collection-ownership`**. **Needs:** `toric-cohomology`.
-  Finish collection ownership and typing on the surviving interfaces.
-  **Targets:** group and coset/orbit collections, discriminant objects,
-  lattice roots, Coxeter/configuration data, tensors and index shapes,
-  scheme/fan/polytope families, and profinite/Galois stages and embeddings.
-  **Decision:** owned sets/indexed families retain labels, multiplicity,
-  cardinality and laziness. Finite support does not imply finite index set.
-  A Python sequence survives only at syntactic ingress immediately parsed
-  into owned data or private finite engine serialization.
-  **Deliver:** mathematical parameter/result types and readable forms of
-  functors, with unknown static expressibility localized according to the
-  typing policy rather than broad annotations at each consumer.
-  **Recursive boundary:** inspect each targeted public operation's constituents,
-  not merely the outer collection type. Include lazy evaluation, iteration,
-  indexing, coefficients, base rings, framing data, representatives, inclusions,
-  projections, morphism endpoints, scalar arithmetic, equality and reconstruction.
-  Extend this inspection to every surviving public family under the constructor
-  scope above; the target list supplies traversal starting points, not exceptions
-  for unlisted mathematics (`OWN-04`).
-  **Remaining concrete repair boundary:** follow a cohomology representative
-  through inclusion and arithmetic, and
-  a localized module element through its scalar action. Correctness of an outer
-  module or family does not establish ownership of these evaluated results.
-  **Integration decision:** raising belongs inside the selected adapter and
-  passes through the same semantic constructor as ordinary input. Add the
-  missing owned scalar/family/map operation at its owner rather than publishing
-  raw storage or copying a conversion loop into each theory. Fix the actual type
-  contract; `Any`, `object`, casts, and suppressed diagnostics do not supply it.
-  **Acceptance:** infinite/repeated-label specimens and nontrivial consumers
-  retain their mathematics. A list/tuple count or annotation count alone
-  cannot remove this item.
-  Retain only uninspected or unrepaired families after a delivery; evidence for
-  completed families belongs in their commits. Source inspection establishes
-  recursive ownership, and public specimens remain unexecuted until T.
-
-- [ ] **`package-organization`**. **Needs:** `collection-ownership`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `archive-reconciliation`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

@@ -51,17 +51,22 @@ def test_nonzero_weight_piece_includes_into_total_cohomology() -> None:
     label = next(iter(cycle_module.module_generating_set()))
     class_ = piece.class_of_cycle(cycle_module.module_generator(label))
     included = inclusion(class_)
+    doubled_in_total = QQ(2) * included
     projected = projection(included)
+    projected_doubled = projection(doubled_in_total)
 
     assert class_.parent() is piece
     assert included.parent() is total
+    assert doubled_in_total.parent() is total
     assert projected.parent() is piece
+    assert projected_doubled.parent() is piece
     assert inclusion.domain() is piece
     assert inclusion.codomain() is total
     assert projection.domain() is total
     assert projection.codomain() is piece
     assert included != total.zero()
     assert projected == class_
+    assert projected_doubled == QQ(2) * class_
 
 
 def test_zero_support_and_boundary_degree_keep_the_geometric_complex() -> None:

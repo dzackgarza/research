@@ -350,3 +350,13 @@ def test_localization_is_scalar_extension_of_the_selected_presentation_and_actio
     assert acted == multiplied
     assert acted.numerator().parent() is module
     assert acted.denominator().parent() is ring
+
+    inverse = localization_ring.fraction(ring.one(), x - ring.one())
+    fraction = localized.fraction(module.module_generator("g"), x - ring.one())
+    acted_fraction = localized.scalar_action()(inverse)(fraction)
+
+    assert inverse.parent() is localization_ring
+    assert fraction.parent() is localized
+    assert acted_fraction.parent() is localized
+    assert acted_fraction.numerator().parent() is module
+    assert acted_fraction.denominator().parent() is ring
