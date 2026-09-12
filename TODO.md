@@ -1499,4 +1499,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `CURVE-genus-20260912-0027` | curves / curve-genus | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/varieties.py; src/dzack_research/preamble/categories/rings/commutative_algebra.py; tests/schemes/test_curve_genus_frontier.py` (write) | `19e6c16d; c3f4930c; 1bf827cc` | 2026-09-12T00:27:00Z |
+| `DIVISORS-general-20260912-0030` | divisors / general divisor comparison | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/; tests/divisors/test_general_divisors_frontier.py` (write) | `19e6c16d; 541e10d9` | 2026-09-12T00:30:00Z |
