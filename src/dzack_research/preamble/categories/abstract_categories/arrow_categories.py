@@ -950,16 +950,48 @@ class SubobjectCategory(OwnedCategoryBase):
 
 
 class SuperobjectCategory(CosliceCategory):
-    r"""The category of represented quotient/superobjects of one object."""
+    r"""The category of represented superobjects ``X -> B`` that are monic."""
 
     def super_categories(self):
         return [CosliceCategory(self.base_category(), self.base_object())]
 
     def _accepts_arrow(self, arrow: Morphism) -> bool:
-        return super()._accepts_arrow(arrow) and EpimorphismArrowCategory(self.base_category())._accepts_arrow(arrow)
+        return super()._accepts_arrow(arrow) and MonomorphismArrowCategory(
+            self.base_category()
+        )._accepts_arrow(arrow)
 
     def _repr_(self) -> str:
         return f"Superobjects of {self.base_object()}"
+
+
+class CoveringObjectCategory(SliceCategory):
+    r"""The category of covering objects ``A -> X`` that are epic."""
+
+    def super_categories(self):
+        return [SliceCategory(self.base_category(), self.base_object())]
+
+    def _accepts_arrow(self, arrow: Morphism) -> bool:
+        return super()._accepts_arrow(arrow) and EpimorphismArrowCategory(
+            self.base_category()
+        )._accepts_arrow(arrow)
+
+    def _repr_(self) -> str:
+        return f"Covering objects of {self.base_object()}"
+
+
+class CoveredObjectCategory(CosliceCategory):
+    r"""The category of covered objects ``X -> B`` that are epic."""
+
+    def super_categories(self):
+        return [CosliceCategory(self.base_category(), self.base_object())]
+
+    def _accepts_arrow(self, arrow: Morphism) -> bool:
+        return super()._accepts_arrow(arrow) and EpimorphismArrowCategory(
+            self.base_category()
+        )._accepts_arrow(arrow)
+
+    def _repr_(self) -> str:
+        return f"Covered objects of {self.base_object()}"
 
 
 class FixedWideHomCategory(FixedRestrictedHomCategory):
@@ -1241,6 +1273,20 @@ def SuperobjectsOf(
     return SuperobjectCategory(base_category, base_object)
 
 
+def CoveringObjectsOf(
+    base_category: Category,
+    base_object: Parent,
+) -> CoveringObjectCategory:
+    return CoveringObjectCategory(base_category, base_object)
+
+
+def CoveredObjectsOf(
+    base_category: Category,
+    base_object: Parent,
+) -> CoveredObjectCategory:
+    return CoveredObjectCategory(base_category, base_object)
+
+
 def core_mor(domain: Parent, codomain: Parent) -> CoreHomset:
     r"""Return ``Hom`` in the core of the greatest category holding both objects."""
     return Core(common_category(domain, codomain)).Mor(domain, codomain)
@@ -1278,6 +1324,10 @@ __all__ = [
     "CoreHomset",
     "CosliceCategory",
     "CosliceUnder",
+    "CoveredObjectCategory",
+    "CoveredObjectsOf",
+    "CoveringObjectCategory",
+    "CoveringObjectsOf",
     "EpimorphismArrowCategory",
     "MonomorphismArrowCategory",
     "SliceCategory",

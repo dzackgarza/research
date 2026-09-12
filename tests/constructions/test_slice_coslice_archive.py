@@ -2,16 +2,27 @@ r"""Archived slice/coslice/subobject semantics on the current owned categories."
 
 from dzack_research.preamble.all import (
     CosliceCategory,
+    CoveredObjectCategory,
+    CoveringObjectCategory,
     FreeModule,
     Modules,
     Sets,
     SliceCategory,
     SubobjectCategory,
+    SuperobjectCategory,
     ZZ,
+    set_injection,
+    set_surjection,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/abstract_categories/slice_categories.sage",
+    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def test_slice_retains_the_fixed_codomain_and_identity_edge() -> None:
@@ -68,3 +79,34 @@ def test_subobject_is_the_object_with_its_selected_monomorphism_into_the_fixed_b
     identity = category.Mor(submodule, submodule).identity()
     assert identity.factor_morphism() == Modules(ZZ).Mor(submodule, submodule).identity()
     assert submodule.inclusion() is inclusion
+
+
+def test_superobjects_coverings_and_covered_objects_keep_distinct_arrow_classes() -> None:
+    one = finite_ordered_set(("*",))
+    points = finite_ordered_set(("a", "b"))
+    inclusion = set_injection(one, points, lambda _point: points[0])
+    quotient = set_surjection(points, one, lambda _point: one[0])
+
+    superobjects = SuperobjectCategory(Sets(), one)
+    covering_objects = CoveringObjectCategory(Sets(), one)
+    covered_objects = CoveredObjectCategory(Sets(), points)
+
+    superobject = superobjects(inclusion)
+    covering = covering_objects(quotient)
+    covered = covered_objects(quotient)
+
+    assert superobject.arrow() is inclusion
+    assert covering.arrow() is quotient
+    assert covered.arrow() is quotient
+    assert Sets().Superobjects(one) is superobjects
+    assert Sets().CoveringObjects(one) is covering_objects
+    assert Sets().CoveredObjects(points) is covered_objects
+
+    raw_inclusion = CosliceCategory(Sets(), one)(inclusion)
+    raw_quotient_over_one = SliceCategory(Sets(), one)(quotient)
+    raw_quotient_under_points = CosliceCategory(Sets(), points)(quotient)
+    assert raw_inclusion in superobjects
+    assert raw_inclusion not in CoveredObjectCategory(Sets(), one)
+    assert raw_quotient_over_one in covering_objects
+    assert raw_quotient_under_points in covered_objects
+    assert raw_quotient_under_points not in SuperobjectCategory(Sets(), points)

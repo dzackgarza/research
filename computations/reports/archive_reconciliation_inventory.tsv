@@ -358,31 +358,31 @@ preamble/categories/abstract_categories/products.sage	TensorProductCategory.Pare
 preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.universal_bilinear_map	method	807	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
 preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.pure_tensor	method	812	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
 preamble/categories/abstract_categories/products.sage	TensorProductCategory.ParentMethods.from_bilinear	method	830	0		src/dzack_research/preamble/categories/abstract_categories/products.py	reconciled-live-owner
-preamble/categories/abstract_categories/slice_categories.sage	<module>	module	1	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SliceOverCategory	class	83	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SliceOverCategory.ObjectType	method	87	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SliceOverCategory.super_categories	method	93	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CosliceUnderCategory	class	138	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CosliceUnderCategory.ObjectType	method	142	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CosliceUnderCategory.super_categories	method	148	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SubobjectCategory	class	193	2			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SubobjectCategory.ObjectType	method	197	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SubobjectCategory.super_categories	method	203	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SuperobjectCategory	class	212	2			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SuperobjectCategory.ObjectType	method	216	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	SuperobjectCategory.super_categories	method	222	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CoveringObjectCategory	class	232	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CoveringObjectCategory.ObjectType	method	236	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CoveringObjectCategory.super_categories	method	242	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory	class	252	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory.ObjectType	method	256	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory.super_categories	method	262	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	Slice	function	272	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	Coslice	function	300	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	Superobject	function	328	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	Subobject	function	335	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	Covering	function	342	0			unreviewed
-preamble/categories/abstract_categories/slice_categories.sage	Covered	function	349	0			unreviewed
+preamble/categories/abstract_categories/slice_categories.sage	<module>	module	1	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SliceOverCategory	class	83	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SliceOverCategory.ObjectType	method	87	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SliceOverCategory.super_categories	method	93	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CosliceUnderCategory	class	138	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CosliceUnderCategory.ObjectType	method	142	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CosliceUnderCategory.super_categories	method	148	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SubobjectCategory	class	193	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SubobjectCategory.ObjectType	method	197	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SubobjectCategory.super_categories	method	203	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SuperobjectCategory	class	212	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SuperobjectCategory.ObjectType	method	216	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	SuperobjectCategory.super_categories	method	222	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CoveringObjectCategory	class	232	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CoveringObjectCategory.ObjectType	method	236	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CoveringObjectCategory.super_categories	method	242	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory	class	252	2		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory.ObjectType	method	256	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	CoveredObjectCategory.super_categories	method	262	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	Slice	function	272	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	Coslice	function	300	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	Superobject	function	328	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	Subobject	function	335	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	Covering	function	342	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
+preamble/categories/abstract_categories/slice_categories.sage	Covered	function	349	0		src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py	reconciled-live-owner
 preamble/categories/algebras/algebras.sage	<module>	module	1	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
 preamble/categories/algebras/algebras.sage	AlgebraParent	class	41	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner
 preamble/categories/algebras/algebras.sage	AlgebraParent.base_ring	method	49	0		src/dzack_research/preamble/categories/algebras/algebras.py	reconciled-live-owner

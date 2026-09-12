@@ -482,12 +482,34 @@ class Cat(CategoryPacketMethods, Category):
 
             return SubobjectCategory(self, base_object)
         def SuperobjectCategory(self, base_object: Parent) -> Category:
-            r"""Return the category of superobjects of ``base_object`` here."""
+            r"""Return the category of monic superobjects of ``base_object`` here."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
                 SuperobjectCategory,
             )
 
             return SuperobjectCategory(self, base_object)
+        def CoveringObjectCategory(self, base_object: Parent) -> Category:
+            r"""Return the category of epic objects covering ``base_object`` here."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                CoveringObjectCategory,
+            )
+
+            return CoveringObjectCategory(self, base_object)
+        def CoveredObjectCategory(self, base_object: Parent) -> Category:
+            r"""Return the category of epic quotients covered by ``base_object`` here."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                CoveredObjectCategory,
+            )
+
+            return CoveredObjectCategory(self, base_object)
+        def Subobjects(self, base_object: Parent) -> Category:
+            return self.SubobjectCategory(base_object)
+        def Superobjects(self, base_object: Parent) -> Category:
+            return self.SuperobjectCategory(base_object)
+        def CoveringObjects(self, base_object: Parent) -> Category:
+            return self.CoveringObjectCategory(base_object)
+        def CoveredObjects(self, base_object: Parent) -> Category:
+            return self.CoveredObjectCategory(base_object)
 
     def ArrowCategory(self) -> Category:
         r"""Return the arrow category of ``Cat``.
