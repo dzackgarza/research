@@ -3,6 +3,12 @@ r"""The Horikawa ``(4,4)`` family is built from the shared equivariant cover own
 from dzack_research.preamble.all import QQ, QuadraticField
 from dzack_research.preamble.categories.schemes.k3_families import HorikawaK3Family
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_group_actions_and_isotypics.sage",
+    "live_owner": "tests/schemes/test_horikawa_k3_family.py",
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_branch_section_action_computes_the_source_specified_13_plus_12_split() -> None:
     family = HorikawaK3Family()
@@ -17,6 +23,18 @@ def test_branch_section_action_computes_the_source_specified_13_plus_12_split() 
     assert anti_invariant.module_rank() == 12
     assert invariant.inclusion().codomain() is sections
     assert anti_invariant.inclusion().codomain() is sections
+
+    group = family.branch_linearization().acting_group()
+    generator = next(iter(group.group_generators()))
+    invariant_label = next(iter(invariant.module_generating_set()))
+    anti_invariant_label = next(iter(anti_invariant.module_generating_set()))
+    invariant_section = invariant.inclusion()(invariant.module_generator(invariant_label))
+    anti_invariant_section = anti_invariant.inclusion()(
+        anti_invariant.module_generator(anti_invariant_label)
+    )
+    section_action = family.branch_linearization().section_action_of(generator)
+    assert section_action(invariant_section) == invariant_section
+    assert section_action(anti_invariant_section) == -anti_invariant_section
 
     branch = family.default_branch_section()
     trivial = lambda _element: QQ.one()
