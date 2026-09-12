@@ -492,12 +492,24 @@ def NaturalIsomorphism(
     target: Functor,
     components: Callable[[Parent], Morphism],
     inverse_components: Callable[[Parent], Morphism],
-) -> tuple[NaturalTransformation, NaturalTransformation]:
-    r"""Return mutually inverse natural transformations as a categorical pair."""
-    return (
-        NaturalTransformation(source, target, components),
-        NaturalTransformation(target, source, inverse_components),
+):
+    r"""Return the isomorphism in ``[C,D]`` selected by inverse components.
+
+    The two supplied component families define inverse natural transformations.
+    Their categorical packaging is therefore an isomorphism between the two
+    functor objects, not a Python pair of transformations.
+    """
+    from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+        _isomorphism_from_known_inverse_pair,
     )
+
+    forward = NaturalTransformations(source, target)(
+        NaturalTransformation(source, target, components)
+    )
+    inverse = NaturalTransformations(target, source)(
+        NaturalTransformation(target, source, inverse_components)
+    )
+    return _isomorphism_from_known_inverse_pair(forward, inverse)
 
 
 __all__ = [

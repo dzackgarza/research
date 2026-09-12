@@ -104,6 +104,7 @@ from dzack_research.preamble.categories.abstract_categories.functors import (  #
     DiscreteDiagram,
     DiscreteFunctor,
     DomainFunctor,
+    NaturalIsomorphism,
     NaturalTransformations,
     ObjectSetFunctor,
     compose_functors,
