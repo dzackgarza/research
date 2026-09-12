@@ -1411,98 +1411,98 @@ preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sa
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.vinberg_algorithm	method	194	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.allcock_edgewalk	method	287	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage	HyperbolicLattices.ParentMethods.is_cocompact	method	360	0		src/dzack_research/preamble/categories/hyperbolic_lattices.py	reconciled-live-owner
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	LatticeParent	class	116	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	LatticeElement	class	124	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	FinitelyGeneratedIntegralLattices	class	128	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices	class	138	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods	class	180	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.Aut	method	200	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.decomposition	method	205	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.summands	method	218	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_decomposable	method	226	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.div	method	229	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.gram_of	method	251	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.get_isotropic_type	method	256	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_basis	method	286	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.I_perp_mod_I	method	308	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_lattice_module_generators	method	318	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_embedding	method	322	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_projection	method	326	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.project_to_discriminant_bilinear_form	method	335	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.project_to_discriminant_quadratic_form	method	356	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.divided_discriminant_class	method	364	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.glue	method	371	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.maximal_overlattice	method	425	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.overlattice	method	450	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.local_modification	method	472	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.Isom	method	502	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.Emb	method	513	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.embeds_in_even_unimodular	method	526	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.embed_in_even_unimodular	method	563	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.glue_map	method	617	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_isometric	method	742	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.reflection	method	760	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.eichler_transvection	method	792	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.possible_root_lengths	method	851	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_unimodular	method	911	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.correlation_isomorphism	method	926	1	src/dzack_research/preamble/categories/modules/hodge.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.signature_pair	method	954	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_even	method	974	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.level	method	984	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.genus	method	1024	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_locally_isometric	method	1048	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant	method	1068	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.minimum	method	1088	1	src/dzack_research/preamble/categories/definite_lattices.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.enumerate_short_vectors	method	1117	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_lattice	method	1156	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.correlation	method	1188	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_bilinear_form	method	1201	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_quadratic_form	method	1212	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_group	method	1227	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_coeven	method	1283	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_coodd	method	1299	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.delta	method	1303	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_p_elementary	method	1307	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_elliptic	method	1317	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_parabolic	method	1321	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.declared_generator_name_slots	method	1346	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.with_names	method	1350	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.to_lin_comb_module_generators	method	1362	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.sublattices	method	1391	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.direct_sum	method	1397	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.twist	method	1451	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_similar	method	1471	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.similarity	method	1487	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_representation	method	1508	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_representation_is_surjective	method	1531	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.stable_orthogonal_group	method	1555	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.with_action	method	1573	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.invariant_lattice	method	1605	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.coinvariant_lattice	method	1622	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.formed_coinvariants	method	1626	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods	class	1841	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.div	method	1850	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.primitive_dual	method	1855	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.primitive_dual_in_discriminant_bilinear_form	method	1863	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.primitive_dual_in_discriminant_quadratic_form	method	1869	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.is_primitive	method	1878	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.e_perp_mod_e	method	1903	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	set_zero_dots	function	1916	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus	class	1968	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.signature_pair	method	1992	1	src/dzack_research/preamble/categories/_lattice.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.discriminant_form	method	1996	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.exists	method	2039	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.determinant	method	2056	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.local_symbol	method	2060	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.excess	method	2064	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.level	method	2069	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.representative	method	2073	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.class_number	method	2077	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.representatives	method	2081	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.mass	method	2094	0			unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	register_indecomposable	function	2360	1	src/dzack_research/preamble/categories/lattices.py		unreviewed
-preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	refine_one_lattice	function	2439	0			unreviewed
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	<module>	module	1	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	LatticeParent	class	116	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	LatticeElement	class	124	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	FinitelyGeneratedIntegralLattices	class	128	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices	class	138	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods	class	180	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.Aut	method	200	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.decomposition	method	205	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.summands	method	218	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_decomposable	method	226	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.div	method	229	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.gram_of	method	251	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.get_isotropic_type	method	256	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_basis	method	286	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.I_perp_mod_I	method	308	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_lattice_module_generators	method	318	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_embedding	method	322	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_projection	method	326	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.project_to_discriminant_bilinear_form	method	335	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.project_to_discriminant_quadratic_form	method	356	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.divided_discriminant_class	method	364	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.glue	method	371	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.maximal_overlattice	method	425	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.overlattice	method	450	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.local_modification	method	472	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.Isom	method	502	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.Emb	method	513	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.embeds_in_even_unimodular	method	526	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.embed_in_even_unimodular	method	563	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.glue_map	method	617	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_isometric	method	742	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.reflection	method	760	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.eichler_transvection	method	792	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.possible_root_lengths	method	851	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_unimodular	method	911	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.correlation_isomorphism	method	926	1	src/dzack_research/preamble/categories/modules/hodge.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.signature_pair	method	954	1	src/dzack_research/preamble/categories/_lattice.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_even	method	974	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.level	method	984	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.genus	method	1024	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_locally_isometric	method	1048	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant	method	1068	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.minimum	method	1088	1	src/dzack_research/preamble/categories/definite_lattices.py	src/dzack_research/preamble/categories/definite_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.enumerate_short_vectors	method	1117	0		src/dzack_research/preamble/categories/definite_lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.dual_lattice	method	1156	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.correlation	method	1188	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_bilinear_form	method	1201	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_quadratic_form	method	1212	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_group	method	1227	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_coeven	method	1283	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_coodd	method	1299	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.delta	method	1303	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_p_elementary	method	1307	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_elliptic	method	1317	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_parabolic	method	1321	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.declared_generator_name_slots	method	1346	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.with_names	method	1350	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.to_lin_comb_module_generators	method	1362	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.sublattices	method	1391	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.direct_sum	method	1397	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.twist	method	1451	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.is_similar	method	1471	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.similarity	method	1487	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_representation	method	1508	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.discriminant_representation_is_surjective	method	1531	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.stable_orthogonal_group	method	1555	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.with_action	method	1573	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.invariant_lattice	method	1605	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.coinvariant_lattice	method	1622	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ParentMethods.formed_coinvariants	method	1626	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods	class	1841	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.div	method	1850	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.primitive_dual	method	1855	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.primitive_dual_in_discriminant_bilinear_form	method	1863	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.primitive_dual_in_discriminant_quadratic_form	method	1869	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.is_primitive	method	1878	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	IntegralLattices.ElementMethods.e_perp_mod_e	method	1903	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	set_zero_dots	function	1916	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus	class	1968	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.signature_pair	method	1992	1	src/dzack_research/preamble/categories/_lattice.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.discriminant_form	method	1996	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.exists	method	2039	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.determinant	method	2056	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.local_symbol	method	2060	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.excess	method	2064	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.level	method	2069	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.representative	method	2073	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.class_number	method	2077	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.representatives	method	2081	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	Genus.mass	method	2094	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	register_indecomposable	function	2360	1	src/dzack_research/preamble/categories/lattices.py	src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
+preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage	refine_one_lattice	function	2439	0		src/dzack_research/preamble/categories/lattices.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	<module>	module	1	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_isotropic_orbit_representatives	function	127	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
 preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage	orthogonal_group_line_equivalence_witness	function	144	0		src/dzack_research/preamble/categories/isotropic_orbits.py	reconciled-live-owner
