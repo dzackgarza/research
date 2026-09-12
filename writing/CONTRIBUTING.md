@@ -4330,6 +4330,83 @@ forced by type: $W\to W'$ must act by $\varphi\circ b$, $M\to N$ by
 $b\circ(f\otimes f)$, and the special $\lambda$ is the single $\varphi$
 coming from $R\to\operatorname{End}(W)$.
 
+### `PR-69`: Prose "greatest dimension of a subspace on which $b$ is positive definite" for the hard equations $V\cong P\perp Q\perp\operatorname{rad}(V)$ and $G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ — Sylvester's law hand-waved as language
+
+"Write $p$ for the greatest dimension of a subspace on which $b$ is
+positive definite" looks like a definition by a set-theoretic $\max$,
+but the content is the *existence* of an orthogonal decomposition
+$V\cong P\perp Q\perp\operatorname{rad}(V)$ in $\mathbf{Bil}_{F,F}$ with
+$b_{|P}>0$, $b_{|Q}<0$, and its invariance — Sylvester's law — i.e.
+$G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ for a framed $((V,e),b)$
+and $(p,q,r)$ with $p+q+r=n$ as the $\operatorname{GL}_n(F)$-congruence
+invariant, with $p=\max\{\dim U\mid b_{|U}>0\}$ *attained* and
+$p+q+r=n$. The prose hides that a maximum (not just supremum) exists,
+that $p,q$ are well-defined (independent of the $U$ attaining them),
+that $p+q+r=n$, and that $(p,q,r)$ classifies $b$ up to isometry — all
+of which are the orthogonal diagonalization, not language.
+
+Concrete standard — state the equations, then $p,q,r$ are the normal
+form:
+
+"::: {#def-signature} **Definition.** Let $F$ be ordered, $V\in\mathbf{Vect}_F$
+finite-dimensional, $b\colon V\otimes V\to F$ symmetric. Put
+$\operatorname{rad}(V):=\ker(V\xrightarrow{b^{\sharp}}V^\vee)$,
+$r:=\dim_F\operatorname{rad}(V)$. By Sylvester there exists an orthogonal
+$V\cong P\perp Q\perp\operatorname{rad}(V)$ with $b_{|P}>0$,
+$b_{|Q}<0$; put $p:=\dim_FP$, $q:=\dim_FQ$. Then $p+q+r=\dim_FV$ and
+$G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ for any ordered basis $e$.
+The triple $(p,q,r)$ is the **signature** of $b$. In particular
+$p=\max\{\dim U\mid b_{|U}>0\}$ and $q=\max\{\dim U\mid b_{|U}<0\}$ are
+attained. :::"
+
+**Banned:** the block as stated — "$p$ is the greatest dimension of a
+subspace on which $b$ is positive definite" with no $V\cong P\perp
+Q\perp\operatorname{rad}$, no $G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$,
+no Sylvester.
+
+**Preferred:** define $p,q,r$ via the orthogonal sum and the Gram normal
+form as above, with $b_{|P}>0$ / $b_{|Q}<0$ as $R$-submodule conditions,
+then note $p,q$ as the attained maxima as a *consequence*.
+
+### `PR-70`: Overly restricted hypotheses to avoid the sup — $F$ ordered, $V$ finite-dimensional, "$\max$" instead of "$\sup$" on $F$ / the flag variety
+
+"Let $F$ be an ordered field and $V$ finite-dimensional, $p:=\max\dim U$
+with $b_{|U}>0$" restricts to the case where the invariant is a
+*maximum* over subspaces, so it can be stated as "$\max$" with
+$p+q+r=n<\infty$ without ever saying "sup." The general
+($F$ ordered, $b\colon V\otimes V\to F$ symmetric, $V$ arbitrary
+$F$-vector space, possibly infinite-dimensional) is not harder: put
+
+* $p:=\sup\{\dim_FU\mid U\subseteq V,\ b_{|U}>0\}$ and
+  $q:=\sup\{\dim_FU\mid b_{|U}<0\}$ as suprema in $\mathbf{Card}$ (or
+  $\mathbb N\cup\{\infty\}$ in the countable case), $r:=\dim_F\operatorname{rad}(V)$
+  with $\operatorname{rad}(V):=\ker(b^{\sharp})$,
+
+as suprema over the flag variety $\operatorname{Gr}(V)$ of subspaces /
+over $F$-points of the variety of $b$-positive flags — i.e. a sup in $F$
+with its order topology / on $\mathrm{Fl}(V)$. The signature is
+$(p,q,r)\in\mathbf{Card}^3$.
+
+Then the finite-dimensional case is the *remark* that the suprema are
+attained and $p+q+r=\dim_FV=n$, so "$\sup$" can be written "$\max$" and
+$G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ via Sylvester; the
+definition itself needs no finiteness.
+
+Stating it only for $V$ finite-dimensional and as "$\max$" avoids ever
+saying "sup" (in $F$ or on $\mathrm{Fl}(V)$) and lets well-definedness be
+the elementary "$\max$ over finitely many dimensions" instead of the
+one-line sup that already works generally.
+
+**Banned:** the block as stated with "$F$ ordered, $V$ finite-dimensional,
+$p$ is the greatest dimension …" as the *definition* of signature.
+
+**Preferred:** define $(p,q,r)$ via the suprema as above for arbitrary
+$V$ (fenced, with $\operatorname{rad}(V)$ via $b^{\sharp}$), then add:
+"::: {.Remark} When $\dim_FV=n<\infty$, the suprema are attained, $p$ and
+$q$ are the greatest dimensions, $p+q+r=n$, and $G_e(b)\cong\operatorname{diag}
+(1^p,-1^q,0^r)$. :::" The finite case as specialization, not the
+definition.
+
 ### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
 
 A fenced `Definition` is an atomic unit with one logical status: it
@@ -4973,6 +5050,19 @@ R^{(I)},W)$, $b(v,w)=\langle v,Aw\rangle$ with $A$ symmetric $\iff$
 self-adjoint) as a Proposition with honest hypotheses, not as the
 definition. The diagram is preferable because it already is the general
 case.
+
+**31. Signature as prose "greatest dimension" vs. hard equations, and
+overly restricted $V$ finite-dimensional.** "$p$ is the greatest dimension
+of a subspace on which $b$ is positive definite" hand-waves the
+orthogonal $V\cong P\perp Q\perp\operatorname{rad}(V)$ and
+$G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$ (Sylvester's law) that
+makes $p,q,r$ well-defined and isometry-invariant (PR-69). The general
+$F$ ordered, $V$ arbitrary, is no harder: $p:=\sup\{\dim U\mid b_{|U}>0\}$,
+$q:=\sup\{\dim U\mid b_{|U}<0\}$ in $\mathbf{Card}$ / on
+$\mathrm{Gr}(V)$ / $\mathrm{Fl}(V)$, $r:=\dim\operatorname{rad}(V)$,
+$(p,q,r)\in\mathbf{Card}^3$ (PR-70); the finite $V$ with "$\max$" and
+$p+q+r=n$ is the specialization where the suprema are attained, not the
+definition.
 
 **29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
 $\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
