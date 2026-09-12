@@ -386,6 +386,31 @@ restart of the module/algebra/action constructions.
 
 ### Constructor and ownership convergence
 
+- [ ] **`gate-ruff-paydown`**. **Needs:** none.
+
+  The commit gate is red on `ruff check found issues in project code`, independently of what
+  any single commit stages. While it stays red, every worker either endures it as a
+  pre-existing condition or reaches for a bypass, and the gate stops distinguishing this
+  commit from the hundred before it. Clear the findings at their owners — not by widening
+  excludes, adding per-file ignores, or annotating commit subjects — so the gate carries
+  information again. First encounter with it is the current unit, ahead of new mathematics.
+
+- [ ] **`localization-fraction-field`**. **Needs:** none.
+
+  COMPLAINTS.md, "Localization must define its fraction-field specialization": the
+  specialization is required by consumers and does not exist. Promoted from prose so it can be
+  selected and closed like any other node.
+
+- [ ] **`completion-as-limit`**. **Needs:** none.
+
+  COMPLAINTS.md, "Completion must be a limit rather than one quotient": the current completion
+  is a single quotient, which is not the object the consumers need. Promoted from prose.
+
+- [ ] **`cohomology-boundary-contract`**. **Needs:** none.
+
+  COMPLAINTS.md, "Cohomology needs a common complex contract in boundary degrees": boundary
+  degrees have no shared contract, so each consumer reinvents one. Promoted from prose.
+
 - [ ] **`constructor-convergence`**. **Needs:** none.
   Close the surviving alternate-constructor and private-access paths, one
   mathematical construction family with its consumers per release.
