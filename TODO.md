@@ -388,18 +388,21 @@ restart of the module/algebra/action constructions.
 
 - [ ] **`ruff-autofix-mechanism`**. **Needs:** none.
 
-  The shared gate runs `ruff check --fix` on every commit with `fixable = ["ALL"]` in
-  `ai-review-ci/tool-configs/ruff-global.toml`, and `select` includes `I` (isort). In this
-  repository import order is load-bearing — `preamble/all.py` carries a comment saying
-  `language_runtime.install()` must run before the imports that follow it, and the autofix
-  moved it anyway. Curating the result by hand cannot hold: the fix regenerates on the next
-  commit, which is how 324 files of reordering accumulated uncommitted.
+  The shared gate runs `ruff check --fix` on every commit with `fixable = ["ALL"]` and `select`
+  including `I` (isort), so anything reverted by hand is reapplied on the next commit. That is
+  how 324 files of reordering accumulated uncommitted rather than being resolved.
 
-  Fix the mechanism, not the output. Identify every module here whose import order or import
-  side effects are semantically required, and make the autofix unable to reorder them — a
-  scoped `I001` exclusion for those files, or an explicit ordering the rule already agrees
-  with. The acceptance is that running the gate twice in a row produces no diff on those files.
-  Only then curate whatever autofix output remains.
+  The repository-side cause is one file. `preamble/all.py` calls
+  `language_runtime.install()` at module level between its imports, which makes the imports
+  after it order-dependent and forces the only `# noqa: E402` in `src/`. Nothing else in the
+  tree carries that suppression. The remedy is to remove the dependency, not to exempt the
+  file: move the install so it happens on import of a dedicated module that `all.py` imports
+  first, so every import in `all.py` can sit at the top and isort has nothing left to break.
+
+  **Acceptance:** `src/` contains no `# noqa: E402`, and running the gate twice in a row
+  produces no diff. Only then judge the remaining autofix output — with that one file fixed,
+  the rest is ordinary import sorting and unused-import removal, and the question for it is
+  narrower: whether any removed import existed for a side effect.
 
 - [ ] **`gate-ruff-paydown`**. **Needs:** `ruff-autofix-mechanism`.
 
