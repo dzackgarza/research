@@ -1,6 +1,6 @@
 r"""Archive reconciliation for reversible weighted Gram-graph presentations."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.forms.gram_matrices import (
     GramTensorGraph,
     gram_tensor_from_graph,

@@ -1,6 +1,6 @@
 from dzack_research.preamble.all import (
-    Lattices,
     ZZ,
+    Lattices,
     finite_ordered_set,
     vector_configuration,
 )

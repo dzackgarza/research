@@ -5,7 +5,7 @@ ordinary owned modules, subobjects and cohomology quotients; no CAP object is
 part of the assertions.
 """
 
-from dzack_research.preamble.all import PolynomialRing, ZZ
+from dzack_research.preamble.all import ZZ, PolynomialRing
 from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 from dzack_research.preamble.categories.modules import (
     BasedFreeModule,

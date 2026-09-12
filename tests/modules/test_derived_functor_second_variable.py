@@ -1,13 +1,13 @@
 r"""Tor and Ext retain their functoriality in the second module variable."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     Ext,
     ExtMap,
     FinitelyPresentedModule,
     FreeModule,
     Tor,
     TorMap,
-    ZZ,
 )
 
 

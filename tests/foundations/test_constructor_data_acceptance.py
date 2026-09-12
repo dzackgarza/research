@@ -1,11 +1,11 @@
 from dzack_research.preamble.all import (
+    QQ,
     AdditiveGroups,
     Algebras,
     BasedFreeModule,
     BilinearMap,
     MatrixSpace,
     Modules,
-    QQ,
     TensorProduct,
     finite_ordered_set,
     ring_morphism,

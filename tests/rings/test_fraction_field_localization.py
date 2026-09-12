@@ -1,12 +1,12 @@
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     BasedFreeModule,
     Localization,
     NumberField,
     PolynomialRing,
-    QQ,
-    ZZ,
 )
 from dzack_research.preamble.categories.functors.module_localization import (
     module_localization_functor,

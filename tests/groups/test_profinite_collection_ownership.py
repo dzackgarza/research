@@ -1,8 +1,8 @@
 from dzack_research.preamble.all import (
+    QQ,
     AbsoluteGaloisGroup,
     NumberField,
     PolynomialRing,
-    QQ,
     QuadraticField,
     exact_embeddings,
 )

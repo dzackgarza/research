@@ -3,11 +3,11 @@ r"""Maps and ideal extensions attached to represented adic completions."""
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
     ArtinianRings,
     CompleteLocalRings,
     FinitelyPresentedAlgebraOn,
     PolynomialRing,
-    QQ,
     algebra_homset,
 )
 

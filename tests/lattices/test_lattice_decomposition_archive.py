@@ -6,7 +6,7 @@ keeps that representation-sensitive contract: it does not run an unrelated
 indecomposability algorithm on an arbitrary Gram matrix.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_archived_orthogonal_sum_decomposition_retains_actual_summand_embeddings() -> None:

@@ -2,7 +2,7 @@ r"""Archive reconciliation for total group generator-count queries."""
 
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import Groups, QQ
+from dzack_research.preamble.all import QQ, Groups
 
 
 def test_group_without_chosen_generators_answers_unknown_instead_of_raising() -> None:

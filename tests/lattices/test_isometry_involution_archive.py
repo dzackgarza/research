@@ -1,6 +1,6 @@
 r"""Archived involution predicate on live lattice isometries."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_identity_and_root_reflection_are_involutions() -> None:

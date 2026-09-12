@@ -3,11 +3,11 @@ r"""Archive reconciliation for corestriction of algebra maps to the centre."""
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
     AlternatingAlgebraOn,
     FreeAlgebraOn,
     MatrixSpace,
     OwnedRings,
-    QQ,
 )
 from dzack_research.preamble.categories.algebras.algebras import algebra_homset
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (

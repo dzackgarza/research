@@ -4,7 +4,6 @@ import json
 import subprocess
 import sys
 
-
 _SESSION_SCRIPT = r'''
 import json
 import sys

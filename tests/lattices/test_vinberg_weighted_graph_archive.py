@@ -1,12 +1,13 @@
 r"""Archive-required operations on owned projectively weighted Vinberg graphs."""
 
+from sage.rings.integer_ring import ZZ as SageZZ
+
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.vinberg_invariants import (
     VinbergInvariantMatrices,
     projective_weighted_graph,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from sage.rings.integer_ring import ZZ as SageZZ
 
 
 def test_induced_weighted_subgraph_retains_exact_vertex_and_edge_weights() -> None:

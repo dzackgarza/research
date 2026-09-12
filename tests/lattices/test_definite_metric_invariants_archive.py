@@ -10,7 +10,7 @@ lattice and the nonorthogonal root lattice ``A2``.
 
 from sage.symbolic.constants import pi
 
-from dzack_research.preamble.all import Lattices, QQ, RR, ZZ
+from dzack_research.preamble.all import QQ, RR, ZZ, Lattices
 
 
 def test_archived_square_lattice_metric_invariants_are_exact() -> None:

@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.group.profinite.profinite_groups import 
     ProfiniteGroups,
 )
 
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/profinite/profinite_groups.sage",
     "live_owner": "src/dzack_research/preamble/categories/group/profinite/profinite_groups.py",

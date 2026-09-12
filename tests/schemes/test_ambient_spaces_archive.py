@@ -1,11 +1,11 @@
 """Archive reconciliation for the ambient affine/projective space constructors."""
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSpace,
     AffineSpaces,
     ProjectiveSpace,
     ProjectiveSpaces,
-    QQ,
 )
 
 ARCHIVE_RECONCILIATION = {

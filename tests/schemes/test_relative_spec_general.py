@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import PolynomialRing, QQ, Spec
+from dzack_research.preamble.all import QQ, PolynomialRing, Spec
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Isomorphism
 from dzack_research.preamble.categories.schemes.schemes import affine_spec_morphism
 

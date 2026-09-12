@@ -1,15 +1,15 @@
 """General divisor theory beyond torus-invariant presentations."""
 
 from dzack_research.preamble.all import (
-    FreeModule,
+    QQ,
+    ZZ,
     FinitelyPresentedModule,
+    FreeModule,
     PolynomialRing,
     ProjectiveSpace,
-    QQ,
     QuadraticField,
     QuotientRing,
     Spec,
-    ZZ,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroup,

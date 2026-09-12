@@ -3,12 +3,12 @@ r"""Archive reconciliation for the owned plane-curve constructor."""
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSpace,
     ClosedSubschemes,
     Curves,
     PolynomialRing,
     ProjectiveSpace,
-    QQ,
 )
 from dzack_research.preamble.categories.schemes import Curve
 

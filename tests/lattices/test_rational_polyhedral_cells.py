@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_square_voronoi_cell_retains_facets_incidence_and_stabilizers() -> None:

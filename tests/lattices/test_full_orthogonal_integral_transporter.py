@@ -1,9 +1,9 @@
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     FreeModule,
     Lattices,
     Modules,
-    QQ,
-    ZZ,
     integral_transporter,
     module_embedding,
 )

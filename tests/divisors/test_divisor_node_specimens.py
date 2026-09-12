@@ -1,19 +1,18 @@
 """The three separating specimens for general divisor-class theory."""
 
 from dzack_research.preamble.all import (
-    FreeModule,
+    QQ,
+    ZZ,
     FinitelyPresentedModule,
+    FreeModule,
     PolynomialRing,
     ProjectiveSpace,
-    QQ,
     QuadraticField,
     QuotientRing,
     Spec,
-    ZZ,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroup
 from dzack_research.preamble.categories.divisors.general_divisors import (
-    DivisorClassTheory,
     affine_normal_weil_divisor_group,
     projective_space_divisor_class_theory,
     trivial_picard_group,

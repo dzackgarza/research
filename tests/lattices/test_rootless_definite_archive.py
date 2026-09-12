@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the zero root sublattice of a rootless definite lattice."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_rootless_definite_lattice_has_the_zero_embedded_root_sublattice() -> None:

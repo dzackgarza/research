@@ -1,8 +1,8 @@
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
+from dzack_research.preamble.categories import lattice_engines
 from dzack_research.preamble.categories.reduction_complexes import (
     _perfect_domain_traversal_from_records,
 )
-from dzack_research.preamble.categories import lattice_engines
 
 
 def test_full_adjacency_records_cross_to_cells_stabilizers_and_transporters() -> None:

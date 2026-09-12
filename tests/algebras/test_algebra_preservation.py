@@ -1,6 +1,6 @@
 r"""Preservation surfaces for shared center and algebra-cokernel constructions."""
 
-from dzack_research.preamble.all import Algebras, MatrixSpace, Modules, QQ
+from dzack_research.preamble.all import QQ, Algebras, MatrixSpace, Modules
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     TensorProduct,
 )

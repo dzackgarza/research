@@ -2,7 +2,7 @@ r"""Archived finite-isometry structure descriptions at the live group owner."""
 
 import pytest
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_rank_one_root_lattice_has_cyclic_order_two_orthogonal_group() -> None:

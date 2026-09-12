@@ -1,6 +1,6 @@
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import Lattices, MatrixSpace, ZZ
+from dzack_research.preamble.all import ZZ, Lattices, MatrixSpace
 
 
 def test_isometry_to_returns_a_live_lattice_isometry_for_an_identical_lattice() -> None:

@@ -13,7 +13,6 @@ from collections import Counter
 from pathlib import Path
 
 import dzack_research
-
 from dzack_research.preamble.all import Sterk
 
 ARCHIVE_RECONCILIATIONS = (

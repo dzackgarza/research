@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, ZZ, isometry_primitive_extension
+from dzack_research.preamble.all import ZZ, Lattices, isometry_primitive_extension
 
 
 def test_glue_graph_is_an_owned_finite_set_of_actual_discriminant_elements() -> None:

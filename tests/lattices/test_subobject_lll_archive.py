@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_subobject_lll.sage",

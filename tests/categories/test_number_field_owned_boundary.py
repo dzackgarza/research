@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import AA, QuadraticField, ZZ
+from dzack_research.preamble.all import AA, ZZ, QuadraticField
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.rings.number_fields import (
     NumberFieldsWithChosenPrimitiveElement,

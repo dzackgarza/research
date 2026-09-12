@@ -1,6 +1,6 @@
 r"""Archive reconciliation for isotropy and left orthogonality of formed elements."""
 
-from dzack_research.preamble.all import BilinearForms, FormModule, FreeModule, ZZ
+from dzack_research.preamble.all import ZZ, BilinearForms, FormModule, FreeModule
 
 
 def test_isotropy_and_left_orthogonality_are_element_predicates() -> None:

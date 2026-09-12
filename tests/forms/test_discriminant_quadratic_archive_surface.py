@@ -5,7 +5,7 @@ bilinear polarizations, while retaining normal forms, Brown invariants,
 metabolizers and orthogonal automorphisms on the same finite quadratic object.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
     DiscriminantBilinearModules,
     DiscriminantQuadraticModules,

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the decorated two-dimensional ADE SVG view."""
 
-from dzack_research.preamble.all import ADELogPair, QQ
+from dzack_research.preamble.all import QQ, ADELogPair
 
 
 def test_ade_svg_retains_the_distinguished_point_and_side_decorations() -> None:

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the group-ring and underlying-module functors."""
 
-from dzack_research.preamble.all import GF, Groups, PolynomialRing, ZZ, group_homset
+from dzack_research.preamble.all import GF, ZZ, Groups, PolynomialRing, group_homset
 from dzack_research.preamble.categories.algebras import (
     FreeModuleOnGroupFunctor,
     GroupAlgebraFunctor,

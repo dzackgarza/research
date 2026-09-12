@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.reduction_complexes import (
     rational_reduction_cell,
     rational_reduction_complex_exploration,

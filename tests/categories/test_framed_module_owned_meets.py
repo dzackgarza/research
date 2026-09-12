@@ -4,8 +4,8 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
     FinitelyPresentedModule,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
-    FreeModuleOn,
     FramedFreeModules,
+    FreeModuleOn,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,

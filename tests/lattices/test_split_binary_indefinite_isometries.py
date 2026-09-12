@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_split_binary_indefinite_isometry_returns_an_actual_witness() -> None:

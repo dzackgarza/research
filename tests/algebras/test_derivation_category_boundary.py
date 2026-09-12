@@ -7,7 +7,7 @@ from dzack_research.preamble.categories.algebras import (
     KahlerDifferentials,
     SymmetricAlgebraOn,
 )
-from dzack_research.preamble.categories.modules import ModuleSubobjects, Modules, ring_as_module
+from dzack_research.preamble.categories.modules import Modules, ModuleSubobjects, ring_as_module
 
 
 def test_derivation_space_retains_module_subobject_and_inclusion_structure() -> None:

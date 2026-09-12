@@ -7,7 +7,7 @@ retains the distinguished element.  Nested distinguished opens retain their
 actual inclusion morphism as well.
 """
 
-from dzack_research.preamble.all import AffineSpace, OpenImmersions, QQ, Schemes
+from dzack_research.preamble.all import QQ, AffineSpace, OpenImmersions, Schemes
 
 
 def test_distinguished_open_is_the_live_open_subobject_with_localized_algebra() -> None:

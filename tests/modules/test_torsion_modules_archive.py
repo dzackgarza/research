@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the torsion-module category."""
 
-from dzack_research.preamble.all import FinitelyPresentedTorsionModules, TorsionModules, ZZ
+from dzack_research.preamble.all import ZZ, FinitelyPresentedTorsionModules, TorsionModules
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
 )

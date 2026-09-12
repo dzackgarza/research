@@ -7,7 +7,7 @@ subgroup in the discriminant form of that sum, and the quotient identification
 the current ``VectorPrimitiveExtension`` object.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/vector_orbits.sage",

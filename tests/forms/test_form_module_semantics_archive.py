@@ -1,6 +1,6 @@
 r"""Archive reconciliation for formed-module categories and exact form morphisms."""
 
-from dzack_research.preamble.all import BasedFreeModule, ZZ, finite_ordered_set
+from dzack_research.preamble.all import ZZ, BasedFreeModule, finite_ordered_set
 from dzack_research.preamble.categories.forms import BilinearForms, QuadraticForms
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     BilinearFormModules,

@@ -7,11 +7,10 @@ archive without reinstating its separate module hierarchy.
 """
 
 import pytest
-
 from sage.all import SR, exp, sin
 from sage.rings.infinity import Infinity
 
-from dzack_research.preamble.all import C, Lp, RR
+from dzack_research.preamble.all import RR, C, Lp
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/pure/function_modules.sage",
@@ -99,7 +98,7 @@ def test_archived_integral_fallback_decides_two_nonstructural_symbolic_cases() -
 
 
 def test_archived_finite_formed_module_still_has_a_gram_matrix() -> None:
-    from dzack_research.preamble.all import Lattices, ZZ
+    from dzack_research.preamble.all import ZZ, Lattices
 
     root_lattice = Lattices(ZZ)("A2")
     assert root_lattice.gram_matrix().list() == [-2, 1, 1, -2]

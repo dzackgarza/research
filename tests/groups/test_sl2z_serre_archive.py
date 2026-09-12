@@ -6,7 +6,7 @@ the preamble: this is an infinite arithmetic group with a selected pair of
 generators.
 """
 
-from dzack_research.preamble.all import Groups, ZZ
+from dzack_research.preamble.all import ZZ, Groups
 from dzack_research.preamble.categories.group.groups import (
     GroupsWithChosenFiniteGeneratingSet,
     OwnedFinitelyGeneratedGroups,

@@ -1,11 +1,11 @@
 import pytest
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModuleOn,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from sage.rings.integer_ring import ZZ as SageZZ
 
 
 def test_free_module_on_one_owned_ring_and_index_set_is_one_object() -> None:

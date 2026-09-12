@@ -3,8 +3,8 @@ from dzack_research.preamble.categories.reduction_complexes import (
     _perfect_domain_traversal_from_records,
     marked_reduction_cell,
 )
-from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 
 
 def _completed_single_orbit_traversal():

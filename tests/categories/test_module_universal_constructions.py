@@ -1,6 +1,6 @@
 import pytest
 
-from dzack_research.preamble.all import BasedFreeModule, ZZ, module_homset
+from dzack_research.preamble.all import ZZ, BasedFreeModule, module_homset
 from dzack_research.preamble.categories.abstract_categories.constructions import (
     Coequalizer,
     CoequalizerConstruction,
@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
     Product,
     ProductConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
 from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
     ColimitsOfCategory,
@@ -22,16 +23,15 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     PosetCategory,
     restrict_diagram,
 )
-from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.functors.core import (
     Functor,
     IdentityFunctor,
     NaturalTransformation,
 )
 from dzack_research.preamble.categories.sets import NN, cartesian_product_of, finite_ordered_set
+from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
 def test_module_equalizer_is_the_apex_of_its_actual_universal_cone() -> None:
@@ -72,7 +72,7 @@ def test_module_coequalizer_is_the_apex_of_its_actual_universal_cocone() -> None
     source = BasedFreeModule(ZZ, finite_ordered_set(("t",)))
     plane = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     target = BasedFreeModule(ZZ, finite_ordered_set(("z",)))
-    t = source.module_generator("t")
+    source.module_generator("t")
     x, y = plane.module_generators()
     z = target.module_generator("z")
 

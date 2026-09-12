@@ -7,7 +7,7 @@ These specimens keep those mathematical requirements without restoring the
 archived wrapper.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/subobjects.sage",

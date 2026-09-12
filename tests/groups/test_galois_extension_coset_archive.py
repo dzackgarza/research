@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import NumberField, PolynomialRing, QQ, QuadraticField
+from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )

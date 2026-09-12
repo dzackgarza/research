@@ -1,7 +1,8 @@
-from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories import lattice_engines
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from sage.rings.integer_ring import ZZ as SageZZ
+
+from dzack_research.preamble.categories import lattice_engines
+from dzack_research.preamble.categories.lattices import Lattices
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 def test_oscar_supplies_an_actual_indefinite_integral_isometry() -> None:

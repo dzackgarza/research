@@ -7,14 +7,14 @@ installed compatibility layer.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     CommutativeRings,
     MatrixSpace,
     Modules,
     OwnedRings,
     PrimeField,
     PrimeFields,
-    QQ,
-    ZZ,
 )
 
 

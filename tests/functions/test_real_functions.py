@@ -1,7 +1,6 @@
 from sage.all import (
     QQ,
     SR,
-    ZZ,
     Integer,
     LaurentPolynomialRing,
     LaurentSeriesRing,
@@ -19,14 +18,14 @@ from sage.rings.infinity import Infinity
 from sage.rings.semirings.non_negative_integer_semiring import NN
 
 from dzack_research.preamble.all import (
-    CommutativeAlgebras,
+    RR,
     Algebras,
     C,
-    FormModules,
+    CommutativeAlgebras,
     FormedModules,
+    FormModules,
     Lp,
     PairedModules,
-    RR,
     SymmetricBilinearFormModules,
     VectorSpaces,
     ell,

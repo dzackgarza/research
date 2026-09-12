@@ -5,8 +5,7 @@ vacuous.  They assert the actual bilinear form on pure tensors and its
 compatibility with orthogonal direct sums, rather than only comparing ranks.
 """
 
-from dzack_research.preamble.all import BilinearMap, Lattices, ZZ, module_homset
-
+from dzack_research.preamble.all import ZZ, BilinearMap, Lattices, module_homset
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_tensor_and_direct_sum.sage",

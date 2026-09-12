@@ -6,7 +6,7 @@ represented isometries.  The live homset keeps those operations directly; the
 specimens below retain the actual equation defining the torsor action.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_archived_isom_homset_is_acted_on_by_the_codomain_orthogonal_group() -> None:
@@ -27,7 +27,7 @@ def test_archived_isom_homset_is_acted_on_by_the_codomain_orthogonal_group() -> 
 def test_archived_isom_transporter_is_the_postcomposition_torsor_difference() -> None:
     lattice = Lattices(ZZ)("A2")
     homset = lattice.Isom(lattice)
-    identity = homset.identity()
+    homset.identity()
     first_root, second_root = lattice.module_generators()
     first = lattice.reflection(first_root)
     second = lattice.reflection(second_root) * first

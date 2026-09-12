@@ -231,7 +231,7 @@ def test_module_morphism_lifts_to_the_selected_presentation_diagrams() -> None:
     assert square.domain() is source.presentation_object()
     assert square.codomain() is target.presentation_object()
     assert square.right() * source.presentation() == target.presentation() * square.left()
-    source_projection = source.presentation_projection()
+    source.presentation_projection()
     target_projection = target.presentation_projection()
     for label in source.module_generating_set():
         lifted = square.right()(source.presentation().codomain().module_generator(label))

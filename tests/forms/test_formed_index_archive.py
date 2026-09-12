@@ -2,7 +2,7 @@ r"""Archive reconciliation for tensor index operations owned by formed modules."
 
 import pytest
 
-from dzack_research.preamble.all import BilinearForm, FreeModule, QQ, ZZ, tensor
+from dzack_research.preamble.all import QQ, ZZ, BilinearForm, FreeModule, tensor
 
 
 def test_formed_module_raises_and_lowers_the_same_tensor_indices_as_the_tensor_owner() -> None:

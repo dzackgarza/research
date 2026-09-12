@@ -1,6 +1,7 @@
 r"""Archive reconciliation for the five divisor-group role categories."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     CartierDivisorGroup,
     CartierDivisorGroups,
     ClassGroup,
@@ -15,7 +16,6 @@ from dzack_research.preamble.all import (
     Set,
     WeilDivisorGroup,
     WeilDivisorGroups,
-    ZZ,
 )
 
 ARCHIVE_RECONCILIATIONS = (

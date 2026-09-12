@@ -1,6 +1,6 @@
 r"""Archive reconciliation for multiplication endomorphisms of number fields."""
 
-from dzack_research.preamble.all import NumberField, PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, NumberField, PolynomialRing
 
 
 def _quadratic_field():

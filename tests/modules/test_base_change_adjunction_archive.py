@@ -9,10 +9,10 @@ an object-level base-change operation.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
     FinitelyPresentedAlgebra,
     FreeModule,
     Modules,
-    QQ,
     SymmetricAlgebraOn,
 )
 

@@ -1,14 +1,14 @@
 """Canonical grading witnesses use the category's selected grading monoid."""
 
 from dzack_research.preamble.all import (
+    NN,
+    ZZ,
     GradedAlgebras,
     GradedCommutativeAlgebras,
     GradedModules,
     Modules,
-    NN,
     StrictlyGradedCommutativeAlgebras,
     Zmod,
-    ZZ,
 )
 
 

@@ -1,6 +1,6 @@
 """Archive reconciliation for scheme points as morphisms in Sch/S."""
 
-from dzack_research.preamble.all import AffineSpace, QQ, Schemes, Spec
+from dzack_research.preamble.all import QQ, AffineSpace, Schemes, Spec
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/schemes/scheme_points.sage",

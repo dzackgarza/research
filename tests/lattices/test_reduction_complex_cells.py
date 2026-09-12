@@ -1,10 +1,10 @@
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.categories.reduction_complexes import (
     rational_reduction_cell,
 )
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
 
 def test_exact_rational_cells_retain_walls_rays_and_facet_incidence() -> None:

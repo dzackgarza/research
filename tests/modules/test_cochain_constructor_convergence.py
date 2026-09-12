@@ -1,17 +1,17 @@
 r"""Every public cochain route delegates to the category-owned construction."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     BasedFreeModule,
     CochainComplex,
-    CochainComplexFromFamily,
     CochainComplexes,
-    ZZ,
+    CochainComplexFromFamily,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 
 
 def _two_term_data():

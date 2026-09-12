@@ -8,7 +8,7 @@ retain stronger information when it is genuinely available.
 
 import pytest
 
-from dzack_research.preamble.all import FinitelyPresentedAlgebraOn, PolynomialRing, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, FinitelyPresentedAlgebraOn, PolynomialRing
 from dzack_research.preamble.rings import Zp
 
 

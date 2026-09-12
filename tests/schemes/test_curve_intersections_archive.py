@@ -6,7 +6,7 @@ multiplicity ``1`` where their linear parts are independent; at ``(1,1)`` the
 two gradients are independent.
 """
 
-from dzack_research.preamble.all import AffineSpace, QQ
+from dzack_research.preamble.all import QQ, AffineSpace
 
 
 def test_two_cuspidal_plane_curves_have_distinct_local_intersection_multiplicities() -> None:

@@ -7,7 +7,7 @@ that theorem-level property independently of whether a chosen generator list
 is currently materialized.
 """
 
-from dzack_research.preamble.all import Groups, ZZ
+from dzack_research.preamble.all import ZZ, Groups
 from dzack_research.preamble.categories.group.groups import (
     OwnedFinitelyGeneratedGroups,
 )

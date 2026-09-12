@@ -2,7 +2,7 @@ r"""Archive reconciliation for exact vectors close to a rational target."""
 
 from sage.rings.rational_field import QQ as SageQQ
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.definite_lattices import close_vectors
 
 

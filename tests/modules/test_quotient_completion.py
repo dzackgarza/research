@@ -1,9 +1,9 @@
 r"""Noetherian quotient/completion comparison through the canonical maps."""
 
 from dzack_research.preamble.all import (
+    QQ,
     BasedFreeModule,
     PolynomialRing,
-    QQ,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set

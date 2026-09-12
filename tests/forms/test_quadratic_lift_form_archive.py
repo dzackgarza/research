@@ -2,7 +2,7 @@ r"""Archive reconciliation for the chosen bilinear lift of a quadratic form."""
 
 import pytest
 
-from dzack_research.preamble.all import QuadraticMap, ZZ, ring_as_module
+from dzack_research.preamble.all import ZZ, QuadraticMap, ring_as_module
 
 
 def test_coordinate_quadratic_form_retains_its_bilinear_lift_as_a_form() -> None:

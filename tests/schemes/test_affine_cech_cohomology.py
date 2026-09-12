@@ -1,6 +1,8 @@
 r"""Non-toric coherent cohomology from affine acyclicity."""
 
-from dzack_research.preamble.all import FreeModule, PolynomialRing, QQ, QuotientRing, Spec
+from dzack_research.preamble.all import QQ, FreeModule, PolynomialRing, QuotientRing, Spec
+from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
+from dzack_research.preamble.categories.modules.cochain_complexes import cochain_homset
 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
     AffineCoverRefinementCohomologyMap,
     AffineGeometricCohomology,
@@ -8,8 +10,6 @@ from dzack_research.preamble.categories.schemes.geometric_cohomology import (
     AffineGeometricCohomologyComplexes,
     AffineGeometricScalarCohomologyMap,
 )
-from dzack_research.preamble.categories.modules.cochain_complexes import cochain_homset
-from dzack_research.preamble.categories.functors.cohomology import cohomology_functor
 
 
 def _dual_number_sheaf():

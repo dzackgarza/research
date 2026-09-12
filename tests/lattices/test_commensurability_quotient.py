@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import FreeModule, Lattices, Modules, QQ, ZZ, module_embedding
+from dzack_research.preamble.all import QQ, ZZ, FreeModule, Lattices, Modules, module_embedding
 from dzack_research.preamble.categories.rational_integral_stabilizers import (
     finite_commensurability_quotient,
 )

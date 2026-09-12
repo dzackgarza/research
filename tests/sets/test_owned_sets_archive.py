@@ -6,11 +6,11 @@ than the old Sage-global axiom implementation.
 """
 
 from dzack_research.preamble.all import (
+    NN,
     CountableSets,
     CountablyInfiniteSets,
     FiniteSets,
     InfiniteSets,
-    NN,
     PartiallyOrderedSets,
     PowerSet,
     Sets,

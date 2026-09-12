@@ -5,21 +5,22 @@ used as the prescribed finitely generated rational-group carrier; every result
 that crosses back retains live preamble lattice embeddings and isometries.
 """
 
+from sage_indefinite_port.groups.integral_structures import (
+    ArithmeticSubgroup,
+    RationalMatrixGroup,
+)
+
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     FreeModule,
     Lattices,
     Modules,
-    QQ,
-    ZZ,
     integral_double_cosets,
     integral_right_cosets,
     integral_stabilizer,
     integral_transporter,
     module_embedding,
-)
-from sage_indefinite_port.groups.integral_structures import (
-    ArithmeticSubgroup,
-    RationalMatrixGroup,
 )
 
 

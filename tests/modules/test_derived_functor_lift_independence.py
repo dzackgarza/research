@@ -1,6 +1,6 @@
 r"""Different chain lifts induce the same Tor and Ext maps."""
 
-from dzack_research.preamble.all import ExtMap, FinitelyPresentedModule, FreeModule, TorMap, ZZ
+from dzack_research.preamble.all import ZZ, ExtMap, FinitelyPresentedModule, FreeModule, TorMap
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.pure.modules import (
     FreeResolutionMorphism,

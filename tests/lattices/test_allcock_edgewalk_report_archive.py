@@ -1,6 +1,6 @@
 r"""Archive reconciliation for Allcock fundamental-domain report data."""
 
-from dzack_research.preamble.all import HyperbolicLattices, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, HyperbolicLattices, Lattices
 from dzack_research.preamble.categories.hyperbolic_lattices import (
     AllcockEdgewalkReport,
 )

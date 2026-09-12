@@ -1,7 +1,7 @@
 r"""The monoid morphism parent is the owned fixed Hom category."""
 
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.group.magmas import Monoids, MonoidHomset
+from dzack_research.preamble.categories.group.magmas import MonoidHomset, Monoids
 
 
 def test_monoid_hom_is_the_owned_fixed_hom_category() -> None:

@@ -8,7 +8,6 @@ recomputation from the same backend representation.
 
 from dzack_research.preamble.all import Groups
 
-
 WEYL_ORDERS = {
     ("A", 2): 6,
     ("A", 4): 120,

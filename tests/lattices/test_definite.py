@@ -2,18 +2,17 @@ import pytest
 from sage.misc.unknown import Unknown
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     Cardinalities,
     FiniteGroups,
     Lattices,
     MatrixSpace,
     MatrixSpaces,
-    QQ,
     Set,
     signature_pair,
     tensor,
-    ZZ,
 )
-from dzack_research.preamble.tensors import Tensor
 
 
 def test_lll_is_a_change_of_framing_with_actual_isometry_witness() -> None:
@@ -445,7 +444,8 @@ def test_cyclic_subgroup_is_the_literal_subgroup_generated_by_a_live_isometry() 
     assert subgroup.is_finite() is True
     assert subgroup.order() >= ZZ(2)
     assert lattice.Aut().order() % subgroup.order() == 0
-    assert Set(subgroup).cardinality() == subgroup.order()
+    elements = tuple(subgroup)
+    assert Set(elements).cardinality() == subgroup.order()
     assert subgroup.one() in subgroup
     assert generator in subgroup
     assert all(element.parent() is lattice.Aut() for element in elements)

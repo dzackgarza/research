@@ -1,6 +1,6 @@
 r"""Reduced normalization, total quotients, and finite local lengths."""
 
-from dzack_research.preamble.all import IsolatedHypersurfaceSingularity, PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, IsolatedHypersurfaceSingularity, PolynomialRing
 
 
 def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:

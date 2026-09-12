@@ -6,10 +6,11 @@ are also realized by adjoining unimodular hyperbolic planes, which leaves the
 discriminant form unchanged.
 """
 
-from dzack_research.preamble.all import Lattices
 from dzack_research.preamble.categories.modules.framed.formed.integrallattice.integral_lattices import (
     Genus,
 )
+
+from dzack_research.preamble.all import Lattices
 
 
 def test_a2_discriminant_genus_exists_exactly_on_the_selected_nikulin_rows() -> None:

@@ -1,6 +1,6 @@
 r"""Generic constructions choose their common mathematical owner through ``Cat``."""
 
-from dzack_research.preamble.all import Biproduct, FreeModule, Lattices, Modules, ZZ
+from dzack_research.preamble.all import ZZ, Biproduct, FreeModule, Lattices, Modules
 
 
 def test_biproduct_of_formed_and_plain_modules_dispatches_to_the_common_module_owner() -> None:

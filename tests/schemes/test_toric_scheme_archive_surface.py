@@ -8,15 +8,14 @@ are decided by fan isomorphism.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     BasedFreeModule,
     LatticePolygon,
-    QQ,
     RationalPolyhedralFans,
     Schemes,
     ToricSchemes,
-    ZZ,
 )
-
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/schemes/toric/toric_schemes.sage",

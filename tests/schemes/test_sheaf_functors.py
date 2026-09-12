@@ -1,15 +1,15 @@
-from dzack_research.preamble.all import ProjectiveSpace, QQ, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
+)
+from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+    FiniteAtlasInvertibleSheaf,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModule,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
-)
-from dzack_research.preamble.categories.divisors.invertible_sheaves import (
-    FiniteAtlasInvertibleSheaf,
 )
 from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAtlasModuleGluingDatum,
@@ -197,8 +197,8 @@ def _cusp_parametrization():
 
     plane = AffineSpace(2, QQ, names=("x", "y"))
     algebra = plane.coordinate_ring()
-    x = algebra.algebra_generator("x")
-    y = algebra.algebra_generator("y")
+    algebra.algebra_generator("x")
+    algebra.algebra_generator("y")
     line_ring = PolynomialRing(QQ, "t")
     t = line_ring.algebra_generator("t")
     morphism = SpecFunctor(QQ)(

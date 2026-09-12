@@ -1,10 +1,10 @@
 r"""Comparison maps at the supported local-module boundary."""
 
 from dzack_research.preamble.all import (
+    QQ,
     BasedFreeModule,
     FinitelyPresentedAlgebra,
     PolynomialRing,
-    QQ,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set

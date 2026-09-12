@@ -1,6 +1,6 @@
 r"""Archive reconciliation for ADE base log-pair vocabulary."""
 
-from dzack_research.preamble.all import ADELogPair, QQ
+from dzack_research.preamble.all import QQ, ADELogPair
 
 
 def test_archived_ade_type_names_read_the_same_retained_family_data() -> None:

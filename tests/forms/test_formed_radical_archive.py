@@ -1,6 +1,6 @@
 r"""Archive reconciliation for radicals of finite free formed modules."""
 
-from dzack_research.preamble.all import BilinearForm, FreeModule, QQ
+from dzack_research.preamble.all import QQ, BilinearForm, FreeModule
 
 
 def test_radical_is_the_kernel_of_the_correlation_and_keeps_its_inclusion() -> None:

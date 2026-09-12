@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the generating family of an ideal as a module."""
 
-from dzack_research.preamble.all import FractionalIdeal, ZZ
+from dzack_research.preamble.all import ZZ, FractionalIdeal
 
 
 def test_fractional_ideal_gens_is_the_module_generating_family() -> None:

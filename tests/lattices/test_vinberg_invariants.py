@@ -15,10 +15,10 @@ crystallographic restriction.
 from sage.all import AA, CoxeterMatrix, Infinity, sqrt
 
 from dzack_research.preamble.all import (
+    ZZ,
     CoxeterDiagrams,
     Lattices,
     VinbergInvariantMatrices,
-    ZZ,
     reflection_cosines,
 )
 from dzack_research.preamble.categories.vinberg_invariants import (

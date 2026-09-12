@@ -6,8 +6,7 @@ that global hook: mathematical objects that have a LaTeX representation own
 it themselves, while other rich views are explicit object methods.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
-
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/display.py",

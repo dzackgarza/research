@@ -3,10 +3,10 @@
 import pytest
 
 from dzack_research.preamble.all import ZZ
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModuleOn,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import module_homset
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/framed_free_modules.sage",

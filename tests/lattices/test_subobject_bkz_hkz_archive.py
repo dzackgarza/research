@@ -6,7 +6,7 @@ matrix.  The live reduction records retain the ambient lattice and an exact
 isometry from the reduced framing back to the original subobject.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def _skew_subobject():

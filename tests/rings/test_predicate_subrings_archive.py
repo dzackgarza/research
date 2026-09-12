@@ -7,7 +7,7 @@ refuses undecided predicate answers instead of coercing them to truth values.
 
 import pytest
 
-from dzack_research.preamble.all import PredicateSubrings, QQ, ZZ, predicate_subring
+from dzack_research.preamble.all import QQ, ZZ, PredicateSubrings, predicate_subring
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/rings/predicate_subrings.sage",

@@ -1,10 +1,10 @@
 import pytest
 
 from dzack_research.preamble.all import (
+    QQ,
     ProjectiveCompleteIntersection,
     ProjectiveCompleteIntersections,
     ProjectiveSpace,
-    QQ,
 )
 
 

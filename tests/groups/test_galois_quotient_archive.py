@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.group.profinite.galois_quotient import (
     restrict_along,
 )
 
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/group/profinite/galois_quotient.sage",
     "live_owner": "src/dzack_research/preamble/categories/group/profinite/galois_quotient.py",
@@ -48,7 +47,7 @@ def test_restrict_along_and_extensions_along_solve_the_same_commuting_square() -
     frobenius = group.frobenius()
     degree_two = group.finite_extension(2)
     degree_four = group.finite_extension(4)
-    quotient_two = group.finite_quotient(degree_two)
+    group.finite_quotient(degree_two)
     quotient_four = group.finite_quotient(degree_four)
     restriction_two = group.restriction_map(degree_two)
     restriction_four = group.restriction_map(degree_four)
@@ -90,7 +89,7 @@ def test_lift_fiber_is_a_coset_of_the_restriction_kernel() -> None:
 
 
 def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmetic() -> None:
-    from dzack_research.preamble.all import NumberField, PolynomialRing, QQ, QuadraticField
+    from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
     from dzack_research.preamble.categories.group.profinite.field_morphisms import exact_embeddings
 
     polynomial_ring = PolynomialRing(QQ, "x")
@@ -142,7 +141,7 @@ def test_cyclotomic_restrictions_retain_the_archived_quadratic_subfield_arithmet
 
 
 def test_cyclotomic_restriction_is_multiplicative_without_a_false_absolute_lift() -> None:
-    from dzack_research.preamble.all import NumberField, PolynomialRing, QQ, QuadraticField
+    from dzack_research.preamble.all import QQ, NumberField, PolynomialRing, QuadraticField
     from dzack_research.preamble.categories.group.profinite.field_morphisms import exact_embeddings
 
     polynomial_ring = PolynomialRing(QQ, "x")

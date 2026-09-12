@@ -91,7 +91,7 @@ def test_archived_abelian_group_is_a_module_over_the_integers_by_its_power_actio
 
 
 def test_archived_discriminant_module_keeps_group_and_module_structure_on_one_parent() -> None:
-    from dzack_research.preamble.all import Lattices, Modules, ZZ
+    from dzack_research.preamble.all import ZZ, Lattices, Modules
     from dzack_research.preamble.categories.group.groups import OwnedFiniteAbelianGroups
 
     discriminant = Lattices(ZZ)("A2").discriminant_group()

@@ -5,9 +5,9 @@ surface.  They remain mathematical facts of the current catalogue; no legacy
 constructor wrapper is needed to state them.
 """
 
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.catalogue import NamedLattices
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.all import ZZ
 
 
 def test_named_period_lattices_retain_their_defining_rank_and_signature() -> None:

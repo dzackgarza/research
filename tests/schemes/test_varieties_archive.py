@@ -1,10 +1,10 @@
 """Archive reconciliation for varieties, curves, and surfaces."""
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSpace,
     Curves,
     ProjectiveSpace,
-    QQ,
     Surfaces,
     Varieties,
 )

@@ -7,10 +7,10 @@ its two essential operations: carrying a finite presentation from ``ZZ`` to
 """
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedAlgebra,
     QQ,
-    SymmetricAlgebraOn,
     ZZ,
+    FinitelyPresentedAlgebra,
+    SymmetricAlgebraOn,
     algebra_base_change_adjunction,
 )
 from dzack_research.preamble.categories.rings import ring_homset

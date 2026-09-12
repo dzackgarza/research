@@ -2,7 +2,7 @@
 
 import pytest
 
-from dzack_research.preamble.all import Algebras, BasedFreeModule, BilinearMap, Modules, ZZ
+from dzack_research.preamble.all import ZZ, Algebras, BasedFreeModule, BilinearMap, Modules
 from dzack_research.preamble.categories.algebras.power_algebras import (
     AlternatingAlgebraOf,
     alternating_extension,

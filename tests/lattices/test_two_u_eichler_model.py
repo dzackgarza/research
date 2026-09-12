@@ -2,7 +2,10 @@ r"""The represented ``2U`` determinant model carries the two exact SL2 actions."
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.categories.eichler_criterion import two_u_eichler_model
+from dzack_research.preamble.categories.eichler_criterion import (
+    covering_discriminant_classes,
+    two_u_eichler_model,
+)
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 
@@ -33,12 +36,8 @@ def test_the_determinant_model_actions_preserve_the_group_law_and_commute() -> N
     group = model.special_linear_group()
     first, second = tuple(group.group_generators())[:2]
 
-    assert model.left_action(first * second) == (
-        model.left_action(first) * model.left_action(second)
-    )
-    assert model.right_action(first * second) == (
-        model.right_action(first) * model.right_action(second)
-    )
+    assert model.left_action(first * second) == (model.left_action(first) * model.left_action(second))
+    assert model.right_action(first * second) == (model.right_action(first) * model.right_action(second))
     assert model.left_action(~first) == ~model.left_action(first)
     assert model.right_action(~first) == ~model.right_action(first)
     assert model.left_action(group.one()) == model.lattice().O().one()
@@ -46,10 +45,7 @@ def test_the_determinant_model_actions_preserve_the_group_law_and_commute() -> N
 
     for left_generator in (first, second):
         for right_generator in (first, second):
-            assert (
-                model.left_action(left_generator) * model.right_action(right_generator)
-                == model.right_action(right_generator) * model.left_action(left_generator)
-            )
+            assert model.left_action(left_generator) * model.right_action(right_generator) == model.right_action(right_generator) * model.left_action(left_generator)
 
 
 def test_both_sl2_factors_fix_the_orthogonal_complement_pointwise() -> None:
@@ -84,9 +80,7 @@ def test_actual_K_isometries_extend_canonically_and_need_no_discriminant_guess()
     complement = Lattices(integers)("A2")
     model = two_u_eichler_model(complement)
     lattice = model.lattice()
-    minus_one = complement.O()(
-        tuple(-generator for generator in complement.module_generators())
-    )
+    minus_one = complement.O()(tuple(-generator for generator in complement.module_generators()))
     lifted = model.complement_action(minus_one)
 
     for hyperbolic_generator in model.hyperbolic_basis():
@@ -96,9 +90,7 @@ def test_actual_K_isometries_extend_canonically_and_need_no_discriminant_guess()
         assert lifted(inclusion(generator)) == inclusion(minus_one(generator))
 
     assert model.complement_action(complement.O().one()) == lattice.O().one()
-    assert model.complement_action(minus_one * minus_one) == (
-        model.complement_action(minus_one) * model.complement_action(minus_one)
-    )
+    assert model.complement_action(minus_one * minus_one) == (model.complement_action(minus_one) * model.complement_action(minus_one))
     assert lifted.discriminant_morphism() != lattice.O().one().discriminant_morphism()
 
     action = model.complement_action_functor()

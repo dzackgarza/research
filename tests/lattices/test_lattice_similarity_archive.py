@@ -6,7 +6,7 @@ The hyperbolic plane and its scale-two twist distinguish this from ordinary
 isometry because their determinants differ by a factor of four.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_archived_scale_two_similarity_is_an_actual_isometry_from_the_twist() -> None:

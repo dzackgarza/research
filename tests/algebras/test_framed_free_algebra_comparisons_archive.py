@@ -1,5 +1,6 @@
 r"""Archive reconciliation for polynomial rings and the four free-algebra comparisons."""
 
+from dzack_research.preamble.all import QQ, ZZ, finite_ordered_set
 from dzack_research.preamble.categories.algebras import (
     AlternatingAlgebraOf,
     DividedPowerAlgebraOf,
@@ -13,7 +14,6 @@ from dzack_research.preamble.categories.algebras import (
     tensor_to_symmetric,
 )
 from dzack_research.preamble.categories.modules import BasedFreeModule
-from dzack_research.preamble.all import QQ, ZZ, finite_ordered_set
 
 
 def test_polynomial_ring_is_the_owned_free_commutative_algebra_on_its_variables() -> None:

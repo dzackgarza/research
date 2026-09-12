@@ -6,7 +6,7 @@ its normalization, orthogonal-group, Pontryagin-duality and quadratic-refinement
 operations remain operations of that same mathematical object.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.modules.framed.formed.discriminant_modules import (
     DiscriminantBilinearModules,
 )

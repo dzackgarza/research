@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the mixed tensor algebra."""
 
-from dzack_research.preamble.all import Algebras, FreeModule, QQ
+from dzack_research.preamble.all import QQ, Algebras, FreeModule
 from dzack_research.preamble.tensors import MixedTensorAlgebra, tensor
 
 

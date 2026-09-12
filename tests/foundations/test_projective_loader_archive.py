@@ -15,7 +15,6 @@ from dzack_research.preamble.all import (
     ProjectiveSpaces,
 )
 
-
 ARCHIVE_RECONCILIATIONS = (
     {
         "archive_module": "preamble/tests/framework/__init__.py",

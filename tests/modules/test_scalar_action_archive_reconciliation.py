@@ -8,7 +8,7 @@ additive object from the endomorphism ring and retains ``rho`` as the module's
 actual scalar action.
 """
 
-from dzack_research.preamble.all import FreeModule, Modules, ZZ
+from dzack_research.preamble.all import ZZ, FreeModule, Modules
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 
 ARCHIVE_RECONCILIATION = {

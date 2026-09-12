@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import HyperbolicLattices, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, HyperbolicLattices, Lattices
 
 
 def test_height_one_isotropic_vectors_in_u_plus_a1_are_exactly_zero_and_four_rays() -> None:

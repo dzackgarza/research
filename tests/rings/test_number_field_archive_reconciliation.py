@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import QuadraticField, QQ
+from dzack_research.preamble.all import QuadraticField
 
 
 def test_number_field_element_polynomials_keep_their_distinct_degrees() -> None:

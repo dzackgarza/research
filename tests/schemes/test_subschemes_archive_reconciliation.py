@@ -9,11 +9,11 @@ These specimens retain the archive mathematics without reviving that wrapper.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSpace,
     ClosedEmbeddings,
     ClosedSubschemes,
     ProjectiveSpace,
-    QQ,
     Schemes,
 )
 

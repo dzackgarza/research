@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the formed-element representation predicate."""
 
-from dzack_research.preamble.all import BilinearForm, FreeModule, QQ
+from dzack_research.preamble.all import QQ, BilinearForm, FreeModule
 
 
 def test_formed_element_represents_exactly_its_norm_value() -> None:

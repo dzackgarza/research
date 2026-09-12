@@ -9,7 +9,7 @@ from dzack_research.preamble.categories.group.profinite.absolute_galois_group im
 def test_lift_coset_retains_ambient_kernel_and_finite_coordinate() -> None:
     group = AbsoluteGaloisGroup(GF(5))
     stage = group.finite_extension(3)
-    quotient = group.finite_quotient(stage)
+    group.finite_quotient(stage)
     restriction = group.restriction_map(stage)
     sigma = restriction(group.frobenius())
     coset = group.lifts(sigma)

@@ -8,7 +8,6 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedFinitelyPresentedGroups,
 )
 
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_group_hierarchy.sage",
     "live_owner": "src/dzack_research/preamble/categories/group/groups.py",

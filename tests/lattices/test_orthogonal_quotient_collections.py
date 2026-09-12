@@ -1,6 +1,6 @@
 r"""Finite-character quotient representatives are owned mathematical collections."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
 

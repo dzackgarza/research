@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ProjectiveSpace, QQ, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
@@ -9,9 +9,9 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
     module_homset,
 )
 from dzack_research.preamble.categories.schemes.gluing import (
-    FiniteAtlasRefinement,
     FiniteAtlasGluedModuleSheaf,
     FiniteAtlasModuleGluingDatum,
+    FiniteAtlasRefinement,
 )
 
 

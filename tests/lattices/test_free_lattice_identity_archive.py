@@ -1,6 +1,6 @@
 r"""Archive reconciliation for free lattices as one formed-module object."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_free_lattice_form_is_defined_on_the_lattice_itself() -> None:

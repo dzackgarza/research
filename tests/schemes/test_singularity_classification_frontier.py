@@ -1,10 +1,10 @@
 r"""Supported singularity equivalences and the regular/smooth boundary."""
 
 from dzack_research.preamble.all import (
-    FinitelyPresentedAlgebra,
     GF,
-    PolynomialRing,
     QQ,
+    FinitelyPresentedAlgebra,
+    PolynomialRing,
     Spec,
 )
 from dzack_research.preamble.categories.schemes.singularities import (

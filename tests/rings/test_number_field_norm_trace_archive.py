@@ -1,6 +1,6 @@
 r"""Archive reconciliation for number-field norm and trace."""
 
-from dzack_research.preamble.all import NumberField, PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, NumberField, PolynomialRing
 
 
 def _quadratic_field():

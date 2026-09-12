@@ -1,6 +1,6 @@
 r"""Archive reconciliation for normalizers of open absolute-Galois subgroups."""
 
-from dzack_research.preamble.all import NumberField, PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, NumberField, PolynomialRing
 from dzack_research.preamble.categories.group.profinite.absolute_galois_group import (
     AbsoluteGaloisGroup,
 )

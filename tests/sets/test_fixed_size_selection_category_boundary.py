@@ -1,8 +1,8 @@
 r"""Fixed-size selections use only owned set-category placement."""
 
 from dzack_research.preamble.categories.sets.enumerated.enumerated_sets import EnumeratedSets
-from dzack_research.preamble.categories.sets.fixed_size_selections import fixed_size_selections
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.fixed_size_selections import fixed_size_selections
 from dzack_research.preamble.categories.sets.set_categories import FiniteSets, TotallyOrderedSets
 
 

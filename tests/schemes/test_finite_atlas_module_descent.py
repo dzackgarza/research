@@ -1,3 +1,4 @@
+from dzack_research.preamble.all import QQ, AffineSpace
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )
@@ -21,7 +22,6 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
-from dzack_research.preamble.all import AffineSpace, QQ
 
 
 def _distinct_punctured_lines():

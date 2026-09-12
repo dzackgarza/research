@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, ZZ, vector_configuration
+from dzack_research.preamble.all import ZZ, Lattices, vector_configuration
 
 
 def test_every_A2_graph_automorphism_lifts_through_gap_to_a_lattice_isometry() -> None:

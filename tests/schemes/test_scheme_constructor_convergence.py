@@ -1,13 +1,13 @@
 r"""Basic scheme notation delegates to the owning scheme categories."""
 
 from dzack_research.preamble.all import (
+    QQ,
     AffineSchemes,
     AffineSpace,
     AffineSpaces,
     PolynomialRing,
     ProjectiveSpace,
     ProjectiveSpaces,
-    QQ,
     Spec,
 )
 

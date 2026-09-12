@@ -1,6 +1,6 @@
 r"""Equivariant vector orbits are computed under the actual lattice centralizer."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def _swap_equipped_a1_squared():

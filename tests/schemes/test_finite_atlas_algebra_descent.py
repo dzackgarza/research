@@ -1,6 +1,6 @@
 r"""Algebra descent across affine atlases with genuinely distinct overlap rings."""
 
-from dzack_research.preamble.all import AffineSpace, PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, AffineSpace, PolynomialRing
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )

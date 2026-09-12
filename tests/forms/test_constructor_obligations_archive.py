@@ -2,7 +2,7 @@ r"""Archive reconciliation for formed-object constructor obligations."""
 
 from sage.rings.integer_ring import ZZ as SageZZ
 
-from dzack_research.preamble.all import BilinearForm, FreeModule, Lattices, TensorSquare, ZZ
+from dzack_research.preamble.all import ZZ, BilinearForm, FreeModule, Lattices, TensorSquare
 
 
 def test_archived_bilinear_form_is_an_actual_morphism_to_its_value_module() -> None:

@@ -1,6 +1,6 @@
 r"""Primitive embeddings into specified non-unimodular indefinite targets."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_a1_embeds_primitively_into_u_plus_a1_with_an_actual_map() -> None:

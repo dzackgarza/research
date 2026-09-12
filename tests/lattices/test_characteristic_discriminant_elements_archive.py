@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, NamedLattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices, NamedLattices
 
 
 def test_divided_class_of_u2_basis_vector_is_not_characteristic() -> None:

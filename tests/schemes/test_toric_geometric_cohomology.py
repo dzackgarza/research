@@ -1,6 +1,6 @@
 r"""Owned toric weight complexes and their induced maps."""
 
-from dzack_research.preamble.all import BasedFreeModule, QQ, RationalPolyhedralFans, ZZ
+from dzack_research.preamble.all import QQ, ZZ, BasedFreeModule, RationalPolyhedralFans
 from dzack_research.preamble.categories.schemes.geometric_cohomology import (
     ToricLineBundleCohomology,
     ToricWeightCohomology,

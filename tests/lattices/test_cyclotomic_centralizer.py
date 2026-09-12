@@ -1,6 +1,6 @@
 r"""Higher finite-order lattice centralizers retain cyclotomic gluing data."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def _cubic_rotation():

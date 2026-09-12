@@ -2,7 +2,7 @@ r"""Archive reconciliation for metric raising and lowering of tensor indices."""
 
 import pytest
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.tensors import tensor
 
 

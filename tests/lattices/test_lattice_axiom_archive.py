@@ -1,11 +1,11 @@
 r"""Archive reconciliation for the independent lattice property refinements."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     EvenLattices,
     FiniteRankLattices,
     Lattices,
     NondegenerateLattices,
-    ZZ,
 )
 
 ARCHIVE_RECONCILIATION = {

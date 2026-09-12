@@ -6,7 +6,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     SymmetricBilinearFormModules,
 )
 
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/free_lattices.sage",
     "live_owner": "src/dzack_research/preamble/categories/lattices.py",

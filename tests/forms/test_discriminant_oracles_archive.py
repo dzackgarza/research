@@ -8,7 +8,7 @@ exactly the prime-power orders of the finite abelian group.
 
 from math import prod
 
-from dzack_research.preamble.all import Lattices, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, Lattices
 
 
 def _order(form) -> int:

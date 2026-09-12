@@ -7,7 +7,7 @@ parent: a subgroup still consists of lattice isometries, while its ambient
 more specific generated-subgroup category.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.group.groups import (
     GeneratedSubgroups,
     Subgroups,

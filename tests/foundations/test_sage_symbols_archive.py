@@ -2,7 +2,6 @@ r"""Archive reconciliation for exact algebra through the public session symbols.
 
 from dzack_research.preamble.all import QQ, PolynomialRing, matrix
 
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_sage_symbols.py",
     "live_owner": "src/dzack_research/preamble/all.py",

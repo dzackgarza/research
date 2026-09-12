@@ -2,7 +2,7 @@ r"""Archive reconciliation for formed isotypic sublattices of a group lattice.""
 
 import pytest
 
-from dzack_research.preamble.all import Groups, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Groups, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/group_modules/group_lattices.sage",

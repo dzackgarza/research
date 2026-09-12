@@ -10,9 +10,17 @@ from sage.structure.element import Element, Matrix, ModuleElement, RingElement
 
 from dzack_research.preamble.lexicon import (
     BaseRing,
+)
+from dzack_research.preamble.lexicon import (
     Element as PublicElement,
+)
+from dzack_research.preamble.lexicon import (
     Matrix as PublicMatrix,
+)
+from dzack_research.preamble.lexicon import (
     ModuleElement as PublicModuleElement,
+)
+from dzack_research.preamble.lexicon import (
     RingElement as PublicRingElement,
 )
 

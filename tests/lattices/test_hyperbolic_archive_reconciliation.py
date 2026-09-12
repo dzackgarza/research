@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the public hyperbolic reflection vocabulary."""
 
-from dzack_research.preamble.all import HyperbolicLattices, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, HyperbolicLattices, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/hyperbolic_lattices.sage",

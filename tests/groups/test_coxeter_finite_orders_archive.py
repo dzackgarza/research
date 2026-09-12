@@ -13,7 +13,6 @@ orders used by the archived literature corpus.
 
 from dzack_research.preamble.all import Groups
 
-
 FINITE_COXETER_ORDERS = {
     ("A", 1): 2,
     ("A", 2): 6,

@@ -1,5 +1,4 @@
 import pytest
-
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras

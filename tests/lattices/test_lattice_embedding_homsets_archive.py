@@ -7,7 +7,7 @@ lattice morphisms; there is no detached embedding wrapper around a second map.
 
 import pytest
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_embedding_homset_owns_the_actual_form_preserving_arrow() -> None:

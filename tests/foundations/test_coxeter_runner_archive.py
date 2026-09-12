@@ -6,9 +6,8 @@ directly, with repository-wide diagnostics configured in ``pyproject.toml``;
 Coxeter mathematics remains in ordinary collected tests.
 """
 
-from pathlib import Path
 import tomllib
-
+from pathlib import Path
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/coxeter_tdd_specs/run_tests.py",

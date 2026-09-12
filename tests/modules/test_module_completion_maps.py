@@ -1,11 +1,11 @@
 r"""Functorial finite-module completion over represented Noetherian rings."""
 
 from dzack_research.preamble.all import (
+    QQ,
     BasedFreeModule,
     Biproduct,
     FinitelyPresentedModule,
     PolynomialRing,
-    QQ,
     module_homset,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set

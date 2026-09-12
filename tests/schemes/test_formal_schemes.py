@@ -1,6 +1,6 @@
 r"""Formal spectra retain the inverse system, not a computational precision."""
 
-from dzack_research.preamble.all import PolynomialRing, QQ
+from dzack_research.preamble.all import QQ, PolynomialRing
 from dzack_research.preamble.categories.rings.ring_foundation import ring_homset
 from dzack_research.preamble.categories.schemes.formal_schemes import (
     formal_affine_morphism,

@@ -3,7 +3,6 @@ import pytest
 from dzack_research.preamble.all import NN, ZZ
 from dzack_research.preamble.categories.forms import (
     BilinearForms,
-    QuadraticForms,
     QuadraticMap,
     classifying_morphism,
     quadratic_map_from_morphism,

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for bilinear-form value tables and image modules."""
 
-from dzack_research.preamble.all import BilinearForms, ZZ, ring_as_module
+from dzack_research.preamble.all import ZZ, BilinearForms, ring_as_module
 
 
 def _generator(module):

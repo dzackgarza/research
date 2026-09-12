@@ -12,14 +12,16 @@ type without changing category identity.
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category_bases import (
-    Category as OwnedCategoryBase,
-    HomCategoryConstruction,
-)
 from dzack_research.preamble.owned_category import (
     OwnedCategoryObject,
     declared_implementation_types,
     object_of,
+)
+from dzack_research.preamble.owned_category_bases import (
+    Category as OwnedCategoryBase,
+)
+from dzack_research.preamble.owned_category_bases import (
+    HomCategoryConstruction,
 )
 
 ARCHIVE_RECONCILIATIONS = (

@@ -5,7 +5,7 @@ restriction.  The live owner keeps those maps and additionally retains the
 finite Galois extension through which each continuous character factors.
 """
 
-from dzack_research.preamble.all import AbsoluteGaloisGroup, GF
+from dzack_research.preamble.all import GF, AbsoluteGaloisGroup
 
 
 def test_cyclotomic_character_is_an_actual_continuous_morphism() -> None:

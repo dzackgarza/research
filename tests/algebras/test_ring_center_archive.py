@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import CommutativeRings, MatrixSpace, OwnedRings, QQ
+from dzack_research.preamble.all import QQ, CommutativeRings, MatrixSpace, OwnedRings
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import Core
 from dzack_research.preamble.categories.rings.ring_foundation import ring_morphism
 

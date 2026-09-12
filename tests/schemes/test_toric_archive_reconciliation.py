@@ -8,12 +8,12 @@ fan and a polarizing polytope are not conflated.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     BasedFreeModule,
     LatticePolygon,
-    QQ,
     RationalPolyhedralFans,
     ToricSchemes,
-    ZZ,
 )
 
 ARCHIVE_RECONCILIATION = {

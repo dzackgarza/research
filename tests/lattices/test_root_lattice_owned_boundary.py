@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import Lattices, RootLattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices, RootLattices
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 
 

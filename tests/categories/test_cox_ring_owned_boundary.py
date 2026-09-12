@@ -2,7 +2,7 @@ r"""Cox-ring categories are owned and parameterized by represented toric schemes
 
 import pytest
 
-from dzack_research.preamble.all import PolynomialRing, QQ, Spec
+from dzack_research.preamble.all import QQ, PolynomialRing, Spec
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )

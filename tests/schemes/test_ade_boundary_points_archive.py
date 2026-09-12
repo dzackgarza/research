@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the distinguished boundary points of an ADE polygon."""
 
-from dzack_research.preamble.all import ADELogPair, QQ
+from dzack_research.preamble.all import QQ, ADELogPair
 
 
 def test_a_one_distinguished_boundary_points_are_exactly_the_two_blue_edges() -> None:

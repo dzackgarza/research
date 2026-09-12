@@ -2,7 +2,7 @@ r"""Archive reconciliation for finite abelian groups as torsion modules."""
 
 from sage.groups.abelian_gps.abelian_group import AbelianGroup
 
-from dzack_research.preamble.all import FinitelyPresentedTorsionModules, ZZ
+from dzack_research.preamble.all import ZZ, FinitelyPresentedTorsionModules
 
 
 def test_crossing_preserves_the_selected_two_generator_presentation() -> None:

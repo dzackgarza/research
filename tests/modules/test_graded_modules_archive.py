@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the generic decomposition surface of graded modules."""
 
-from dzack_research.preamble.all import GradedModules, QQ, TensorAlgebraOn
+from dzack_research.preamble.all import QQ, GradedModules, TensorAlgebraOn
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )

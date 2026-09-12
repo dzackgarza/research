@@ -13,12 +13,7 @@ refinement behavior without restoring constructor monkey-patching.
 """
 
 import pytest
-
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/refine.sage",
-    "live_owner": "src/dzack_research/preamble/refine.py",
-    "disposition": "reconciled-live-owner",
-}
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
     EvenLattices,
@@ -27,7 +22,12 @@ from dzack_research.preamble.categories.lattices import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
 from dzack_research.preamble.refine import refine
-from sage.rings.integer_ring import ZZ as SageZZ
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/refine.sage",
+    "live_owner": "src/dzack_research/preamble/refine.py",
+    "disposition": "reconciled-live-owner",
+}
 
 
 def test_refinement_preserves_the_owned_parent_identity() -> None:
@@ -67,7 +67,7 @@ def test_successful_property_refinement_keeps_existing_elements_and_operations()
 def test_archived_owned_polynomial_real_roots_keep_exact_multiplicities() -> None:
     from sage.rings.qqbar import AA as AlgebraicReals
 
-    from dzack_research.preamble.all import PolynomialRing, QQ
+    from dzack_research.preamble.all import QQ, PolynomialRing
 
     polynomial_ring = PolynomialRing(QQ, "x")
     x = polynomial_ring.algebra_generator("x")

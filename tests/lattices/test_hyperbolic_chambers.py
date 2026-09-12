@@ -1,9 +1,10 @@
 r"""Exact half-space ownership for hyperbolic reflection chambers."""
 
+from sage.rings.integer_ring import ZZ as SageZZ
+
 from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
 from dzack_research.preamble.categories.lattices import Lattices
 from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
-from sage.rings.integer_ring import ZZ as SageZZ
 
 
 def test_root_halfspaces_retain_the_bilinear_covectors(monkeypatch) -> None:

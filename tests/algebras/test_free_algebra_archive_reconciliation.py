@@ -1,12 +1,12 @@
 r"""Archive reconciliation for the graded basis of the four free constructions."""
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AlternatingAlgebraOn,
     DividedPowerAlgebraOn,
-    QQ,
     SymmetricAlgebraOn,
     TensorAlgebraOn,
-    ZZ,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 

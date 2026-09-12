@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import ProjectiveSpace, QQ, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     Isomorphism,
 )

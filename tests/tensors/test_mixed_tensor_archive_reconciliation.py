@@ -17,7 +17,7 @@ def test_archive_vector_covector_contraction_is_pairing() -> None:
 
 
 def test_archive_partial_contraction_preserves_remaining_variance() -> None:
-    left = tensor(ZZ, (2, 2), (), [[[1, 0], [0, 1]][i][j] for j in range(2)] for i in range(2)])
+    left = tensor(ZZ, (2, 2), (), [[1, 0], [0, 1]])
     covector = tensor.covector(ZZ, [4, 9])
     contracted = left.contract(covector, slot=1)
 

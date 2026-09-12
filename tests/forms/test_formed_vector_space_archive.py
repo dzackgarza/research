@@ -1,6 +1,6 @@
 """Archive reconciliation for rationalization of framed and formed modules."""
 
-from dzack_research.preamble.all import BilinearForms, FormModule, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, BilinearForms, FormModule
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreeModuleOn,
 )

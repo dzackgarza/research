@@ -1,6 +1,6 @@
 r"""Archive reconciliation for ``QQ / n ZZ`` as an owned module quotient."""
 
-from dzack_research.preamble.all import FractionFieldQuotient, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, FractionFieldQuotient
 
 
 def test_fraction_field_quotient_retains_projection_lift_and_factorial_framing() -> None:

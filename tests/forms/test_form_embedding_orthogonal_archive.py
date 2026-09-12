@@ -1,6 +1,6 @@
 r"""Archive reconciliation for orthogonal complements of formed embeddings."""
 
-from dzack_research.preamble.all import BilinearForm, FreeModule, QQ, form_embedding
+from dzack_research.preamble.all import QQ, BilinearForm, FreeModule, form_embedding
 
 
 def test_form_embedding_orthogonal_complement_is_the_pairing_kernel_with_restricted_form() -> None:

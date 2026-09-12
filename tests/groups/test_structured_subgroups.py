@@ -1,6 +1,6 @@
 r"""Structured subgroup constructors retain the mathematics that defines them."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.group.groups import GeneratedSubgroups
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     CentralizerSubgroups,

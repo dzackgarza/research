@@ -1,9 +1,9 @@
 """Archive reconciliation for the base bilinear/quadratic form surface."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     BilinearForms,
     QuadraticMap,
-    ZZ,
     module_homset,
     ring_as_module,
 )

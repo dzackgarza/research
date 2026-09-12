@@ -2,7 +2,7 @@ r"""Archive reconciliation for the torsor cardinality of ``Isom(L,M)``."""
 
 from sage.misc.unknown import Unknown
 
-from dzack_research.preamble.all import Lattices, MatrixSpace, ZZ
+from dzack_research.preamble.all import ZZ, Lattices, MatrixSpace
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 
 

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for discriminant normal forms and correlation maps."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def _assert_form_isometry(normalization) -> None:

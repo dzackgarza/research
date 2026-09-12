@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import BasedFreeModule, Localization, ZZ
+from dzack_research.preamble.all import ZZ, BasedFreeModule, Localization
 from dzack_research.preamble.categories.functors.module_localization import (
     module_localization_functor,
 )

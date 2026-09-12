@@ -5,7 +5,7 @@ owner makes the stronger statement: the ideal is itself the module and carries
 its canonical inclusion, so no second module object is manufactured.
 """
 
-from dzack_research.preamble.all import FractionalIdeals, Ideals, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, FractionalIdeals, Ideals
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/fractional_ideals.sage",

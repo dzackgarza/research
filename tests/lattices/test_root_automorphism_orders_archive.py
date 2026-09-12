@@ -7,7 +7,6 @@ SPLAG chapter 4 gives the automorphism-group orders below.  It also identifies
 
 from dzack_research.preamble.all import Groups, Lattices
 
-
 ROOT_AUTOMORPHISM_ORDERS = {
     "A2": 12,
     "A4": 240,

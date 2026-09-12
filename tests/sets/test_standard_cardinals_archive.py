@@ -1,11 +1,11 @@
 r"""Archived standard-cardinality facts not already covered by live catalogues."""
 
 from dzack_research.preamble.all import (
+    QQ,
+    RR,
     MatrixSpace,
     PolynomialRing,
     PowerSeriesRing,
-    QQ,
-    RR,
     aleph0,
     continuum,
 )

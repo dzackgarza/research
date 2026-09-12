@@ -1,12 +1,12 @@
 r"""Archive reconciliation for generic finite torsion forms and their subobjects."""
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     FractionFieldQuotient,
     MatrixSpace,
-    QQ,
     TorsionBilinearFormModules,
     TorsionQuadraticFormModules,
-    ZZ,
 )
 
 

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for lattice subobject arithmetic."""
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_lattice_subobject_sum_and_intersection_are_actual_embedded_operations() -> None:

@@ -5,7 +5,7 @@ full-orthogonal isotropic geometry, structured predicate subgroups, and finite
 character-quotient splitting/transporters.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/isotropic_orbits.sage",

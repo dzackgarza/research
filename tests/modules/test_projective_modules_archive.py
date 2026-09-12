@@ -1,6 +1,6 @@
 r"""Archive reconciliation for projective modules as a module property."""
 
-from dzack_research.preamble.all import FreeModules, ProjectiveModules, QQ
+from dzack_research.preamble.all import QQ, FreeModules, ProjectiveModules
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/pure/projective_modules.sage",

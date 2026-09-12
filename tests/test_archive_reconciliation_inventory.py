@@ -1,7 +1,7 @@
 """Source-level regressions for the archive reconciliation denominator."""
 
-from pathlib import Path
 import runpy
+from pathlib import Path
 
 
 def _inventory_module():

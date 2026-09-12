@@ -7,7 +7,7 @@ reflections, fundamental weights, root signs/heights, and coroots.  The
 mere root enumeration.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/root_lattices.sage",

@@ -9,7 +9,6 @@ or reconciled independently of this retired grouping table.
 
 from pathlib import Path
 
-
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/framework/scenario_manifest.sage",
     "live_owner": "TODO.md",

@@ -1,6 +1,6 @@
 r"""Archive reconciliation for the selected integral form of a number field."""
 
-from dzack_research.preamble.all import NumberField, PolynomialRing, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, NumberField, PolynomialRing
 
 
 def _quadratic_field():

@@ -1,12 +1,12 @@
 """Formed copies retain vector-space placement over a field."""
 
 from dzack_research.preamble.all import (
-    BilinearForm,
-    FreeModule,
     GF,
     QQ,
-    VectorSpaces,
     ZZ,
+    BilinearForm,
+    FreeModule,
+    VectorSpaces,
 )
 
 

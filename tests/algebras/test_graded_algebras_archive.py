@@ -1,10 +1,10 @@
 r"""Archive reconciliation for the graded-algebra category and its product grading."""
 
 from dzack_research.preamble.all import (
+    QQ,
     Algebras,
     GradedAlgebras,
     GradedModules,
-    QQ,
     TensorAlgebraOn,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set

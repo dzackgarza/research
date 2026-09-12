@@ -9,7 +9,7 @@ it produces the even unimodular hyperbolic plane with index two.
 
 import pytest
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 
 def test_archived_u2_two_primary_modification_is_the_index_two_even_overlattice() -> None:

@@ -53,7 +53,7 @@ def test_mu_two_scales_the_affine_line_by_a_scheme_morphism() -> None:
     mu_two, line, x, acted = _mu_two_scaling_action()
     action = acted.action_morphism()
     product = action.domain()
-    product_algebra = product.coordinate_algebra()
+    product.coordinate_algebra()
     u = mu_two.scheme().coordinate_algebra().algebra_generator("u")
     group_pullback = product.projection(0).coordinate_algebra_morphism()
     point_pullback = product.projection(1).coordinate_algebra_morphism()
