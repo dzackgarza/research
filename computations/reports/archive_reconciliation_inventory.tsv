@@ -1935,30 +1935,30 @@ preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.Pa
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.hom	method	335	0		src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	reconciled-live-owner
 preamble/categories/modules/framed/framed_free_modules.sage	FramedFreeModules.ParentMethods.is_torsion_free	method	358	0		src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
 preamble/categories/modules/framed/framed_free_modules.sage	FreeModuleOn	function	361	1	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py	reconciled-live-owner
-preamble/categories/modules/framed/framed_modules.sage	<module>	module	1	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent	class	98	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.base_ring	method	103	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.zero	method	104	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.variable_names	method	105	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.framing_morphism	method	106	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generator_morphism	method	107	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generators	method	108	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generator	method	109	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generating_set	method	110	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.subobject_on	method	111	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules	class	123	1	src/dzack_research/preamble/categories/modules/pure/modules.py		unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.super_categories	method	130	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods	class	142	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.framing_morphism	method	144	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py		unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generator_morphism	method	149	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generating_set	method	207	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generator	method	212	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generators	method	216	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.inject_variables	method	227	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.linear_combination	method	261	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.subobject_on	method	276	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.is_framed	method	317	0			unreviewed
-preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.vector_space	method	320	0			unreviewed
+preamble/categories/modules/framed/framed_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent	class	98	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.base_ring	method	103	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.zero	method	104	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.variable_names	method	105	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.framing_morphism	method	106	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generator_morphism	method	107	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generators	method	108	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generator	method	109	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.module_generating_set	method	110	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModuleParent.subobject_on	method	111	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules	class	123	1	src/dzack_research/preamble/categories/modules/pure/modules.py	src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.super_categories	method	130	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods	class	142	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.framing_morphism	method	144	1	src/dzack_research/preamble/categories/modules/module_morphisms/module_morphisms.py	src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generator_morphism	method	149	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generating_set	method	207	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generator	method	212	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.module_generators	method	216	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.inject_variables	method	227	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.linear_combination	method	261	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.subobject_on	method	276	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.is_framed	method	317	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
+preamble/categories/modules/framed/framed_modules.sage	FramedModules.ParentMethods.vector_space	method	320	0		src/dzack_research/preamble/categories/modules/pure/modules.py	reconciled-live-owner
 preamble/categories/modules/graded_modules.sage	<module>	module	1	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
 preamble/categories/modules/graded_modules.sage	GradedModuleParent	class	31	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner
 preamble/categories/modules/graded_modules.sage	GradedModuleParent.module_generators	method	38	0		src/dzack_research/preamble/categories/modules/graded_modules.py	reconciled-live-owner

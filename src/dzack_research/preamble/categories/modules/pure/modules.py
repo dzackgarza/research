@@ -790,6 +790,10 @@ class Modules(OwnedCategoryOverBaseRing):
             _ = ring_map
             raise NotImplementedError(f"base change of {self} has no represented module construction")
 
+        def vector_space(self):
+            r"""Return ``M tensor_R Frac(R)`` along the canonical fraction-field map."""
+            return self.base_change(self.base_ring().fraction_field_map())
+
         def _represented_fiber_dimension(self, point):
             _ = point
             return NotImplemented
