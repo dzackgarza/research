@@ -7,6 +7,15 @@ from dzack_research.preamble.all import (
     ProjectiveSpace,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/tests/framework/test_quotients_and_complete_intersections.sage",
+    "live_owner": "tests/schemes/test_complete_intersections.py",
+    "owner_overrides": {
+        "test_diagonal_sign_quotient_family_has_global_quotient_data": "tests/schemes/test_horikawa_enriques_family.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 def test_projective_complete_intersection_retains_equations_multidegree_and_adjunction_integer() -> None:
     space = ProjectiveSpace(3, QQ)
@@ -115,3 +124,22 @@ def test_del_pezzo_complete_intersection_uses_actual_anticanonical_ampleness() -
     assert anticanonical.degree() == 1
     assert anticanonical.is_ample()
     assert cubic.is_del_pezzo()
+
+
+def test_two_quadrics_in_projective_four_space_form_a_degree_four_del_pezzo_surface() -> None:
+    space = ProjectiveSpace(4, QQ, names=("A", "B", "C", "D", "E"))
+    A, B, C, D, E = space.gens()
+    surface = ProjectiveCompleteIntersection(
+        space.closed_subscheme(B * D - A * E, C**2 - A * E)
+    )
+
+    assert tuple(surface.defining_degrees()) == (2, 2)
+    assert surface.expected_dimension() == 2
+    assert surface.anticanonical_twist_degree() == 1
+    assert surface.projective_degree() == 4
+    assert surface.is_gorenstein()
+    assert surface.is_del_pezzo()
+    assert surface.del_pezzo_degree() == 4
+    anticanonical = surface.anticanonical_line_bundle()
+    assert anticanonical.degree() == 1
+    assert anticanonical.is_ample()

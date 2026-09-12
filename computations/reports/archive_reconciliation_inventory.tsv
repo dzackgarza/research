@@ -3059,9 +3059,9 @@ preamble/tests/framework/test_linear_systems_restrictions.sage	test_restriction_
 preamble/tests/framework/test_projective_products_picard.sage	<module>	module	1	0		tests/schemes/test_projective_products_picard_archive.py	reconciled-live-owner
 preamble/tests/framework/test_projective_products_picard.sage	test_picard_group_structure_on_product_of_lines	specimen	6	0		tests/schemes/test_projective_products_picard_archive.py	reconciled-live-owner
 preamble/tests/framework/test_projective_products_picard.sage	test_picard_lattice_matrix_and_duality_data	specimen	18	0		tests/schemes/test_projective_products_picard_archive.py	reconciled-live-owner
-preamble/tests/framework/test_quotients_and_complete_intersections.sage	<module>	module	1	0			unreviewed
-preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_complete_intersection_certificate_for_an_affine_quadric_surface	specimen	6	0			unreviewed
-preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_diagonal_sign_quotient_family_has_global_quotient_data	specimen	29	0			unreviewed
+preamble/tests/framework/test_quotients_and_complete_intersections.sage	<module>	module	1	0		tests/schemes/test_complete_intersections.py	reconciled-live-owner
+preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_complete_intersection_certificate_for_an_affine_quadric_surface	specimen	6	0		tests/schemes/test_complete_intersections.py	reconciled-live-owner
+preamble/tests/framework/test_quotients_and_complete_intersections.sage	test_diagonal_sign_quotient_family_has_global_quotient_data	specimen	29	0		tests/schemes/test_horikawa_enriques_family.py	reconciled-live-owner
 preamble/tests/framework/test_schemes_pullback.sage	<module>	module	1	0			unreviewed
 preamble/tests/framework/test_schemes_pullback.sage	test_graph_and_fixed_subscheme_for_involution	specimen	6	0			unreviewed
 preamble/tests/framework/test_schemes_pullback.sage	test_fiber_pullback_from_projection_is_one_dimensional	specimen	27	0			unreviewed
