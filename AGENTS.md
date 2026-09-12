@@ -195,6 +195,22 @@ These are mathematical threading requirements for the selected consumer, not
 authorization to build every conceivable foundation first. Record actual gaps
 under `DEV-59`, and implement the remaining shared requirement with its consumer.
 
+## Do not end a turn without the next node started (always-on)
+
+A turn that ends with the work delivered and nothing in flight still stops this repository
+until somebody notices and pushes it. On 2026-09-12 that cost between eighteen and fifty
+minutes on each of nine occasions — more total time than every red gate, stalled run and
+blocked node that day.
+
+Ending a turn is a decision to stop, so make it deliberately and rarely. When a node closes,
+take the next ready one from the DAG in the same turn: read its acceptance, open the owners,
+begin. If work genuinely must pause — a run you are waiting on, a decision outside your
+authority — say what you are waiting for and what you will do when it returns, so the next turn
+starts with an instruction rather than a question.
+
+`Needs: none` nodes are always available and the DAG says which they are. Selecting the next
+piece is your work, not the steward's.
+
 ## A claim is not work, and neither is releasing one (always-on)
 
 Claiming a node, widening a claim, releasing a claim, marking a frontier: none of it builds
