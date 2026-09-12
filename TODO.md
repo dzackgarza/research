@@ -663,20 +663,7 @@ of the more general construction (`OWN-01`, `OWN-08`, `OWN-09`).
   products use a multiplication compatible with the differential and descend
   to cycles modulo boundaries.
 
-- [ ] **`integral-topology`**. **Needs:** none.
-  Extend integral topology, cycle classes and cup-product comparisons beyond
-  smooth complete toric examples.
-  **Deliver:** specified complex realizations, integral cohomology with
-  torsion, graded cup products and induced maps, divisor first Chern classes,
-  and the middle-cohomology pairing on the torsion-free quotient where defined.
-  **Decision:** coherent cohomology is not singular cohomology; rational
-  cohomology does not recover integral torsion. A Chow-to-cohomology
-  isomorphism valid for a toric regime is not a universal comparison theorem.
-  Specify ordinary, intersection, or resolution cohomology at singular spaces.
-  **Acceptance:** actual comparison morphisms and a specimen separating the
-  chosen theories; K3 middle cohomology retains its form and divisor inclusion.
-
-- [ ] **`fundamental-hodge`**. **Needs:** `integral-topology`.
+- [ ] **`fundamental-hodge`**. **Needs:** none.
   Extend pointed fundamental groups and Hodge structures to the selected
   geometric realizations.
   **Deliver:** a base point, induced maps for pointed morphisms, and supported
@@ -843,7 +830,7 @@ definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
   **Acceptance:** compute the decomposition through the action rather than
   hard-code its dimensions. The cover, involutions and base changes commute.
 
-- [ ] **`enriques-family`**. **Needs:** `k3-family`, `integral-topology`.
+- [ ] **`enriques-family`**. **Needs:** `k3-family`.
   Construct the Enriques quotient and its lattice comparisons from the
   preceding K3 action.
   **Inputs:** an actually fixed-point-free involution, the required field/
