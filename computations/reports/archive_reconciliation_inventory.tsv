@@ -3163,14 +3163,14 @@ preamble/tests/test_function_modules.sage	test_module_arithmetic_stays_symbolic_
 preamble/tests/test_function_modules.sage	test_an_opaque_callable_is_trusted_where_an_expression_is_refused	specimen	291	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
 preamble/tests/test_function_modules.sage	test_such_a_form_has_no_gram_matrix_and_says_so	specimen	304	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
 preamble/tests/test_function_modules.sage	test_a_finitely_generated_form_still_has_one	specimen	321	0		src/dzack_research/preamble/categories/modules/pure/function_modules.py	reconciled-live-owner
-preamble/tests/test_functor_codomains.sage	<module>	module	1	0			unreviewed
-preamble/tests/test_functor_codomains.sage	test_free_module_functor_lands_in_modules	specimen	37	0			unreviewed
-preamble/tests/test_functor_codomains.sage	test_underlying_set_of_group_functor_lands_in_sets	specimen	53	0			unreviewed
-preamble/tests/test_functor_codomains.sage	test_group_ring_module_functor_lands_in_modules	specimen	67	0			unreviewed
-preamble/tests/test_functor_codomains.sage	test_forgetful_module_functor_lands_in_sets	specimen	81	0			unreviewed
-preamble/tests/test_functor_codomains.sage	test_group_ring_over_many_base_rings	specimen	160	0			unreviewed
-preamble/tests/test_functor_codomains.sage	test_group_ring_is_noncommutative_exactly_when_the_group_is	specimen	204	0			unreviewed
-preamble/tests/test_functor_codomains.sage	test_free_module_functor_carries_morphisms	specimen	225	0			unreviewed
+preamble/tests/test_functor_codomains.sage	<module>	module	1	0		tests/categories/test_free_forgetful_adjunction_archive.py	reconciled-live-owner
+preamble/tests/test_functor_codomains.sage	test_free_module_functor_lands_in_modules	specimen	37	0		tests/categories/test_free_forgetful_adjunction_archive.py	reconciled-live-owner
+preamble/tests/test_functor_codomains.sage	test_underlying_set_of_group_functor_lands_in_sets	specimen	53	0		tests/groups/test_functors_out_of_groups.py	reconciled-live-owner
+preamble/tests/test_functor_codomains.sage	test_group_ring_module_functor_lands_in_modules	specimen	67	0		tests/algebras/test_group_algebra_functor_archive.py	reconciled-live-owner
+preamble/tests/test_functor_codomains.sage	test_forgetful_module_functor_lands_in_sets	specimen	81	0		tests/categories/test_free_forgetful_adjunction_archive.py	reconciled-live-owner
+preamble/tests/test_functor_codomains.sage	test_group_ring_over_many_base_rings	specimen	160	0		tests/algebras/test_group_algebra_functor_archive.py	reconciled-live-owner
+preamble/tests/test_functor_codomains.sage	test_group_ring_is_noncommutative_exactly_when_the_group_is	specimen	204	0		tests/algebras/test_group_algebra_functor_archive.py	reconciled-live-owner
+preamble/tests/test_functor_codomains.sage	test_free_module_functor_carries_morphisms	specimen	225	0		tests/categories/test_free_forgetful_adjunction_archive.py	reconciled-live-owner
 preamble/tests/test_group_hierarchy.sage	<module>	module	1	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/tests/test_group_hierarchy.sage	test_groups_refine_on_witnesses_only	specimen	30	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
 preamble/tests/test_group_hierarchy.sage	test_every_subgroup_has_its_inclusion_homomorphism	specimen	61	0		src/dzack_research/preamble/categories/group/groups.py	reconciled-live-owner
