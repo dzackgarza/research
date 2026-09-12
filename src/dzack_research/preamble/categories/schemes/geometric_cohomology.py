@@ -616,16 +616,64 @@ class QuarticK3IntegralTopology(SageObject):
     @cached_method
     def integral_cohomology(self, degree):
         degree = int(degree)
-        if degree < 0 or degree > 4:
-            raise ValueError("a complex K3 surface has cohomology only in degrees zero through four")
+        if degree < 0:
+            raise ValueError("a singular-cohomology degree is nonnegative")
         integers = _own_ring(SageZZ)
         if degree == 2:
             return self.middle_cohomology_lattice()
-        if degree in (1, 3):
-            return FreshFreeModuleOn(integers, finite_ordered_set(()))
-        return FreshFreeModuleOn(
-            integers,
-            finite_ordered_set((f"H{degree}",)),
+        if degree in (0, 4):
+            return FreshFreeModuleOn(
+                integers,
+                finite_ordered_set((f"H{degree}",)),
+            )
+        return FreshFreeModuleOn(integers, finite_ordered_set(()))
+
+    @cached_method
+    def cup_product(self, left_degree, right_degree):
+        r"""Return the graded cup product in the selected K3 marking."""
+        left_degree = int(left_degree)
+        right_degree = int(right_degree)
+        if left_degree < 0 or right_degree < 0:
+            raise ValueError("cup-product degrees are nonnegative")
+        left = self.integral_cohomology(left_degree)
+        right = self.integral_cohomology(right_degree)
+        target = self.integral_cohomology(left_degree + right_degree)
+        integers = _own_ring(SageZZ)
+
+        if left_degree == 0:
+            return BilinearMap(
+                left,
+                right,
+                target,
+                lambda _unit_label, right_label: target.module_generator(right_label),
+            )
+        if right_degree == 0:
+            return BilinearMap(
+                left,
+                right,
+                target,
+                lambda left_label, _unit_label: target.module_generator(left_label),
+            )
+        if left_degree == right_degree == 2:
+            top_label = next(iter(target.module_generating_set()))
+            middle = self.middle_cohomology_lattice()
+            return BilinearMap(
+                left,
+                right,
+                target,
+                lambda left_label, right_label: target.scalar_multiple(
+                    middle.b(
+                        middle.module_generator(left_label),
+                        middle.module_generator(right_label),
+                    ),
+                    target.module_generator(top_label),
+                ),
+            )
+        return BilinearMap(
+            left,
+            right,
+            target,
+            lambda _left_label, _right_label: target.zero(),
         )
 
     @cached_method
