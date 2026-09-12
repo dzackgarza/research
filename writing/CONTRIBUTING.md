@@ -4407,6 +4407,55 @@ $q$ are the greatest dimensions, $p+q+r=n$, and $G_e(b)\cong\operatorname{diag}
 (1^p,-1^q,0^r)$. :::" The finite case as specialization, not the
 definition.
 
+### `PR-71`: For any stated result or definition, ask if it can be reasonably extended — if "hypothesis $X$ relaxed, is it that much harder?" is no, do it and recover the special case
+
+For every Definition / Proposition / Theorem as stated, go through all
+permutations of its hypotheses and ask: "Is the statement with $X$
+relaxed / removed that much harder to state or prove?" If the answer is
+no — and it is surprisingly often no — state the general form and
+recover the desired specialization as a Remark / Corollary. Choosing the
+restricted form to avoid the general sup / infinite-dimensional / $W\neq
+R$ / non-free case saves nothing and forces a rewrite when the
+geometric / analytic specialization is needed anyway (PR-63, PR-66, PR-70).
+
+This is the general form behind PR-61/PR-63 (free $W=R$ finite $M=R^{(I)}$
+discrete vs. $M\in\mathbf{Mod}_R$ arbitrary with $b\colon M\otimes M\to W$),
+PR-66/PR-70 ($V$ finite-dimensional ordered $F$ with $\max$ vs. $V$
+arbitrary with $\sup$ in $\mathbf{Card}$ / on $\mathrm{Fl}(V)$),
+PR-58/60 (no framing vs. framed $((M,e),b)$ with variance clause), and
+PR-69 (prose $\max$ vs. hard $V\cong P\perp Q\perp\operatorname{rad}$).
+
+Concrete check — on every new unit, ask explicitly:
+
+* Finite $\to$ arbitrary ($n<\infty$ vs. $I$ arbitrary, $M$ finite free vs.
+  $M\in\mathbf{Mod}_R$, $V$ finite-dimensional vs. arbitrary, $\max$ vs.
+  $\sup$)?
+* $W=R$ vs. $W\in\mathbf{Mod}_R$ varying (PR-37)?
+* Free $M=R^{(I)}$ vs. $M$ arbitrary (projective / not free vs. $L^2$)?
+* Discrete topology / finite support vs. topological / $L^2$-convergent
+  (PR-61/PR-62)?
+* $R$ commutative / $2$ invertible vs. general $R$ / $2$ not invertible
+  (PR-48)?
+
+If the general $W$-valued $(0,2)$-tensor $b\colon M\otimes M\to W$ as
+$R$-module, or the sup $(p,q,r)\in\mathbf{Card}^3$ on $\mathrm{Gr}(V)$,
+is one line more and the proof is Sylvester with the same $b^{\sharp}$
+/ $\Gamma^2_R$, state the general and add "::: {.Remark} When
+$\dim_FV=n<\infty$, this gives $p=\max\ldots$, $p+q+r=n$, and
+$G_e(b)\cong\operatorname{diag}(1^p,-1^q,0^r)$. :::" — the special case
+desired is recovered without loss.
+
+**Banned:** the block as stated with "$F$ ordered, $V$ finite-dimensional,
+$M$ free on $E$, $b$ with values in $R$, $p$ is the greatest dimension …"
+as the *definition*, when the sup / $W$-valued / $M$ arbitrary form is
+one line more and the same proof works.
+
+**Preferred:** state the general $b\colon M\otimes M\to W$ / $\sup$ /
+$M$ arbitrary / $W$ varying form fenced, then the finite $W=R$ / $V$
+finite-dimensional / $M=R^n$ / $G_{ij}$ / $\max$ specialization as a
+fenced Remark / Corollary that recovers the desired case. Always perform
+the permutation check; if not much harder, the general is the definition.
+
 ### `PR-64`: Definitions are atomic units — one definition per fenced block, with only rare grouping of tightly related definitions; Lemmas / Propositions / Remarks are never in a Definition block
 
 A fenced `Definition` is an atomic unit with one logical status: it
@@ -5063,6 +5112,17 @@ $\mathrm{Gr}(V)$ / $\mathrm{Fl}(V)$, $r:=\dim\operatorname{rad}(V)$,
 $(p,q,r)\in\mathbf{Card}^3$ (PR-70); the finite $V$ with "$\max$" and
 $p+q+r=n$ is the specialization where the suprema are attained, not the
 definition.
+
+**32. Always ask if the statement generalizes without much more
+difficulty — if not, state the general and recover the special case.**
+For every Definition / Proposition, go through all permutations of its
+hypotheses ("finite $\to$ arbitrary," "$W=R$ $\to$ $W$ varying," "free
+$M=R^{(I)}$ $\to$ $M$ arbitrary," "discrete / finite support $\to$
+topological / $L^2$-convergent," "$2$ invertible $\to$ general $R$")
+and ask "is it that much harder with $X$ relaxed?" If no, the general
+is the definition and the desired special case is a Remark / Corollary
+(PR-71) — as with $b\colon M\otimes M\to W$ vs. $M$ free $W=R$ finite,
+and $\sup$ vs. $\max$ for signature.
 
 **29. Twist is any $\varphi\colon W\to W'$, not just $\lambda\in R$.**
 $\mathbf{Bil}_{R,W}$ is functorial in $W$ — $\varphi\colon W\to W'$
