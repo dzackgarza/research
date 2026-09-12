@@ -57,6 +57,11 @@ ARCHIVE_RECONCILIATIONS = (
         },
         "disposition": "reconciled-live-owner",
     },
+    {
+        "archive_module": "preamble/tests/coxeter_tdd_specs/sage_verification/test_sage_delegation.sage",
+        "live_owner": "tests/lattices/test_coxeter_literature.py",
+        "disposition": "reconciled-live-owner",
+    },
 )
 
 
@@ -392,3 +397,53 @@ def test_icosahedral_root_lattices_live_over_the_golden_integer_ring() -> None:
     assert rooted.root_gram_tensor().base_ring() is h3.base_ring()
     assert rooted.coxeter_matrix() == CoxeterMatrix(["H", 3])
 
+
+
+def test_archived_large_exceptional_orders_are_the_products_of_invariant_degrees() -> None:
+    expected = {
+        ("E", 6): (51840, 12),
+        ("E", 7): (2903040, 18),
+        ("E", 8): (696729600, 30),
+        ("F", 4): (1152, 12),
+        ("H", 4): (14400, 30),
+    }
+
+    for cartan_type, (order, coxeter_number) in expected.items():
+        degrees = CoxeterDiagrams().from_cartan_type(list(cartan_type)).coxeter_group().degrees()
+        from math import prod
+
+        assert prod(int(degree) for degree in degrees) == order
+        assert max(int(degree) for degree in degrees) == coxeter_number
+
+
+def test_archived_longest_elements_have_one_step_per_positive_root() -> None:
+    expected_lengths = {
+        ("A", 3): 6,
+        ("B", 3): 9,
+        ("D", 4): 12,
+        ("G", 2): 6,
+        ("H", 3): 15,
+        ("I", 5): 5,
+    }
+
+    for cartan_type, expected in expected_lengths.items():
+        group = CoxeterDiagrams().from_cartan_type(list(cartan_type)).coxeter_group()
+        assert group.long_element().length() == expected
+
+
+def test_archived_root_counts_positive_roots_and_highest_root_heights_agree() -> None:
+    expected = {
+        "A3": (12, 6, 4),
+        "D4": (24, 12, 6),
+        "E6": (72, 36, 12),
+    }
+
+    for name, (root_count, positive_count, coxeter_number) in expected.items():
+        lattice = getattr(Lattices, name)
+        roots = lattice.roots()
+        positive = tuple(root for root in roots if root.is_positive_root())
+
+        assert roots.cardinality() == root_count
+        assert len(positive) == positive_count
+        assert lattice.coxeter_number() == coxeter_number
+        assert lattice.highest_root().height() == coxeter_number - 1
