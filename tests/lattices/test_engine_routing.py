@@ -17,6 +17,16 @@ from dzack_research.preamble.engine_capabilities import (
     engine_capabilities,
 )
 
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/modules/framed/formed/integrallattice/engines.sage",
+    "live_owner": "src/dzack_research/preamble/categories/lattice_engines.py",
+    "owner_overrides": {
+        "lorentz_edgewalk_fundamental_domain": "src/dzack_research/preamble/categories/hyperbolic_lattices.py",
+        "vinbergs_algorithm_nf_root_rows": "src/dzack_research/preamble/categories/hyperbolic_lattices.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 _CAPABILITY = "lattice.indefinite_vector_stabilizer"
 _POLYHEDRAL_PROVIDER = "polyhedral-common-via-py-polyhedral"
 
