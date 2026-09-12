@@ -2638,81 +2638,81 @@ preamble/categories/sets/ordinals.py	Ordinals	function	376	1	src/dzack_research/
 preamble/categories/sets/ordinals.py	ordinal	function	381	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
 preamble/categories/sets/ordinals.py	omega	function	385	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
 preamble/categories/sets/ordinals.py	omega0	binding	390	1	src/dzack_research/preamble/categories/sets/cardinals.py	src/dzack_research/preamble/categories/sets/cardinals.py	reconciled-live-owner
-preamble/categories/sets/owned_sets.py	<module>	module	1	0			unreviewed
-preamble/categories/sets/owned_sets.py	register_set_axioms	function	111	2			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods	class	125	2			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.Countable	method	130	0			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.Uncountable	method	137	0			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.PartiallyOrdered	method	146	0			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.TotallyOrdered	method	151	0			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.ProductFunctor	method	157	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.CoproductFunctor	method	168	1	src/dzack_research/preamble/categories/abstract_categories/functors.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.ExponentialFunctor	method	179	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.Exponentials	method	184	0			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.InverseImagePowerSetFunctor	method	188	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.PowerSets	method	195	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FinitePowerSetFunctor	method	199	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FinitePowerSets	method	204	1	src/dzack_research/preamble/categories/sets/set_categories.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FixedCardinalitySubsetFunctor	method	208	1	src/dzack_research/preamble/categories/functors/set_constructions.py		unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FixedCardinalitySubsets	method	218	0			unreviewed
-preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.CardinalityFunctor	method	222	1	src/dzack_research/preamble/categories/functors/cardinality.py		unreviewed
-preamble/categories/sets/owned_sets.py	Sets	class	230	2			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.super_categories	method	244	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.Countable	method	252	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.Uncountable	method	253	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.PartiallyOrdered	method	254	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.TotallyOrdered	method	255	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.Finite	method	256	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.Infinite	method	257	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.Facade	method	258	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ElementMethods	class	884	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods	class	897	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.cardinality	method	924	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_finite	method	936	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_infinite	method	939	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_countable	method	942	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_uncountable	method	953	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.exponential	method	957	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.power_set	method	968	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.subsets_of_size	method	974	0			unreviewed
-preamble/categories/sets/owned_sets.py	Sets.ParentMethods.finite_subsets	method	980	0			unreviewed
-preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets	class	995	2			unreviewed
-preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.super_categories	method	1012	0			unreviewed
-preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods	class	1019	0			unreviewed
-preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.index_set	method	1054	0			unreviewed
-preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.value_set	method	1057	0			unreviewed
-preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.basepoint	method	1060	0			unreviewed
-preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.cardinality	method	1099	0			unreviewed
-preamble/categories/sets/owned_sets.py	FiniteSets	class	1109	2			unreviewed
-preamble/categories/sets/owned_sets.py	FiniteSets.extra_super_categories	method	1115	0			unreviewed
-preamble/categories/sets/owned_sets.py	FiniteSets.ParentMethods	class	1137	0			unreviewed
-preamble/categories/sets/owned_sets.py	FiniteSets.ParentMethods.symmetric_group	method	1142	0			unreviewed
-preamble/categories/sets/owned_sets.py	InfiniteSets	class	1182	2			unreviewed
-preamble/categories/sets/owned_sets.py	CountableSets	class	1190	2			unreviewed
-preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods	class	1208	0			unreviewed
-preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.position	method	1248	0			unreviewed
-preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.enumeration_injection	method	1257	0			unreviewed
-preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.is_countable	method	1275	0			unreviewed
-preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.is_uncountable	method	1278	0			unreviewed
-preamble/categories/sets/owned_sets.py	CountablyInfiniteSets	class	1282	2			unreviewed
-preamble/categories/sets/owned_sets.py	CountablyInfiniteSets.ParentMethods	class	1288	0			unreviewed
-preamble/categories/sets/owned_sets.py	CountablyInfiniteSets.ParentMethods.cardinality	method	1289	0			unreviewed
-preamble/categories/sets/owned_sets.py	UncountableSets	class	1297	2			unreviewed
-preamble/categories/sets/owned_sets.py	UncountableSets.extra_super_categories	method	1303	0			unreviewed
-preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods	class	1306	0			unreviewed
-preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods.is_countable	method	1307	0			unreviewed
-preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods.is_uncountable	method	1310	0			unreviewed
-preamble/categories/sets/owned_sets.py	PosetTikz	class	1314	0			unreviewed
-preamble/categories/sets/owned_sets.py	PosetTikz.tikz_code	method	1367	0			unreviewed
-preamble/categories/sets/owned_sets.py	PartiallyOrderedSets	class	1591	2			unreviewed
-preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods	class	1643	0			unreviewed
-preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods.hasse_layout	method	1644	0			unreviewed
-preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods.hasse_tikz	method	1649	0			unreviewed
-preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods.tikz	method	1657	0			unreviewed
-preamble/categories/sets/owned_sets.py	install_poset_display	function	1685	0			unreviewed
-preamble/categories/sets/owned_sets.py	TotallyOrderedSets	class	1707	2			unreviewed
-preamble/categories/sets/owned_sets.py	TotallyOrderedSets.extra_super_categories	method	1712	0			unreviewed
-preamble/categories/sets/owned_sets.py	placement_of	function	1726	2			unreviewed
+preamble/categories/sets/owned_sets.py	<module>	module	1	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	register_set_axioms	function	111	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods	class	125	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.Countable	method	130	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.Uncountable	method	137	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.PartiallyOrdered	method	146	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.TotallyOrdered	method	151	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.ProductFunctor	method	157	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.CoproductFunctor	method	168	1	src/dzack_research/preamble/categories/abstract_categories/functors.py	src/dzack_research/preamble/categories/abstract_categories/functors.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.ExponentialFunctor	method	179	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.Exponentials	method	184	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.InverseImagePowerSetFunctor	method	188	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.PowerSets	method	195	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FinitePowerSetFunctor	method	199	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FinitePowerSets	method	204	1	src/dzack_research/preamble/categories/sets/set_categories.py	src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FixedCardinalitySubsetFunctor	method	208	1	src/dzack_research/preamble/categories/functors/set_constructions.py	src/dzack_research/preamble/categories/functors/set_constructions.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.FixedCardinalitySubsets	method	218	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	SetSubcategoryMethods.CardinalityFunctor	method	222	1	src/dzack_research/preamble/categories/functors/cardinality.py	src/dzack_research/preamble/categories/functors/cardinality.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets	class	230	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.super_categories	method	244	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.Countable	method	252	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.Uncountable	method	253	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.PartiallyOrdered	method	254	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.TotallyOrdered	method	255	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.Finite	method	256	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.Infinite	method	257	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.Facade	method	258	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ElementMethods	class	884	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods	class	897	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.cardinality	method	924	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_finite	method	936	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_infinite	method	939	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_countable	method	942	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.is_uncountable	method	953	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.exponential	method	957	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.power_set	method	968	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.subsets_of_size	method	974	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	Sets.ParentMethods.finite_subsets	method	980	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets	class	995	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.super_categories	method	1012	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods	class	1019	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.index_set	method	1054	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.value_set	method	1057	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.basepoint	method	1060	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FinitelySupportedFunctionSets.ParentMethods.cardinality	method	1099	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FiniteSets	class	1109	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FiniteSets.extra_super_categories	method	1115	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FiniteSets.ParentMethods	class	1137	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	FiniteSets.ParentMethods.symmetric_group	method	1142	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	InfiniteSets	class	1182	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountableSets	class	1190	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods	class	1208	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.position	method	1248	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.enumeration_injection	method	1257	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.is_countable	method	1275	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountableSets.ParentMethods.is_uncountable	method	1278	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountablyInfiniteSets	class	1282	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountablyInfiniteSets.ParentMethods	class	1288	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	CountablyInfiniteSets.ParentMethods.cardinality	method	1289	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	UncountableSets	class	1297	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	UncountableSets.extra_super_categories	method	1303	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods	class	1306	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods.is_countable	method	1307	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	UncountableSets.ParentMethods.is_uncountable	method	1310	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	PosetTikz	class	1314	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	PosetTikz.tikz_code	method	1367	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	PartiallyOrderedSets	class	1591	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods	class	1643	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods.hasse_layout	method	1644	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods.hasse_tikz	method	1649	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	PartiallyOrderedSets.ParentMethods.tikz	method	1657	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	install_poset_display	function	1685	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	TotallyOrderedSets	class	1707	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	TotallyOrderedSets.extra_super_categories	method	1712	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
+preamble/categories/sets/owned_sets.py	placement_of	function	1726	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
 preamble/categories/sets/sets.sage	<module>	module	1	0		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
 preamble/categories/sets/sets.sage	Set	function	69	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner
 preamble/categories/sets/sets.sage	ConditionSet	function	87	2		src/dzack_research/preamble/categories/sets/set_categories.py	reconciled-live-owner

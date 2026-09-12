@@ -9,6 +9,7 @@ from dzack_research.preamble.all import (
     NN,
     CountableSets,
     CountablyInfiniteSets,
+    EnumeratedSets,
     FiniteSets,
     InfiniteSets,
     PartiallyOrderedSets,
@@ -17,6 +18,22 @@ from dzack_research.preamble.all import (
     TotallyOrderedSets,
     UncountableSets,
 )
+
+ARCHIVE_RECONCILIATION = {
+    "archive_module": "preamble/categories/sets/owned_sets.py",
+    "live_owner": "src/dzack_research/preamble/categories/sets/set_categories.py",
+    "owner_overrides": {
+        "SetSubcategoryMethods.ProductFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "SetSubcategoryMethods.CoproductFunctor": "src/dzack_research/preamble/categories/abstract_categories/functors.py",
+        "SetSubcategoryMethods.ExponentialFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "SetSubcategoryMethods.InverseImagePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "SetSubcategoryMethods.FinitePowerSetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "SetSubcategoryMethods.FixedCardinalitySubsetFunctor": "src/dzack_research/preamble/categories/functors/set_constructions.py",
+        "SetSubcategoryMethods.CardinalityFunctor": "src/dzack_research/preamble/categories/functors/cardinality.py",
+    },
+    "disposition": "reconciled-live-owner",
+}
+
 
 
 def test_archived_finite_sets_are_countable_without_becoming_infinite() -> None:
@@ -51,3 +68,10 @@ def test_archived_total_order_refines_partial_order_without_cardinality_claim() 
     assert NN in PartiallyOrderedSets()
     assert TotallyOrderedSets().is_subcategory(PartiallyOrderedSets())
     assert not TotallyOrderedSets().is_subcategory(FiniteSets())
+
+
+def test_countability_and_a_chosen_enumeration_are_distinct_live_structures() -> None:
+    assert not CountableSets().is_subcategory(EnumeratedSets())
+    assert NN in CountableSets()
+    assert NN in EnumeratedSets()
+    assert NN.ranking_map().inverse()(7) == NN(7)
