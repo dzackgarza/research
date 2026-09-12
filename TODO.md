@@ -936,7 +936,7 @@ not establish a comparison or authorize a substitute (`OWN-08`, `OWN-09`).
   fibers and flatness; a scalar-killed comparison detects nonflatness.
   Completion precision is absent from exact flatness and fiber claims.
 
-- [ ] **`formal-families`**. **Needs:** `completion-comparisons`, `sheaf-functors`.
+- [x] **`formal-families`**. **Needs:** `completion-comparisons`, `sheaf-functors`.
   Construct formal neighborhoods and formal families as formal objects,
   retaining their algebraic comparisons.
   **Dependencies:** corrected ring/module completion and continuous maps.
@@ -1470,5 +1470,4 @@ behavior.
 
 | Claim | Stream / concrete release | Owner task/session and checkout | Reserved resources and mode | Base / checkpoint | Updated UTC |
 | --- | --- | --- | --- | --- | --- |
-| `FORMAL-FAMILIES-adic-system-20260912-0249` | formal-families / formal spectrum and thickenings | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/schemes/formal_schemes.py; tests/schemes/test_formal_schemes.py` (write) | `b1f673fc` | 2026-09-12T02:49:00Z |
 | `LINE-BUNDLES-projective-20260912-0112` | line-bundles / projective O(d) and section algebra | Chat continuation 2026-09-12; `/home/dzack/research` | `src/dzack_research/preamble/categories/divisors/invertible_sheaves.py; src/dzack_research/preamble/categories/divisors/section_rings.py; src/dzack_research/preamble/categories/schemes/schemes.py; src/dzack_research/preamble/categories/divisors/__init__.py; src/dzack_research/preamble/all.py; tests/divisors/test_projective_line_bundles_frontier.py` (write) | `8ae1ccaf` | 2026-09-12T01:12:00Z |
