@@ -3000,20 +3000,20 @@ preamble/tests/coxeter_tdd_specs/system/test_literature_examples.sage	test_the_e
 preamble/tests/coxeter_tdd_specs/test_index.py	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/test_index.py	analyze_test_file	function	15	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/test_index.py	generate_test_index	function	64	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	<module>	module	1	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a2_determinant_signature_and_discriminant	specimen	33	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a2_eigenvalues_are_the_negatives_of_the_schlafli_eigenvalues	specimen	51	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a_series_ranks_and_determinants	specimen	66	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_elliptic_diagrams_are_negative_definite	specimen	81	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_affine_a2_root_gram_matrix_is_singular_and_the_diagram_is_parabolic	specimen	98	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	strict	binding	118	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	reason	binding	119	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_affine_a2_root_lattice_has_signature_zero_two_one	specimen	128	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a_hyperbolic_edge_has_negative_determinant_and_mixed_signature	specimen	144	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_triangle_group_333_is_the_a2_schlafli_matrix	specimen	165	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_square_group_is_the_dihedral_group_of_order_eight	specimen	181	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a_gram_matrix_must_be_symmetric	specimen	198	0			unreviewed
-preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_an_integral_lattice_must_have_integral_gram_entries	specimen	208	0			unreviewed
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	<module>	module	1	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a2_determinant_signature_and_discriminant	specimen	33	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a2_eigenvalues_are_the_negatives_of_the_schlafli_eigenvalues	specimen	51	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a_series_ranks_and_determinants	specimen	66	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_elliptic_diagrams_are_negative_definite	specimen	81	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_affine_a2_root_gram_matrix_is_singular_and_the_diagram_is_parabolic	specimen	98	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	strict	binding	118	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	reason	binding	119	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_affine_a2_root_lattice_has_signature_zero_two_one	specimen	128	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a_hyperbolic_edge_has_negative_determinant_and_mixed_signature	specimen	144	0		tests/lattices/test_coxeter_gram_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_triangle_group_333_is_the_a2_schlafli_matrix	specimen	165	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_square_group_is_the_dihedral_group_of_order_eight	specimen	181	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_a_gram_matrix_must_be_symmetric	specimen	198	0		tests/forms/test_constructor_obligations_archive.py	reconciled-live-owner
+preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage	test_an_integral_lattice_must_have_integral_gram_entries	specimen	208	0		tests/forms/test_constructor_obligations_archive.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	<module>	module	1	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_a2_root_gram_matrix_is_two_cosine_of_the_coxeter_angles	specimen	28	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
 preamble/tests/coxeter_tdd_specs/unit/test_matrix_construction.sage	test_root_gram_matrix_is_the_negated_schlafli_matrix	specimen	49	0		tests/lattices/test_coxeter_literature.py	reconciled-live-owner
