@@ -1,0 +1,458 @@
+r"""Horikawa ``(4,4)`` double-cover K3 family with its three involutions.
+
+Let ``Y=P^1 x P^1`` and let
+
+``tau([x0:x1],[y0:y1])=([x0:-x1],[y0:-y1])``.
+
+The standard linearization on ``O_Y(4,4)`` splits its 25-dimensional section
+space into the even and odd parity eigenspaces.  This module does not insert
+the source dimensions ``13`` and ``12``: they are obtained from the actual
+``C2`` action on the represented monomial basis and the common isotypic
+construction.
+
+For an invariant branch section ``f`` and ``L=O_Y(2,2)=-K_Y`` the cyclic-cover
+algebra ``O_Y plus L^-1`` with ``z^2=f`` gives the double cover.  The two
+linearizations of ``L`` with character ``+1`` and ``-1`` give the two lifts of
+``tau``.  On the affine coordinates their maps are respectively
+``(u,v,z) -> (-u,-v,z)`` and ``(u,v,z) -> (-u,-v,-z)``.  The covering
+involution is ``z -> -z`` over the identity.
+
+The selected branch
+
+``x0^4 y0^4 + x0^4 y1^4 + x1^4 y0^4 - x1^4 y1^4``
+
+is invariant and avoids the four ``tau``-fixed corners.  Smoothness is decided
+chartwise by the existing affine hypersurface Jacobian/Fitting construction.
+Under those hypotheses the standard smooth double-cover formula
+``K_X = pi^*(K_Y+L)`` gives trivial canonical bundle, and
+``pi_*O_X=O_Y plus O_Y(-2,-2)`` gives ``H^1(O_X)=0``.  Thus the selected smooth
+member is a K3 surface.  This is the Horikawa/Pardini double-cover theorem used
+in the project source notes; it is not a generic K3 recognition algorithm.
+"""
+
+from sage.misc.cachefunc import cached_method
+from sage.rings.rational_field import QQ as SageQQ
+from sage.structure.sage_object import SageObject
+
+from dzack_research.preamble.categories.algebras.cyclic_cover_algebras import (
+    CyclicCoverAlgebra,
+)
+from dzack_research.preamble.categories.divisors.linearizations import (
+    C2DiagonalProductProjectiveAction,
+    ProductProjectiveLineBundleLinearization,
+)
+from dzack_research.preamble.categories.group.groups import OwnedGroups
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+)
+from dzack_research.preamble.categories.rings.ring_foundation import _own_ring
+from dzack_research.preamble.categories.schemes.cyclic_covers import (
+    cyclic_cover_base_change,
+    relative_cyclic_cover_lift,
+)
+from dzack_research.preamble.categories.schemes.schemes import (
+    ProjectiveSpace,
+    Schemes,
+)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_set,
+)
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+)
+
+
+class HorikawaK3Family(SageObject):
+    r"""Invariant ``(4,4)`` branch sections and their double covers."""
+
+    def __init__(self, base_ring=None) -> None:
+        base = _own_ring(SageQQ) if base_ring is None else _own_ring(base_ring)
+        if int(base.characteristic()) != 0:
+            raise NotImplementedError(
+                "the represented Horikawa eigenspace family currently uses characteristic zero"
+            )
+        labels = finite_ordered_set(("left", "right"))
+        line = ProjectiveSpace(1, base, names=("x0", "x1"))
+        factors = finite_indexed_family(
+            labels,
+            lambda _label: line,
+            name="Two labelled projective-line factors of the Horikawa base",
+        )
+        surface = Schemes(base).product(factors)
+        cover_line_bundle = surface.O(2, 2)
+        branch_line_bundle = cover_line_bundle.tensor_power(2)
+        group = OwnedGroups().C(2)
+        action = C2DiagonalProductProjectiveAction(surface, group)
+        trivial = lambda element: base.one()
+        sign = lambda element: (
+            base.one() if group(element) == group.one() else -base.one()
+        )
+        branch_linearization = ProductProjectiveLineBundleLinearization(
+            branch_line_bundle,
+            action,
+            trivial,
+        )
+        nikulin_linearization = ProductProjectiveLineBundleLinearization(
+            cover_line_bundle,
+            action,
+            trivial,
+        )
+        enriques_linearization = ProductProjectiveLineBundleLinearization(
+            cover_line_bundle,
+            action,
+            sign,
+        )
+        self._base_ring = base
+        self._factor_labels = labels
+        self._line = line
+        self._base_surface = surface
+        self._cover_line_bundle = cover_line_bundle
+        self._branch_line_bundle = branch_line_bundle
+        self._group = group
+        self._base_action = action
+        self._branch_linearization = branch_linearization
+        self._nikulin_linearization = nikulin_linearization
+        self._enriques_linearization = enriques_linearization
+
+    def base_ring(self):
+        return self._base_ring
+
+    def factor_labels(self):
+        return self._factor_labels
+
+    def base_surface(self):
+        return self._base_surface
+
+    def cover_line_bundle(self):
+        return self._cover_line_bundle
+
+    def branch_line_bundle(self):
+        return self._branch_line_bundle
+
+    def acting_group(self):
+        return self._group
+
+    def base_action(self):
+        return self._base_action
+
+    def branch_linearization(self):
+        return self._branch_linearization
+
+    def nikulin_linearization(self):
+        return self._nikulin_linearization
+
+    def enriques_linearization(self):
+        return self._enriques_linearization
+
+    def branch_section_space(self):
+        return self.branch_line_bundle().global_sections()
+
+    def branch_group_module(self):
+        return self.branch_linearization().section_group_module()
+
+    @cached_method
+    def branch_isotypic_decomposition(self):
+        return self.branch_group_module().isotypic_decomposition()
+
+    def invariant_branch_sections(self):
+        return self.branch_isotypic_decomposition().trivial_component()
+
+    def anti_invariant_branch_sections(self):
+        nontrivial = tuple(
+            self.branch_isotypic_decomposition().nontrivial_components()
+        )
+        if len(nontrivial) != 1:
+            raise ArithmeticError("a C2 representation has one nontrivial character")
+        return nontrivial[0]
+
+    @cached_method
+    def default_branch_section(self):
+        sections = self.branch_section_space()
+        by_exponents = {
+            tuple(tuple(value for value in block) for block in exponents): monomial
+            for monomial, exponents in sections._preamble_multihomogeneous_exponents.items()
+        }
+        one = self.base_ring().one()
+        section = sections.linear_combination(
+            {
+                by_exponents[((4, 0), (4, 0))]: one,
+                by_exponents[((4, 0), (0, 4))]: one,
+                by_exponents[((0, 4), (4, 0))]: one,
+                by_exponents[((0, 4), (0, 4))]: -one,
+            }
+        )
+        trivial = lambda _element: self.base_ring().one()
+        if not self.branch_linearization().is_eigensection(section, trivial):
+            raise ArithmeticError("the selected Horikawa branch is not invariant")
+        return section
+
+    def member(self, branch_section=None):
+        section = (
+            self.default_branch_section()
+            if branch_section is None
+            else self.branch_section_space()(branch_section)
+        )
+        trivial = lambda _element: self.base_ring().one()
+        if not self.branch_linearization().is_eigensection(section, trivial):
+            raise ValueError("a Horikawa double cover in this family requires a tau-invariant branch section")
+        return HorikawaK3DoubleCover(self, section)
+
+
+class HorikawaK3DoubleCover(SageObject):
+    r"""One represented member of :class:`HorikawaK3Family`."""
+
+    def __init__(self, family, branch_section) -> None:
+        self._family = family
+        self._branch_section = family.branch_section_space()(branch_section)
+        compatible_branch = family.branch_line_bundle().compatible_section(
+            self._branch_section
+        )
+        cyclic_algebra = CyclicCoverAlgebra(
+            family.cover_line_bundle(),
+            compatible_branch,
+            2,
+        )
+        relative = cyclic_algebra.relative_spectrum()
+        generator = next(iter(family.acting_group().group_generators()))
+        nikulin_lift = relative_cyclic_cover_lift(
+            cyclic_algebra,
+            family.nikulin_linearization(),
+            generator,
+        )
+        enriques_lift = relative_cyclic_cover_lift(
+            cyclic_algebra,
+            family.enriques_linearization(),
+            generator,
+        )
+        self._compatible_branch = compatible_branch
+        self._cyclic_algebra = cyclic_algebra
+        self._relative_cover = relative
+        self._nikulin_lift = nikulin_lift
+        self._enriques_lift = enriques_lift
+        self._deck_involution = cyclic_algebra.constant_deck_transformation()
+
+    def family(self):
+        return self._family
+
+    def base_ring(self):
+        return self.family().base_ring()
+
+    def base_surface(self):
+        return self.family().base_surface()
+
+    def branch_section(self):
+        return self._branch_section
+
+    def compatible_branch_section(self):
+        return self._compatible_branch
+
+    def cyclic_algebra(self):
+        return self._cyclic_algebra
+
+    def relative_cover(self):
+        return self._relative_cover
+
+    def scheme(self):
+        return self.relative_cover().arrow().domain()
+
+    def cover_morphism(self):
+        return self.relative_cover().arrow()
+
+    def deck_involution(self):
+        return self._deck_involution
+
+    def nikulin_lift(self):
+        return self._nikulin_lift
+
+    def enriques_lift(self):
+        return self._enriques_lift
+
+    def branch_chart(self, index):
+        chart = self.family().branch_line_bundle().gluing_datum().chart(index)
+        return chart.closed_subscheme(
+            self.cyclic_algebra().local_branch_coefficient(index)
+        )
+
+    @cached_method
+    def branch_is_smooth(self) -> bool:
+        return all(
+            self.branch_chart(index).singular_subscheme().is_empty()
+            for index in self.cyclic_algebra().chart_index_set()
+        )
+
+    @cached_method
+    def branch_avoids_tau_fixed_corners(self) -> bool:
+        base = self.base_ring()
+        for index in self.cyclic_algebra().chart_index_set():
+            ring = self.family().branch_line_bundle().gluing_datum().chart(
+                index
+            ).coordinate_algebra()
+            evaluation = ring.Mor(base)(
+                {
+                    label: base.zero()
+                    for label in ring.algebra_generating_set()
+                }
+            )
+            if evaluation(self.cyclic_algebra().local_branch_coefficient(index)) == base.zero():
+                return False
+        return True
+
+    def cover_line_bundle_is_anticanonical(self) -> bool:
+        selected = self.family().cover_line_bundle().multidegree()
+        anticanonical = self.base_surface().anticanonical_line_bundle().multidegree()
+        labels = tuple(selected.index_set())
+        return all(selected[label] == anticanonical[label] for label in labels)
+
+    def k3_theorem_hypotheses_hold(self) -> bool:
+        return (
+            int(self.base_ring().characteristic()) != 2
+            and self.cover_line_bundle_is_anticanonical()
+            and self.branch_is_smooth()
+        )
+
+    def is_k3(self) -> bool:
+        r"""Apply the smooth anticanonical double-cover theorem to this member."""
+        return self.k3_theorem_hypotheses_hold()
+
+    def deck_top_form_scalar(self):
+        index = next(iter(self.cyclic_algebra().chart_index_set()))
+        local = self.cyclic_algebra().local_algebra(index)
+        labels = local.module_generating_set()
+        z_label = labels[1]
+        deck = self.cyclic_algebra().local_deck_transformation(
+            index, -self.base_ring().one()
+        )
+        z = local.algebra_generator("z")
+        coefficients = module_coefficients(
+            deck.coordinate_algebra_morphism()(z), local
+        )
+        expected = local.base_ring().algebra_structure_morphism()(
+            -self.base_ring().one()
+        )
+        if coefficients.get(z_label, local.base_ring().zero()) != expected:
+            raise ArithmeticError("the represented deck map does not negate the cover coordinate")
+        return -self.base_ring().one()
+
+    def fixed_subschemes(self):
+        return (
+            self.enriques_lift().fixed_subscheme(),
+            self.nikulin_lift().fixed_subscheme(),
+        )
+
+    def enriques_lift_is_fixed_point_free(self) -> bool:
+        return self.enriques_lift().is_fixed_point_free()
+
+    def both_lifts_have_order_two(self) -> bool:
+        return (
+            self.enriques_lift().has_order_two()
+            and self.nikulin_lift().has_order_two()
+        )
+
+    def base_change(self, ring_map):
+        return HorikawaK3BaseChangeComparison(self, ring_map)
+
+
+class HorikawaK3BaseChangeComparison(SageObject):
+    r"""Base change of one Horikawa cover with commuting lifted involutions."""
+
+    def __init__(self, source, ring_map) -> None:
+        cyclic_comparison = cyclic_cover_base_change(
+            source.cyclic_algebra(), ring_map
+        )
+        changed_cyclic = cyclic_comparison.changed_cyclic_algebra()
+        changed_line = cyclic_comparison.changed_line_bundle()
+        changed_surface = changed_line.projective_product()
+        group = source.family().acting_group()
+        changed_action = C2DiagonalProductProjectiveAction(
+            changed_surface, group
+        )
+        target_base = _own_ring(ring_map.codomain())
+        trivial = lambda _element: target_base.one()
+        sign = lambda element: (
+            target_base.one()
+            if group(element) == group.one()
+            else -target_base.one()
+        )
+        changed_nikulin_linearization = ProductProjectiveLineBundleLinearization(
+            changed_line,
+            changed_action,
+            trivial,
+        )
+        changed_enriques_linearization = ProductProjectiveLineBundleLinearization(
+            changed_line,
+            changed_action,
+            sign,
+        )
+        generator = next(iter(group.group_generators()))
+        changed_nikulin_lift = relative_cyclic_cover_lift(
+            changed_cyclic,
+            changed_nikulin_linearization,
+            generator,
+        )
+        changed_enriques_lift = relative_cyclic_cover_lift(
+            changed_cyclic,
+            changed_enriques_linearization,
+            generator,
+        )
+        self._source = source
+        self._ring_map = ring_map
+        self._cyclic_comparison = cyclic_comparison
+        self._changed_action = changed_action
+        self._changed_nikulin_linearization = changed_nikulin_linearization
+        self._changed_enriques_linearization = changed_enriques_linearization
+        self._changed_nikulin_lift = changed_nikulin_lift
+        self._changed_enriques_lift = changed_enriques_lift
+
+    def source(self):
+        return self._source
+
+    def ring_map(self):
+        return self._ring_map
+
+    def cyclic_cover_comparison(self):
+        return self._cyclic_comparison
+
+    def changed_cyclic_algebra(self):
+        return self.cyclic_cover_comparison().changed_cyclic_algebra()
+
+    def changed_scheme(self):
+        return self.changed_cyclic_algebra().relative_spectrum().arrow().domain()
+
+    def cover_projection(self):
+        return self.cyclic_cover_comparison().projection()
+
+    def base_projection(self):
+        return self.cyclic_cover_comparison().base_projection()
+
+    def changed_nikulin_lift(self):
+        return self._changed_nikulin_lift
+
+    def changed_enriques_lift(self):
+        return self._changed_enriques_lift
+
+    def cover_square_commutes(self) -> bool:
+        return self.cyclic_cover_comparison().cover_square_commutes()
+
+    def involutions_commute_with_base_change(self) -> bool:
+        comparison = self.cyclic_cover_comparison()
+        return (
+            comparison.lift_commutes(
+                self.source().nikulin_lift(), self.changed_nikulin_lift()
+            )
+            and comparison.lift_commutes(
+                self.source().enriques_lift(), self.changed_enriques_lift()
+            )
+            and comparison.deck_commutes(-self.source().base_ring().one())
+        )
+
+
+def horikawa_k3_family(base_ring=None):
+    return HorikawaK3Family(base_ring)
+
+
+__all__ = [
+    "HorikawaK3BaseChangeComparison",
+    "HorikawaK3DoubleCover",
+    "HorikawaK3Family",
+    "horikawa_k3_family",
+]

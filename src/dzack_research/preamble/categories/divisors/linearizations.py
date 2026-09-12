@@ -32,7 +32,14 @@ from dzack_research.preamble.categories.modules.pure.modules import Modules
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.schemes.schemes import Schemes
+from dzack_research.preamble.categories.sets.indexed_families import (
+    finite_indexed_family,
+    indexed_family,
+)
+from dzack_research.preamble.categories.schemes.schemes import (
+    Schemes,
+    _affine_morphism_from_pullback,
+)
 
 
 class ProjectiveLineBundleLinearizationIsomorphism(SageObject):
@@ -109,6 +116,9 @@ class ProjectiveLineBundleLinearization(SageObject):
     def projective_space(self):
         return self.line_bundle().projective_space()
 
+    def section_scheme(self):
+        return self.projective_space()
+
     def acting_group(self):
         return self._group
 
@@ -120,11 +130,11 @@ class ProjectiveLineBundleLinearization(SageObject):
         r"""Return the generic ``G``-object represented by the scheme action functor."""
         return GObjects(
             self.acting_group(),
-            Schemes(self.projective_space().scheme_base_ring()),
+            Schemes(self.section_scheme().scheme_base_ring()),
         )(self.scheme_action_functor())
 
     def character_value(self, group_element):
-        base = self.projective_space().scheme_base_ring()
+        base = self.section_scheme().scheme_base_ring()
         value = base(self._character(self.acting_group()(group_element)))
         if not value.is_unit():
             raise ValueError("a linearization character takes values in scalar units")
@@ -132,7 +142,7 @@ class ProjectiveLineBundleLinearization(SageObject):
 
     def _validate_character(self) -> None:
         group = self.acting_group()
-        base = self.projective_space().scheme_base_ring()
+        base = self.section_scheme().scheme_base_ring()
         if self.character_value(group.one()) != base.one():
             raise ValueError("a linearization character sends the identity to one")
         elements = tuple(group)
@@ -181,7 +191,7 @@ class ProjectiveLineBundleLinearization(SageObject):
     @cached_method
     def section_group_module(self):
         r"""Return the actual module over ``R[G]`` induced by this linearization."""
-        base = self.projective_space().scheme_base_ring()
+        base = self.section_scheme().scheme_base_ring()
         group_algebra = OwnedGroups().group_algebra(base)(self.acting_group())
         sections = self.line_bundle().global_sections()
         return Modules(group_algebra)(
@@ -212,7 +222,7 @@ class ProjectiveLineBundleLinearization(SageObject):
         if degree == 0:
             return self.section_group_module()
         if int(self.projective_space().relative_dimension()) == 1 and degree == 1 and self.line_bundle().degree() >= 0:
-            base = self.projective_space().scheme_base_ring()
+            base = self.section_scheme().scheme_base_ring()
             zero = FreshFreeModuleOn(base, finite_ordered_set(()))
             return Modules(base).trivial_action(self.acting_group())(zero)
         raise NotImplementedError(
@@ -334,8 +344,217 @@ class ProjectiveLineBundleLinearization(SageObject):
             self.line_bundle(),
             self.scheme_action_functor(),
             lambda group_element: self.character_value(group_element)
-            * self.projective_space().scheme_base_ring()(character(group_element)),
+            * self.section_scheme().scheme_base_ring()(character(group_element)),
         )
+
+
+class ProductProjectiveLineBundleLinearization(ProjectiveLineBundleLinearization):
+    r"""A C2 coordinate linearization of ``O(d_1,...,d_r)`` on a projective product.
+
+    The scheme action stores the scalar weight of every homogeneous coordinate.
+    The induced action on a monomial section is the product of those weights to
+    its exponent vector, followed by the selected character twist.  Thus the
+    eigenspace decomposition is obtained from the represented action on the
+    common group-module owner rather than from a dimension formula.
+    """
+
+    def __init__(self, line_bundle, scheme_action_functor, character) -> None:
+        from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+            ProductProjectiveLineBundle,
+        )
+
+        if not isinstance(line_bundle, ProductProjectiveLineBundle):
+            raise TypeError("this linearization requires multiprojective O(d_1,...,d_r)")
+        scheme = line_bundle.projective_product()
+        base = scheme.scheme_base_ring()
+        if not isinstance(scheme_action_functor, GroupActionFunctor):
+            raise TypeError("a multiprojective linearization requires an actual BG -> Schemes action functor")
+        group = scheme_action_functor.group()
+        if scheme_action_functor.codomain() != Schemes(base):
+            raise ValueError("the multiprojective action functor has the wrong scheme category")
+        if scheme_action_functor.underlying_object() is not scheme:
+            raise ValueError("the multiprojective action functor acts on a different scheme")
+        if int(group.order()) != 2:
+            raise NotImplementedError("the represented coordinate-weight specialization currently uses C2")
+        weights = getattr(scheme_action_functor, "_preamble_coordinate_weights", None)
+        if weights is None or weights.index_set() is not scheme.factors().index_set():
+            raise ValueError("the product action must retain coordinate weights on the exact factor index set")
+        self._line_bundle = line_bundle
+        self._scheme_action_functor = scheme_action_functor
+        self._group = group
+        self._character = character
+        self._validate_character()
+
+    def projective_product(self):
+        return self.line_bundle().projective_product()
+
+    def section_scheme(self):
+        return self.projective_product()
+
+    def coordinate_weights(self):
+        return self.scheme_action_functor()._preamble_coordinate_weights
+
+    def local_chart_automorphism(self, group_element, chart_index):
+        group_element = self.acting_group()(group_element)
+        atlas = self.projective_product().standard_affine_atlas()
+        chart_index = atlas.normalize_chart_index(chart_index)
+        if group_element == self.acting_group().one():
+            return atlas.chart(chart_index).categorical_identity_morphism()
+        return self.scheme_action_functor()._preamble_local_automorphisms[chart_index]
+
+    def local_jacobian_scalar(self, group_element, chart_index):
+        r"""Return the determinant of the diagonal action on affine chart coordinates."""
+        group_element = self.acting_group()(group_element)
+        base = self.section_scheme().scheme_base_ring()
+        if group_element == self.acting_group().one():
+            return base.one()
+        atlas = self.projective_product().standard_affine_atlas()
+        chart_index = atlas.normalize_chart_index(chart_index)
+        choice = chart_index
+        factors = self.projective_product().factors()
+        labels = tuple(factors.index_set())
+        result = base.one()
+        for position, label in enumerate(labels):
+            selected = choice[position]
+            weights = self.coordinate_weights()[label]
+            other = 1 - int(selected)
+            result *= base(weights[other]) * base(weights[selected]).inverse_of_unit()
+        return result
+
+    @cached_method
+    def section_action_of(self, group_element):
+        group_element = self.acting_group()(group_element)
+        sections = self.line_bundle().global_sections()
+        base = sections.base_ring()
+        scalar_twist = self.character_value(group_element)
+        if group_element == self.acting_group().one():
+            return sections.Mor(sections).elementwise(
+                lambda section: sections.scalar_multiple(scalar_twist, section),
+                verify_linearity=False,
+            )
+        exponents = sections._preamble_multihomogeneous_exponents
+        factor_labels = tuple(self.projective_product().factors().index_set())
+        weights = self.coordinate_weights()
+        images = {}
+        for monomial in sections.module_generating_set():
+            weight = base.one()
+            for factor_label, block in zip(factor_labels, exponents[monomial], strict=True):
+                factor_weights = weights[factor_label]
+                for coordinate_weight, exponent in zip(factor_weights, block, strict=True):
+                    if exponent:
+                        weight *= base(coordinate_weight) ** int(exponent)
+            images[monomial] = sections.scalar_multiple(
+                scalar_twist * weight,
+                sections.module_generator(monomial),
+            )
+        return sections.Mor(sections)(images)
+
+    def coherent_cohomology_group_module(self, degree):
+        raise NotImplementedError(
+            "multiprojective higher coherent cohomology belongs to the general product-projective cohomology owner"
+        )
+
+
+@cached_function(
+    key=lambda projective_product, group=None: (
+        id(projective_product),
+        id(OwnedGroups().C(2) if group is None else group),
+    )
+)
+def C2DiagonalProductProjectiveAction(projective_product, group=None):
+    r"""Return the diagonal sign action ``[x0:x1] |-> [x0:-x1]`` on every P1 factor."""
+    base = projective_product.scheme_base_ring()
+    factors = projective_product.factors()
+    indices = factors.index_set()
+    for label in indices:
+        if int(factors[label].relative_dimension()) != 1:
+            raise TypeError("the diagonal sign action is represented here on products of projective lines")
+    group = OwnedGroups().C(2) if group is None else group
+    if int(group.order()) != 2:
+        raise ValueError("the diagonal sign action requires a group of order two")
+    weights = finite_indexed_family(
+        indices,
+        lambda _label: (base.one(), -base.one()),
+        name="Homogeneous coordinate weights of the diagonal sign action",
+    )
+    factor_automorphisms = {}
+    for label in indices:
+        factor = factors[label]
+        ring = factor.O(1).global_sections().homogeneous_coordinate_ring()
+        coordinate_labels = tuple(ring.algebra_generating_set())
+        coordinates = tuple(ring.algebra_generator(name) for name in coordinate_labels)
+        factor_automorphisms[label] = factor.projective_morphism_from_coordinates(
+            factor,
+            (coordinates[0], -coordinates[1]),
+        )
+    nontrivial = projective_product.from_product_cone(
+        indexed_family(
+            indices,
+            lambda label: factor_automorphisms[label] * projective_product.projection(label),
+            name="Factor legs of the diagonal sign involution",
+        )
+    )
+    atlas = projective_product.standard_affine_atlas()
+    positions = {label: position for position, label in enumerate(tuple(indices))}
+    local_automorphisms = {}
+    for choice in atlas.chart_indices():
+        chart = atlas.chart(choice)
+        local_factors = chart.factors()
+        local_factor_automorphisms = {}
+        for label in indices:
+            factor_chart = local_factors[label]
+            algebra = factor_chart.coordinate_algebra()
+            coordinate_label = next(iter(algebra.algebra_generating_set()))
+            coordinate = algebra.algebra_generator(coordinate_label)
+            selected = int(choice[positions[label]])
+            other = 1 - selected
+            factor_weights = weights[label]
+            scalar = base(factor_weights[other]) * base(factor_weights[selected]).inverse_of_unit()
+            local_factor_automorphisms[label] = _affine_morphism_from_pullback(
+                factor_chart,
+                factor_chart,
+                algebra.Mor(algebra)({coordinate_label: algebra(scalar) * coordinate}),
+            )
+        local_automorphisms[choice] = chart.from_product_cone(
+            indexed_family(
+                indices,
+                lambda label, chart=chart: (
+                    local_factor_automorphisms[label] * chart.projection(label)
+                ),
+                name="Affine factor legs of the diagonal sign involution",
+            )
+        )
+
+    identity = projective_product.categorical_identity_morphism()
+    action = GroupActionFunctor(
+        group,
+        Schemes(base),
+        projective_product,
+        lambda element: identity if element == group.one() else nontrivial,
+    )
+    action._preamble_coordinate_weights = weights
+    action._preamble_nontrivial_automorphism = nontrivial
+    action._preamble_local_automorphisms = finite_indexed_family(
+        atlas.chart_index_set(),
+        lambda index: local_automorphisms[index],
+        name="Affine-chart automorphisms of the diagonal sign action",
+    )
+    return action
+
+
+def C2ProductProjectiveLinearization(line_bundle, twist=1):
+    r"""Linearize a multiprojective ``O(d_1,...,d_r)`` for the diagonal sign action."""
+    base = line_bundle.projective_product().scheme_base_ring()
+    group = OwnedGroups().C(2)
+    scalar = base(twist)
+    if scalar not in (base.one(), -base.one()):
+        raise ValueError("a C2 character twist is +1 or -1")
+    action = C2DiagonalProductProjectiveAction(line_bundle.projective_product(), group)
+    return ProductProjectiveLineBundleLinearization(
+        line_bundle,
+        action,
+        lambda element: base.one() if element == group.one() else scalar,
+    )
 
 
 @cached_function(key=lambda projective_line, group=None: (id(projective_line), id(OwnedGroups().C(2) if group is None else group)))
@@ -388,7 +607,10 @@ def C2ProjectiveLineLinearization(line_bundle, twist=1):
 
 
 __all__ = [
+    "C2DiagonalProductProjectiveAction",
+    "C2ProductProjectiveLinearization",
     "C2ProjectiveLineLinearization",
+    "ProductProjectiveLineBundleLinearization",
     "ProjectiveLineBundleLinearization",
     "ProjectiveLineBundleLinearizationIsomorphism",
     "ProjectiveLineCoordinateSwapAction",

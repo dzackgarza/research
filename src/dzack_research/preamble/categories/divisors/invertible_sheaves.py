@@ -401,6 +401,20 @@ class FiniteAtlasInvertibleSheaf(InvertibleSheaf):
 
     sections = global_sections
 
+    @cached_method
+    def module_sheaf(self):
+        from dzack_research.preamble.categories.schemes.gluing import (
+            finite_atlas_line_bundle_module_sheaf,
+        )
+
+        return finite_atlas_line_bundle_module_sheaf(self)
+
+    @cached_method
+    def compatible_sections(self):
+        sections = self.module_sheaf().global_sections()
+        sections._preamble_line_bundle = self
+        return sections
+
     def sheaf(self):
         return self
 
@@ -619,10 +633,69 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     def homogeneous_polynomial_sections(self):
         return self.global_sections()
 
+    def linearize(self, scheme_action_functor, character):
+        from dzack_research.preamble.categories.divisors.linearizations import (
+            ProductProjectiveLineBundleLinearization,
+        )
+
+        return ProductProjectiveLineBundleLinearization(
+            self,
+            scheme_action_functor,
+            character,
+        )
+
     def homogeneous_polynomial_comparison(self):
         sections = self.global_sections()
         identity = module_homset(sections, sections).identity()
         return Isomorphism(identity, identity)
+
+    def compatible_section(self, section):
+        r"""Dehomogenize one global section on the standard affine atlas.
+
+        On the chart where homogeneous coordinate ``x_{i,j_i}`` of each
+        factor is nonzero, ``O(d_i)`` is trivialized by ``x_{i,j_i}^{d_i}``.
+        Dividing a multihomogeneous monomial by those selected powers therefore
+        replaces every selected coordinate by ``1`` and every other coordinate
+        by the corresponding affine ratio.  The finite-atlas equalizer checks
+        that these chart coefficients glue through the line-bundle transitions.
+        """
+        sections = self.global_sections()
+        section = sections(section)
+        coefficients = module_coefficients(section, sections)
+        exponent_data = sections._preamble_multihomogeneous_exponents
+        atlas = self.gluing_datum()
+        product = self.projective_product()
+        factors = product.factors()
+        factor_labels = tuple(factors.index_set())
+        positions = {label: position for position, label in enumerate(factor_labels)}
+        module_sheaf = self.module_sheaf()
+        components = {}
+        for choice in atlas.chart_indices():
+            chart = atlas.chart(choice)
+            chart_ring = chart.coordinate_algebra()
+            scalar_map = chart_ring.algebra_structure_morphism()
+            local_coefficient = chart_ring.zero()
+            for monomial, coefficient in coefficients.items():
+                term = scalar_map(coefficient)
+                blocks = exponent_data[monomial]
+                for label, block in zip(factor_labels, blocks, strict=True):
+                    position = positions[label]
+                    selected = choice[position]
+                    factor = factors[label]
+                    projection = chart.projection(label).coordinate_algebra_morphism()
+                    for coordinate, exponent in enumerate(block):
+                        if not exponent or coordinate == selected:
+                            continue
+                        term *= projection(
+                            factor._standard_chart_coordinate(selected, coordinate)
+                        ) ** int(exponent)
+                local_coefficient += term
+            module = module_sheaf.sections_on_chart(choice)
+            generator = _rank_one_generator(module)
+            components[choice] = module.scalar_multiple(local_coefficient, generator)
+        compatible = self.compatible_sections()(components)
+        compatible._preamble_global_section_source = section
+        return compatible
 
     def section_multiplication(self, other):
         from dzack_research.preamble.categories.modules.pure.modules import BilinearMap

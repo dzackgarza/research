@@ -1757,6 +1757,7 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         self._transitions = []
         self._triple_transitions = []
         self._sheaf = None
+        self._compatible_sections = None
         for pair in gluing_datum.transition_index_set():
             self.transition(*pair)
         self._verify_cocycle()
@@ -2025,6 +2026,12 @@ class FiniteAtlasModuleGluingDatum(SageObject):
         if self._sheaf is None:
             self._sheaf = FiniteAtlasGluedModuleSheaf(self)
         return self._sheaf
+
+    def compatible_sections(self):
+        r"""Return global sections as the equalizer of the finite-atlas transitions."""
+        if self._compatible_sections is None:
+            self._compatible_sections = FiniteAtlasCompatibleSectionsModule(self)
+        return self._compatible_sections
 
     def tensor_product(self, other):
         r"""Return the descent datum for the chartwise tensor product with ``other``."""
@@ -2526,6 +2533,13 @@ class FiniteAtlasAlgebraGluingDatum(SageObject):
 
     def morphism_to(self, target, local_maps):
         return FiniteAtlasAlgebraGluingMorphism(self, target, local_maps)
+
+    def relative_spectrum(self):
+        from dzack_research.preamble.categories.schemes.relative_spec import (
+            relative_spectrum,
+        )
+
+        return relative_spectrum(self)
 
 
 class FiniteAtlasAlgebraGluingMorphism(SageObject):
@@ -3529,6 +3543,160 @@ class AlgebraGluingHomset(CategoricalHomset):
         )
 
 
+class FiniteAtlasCompatibleSectionElement(ModuleElement):
+    r"""One global section represented by compatible sections on labelled affine charts."""
+
+    def __init__(self, parent, components) -> None:
+        ModuleElement.__init__(self, parent)
+        self._components = components
+
+    def components(self):
+        return self._components
+
+    def component(self, index):
+        datum = self.parent().gluing_datum()
+        return self.components()[datum.gluing_datum().normalize_chart_index(index)]
+
+    def _add_(self, other):
+        datum = self.parent().gluing_datum()
+        return self.parent()(
+            {
+                index: self.component(index) + other.component(index)
+                for index in datum.chart_indices()
+            }
+        )
+
+    def _neg_(self):
+        datum = self.parent().gluing_datum()
+        return self.parent()(
+            {index: -self.component(index) for index in datum.chart_indices()}
+        )
+
+    def _lmul_(self, scalar):
+        return self.parent().scalar_multiple(scalar, self)
+
+    def _acted_upon_(self, actor, self_on_left):
+        try:
+            scalar = self.parent().base_ring()(actor)
+        except (TypeError, ValueError):
+            return None
+        return self.parent().scalar_multiple(scalar, self)
+
+    def _richcmp_(self, other, op):
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        datum = self.parent().gluing_datum()
+        equal = (
+            isinstance(other, FiniteAtlasCompatibleSectionElement)
+            and other.parent() is self.parent()
+            and all(
+                self.component(index) == other.component(index)
+                for index in datum.chart_indices()
+            )
+        )
+        return equal if op == op_EQ else not equal
+
+    def _repr_(self):
+        return f"compatible finite-atlas sections {self.components()}"
+
+
+class FiniteAtlasCompatibleSectionsModule(Parent):
+    r"""Global sections of a finite-atlas module descent datum.
+
+    A section is one local element on every labelled chart.  On an overlap
+    ``U_ij`` the target-chart element is transported through the datum's
+    semilinear pullback and compared with the source-chart restriction.  Thus
+    the equalizer uses the actual distinct overlap rings rather than identifying
+    their presentations by position.
+    """
+
+    Element = FiniteAtlasCompatibleSectionElement
+
+    def __init__(self, gluing_datum) -> None:
+        self._gluing_datum = gluing_datum
+        self._preamble_base_ring = gluing_datum.scheme().scheme_base_ring()
+        Parent.__init__(self, category=Modules(self._preamble_base_ring))
+
+    def gluing_datum(self):
+        return self._gluing_datum
+
+    def base_ring(self):
+        return self._preamble_base_ring
+
+    def base(self):
+        return self.base_ring()
+
+    def _element_constructor_(self, value):
+        if isinstance(value, FiniteAtlasCompatibleSectionElement) and value.parent() is self:
+            return value
+        datum = self.gluing_datum()
+        atlas = datum.gluing_datum()
+        raw = _family_on_finite_ordered_set(
+            atlas.chart_index_set(),
+            value,
+            name="Components of a finite-atlas global section",
+            noun="a finite-atlas global section",
+        )
+        components = finite_indexed_family(
+            atlas.chart_index_set(),
+            lambda index: datum.local_module(index)(raw[index]),
+            name="Compatible finite-atlas section components",
+        )
+        for source_index, target_index in atlas.transition_index_set():
+            source_overlap = atlas.overlap(source_index, target_index)
+            target_overlap = atlas.overlap(target_index, source_index)
+            source_restriction = source_overlap.inclusion().coordinate_algebra_morphism()
+            target_restriction = target_overlap.inclusion().coordinate_algebra_morphism()
+            source_pair = datum.pair_module(source_index, target_index)
+            target_pair = datum.pair_module(target_index, source_index)
+            source_value = _change_coefficients(
+                components[source_index],
+                datum.local_module(source_index),
+                source_pair,
+                source_restriction,
+            )
+            target_value = _change_coefficients(
+                components[target_index],
+                datum.local_module(target_index),
+                target_pair,
+                target_restriction,
+            )
+            transported = datum.transition(source_index, target_index).pullback()(target_value)
+            if transported != source_value:
+                raise ValueError("the finite-atlas local sections do not agree on an overlap")
+        return self.element_class(self, components)
+
+    def __call__(self, value):
+        return self._element_constructor_(value)
+
+    def __contains__(self, value) -> bool:
+        return isinstance(value, FiniteAtlasCompatibleSectionElement) and value.parent() is self
+
+    def zero(self):
+        datum = self.gluing_datum()
+        return self(
+            {index: datum.local_module(index).zero() for index in datum.chart_indices()}
+        )
+
+    def scalar_multiple(self, scalar, section):
+        datum = self.gluing_datum()
+        scalar = self.base_ring()(scalar)
+        section = self(section)
+        components = {}
+        for index in datum.chart_indices():
+            module = datum.local_module(index)
+            ring = module.base_ring()
+            local_scalar = ring.algebra_structure_morphism()(scalar)
+            components[index] = module.scalar_multiple(local_scalar, section.component(index))
+        return self(components)
+
+    def an_element(self):
+        return self.zero()
+
+    def _repr_(self):
+        return f"Compatible finite-atlas sections of {self.gluing_datum()}"
+
+
 class CompatibleLocalSectionElement(ModuleElement):
     def __init__(self, parent, components) -> None:
         ModuleElement.__init__(self, parent)
@@ -3809,6 +3977,11 @@ class FiniteAtlasGluedModuleSheaf(SageObject):
 
     def transition(self, source_index, target_index):
         return self.gluing_datum().transition(source_index, target_index)
+
+    def global_sections(self):
+        return self.gluing_datum().compatible_sections()
+
+    sections = global_sections
 
     def stalk_on_chart(self, chart_index, point):
         r"""Return the stalk of this sheaf at a point of the selected chart."""
@@ -4208,6 +4381,81 @@ class GluedAlgebraSheaf(SageObject):
         return f"Glued algebra sheaf on {self.scheme()} from {self.cover()}"
 
 
+def chartwise_fixed_subscheme(glued_scheme, local_automorphisms):
+    r"""Glue the fixed subschemes of a chart-preserving automorphism.
+
+    Each local automorphism is an endomorphism of the corresponding affine
+    chart.  Its equalizer with the identity is closed.  On every pair overlap
+    the ambient gluing transition carries one local equalizer to the other;
+    restricting that transition therefore supplies the fixed-locus gluing.
+    The resulting global inclusion is a closed immersion because closedness is
+    local on the target for this finite affine cover.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import (
+        ClosedSubschemes,
+        Schemes,
+        refine_scheme,
+    )
+
+    datum = glued_scheme.gluing_datum()
+    indices = datum.chart_index_set()
+    automorphisms = _family_on_finite_ordered_set(
+        indices,
+        local_automorphisms,
+        name="Local automorphisms defining a glued fixed subscheme",
+        noun="a chart-preserving automorphism",
+    )
+    local_fixed = {}
+    for index in indices:
+        automorphism = automorphisms[index]
+        chart = datum.chart(index)
+        if automorphism.domain() is not chart or automorphism.codomain() is not chart:
+            raise ValueError("a chartwise fixed locus requires endomorphisms of the selected charts")
+        local_fixed[index] = automorphism.fixed_subscheme()
+
+    def fixed_overlap(source_index, target_index):
+        fixed = local_fixed[source_index]
+        ambient_overlap = datum.overlap(source_index, target_index)
+        element = ambient_overlap.distinguished_open_element()
+        restricted = fixed.inclusion().coordinate_algebra_morphism()(element)
+        return fixed.distinguished_open(restricted)
+
+    def fixed_transition(source_index, target_index):
+        source = fixed_overlap(source_index, target_index)
+        target = fixed_overlap(target_index, source_index)
+        source_ambient_overlap = datum.overlap(source_index, target_index)
+        into_source_chart = local_fixed[source_index].inclusion() * source.inclusion()
+        into_source_overlap = source_ambient_overlap.corestriction(into_source_chart)
+        across = datum.transition_between(source_index, target_index).forward() * into_source_overlap
+        into_target_chart = datum.overlap(target_index, source_index).inclusion() * across
+        into_target_fixed = local_fixed[target_index].corestriction(into_target_chart)
+        return target.corestriction(into_target_fixed)
+
+    transitions = {
+        (left, right): Isomorphism(
+            fixed_transition(left, right),
+            fixed_transition(right, left),
+        )
+        for left, right in datum.transition_index_set()
+    }
+    base = glued_scheme.scheme_base_ring()
+    fixed_glued = Schemes(base).glue_affine_atlas(local_fixed, transitions)
+    inclusion = fixed_glued.Mor(glued_scheme)(
+        {
+            index: datum.chart_embedding(index) * local_fixed[index].inclusion()
+            for index in indices
+        }
+    )
+    fixed_glued._preamble_inclusion = inclusion
+    fixed_glued._preamble_chartwise_fixed_automorphisms = automorphisms
+    fixed_glued._preamble_local_fixed_subschemes = finite_indexed_family(
+        indices,
+        lambda index: local_fixed[index],
+        name="Affine charts of the glued fixed subscheme",
+    )
+    return refine_scheme(fixed_glued, base, (ClosedSubschemes(base),))
+
+
 __all__ = [
     "AlgebraGluingData",
     "AlgebraGluingDatum",
@@ -4218,6 +4466,8 @@ __all__ = [
     "FiniteAtlasAlgebraGluingDatum",
     "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
+    "FiniteAtlasCompatibleSectionElement",
+    "FiniteAtlasCompatibleSectionsModule",
     "FiniteAffineAtlasPresentation",
     "FiniteAtlasInvertibleSheafRefinement",
     "FiniteAtlasLineBundlePullbackComparison",
@@ -4238,6 +4488,7 @@ __all__ = [
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
     "finite_atlas_module_pullback_functor",
+    "chartwise_fixed_subscheme",
     "finite_atlas_line_bundle_module_sheaf",
     "compare_finite_atlas_line_bundle_pullback",
 ]

@@ -734,22 +734,7 @@ trace its nonidentity maps back through those owners. An expected lattice,
 signature, dimension, or classification label is a comparison specimen, not the
 definition of the computed geometric result (`OWN-01`, `OWN-09`, `OWN-12`).
 
-- [ ] **`k3-family`**. **Needs:** none.
-  Construct the `(4,4)` double-cover K3 family over `P^1 x P^1` and
-  the two lifts of the diagonal sign involution.
-  **Inputs:** branch sections, a selected linearization, the existing cyclic
-  cover algebra/relative Spec, smoothness criteria, and section actions.
-  **Decisions:** a lift needs a compatible isomorphism on the line bundle
-  and branch section, not just an invariant divisor class. Keep `mu_2`
-  and a chosen constant-group identification distinct when base hypotheses
-  matter. Determine the lift's order and action on top forms from its maps.
-  **Deliver:** invariant/eigenspace decomposition of the section space,
-  including the source-specified `13+12` decomposition, the cover morphism,
-  both lifts, fixed subschemes and top-form action.
-  **Acceptance:** compute the decomposition through the action rather than
-  hard-code its dimensions. The cover, involutions and base changes commute.
-
-- [ ] **`enriques-family`**. **Needs:** `k3-family`.
+- [ ] **`enriques-family`**. **Needs:** none.
   Construct the Enriques quotient and its lattice comparisons from the
   preceding K3 action.
   **Inputs:** an actually fixed-point-free involution, the required field/

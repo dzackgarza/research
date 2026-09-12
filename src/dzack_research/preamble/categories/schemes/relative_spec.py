@@ -154,9 +154,163 @@ def _relative_transition(datum, left_index, right_index):
     )
 
 
+def _finite_atlas_relative_overlap(datum, source_index, target_index):
+    atlas = datum.gluing_datum()
+    source_base = atlas.chart(source_index).coordinate_algebra()
+    source_algebra = datum.local_algebra(source_index)
+    source_scheme = Spec(source_algebra)
+    overlap_element = atlas.overlap(
+        source_index, target_index
+    ).distinguished_open_element()
+    lifted = source_algebra.algebra_structure_morphism()(source_base(overlap_element))
+    return source_scheme.distinguished_open(lifted)
+
+
+def _finite_atlas_base_to_relative_overlap(
+    datum, source_index, target_index, relative_overlap
+):
+    atlas = datum.gluing_datum()
+    source_base = atlas.chart(source_index).coordinate_algebra()
+    source_algebra = datum.local_algebra(source_index)
+    overlap_base = atlas.overlap(source_index, target_index).coordinate_algebra()
+    relative_ring = relative_overlap.coordinate_algebra()
+    localize = relative_ring.localization_map()
+    source_to_relative = localize * source_algebra.algebra_structure_morphism()
+
+    def image(element):
+        numerator, denominator = overlap_base.localization_fraction_data(element)
+        return (
+            source_to_relative(source_base(numerator))
+            * source_to_relative(source_base(denominator)).inverse_of_unit()
+        )
+
+    return ring_morphism(overlap_base, relative_ring, image)
+
+
+def _finite_atlas_local_to_pair(datum, source_index, target_index):
+    atlas = datum.gluing_datum()
+    source_base = atlas.chart(source_index).coordinate_algebra()
+    overlap_base = atlas.overlap(source_index, target_index).coordinate_algebra()
+    local = datum.local_algebra(source_index)
+    pair = datum.pair_algebra(source_index, target_index)
+    base_restriction = atlas.overlap(
+        source_index, target_index
+    ).inclusion().coordinate_algebra_morphism()
+    structure = pair.algebra_structure_morphism() * base_restriction
+    view = algebra_structure_view(pair, structure)
+    morphism = local.Mor(view)(
+        {
+            label: view(pair.algebra_generator(label))
+            for label in local.algebra_generating_set()
+        }
+    )
+    return ring_morphism(local, pair, lambda element: pair(morphism(element)))
+
+
+def _finite_atlas_pair_to_overlap(
+    datum, source_index, target_index, relative_overlap
+):
+    local = datum.local_algebra(source_index)
+    pair = datum.pair_algebra(source_index, target_index)
+    overlap_ring = relative_overlap.coordinate_algebra()
+    base_map = _finite_atlas_base_to_relative_overlap(
+        datum, source_index, target_index, relative_overlap
+    )
+    view = algebra_structure_view(overlap_ring, base_map)
+    localization_map = overlap_ring.localization_map()
+    morphism = pair.Mor(view)(
+        {
+            label: view(localization_map(local.algebra_generator(label)))
+            for label in pair.algebra_generating_set()
+        }
+    )
+    return ring_morphism(
+        pair, overlap_ring, lambda element: overlap_ring(morphism(element))
+    )
+
+
+def _finite_atlas_overlap_to_pair(
+    datum, source_index, target_index, relative_overlap
+):
+    local = datum.local_algebra(source_index)
+    pair = datum.pair_algebra(source_index, target_index)
+    local_to_pair = _finite_atlas_local_to_pair(datum, source_index, target_index)
+    overlap_ring = relative_overlap.coordinate_algebra()
+
+    def image(element):
+        numerator, denominator = overlap_ring.localization_fraction_data(element)
+        numerator_image = local_to_pair(local(numerator))
+        denominator_image = local_to_pair(local(denominator))
+        return numerator_image * denominator_image.inverse_of_unit()
+
+    return ring_morphism(overlap_ring, pair, image)
+
+
+def _finite_atlas_relative_transition_morphism(datum, source_index, target_index):
+    source_open = _finite_atlas_relative_overlap(datum, source_index, target_index)
+    target_open = _finite_atlas_relative_overlap(datum, target_index, source_index)
+    target_to_pair = _finite_atlas_overlap_to_pair(
+        datum, target_index, source_index, target_open
+    )
+    transition = datum.transition(source_index, target_index).pullback()
+    pair_to_source = _finite_atlas_pair_to_overlap(
+        datum, source_index, target_index, source_open
+    )
+    pullback = ring_morphism(
+        target_open.coordinate_algebra(),
+        source_open.coordinate_algebra(),
+        lambda element: pair_to_source(transition(target_to_pair(element))),
+    )
+    return _affine_morphism_from_pullback(source_open, target_open, pullback)
+
+
+def _finite_atlas_relative_transition(datum, left_index, right_index):
+    return Isomorphism(
+        _finite_atlas_relative_transition_morphism(datum, left_index, right_index),
+        _finite_atlas_relative_transition_morphism(datum, right_index, left_index),
+    )
+
+
+def _finite_atlas_relative_spectrum(datum):
+    atlas = datum.gluing_datum()
+    indices = tuple(atlas.chart_indices())
+    base_scheme = datum.scheme()
+    base_ring = base_scheme.scheme_base_ring()
+    charts = {index: Spec(datum.local_algebra(index)) for index in indices}
+    transitions = {
+        (left, right): _finite_atlas_relative_transition(datum, left, right)
+        for left, right in atlas.transition_index_set()
+    }
+    glued = Schemes(base_ring).glue_affine_atlas(charts, transitions)
+    local_maps = {}
+    for index in indices:
+        local_to_base_chart = affine_spec_morphism(
+            datum.local_algebra(index).algebra_structure_morphism()
+        )
+        local_maps[index] = atlas.chart_embedding(index) * local_to_base_chart
+    structure = glued.Mor(base_scheme)(local_maps)
+    if any(
+        structure * glued.chart_embedding(index) != local_maps[index]
+        for index in indices
+    ):
+        raise ArithmeticError(
+            "the finite-atlas relative-Spec structure map does not restrict to its local chart maps"
+        )
+    glued._preamble_relative_spec_algebra_datum = datum
+    glued._preamble_relative_spec_morphism = structure
+    return glued.scheme_category().SliceOver(base_scheme)(structure)
+
+
 @cached_function(key=lambda datum: id(datum))
 def relative_spectrum(datum):
     r"""Return ``Spec_X(A) -> X`` for represented algebra descent data ``datum``."""
+    from dzack_research.preamble.categories.schemes.gluing import (
+        FiniteAtlasAlgebraGluingDatum,
+    )
+
+    if isinstance(datum, FiniteAtlasAlgebraGluingDatum):
+        return _finite_atlas_relative_spectrum(datum)
+
     cover = datum.cover()
     indices = tuple(cover.atlas())
     base_scheme = datum.scheme()
