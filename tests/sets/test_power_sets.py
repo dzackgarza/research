@@ -2,12 +2,19 @@
 from dzack_research.preamble.all import (
     FiniteSubsets,
     PowerSet,
+    PowerSets,
     Set,
     Sets,
     SubsetsOfSize,
     ZZ,
     aleph0,
     cardinal,
+)
+
+from dzack_research.preamble.categories.sets.set_categories import (
+    FinitePowerSets,
+    FixedCardinalitySubsetSets,
+    FunctionSets,
 )
 
 
@@ -85,3 +92,23 @@ def test_fixed_and_finite_subsets_have_the_expected_universal_membership() -> No
     assert finite_subsets.cardinality() == cardinal(32)
     assert Set(pairs).cardinality() == pairs.cardinality()
     assert Set((1, 4)) in PowerSet(source)
+
+
+def test_set_collection_notation_routes_through_owning_categories() -> None:
+    source = Sets.Δ[3]
+    target = Sets.Δ[1]
+
+    declared_power = PowerSets()(source)
+    declared_pairs = FixedCardinalitySubsetSets()(source, 2)
+    declared_finite = FinitePowerSets()(source)
+    declared_functions = FunctionSets()(target, source)
+
+    assert declared_power.base_set() is source
+    assert declared_pairs.source() is source
+    assert declared_pairs.subset_cardinality() == 2
+    assert declared_finite.source() is source
+    assert declared_functions.base() is target
+    assert declared_functions.exponent() is source
+    assert PowerSet(source).base_set() is source
+    assert SubsetsOfSize(source, 2).source() is source
+    assert FiniteSubsets(source).source() is source

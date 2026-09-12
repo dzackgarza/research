@@ -280,11 +280,8 @@ def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
     if root_cartan_type is not None:
         extra_categories = (RootLattices(),)
         construction_data = (("cartan_type", root_cartan_type),)
-    source = Lattice(
-        prototype._module,
-        prototype.gram_tensor(),
-        category,
-        prototype._sage_lattice,
+    return category._specialize_existing_lattice(
+        prototype,
         extra_categories=extra_categories,
         construction_data=construction_data,
         subobject_ambient=module,
@@ -292,7 +289,6 @@ def _lattice_subobject_spanning(module, basis, root_cartan_type=None):
         subobject_lift=lift,
         subobject_inclusion_factory=inclusion_factory,
     )
-    return category._refine_lattice_object(source)
 
 
 class LocalGenusSymbol:
@@ -653,6 +649,63 @@ class Lattices(OwnedCategoryOverBaseRing):
             category=self,
         )
 
+    def _specialize_existing_lattice(
+        self,
+        lattice,
+        *,
+        extra_categories=(),
+        construction_data=(),
+        subobject_source=None,
+        subobject_ambient=None,
+        subobject_generator_images=None,
+        subobject_lift=None,
+        subobject_inclusion_factory=None,
+        subobject_verify_linearity=None,
+    ):
+        r"""Protected construction boundary for a structured lattice specialization.
+
+        The ordinary mathematical entrypoint is ``Lattices(R)(data)``.  This
+        protected route is only for lattice-owned constructions that already
+        have an owned lattice and must retain its free module, Gram form and
+        private computation realization while adding structure such as a
+        subobject placement, isotropic-reduction datum, root framing or group
+        action.  Callers supply only owned mathematical data; concrete
+        ``Lattice`` storage stays inside this owner.
+        """
+        if lattice.base_ring() is not self.base_ring():
+            raise ValueError("a lattice specialization must stay over its base ring")
+        retained = lattice if subobject_source is None else subobject_source
+        if subobject_ambient is None:
+            subobject_ambient = retained.__dict__.get("_preamble_subobject_ambient")
+        if subobject_generator_images is None:
+            subobject_generator_images = retained.__dict__.get(
+                "_preamble_subobject_generator_images"
+            )
+        if subobject_lift is None:
+            subobject_lift = retained.__dict__.get("_preamble_subobject_lift")
+        if subobject_inclusion_factory is None:
+            subobject_inclusion_factory = retained.__dict__.get(
+                "_preamble_subobject_inclusion_factory"
+            )
+        if subobject_verify_linearity is None:
+            subobject_verify_linearity = retained.__dict__.get(
+                "_preamble_subobject_verify_linearity", True
+            )
+        result = Lattice(
+            lattice._module,
+            lattice.gram_tensor(),
+            self,
+            lattice._sage_lattice,
+            extra_categories=tuple(extra_categories),
+            construction_data=tuple(construction_data),
+            subobject_ambient=subobject_ambient,
+            subobject_generator_images=subobject_generator_images,
+            subobject_lift=subobject_lift,
+            subobject_inclusion_factory=subobject_inclusion_factory,
+            subobject_verify_linearity=subobject_verify_linearity,
+        )
+        return self._refine_lattice_object(result)
+
     def _refine_lattice_object(self, lattice):
         r"""Attach the lattice-property subcategories decidable from its form."""
         categories = []
@@ -672,20 +725,11 @@ class Lattices(OwnedCategoryOverBaseRing):
         r"""Return a root-structured copy with constructor-owned Cartan data."""
         if lattice in RootLattices() and lattice.cartan_type() == cartan_type:
             return lattice
-        result = Lattice(
-            lattice._module,
-            lattice.gram_tensor(),
-            self,
-            lattice._sage_lattice,
+        return self._specialize_existing_lattice(
+            lattice,
             extra_categories=(RootLattices(),),
             construction_data=(("cartan_type", cartan_type),),
-            subobject_ambient=lattice.__dict__.get("_preamble_subobject_ambient"),
-            subobject_generator_images=lattice.__dict__.get("_preamble_subobject_generator_images"),
-            subobject_lift=lattice.__dict__.get("_preamble_subobject_lift"),
-            subobject_inclusion_factory=lattice.__dict__.get("_preamble_subobject_inclusion_factory"),
-            subobject_verify_linearity=lattice.__dict__.get("_preamble_subobject_verify_linearity", True),
         )
-        return self._refine_lattice_object(result)
 
     def colimit(self, stage):
         r"""Return \(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).

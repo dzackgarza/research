@@ -8,6 +8,12 @@ from dzack_research.preamble.all import (
     cardinal,
 )
 
+from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+from dzack_research.preamble.categories.sets.set_categories import (
+    CartesianProductsOfSets,
+    CoproductsOfSets,
+)
+
 
 def test_set_product_has_projection_and_pairing_universal_property() -> None:
     x = Sets.Δ[1]
@@ -67,3 +73,23 @@ def test_product_and_coproduct_morphisms_act_componentwise() -> None:
     image = carried_sum(source_sum.injection(0)(x(1)))
     assert image.summand_index() == 0
     assert image.summand_element() == y(2)
+
+
+def test_dependent_product_and_coproduct_have_category_owned_constructors() -> None:
+    labels = Sets.Δ[1]
+    left = Sets.Δ[1]
+    right = Sets.Δ[2]
+    family = indexed_family(
+        labels,
+        lambda index: left if int(index) == 0 else right,
+    )
+
+    product = CartesianProductsOfSets()(labels, family)
+    coproduct = CoproductsOfSets()(labels, family)
+
+    assert product.index_set() is labels
+    assert product.factor(labels[0]) is left
+    assert product.factor(labels[1]) is right
+    assert coproduct.index_set() is labels
+    assert coproduct.cofactor(labels[0]) is left
+    assert coproduct.cofactor(labels[1]) is right

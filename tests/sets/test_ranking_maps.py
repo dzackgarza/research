@@ -9,7 +9,14 @@ rather than some bijection that happens to round-trip.
 
 import pytest
 
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    FiniteFilteredOrderedSets,
+    FiniteOrderedSets,
+    OrderedEnumeratedSets,
+    finite_ordered_filter,
+    finite_ordered_image,
+    finite_ordered_set,
+)
 from dzack_research.preamble.categories.sets.set_categories import (
     CartesianProductOfSets,
     CoproductOfSets,
@@ -109,3 +116,33 @@ def test_a_product_of_infinite_factors_refuses_the_arrow_it_cannot_represent() -
     """
     with pytest.raises(AssertionError):
         CartesianProductOfSets(NN, NN).ranking_map()
+
+
+def test_ordered_collection_notation_routes_through_category_constructors() -> None:
+    declared = FiniteOrderedSets()(("a", "b", "c"))
+    notation = finite_ordered_set(("a", "b", "c"))
+    indices = Sets.Δ[2]
+    image = FiniteOrderedSets().from_indexed(
+        indices,
+        lambda index: ("x", "y", "z")[int(index)],
+    )
+    image_notation = finite_ordered_image(
+        indices,
+        lambda index: ("x", "y", "z")[int(index)],
+    )
+    ordered = OrderedEnumeratedSets()(
+        indices,
+        lambda index: ("u", "v", "w")[int(index)],
+        index_of=lambda value: {"u": indices[0], "v": indices[1], "w": indices[2]}[value],
+    )
+    filtered = FiniteFilteredOrderedSets()(
+        declared,
+        lambda value: value != "b",
+    )
+    filtered_notation = finite_ordered_filter(declared, lambda value: value != "b")
+
+    assert tuple(declared) == tuple(notation) == ("a", "b", "c")
+    assert tuple(image) == tuple(image_notation) == ("x", "y", "z")
+    assert tuple(ordered) == ("u", "v", "w")
+    assert tuple(filtered) == tuple(filtered_notation) == ("a", "c")
+    assert int(image.ranking_map()("z")) == 2

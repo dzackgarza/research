@@ -20,7 +20,6 @@ from dzack_research.preamble.categories.lattice_morphisms import (
 )
 from dzack_research.preamble.categories.lattices import (
     FiniteRankLattices,
-    Lattice,
     Lattices,
     RootLattices,
 )
@@ -287,26 +286,12 @@ def group_lattice(lattice, group_or_action, action=None):
     if lattice in RootLattices():
         extra_categories.append(RootLattices())
         construction_data.append(("cartan_type", lattice.cartan_type()))
-    result = Lattice(
-        prototype._module,
-        prototype.gram_tensor(),
-        Lattices(base_ring),
-        prototype._sage_lattice,
+    result = Lattices(base_ring)._specialize_existing_lattice(
+        prototype,
         extra_categories=tuple(extra_categories),
         construction_data=tuple(construction_data),
-        subobject_ambient=lattice.__dict__.get("_preamble_subobject_ambient"),
-        subobject_generator_images=lattice.__dict__.get(
-            "_preamble_subobject_generator_images"
-        ),
-        subobject_lift=lattice.__dict__.get("_preamble_subobject_lift"),
-        subobject_inclusion_factory=lattice.__dict__.get(
-            "_preamble_subobject_inclusion_factory"
-        ),
-        subobject_verify_linearity=lattice.__dict__.get(
-            "_preamble_subobject_verify_linearity", True
-        ),
+        subobject_source=lattice,
     )
-    result = result.lattice_category()._refine_lattice_object(result)
     assert group.is_finitely_generated() is True
     for group_generator in group.group_generators():
         result.action()(group_generator)

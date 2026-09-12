@@ -370,45 +370,6 @@ restart of the module/algebra/action constructions.
 
 ### Constructor and ownership convergence
 
-- [ ] **`constructor-convergence`**. **Needs:** none.
-  Close the surviving alternate-constructor and private-access paths, one
-  mathematical construction family with its consumers per release.
-  **Owners:** declaration-side contracts at `owned_category.py::object_of`,
-  the responsible category/object methods, `Mor`, and existing private adapters;
-  session exports in `all.py`, notation in `lexicon/`, and catalogue entrypoints.
-  **Scope:** every surviving public construction family, including those whose
-  feature implementation no longer appears in this queue. Continue with lattice and
-  collection consumers. This is a source-conformance task, not a claim that every
-  family currently violates the contract.
-  **Decision:** the constructor's defining datum and maps are authoritative.
-  Document its allowed mathematical input forms at the existing declaration
-  (`OWN-13`), including the actual inherited or composed general construction
-  for each specialization (`OWN-14`). Direct construction, notation, a catalogue
-  example, a functor image, element reconstruction, and an engine result must
-  establish that same datum.
-  Concrete runtime classes, global implementation factories, raw adoption and
-  conversion helpers are private; importability does not grant calling authority.
-  **Deliver:** inspect all routes in the selected family, repair established
-  bypasses, and update their ordinary consumers to the owned operation. Preserve
-  deliberate user notation through its sanctioned construction, not through a
-  retained compatibility factory. Respect the fixed expectation subtrees.
-  **Private-access disposition:** for each cross-owner engine/storage access
-  encountered, either replace it with the responsible owned operation or establish
-  that it implements the already-declared protected framework contract in
-  `OWN-05`. A call-site comment, same-file placement, new public raw accessor, or
-  helper extraction cannot create an exception. Move raw computation only into
-  its designated adapter and keep its raising inside that boundary.
-  **First remaining specimen:** a selected lattice constructed through
-  `Lattices(R)(data)` and the structured refinements that retain its form and
-  framing. Reuse the existing lattice constructor specimens rather than
-  commissioning another suite of implementation-shaped checks.
-  **Acceptance:** the family's source routes converge and its public objects
-  retain the required data before inherited operations run. The accompanying
-  source review covers the actual computation and raising, not only exports or
-  underscores. Remove only the covered family from this remaining scope; keep
-  others named until inspected and repaired where needed. Record completed
-  dispositions in commits, never in a second status table in this queue.
-
 - [x] **`category-order`**. **Needs:** none.
   Integrate a construction-order-independent owned category ordering across
   the actual session graph.
@@ -1260,7 +1221,7 @@ at the existing bridge owner, not in an arithmetic consumer (`OWN-07`, `OWN-08`)
   completed families belongs in their commits. Source inspection establishes
   recursive ownership, and public specimens remain unexecuted until T.
 
-- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `constructor-convergence`, `category-boundaries`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
+- [ ] **`package-organization`**. **Needs:** `framework-transfer`, `collection-ownership`, `category-boundaries`, `general-modules`, `archive-reconciliation`, `dvr-families`, `formal-families`, `monodromy`, `curve-genus`, `enriques-family`, `ade-pairs`, `bertini-family`, `arithmetic-applications`.
   Finish ownership-directed package, export and import consolidation after
   the affected interfaces settle.
   **Dependency scope:** this is final cross-family consolidation. Each feature

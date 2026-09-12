@@ -96,6 +96,10 @@ class FiniteOrdinalSets(OwnedCategory):
         # by the category rather than computed for each object.
         return [EnumeratedSets(), TotallyOrderedSets(), FiniteEnumeratedSets()]
 
+    def _call_(self, size):
+        r"""Construct the canonical finite ordinal of cardinality ``size``."""
+        return object_of(self, size=size)
+
     class ParentMethods:
         def __init__(self, size: int, **rest) -> None:
             self._size = int(size)
@@ -175,7 +179,7 @@ def finite_ordinal_set(size: int) -> Parent:
     counts: two sets of the same cardinality must reach the *same* codomain
     or their enumerations do not compose.
     """
-    return object_of(FiniteOrdinalSets(), size=size)
+    return FiniteOrdinalSets()(size)
 
 
 def counting_ordinal(source: Parent) -> Parent:
@@ -449,6 +453,48 @@ class Sets(OwnedCategory):
 
     def super_categories(self):
         return [Objects()]
+
+    def _call_(self, source):
+        r"""Construct ``source`` as a represented set when syntactic ingress is needed."""
+        if source in self or source in SageSets():
+            return source
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+
+        return finite_ordered_set(tuple(SageSet(source)))
+
+    def condition_set(self, universe, predicate):
+        r"""Return the represented subset of ``universe`` cut out by ``predicate``."""
+        return SageConditionSet(universe, predicate)
+
+    def image_set(
+        self,
+        map_,
+        domain_subset,
+        *,
+        category=None,
+        is_injective=None,
+        inverse=None,
+    ):
+        r"""Return the represented image of ``domain_subset`` under ``map_``."""
+        try:
+            domain_cardinality = domain_subset.cardinality()
+            if domain_cardinality.is_finite():
+                from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                    finite_ordered_set,
+                )
+
+                return finite_ordered_set(tuple(map_(element) for element in domain_subset))
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            pass
+        return SageImageSet(
+            map_,
+            domain_subset,
+            category=category,
+            is_injective=is_injective,
+            inverse=inverse,
+        )
 
     def __contains__(self, candidate) -> bool:
         try:
@@ -843,20 +889,16 @@ def InfiniteSets() -> Category:
 
 
 def Set[SourcePointT](source: Parent | Iterable[SourcePointT]) -> Parent:
-    r"""Return ``source`` as an owned set whenever this constructor creates it."""
-    if source in Sets() or source in SageSets():
-        return source
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-    return finite_ordered_set(tuple(SageSet(source)))
+    r"""Notebook notation for construction through :class:`Sets`."""
+    return Sets()(source)
 
 
 def ConditionSet[SourcePointT](
     universe: Parent,
     predicate: Callable[[SourcePointT], bool],
 ) -> Parent:
-    r"""Return the subset of ``universe`` cut out by ``predicate``."""
-    return SageConditionSet(universe, predicate)
+    r"""Notebook notation for the set-category condition construction."""
+    return Sets().condition_set(universe, predicate)
 
 
 def ImageSet[SourcePointT, TargetPointT](
@@ -867,16 +909,8 @@ def ImageSet[SourcePointT, TargetPointT](
     is_injective: bool | None = None,
     inverse: Callable[[TargetPointT], SourcePointT] | None = None,
 ) -> Parent:
-    r"""Return the represented image of ``domain_subset`` under ``map_``."""
-    try:
-        domain_cardinality = domain_subset.cardinality()
-        if domain_cardinality.is_finite():
-            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-
-            return finite_ordered_set(tuple(map_(element) for element in domain_subset))
-    except (AttributeError, NotImplementedError, TypeError, ValueError):
-        pass
-    return SageImageSet(
+    r"""Notebook notation for the set-category image construction."""
+    return Sets().image_set(
         map_,
         domain_subset,
         category=category,
@@ -1041,6 +1075,10 @@ class PowerSets(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
+    def _call_(self, base_set):
+        r"""Construct the power object of ``base_set``."""
+        return object_of(self, base_set=base_set)
+
     class ParentMethods:
         def __init__(self, base_set: Parent, **rest) -> None:
             assert base_set in Sets(), "a power set is formed from an owned set"
@@ -1171,7 +1209,7 @@ class PowerSets(OwnedCategory):
 
 @cached_function
 def PowerSet(base_set: Parent) -> Parent:
-    return object_of(PowerSets(), base_set=base_set)
+    return PowerSets()(base_set)
 
 
 def _function_set_of(codomain, exponent):
@@ -1198,6 +1236,10 @@ class FunctionSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    def _call_(self, codomain, exponent):
+        r"""Construct the exponential ``codomain^exponent``."""
+        return _function_set_of(codomain, exponent)
 
     class ParentMethods:
         def __init__(self, codomain: Parent, exponent: Parent, **rest) -> None:
@@ -1240,7 +1282,7 @@ class FunctionSets(OwnedCategory):
 
 @cached_function
 def ExponentialOfSets(codomain: Parent, exponent: Parent) -> Parent:
-    return _function_set_of(codomain, exponent)
+    return FunctionSets()(codomain, exponent)
 
 
 class FixedCardinalitySubsetSets(OwnedCategory):
@@ -1252,6 +1294,14 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    def _call_(self, source, subset_cardinality):
+        r"""Construct the set of subsets of ``source`` of the stated cardinality."""
+        return object_of(
+            self,
+            source=source,
+            subset_cardinality=subset_cardinality,
+        )
 
     class ParentMethods:
         def __init__(self, source: Parent, subset_cardinality: int, **rest) -> None:
@@ -1305,11 +1355,7 @@ class FixedCardinalitySubsetSets(OwnedCategory):
 
 @cached_function
 def SubsetsOfSize(source: Parent, subset_cardinality: int) -> Parent:
-    return object_of(
-        FixedCardinalitySubsetSets(),
-        source=source,
-        subset_cardinality=subset_cardinality,
-    )
+    return FixedCardinalitySubsetSets()(source, subset_cardinality)
 
 
 class FinitePowerSets(OwnedCategory):
@@ -1321,6 +1367,10 @@ class FinitePowerSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+    def _call_(self, source):
+        r"""Construct the finite-subset object of ``source``."""
+        return object_of(self, source=source)
 
     class ParentMethods:
         def __init__(self, source: Parent, **rest) -> None:
@@ -1365,7 +1415,7 @@ class FinitePowerSets(OwnedCategory):
 
 @cached_function
 def FiniteSubsets(source: Parent) -> Parent:
-    return object_of(FinitePowerSets(), source=source)
+    return FinitePowerSets()(source)
 
 
 @cached_function(key=lambda index_set, family: (id(index_set), id(family)))
@@ -1448,6 +1498,10 @@ class CartesianProductsOfSets(OwnedCategory):
             for index in self.parent().index_set():
                 value_hash = hash((value_hash, self.component(index)))
             return hash((id(self.parent()), value_hash))
+
+    def _call_(self, index_set, family):
+        r"""Construct the dependent product of the stated family of sets."""
+        return _cartesian_product_of(index_set, family)
 
     class ParentMethods:
         def __init__(
@@ -1651,6 +1705,10 @@ class CoproductsOfSets(OwnedCategory):
 
         def __hash__(self) -> int:
             return hash((id(self.parent()), self.summand_index(), self.summand_element()))
+
+    def _call_(self, index_set, family):
+        r"""Construct the dependent coproduct of the stated family of sets."""
+        return _coproduct_of_indexed_family(index_set, family)
 
     class ParentMethods:
         def __init__(
@@ -1871,7 +1929,7 @@ def _finite_family_key(family: IndexedFamily) -> tuple[int, tuple[int, ...]]:
 
 @cached_function(key=_finite_family_key)
 def _cartesian_product_of_finite_family(family: IndexedFamily) -> Parent:
-    return _cartesian_product_of(family.index_set(), family)
+    return CartesianProductsOfSets()(family.index_set(), family)
 
 
 def CartesianProductOfFamily[IndexT](
@@ -1922,7 +1980,7 @@ def CartesianProductOfFamily[IndexT](
         raise ValueError("the product family has a different index set")
     if index_set in FiniteSets() and index_set in EnumeratedSets():
         return _cartesian_product_of_finite_family(indexed_family(index_set, family))
-    return _cartesian_product_of(index_set, family)
+    return CartesianProductsOfSets()(index_set, family)
 
 
 @cached_function(key=lambda factors: tuple(id(factor) for factor in factors))
@@ -1956,7 +2014,7 @@ def CartesianProductMorphism[IndexT](
 
 @cached_function(key=_finite_family_key)
 def _coproduct_of_finite_family(family: IndexedFamily) -> Parent:
-    return _coproduct_of_indexed_family(family.index_set(), family)
+    return CoproductsOfSets()(family.index_set(), family)
 
 
 @cached_function(key=lambda index_set, family: (id(index_set), id(family)))
@@ -1972,7 +2030,7 @@ def CoproductOfFamily[IndexT](
         raise ValueError("the coproduct family has a different index set")
     if index_set in FiniteSets() and index_set in EnumeratedSets():
         return _coproduct_of_finite_family(indexed_family(index_set, family))
-    return _coproduct_of_indexed_family(index_set, family)
+    return CoproductsOfSets()(index_set, family)
 
 
 @cached_function(key=lambda cofactors: tuple(id(cofactor) for cofactor in cofactors))

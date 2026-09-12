@@ -363,7 +363,6 @@ class LatticeEmbedding(LatticeMorphism):
         Levi action on \(K_I\) and its unipotent radical are all read off that
         retained data.
         """
-        from dzack_research.preamble.categories._lattice import Lattice
         from dzack_research.preamble.categories.lattices import IsotropicReductions
 
         source = self.domain()
@@ -417,11 +416,8 @@ class LatticeEmbedding(LatticeMorphism):
             )
             prototype = lattice_category(gram, module_generators=labels)
 
-        reduction = Lattice(
-            prototype._module,
-            prototype.gram_tensor(),
-            lattice_category,
-            prototype._sage_lattice,
+        return lattice_category._specialize_existing_lattice(
+            prototype,
             extra_categories=(IsotropicReductions(ring),),
             construction_data=(
                 ("isotropic_embedding", self),
@@ -431,7 +427,6 @@ class LatticeEmbedding(LatticeMorphism):
                 ("reduction_normalization", normalization),
             ),
         )
-        return lattice_category._refine_lattice_object(reduction)
 
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.

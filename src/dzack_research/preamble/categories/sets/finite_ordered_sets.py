@@ -112,10 +112,9 @@ def ordered_enumerated_set[IndexT, PointT](
     name: str | None = None,
 ) -> Parent:
     r"""Return the ordered image of ``index_set`` under the stated enumeration."""
-    return object_of(
-        OrderedEnumeratedSets(),
-        index_set=index_set,
-        element_at=element_at,
+    return OrderedEnumeratedSets()(
+        index_set,
+        element_at,
         index_of=index_of,
         contains=contains,
         name=name,
@@ -131,7 +130,7 @@ def finite_ordered_image[IndexT, PointT](
     name: str | None = None,
 ) -> Parent:
     r"""Return a finite ordered image without materializing its members."""
-    return FiniteOrderedSets().ObjectType.from_indexed(
+    return FiniteOrderedSets().from_indexed(
         index_set,
         element_at,
         index_of=index_of,
@@ -147,9 +146,7 @@ def finite_ordered_filter[PointT](
     name: str | None = None,
 ) -> Parent:
     r"""Return the finite ordered subset cut out by ``predicate`` lazily."""
-    return object_of(
-        FiniteFilteredOrderedSets(), source=source, predicate=predicate, name=name
-    )
+    return FiniteFilteredOrderedSets()(source, predicate, name=name)
 
 
 class OrderedEnumeratedSets(OwnedCategory):
@@ -161,6 +158,27 @@ class OrderedEnumeratedSets(OwnedCategory):
 
     def super_categories(self):
         return [EnumeratedSets(), TotallyOrderedSets()]
+
+    def _call_(
+        self,
+        index_set,
+        element_at,
+        *,
+        index_of,
+        contains=None,
+        name=None,
+        finite=False,
+    ):
+        r"""Construct an ordered enumerated set from its chosen enumeration."""
+        return object_of(
+            self,
+            index_set=index_set,
+            element_at=element_at,
+            index_of=index_of,
+            contains=contains,
+            name=name,
+            finite=finite,
+        )
 
     class ParentMethods:
         def __init__(
@@ -269,6 +287,47 @@ class FiniteOrderedSets(OwnedCategory):
         # integer, and a cardinality here is a cardinal.
         return [OrderedEnumeratedSets(), FiniteSets()]
 
+    def _call_(self, elements):
+        r"""Construct a finite ordered set from a known finite enumeration."""
+        if elements in self:
+            return elements
+        return object_of(self, elements=elements)
+
+    def from_indexed(
+        self,
+        index_set,
+        element_at,
+        *,
+        index_of=None,
+        contains=None,
+        name=None,
+    ):
+        r"""Construct a finite ordered image from its chosen indexed presentation."""
+        assert cardinal(index_set.cardinality()).is_finite(), (
+            "a finite ordered set requires a finite index set"
+        )
+        if index_of is None:
+            def index_of(element):
+                for index in index_set:
+                    if element_at(index) == element:
+                        return index
+                raise ValueError(element)
+        if contains is None:
+            def contains(element):
+                try:
+                    index_of(element)
+                except (TypeError, ValueError):
+                    return False
+                return True
+        return OrderedEnumeratedSets()(
+            index_set,
+            element_at,
+            index_of=index_of,
+            contains=contains,
+            name=name,
+            finite=True,
+        )
+
     class ParentMethods:
         def __init__(
             self,
@@ -285,41 +344,6 @@ class FiniteOrderedSets(OwnedCategory):
                 **rest,
             )
 
-        @staticmethod
-        def from_indexed(
-            index_set: Parent,
-            element_at: Callable[[IndexT], PointT],
-            *,
-            index_of: Callable[[PointT], IndexT | None] | None = None,
-            contains: Callable[[PointT], bool] | None = None,
-            name: str | None = None,
-        ) -> Parent:
-            r"""Return the finite ordered set on a chosen indexed presentation."""
-            assert cardinal(index_set.cardinality()).is_finite(), (
-                "a finite ordered set requires a finite index set"
-            )
-            if index_of is None:
-                def index_of(element):
-                    for index in index_set:
-                        if element_at(index) == element:
-                            return index
-                    raise ValueError(element)
-            if contains is None:
-                def contains(element):
-                    try:
-                        index_of(element)
-                    except (TypeError, ValueError):
-                        return False
-                    return True
-            return object_of(
-                OrderedEnumeratedSets(),
-                index_set=index_set,
-                element_at=element_at,
-                index_of=index_of,
-                contains=contains,
-                name=name,
-                finite=True,
-            )
 
         def __eq__(self, other) -> bool:
             if self is other:
@@ -363,6 +387,10 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         # ``FiniteEnumeratedSets`` supplies a ``cardinality`` returning an
         # integer, and a cardinality here is a cardinal.
         return [OrderedEnumeratedSets(), FiniteSets()]
+
+    def _call_(self, source, predicate, *, name=None):
+        r"""Construct the finite ordered subset cut out by ``predicate``."""
+        return object_of(self, source=source, predicate=predicate, name=name)
 
     class ParentMethods:
         def __init__(
@@ -458,6 +486,4 @@ def finite_ordered_set[PointT](
     elements: Parent | tuple[PointT, ...] | list[PointT] | range,
 ) -> Parent:
     r"""Transport one known finite ordered enumeration to an owned set."""
-    if elements in FiniteOrderedSets():
-        return elements
-    return object_of(FiniteOrderedSets(), elements=elements)
+    return FiniteOrderedSets()(elements)
