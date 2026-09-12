@@ -3,11 +3,18 @@ r"""The Horikawa ``(4,4)`` family is built from the shared equivariant cover own
 from dzack_research.preamble.all import QQ, QuadraticField
 from dzack_research.preamble.categories.schemes.k3_families import HorikawaK3Family
 
-ARCHIVE_RECONCILIATION = {
-    "archive_module": "preamble/tests/framework/test_group_actions_and_isotypics.sage",
-    "live_owner": "tests/schemes/test_horikawa_k3_family.py",
-    "disposition": "reconciled-live-owner",
-}
+ARCHIVE_RECONCILIATIONS = (
+    {
+        "archive_module": "preamble/tests/framework/test_group_actions_and_isotypics.sage",
+        "live_owner": "tests/schemes/test_horikawa_k3_family.py",
+        "disposition": "reconciled-live-owner",
+    },
+    {
+        "archive_module": "preamble/tests/framework/test_composite_certificates.sage",
+        "live_owner": "tests/schemes/test_horikawa_k3_family.py",
+        "disposition": "reconciled-live-owner",
+    },
+)
 
 
 def test_branch_section_action_computes_the_source_specified_13_plus_12_split() -> None:
@@ -103,3 +110,21 @@ def test_cover_and_all_three_involutions_commute_with_nontrivial_scalar_base_cha
     assert comparison.involutions_commute_with_base_change()
     assert comparison.changed_nikulin_lift().top_form_scalar() == field.one()
     assert comparison.changed_enriques_lift().top_form_scalar() == -field.one()
+
+
+def test_branch_linear_system_and_double_cover_form_one_composite_construction() -> None:
+    family = HorikawaK3Family()
+    member = family.member()
+    branch_bundle = family.branch_line_bundle()
+    sections = branch_bundle.global_sections()
+    system = branch_bundle.linear_system()
+    cover = member.cover_morphism()
+
+    assert sections.module_rank() == 25
+    assert system.line_bundle() is branch_bundle
+    assert system.is_basepoint_free()
+    assert system.associated_morphism().domain() is family.base_surface()
+    assert member.cyclic_algebra().degree() == 2
+    assert cover.domain() is member.scheme()
+    assert cover.codomain() is family.base_surface()
+    assert member.scheme().relative_dimension() == family.base_surface().relative_dimension()
