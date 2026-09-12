@@ -7,6 +7,7 @@ from importlib.util import find_spec
 from pathlib import Path
 
 from sage.libs.gap.libgap import libgap
+from sage.matrix.constructor import matrix as engine_matrix
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -218,6 +219,13 @@ function target_primitive_embedding_classes(
         return [1, 0, []]
     end
     return [1, 1, result]
+end
+
+function leech_gram_rows()
+    lattice = leech_lattice()
+    gram = change_base_ring(ZZ, gram_matrix(lattice))
+    rows, columns = size(gram)
+    return [[Int(gram[i, j]) for j in 1:columns] for i in 1:rows]
 end
 
 function integral_isometry_witness(source_gram_entries, target_gram_entries)
@@ -471,6 +479,24 @@ class _OscarLatticeAdapter:
             representatives.append((target_prime_gram, source_prime_gram, embedding))
         return tuple(representatives)
 
+    def leech_gram_rows(self):
+        rows = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.leech_gram_rows"
+        )
+        if not isinstance(rows, list) or len(rows) != 24:
+            raise RuntimeError("OSCAR returned malformed Leech Gram data")
+        matrix_rows = tuple(tuple(SageZZ(entry) for entry in row) for row in rows)
+        if any(len(row) != 24 for row in matrix_rows):
+            raise RuntimeError("OSCAR returned a non-square Leech Gram matrix")
+        gram = engine_matrix(SageZZ, matrix_rows)
+        if not gram.is_symmetric():
+            raise ArithmeticError("OSCAR returned a nonsymmetric Leech Gram matrix")
+        if abs(gram.det()) != 1:
+            raise ArithmeticError("OSCAR returned a non-unimodular Leech Gram matrix")
+        if any(gram[index, index] % 2 for index in range(24)):
+            raise ArithmeticError("OSCAR returned an odd Leech Gram matrix")
+        return matrix_rows
+
     def integral_isometry_witness(self, source_gram, target_gram):
         result = self._bridge().call(
             "DzackResearchOscarLatticeAdapter.integral_isometry_witness",
@@ -534,6 +560,13 @@ engine_capabilities.register(
     provisioning=_OSCAR_PROVISIONING,
 )
 engine_capabilities.register(
+    "lattice.leech_gram_rows",
+    _OSCAR_PROVIDER,
+    _oscar_lattices.leech_gram_rows,
+    available=_oscar_lattices.available,
+    provisioning=_OSCAR_PROVISIONING,
+)
+engine_capabilities.register(
     "lattice.oscar_isometry_witness",
     _OSCAR_PROVIDER,
     _oscar_lattices.integral_isometry_witness,
@@ -582,6 +615,11 @@ def target_primitive_embedding_classes(source_gram, target_gram, classification)
         target_gram,
         classification,
     )
+
+
+def leech_gram_rows():
+    r"""Return Hecke's exact positive-definite Leech Gram rows privately."""
+    return engine_capabilities.compute("lattice.leech_gram_rows")
 
 
 def integral_isometry_witness(source_gram, target_gram):

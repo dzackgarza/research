@@ -864,6 +864,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             (*hyperbolic, category("E8"), category("E8"), category("A2"))
         )
 
+    @staticmethod
+    @cached_function
+    def leech_lattice():
+        r"""Return the negative-definite Leech lattice through Hecke's maintained construction."""
+        integers = _own_ring(SageZZ)
+        positive = Lattices(integers)(lattice_engines.leech_gram_rows())
+        return positive.twist(-integers.one())
+
     @cached_method
     def super_categories(self):
         r"""

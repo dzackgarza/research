@@ -45,3 +45,13 @@ def test_hyperkaehler_bbf_lattices_have_the_standard_ranks_and_signatures() -> N
         assert lattice.module_rank() == rank
         assert lattice.signature_pair() == signature
         assert lattice.base_ring() is ZZ
+
+
+def test_leech_lattice_uses_the_rootless_even_unimodular_archive_contract() -> None:
+    leech = Lattices.leech_lattice()
+
+    assert leech.module_rank() == 24
+    assert leech.signature_pair() == (0, 24)
+    assert leech.is_even()
+    assert abs(leech.gram_matrix().determinant()) == 1
+    assert leech.roots().cardinality() == 0
