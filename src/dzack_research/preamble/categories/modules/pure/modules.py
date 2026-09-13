@@ -2383,7 +2383,7 @@ class RestrictedScalarsModuleView(Parent):
                 scalar,
                 self.extension_ring(),
             ).items():
-                label = framing(lambda index: scalar_label if int(index) == 0 else module_label)
+                label = framing((scalar_label, module_label))
                 coefficients[label] = self.base_ring()(coefficient)
         return coefficients
 
