@@ -630,7 +630,7 @@ class FixedRestrictedHomCategory(FixedHomCategory):
         return [base, *inherited]
 
 
-class RestrictedHomCategoryParent(Parent, FixedRestrictedHomCategory):
+class RestrictedHomCategoryParent(FixedRestrictedHomCategory, Parent):
     r"""A restricted Hom category that also carries independent enrichment.
 
     Its elements may be structured witnesses (for example derivations) whose
