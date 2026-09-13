@@ -1,10 +1,16 @@
 import pytest
 
-from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.owned_category import construction_contract, object_of
 
 
 class ClosedConstructionCategory(OwnedCategory):
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        return object_of(self, required_value=0)
+
     class ParentMethods:
         def __init__(self, required_value, optional_value=1):
             self._required_value = required_value
@@ -18,6 +24,12 @@ class ClosedConstructionCategory(OwnedCategory):
 
 
 class OpenConstructionCategory(OwnedCategory):
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        return object_of(self, required_value=0)
+
     class ParentMethods:
         def __init__(self, required_value, **rest):
             self._required_value = required_value

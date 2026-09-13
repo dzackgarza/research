@@ -759,14 +759,30 @@ class ConstructionContract:
             )
 
 
-def _construction_contract_from_type(owner, implementation_type: type) -> ConstructionContract:
-    r"""Discover named constructor data contributed by one implementation MRO."""
+def _construction_contract_from_type(
+    owner,
+    implementation_type: type,
+    *,
+    owned_object_chain: bool = False,
+) -> ConstructionContract:
+    r"""Discover named constructor data contributed by one implementation MRO.
+
+    Object construction is delimited structurally: every implementation level
+    before :class:`OwnedParent` belongs to the owned category chain, regardless
+    of the Python module where a concrete owned category is declared.  This is
+    what makes the contract a property of the mathematical owner rather than a
+    package-layout convention.  Other callers retain the narrower preamble
+    module boundary used for fixed Hom parents.
+    """
     parameters: list[ConstructionParameter] = []
     variadic: list[type] = []
     opaque: list[type] = []
     hooks: list[type] = []
     for provider in implementation_type.__mro__:
-        if not provider.__module__.startswith("dzack_research.preamble"):
+        if owned_object_chain:
+            if provider is OwnedParent:
+                break
+        elif not provider.__module__.startswith("dzack_research.preamble"):
             continue
         if "__init_extra__" in provider.__dict__:
             hooks.append(provider)
@@ -827,7 +843,11 @@ def construction_contract(category: Category) -> ConstructionContract:
     provider with ``**rest`` is retained as variadic.  Discovery never changes
     construction behavior and never interprets an omitted name as optional.
     """
-    return _construction_contract_from_type(category, category.ObjectType)
+    return _construction_contract_from_type(
+        category,
+        category.ObjectType,
+        owned_object_chain=True,
+    )
 
 
 def hom_construction_contract(
