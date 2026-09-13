@@ -18,6 +18,10 @@ from sage.all import (
 from sage.all import (
     Zmod as _SageZmod,
 )
+from sage.arith.misc import (
+    euler_phi as _engine_euler_phi,
+    number_of_divisors as _engine_number_of_divisors,
+)
 from sage.categories.category import Category
 from sage.categories.division_rings import DivisionRings as SageDivisionRings
 from sage.categories.fields import Fields as SageFields
@@ -2234,6 +2238,27 @@ class _OwnedRingElement(RingElement):
 
     def is_prime(self):
         return bool(self._backend().is_prime())
+
+    def divisors(self):
+        r"""Return the positive divisors as an owned finite ordered set."""
+        return finite_ordered_set(
+            tuple(
+                self.parent()._from_engine_element(divisor)
+                for divisor in self._backend().divisors()
+            )
+        )
+
+    def euler_phi(self):
+        r"""Return Euler's totient as an owned nonnegative integer."""
+        integers = _own_ring(SageZZ)
+        return integers._from_engine_element(SageZZ(_engine_euler_phi(self._backend())))
+
+    def number_of_divisors(self):
+        r"""Return the number of positive divisors as an owned integer."""
+        integers = _own_ring(SageZZ)
+        return integers._from_engine_element(
+            SageZZ(_engine_number_of_divisors(self._backend()))
+        )
 
     def factor(self):
         r"""Return the engine factorization crossed into owned factors and multiplicities."""
