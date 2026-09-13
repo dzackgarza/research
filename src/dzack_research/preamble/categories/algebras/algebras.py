@@ -2379,7 +2379,12 @@ def commutative_algebra_pushout(left_map, right_map):
 
 
 class OwnedAlgebras(OwnedCategoryOverBaseRing):
-    r"""Algebras carrying their chosen structure map ``R -> Z(A)``."""
+    r"""Algebras carrying their chosen structure map ``R -> A``.
+
+    Centrality is retained separately by :meth:`algebra_structure_morphism`,
+    whose codomain is ``Z(A)``.  The defining map itself must land in ``A``:
+    it is the map used for restriction and extension of scalars.
+    """
 
     def an_object(self):
         r"""The polynomial algebra on one generator."""
@@ -2494,11 +2499,17 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
 
 def _default_structure_map(base, algebra):
-    center = algebra.ring_center()
+    r"""Return the defining scalar map ``base -> algebra``.
 
+    The image is central by the algebra contract, but the defining map must
+    retain the algebra itself as codomain so scalar restriction has the exact
+    ring homomorphism it is supposed to restrict along.  The separate
+    ``algebra_structure_morphism`` method records the factorization through
+    the centre.
+    """
     return ring_morphism(
         base,
-        center,
+        algebra,
         lambda scalar: algebra(scalar),
     )
 
