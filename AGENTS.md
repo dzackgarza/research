@@ -60,6 +60,21 @@ Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` be
 
 These are implementation prerequisites: use them to identify already-planned remediation, existing mathematical constructions, known architectural failures, and outstanding archive-port work before adding or changing code.
 
+## Bank before you wait
+
+Work that is written but uncommitted lives only in this chat's working tree, and a turn that
+ends, a chat that is replaced, or a host that runs out of memory takes it with it. On
+2026-09-13 this repository sat idle holding several tracked paths of finished repairs, none of them
+banked, while the thing they were waiting on was a suite whose runs on this host stall often enough to be the largest single source of lost time.
+
+So order the work the other way. When a piece is written and you believe it correct, commit it
+*before* starting whatever comes next — the validating run, the next collection, the rest of
+the batch. A commit is not a claim that everything is finished; the message can say what is
+still pending. What it buys is that a stall, a kill or an ended turn costs a wait and nothing
+else, rather than taking the work with it.
+
+Commit in coherent groups as you go, not in one batch at the end. A construction and the specimens that would falsify it are a commit, whether or not the suite has run over them yet.
+
 ## Mathematical tracing and complaints (always-on)
 
 **Before designing any new mathematical addition, unfold its mathematics before
