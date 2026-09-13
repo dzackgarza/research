@@ -1215,6 +1215,34 @@ class LimitsOfCategory(OwnedCategoryBase):
             )
         return object_set, objects, arrows
 
+    @staticmethod
+    def _extremal_shape_object(objects, arrows, *, terminal: bool):
+        r"""Return an initial/terminal object with its unique arrows, if represented.
+
+        A diagram indexed by a category with a terminal object has colimit the
+        value at that object; dually an initial object computes the limit.
+        Detecting this before a product/equalizer or coproduct/coequalizer
+        reduction matters when the target subcategory has the required
+        extremal colimit but does not have arbitrary coequalizers.
+        """
+        shape_objects = tuple(objects)
+        shape_arrows = tuple(arrows)
+        for candidate in shape_objects:
+            selected = {}
+            for obj in shape_objects:
+                source, target = (obj, candidate) if terminal else (candidate, obj)
+                matches = tuple(
+                    arrow
+                    for arrow in shape_arrows
+                    if arrow.domain() is source and arrow.codomain() is target
+                )
+                if len(matches) != 1:
+                    break
+                selected[obj] = matches[0]
+            else:
+                return candidate, selected
+        return None
+
     @cached_method(key=lambda self, diagram: id(diagram))
     def construction(self, diagram):
         r"""Return the selected limit, using products and an equalizer on finite represented shapes."""
@@ -1224,6 +1252,20 @@ class LimitsOfCategory(OwnedCategoryBase):
         )
 
         object_set, objects, arrows = self._finite_shape_data(diagram)
+        extremal = self._extremal_shape_object(objects, arrows, terminal=False)
+        if extremal is not None:
+            initial, arrows_from_initial = extremal
+            apex = diagram(initial)
+            universal_cone = ConeCategory(diagram).cone(
+                apex,
+                lambda index: diagram(arrows_from_initial[index]),
+            )
+
+            def factorizer(cone):
+                return cone.structure_morphism(initial)
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
         target = self.target_category()
         object_factors = indexed_family(
             object_set,
@@ -1323,6 +1365,20 @@ class ColimitsOfCategory(LimitsOfCategory):
         )
 
         object_set, objects, arrows = self._finite_shape_data(diagram)
+        extremal = self._extremal_shape_object(objects, arrows, terminal=True)
+        if extremal is not None:
+            terminal, arrows_to_terminal = extremal
+            apex = diagram(terminal)
+            universal_cocone = CoconeCategory(diagram).cocone(
+                apex,
+                lambda index: diagram(arrows_to_terminal[index]),
+            )
+
+            def factorizer(cocone):
+                return cocone.costructure_morphism(terminal)
+
+            return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
+
         target = self.target_category()
         object_cofactors = indexed_family(
             object_set,
