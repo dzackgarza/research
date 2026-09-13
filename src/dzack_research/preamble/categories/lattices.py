@@ -1518,7 +1518,20 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert right.parent() is self
             gram = self.gram_tensor()
             if self.module_rank().is_finite():
-                return gram.contract(left.to_vector(), right.to_vector())
+                labels = self.module_generating_set()
+                ranking = labels.ranking_map()
+                left_coefficients = self._monomial_coefficients(left._vector)
+                right_coefficients = self._monomial_coefficients(right._vector)
+                return sum(
+                    (
+                        left_coefficient
+                        * right_coefficient
+                        * gram[int(ranking(left_label)), int(ranking(right_label))]
+                        for left_label, left_coefficient in left_coefficients.items()
+                        for right_label, right_coefficient in right_coefficients.items()
+                    ),
+                    self.base_ring().zero(),
+                )
             return gram(left._vector, right._vector)
 
         def q(self, vector):

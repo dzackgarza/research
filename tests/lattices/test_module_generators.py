@@ -153,7 +153,10 @@ def test_lattices_over_an_order_do_not_sniff_cartan_type() -> None:
 def test_signature_pair_uses_the_public_cardinal_product_parent() -> None:
     pair = signature_pair(1, 2)
 
-    assert pair.parent() is signature_pairs()
+    # ``pair`` is itself an object/Parent of Card x Card; ``category()`` is
+    # its mathematical owner.  Sage ``parent()`` on a Parent exposes runtime
+    # class infrastructure and is not the categorical parent of an element.
+    assert pair.category() is signature_pairs()
 
 
 def test_signature_pair_uses_the_fraction_field() -> None:
