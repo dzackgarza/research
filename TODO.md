@@ -1009,7 +1009,10 @@ carry on with the 36 collection errors, which are this repository's own and are 
   specimen also now uses the represented fixed-Hom object's explicit arrow
   object rather than incorrectly identifying that object with its underlying map;
   corestriction from a more specific core similarly retains the same forward and
-  inverse arrows while changing the represented Hom parent.
+  inverse arrows while changing the represented Hom parent. The construction-order
+  session regression no longer reads Sage's private `_cmp_key` representation (a
+  method on current join categories); it now compares the existing structural
+  category-graph signature that the owned ordering itself is defined from.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,

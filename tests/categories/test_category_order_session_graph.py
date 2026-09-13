@@ -16,12 +16,22 @@ from dzack_research.preamble.all import (
     ZZ,
     module_homset,
 )
+from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    module_coefficients,
+)
 from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.owned_category import (
+    _category_graph_signature,
+    _category_parameter_signature,
+    _stable_signature_integer,
+)
 
 
 def category_key(obj):
     category = obj.category()
-    return [int(category._cmp_key[0]), int(category._cmp_key[1])]
+    return _stable_signature_integer(
+        (_category_graph_signature(category), _category_parameter_signature(category))
+    )
 
 
 def affine_open():
@@ -50,8 +60,14 @@ def matrix_hom():
         "hom_category": category_key(morphism.parent()),
         "source_category": category_key(source),
         "target_category": category_key(target),
-        "e0_image": [int(entry) for entry in morphism(e0).to_tuple()],
-        "e1_image": [int(entry) for entry in morphism(e1).to_tuple()],
+        "e0_image": [
+            int(module_coefficients(morphism(e0), target).get(label, ZZ.zero()))
+            for label in target.module_generating_set()
+        ],
+        "e1_image": [
+            int(module_coefficients(morphism(e1), target).get(label, ZZ.zero()))
+            for label in target.module_generating_set()
+        ],
     }
 
 
