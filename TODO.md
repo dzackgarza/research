@@ -991,12 +991,13 @@ carry on with the 36 collection errors, which are this repository's own and are 
   duplicate-basename, group-algebra commutativity, and
   `OwnedCategoryOverBaseRing` export failures no longer reproduce.
   `just test-universe` still reports 758 proof-surface findings.
-  Session/notebook verification adds
-  three independent failures: `just sage-init-check` says the startup object
-  does not render as LaTeX; `preamble.ipynb` fails its first code cell because
-  `Lattices` is absent from the bound Sage kernel; and the main
-  `H0_O_P1xP1_4_4.ipynb` setup cell fails the imported projective framework's
-  idempotent-installation assertion because external methods are unregistered.
+  Session/notebook verification still has two active failures. `preamble.ipynb`
+  previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
+  and the main `H0_O_P1xP1_4_4.ipynb` setup cell fails the imported projective framework's
+  idempotent-installation assertion because external methods are unregistered. The former
+  startup-display item is no longer active: on 2026-09-13 `just sage-init-check` completed in a
+  real Sage kernel with `sage-init-check: ok — Sage objects typeset, plain text left alone`. Keep
+  rechecking session failures against the live tree before treating this recorded set as current.
   Preserve these propositions and repair their owners; do not edit expectations
   merely to reduce this list.
   **Decision:** do not weaken expectations to match an implementation, filter
@@ -1059,23 +1060,36 @@ These are not prerequisites for the required mathematics or terminal T.
 
 - [ ] **`bloat-audit-loop`**. **Needs:** `type-paydown`.
 
-  The terminal node, and it loops rather than closing. Continually audit the codebase for
-  unnecessary bloat, bad style and non-idiomatic constructions, opportunities to reduce lines
-  of code, and anything hand-rolled that could be offloaded to a dependency — Python or
-  otherwise, inside Sage or outside it. Append every finding to `COMPLAINTS.md` as it is found,
-  and repair at least one finding in the same turn that records it.
+  The terminal convergence node, and it loops rather than closing. Before each pass reread
+  `AGENTS.md`, `CONTRIBUTING.md`, this DAG, and the relevant audit skills under
+  `~/ai/opencode/skills/`: `addressing-shallow-work`, `policy-index`, `anti-slop`,
+  `fixing-slop`, `bespoke-software-policy`, `code-patterns`,
+  `thermo-nuclear-code-quality-review`, `brooks-audit`, `brooks-debt`, `test-guidelines`,
+  `test-writing`, `known-solution-first`, `epistemic-integrity`, `reality-grounded-debugging`,
+  `reviewing-llm-code`, `quality-control`, and `general-cleanup`. These are interpretive lenses,
+  not a checklist and not permission to rewrite mathematical expectations.
 
-  A pass that files findings and repairs none has not advanced this node, and a commit whose
-  only content is a `COMPLAINTS.md` entry is not a unit of work. The backlog there may outrun
-  the repairs, and the audit is never declared finished. When there are no findings in a pass,
-  record nothing and run it again later.
+  Rotate whole-repository passes across: categorical/math owner placement; duplicate or derivable
+  retained state; public type/API design; tests as behavioral proofs rather than implementation
+  mirrors; dead compatibility bridges and validation-evasion fallbacks; dependency offload to
+  Sage, GAP/CAP, OSCAR, SymPy, Python or another mature owner; import/lazy-import and module-cycle
+  structure; notebook/session usability; generated/static projection boundaries; and AI-slop or
+  locally tidy code that violates the architectural contract. Search the dependency or upstream
+  owner before improving a local mechanism that may not need to exist.
 
-- [ ] **`optional-database`**. **Needs:** none.
+  Repair a small, well-supported finding in the same pass and commit the behavioral regression or
+  mathematical consumer that proves it. If a finding spans several owners or is too large to
+  repair coherently in one pass, hydrate this DAG with explicit child nodes and dependency edges
+  before implementation continues. Never create a node merely to say that an audit ran. A full
+  pass that finds no defensible change makes **no commit and no complaint entry**; that is positive
+  evidence of convergence under that lens and the terminal node remains open for later passes.
+
+- [ ] **`optional-database`**. **Needs:** `terminal-session`.
   Add a database/classification example when it supplies data needed by
   research: LMFDB, curve/field databases, OEIS, GRDB, Kreuzer--Skarke or
   Fanography. Select a concrete mathematical query before provisioning an
   adapter.
-- [ ] **`optional-engine`**. **Needs:** none.
+- [ ] **`optional-engine`**. **Needs:** `terminal-session`.
   Extend private engine integrations when a named construction benefits:
   Sage/Singular for local and polynomial algebra, libGAP for group actions,
   persistent `sage-julia-bridge` for OSCAR/Hecke, optional Macaulay2 for
