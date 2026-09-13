@@ -1011,12 +1011,20 @@ carry on with the 36 collection errors, which are this repository's own and are 
 - [ ] **`terminal-session`**. **Needs:** `terminal-repairs`.
   Verify the required session/rendered examples and final contribution
   contracts after mathematical integration.
+  **Fresh-session invariant:** before this node can close, a fresh live Sage process on the
+  repository's active environment must execute `from dzack_research.preamble.all import *`
+  successfully and expose at least the core `Cat` and `Lattices` entry points. Regenerate the
+  preamble megadoc/graph from that same tree and require the JSON/megadoc inventory to agree with
+  the live session; graph node counts are an inventory, not acceptance by themselves. Treat a
+  preamble-owned import warning or an import-order-dependent result as a terminal repair, not as
+  harmless startup noise. Re-run this smoke after terminal repairs that touch category/bootstrap,
+  exports, or session initialization so a previously green import cannot silently regress.
   **Deliver:** actual inspected notebook/rendering results where relevant,
   source-backed terminology review at the required push boundary, and the
   repository's prescribed final QC.
-  **Acceptance:** the displayed mathematical objects and maps are correct;
-  no output is certified solely by a generated file or a server starting.
-  Respect the user's push approval and active-task scope.
+  **Acceptance:** the public star import and live graph/session invariant above hold; the displayed
+  mathematical objects and maps are correct; no output is certified solely by a generated file, a
+  graph count, or a server starting. Respect the user's push approval and active-task scope.
 
 
 
