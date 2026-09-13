@@ -580,7 +580,13 @@ class LocalizationRings(OwnedCategory):
             try:
                 return denominator in self.localization_submonoid()
             except NotImplementedError:
-                return False
+                source = self.localization_source()
+                if denominator == source.one():
+                    return True
+                try:
+                    return bool(self.localization_map()(denominator).is_unit())
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
+                    return False
 
         def fraction(self, numerator, denominator=None, *, _trusted_denominator=False):
             source = self.localization_source()

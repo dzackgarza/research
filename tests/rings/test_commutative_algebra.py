@@ -957,7 +957,15 @@ def test_map_induced_out_of_a_localization_is_independent_of_the_representative(
     assert induced(half) * to_fractions(ring(2)) == to_fractions(ring.one())
 
     plane = PolynomialRing(QQ, ("x", "y"))
-    with pytest.raises(AssertionError, match="a localization at a single element"):
-        plane.localization(
-            plane.algebra_generator("x"), plane.algebra_generator("y")
-        ).induced_morphism(plane.fraction_field_map())
+    x_plane, y_plane = plane.algebra_generators()
+    inverted_plane = plane.localization(x_plane, y_plane)
+    plane_to_fractions = plane.fraction_field_map()
+    plane_induced = inverted_plane.induced_morphism(plane_to_fractions)
+
+    assert plane_induced(inverted_plane.localization_map()(x_plane + y_plane)) == (
+        plane_to_fractions(x_plane + y_plane)
+    )
+    inverse_product = inverted_plane.fraction(plane.one(), x_plane * y_plane)
+    assert plane_induced(inverse_product) * plane_to_fractions(x_plane * y_plane) == (
+        plane_to_fractions(plane.one())
+    )
