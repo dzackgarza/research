@@ -1146,7 +1146,16 @@ def Span(left_leg: Morphism, right_leg: Morphism) -> Parent:
     """
     assert left_leg.domain() is right_leg.domain(), "a span has one common domain"
     legs = (left_leg, right_leg)
-    diagram = _discrete_diagram((left_leg.codomain(), right_leg.codomain()))
+    target = Category.meet(
+        [
+            left_leg.parent().homset_category(),
+            right_leg.parent().homset_category(),
+        ]
+    )
+    diagram = _discrete_diagram(
+        (left_leg.codomain(), right_leg.codomain()),
+        target_category=target,
+    )
     return SpanCategory(diagram).cone(
         left_leg.domain(),
         lambda index: legs[int(index.value())],

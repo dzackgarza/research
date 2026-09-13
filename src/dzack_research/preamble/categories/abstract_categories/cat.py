@@ -454,9 +454,10 @@ class Cat(CategoryPacketMethods, Category):
                 "a span has one common domain"
             )
             total = self.coproduct([left_leg.codomain(), right_leg.codomain()])
+            labels = total.index_set()
             return self.coequalizer(
-                total.left_injection() * left_leg,
-                total.right_injection() * right_leg,
+                total.injection(labels(0)) * left_leg,
+                total.injection(labels(1)) * right_leg,
             )
 
         def opposite(self) -> Category:
