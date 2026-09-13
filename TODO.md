@@ -899,9 +899,10 @@ worker looks for something it is permitted to do.
 
 ### The implementation nodes are closed; repairs now wait on execution
 
-Twenty-eight work nodes are done and the nine below are what remains. `terminal-reference` has
-no prerequisites, which means the verification phase is ready to start and has been for some
-time.
+The implementation nodes are checked off above and the terminal ones are what remains; count
+the boxes in this file rather than trusting a number written into this paragraph, which was
+true when it was written and not after. `terminal-reference` has no prerequisites, which means
+the verification phase is ready to start and has been for some time.
 
 This matters more than it reads. Every commit in this repository since the phase rule took
 effect is explicitly unverified — the construction and the specimens that would falsify it are
