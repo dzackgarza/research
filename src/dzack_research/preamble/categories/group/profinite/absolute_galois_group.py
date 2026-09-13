@@ -397,6 +397,9 @@ class AbsoluteGaloisCategoryConstruction(RestrictedHomCategoryOf):
             return False
 
 
+_ABSOLUTE_GALOIS_GROUP_CACHE = {}
+
+
 class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
     r"""The automorphism group of one exact extension object (K\to\bar K).
 
@@ -407,6 +410,36 @@ class AbsoluteGaloisGroup(RestrictedHomCategoryParent):
     """
 
     Element = AbsoluteGaloisGroupElement
+
+    @staticmethod
+    def __classcall__(cls, *args, **kwargs):
+        # Open subgroups inherit this Python method but have different
+        # construction data; their own constructor remains ordinary.
+        if cls is not AbsoluteGaloisGroup:
+            return typecall(cls, *args, **kwargs)
+        if len(args) != 1:
+            return typecall(cls, *args, **kwargs)
+
+        field = _own_ring(args[0])
+        closure = kwargs.get("closure")
+        embedding = kwargs.get("embedding")
+        extra_categories = tuple(kwargs.get("extra_categories", ()))
+        if closure is not None or embedding is not None or extra_categories:
+            return typecall(
+                cls,
+                field,
+                closure=closure,
+                embedding=embedding,
+                extra_categories=extra_categories,
+            )
+
+        key = id(field)
+        cached = _ABSOLUTE_GALOIS_GROUP_CACHE.get(key)
+        if cached is not None and cached.base_field() is field:
+            return cached
+        result = typecall(cls, field)
+        _ABSOLUTE_GALOIS_GROUP_CACHE[key] = result
+        return result
 
     def __init__(
         self,

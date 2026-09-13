@@ -1037,7 +1037,11 @@ carry on with the 36 collection errors, which are this repository's own and are 
   index set. Character inner products now use the identity
   ``conjugate(chi(g)) = chi(g^{-1})`` inside the character/group owners instead of
   requiring a nonexistent generic complex-conjugation method on owned cyclotomic
-  scalars; direct-sum irreducible constituents are recovered again.
+  scalars; direct-sum irreducible constituents are recovered again. The default
+  absolute Galois realization is now canonical per owned base field: repeated
+  ``AbsoluteGaloisGroup(K)`` and ``K.absolute_galois_group()`` calls retain the
+  same chosen closure/embedding object, while explicitly supplied realization
+  data still construct their stated choice.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
