@@ -1059,7 +1059,16 @@ class Schemes(OwnedCategoryOverBaseRing):
         def _scheme_underlying_space(self):
             base_ring = self.scheme_base_ring()
             if self in AffineSchemes(base_ring):
-                return self.coordinate_algebra().spectrum()
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    PrimeSpectra,
+                )
+                from dzack_research.preamble.owned_category import object_of
+
+                return object_of(
+                    PrimeSpectra(),
+                    ring=self.coordinate_algebra(),
+                    ringed_space=self,
+                )
             return SchemeUnderlyingSpace(self)
 
         def _structure_sheaf_global_sections(self):

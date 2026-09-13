@@ -406,15 +406,29 @@ class PrimeSpectra(OwnedCategory):
 
     class ParentMethods:
 
-        def __init__(self, ring, **rest) -> None:
+        def __init__(self, ring, ringed_space=None, **rest) -> None:
             self._ring = _own_ring(ring)
             assert self._ring in OwnedRings().Commutative(), (
                 "Spec(R) requires a commutative ring"
             )
+            self._ringed_space = ringed_space
             super().__init__(**rest)
 
         def ring(self):
             return self._ring
+
+        def ringed_space(self):
+            r"""Return the ringed space whose underlying space this spectrum represents.
+
+            A bare ring spectrum has no selected structure sheaf presentation.
+            When an affine scheme asks for its underlying space, the same prime
+            spectrum is constructed with that scheme as its retained ringed-space
+            datum, so points keep their prime-ideal semantics while the space can
+            recover the structure it underlies.
+            """
+            if self._ringed_space is None:
+                raise ValueError("this prime spectrum has no selected ringed-space presentation")
+            return self._ringed_space
 
         coordinate_ring = ring
 
