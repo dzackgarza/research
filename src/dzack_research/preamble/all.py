@@ -1142,7 +1142,6 @@ from dzack_research.preamble.coble import Coble  # noqa: F401
 from dzack_research.preamble.logic import Predicate, Unknown, ask  # noqa: F401
 from dzack_research.preamble.rings import (  # noqa: F401
     RR,
-    ZZ,
     AdicallyCompleteRings,
     ArtinianRings,
     CommutativeIdeal,
