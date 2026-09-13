@@ -238,15 +238,45 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _relation_submodule_resolution(self):
-            r"""Resolve over a PID, where the relation submodule is already free."""
+            r"""Resolve over a PID, where the relation submodule is already free.
+
+            When the selected presentation already exhibits independent diagonal
+            relations, it is itself the relation inclusion.  This matters for
+            exact local PIDs such as ``Z_p``: Sage's generic row-module echelon
+            routine normalizes a nonunit pivot by dividing through it, which
+            leaves the ring even though no basis change is mathematically needed.
+            """
 
             ring = self.base_ring()
-            degree_zero = self.presentation().codomain()
+            presentation = self.presentation()
+            degree_zero = presentation.codomain()
+            zero = _free_cover_owner(self)._fresh_free_module_on(Sets.Δ[-1])
+            source_labels = tuple(presentation.domain().module_generating_set())
+            target_labels = tuple(degree_zero.module_generating_set())
+            relation_rows = tuple(_matrix_coordinate_rows(self.presentation_matrix()))
+            selected_is_independent_diagonal = (
+                len(source_labels) <= len(target_labels)
+                and len(relation_rows) == len(source_labels)
+                and all(
+                    coefficient != ring.zero()
+                    if column == row
+                    else coefficient == ring.zero()
+                    for row, relation_row in enumerate(relation_rows)
+                    for column, coefficient in enumerate(relation_row)
+                )
+            )
+            if selected_is_independent_diagonal:
+                return _resolution_over_degrees(
+                    self,
+                    {0: degree_zero, 1: presentation.domain()},
+                    {1: presentation},
+                    self.presentation_projection(),
+                    zero,
+                )
+
             relation_matrix = _engine_matrix(self.presentation_matrix()).row_module().basis_matrix()
             relation_labels = Sets.Δ[int(relation_matrix.nrows()) - 1]
-            degree_one = degree_zero._fresh_free_module_on(relation_labels)
-            zero = degree_zero._fresh_free_module_on(Sets.Δ[-1])
-            target_labels = degree_zero.module_generating_set()
+            degree_one = _free_cover_owner(self)._fresh_free_module_on(relation_labels)
 
             def image(label):
                 row = relation_matrix.row(int(relation_labels.ranking_map()(label)))

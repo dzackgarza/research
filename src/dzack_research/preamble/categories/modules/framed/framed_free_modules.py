@@ -341,6 +341,17 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
 
             return module_subobject_on(self, module_generating_set)
 
+        def whole_subobject(self):
+            r"""Return this free module as the full subobject of itself.
+
+            The selected framing is already a basis, so this construction does
+            not ask a backend to row-reduce it.  That distinction is essential
+            over exact local PIDs, where echelon normalization can divide by a
+            nonunit even though the whole-span basis is already known.
+            """
+
+            return _module_subobject_spanning(self, self.module_generators())
+
         def base_ring(self):
             selected = self.__dict__.get("_preamble_base_ring")
             if selected is not None:
@@ -572,6 +583,15 @@ def _span_basis_elements(module, module_generating_set):
         )
 
     generators = _known_finite_generator_family(module_generating_set)
+    if int(generators.cardinality()) == 1:
+        generator = next(iter(generators))
+        generator = generator if generator.parent() is module else module(generator)
+        if generator != module.zero():
+            # Over a PID, hence an integral domain, one nonzero vector is
+            # automatically a basis of the cyclic submodule it generates.
+            # Retain that mathematical basis instead of echelon-normalizing it;
+            # p-adic backends otherwise divide through nonunit pivots.
+            return finite_ordered_set((generator,))
     support_labels = _finite_support_labels(module, generators)
 
     # Private finite backend serialization.  Only the finite support window is

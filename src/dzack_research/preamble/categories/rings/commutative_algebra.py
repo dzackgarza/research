@@ -805,6 +805,21 @@ class QuotientRings(OwnedCategory):
                 )
                 if not defining.is_zero():
                     return cardinal(SageZZ(defining.norm()))
+            source = self.quotient_source()
+            if source in PrincipalIdealDomains() and source in OwnedLocalRings():
+                valuations = []
+                for generator in self.defining_ideal().ideal_generators():
+                    backend = _engine_ring_value(source, generator)
+                    if backend == source_engine.zero():
+                        continue
+                    valuation = getattr(backend, "valuation", None)
+                    if valuation is None:
+                        valuations = []
+                        break
+                    valuations.append(int(valuation()))
+                if valuations:
+                    residue_size = source.residue_field().cardinality()
+                    return residue_size ** min(valuations)
             assert False, (
                 "cardinality is defined for every quotient ring, but this represented "
                 "quotient has no selected exact-cardinality computation"

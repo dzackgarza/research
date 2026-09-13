@@ -1930,6 +1930,8 @@ class FinitelyGeneratedFreeModules(OwnedCategoryOverBaseRing):
         def _represented_kernel_of_morphism(self, morphism):
             if morphism.domain() is not self:
                 return NotImplemented
+            if morphism.codomain().is_zero():
+                return self.whole_subobject()
             try:
                 generators = morphism.matrix()._kernel_spanning_family()
             except NotImplementedError:
