@@ -2286,7 +2286,18 @@ class _OwnedRingElement(RingElement):
         return _cross_engine_ring_value(self._backend().resultant(other._backend()))
 
     def splitting_field(self):
-        return _own_ring(self._backend().splitting_field())
+        r"""Return the owned splitting field of this polynomial.
+
+        Sage requires a presentation name even though the splitting field is
+        the mathematical output.  Keep that choice private, then refine the
+        crossed ring through the number-field owner so field operations such
+        as ``degree`` remain available.
+        """
+        from dzack_research.preamble.categories.rings.number_fields import (
+            _own_number_field,
+        )
+
+        return _own_number_field(self._backend().splitting_field("a"))
 
     def factorial(self):
         return self.parent()._from_engine_element(self._backend().factorial())
