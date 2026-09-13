@@ -321,13 +321,15 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
 
         ideal_quotient = colon
 
-        def saturation(self, other):
+        def ideal_saturation(self, other):
             r"""Return ``(I : J^infinity)``.
 
-            Preimages behave as they do for a colon, so a saturation over a
-            realized quotient ``P/K`` is ``(I~ : J~^infinity)/K``.  Sage
-            answers with the ideal and the exponent that reached it; the
-            exponent is a fact about the computation, not about the ideal.
+            This name keeps ideal saturation distinct from saturation of a
+            module subobject.  Preimages behave as they do for a colon, so a
+            saturation over a realized quotient ``P/K`` is
+            ``(I~ : J~^infinity)/K``.  Sage answers with the ideal and the
+            exponent that reached it; the exponent is a fact about the
+            computation, not about the ideal.
             """
             _require_same_ring(self, other)
             if _realized_as_quotient(self.ring()):
@@ -342,6 +344,8 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
             )
             saturated, _reached_at_exponent = method(other._engine_ideal())
             return _from_engine_ideal(self.ring(), saturated)
+
+        saturation = ideal_saturation
 
         def contraction_from_localization(self):
             r"""Contract this selected localized extension back to its source ring."""

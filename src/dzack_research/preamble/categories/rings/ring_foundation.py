@@ -455,9 +455,11 @@ class LocalizationRings(OwnedCategory):
             inverted_product = bottom.one()
             for inverted in inverted_family:
                 inverted_product = inverted_product * inverted
-            return bottom.ideal(numerator).radical().contains_ambient_element(
-                inverted_product
-            )
+            numerator_ideal = bottom.ideal(numerator)
+            inverted_ideal = bottom.ideal(inverted_product)
+            return numerator_ideal.ideal_saturation(
+                inverted_ideal
+            ).contains_ambient_element(bottom.one())
 
         def __truediv__(self, other):
             other = self.parent()(other)
