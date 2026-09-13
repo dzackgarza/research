@@ -62,6 +62,9 @@ class GeneralModules(OwnedCategoryOverBaseRing):
         def _rmul_(self, scalar):
             return self.parent().scalar_multiple(scalar, self)
 
+        def __rmul__(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
         def _acted_upon_(self, actor, self_on_left):
             try:
                 scalar = self.parent().base_ring()(actor)

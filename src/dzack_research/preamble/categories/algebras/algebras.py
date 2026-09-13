@@ -687,6 +687,22 @@ class Algebras(OwnedCategoryOverBaseRing):
             module = self.underlying_module()
             if getattr(element, "parent", lambda: None)() is self:
                 return element
+            base = self.algebra_base_ring()
+            try:
+                scalar = base(element)
+            except (TypeError, ValueError):
+                pass
+            else:
+                selected_unit = self.__dict__.get(
+                    "_preamble_algebra_unit_morphism"
+                )
+                if selected_unit is not None:
+                    from dzack_research.preamble.categories.functors.algebra_modules import (
+                        algebra_underlying_module_functor,
+                    )
+
+                    scalar_module = algebra_underlying_module_functor(base)(base)
+                    return self(selected_unit(scalar_module(scalar)))
             underlying = getattr(element, "underlying_element", None)
             if callable(underlying):
                 element = underlying()
@@ -713,6 +729,12 @@ class Algebras(OwnedCategoryOverBaseRing):
                 return super().module_generator(label)
             module = self.underlying_module()
             return self(module.module_generator(label))
+
+        def _selected_module_coefficients(self, element):
+            if not _has_exact_algebra_carrier(self):
+                return super()._selected_module_coefficients(element)
+            module = self.underlying_module()
+            return module_coefficients(self._carrier_element(element), module)
 
         def _carrier_element(self, element):
             module = self.underlying_module()
