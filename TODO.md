@@ -1016,7 +1016,14 @@ carry on with the 36 collection errors, which are this repository's own and are 
   toric construction then exposed join categories inheriting both an ordinary
   Hom and its stricter subobject Hom; fixed-Hom selection now removes inherited
   super-Homs and keeps the unique minimal arrow theory, while still rejecting
-  genuinely incomparable Hom constructions.
+  genuinely incomparable Hom constructions. Generic ``G``-objects then exposed
+  two representation-boundary defects: Hom inheritance attempted to reuse a
+  supercategory Hom whose endpoints that supercategory did not admit, and
+  functor admission bypassed ``GObjects.Mor`` for represented action functors.
+  Hom selection now inherits only from endpoint-admitting supercategories, the
+  generic functor check uses each category's public ``Mor`` selector, and a
+  ``BG -> Set`` action is wrapped as the represented functor-category object;
+  the nontrivial ``C2`` swap action and its equivariant endomorphism pass.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,

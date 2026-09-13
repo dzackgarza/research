@@ -57,7 +57,13 @@ def _category_hom(
     that parent alone is not admission to the selected category.
     """
     if has_category_packet_surface(category):
-        return category_packet(category).Homs().Of(domain, codomain)
+        # Admission follows the category's public Hom selector.  Most owned
+        # categories inherit the packet implementation, while constructions
+        # such as G-objects and functor categories legitimately specialize
+        # ``Mor`` for their represented object type.  Bypassing that selector
+        # rebuilds the packet Hom against endpoints that may be wrappers for a
+        # more specific representation.
+        return category.Mor(domain, codomain)
     return Hom(domain, codomain, category)
 
 
@@ -1222,6 +1228,14 @@ class HomCategoryOf(OwnedCategoryBase):
         inherited = []
         for supercategory in _packet_supercategories(self.base_category()):
             if not self._inherits_morphisms_from(supercategory, domain, codomain):
+                continue
+            # Some owned categories admit substrate objects by their own
+            # mathematical recognition rule (Sets admits Sage set parents, for
+            # example) without mutating those parents into every semantic
+            # supercategory.  A Hom can only be inherited from a supercategory
+            # when that supercategory actually admits both endpoints; otherwise
+            # there is no fixed Hom object there to reuse.
+            if domain not in supercategory or codomain not in supercategory:
                 continue
             candidate = self.family_over(supercategory).Of(domain, codomain)
             if not (
