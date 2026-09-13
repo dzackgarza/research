@@ -123,7 +123,10 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
             }
             coefficients = {}
             for exponent, coefficient in engine(backend).monomial_coefficients().items():
-                powers = (int(exponent),) if not isinstance(exponent, tuple) else tuple(int(value) for value in exponent)
+                try:
+                    powers = tuple(int(value) for value in exponent)
+                except TypeError:
+                    powers = (int(exponent),)
                 if powers not in by_exponents:
                     raise ValueError("the polynomial is not homogeneous of this section-space degree")
                 coefficients[by_exponents[powers]] = base._from_engine_element(
