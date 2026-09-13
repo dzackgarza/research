@@ -1,7 +1,9 @@
-from sage.categories.homset import Hom
 import pytest
+from sage.categories.homset import Hom
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     Algebras,
     BasedFreeModule,
     BilinearMap,
@@ -10,21 +12,19 @@ from dzack_research.preamble.all import (
     MatrixSpace,
     Modules,
     OwnedRings,
-    QQ,
     QuadraticField,
     SymmetricAlgebraOn,
-    ZZ,
     algebra_underlying_module_functor,
 )
 from dzack_research.preamble.categories.algebras.free_algebras import (
     FinitelyPresentedAlgebra,
     PolynomialRing,
 )
-from dzack_research.preamble.refine import refine
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphism,
 )
 from dzack_research.preamble.categories.sets import finite_ordered_set
+from dzack_research.preamble.refine import refine
 
 
 def _gaussian_integers():

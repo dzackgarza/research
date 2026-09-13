@@ -5,10 +5,10 @@ from dzack_research.preamble.categories.algebras.differential_graded_algebras im
     Differential,
     StrictlyCommutativeDifferentialGradedAlgebras,
 )
-from dzack_research.preamble.categories.algebras.power_algebras import AlternatingAlgebraOf
 from dzack_research.preamble.categories.algebras.kahler_differentials import (
     KahlerDifferentials,
 )
+from dzack_research.preamble.categories.algebras.power_algebras import AlternatingAlgebraOf
 from dzack_research.preamble.categories.algebras.restricted_graded_algebras import (
     RestrictedGradedAlgebra,
 )

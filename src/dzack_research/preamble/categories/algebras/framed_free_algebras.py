@@ -32,8 +32,6 @@ from dzack_research.preamble.categories.sets.indexed_families import indexed_fam
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-
-
 def polynomial_ring(base_ring, names):
     r"""Return the symmetric algebra using standard polynomial-ring syntax."""
     if isinstance(names, str):

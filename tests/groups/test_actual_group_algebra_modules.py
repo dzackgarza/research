@@ -6,13 +6,13 @@ unverified under the repository's terminal-T execution policy.
 """
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AdditiveGroups,
     FinitelyPresentedTorsionModules,
     FreeModule,
     Groups,
     Modules,
-    QQ,
-    ZZ,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,

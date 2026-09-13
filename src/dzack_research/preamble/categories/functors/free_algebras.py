@@ -12,15 +12,15 @@ from dzack_research.preamble.categories.algebras.framed_free_algebras import (
     SymmetricAlgebraOf,
     TensorAlgebraOf,
 )
-from dzack_research.preamble.categories.algebras.power_algebras import (
-    AlternatingAlgebraOf,
-    DividedPowerAlgebraOf,
-)
 from dzack_research.preamble.categories.algebras.free_algebras import (
     AlternatingAlgebras,
     DividedPowerAlgebras,
 )
-from dzack_research.preamble.categories.algebras.power_algebras import power_algebra_homset
+from dzack_research.preamble.categories.algebras.power_algebras import (
+    AlternatingAlgebraOf,
+    DividedPowerAlgebraOf,
+    power_algebra_homset,
+)
 from dzack_research.preamble.categories.functors.algebra_modules import (
     algebra_underlying_module_functor,
 )

@@ -17,7 +17,6 @@ from dzack_research.preamble.all import (
     PolynomialRing,
     QuadraticField,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/test_preamble_algebra_syntax.sage",

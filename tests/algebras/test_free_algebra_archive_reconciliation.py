@@ -52,12 +52,20 @@ def _two_labels():
 def test_algebra_package_exports_the_live_free_construction_entrypoints() -> None:
     from dzack_research.preamble.categories.algebras import (
         FreeAlgebraOn as package_free,
+    )
+    from dzack_research.preamble.categories.algebras import (
         SymmetricAlgebraOn as package_symmetric,
+    )
+    from dzack_research.preamble.categories.algebras import (
         TensorAlgebraOn as package_tensor,
     )
     from dzack_research.preamble.categories.algebras.free_algebras import (
         FreeAlgebraOn as live_free,
+    )
+    from dzack_research.preamble.categories.algebras.free_algebras import (
         SymmetricAlgebraOn as live_symmetric,
+    )
+    from dzack_research.preamble.categories.algebras.free_algebras import (
         TensorAlgebraOn as live_tensor,
     )
 

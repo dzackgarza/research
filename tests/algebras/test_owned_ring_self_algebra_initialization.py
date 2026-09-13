@@ -1,6 +1,6 @@
 r"""A commutative owned ring becomes its own commutative algebra after initialization."""
 
-from dzack_research.preamble.all import CommutativeAlgebras, ZZ
+from dzack_research.preamble.all import ZZ, CommutativeAlgebras
 
 
 def test_integer_ring_self_algebra_uses_the_finished_owned_parent() -> None:

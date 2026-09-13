@@ -1,10 +1,10 @@
 r"""Affine semigroup presentations are owned by the algebra layer."""
 
+from dzack_research.preamble.all import ZZ
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebra,
     AffineSemigroupAlgebras,
 )
-from dzack_research.preamble.all import ZZ
 
 
 def test_affine_semigroup_algebra_retains_its_selected_binomial_presentation() -> None:

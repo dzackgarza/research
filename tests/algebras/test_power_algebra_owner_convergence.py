@@ -1,10 +1,10 @@
 r"""Exterior and divided powers have one constructor owner and functor route."""
 
 from dzack_research.preamble.all import (
+    ZZ,
     AlternatingAlgebraOf,
     BasedFreeModule,
     DividedPowerAlgebraOf,
-    ZZ,
     module_homset,
 )
 from dzack_research.preamble.categories.algebras.power_algebras import (

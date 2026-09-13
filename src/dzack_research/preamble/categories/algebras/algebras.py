@@ -1,9 +1,9 @@
 """Algebras over an owned base ring, with identities represented as refinements."""
 
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.commutative_algebras import (
     CommutativeAlgebras as SageCommutativeAlgebras,
 )
-from sage.categories.category_with_axiom import all_axioms
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.rings import Rings as SageRings
@@ -57,10 +57,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _own_ring,
-    _proper_restriction_base_ring,
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
+    _proper_restriction_base_ring,
     ring_morphism,
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0

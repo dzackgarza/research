@@ -26,7 +26,6 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
 
 if TYPE_CHECKING:
     from sage.structure.element import Element
