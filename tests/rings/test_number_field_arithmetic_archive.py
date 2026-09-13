@@ -52,3 +52,11 @@ def test_maximal_order_is_a_pid_exactly_in_the_class_number_one_specimen() -> No
     assert gaussian in PrincipalIdealDomains()
     assert nonprincipal_field.class_number() == 2
     assert nonprincipal not in PrincipalIdealDomains()
+
+
+def test_maximal_order_principal_quotient_has_the_norm_cardinality() -> None:
+    field = QuadraticField(-1, "i")
+    order = field.ring_of_integers()
+    quotient = order.quotient_ring(order.ideal(order(2)))
+
+    assert quotient.cardinality() == 4

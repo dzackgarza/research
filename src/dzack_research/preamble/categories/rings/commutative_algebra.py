@@ -12,8 +12,10 @@ from sage.all import (
     Zp as _SageZp,
 )
 from sage.categories.integral_domains import IntegralDomains as SageIntegralDomains
+from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
+from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import CommutativeRingElement, Element
 from sage.structure.richcmp import op_EQ, op_NE
@@ -468,7 +470,7 @@ def _engine_ring_value(ring, value):
     source = _own_ring(ring)
     engine = _engine_ring(source)
     parent = getattr(value, "parent", lambda: None)()
-    if parent is engine:
+    if parent is engine or (parent is not None and parent in SageRings()):
         return engine(value)
     return engine(_engine_element(source, source(value)))
 
@@ -782,15 +784,27 @@ class QuotientRings(OwnedCategory):
             return self.one()
 
         def is_finite(self):
-            if self._preamble_engine_ring is None:
-                from sage.misc.unknown import Unknown
+            if self._preamble_engine_ring is not None:
+                return bool(self._preamble_engine_ring.is_finite())
+            source_engine = _engine_ring(self.quotient_source())
+            if isinstance(source_engine, SageNumberFieldOrder):
+                return not _engine_ideal(
+                    self.quotient_source(), self.defining_ideal()
+                ).is_zero()
+            from sage.misc.unknown import Unknown
 
-                return Unknown
-            return bool(self._preamble_engine_ring.is_finite())
+            return Unknown
 
         def cardinality(self):
             if self._preamble_engine_ring is not None:
                 return cardinal(self._preamble_engine_ring.cardinality())
+            source_engine = _engine_ring(self.quotient_source())
+            if isinstance(source_engine, SageNumberFieldOrder):
+                defining = _engine_ideal(
+                    self.quotient_source(), self.defining_ideal()
+                )
+                if not defining.is_zero():
+                    return cardinal(SageZZ(defining.norm()))
             assert False, (
                 "cardinality is defined for every quotient ring, but this represented "
                 "quotient has no selected exact-cardinality computation"
