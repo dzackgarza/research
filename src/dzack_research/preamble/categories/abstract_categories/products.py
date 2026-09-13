@@ -569,6 +569,18 @@ class ParallelPairDiagram(Functor):
         raise ValueError("unknown arrow of the walking parallel pair")
 
 
+@cached_function(key=lambda left, right, target_category: (id(left), id(right), id(target_category)))
+def _parallel_pair_diagram(left: Morphism, right: Morphism, target_category: Category) -> ParallelPairDiagram:
+    r"""Return the selected diagram object for one represented parallel pair.
+
+    Equalizers and coequalizers of the same two arrows have the same source
+    diagram ``A ⇉ B``.  Retaining one diagram object lets a natural
+    transformation of that diagram induce both universal maps without
+    manufacturing a second, merely isomorphic indexing presentation.
+    """
+    return ParallelPairDiagram(left, right, target_category)
+
+
 class RestrictedDiagram(Functor):
     r"""The precomposition ``D ∘ u`` retaining ``D`` and the indexing functor ``u``."""
 

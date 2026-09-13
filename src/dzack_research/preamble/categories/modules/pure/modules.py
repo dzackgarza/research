@@ -28,7 +28,7 @@ from dzack_research.preamble.categories.abstract_categories.products import (
     CoconeCategory,
     ConeCategory,
     CoproductCoconeCategory,
-    ParallelPairDiagram,
+    _parallel_pair_diagram,
     ProductConeCategory,
     SelectedColimitConstruction,
     SelectedLimitConstruction,
@@ -523,7 +523,7 @@ class Modules(OwnedCategoryOverBaseRing):
             equalizer = (left_morphism - right_morphism).kernel()
             inclusion = equalizer.inclusion()
             ambient_modules = Modules(left_morphism.domain().base_ring())
-            diagram = ParallelPairDiagram(
+            diagram = _parallel_pair_diagram(
                 left_morphism, right_morphism, ambient_modules
             )
             shape = diagram.domain()
@@ -567,7 +567,7 @@ class Modules(OwnedCategoryOverBaseRing):
             coequalizer = difference.cokernel()
             projection = difference.cokernel_projection()
             ambient_modules = Modules(left_morphism.domain().base_ring())
-            diagram = ParallelPairDiagram(
+            diagram = _parallel_pair_diagram(
                 left_morphism, right_morphism, ambient_modules
             )
             shape = diagram.domain()
