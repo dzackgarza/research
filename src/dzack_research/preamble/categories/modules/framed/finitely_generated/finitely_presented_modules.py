@@ -161,13 +161,22 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             that factor's own block of generators; over the index set those
             blocks are disjoint, so the relation rows are their union.
             """
-            try:
-                relations_of = {
-                    index: _presentation_rows(factors.value(index))
-                    for index in factors.index_set()
-                }
-            except (AttributeError, NotImplementedError, TypeError, ValueError):
-                return NotImplemented
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                FramedFreeModules,
+            )
+
+            relations_of = {}
+            for index in factors.index_set():
+                factor = factors.value(index)
+                try:
+                    relations_of[index] = _presentation_rows(factor)
+                except (AttributeError, NotImplementedError, TypeError, ValueError):
+                    if factor in FramedFreeModules(self.base_ring()) and (
+                        factor.module_generating_set().cardinality().is_finite()
+                    ):
+                        relations_of[index] = ()
+                    else:
+                        return NotImplemented
             size = labels.cardinality()
             if not size.is_finite():
                 return NotImplemented
@@ -2555,13 +2564,18 @@ def FinitelyPresentedModule(
             extra_construction_data=_extra_construction_data,
         )
 
-    if base_ring in PrincipalIdealDomains() and quotient.is_torsion():
-        from dzack_research.preamble.categories.modules.pure.torsion_modules import (
-            FinitelyPresentedTorsionModules,
-        )
-        from dzack_research.preamble.refine import refine
+    if base_ring in PrincipalIdealDomains():
+        try:
+            represented_torsion = quotient.is_torsion()
+        except NotImplementedError:
+            represented_torsion = None
+        if represented_torsion is True:
+            from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+                FinitelyPresentedTorsionModules,
+            )
+            from dzack_research.preamble.refine import refine
 
-        quotient = refine(quotient, FinitelyPresentedTorsionModules(base_ring))
+            quotient = refine(quotient, FinitelyPresentedTorsionModules(base_ring))
 
     return quotient
 

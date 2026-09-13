@@ -3132,12 +3132,15 @@ def _module_biproduct_with_data(
         extra_construction_data=extra_construction_data,
     )
     if result is NotImplemented:
-        result = values[0]._presented_biproduct_over(
-            labels,
-            factors,
-            extra_categories=extra_categories,
-            extra_construction_data=extra_construction_data,
-        )
+        for factor in values:
+            result = factor._presented_biproduct_over(
+                labels,
+                factors,
+                extra_categories=extra_categories,
+                extra_construction_data=extra_construction_data,
+            )
+            if result is not NotImplemented:
+                break
     if result is NotImplemented:
         raise NotImplementedError("the represented module factors provide no biproduct realization")
     return result
