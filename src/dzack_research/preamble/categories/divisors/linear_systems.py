@@ -86,6 +86,20 @@ class HomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            _preamble_section_scheme,
+            _preamble_homogeneous_degree,
+            _preamble_homogeneous_coordinate_ring,
+            _preamble_homogeneous_exponents,
+            **rest,
+        ) -> None:
+            self._preamble_section_scheme = _preamble_section_scheme
+            self._preamble_homogeneous_degree = _preamble_homogeneous_degree
+            self._preamble_homogeneous_coordinate_ring = _preamble_homogeneous_coordinate_ring
+            self._preamble_homogeneous_exponents = _preamble_homogeneous_exponents
+            super().__init__(**rest)
+
         def section_scheme(self):
             return self._preamble_section_scheme
 
@@ -222,6 +236,22 @@ class MultihomogeneousPolynomialSectionSpaces(OwnedCategoryOverBaseRing):
         return [VectorSpaces(self.base_ring())]
 
     class ParentMethods:
+        def __init__(
+            self,
+            _preamble_section_scheme,
+            _preamble_multihomogeneous_degree,
+            _preamble_homogeneous_coordinate_ring,
+            _preamble_multihomogeneous_exponents,
+            _preamble_multihomogeneous_block_offsets,
+            **rest,
+        ) -> None:
+            self._preamble_section_scheme = _preamble_section_scheme
+            self._preamble_multihomogeneous_degree = _preamble_multihomogeneous_degree
+            self._preamble_homogeneous_coordinate_ring = _preamble_homogeneous_coordinate_ring
+            self._preamble_multihomogeneous_exponents = _preamble_multihomogeneous_exponents
+            self._preamble_multihomogeneous_block_offsets = _preamble_multihomogeneous_block_offsets
+            super().__init__(**rest)
+
         def section_scheme(self):
             return self._preamble_section_scheme
 

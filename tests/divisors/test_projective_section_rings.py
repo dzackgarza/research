@@ -72,3 +72,22 @@ def test_multiprojective_section_ring_is_segre_veronese_with_exact_factor_roles(
     assert inclusion_two.codomain() is ring.underlying_module()
     assert product_in_ring == first_in_ring * last_in_ring
     assert ring.homogeneous_degree(product_in_ring) == NN(2)
+
+
+def test_section_spaces_consume_their_owned_construction_data() -> None:
+    line = ProjectiveSpace(1, QQ)
+    homogeneous = line.O(2).global_sections()
+
+    assert homogeneous.section_scheme() is line
+    assert homogeneous.homogeneous_degree() == 2
+    assert homogeneous.homogeneous_coordinate_ring() is not None
+
+    factor_labels = finite_ordered_set(("left", "right"))
+    factors = indexed_family(factor_labels, lambda _label: line)
+    quadric = Schemes(QQ).product(factors)
+    multihomogeneous = quadric.O(1, 2).global_sections()
+
+    assert multihomogeneous.section_scheme() is quadric
+    assert multihomogeneous.multidegree().index_set() is factor_labels
+    assert tuple(multihomogeneous.multidegree()[label] for label in factor_labels) == (1, 2)
+    assert multihomogeneous.homogeneous_coordinate_ring() is not None
