@@ -53,7 +53,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         r"""Construct the predicate subgroup of this category's ambient group."""
         return object_of(
             self,
-            containing_group=self.base(),
+            supergroup=self.base(),
             predicate=predicate,
             description=description,
             character_data=character_data,
@@ -63,14 +63,14 @@ class PredicateSubgroups(OwnedParameterizedCategory):
     class ParentMethods:
         def __init__(
             self,
-            containing_group,
+            supergroup,
             predicate,
             description,
             character_data=None,
             character_data_complete=None,
             **rest,
         ) -> None:
-            self._containing_group = containing_group
+            self._containing_group = supergroup
             self._predicate = predicate
             self._description = description
             self._character_data = dict(character_data or {})
@@ -79,7 +79,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 if character_data_complete is None
                 else bool(character_data_complete)
             )
-            super().__init__(supergroup=containing_group, **rest)
+            super().__init__(supergroup=supergroup, **rest)
 
         def supergroup(self):
             return self._containing_group
@@ -258,7 +258,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
         identity = morphism.codomain().one()
         return object_of(
             self,
-            containing_group=group,
+            supergroup=group,
             predicate=lambda element: morphism(element) == identity,
             description=f"{morphism}(g)=1",
             kernel_morphism=morphism,
@@ -305,7 +305,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             description = f"{morphism}(g) lies in {subgroup}"
         return object_of(
             self,
-            containing_group=group,
+            supergroup=group,
             predicate=predicate,
             description=description,
             character_data=character_data,
@@ -355,7 +355,7 @@ class StabilizerSubgroups(_PredicateSubgroupConstruction):
             description = f"g stabilizes {stabilized_object} {action}"
         return object_of(
             self,
-            containing_group=group,
+            supergroup=group,
             predicate=predicate,
             description=description,
             stabilized_object=stabilized_object,
@@ -391,7 +391,7 @@ class CentralizerSubgroups(_PredicateSubgroupConstruction):
             raise ValueError(f"{element} is not in {group}")
         return object_of(
             self,
-            containing_group=group,
+            supergroup=group,
             predicate=lambda candidate: element * candidate == candidate * element,
             description=f"g commutes with {element}",
             centralizing_element=element,
@@ -430,7 +430,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             raise ValueError("an intersection requires subgroups of one ambient group")
         return object_of(
             self,
-            containing_group=group,
+            supergroup=group,
             predicate=lambda element: all(element in subgroup for subgroup in subgroups),
             description="g lies in every selected subgroup",
             character_data=character_data,

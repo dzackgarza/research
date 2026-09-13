@@ -1027,7 +1027,11 @@ carry on with the 36 collection errors, which are this repository's own and are 
   concrete acted object is now forgotten before forming ``Mor_C``: in particular
   an ``R[G]``-module contributes its retained coefficient module to ``Mod_R``
   rather than being incorrectly used as an ``R``-module endpoint itself. The
-  sign-module equivariant doubling map and its naturality square pass.
+  sign-module equivariant doubling map and its naturality square pass. Predicate
+  subgroup specializations now thread the inherited ``Subgroups(G)`` datum as
+  ``supergroup=G`` through the construction contract instead of hiding it behind
+  a duplicate ``containing_group`` name; regular-action point stabilizers again
+  construct with their actual ambient group.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
