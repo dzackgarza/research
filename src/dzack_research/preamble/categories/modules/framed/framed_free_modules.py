@@ -123,7 +123,7 @@ class _SparseFreeModuleElement(ModuleElement):
                 coefficients.pop(label, None)
             else:
                 coefficients[label] = value
-        return self.parent()._element_constructor_(coefficients)
+        return self.parent().element_class(self.parent(), coefficients)
 
     def _neg_(self):
         return self.parent()._element_constructor_(
