@@ -2341,10 +2341,13 @@ def _finite_generated_localization(source, submonoid):
     except (AttributeError, NotImplementedError, TypeError, ValueError):
         localization_engine = None
     placements = []
-    if source in OwnedIntegralDomains():
-        placements.append(OwnedIntegralDomains())
-    if source in OwnedNoetherianRings():
-        placements.append(OwnedNoetherianRings())
+    if source in PrincipalIdealDomains():
+        placements.append(PrincipalIdealDomains())
+    else:
+        if source in OwnedIntegralDomains():
+            placements.append(OwnedIntegralDomains())
+        if source in OwnedNoetherianRings():
+            placements.append(OwnedNoetherianRings())
     base = source.base_ring()
     algebra_source = (
         source
@@ -2701,10 +2704,14 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
     if prime_ideal is None:
         raise ValueError("prime-complement localization requires its represented prime ideal")
     placements = []
-    if source in OwnedNoetherianRings():
-        placements.append(OwnedNoetherianRings())
+    if source in PrincipalIdealDomains():
+        placements.append(PrincipalIdealDomains())
+    else:
+        if source in OwnedNoetherianRings():
+            placements.append(OwnedNoetherianRings())
+        if source in OwnedIntegralDomains():
+            placements.append(OwnedIntegralDomains())
     if source in OwnedIntegralDomains():
-        placements.append(OwnedIntegralDomains())
         fraction_field = source.fraction_field()
         fraction_engine = _engine_ring(fraction_field)
     else:

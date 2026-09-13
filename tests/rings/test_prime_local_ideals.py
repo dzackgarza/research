@@ -12,6 +12,7 @@ from dzack_research.preamble.all import (
     CommutativeIdeals,
     FinitelyPresentedAlgebra,
     PolynomialRing,
+    PrincipalIdealDomains,
     QQ,
     ZZ,
 )
@@ -58,3 +59,14 @@ def test_prime_local_ideals_of_a_nonreduced_quotient_need_no_fraction_field() ->
     assert local.maximal_ideal().contains_ambient_element(local(x0))
     assert local.maximal_ideal().contains_ambient_element(local(y0))
     assert not local.maximal_ideal().contains_ambient_element(local.one())
+
+
+def test_localization_of_a_polynomial_pid_remains_a_pid() -> None:
+    polynomial = PolynomialRing(QQ, "x")
+    x = polynomial.algebra_generator("x")
+    local = polynomial.localize_at_prime(polynomial.ideal(x))
+
+    assert polynomial in PrincipalIdealDomains()
+    assert local in PrincipalIdealDomains()
+    assert not local(x).is_unit()
+    assert local(6).is_unit()
