@@ -94,7 +94,7 @@ def _formal_symbol_index(elt):
     if not rest.isdigit():
         raise ValueError(elt)
     index = int(rest)
-    if symbol != _formal_symbol(index):
+    if text != f"e_{index}":
         raise ValueError(elt)
     return index
 
