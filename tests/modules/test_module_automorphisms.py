@@ -10,6 +10,7 @@ left to choose.
 from dzack_research.preamble.all import (
     ZZ,
     BasedFreeModule,
+    FinitelyPresentedModule,
     Modules,
     module_homset,
 )
@@ -104,3 +105,18 @@ def test_a_nonidentity_module_automorphism_generates_the_generic_cyclic_subgroup
     assert generated.order() == 2
     assert swap in generated
     assert plane.Aut().identity_automorphism() in generated
+
+
+def test_a_finite_presented_module_automorphism_uses_actual_finite_preimages() -> None:
+    free = BasedFreeModule(ZZ, finite_ordered_set(("g",)))
+    relations = BasedFreeModule(ZZ, finite_ordered_set(("r",)))
+    quotient = FinitelyPresentedModule(
+        module_homset(relations, free)({"r": 3 * free.module_generator("g")})
+    )
+    generator = quotient.module_generator("g")
+    negation = module_homset(quotient, quotient)({"g": -generator}).as_automorphism()
+
+    assert negation.parent() is quotient.Aut()
+    assert negation(generator) == -generator
+    assert negation.inverse() == negation
+    assert negation * negation == quotient.Aut().one()

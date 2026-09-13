@@ -2415,6 +2415,14 @@ def FinitelyPresentedModule(
             extra_construction_data=_extra_construction_data,
         )
 
+    if base_ring in PrincipalIdealDomains() and quotient.is_torsion():
+        from dzack_research.preamble.categories.modules.pure.torsion_modules import (
+            FinitelyPresentedTorsionModules,
+        )
+        from dzack_research.preamble.refine import refine
+
+        quotient = refine(quotient, FinitelyPresentedTorsionModules(base_ring))
+
     return quotient
 
 

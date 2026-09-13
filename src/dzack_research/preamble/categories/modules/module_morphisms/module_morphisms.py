@@ -740,7 +740,15 @@ class ModuleMorphism(Morphism):
         if element == codomain.zero():
             return domain.zero()
         if not _has_finite_free_framing(domain):
-            raise NotImplementedError("represented preimages currently require a finitely framed free domain")
+            elements = getattr(domain, "elements", None)
+            if callable(elements) and domain.cardinality().is_finite():
+                for candidate in elements():
+                    if self(candidate) == element:
+                        return candidate
+                raise ValueError("the selected element does not lie in the represented image")
+            raise NotImplementedError(
+                "represented preimages require a finitely framed free domain or an enumerable finite domain"
+            )
         if self.is_surjective() and bool(getattr(codomain, "is_free", lambda: False)()):
             return self.section()(element)
 
@@ -1173,7 +1181,9 @@ class ModuleMorphism(Morphism):
         codomain = self.codomain()
         assert self.is_surjective(), "only an epimorphism has a section"
         assert codomain.is_free(), f"a section chooses a preimage of each generator, and {codomain} must be free for those choices to respect no relation"
-        return module_homset(codomain, self.domain())(lambda label: self.lift(codomain.module_generator(label)))
+        return module_homset(codomain, self.domain())(
+            lambda label: self.lift(codomain.module_generator(label))
+        )
 
     def retraction(self):
         r"""Return ``r`` with ``r . self`` the identity, for a split monomorphism.
@@ -1212,7 +1222,10 @@ class ModuleMorphism(Morphism):
         assert self.is_injective(), "only a bijection has a two-sided inverse"
         assert self.is_surjective(), "only a bijection has a two-sided inverse"
         codomain = self.codomain()
-        return module_homset(codomain, self.domain())(lambda label: self.lift(codomain.module_generator(label)))
+        inverse_image = self.lift if _has_finite_free_framing(self.domain()) else self.preimage
+        return module_homset(codomain, self.domain())(
+            lambda label: inverse_image(codomain.module_generator(label))
+        )
 
     def as_automorphism(self):
         r"""Return this invertible endomorphism as an element of ``Aut_R(M)``.
@@ -1805,17 +1818,33 @@ class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
 
         return [OwnedGroups()]
 
+    class ParentMethods:
+        @cached_method
+        def identity(self):
+            identity = module_homset(self.domain(), self.domain()).identity()
+            return self._from_known_inverse_pair(identity, identity)
 
-class ModuleAutomorphismGroup(ModuleHomset):
+        one = identity
+        identity_automorphism = identity
+
+
+class ModuleAutomorphismGroup(CategoricalHomset):
     r"""The unit group of ``End_R(M)``, retaining its actual module maps."""
 
     Element = ModuleAutomorphism
 
     def __init__(self, hom_family, module) -> None:
-        ModuleHomset.__init__(self, hom_family, module, module)
-        from dzack_research.preamble.refine import refine
+        self._preamble_base_ring = _owned_ring(module.base_ring())
+        CategoricalHomset.__init__(
+            self,
+            hom_family,
+            module,
+            module,
+            category=ModuleAutomorphismGroups(self._preamble_base_ring),
+        )
 
-        refine(self, ModuleAutomorphismGroups(module.base_ring()))
+    def base_ring(self):
+        return self._preamble_base_ring
 
     def _from_known_inverse_pair(self, forward, inverse):
         forward = module_homset(self.domain(), self.domain())(forward)
