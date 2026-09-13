@@ -958,6 +958,21 @@ Take `terminal-reference` now.
   results. Engine call counts, mocked delegation, and checks of private helper
   spellings do not prove these obligations.
 
+### The sage-categories pin is unresolvable, and the cause is in that repository
+
+`pyproject.toml` pins `sage-categories @ git+https://github.com/dzackgarza/sage-categories.git@66efc15bf5050a527f1bb4ff3bff8542e3d83203`.
+That revision exists — it is ten hours old and an ancestor of that project's local `main` — but it
+is not on the remote this pin fetches from: `origin/main` there is `10e14a53`, and local `main` is
+**1341 commits ahead of it**. So the resolution failure `terminal-execution` recorded is not a
+defect in this repository and cannot be repaired from here by choosing a different revision;
+every revision this project actually wants is equally absent from the remote, and the newest one
+that is present is 1341 commits stale.
+
+Do not work around it by switching to a filesystem path dependency. That hides a publication gap
+that affects every consumer, and the declared route between these projects is GitHub. Treat the
+pin as blocked, record it that way against the affected items in the observed failure set, and
+carry on with the 36 collection errors, which are this repository's own and are repairable here.
+
 - [ ] **`terminal-repairs`**. **Needs:** `terminal-execution`.
   Repair the mathematical owners exposed by terminal verification and
   establish the originally required behavior.
