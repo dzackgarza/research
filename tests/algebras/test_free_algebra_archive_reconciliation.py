@@ -49,6 +49,23 @@ def _two_labels():
     return finite_ordered_set(("x", "y"))
 
 
+def test_algebra_package_exports_the_live_free_construction_entrypoints() -> None:
+    from dzack_research.preamble.categories.algebras import (
+        FreeAlgebraOn as package_free,
+        SymmetricAlgebraOn as package_symmetric,
+        TensorAlgebraOn as package_tensor,
+    )
+    from dzack_research.preamble.categories.algebras.free_algebras import (
+        FreeAlgebraOn as live_free,
+        SymmetricAlgebraOn as live_symmetric,
+        TensorAlgebraOn as live_tensor,
+    )
+
+    assert package_free is live_free
+    assert package_symmetric is live_symmetric
+    assert package_tensor is live_tensor
+
+
 def test_archive_graded_piece_monomials_are_the_live_piece_basis() -> None:
     labels = _two_labels()
     algebras = (
