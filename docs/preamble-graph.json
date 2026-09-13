@@ -40043,7 +40043,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "1",
       "signature_pair": "(1, 0)",
-      "discriminant": "0"
+      "discriminant": "2"
     },
     {
       "catalogue": "NamedLattices",
@@ -40052,7 +40052,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "2",
       "signature_pair": "(1, 1)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40061,7 +40061,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "2",
       "signature_pair": "(1, 1)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40070,7 +40070,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "2",
       "signature_pair": "(1, 1)",
-      "discriminant": "0"
+      "discriminant": "4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40079,7 +40079,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "2",
       "signature_pair": "(1, 1)",
-      "discriminant": "0"
+      "discriminant": "4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40088,7 +40088,7 @@
       "category": "Category of root lattices",
       "module_rank": "8",
       "signature_pair": "(0, 8)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40097,7 +40097,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "8",
       "signature_pair": "(0, 8)",
-      "discriminant": "0"
+      "discriminant": "256"
     },
     {
       "catalogue": "NamedLattices",
@@ -40106,7 +40106,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects",
       "module_rank": "10",
       "signature_pair": "(1, 9)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40115,7 +40115,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects",
       "module_rank": "10",
       "signature_pair": "(1, 9)",
-      "discriminant": "0"
+      "discriminant": "1024"
     },
     {
       "catalogue": "NamedLattices",
@@ -40124,7 +40124,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "2",
       "signature_pair": "(1, 1)",
-      "discriminant": "0"
+      "discriminant": "4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40133,7 +40133,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects",
       "module_rank": "10",
       "signature_pair": "(1, 9)",
-      "discriminant": "0"
+      "discriminant": "1024"
     },
     {
       "catalogue": "NamedLattices",
@@ -40142,7 +40142,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "11",
       "signature_pair": "(2, 9)",
-      "discriminant": "0"
+      "discriminant": "2048"
     },
     {
       "catalogue": "NamedLattices",
@@ -40151,7 +40151,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "11",
       "signature_pair": "(1, 10)",
-      "discriminant": "0"
+      "discriminant": "-2048"
     },
     {
       "catalogue": "NamedLattices",
@@ -40160,7 +40160,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "12",
       "signature_pair": "(2, 10)",
-      "discriminant": "0"
+      "discriminant": "1024"
     },
     {
       "catalogue": "NamedLattices",
@@ -40169,7 +40169,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "20",
       "signature_pair": "(2, 18)",
-      "discriminant": "0"
+      "discriminant": "4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40178,7 +40178,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "20",
       "signature_pair": "(2, 18)",
-      "discriminant": "0"
+      "discriminant": "4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40187,7 +40187,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "22",
       "signature_pair": "(3, 19)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40196,7 +40196,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "21",
       "signature_pair": "(2, 19)",
-      "discriminant": "0"
+      "discriminant": "-2"
     },
     {
       "catalogue": "NamedLattices",
@@ -40205,7 +40205,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "21",
       "signature_pair": "(2, 19)",
-      "discriminant": "0"
+      "discriminant": "-4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40214,7 +40214,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "14",
       "signature_pair": "(3, 11)",
-      "discriminant": "0"
+      "discriminant": "256"
     },
     {
       "catalogue": "NamedLattices",
@@ -40223,7 +40223,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "8",
       "signature_pair": "(0, 8)",
-      "discriminant": "0"
+      "discriminant": "256"
     },
     {
       "catalogue": "NamedLattices",
@@ -40232,7 +40232,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "24",
       "signature_pair": "(4, 20)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40241,7 +40241,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "26",
       "signature_pair": "(5, 21)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40250,7 +40250,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "8",
       "signature_pair": "(4, 4)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40259,7 +40259,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "10",
       "signature_pair": "(5, 5)",
-      "discriminant": "0"
+      "discriminant": "1"
     },
     {
       "catalogue": "NamedLattices",
@@ -40268,7 +40268,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects",
       "module_rank": "10",
       "signature_pair": "(1, 9)",
-      "discriminant": "0"
+      "discriminant": "256"
     },
     {
       "catalogue": "NamedLattices",
@@ -40277,7 +40277,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of finite-rank lattices",
       "module_rank": "3",
       "signature_pair": "(1, 2)",
-      "discriminant": "0"
+      "discriminant": "-2401"
     },
     {
       "catalogue": "NamedLattices",
@@ -40286,7 +40286,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of finite-rank lattices",
       "module_rank": "3",
       "signature_pair": "(1, 2)",
-      "discriminant": "0"
+      "discriminant": "-117649"
     },
     {
       "catalogue": "NamedLattices",
@@ -40295,7 +40295,7 @@
       "category": "Category of root lattices",
       "module_rank": "1",
       "signature_pair": "(0, 1)",
-      "discriminant": "0"
+      "discriminant": "-2"
     },
     {
       "catalogue": "NamedLattices",
@@ -40304,7 +40304,7 @@
       "category": "Category of root lattices",
       "module_rank": "4",
       "signature_pair": "(0, 4)",
-      "discriminant": "0"
+      "discriminant": "4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40313,7 +40313,7 @@
       "category": "Category of root lattices",
       "module_rank": "6",
       "signature_pair": "(0, 6)",
-      "discriminant": "0"
+      "discriminant": "-4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40322,7 +40322,7 @@
       "category": "Category of root lattices",
       "module_rank": "8",
       "signature_pair": "(0, 8)",
-      "discriminant": "0"
+      "discriminant": "4"
     },
     {
       "catalogue": "NamedLattices",
@@ -40331,7 +40331,7 @@
       "category": "Category of root lattices",
       "module_rank": "7",
       "signature_pair": "(0, 7)",
-      "discriminant": "0"
+      "discriminant": "2"
     },
     {
       "catalogue": "NamedLattices",
@@ -40340,7 +40340,7 @@
       "category": "Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices",
       "module_rank": "1",
       "signature_pair": "(0, 1)",
-      "discriminant": "0"
+      "discriminant": "-2"
     }
   ]
 }

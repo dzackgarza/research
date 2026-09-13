@@ -147,40 +147,40 @@ Named involutions of the K3 lattice in its displayed block framing.
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | `NamedLattices.Zero` | Integral lattice of rank 0 and signature (0, 0) | 0 | (0, 0) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
 | `NamedLattices.Z` | Integral lattice of rank 1 and signature (1, 0) | 1 | (1, 0) | 1 | Join of Category of nondegenerate lattices and Category of finite-rank lattices |
-| `NamedLattices.Z_2` | Integral lattice of rank 1 and signature (1, 0) | 1 | (1, 0) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.U` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.H` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.U_2` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.H_2` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.E8` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 0 | Category of root lattices |
-| `NamedLattices.E8_2` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.E10` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
-| `NamedLattices.E10_2` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
-| `NamedLattices.Sdp` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.SEn` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
-| `NamedLattices.Tco` | Integral lattice of rank 11 and signature (2, 9) | 11 | (2, 9) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.Sco` | Integral lattice of rank 11 and signature (1, 10) | 11 | (1, 10) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.TEn` | Integral lattice of rank 12 and signature (2, 10) | 12 | (2, 10) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.TdP` | Integral lattice of rank 20 and signature (2, 18) | 20 | (2, 18) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.L_20_2_0` | Integral lattice of rank 20 and signature (2, 18) | 20 | (2, 18) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.LK3` | Integral lattice of rank 22 and signature (3, 19) | 22 | (3, 19) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.LK3_2` | Integral lattice of rank 21 and signature (2, 19) | 21 | (2, 19) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.LK3_4` | Integral lattice of rank 21 and signature (2, 19) | 21 | (2, 19) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.LpNik` | Integral lattice of rank 14 and signature (3, 11) | 14 | (3, 11) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.LmNik` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.Mukai` | Integral lattice of rank 24 and signature (4, 20) | 24 | (4, 20) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.MukaiExtended` | Integral lattice of rank 26 and signature (5, 21) | 26 | (5, 21) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.MukaiAbelian` | Integral lattice of rank 8 and signature (4, 4) | 8 | (4, 4) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.MukaiAbelianExtended` | Integral lattice of rank 10 and signature (5, 5) | 10 | (5, 5) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
-| `NamedLattices.U_E8_2` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
-| `NamedLattices.BogachevKolpakovNonReflective` | Integral lattice of rank 3 and signature (1, 2) | 3 | (1, 2) | 0 | Join of Category of nondegenerate lattices and Category of finite-rank lattices |
-| `NamedLattices.BogachevKolpakovWithoutRoots` | Integral lattice of rank 3 and signature (1, 2) | 3 | (1, 2) | 0 | Join of Category of nondegenerate lattices and Category of finite-rank lattices |
-| `NamedLattices.A1` | Integral lattice of rank 1 and signature (0, 1) | 1 | (0, 1) | 0 | Category of root lattices |
-| `NamedLattices.D4` | Integral lattice of rank 4 and signature (0, 4) | 4 | (0, 4) | 0 | Category of root lattices |
-| `NamedLattices.D6` | Integral lattice of rank 6 and signature (0, 6) | 6 | (0, 6) | 0 | Category of root lattices |
-| `NamedLattices.D8` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 0 | Category of root lattices |
-| `NamedLattices.E7` | Integral lattice of rank 7 and signature (0, 7) | 7 | (0, 7) | 0 | Category of root lattices |
-| `NamedLattices.Z_m2` | Integral lattice of rank 1 and signature (0, 1) | 1 | (0, 1) | 0 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.Z_2` | Integral lattice of rank 1 and signature (1, 0) | 1 | (1, 0) | 2 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.U` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.H` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.U_2` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 4 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.H_2` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 4 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.E8` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 1 | Category of root lattices |
+| `NamedLattices.E8_2` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 256 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.E10` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
+| `NamedLattices.E10_2` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 1024 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
+| `NamedLattices.Sdp` | Integral lattice of rank 2 and signature (1, 1) | 2 | (1, 1) | 4 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.SEn` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 1024 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
+| `NamedLattices.Tco` | Integral lattice of rank 11 and signature (2, 9) | 11 | (2, 9) | 2048 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.Sco` | Integral lattice of rank 11 and signature (1, 10) | 11 | (1, 10) | -2048 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.TEn` | Integral lattice of rank 12 and signature (2, 10) | 12 | (2, 10) | 1024 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.TdP` | Integral lattice of rank 20 and signature (2, 18) | 20 | (2, 18) | 4 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.L_20_2_0` | Integral lattice of rank 20 and signature (2, 18) | 20 | (2, 18) | 4 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.LK3` | Integral lattice of rank 22 and signature (3, 19) | 22 | (3, 19) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.LK3_2` | Integral lattice of rank 21 and signature (2, 19) | 21 | (2, 19) | -2 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.LK3_4` | Integral lattice of rank 21 and signature (2, 19) | 21 | (2, 19) | -4 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.LpNik` | Integral lattice of rank 14 and signature (3, 11) | 14 | (3, 11) | 256 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.LmNik` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 256 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.Mukai` | Integral lattice of rank 24 and signature (4, 20) | 24 | (4, 20) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.MukaiExtended` | Integral lattice of rank 26 and signature (5, 21) | 26 | (5, 21) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.MukaiAbelian` | Integral lattice of rank 8 and signature (4, 4) | 8 | (4, 4) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.MukaiAbelianExtended` | Integral lattice of rank 10 and signature (5, 5) | 10 | (5, 5) | 1 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
+| `NamedLattices.U_E8_2` | Integral lattice of rank 10 and signature (1, 9) | 10 | (1, 9) | 256 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices and Category of direct sum objects |
+| `NamedLattices.BogachevKolpakovNonReflective` | Integral lattice of rank 3 and signature (1, 2) | 3 | (1, 2) | -2401 | Join of Category of nondegenerate lattices and Category of finite-rank lattices |
+| `NamedLattices.BogachevKolpakovWithoutRoots` | Integral lattice of rank 3 and signature (1, 2) | 3 | (1, 2) | -117649 | Join of Category of nondegenerate lattices and Category of finite-rank lattices |
+| `NamedLattices.A1` | Integral lattice of rank 1 and signature (0, 1) | 1 | (0, 1) | -2 | Category of root lattices |
+| `NamedLattices.D4` | Integral lattice of rank 4 and signature (0, 4) | 4 | (0, 4) | 4 | Category of root lattices |
+| `NamedLattices.D6` | Integral lattice of rank 6 and signature (0, 6) | 6 | (0, 6) | -4 | Category of root lattices |
+| `NamedLattices.D8` | Integral lattice of rank 8 and signature (0, 8) | 8 | (0, 8) | 4 | Category of root lattices |
+| `NamedLattices.E7` | Integral lattice of rank 7 and signature (0, 7) | 7 | (0, 7) | 2 | Category of root lattices |
+| `NamedLattices.Z_m2` | Integral lattice of rank 1 and signature (0, 1) | 1 | (0, 1) | -2 | Join of Category of nondegenerate lattices and Category of even lattices and Category of finite-rank lattices |
 
 ## Abstract Category Theory & Universal Constructions
 

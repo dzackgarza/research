@@ -1119,13 +1119,15 @@ def discriminant_of_gram(gram: Tensor):
     r"""Return $d_\pm(b)=(-1)^{n(n-1)/2}\det G$."""
     rank = gram.tensor_shape()[0]
     assert rank != Infinity
-    if isinstance(gram, _IdentityGram):
-        n = int(rank)
-        return (-1) ** (n * (n - 1) // 2)
     n = int(rank)
+    negative_sign = (n * (n - 1) // 2) % 2 == 1
+    if isinstance(gram, _IdentityGram):
+        unit = gram.base_ring().one()
+        return -unit if negative_sign else unit
 
     matrix = MatrixSpace(gram.base_ring(), n).from_rows(gram.components())
-    return (-1) ** (n * (n - 1) // 2) * matrix.determinant()
+    determinant = matrix.determinant()
+    return -determinant if negative_sign else determinant
 
 
 def _format_disc_latex(disc) -> str:
