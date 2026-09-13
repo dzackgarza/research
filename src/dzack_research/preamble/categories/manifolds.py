@@ -6,8 +6,8 @@ of labelled charts, and exact forward/inverse coordinate expressions for each
 represented atlas transition.
 """
 
-from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.categories.morphism import Morphism
+from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity
 from sage.structure.sage_object import SageObject
