@@ -132,3 +132,26 @@ def test_nonidentity_dga_map_induces_the_expected_noncommutative_cohomology_map(
     assert induced(x_class * y_class) == y_class * x_class
     assert (induced * induced)(x_class) == x_class
     assert (induced * induced)(y_class) == y_class
+
+
+def test_graded_derivation_checks_degree_through_the_graded_algebra_owner() -> None:
+    from dzack_research.preamble.categories.algebras.derivations import (
+        GradedDerivation,
+        GradedDerivations,
+    )
+
+    module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
+    algebra = TensorAlgebraOf(module)
+
+    def euler(element):
+        element = algebra(element)
+        if element == algebra.zero():
+            return algebra.zero()
+        return algebra(ZZ(algebra.homogeneous_degree(element))) * element
+
+    derivation = GradedDerivation(GradedDerivations(algebra, algebra, shift=0), euler)
+    x = algebra.algebra_generator("x")
+    y = algebra.algebra_generator("y")
+
+    assert algebra.homogeneous_degree(derivation(x)) == 1
+    assert derivation(x * y) == algebra(ZZ(2)) * x * y

@@ -603,34 +603,38 @@ class GradedDerivation(ModuleElement):
 
     def check_on_generators(self) -> bool:
         r"""Check degree and graded Leibniz on a selected finite algebra framing."""
-        labels = self.algebra().algebra_generating_set()
+        algebra = self.algebra()
+        target = self.target()
+        labels = algebra.algebra_generating_set()
         for label in labels:
-            generator = self.algebra().algebra_generator(label)
-            image = self(generator)
-            if (
-                generator.is_homogeneous()
-                and image != self.target().zero()
-                and (
-                    not image.is_homogeneous()
-                    or image.degree()
-                    != (
-                    generator.degree() + self.degree_shift()
-                    )
-                )
-            ):
+            generator = algebra.algebra_generator(label)
+            try:
+                generator_degree = algebra.homogeneous_degree(generator)
+            except (ValueError, NotImplementedError):
                 return False
+            image = self(generator)
+            if image != target.zero():
+                try:
+                    image_degree = target.homogeneous_degree(image)
+                except (ValueError, NotImplementedError):
+                    return False
+                if image_degree != generator_degree + self.degree_shift():
+                    return False
         for left_label in labels:
-            left = self.algebra().algebra_generator(left_label)
-            if not left.is_homogeneous():
+            left = algebra.algebra_generator(left_label)
+            try:
+                left_degree = algebra.homogeneous_degree(left)
+            except (ValueError, NotImplementedError):
                 return False
             for right_label in labels:
-                right = self.algebra().algebra_generator(right_label)
+                right = algebra.algebra_generator(right_label)
                 signed_second = left * self(right)
-                if (self.degree_shift() * left.degree()) % 2:
+                if (self.degree_shift() * left_degree) % 2:
                     signed_second = -signed_second
                 if self(left * right) != self(left) * right + signed_second:
                     return False
         return True
+
 
 
 class GradedDerivationSpace(RestrictedHomCategoryParent):
