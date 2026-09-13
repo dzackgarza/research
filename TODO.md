@@ -918,7 +918,7 @@ that exists precisely so repairs are made against observed failures rather than 
 
 Take `terminal-reference` now.
 
-- [ ] **`terminal-reference`**. **Needs:** none.
+- [x] **`terminal-reference`**. **Needs:** none.
   *Required implementation and transfer are finished.* They mean the twenty-eight
   implementation nodes checked off in this file — `toric-cohomology`, `tor-ext`,
   `witt-recursion`, `arithmetic-applications` and the rest — and every one is closed.
@@ -938,7 +938,7 @@ Take `terminal-reference` now.
   the weaker implementation acceptable. Do not turn this comparison into a
   source-policing test or a count of engine imports.
 
-- [ ] **`terminal-execution`**. **Needs:** `terminal-reference`.
+- [x] **`terminal-execution`**. **Needs:** `terminal-reference`.
   Execute the prescribed public-construction and mathematical suites in the
   terminal verification phase through the existing project recipes.
   **Scope:** expectation subtrees, ring/module/algebra/action contracts,
@@ -960,6 +960,35 @@ Take `terminal-reference` now.
 - [ ] **`terminal-repairs`**. **Needs:** `terminal-execution`.
   Repair the mathematical owners exposed by terminal verification and
   establish the originally required behavior.
+  **Observed terminal failure set (2026-09-13):** `terminal-reference` now
+  generates `docs/preamble-megadoc.md` and the 327-category/94-functor
+  preamble graph from a live Sage session, but the declared `just graph` route
+  currently depends on an untracked `scripts/build_graph.py`; make that recipe
+  reproducible from committed source. `just test-push` cannot resolve the
+  declared `sage-categories` revision `66efc15bf5050a527f1bb4ff3bff8542e3d83203`,
+  and the Sage pytest stage's configured `pytest-timeout`/`pytest-reportlog`
+  options are unavailable in that interpreter. Running the same mathematical
+  corpus without those reporting-only addopts reaches collection and exposes
+  36 errors: missing public `preamble.all` exports (`finite_ordered_set`,
+  `DividedPowerAlgebraOn`, `DividedPowerAlgebraOf`, `Core`, `Biproduct`,
+  `Coproduct`, `Product`, `QuotientRing`, `TensorSquare`, `QuadraticMap`,
+  `TensorProduct`, `CochainComplexFromFamily`, `Localization`, and
+  `AdicCompletion` among them); `sage-categories` importing `typing.TypeIs`
+  under Sage's Python 3.12; missing `hypothesis` and `sage_indefinite_port`;
+  archive tests still importing the retired `integrallattice` package path;
+  duplicate test-module basenames producing pytest import mismatches; an
+  undefined `Polynomial` annotation in `function_modules.py`; the group-algebra
+  construction reaching `is_commutative` through an `OwnedArrowCategory`
+  parent class; and the construction corpus expecting
+  `OwnedCategoryOverBaseRing` in the installed session. `just test-universe`
+  also reports 758 proof-surface findings. Session/notebook verification adds
+  three independent failures: `just sage-init-check` says the startup object
+  does not render as LaTeX; `preamble.ipynb` fails its first code cell because
+  `Lattices` is absent from the bound Sage kernel; and the main
+  `H0_O_P1xP1_4_4.ipynb` setup cell fails the imported projective framework's
+  idempotent-installation assertion because external methods are unregistered.
+  Preserve these propositions and repair their owners; do not edit expectations
+  merely to reduce this list.
   **Decision:** do not weaken expectations to match an implementation, filter
   required failures, infer false from missing algorithms, or turn the failure
   list into unrelated architectural work. A mathematically incorrect
