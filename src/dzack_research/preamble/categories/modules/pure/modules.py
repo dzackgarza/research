@@ -2461,6 +2461,17 @@ class RestrictedScalarsModuleView(Parent):
     def is_zero(self):
         return self._selected_presentation_model().is_zero()
 
+    def whole_subobject(self):
+        if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
+            raise NotImplementedError(
+                "this scalar restriction has no selected finite-presentation subobject backend"
+            )
+        from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
+            _SelectedFinitePresentationModules,
+        )
+
+        return _SelectedFinitePresentationModules.ParentMethods.whole_subobject(self)
+
     def subobject_on(self, module_generators):
         r"""Return the selected-presentation subobject after scalar restriction."""
         if self not in ModulesWithChosenFinitePresentation(self.base_ring()):
