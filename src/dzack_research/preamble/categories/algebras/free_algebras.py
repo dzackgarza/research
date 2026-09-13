@@ -712,10 +712,9 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
                     return AlternatingPower(self.free_source_module(), degree)
                 case _ if self in DividedPowerAlgebras(ring):
                     return DividedPower(self.free_source_module(), degree)
-                # These free constructions are connected: their canonical
-                # degree-zero algebra and module is the scalar ring itself.
-                case _ if degree == 0:
-                    return ring
+                # Every flavor uses its authoritative module-power owner in
+                # every degree.  In degree zero this is the rank-one scalar
+                # module, not the ring parent viewed through an unrelated API.
                 case _ if self in TensorAlgebras(ring):
                     return TensorPower(self.free_source_module(), degree)
                 case _ if self in SymmetricAlgebras(ring):
