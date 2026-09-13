@@ -985,7 +985,7 @@ def cardinal(
 ) -> Cardinalities.ObjectType:
     if value in Cardinalities():
         return value
-    if value == Infinity:
+    if value is Infinity:
         return aleph(0)
     if isinstance(value, int):
         integer = value

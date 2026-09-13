@@ -177,3 +177,20 @@ def test_filtering_an_already_filtered_ordered_set_retains_the_new_predicate() -
     assert tuple(direct) == (2,)
     assert zero.cardinality() == 1
     assert direct.cardinality() == 1
+
+
+def test_finite_ordered_image_positional_access_does_not_run_inverse_lookup() -> None:
+    indices = Sets.Δ[1]
+    values = ("left", "right")
+
+    def inverse_lookup(_value):
+        raise AssertionError("positional access already has the enumeration index")
+
+    image = finite_ordered_image(
+        indices,
+        lambda index: values[int(index)],
+        index_of=inverse_lookup,
+    )
+
+    assert image[0] == "left"
+    assert image[1] == "right"
