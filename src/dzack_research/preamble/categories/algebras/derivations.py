@@ -692,6 +692,10 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
     def degree_shift(self):
         return self._shift
 
+    def __call__(self, function):
+        r"""Construct a graded derivation, not an arrow object."""
+        return self._element_constructor_(function)
+
     def _element_constructor_(self, function):
         if isinstance(function, GradedDerivation) and function.parent() is self:
             return function
@@ -706,8 +710,8 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
                 raise ValueError(
                     "an arbitrary R-linear map cannot be certified as a graded derivation by this backend"
                 )
-            return self.element_class(self, lambda element: derivation(element))
-        return self.element_class(self, function)
+            return GradedDerivation(self, lambda element: derivation(element))
+        return GradedDerivation(self, function)
 
     def zero(self):
         return self.elementwise(lambda _element: self.target().zero())
@@ -715,7 +719,7 @@ class GradedDerivationSpace(RestrictedHomCategoryParent):
     def elementwise(self, function):
         if not callable(function):
             raise TypeError("a graded derivation is specified by an element map")
-        return self.element_class(self, function)
+        return GradedDerivation(self, function)
 
     def scalar_multiple(self, scalar, derivation):
         if derivation.parent() is not self:

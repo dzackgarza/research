@@ -165,6 +165,9 @@ class PowerAlgebra(GradedDirectSumModule):
         product = alternating_power_product if self.flavor() == "alternating" else divided_power_product
         for left_degree, left_component in left.homogeneous_components().items():
             for right_degree, right_component in right.homogeneous_components().items():
+                target_degree = left_degree + right_degree
+                if target_degree not in self.degree_index_set():
+                    continue
                 component = product(
                     self.free_source_module(),
                     left_degree,
@@ -172,7 +175,7 @@ class PowerAlgebra(GradedDirectSumModule):
                     right_degree,
                     right_component,
                 )
-                result += self.from_component(left_degree + right_degree, component)
+                result += self.from_component(target_degree, component)
         return result
 
     def divided_power(self, value, exponent):

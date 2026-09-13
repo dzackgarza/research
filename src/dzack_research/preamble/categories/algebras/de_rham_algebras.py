@@ -66,7 +66,10 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
     result = exterior_algebra.zero()
     for degree, component in element.homogeneous_components().items():
         source_piece = exterior_algebra.graded_piece(degree)
-        target_piece = exterior_algebra.graded_piece(degree + 1)
+        target_degree = degree + 1
+        if target_degree not in exterior_algebra.degree_index_set():
+            continue
+        target_piece = exterior_algebra.graded_piece(target_degree)
         target_component = target_piece.zero()
         for label, coefficient in module_coefficients(component, source_piece).items():
             d_coefficient = universal_derivation(coefficient)
@@ -85,7 +88,7 @@ def _de_rham_differential_on_extension(exterior_algebra, omega, universal_deriva
                 )
             target_component += contribution
         if target_component != target_piece.zero():
-            result += exterior_algebra._from_component(degree + 1, target_component)
+            result += exterior_algebra._from_component(target_degree, target_component)
     return result
 
 
