@@ -507,6 +507,20 @@ class Sets(OwnedCategory):
 
     def condition_set(self, universe, predicate):
         r"""Return the represented subset of ``universe`` cut out by ``predicate``."""
+        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+            finite_ordered_set,
+        )
+
+        if universe in FiniteSets():
+            elements = getattr(universe, "elements", None)
+            if callable(elements):
+                return finite_ordered_set(
+                    tuple(element for element in elements() if predicate(element))
+                )
+            if universe in EnumeratedSets():
+                return finite_ordered_set(
+                    tuple(element for element in universe if predicate(element))
+                )
         return SageConditionSet(universe, predicate)
 
     def image_set(

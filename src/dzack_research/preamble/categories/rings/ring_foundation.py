@@ -20,6 +20,8 @@ from sage.all import (
 )
 from sage.arith.misc import (
     euler_phi as _engine_euler_phi,
+)
+from sage.arith.misc import (
     number_of_divisors as _engine_number_of_divisors,
 )
 from sage.categories.category import Category
@@ -1637,11 +1639,13 @@ class OwnedLocalRings(OwnedCategory):
         def residue_map(self):
             r"""Return the local quotient map ``R -> kappa(m)``.
 
-            A local ring whose residue field is itself is a field, and there
-            the map is the identity.  Otherwise it is supplied by the level
-            that introduces the residue field, as a prime localization does
-            from the universal property of localization.
+            A field carries the identity map.  Other local-ring constructors
+            retain the quotient map together with the selected maximal ideal
+            and residue field.
             """
+            selected = getattr(self, "_preamble_residue_map", None)
+            if selected is not None:
+                return selected
             residue = self.residue_field()
             assert residue is self, (
                 f"the residue map {self} -> {residue} is not constructed here; the level "
@@ -2511,6 +2515,14 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
     def _first_ngens(self, n):
         return tuple(self._from_engine_element(value) for value in self._engine.gens()[:n])
 
+    def elements(self):
+        r"""Return all elements when this ring is finite, as an owned ordered set."""
+        if self not in FiniteSets():
+            raise ValueError("elements() is represented only for a finite ring")
+        return finite_ordered_set(
+            tuple(self._from_engine_element(element) for element in self._engine.list())
+        )
+
     def _repr_(self):
         return repr(self._engine)
 
@@ -2592,7 +2604,8 @@ def _owned_ring_size(engine):
     r"""Return the exact Set-cardinality placement known from the engine kind."""
     from sage.categories.number_fields import NumberFields
     from sage.categories.sets_cat import Sets as SageSets
-    from sage.rings.qqbar import AA as SageAA, QQbar as SageQQbar
+    from sage.rings.qqbar import AA as SageAA
+    from sage.rings.qqbar import QQbar as SageQQbar
 
     if engine.category().is_subcategory(SageSets().Finite()):
         return FiniteSets()
@@ -2762,7 +2775,37 @@ def PrimeField(characteristic):
 
 
 def Zmod(*args, **kwargs):
-    return _own_ring(_SageZmod(*args, **kwargs))
+    r"""Return ``ZZ/nZZ`` with its exact finite-ring refinements."""
+    engine = _SageZmod(*args, **kwargs)
+    ring = _own_ring(engine)
+    if engine is SageZZ:
+        return ring
+
+    modulus = SageZZ(engine.characteristic())
+    factors = tuple(modulus.factor())
+    if bool(engine.is_field()):
+        refine(ring, OwnedFields())
+        return ring
+
+    refine(ring, OwnedArtinianRings())
+    if len(factors) == 1:
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            GeneratedIdealView,
+        )
+
+        prime, _exponent = factors[0]
+        residue = GF(prime)
+        ring._preamble_maximal_ideal = GeneratedIdealView(ring, (ring(int(prime)),))
+        ring._preamble_residue_field = residue
+        ring._preamble_residue_map = ring_morphism(
+            ring,
+            residue,
+            lambda element: residue(
+                SageZZ(_engine_element(ring, element).lift())
+            ),
+        )
+        refine(ring, OwnedLocalRings())
+    return ring
 
 
 IntegerModRing = Zmod
