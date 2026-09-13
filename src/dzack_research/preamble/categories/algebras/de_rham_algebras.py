@@ -21,9 +21,24 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedCatego
 
 class DeRhamAlgebras(OwnedCategoryOverBaseRing):
     def an_object(self):
-        r"""The algebraic de Rham algebra of the polynomial algebra on one generator."""
+        r"""The de Rham algebra of a finite dual-number presentation.
+
+        The witness must inhabit the same represented cohomology route used by
+        downstream DGA constructions.  A polynomial algebra over ``R`` is
+        infinite as an ``R``-module, while the current cohomology owner retains
+        finite presentations of cycles and boundaries.  The selected quotient
+        ``R[x]/(x^2)`` is still nontrivial Kähler calculus and is finite free
+        over ``R``.
+        """
+        from dzack_research.preamble.categories.algebras.free_algebras import (
+            FinitelyPresentedAlgebra,
+        )
+
         ring = self.base_ring()
-        return self(CommutativeAlgebras(ring).an_object())
+        polynomial = CommutativeAlgebras(ring).an_object()
+        label = next(iter(polynomial.algebra_generating_set()))
+        generator = polynomial.algebra_generator(label)
+        return self(FinitelyPresentedAlgebra(polynomial, (generator**2,)))
 
     def _call_(self, algebra):
         r"""Construct ``Omega^*_{A/R}`` from the represented ``R``-algebra ``A``.
