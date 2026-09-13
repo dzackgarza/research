@@ -247,6 +247,38 @@ def _category_graph_depth(category: Category, memo=None) -> int:
     return depth
 
 
+
+
+def _category_parameter_signature(category: Category):
+    r"""Return structural parameter data needed to order category instances.
+
+    Named implementation classes may legitimately be shared by categories with
+    the same method graph, but C3 category merging still needs a strict order
+    on distinct semantic parameters.  Hom families are parameterized by their
+    base category, while categories over scalars expose ``base``.  Record those
+    parameters structurally without using object identity or ``repr``.
+    """
+    for accessor in ("base_category", "base"):
+        method = getattr(category, accessor, None)
+        if not callable(method):
+            continue
+        try:
+            parameter = method()
+        except (AttributeError, TypeError, ValueError):
+            continue
+        if parameter is category:
+            continue
+        if isinstance(parameter, Category):
+            return (accessor, _category_graph_signature(parameter))
+        parameter_type = type(parameter)
+        signature = (accessor, parameter_type.__module__, parameter_type.__qualname__)
+        engine = getattr(parameter, "_engine", None)
+        if engine is not None:
+            engine_type = type(engine)
+            signature += ("engine", engine_type.__module__, engine_type.__qualname__)
+        return signature
+    return ()
+
 def _stable_signature_integer(signature) -> int:
     r"""Encode a structural category signature as a deterministic positive integer."""
     digest = hashlib.blake2b(repr(signature).encode("utf-8"), digest_size=16).digest()
@@ -281,7 +313,10 @@ class _OwnedCategoryComparisonKey:
         native_descriptor = Category.__dict__["_cmp_key"]
         flags, _session_counter = native_descriptor.__get__(category, type(category))
         depth = _category_graph_depth(category)
-        signature = _category_graph_signature(category)
+        signature = (
+            _category_graph_signature(category),
+            _category_parameter_signature(category),
+        )
         structural = (
             self._OWNED_FLOOR
             + (depth << self._DEPTH_SHIFT)
