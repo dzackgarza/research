@@ -809,7 +809,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
         def module_rank(self):
             r"""Return the rank of the free summand over a PID."""
 
-            if self.base_ring() not in PrincipalIdealDomains():
+            ring = self.base_ring()
+            if ring in OwnedFields():
+                return cardinal(self._represented_vector_space_dimension())
+            if ring not in PrincipalIdealDomains():
                 raise NotImplementedError("rank from invariant factors is represented here over a PID")
             return cardinal(sum(1 for invariant in self._invariants_with_units() if invariant == 0))
 
@@ -821,7 +824,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
         def is_torsion_free(self):
             r"""Over a PID ``M`` is torsion-free exactly when no invariant factor is a nonzero non-unit."""
-            if self.base_ring() not in PrincipalIdealDomains():
+            ring = self.base_ring()
+            if ring in OwnedFields():
+                return True
+            if ring not in PrincipalIdealDomains():
                 return super().is_torsion_free()
             return all(invariant == 0 or invariant.is_unit() for invariant in self._invariants_with_units())
 
@@ -839,7 +845,10 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             return self.is_torsion_free()
 
         def is_zero(self):
-            if self.base_ring() not in PrincipalIdealDomains():
+            ring = self.base_ring()
+            if ring in OwnedFields():
+                return self.module_rank() == 0
+            if ring not in PrincipalIdealDomains():
                 inherited = getattr(super(), "is_zero", None)
                 if inherited is None:
                     raise NotImplementedError("zero testing from selected invariant factors is represented here over a PID")
@@ -859,6 +868,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             """
 
             ring = self.base_ring()
+            if ring in OwnedFields():
+                return ring.cardinality() ** self.module_rank()
             assert ring in PrincipalIdealDomains(), (
                 f"the cardinality of a module presented over {ring} is read from an "
                 "invariant-factor decomposition, which a principal ideal domain supplies"
