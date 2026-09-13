@@ -427,12 +427,19 @@ def test_abelianization_is_left_adjoint_to_the_inclusion_of_abelian_groups() -> 
         assert second_triangle(element) == element
 
 
-def test_declared_subcategory_edges_give_canonical_inclusion_functors() -> None:
+def test_declared_inclusions_and_scalar_restriction_use_their_actual_functors() -> None:
     from dzack_research.preamble.all import FormModules
 
     group, acted = _swap_group_module()
-    forget_action = category_inclusion(Modules(ZZ[group]), Modules(ZZ))
-    assert forget_action(acted) is acted
+    group_algebra = ZZ[group]
+    group_modules = Modules(group_algebra)
+    assert not group_modules.is_subcategory(Modules(ZZ))
+
+    forget_action = group_modules.restriction_of_scalars(
+        group_algebra._ring_morphism_defining_algebra_structure()
+    )
+    restricted = forget_action(acted)
+    assert restricted is acted.scalar_restriction()
 
     doubled = acted.Mor(acted)(
         {
@@ -440,8 +447,12 @@ def test_declared_subcategory_edges_give_canonical_inclusion_functors() -> None:
             "f": 2 * acted.module_generator("f"),
         }
     )
-    assert forget_action(doubled) is doubled
-    assert forget_action(doubled)(acted.module_generator("e")) == 2 * acted.module_generator("e")
+    restricted_doubled = forget_action(doubled)
+    assert restricted_doubled.domain() is restricted
+    assert restricted_doubled.codomain() is restricted
+    assert restricted_doubled(restricted.module_generator("e")) == (
+        2 * restricted.module_generator("e")
+    )
 
     lattice = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     from dzack_research.preamble.all import BilinearForm, Lattices

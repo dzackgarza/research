@@ -996,7 +996,11 @@ carry on with the 36 collection errors, which are this repository's own and are 
   `Aut(G)` was rejected as a morphism of `Grp` while checking abelianization-unit
   naturality. The group Hom owner now corestricts same-endpoint structured group
   homomorphisms through their retained GAP map; the abelianization naturality
-  regression passes.
+  regression passes. The next category-suite failure was an obsolete assertion
+  that `Modules(R[G])` is literally a subcategory of `Modules(R)`. The retained
+  architecture correctly makes restriction along `R -> R[G]` a functor; the
+  specimen now exercises that object/morphism restriction and keeps genuine
+  form/lattice subcategory inclusions separate.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
