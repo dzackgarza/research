@@ -69,6 +69,26 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.owned_category import object_of
 
 
+def _canonical_pid_associate(ring, element):
+    r"""Return the selected canonical associate of a PID scalar when available.
+
+    Invariant factors classify cyclic summands by principal ideals, so replacing
+    ``d`` by a unit multiple must not change their public representative.  Sage's
+    exact PID engines already choose a canonical associate (positive over
+    ``ZZ``, monic over polynomial PIDs); cross that choice back through the ring
+    owner rather than reimplementing a ring-specific sign/unit convention.
+    """
+    element = ring(element)
+    if element == ring.zero():
+        return element
+    backend = _engine_element(ring, element)
+    canonical_associate = getattr(backend, "canonical_associate", None)
+    if canonical_associate is None:
+        return element
+    canonical, _unit = canonical_associate()
+    return ring._from_engine_element(canonical)
+
+
 def _free_cover_owner(module):
     r"""Return the nearest owner of fresh free modules over ``module``'s scalars."""
     presentation = getattr(module, "presentation", None)
@@ -876,7 +896,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     continue
                 image = diagonal(source.module_generator(source_labels[position]))
                 coefficients = module_coefficients(image, target)
-                invariants.append(coefficients.get(target_label, ring.zero()))
+                invariants.append(
+                    _canonical_pid_associate(
+                        ring,
+                        coefficients.get(target_label, ring.zero()),
+                    )
+                )
             return tuple(invariants)
 
         def module_rank(self):
