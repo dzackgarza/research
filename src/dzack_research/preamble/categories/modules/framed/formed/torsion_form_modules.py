@@ -1307,8 +1307,7 @@ class TorsionFormOrthogonalGroup(CategoricalHomset):
             libgap.OnPoints,
         )
         return finite_ordered_set(
-            self._from_engine_abelian_element(image)
-            for image in orbit
+            tuple(self._from_engine_abelian_element(image) for image in orbit)
         )
 
     def subgroup_on(self, group_generators):
