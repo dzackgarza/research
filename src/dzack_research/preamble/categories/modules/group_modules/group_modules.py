@@ -125,7 +125,10 @@ class ModulesOverGroupAlgebra(Modules):
         # are genuine functors, not literal category inclusions.  The group
         # module keeps both structures as defining data instead of obtaining
         # them from a false supercategory edge.
-        return [GObjects(self.acting_group(), Modules(self.coefficient_ring()))]
+        return [
+            GObjects(self.acting_group(), Modules(self.coefficient_ring())),
+            AdditiveGroups().AdditiveCommutative(),
+        ]
 
     _HomCategory = GroupModuleHomCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction

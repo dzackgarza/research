@@ -13,6 +13,7 @@ from dzack_research.preamble.all import (
     FreeModule,
     Groups,
     Modules,
+    Sets,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
@@ -63,6 +64,16 @@ def test_group_action_constructs_an_actual_group_algebra_module_parent() -> None
     assert forget(vector) == line.module_generator(label)
     assert equip(forget(vector)) == vector
     assert module.module_rank() == line.module_rank()
+
+
+def test_group_module_retains_its_owned_set_carrier() -> None:
+    _group, _group_algebra, line, _generator, module = _sign_module(QQ)
+    label = line.module_generating_set()[0]
+    equip = module.equip_action_morphism()
+
+    assert module in Sets()
+    assert equip.parent() is Sets().Mor(line, module)
+    assert equip(line.module_generator(label)).parent() is module
 
 
 def test_scalar_restriction_along_R_to_RG_recovers_the_exact_coefficient_module() -> None:
