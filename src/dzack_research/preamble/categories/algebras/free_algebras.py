@@ -938,11 +938,81 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
                 self.algebra_generating_set(),
             )
 
+        def from_component(self, degree, component):
+            r"""Embed ``Sym^degree(M)`` through the shared graded-piece inclusion."""
+            return self.from_graded_piece(degree, component)
+
+        def homogeneous_component(self, element, degree):
+            r"""Project onto the canonical symmetric-power degree piece."""
+            degree = int(degree)
+            element = self(element)
+
+            def monomial_degree(exponent):
+                try:
+                    return sum(exponent)
+                except TypeError:
+                    return int(exponent)
+            piece = self.graded_piece(degree)
+            backend = _engine_element(self, element)
+            coefficients = backend.monomial_coefficients()
+            exponent_to_label = {}
+            for label in piece.module_generating_set():
+                monomial = _engine_element(
+                    self,
+                    self._realize_graded_piece_basis_label(degree, label),
+                )
+                entries = tuple(monomial.monomial_coefficients().items())
+                if len(entries) != 1 or entries[0][1] != 1:
+                    raise ArithmeticError(
+                        "a symmetric-power basis element did not realize as one monomial"
+                    )
+                exponent_to_label[entries[0][0]] = label
+            ring = self.algebra_base_ring()
+            engine_ring = _engine_ring(ring)
+            return piece.linear_combination(
+                {
+                    exponent_to_label[exponent]: ring._from_engine_element(
+                        engine_ring(coefficient)
+                    )
+                    for exponent, coefficient in coefficients.items()
+                    if coefficient and monomial_degree(exponent) == degree
+                }
+            )
+
+        def homogeneous_components(self, element):
+            r"""Return all nonzero polynomial-degree components."""
+            backend = _engine_element(self, self(element))
+
+            def monomial_degree(exponent):
+                try:
+                    return sum(exponent)
+                except TypeError:
+                    return int(exponent)
+
+            degrees = sorted(
+                {
+                    monomial_degree(exponent)
+                    for exponent, coefficient in backend.monomial_coefficients().items()
+                    if coefficient
+                }
+            )
+            return {
+                degree: self.homogeneous_component(element, degree)
+                for degree in degrees
+            }
+
         def _commutative_algebra_coproduct(self, left, right):
             return _commutative_algebra_coproduct_backend(left, right)
 
         def _commutative_algebra_pushout(self, left_map, right_map):
             return _commutative_algebra_pushout_backend(left_map, right_map)
+
+    class ElementMethods:
+        def homogeneous_components(self):
+            return self.parent().homogeneous_components(self)
+
+        def homogeneous_component(self, degree):
+            return self.parent().homogeneous_component(self, degree)
 
 
 class AlternatingAlgebras(OwnedCategoryOverBaseRing):
