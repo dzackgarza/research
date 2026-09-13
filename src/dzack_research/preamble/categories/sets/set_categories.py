@@ -1109,6 +1109,10 @@ class PowerSets(OwnedCategory):
     def super_categories(self):
         return [Sets()]
 
+    def __call__(self, base_set):
+        r"""Construct ``P(base_set)`` even when ``base_set`` is itself a power set."""
+        return self._call_(base_set)
+
     def _call_(self, base_set):
         r"""Construct the power object of ``base_set``."""
         return object_of(self, base_set=base_set)
