@@ -131,6 +131,7 @@ class NamedLattices:
 
 
 NamedLattices.A1 = _C("A1")
+NamedLattices.A2 = _C("A2")
 NamedLattices.D4 = _C("D4")
 NamedLattices.D6 = _C("D6")
 NamedLattices.D8 = _C("D8")
