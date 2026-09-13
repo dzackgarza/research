@@ -423,15 +423,9 @@ class LocalizationRings(OwnedCategory):
             parent = self.parent()
             assert self.is_unit(), f"{self} is not a unit of {parent}"
             engine = parent._selected_engine_ring()
-            source = parent.localization_source()
-            represented = engine(_engine_element(source, self.numerator())) / engine(_engine_element(source, self.denominator()))
-            inverse = represented**-1
-            source_engine = _engine_ring(source)
-            return parent.fraction(
-                source._from_engine_element(source_engine(inverse.numerator())),
-                source._from_engine_element(source_engine(inverse.denominator())),
-                _trusted_denominator=True,
-            )
+            represented = parent._engine_element(self)
+            inverse = engine(represented) ** -1
+            return parent._from_engine_element(inverse)
 
         def is_unit(self):
             r"""Return whether ``a/s`` is invertible in ``S^{-1}R``.
@@ -620,9 +614,51 @@ class LocalizationRings(OwnedCategory):
                 raise NotImplementedError("this localization has no selected computation realization")
             represented = engine(value)
             source = self.localization_source()
+            source_engine = _engine_ring(source)
+
+            # A localization of a quotient is realized privately by the
+            # standard finite presentation
+            # ``P[u_i]/(I, u_i f_i - 1)``.  Decode a polynomial representative
+            # by sending the original variables through ``P -> P/I`` and each
+            # auxiliary variable to the represented inverse of its selected
+            # denominator.  This is exactly the universal localization map.
+            try:
+                engine_cover = engine.cover_ring()
+                source_cover = source_engine.cover_ring()
+                source_names = tuple(source_cover.variable_names())
+                inverted = tuple(self.inverted_elements())
+                engine_names = tuple(engine_cover.variable_names())
+                if (
+                    engine_names[: len(source_names)] == source_names
+                    and len(engine_names) == len(source_names) + len(inverted)
+                    and all(
+                        name.startswith("localization_inverse_")
+                        for name in engine_names[len(source_names) :]
+                    )
+                ):
+                    result = self.zero()
+                    for exponents, coefficient in represented.lift().dict().items():
+                        source_monomial = source_cover(coefficient)
+                        for position, exponent in enumerate(exponents[: len(source_names)]):
+                            source_monomial *= source_cover.gen(position) ** int(exponent)
+                        term = self.fraction(
+                            source._from_engine_element(source_engine(source_monomial))
+                        )
+                        for position, exponent in enumerate(exponents[len(source_names) :]):
+                            if exponent:
+                                term *= self.fraction(
+                                    source.one(),
+                                    inverted[position],
+                                    _trusted_denominator=True,
+                                ) ** int(exponent)
+                        result += term
+                    return result
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                pass
+
             return self.fraction(
-                source._from_engine_element(_engine_ring(source)(represented.numerator())),
-                source._from_engine_element(_engine_ring(source)(represented.denominator())),
+                source._from_engine_element(source_engine(represented.numerator())),
+                source._from_engine_element(source_engine(represented.denominator())),
                 _trusted_denominator=True,
             )
 
@@ -633,7 +669,16 @@ class LocalizationRings(OwnedCategory):
             element = self(value)
             numerator = _engine_element(self.localization_source(), element.numerator())
             denominator = _engine_element(self.localization_source(), element.denominator())
-            return engine(numerator) / engine(denominator)
+            try:
+                return engine(numerator) / engine(denominator)
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                # A quotient-localization realization is an auxiliary-variable
+                # polynomial quotient.  Sage has no direct coercion from the
+                # source quotient ``P/I`` to that presentation, so cross each
+                # source class through its chosen polynomial lift first.
+                numerator_lift = getattr(numerator, "lift", lambda: numerator)()
+                denominator_lift = getattr(denominator, "lift", lambda: denominator)()
+                return engine(numerator_lift) / engine(denominator_lift)
 
         def zero(self):
             return self.fraction(self.localization_source().zero())

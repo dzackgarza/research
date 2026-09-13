@@ -2469,15 +2469,58 @@ def _finite_generated_localization(source, submonoid):
     try:
         localization_engine = engine_bottom.localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
-        # Localizing at units changes no ring.  Some Sage polynomial-ring
-        # engines refuse the syntactic localization at ``1``; in that case
-        # the source engine itself is the exact realization of the selected
-        # localization.
+        # Sage does not localize a generic quotient ring directly, even when
+        # the quotient is a domain.  Present the same ring by adjoining an
+        # inverse variable for each selected denominator:
+        #
+        #   (P/I)[f_1^-1,...,f_r^-1]
+        #       = P[u_1,...,u_r]/(I, u_1 f_1-1, ..., u_r f_r-1).
+        #
+        # Unlike a quotient of Sage's localization parent, this ordinary
+        # polynomial quotient supports exact quotient maps and unit inversion,
+        # which are the private operations affine ``Spec`` needs.
+        localization_engine = None
         try:
-            all_units = all(value.is_unit() for value in values)
+            cover = engine_bottom.cover_ring()
+            defining = engine_bottom.defining_ideal()
+            cover_names = tuple(cover.variable_names())
+            occupied = set(cover_names)
+            inverse_names = []
+            for position in range(len(values)):
+                candidate = f"localization_inverse_{position}"
+                while candidate in occupied:
+                    candidate = "localization_" + candidate
+                occupied.add(candidate)
+                inverse_names.append(candidate)
+            extended_cover = _SagePolynomialRing(
+                cover.base_ring(),
+                names=(*cover_names, *inverse_names),
+            )
+            inverse_variables = tuple(
+                extended_cover.gen(len(cover_names) + position)
+                for position in range(len(values))
+            )
+            relations = tuple(
+                extended_cover(generator) for generator in defining.gens()
+            ) + tuple(
+                inverse * extended_cover(value.lift()) - extended_cover.one()
+                for inverse, value in zip(inverse_variables, values, strict=True)
+            )
+            localization_engine = extended_cover.quotient(
+                extended_cover.ideal(relations)
+            )
         except (AttributeError, NotImplementedError, TypeError, ValueError):
-            all_units = False
-        localization_engine = engine_bottom if all_units else None
+            pass
+        if localization_engine is None:
+            # Localizing at units changes no ring.  Some Sage polynomial-ring
+            # engines refuse the syntactic localization at ``1``; in that case
+            # the source engine itself is the exact realization of the selected
+            # localization.
+            try:
+                all_units = all(value.is_unit() for value in values)
+            except (AttributeError, NotImplementedError, TypeError, ValueError):
+                all_units = False
+            localization_engine = engine_bottom if all_units else None
     placements = list(_localization_size_placements(source, submonoid))
     if source in PrincipalIdealDomains():
         placements.append(PrincipalIdealDomains())
