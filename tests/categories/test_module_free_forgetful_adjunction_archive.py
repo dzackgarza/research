@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 ARCHIVE_RECONCILIATIONS = (
     {
         "archive_module": "preamble/tests/test_functor_codomains.sage",
-        "live_owner": "tests/categories/test_free_forgetful_adjunction_archive.py",
+        "live_owner": "tests/categories/test_module_free_forgetful_adjunction_archive.py",
         "owner_overrides": {
             "test_underlying_set_of_group_functor_lands_in_sets": "tests/groups/test_functors_out_of_groups.py",
             "test_group_ring_module_functor_lands_in_modules": "tests/algebras/test_group_algebra_functor_archive.py",
