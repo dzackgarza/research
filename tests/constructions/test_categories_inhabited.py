@@ -26,7 +26,10 @@ def _session_categories():
     for name, candidate in sorted(globals().items()):
         if not (inspect.isclass(candidate) and issubclass(candidate, Category)):
             continue
-        if candidate is OwnedCategoryOverBaseRing:
+        # ``Category`` and ``OwnedCategoryOverBaseRing`` are abstract base
+        # classes for declaring categories, not concrete mathematical
+        # categories a session can instantiate and ask for a witness.
+        if candidate in (Category, OwnedCategoryOverBaseRing):
             continue
         if issubclass(candidate, OwnedCategoryOverBaseRing):
             over_ring.append(name)
