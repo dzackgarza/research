@@ -862,13 +862,22 @@ def _free_group_constructor(n=None, names="x", index_set=None, abelian=False, **
         except (AttributeError, TypeError, ValueError):
             finite_index_set = getattr(index_set, "is_finite", lambda: False)() is True
         if finite_index_set:
-            backend_index_set = tuple(engine_label(label) for label in index_set)
+            owned_labels = tuple(index_set)
+            backend_index_set = tuple(range(len(owned_labels)))
+
+            def engine_label(label):
+                for position, candidate in enumerate(owned_labels):
+                    if candidate == label:
+                        return position
+                raise ValueError(f"{label!r} is not in the chosen free basis")
 
             def owned_label(backend_label):
-                for label in index_set:
-                    if engine_label(label) == backend_label:
-                        return label
-                raise ValueError(f"{backend_label!r} is not in the backend free basis")
+                try:
+                    return owned_labels[int(backend_label)]
+                except (IndexError, TypeError, ValueError) as error:
+                    raise ValueError(
+                        f"{backend_label!r} is not in the backend free basis"
+                    ) from error
         else:
             backend_index_set = _group_constructor_argument(index_set)
             if backend_index_set is index_set:
