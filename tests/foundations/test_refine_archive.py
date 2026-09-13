@@ -79,22 +79,23 @@ def test_successful_property_refinement_keeps_existing_elements_and_operations()
 
 
 def test_archived_owned_polynomial_real_roots_keep_exact_multiplicities() -> None:
-    from sage.rings.qqbar import AA as AlgebraicReals
-
-    from dzack_research.preamble.all import QQ, PolynomialRing
+    from dzack_research.preamble.all import AA, QQ, PolynomialRing
 
     polynomial_ring = PolynomialRing(QQ, "x")
     x = polynomial_ring.algebra_generator("x")
 
-    roots = (x**2 - 5).roots(ring=AlgebraicReals)
-    assert [multiplicity for _root, multiplicity in roots] == [1, 1]
-    assert [root**2 for root, _multiplicity in roots] == [5, 5]
-    assert roots[0][0] < 0 < roots[1][0]
-    assert ((x - 1) ** 2 * (x - 2)).roots(ring=AlgebraicReals) == [
-        (AlgebraicReals(1), 2),
-        (AlgebraicReals(2), 1),
-    ]
-    assert (x**2 + 1).roots(ring=AlgebraicReals) == []
+    # The archive named Sage's AA directly.  The public boundary now exposes
+    # the same algebraic-real field as an owned ring, and roots are the owned
+    # root-indexed family rather than a backend list of pairs.
+    roots = (x**2 - 5).roots(ring=AA)
+    assert tuple(roots) == (1, 1)
+    assert tuple(root**2 for root in roots.index_set()) == (5, 5)
+    assert roots.index_set()[0] < 0 < roots.index_set()[1]
+
+    repeated = ((x - 1) ** 2 * (x - 2)).roots(ring=AA)
+    assert tuple(repeated.index_set()) == (AA(1), AA(2))
+    assert tuple(repeated) == (2, 1)
+    assert (x**2 + 1).roots(ring=AA).cardinality() == 0
 
 
 def test_archived_noncrystallographic_H4_group_has_order_14400() -> None:
