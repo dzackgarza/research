@@ -1001,6 +1001,15 @@ class SetInclusion(OwnedSetMorphism):
     def inclusion(self) -> Self:
         return self
 
+    def __call__(self, member, *args, **kwargs):
+        r"""Apply the inclusion using the ambient set's owned ingress."""
+        ambient_member = self.codomain()(member)
+        match ambient_member in self:
+            case True:
+                return ambient_member
+            case _:
+                raise ValueError(f"{member!r} is not in this represented subset")
+
     def is_injective(self) -> bool:
         return True
 
