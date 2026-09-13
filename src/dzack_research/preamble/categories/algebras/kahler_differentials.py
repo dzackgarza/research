@@ -353,9 +353,7 @@ def _construct_kahler_differentials(algebra):
         relation_map = module_homset(
             relation_module,
             ambient_differentials,
-        )(
-            lambda label: conormal_morphism(conormal_module.module_generator(label))
-        )
+        )(conormal_morphism.module_generator_images().value)
         omega = FinitelyPresentedModule(
             relation_map,
             _cokernel_morphism=relation_map,
