@@ -532,9 +532,10 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         def pyramid(self):
             r"""The 3-polytope ``P``: the cone over ``Q`` with apex ``(p*, 2)``.
 
-            ``P`` is a lattice polytope exactly when ``p*`` is a lattice point;
-            the affine families place ``p*`` at a half-integral point, and for
-            those ``P`` is a rational polytope.
+            ``P`` is a lattice polytope exactly when ``p*`` is a lattice point.
+            In the affine ``A`` family the archived formula ``p*=(n/2,1)``
+            can be integral or half-integral according to ``n``; in the latter
+            cases ``P`` is a rational polytope.
             """
             polygon = self.polygon()
             base = tuple(
