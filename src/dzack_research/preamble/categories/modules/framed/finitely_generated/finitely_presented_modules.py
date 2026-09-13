@@ -351,24 +351,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return NotImplemented
             if morphism.codomain() is self and morphism.domain() is self.presentation().codomain() and morphism == self.presentation_projection():
                 return self.presentation().image()
-            if morphism.domain()._selected_presentation_rows() is None or morphism.codomain()._selected_presentation_rows() is None:
-                return NotImplemented
-            labels = morphism.domain().module_generating_set()
-            if labels.cardinality().is_finite() and all(
-                morphism(morphism.domain().module_generator(label)) == morphism.codomain().zero()
-                for label in labels
-            ):
-                return morphism.domain().subobject_on(morphism.domain().module_generators())
-            if self.base_ring() in PrincipalIdealDomains():
-                return _pid_presentation_kernel(morphism)
-            ring = self.base_ring()
-            try:
-                variable_names = tuple(ring.variable_names())
-            except (AttributeError, TypeError):
-                variable_names = ()
-            if variable_names and ring.base_ring() is _owned_ring(SageZZ):
-                return _cap_presentation_kernel(morphism)
-            return _singular_presentation_kernel(morphism)
+            return _selected_presentation_kernel(morphism)
 
         def _represented_cokernel_of_morphism(self, morphism):
             if morphism.codomain() is not self:
@@ -429,7 +412,9 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             source = _free_cover_owner(self)._fresh_free_module_on(labels)
             spanning = module_homset(source, self)(lambda label: self(generator(label)))
 
-            if self.base_ring() in LocalRings():
+            if self.base_ring() in OwnedFields():
+                spans_all = spanning.is_surjective()
+            elif self.base_ring() in LocalRings():
                 spans_all = spanning.is_surjective_by_nakayama()
             else:
                 try:
@@ -1585,7 +1570,7 @@ class _GeneralPresentedModule:
 
         presentation_ring = base_ring._exact_coefficient_presentation_ring()
         presentation_engine = _engine_ring(presentation_ring)
-        rank = int(self._free_module.module_rank())
+        rank = int(self.module_generating_set().cardinality())
         lifted_free = SageFreeModule(presentation_engine, rank)
 
         def lift_scalar(value):
@@ -1884,6 +1869,35 @@ def _relation_element(module, row):
 
 
 
+def _selected_presentation_kernel(morphism):
+    r"""Compute a kernel from the selected finite presentations of both endpoints."""
+    domain = morphism.domain()
+    codomain = morphism.codomain()
+    ring = domain.base_ring()
+    if codomain.base_ring() is not ring:
+        raise ValueError("a kernel presentation requires one coefficient ring")
+    selected = ModulesWithChosenFinitePresentation(ring)
+    if domain not in selected or codomain not in selected:
+        return NotImplemented
+    if domain._selected_presentation_rows() is None or codomain._selected_presentation_rows() is None:
+        return NotImplemented
+    labels = domain.module_generating_set()
+    if labels.cardinality().is_finite() and all(
+        morphism(domain.module_generator(label)) == codomain.zero()
+        for label in labels
+    ):
+        return domain.subobject_on(domain.module_generators())
+    if ring in PrincipalIdealDomains():
+        return _pid_presentation_kernel(morphism)
+    try:
+        variable_names = tuple(ring.variable_names())
+    except (AttributeError, TypeError):
+        variable_names = ()
+    if variable_names and ring.base_ring() is _own_ring(SageZZ):
+        return _cap_presentation_kernel(morphism)
+    return _singular_presentation_kernel(morphism)
+
+
 def _cap_presentation_kernel(morphism):
     r"""Return ``ker(morphism)`` through CAP over a polynomial ring over ``ZZ``.
 
@@ -1900,7 +1914,7 @@ def _cap_presentation_kernel(morphism):
     if _owned_ring(codomain.base_ring()) is not ring:
         raise ValueError("a kernel presentation requires one coefficient ring")
     variable_names = tuple(ring.variable_names())
-    if not variable_names or ring.base_ring() is not _owned_ring(SageZZ):
+    if not variable_names or ring.base_ring() is not _own_ring(SageZZ):
         raise NotImplementedError(
             "the CAP kernel provider is selected here for polynomial rings over ZZ"
         )
