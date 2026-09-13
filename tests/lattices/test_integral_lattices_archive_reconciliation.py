@@ -6,7 +6,7 @@ metric-dual/discriminant chain remains one live construction rather than a
 parallel archive API.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/integral_lattices.sage",

@@ -2,7 +2,7 @@ r"""Lattice Hom caches are keyed by endpoint identity, not lattice hashing."""
 
 import pytest
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.lattice_morphisms import (
     lattice_embedding_homset,
     lattice_homset,

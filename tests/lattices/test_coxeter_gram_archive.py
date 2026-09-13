@@ -1,6 +1,6 @@
 r"""Archive reconciliation for Coxeter root-Gram classification invariants."""
 
-from dzack_research.preamble.all import CoxeterDiagrams, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/coxeter_tdd_specs/unit/test_gram_matrices.sage",

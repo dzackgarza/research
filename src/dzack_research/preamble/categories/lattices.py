@@ -46,7 +46,6 @@ from dzack_research.preamble.categories._lattice import (
     scale_gram_tensor,
     signature_pair,
     signature_pair_of_gram,
-    signature_pairs,
 )
 from dzack_research.preamble.categories._lattice import diagonal_gram as diagonal_gram
 from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import DirectSumDecomposition

@@ -8,7 +8,7 @@ distinguish the elliptic subdiagrams from the parabolic one.
 
 from sage.all import Infinity
 
-from dzack_research.preamble.all import CoxeterDiagrams, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
 
 
 def affine_a2():

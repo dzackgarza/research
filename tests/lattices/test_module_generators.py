@@ -1,14 +1,13 @@
 from sage.all import SR
 
 from dzack_research.preamble.all import (
+    ZZ,
     Cardinalities,
-    diagonal_gram,
     Lattices,
     QuadraticField,
-    Set,
+    diagonal_gram,
     signature_pair,
     signature_pairs,
-    ZZ,
 )
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
 from dzack_research.preamble.tensors import Tensor, tensor

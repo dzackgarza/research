@@ -31,8 +31,8 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.modules.free_module_element import vector as engine_vector
 from sage.quadratic_forms.quadratic_form import QuadraticForm
-from sage.rings.qqbar import AA as SageAA
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.qqbar import AA as SageAA
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.sage_object import SageObject
 

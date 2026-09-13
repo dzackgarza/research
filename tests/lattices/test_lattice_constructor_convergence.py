@@ -1,6 +1,6 @@
 r"""Structured lattice constructors stay behind the ``Lattices`` owner."""
 
-from dzack_research.preamble.all import Groups, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Groups, Lattices
 
 
 def test_structured_lattice_specializations_retain_their_defining_data() -> None:

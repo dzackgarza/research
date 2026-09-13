@@ -6,7 +6,7 @@ are also realized by adjoining unimodular hyperbolic planes, which leaves the
 discriminant form unchanged.
 """
 
-from dzack_research.preamble.all import Lattices, ZZ
+from dzack_research.preamble.all import ZZ, Lattices
 from dzack_research.preamble.categories.lattices import Genus
 
 

@@ -32,7 +32,7 @@ and is not enumerated here.
 import pytest
 from sage.all import AA, CoxeterMatrix, SymmetricGroup, factorial, pi, sin
 
-from dzack_research.preamble.all import CoxeterDiagrams, Lattices, ZZ
+from dzack_research.preamble.all import ZZ, CoxeterDiagrams, Lattices
 
 ARCHIVE_RECONCILIATIONS = (
     {

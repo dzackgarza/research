@@ -2,10 +2,10 @@ r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 
 from itertools import combinations
 
+from sage.categories.morphism import Morphism
 from sage.combinat.posets.posets import Poset
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-from sage.categories.morphism import Morphism
 from sage.graphs.graph import Graph
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method
@@ -416,7 +416,8 @@ class CoxeterDiagrams(OwnedCategory):
             has only the bond labels, so its infinite bond is necessarily the
             parallel boundary value ``-1``.
             """
-            from sage.all import AA as SageAA, cos, pi
+            from sage.all import AA as SageAA
+            from sage.all import cos, pi
 
             real_algebraics = _own_ring(SageAA)
             rooted_gram = self.root_gram_tensor() if self.is_rooted() else None
@@ -885,8 +886,8 @@ class CoxeterDiagrams(OwnedCategory):
 
         def equivariant_positions(self, automorphism):
             r"""Return exact planar positions intertwining a finite diagram automorphism."""
-            from sage.rings.qqbar import QQbar
             from sage.rings.number_field.number_field import CyclotomicField
+            from sage.rings.qqbar import QQbar
 
             order = int(automorphism.order())
             if order < 2:
