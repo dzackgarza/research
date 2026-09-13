@@ -2,6 +2,7 @@
 
 from dzack_research.preamble.categories.divisors.divisor_groups import (
     DivisorGroups,
+    _divisor_role_specimen,
     _module_in_role,
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
@@ -10,6 +11,9 @@ from dzack_research.preamble.owned_category_bases import Category
 
 
 class WeilDivisorGroups(Category):
+    def an_object(self):
+        return _divisor_role_specimen(self)
+
     @classmethod
     def _repr_object_names(cls):
         return "Weil divisor groups"

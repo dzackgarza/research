@@ -30,8 +30,24 @@ def _module_in_role(module, category, message, *, construction_data=None):
     )
 
 
+def _divisor_role_specimen(category):
+    r"""Return a one-generator owned free abelian group in ``category``."""
+    from sage.rings.integer_ring import ZZ as SageZZ
+
+    integers = _own_ring(SageZZ)
+    module = FreshFreeModuleOn(integers, finite_ordered_set(("D",)))
+    return _module_in_role(
+        module,
+        category,
+        "a divisor-role specimen requires a represented free-module presentation",
+    )
+
+
 class DivisorGroups(Category):
     r"""Free abelian groups on specified prime divisors."""
+
+    def an_object(self):
+        return _divisor_role_specimen(self)
 
     @classmethod
     def _repr_object_names(cls):
