@@ -397,6 +397,10 @@ class FiniteFilteredOrderedSets(OwnedCategory):
         return object_of(self, source=source, predicate=predicate, name=name)
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset(
+            {"index_set", "element_at", "index_of"}
+        )
+
         def __init__(
             self,
             source: Parent,

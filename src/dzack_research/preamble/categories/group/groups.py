@@ -270,20 +270,16 @@ def _engine_cosets(group, subgroup, side):
 
 def _unique_nonidentity_generators(group):
     engine = _engine_group(group)
-    identity = engine.one()
-    backend_generators = engine.gens()
-    engine_generators = finite_ordered_image(
+    backend_generators = tuple(engine.gens())
+    owned_generators = finite_ordered_image(
         Sets.Δ[len(backend_generators) - 1],
-        lambda position: backend_generators[int(position)],
-        name="Backend chosen group generators",
+        lambda position: group._from_engine(backend_generators[int(position)]),
+        name="Backend chosen group generators raised to the owned group",
     )
-    nonidentity = finite_ordered_filter(
-        engine_generators,
+    identity = group.one()
+    return finite_ordered_filter(
+        owned_generators,
         lambda generator: generator != identity,
-    )
-    return finite_ordered_image(
-        nonidentity,
-        group._from_engine,
         name="Chosen group generators",
     )
 
@@ -1721,6 +1717,12 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def is_abelian(self):
             if self in OwnedAbelianGroups():
                 return True
+            engine = _engine_group(self)
+            if isinstance(engine, FreeGroup_class):
+                # F_0 and F_1 are abelian; F_n for n >= 2 contains the two
+                # noncommuting free generators.  This is structural data of
+                # the represented free group, not an infinite search.
+                return len(tuple(engine.gens())) <= 1
             if self in OwnedFiniteGroups():
                 try:
                     return bool(_gap_model(self).IsAbelian())
