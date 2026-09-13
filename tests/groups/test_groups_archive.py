@@ -42,6 +42,15 @@ def test_finite_group_product_retains_group_structure_and_order() -> None:
     assert product.is_isomorphic_to(Groups.C(6))
 
 
+def test_finite_group_subgroups_are_owned_and_keep_the_ambient_group() -> None:
+    cyclic = Groups.C(6)
+    subgroups = cyclic.subgroups()
+
+    assert subgroups.cardinality() == 4
+    assert tuple(subgroup.cardinality() for subgroup in subgroups) == (1, 2, 3, 6)
+    assert all(subgroup.supergroup() is cyclic for subgroup in subgroups)
+
+
 def test_generated_subgroup_retains_an_actual_inclusion_into_its_supergroup() -> None:
     group = Groups.S(3)
     generator = group.group_generators()[0]
