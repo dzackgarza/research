@@ -282,6 +282,7 @@ def test_the_root_gram_of_a_simply_laced_diagram_is_minus_its_schlaefli_matrix(
     schlafli = diagram.schlafli_tensor()
     gram = diagram.root_gram_tensor()
 
+    assert all(entry.parent() is schlafli.base_ring() for entry in schlafli)
     assert diagram.vinberg_invariant_matrix().is_simply_laced()
     for row in range(rank):
         for column in range(rank):
@@ -345,7 +346,8 @@ def test_archived_a2_root_gram_is_the_live_negative_definite_root_lattice() -> N
     assert gram[1, 1] == -2
     assert gram[0, 1] == gram[1, 0] == 1
     assert diagram.coxeter_entry(0, 1) == 3
-    assert diagram.schlafli_tensor()[0, 1] == -AA(1) / AA(2)
+    schlafli = diagram.schlafli_tensor()
+    assert schlafli[0, 1] == -schlafli.base_ring().one() / schlafli.base_ring()(2)
 
 def test_archived_b3_root_roundtrip_retains_gram_bonds_and_group() -> None:
     rooted = CoxeterDiagrams().from_cartan_type(["B", 3], rooted=True)

@@ -19,7 +19,11 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.lattices import Lattices
-from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _own_ring
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _cross_engine_ring_value,
+    _engine_element,
+    _own_ring,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -403,24 +407,50 @@ class CoxeterDiagrams(OwnedCategory):
             )
 
         def schlafli_tensor(self):
-            r"""Return the normalized reflection Gram tensor ``S_ii=1``."""
-            from sage.all import AA, cos, pi
+            r"""Return the normalized reflection Gram tensor ``S_ii=1``.
 
+            A rooted diagram retains more metric data than its Coxeter matrix:
+            an infinite bond can mean parallel or divergent mirrors.  Normalize
+            the actual root Gram in that case, using
+            ``S_ij = -|b(r_i,r_j)|/sqrt(q(r_i)q(r_j))``.  An unrooted diagram
+            has only the bond labels, so its infinite bond is necessarily the
+            parallel boundary value ``-1``.
+            """
+            from sage.all import AA as SageAA, cos, pi
+
+            real_algebraics = _own_ring(SageAA)
+            rooted_gram = self.root_gram_tensor() if self.is_rooted() else None
+            ranking = self.index_set().ranking_map()
             values = []
             for left in self.index_set():
                 row = []
                 for right in self.index_set():
                     if left == right:
-                        row.append(AA.one())
+                        row.append(real_algebraics.one())
+                        continue
+                    if rooted_gram is not None:
+                        i = int(ranking(left))
+                        j = int(ranking(right))
+                        left_square = SageAA(
+                            _engine_element(rooted_gram.base_ring(), rooted_gram[i, i])
+                        )
+                        right_square = SageAA(
+                            _engine_element(rooted_gram.base_ring(), rooted_gram[j, j])
+                        )
+                        pairing = SageAA(
+                            _engine_element(rooted_gram.base_ring(), rooted_gram[i, j])
+                        )
+                        normalized = -abs(pairing) / (left_square * right_square).sqrt()
+                        row.append(_cross_engine_ring_value(normalized))
                         continue
                     m = self.coxeter_entry(left, right)
                     if m == Infinity:
-                        row.append(-AA.one())
+                        row.append(-real_algebraics.one())
                     else:
-                        row.append(-AA(cos(pi / m)))
+                        row.append(_cross_engine_ring_value(-SageAA(cos(pi / m))))
                 values.append(row)
             mirrors = self.cardinality()
-            return tensor(AA, (), (mirrors, mirrors), values)
+            return tensor(real_algebraics, (), (mirrors, mirrors), values)
 
         def _inertia_counts(self):
             r"""Return \((n_+,n_-,n_0)\) of the Schlaefli form, by Sylvester.

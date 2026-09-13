@@ -40,7 +40,6 @@ from itertools import combinations
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.qqbar import AA, QQbar
-from sage.schemes.projective.projective_space import ProjectiveSpace
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
@@ -51,6 +50,13 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.set_categories import NN, Sets
 from dzack_research.preamble.owned_category import object_of
+
+
+def _projective_line_over(base_ring):
+    r"""Return the owned projective line over the invariant coefficient ring."""
+    from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpace
+
+    return ProjectiveSpace(1, base_ring)
 
 
 class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
@@ -85,7 +91,7 @@ class ProjectiveWeightedGraphs(OwnedCategoryOverBaseRing):
             self._vertex_weights = dict(vertex_weights)
             self._directed = bool(directed)
             self._symmetric = bool(symmetric)
-            self._projective_line = ProjectiveSpace(base_ring, 1)
+            self._projective_line = _projective_line_over(base_ring)
             super().__init__(**rest)
 
         def base_ring(self):
@@ -224,7 +230,7 @@ def projective_weighted_graph(
 ):
     r"""Return the represented finite projectively weighted graph or digraph."""
     vertices = finite_ordered_set(vertices)
-    projective_line = ProjectiveSpace(base_ring, 1)
+    projective_line = _projective_line_over(base_ring)
     normalized_edges = {
         tuple(edge): projective_line(weight)
         for edge, weight in dict(edge_weights).items()
@@ -373,7 +379,7 @@ class VinbergInvariantMatrices(OwnedCategory):
             self._index_set = finite_ordered_set(index_set)
             self._numerators = numerators
             self._denominators = denominators
-            self._projective_line = ProjectiveSpace(base_ring, 1)
+            self._projective_line = _projective_line_over(base_ring)
             super().__init__(**rest)
 
         def base_ring(self):
