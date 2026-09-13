@@ -66,6 +66,25 @@ def test_group_action_constructs_an_actual_group_algebra_module_parent() -> None
     assert module.module_rank() == line.module_rank()
 
 
+def test_regular_representation_linearizes_left_multiplication_on_the_exact_carrier() -> None:
+    group = Groups.S(3)
+    group_algebra = QQ[group]
+    regular = group_algebra.regular_representation()
+    carrier = group_algebra.underlying_module()
+    left, right = tuple(group.group_generators())[:2]
+
+    assert regular in Modules(group_algebra)
+    assert regular.scalar_restriction() is carrier
+    assert regular.module_rank() == carrier.module_rank() == 6
+    assert regular.action_of(left)(carrier.module_generator(right)) == (
+        carrier.module_generator(left * right)
+    )
+    equipped_right = regular.equip_action_morphism()(carrier.module_generator(right))
+    assert regular.act(left, equipped_right) == regular.equip_action_morphism()(
+        carrier.module_generator(left * right)
+    )
+
+
 def test_group_module_retains_its_owned_set_carrier() -> None:
     _group, _group_algebra, line, _generator, module = _sign_module(QQ)
     label = line.module_generating_set()[0]

@@ -140,10 +140,24 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
 
         @cached_method
         def regular_representation(self):
-            r"""``R[G]`` as a module over itself by left multiplication."""
+            r"""``R[G]`` as a module over itself by left multiplication.
+
+            The algebra object and its coefficient-module carrier are distinct
+            objects: ``Alg_R -> Mod_R`` is the represented forgetful functor,
+            not a category-inclusion edge.  Linearize left multiplication on
+            that exact carrier, then let ``Modules(R[G])`` equip the resulting
+            group action with the group-algebra scalar action.
+            """
             from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-            return Modules(self)(self, lambda g, element: self(g) * element)
+            carrier = self.underlying_module()
+            inclusion = self.group_inclusion()
+
+            def left_action(group_element, element):
+                product = inclusion(group_element) * self(element)
+                return carrier(self._carrier_element(product))
+
+            return Modules(self)(carrier, left_action)
 
         def is_semisimple(self) -> bool:
             r"""Maschke's theorem in its ring form (Lam, FC, Theorem 6.1).
