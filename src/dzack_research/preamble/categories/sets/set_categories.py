@@ -1650,18 +1650,26 @@ class CartesianProductsOfSets(OwnedCategory):
                 return True
             if not isinstance(other, Element) or other.parent() is not self.parent():
                 return False
-            if self.parent() in FiniteEnumeratedCartesianProductsOfSets():
-                ranking = self.parent().ranking_map()
-                return ranking(self) == ranking(other)
             if not self.parent().has_finite_index_set():
                 return True if self._components is other._components else Unknown
             answer = True
+            finite_enumerated = self.parent() in FiniteEnumeratedCartesianProductsOfSets()
             for index in self.parent().index_set():
-                equal = self.component(index) == other.component(index)
+                left = self.component(index)
+                right = other.component(index)
+                if left is right:
+                    continue
+                equal = left == right
                 if equal is False:
                     return False
-                if equal is not True:
-                    answer = Unknown
+                if equal is True:
+                    continue
+                if finite_enumerated:
+                    factor_ranking = self.parent().factor(index).ranking_map()
+                    if factor_ranking(left) != factor_ranking(right):
+                        return False
+                    continue
+                answer = Unknown
             return answer
 
         def __ne__(self, other) -> bool | UnknownClass:

@@ -146,3 +146,27 @@ def test_finite_enumerated_product_equality_uses_the_selected_ranking() -> None:
     assert first == same
     assert first != different
     assert {first: "same"}[same] == "same"
+
+
+def test_finite_product_equality_uses_component_equality_before_inverse_ranking() -> None:
+    labels = Sets.Δ[1]
+    inverse_calls = []
+
+    def inverse_lookup(value):
+        inverse_calls.append(value)
+        return labels[int(value)]
+
+    factor = finite_ordered_image(
+        labels,
+        lambda index: int(index),
+        index_of=inverse_lookup,
+    )
+    product = CartesianProductOfSets(factor, factor)
+    left = product((factor[0], factor[1]))
+    same = product((factor[0], factor[1]))
+    different = product((factor[1], factor[0]))
+    inverse_calls.clear()
+
+    assert left == same
+    assert left != different
+    assert inverse_calls == []
