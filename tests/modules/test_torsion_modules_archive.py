@@ -103,3 +103,15 @@ def test_zero_module_over_padic_field_is_projective_without_smith_normalization(
     assert zero.is_zero()
     assert zero.is_projective()
     assert zero.projective_dimension() == 0
+
+
+def test_padic_dvr_cyclic_torsion_uses_the_owned_presentation_when_engine_echelon_leaves_the_ring() -> None:
+    from dzack_research.preamble.all import Zp
+
+    ring = Zp(2)
+    module = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(6),))
+
+    assert module.base_ring() is ring
+    assert module.is_torsion()
+    assert module.module_rank() == 0
+    assert module.projective_dimension() == 1

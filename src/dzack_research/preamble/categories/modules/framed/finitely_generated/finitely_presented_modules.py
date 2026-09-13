@@ -910,6 +910,17 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             if ring not in PrincipalIdealDomains():
                 raise NotImplementedError("invariant-factor presentation normalization is guaranteed here over a PID")
             presentation = self.presentation()
+            relation_rows = tuple(_matrix_coordinate_rows(self.presentation_matrix()))
+            if all(
+                row_index == column_index or coefficient == ring.zero()
+                for row_index, row in enumerate(relation_rows)
+                for column_index, coefficient in enumerate(row)
+            ):
+                arrows = ArrowCategory(Modules(ring))
+                original_object = arrows(presentation)
+                identity = arrows.Mor(original_object, original_object).identity()
+                return Isomorphism(identity, identity)
+
             diagonal_backend, row_change_backend, column_change_backend = self._selected_presentation_smith_backend()
 
             source_labels = finite_ordered_set(range(int(presentation.domain().module_generating_set().cardinality())))
@@ -2376,7 +2387,16 @@ def FinitelyPresentedModule(
 
         free = SageFreeModule(engine, int(labels.cardinality()))
         backend_rows = [free(tuple(_engine_element(base_ring, coefficient) for coefficient in row)) for row in _matrix_coordinate_rows(relations)]
-        relation_submodule = free.zero_submodule() if not backend_rows else free.submodule(backend_rows)
+        try:
+            relation_submodule = free.zero_submodule() if not backend_rows else free.submodule(backend_rows)
+        except (NotImplementedError, TypeError, ValueError):
+            # Some exact local engines (notably capped-precision p-adic DVRs)
+            # advertise PID linear algebra but Sage's free-submodule echelon
+            # constructor divides by a nonunit pivot and leaves the ring.  The
+            # presentation itself is still exact owned data, so keep its owned
+            # free cover and relation matrix rather than rejecting the module.
+            free = selected_presentation.codomain()
+            relation_submodule = None
         # Sage's FGP implementation calls ``_clear_denom`` internally in
         # its Smith/optimization algorithms.  The live Smith-form surface of
         # this project is the integral ``ZZ`` specialization; other Sage rings
