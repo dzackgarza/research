@@ -1705,6 +1705,78 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         # Functors out of ``Grp``, each spelled as a method of this, their
         # domain category, and named by the construction it performs.
 
+        def _categorical_product_construction(self, factors):
+            r"""Return the selected finite product of represented finite groups.
+
+            GAP's ``DirectProduct`` supplies the product group and its canonical
+            projections.  The owned object is raised through the ordinary group
+            constructor, so finiteness, commutativity, permutation realization,
+            and presentation structure are recovered from that one product rather
+            than attached after construction.
+            """
+            from sage.groups.perm_gps.permgroup import PermutationGroup
+
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                ProductConeCategory,
+                SelectedLimitConstruction,
+                _discrete_diagram,
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Group product factors")
+            assert family.cardinality() != cardinal(0), (
+                "the represented finite-group product currently requires a nonempty family"
+            )
+            if any(factor not in self for factor in family):
+                raise TypeError("a group product requires group-valued factors")
+            assert all(factor in OwnedFiniteGroups() for factor in family), (
+                "the represented group product currently uses GAP's finite-group direct product"
+            )
+            labels = tuple(family.index_set())
+            engines = tuple(_gap_model(family[label]) for label in labels)
+            product_engine = libgap.DirectProduct(*engines)
+            product = _own_group(PermutationGroup(gap_group=product_engine))
+            if product not in self:
+                raise ArithmeticError(
+                    "the finite-group direct product did not retain the factors' common structure"
+                )
+
+            diagram = _discrete_diagram(family, self)
+
+            def projection(label):
+                position = labels.index(label) + 1
+                return group_homset(product, family[label])(
+                    libgap.Projection(product_engine, position)
+                )
+
+            universal_cone = ProductConeCategory(diagram).cone(
+                product,
+                lambda index: projection(index.value()),
+            )
+
+            def factorizer(cone):
+                apex = cone.apex()
+                source_engine = _gap_model(apex)
+                source_generators = tuple(source_engine.GeneratorsOfGroup())
+                images = []
+                for source_generator in source_generators:
+                    owned_generator = _element_from_engine(apex, source_generator)
+                    image = product_engine.One()
+                    for position, label in enumerate(labels, start=1):
+                        leg = cone.structure_morphism(diagram.domain()(label))
+                        factor = family[label]
+                        factor_image = leg(owned_generator)
+                        image *= libgap.Embedding(product_engine, position).Image(
+                            _element_to_engine(factor, factor_image)
+                        )
+                    images.append(image)
+                return group_homset(apex, product)._from_engine_generator_images(
+                    source_generators,
+                    images,
+                )
+
+            return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
         def abelianization(self):
             r"""``(-)^ab : Grp -> Ab``, the abelianization functor.
 
