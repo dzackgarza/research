@@ -2462,6 +2462,8 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             if generator_values is not None:
                 raise ValueError("an unframed algebra cannot carry framed generator values")
             self._preamble_algebra_generator_values = None
+            if self.is_commutative() is True:
+                refine(self, [CommutativeAlgebras(self)])
             return
 
         selected_labels = self._preamble_algebra_generating_set
@@ -2504,6 +2506,8 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             value,
             name=f"Algebra generator values of {self}",
         )
+        if self.is_commutative() is True:
+            refine(self, [CommutativeAlgebras(self)])
 
 
 def _default_structure_map(base, algebra):

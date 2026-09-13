@@ -1273,7 +1273,16 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             integers = self if _engine_ring(self) is SageZZ else _own_ring(SageZZ)
             placements = [Algebras(integers).Associative().Unital()]
             if self.is_commutative() is True:
-                placements.extend((OwnedRings().Commutative(), CommutativeAlgebras(self)))
+                placements.append(OwnedRings().Commutative())
+                # An engine-backed algebra view already carries a selected
+                # scalar base while its Parent is still being initialized.
+                # Building ``Alg_self`` here asks Sage to linearize the
+                # self/base scalar tower before that category is stable and
+                # can make an otherwise valid join fail C3.  The algebra owner
+                # completes this canonical self-algebra placement after its
+                # defining scalar map has been installed.
+                if not hasattr(self, "_preamble_algebra_generating_set"):
+                    placements.append(CommutativeAlgebras(self))
             refine(self, placements)
 
         def _fresh_free_module_on(self, labels, **options):
@@ -2351,12 +2360,16 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         scalar action -- run on this route with nothing left to guess.
         """
         self._engine = engine
-        placement = _owned_ring_category(engine)
-        if category is not None:
-            placement = Category.join((placement, category))
         if base is None:
             scalars = _engine_scalar_ring(engine)
-            base = self if scalars is None else scalars
+            base = self if scalars is None else _own_ring(scalars)
+            category_base = None if scalars is None else base
+        else:
+            base = _own_ring(base)
+            category_base = base
+        placement = _owned_ring_category(engine, scalar_base=category_base)
+        if category is not None:
+            placement = Category.join((placement, category))
         self._preamble_algebra_base_ring = base
         Parent.__init__(self, base=base, category=placement)
         realize_owned_category(self)
@@ -2476,12 +2489,18 @@ def _engine_scalar_ring(engine: Ring):
     return _own_ring(base)
 
 
-def _owned_ring_category(engine: Ring) -> Category:
-    """Return the strongest owned ring category witnessed by ``engine``."""
+def _owned_ring_category(engine: Ring, *, scalar_base=None) -> Category:
+    r"""Return the strongest owned ring category witnessed by ``engine``.
+
+    ``scalar_base`` is the owned base already selected by the constructor.
+    Re-reading an engine scalar parent here can create a second owned view of
+    the same mathematical base and hence two distinct parameterized algebra
+    categories.
+    """
     category = engine.category()
     extra = []
-    scalars = _engine_scalar_ring(engine)
-    if scalars is not None:
+    if scalar_base is not None:
+        scalars = scalar_base
         # The engine presents this ring as an algebra over a base -- a number
         # field over QQ, a p-adic ring over ZZ -- and that is the structure
         # ``base_ring()`` reports, so it is the placement recorded here.

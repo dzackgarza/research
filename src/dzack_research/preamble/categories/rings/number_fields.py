@@ -29,7 +29,10 @@ from dzack_research.preamble.categories.modules.fractional_ideals import (
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
 )
-from dzack_research.preamble.categories.modules.pure.modules import FinitelyGeneratedFreeModules
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+    Modules,
+)
 from dzack_research.preamble.categories.rings.embeddings import (
     NumberFieldHomset,
     order_homset,
@@ -681,7 +684,8 @@ def _owned_order_view(engine):
 @cached_function
 def _owned_number_field_view(engine):
     r"""The strongest number-field view determined by ``engine``, refined in place."""
-    categories = [OwnedNumberFields()]
+    rationals = _own_ring(SageQQ)
+    categories = [OwnedNumberFields(), Modules(rationals)]
     if engine is not SageQQ:
         categories.append(NumberFieldsWithChosenPrimitiveElement())
     return refine(_owned_engine_ring(engine), Cat().meet(tuple(categories)))
