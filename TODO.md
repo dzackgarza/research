@@ -1031,7 +1031,13 @@ carry on with the 36 collection errors, which are this repository's own and are 
   subgroup specializations now thread the inherited ``Subgroups(G)`` datum as
   ``supergroup=G`` through the construction contract instead of hiding it behind
   a duplicate ``containing_group`` name; regular-action point stabilizers again
-  construct with their actual ambient group.
+  construct with their actual ambient group. Finite ``G``-set orbit and fixed-point
+  functors are cached by the source category, so repeated ``X.orbits()`` calls
+  retain one quotient object and orbit-indexed stabilizer families keep that exact
+  index set. Character inner products now use the identity
+  ``conjugate(chi(g)) = chi(g^{-1})`` inside the character/group owners instead of
+  requiring a nonexistent generic complex-conjugation method on owned cyclotomic
+  scalars; direct-sum irreducible constituents are recovered again.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,

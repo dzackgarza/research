@@ -138,7 +138,15 @@ class CharacterSets(OwnedParameterizedCategory):
             )
             total = self.codomain().zero()
             for size, representative in zip(class_sizes, representatives, strict=True):
-                total += size * self(representative) * other(representative).conjugate()
+                # For an ordinary finite-group character,
+                # conjugate(chi(g)) = chi(g^{-1}).  Read the involution through
+                # the character and the group rather than asking every owned
+                # cyclotomic scalar for a separate complex-conjugation API.
+                total += (
+                    size
+                    * self(representative)
+                    * other(representative.inverse())
+                )
             return total / int(group.order())
 
         def irreducible_constituents(self):
