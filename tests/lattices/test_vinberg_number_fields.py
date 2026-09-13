@@ -1,6 +1,6 @@
 r"""Number-field Vinberg roots retain their actual maximal-order coefficients."""
 
-from sage.rings.algebraic_real import AA as SageAA
+from sage.rings.qqbar import AA as SageAA
 
 from dzack_research.preamble.all import Lattices, QuadraticField
 from dzack_research.preamble.categories.hyperbolic_lattices import (
