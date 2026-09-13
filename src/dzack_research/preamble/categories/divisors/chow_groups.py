@@ -7,7 +7,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     Isomorphism,
     _isomorphism_from_known_inverse_pair,
 )
-
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )

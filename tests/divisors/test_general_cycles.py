@@ -1,6 +1,6 @@
 r"""General algebraic cycles retain generic-point multiplicities."""
 
-from dzack_research.preamble.all import AffineSpace, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, AffineSpace
 from dzack_research.preamble.categories.divisors.chow_groups import AlgebraicCycleGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,

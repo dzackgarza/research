@@ -1,6 +1,6 @@
 r"""Projective jets are local quotients at actual represented rational points."""
 
-from dzack_research.preamble.all import ProjectiveSpace, QQ
+from dzack_research.preamble.all import QQ, ProjectiveSpace
 
 
 def test_noncoordinate_projective_point_jet_retains_stalk_and_local_quotient() -> None:

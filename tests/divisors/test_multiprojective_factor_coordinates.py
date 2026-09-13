@@ -1,6 +1,6 @@
 """Multiprojective homogeneous coordinates preserve exact factor roles."""
 
-from dzack_research.preamble.all import ProjectiveSpace, QQ, scheme_product
+from dzack_research.preamble.all import QQ, ProjectiveSpace, scheme_product
 
 
 def test_factor_coordinate_embeddings_keep_repeated_projective_factors_distinct() -> None:

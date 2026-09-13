@@ -1,6 +1,6 @@
 """Character twists change projective section actions without changing the line bundle."""
 
-from dzack_research.preamble.all import C2ProjectiveLineLinearization, ProjectiveSpace, QQ
+from dzack_research.preamble.all import QQ, C2ProjectiveLineLinearization, ProjectiveSpace
 
 
 def _linearizations():

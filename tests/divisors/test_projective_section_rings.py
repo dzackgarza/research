@@ -1,6 +1,6 @@
 r"""Projective section rings retain actual graded pieces and multiplication maps."""
 
-from dzack_research.preamble.all import ProjectiveSpace, QQ, Schemes
+from dzack_research.preamble.all import QQ, ProjectiveSpace, Schemes
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import indexed_family
 from dzack_research.preamble.categories.sets.set_categories import NN

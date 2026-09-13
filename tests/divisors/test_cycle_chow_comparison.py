@@ -1,13 +1,13 @@
 r"""Codimension-one cycles use the existing divisor rational-equivalence quotient."""
 
 from dzack_research.preamble.all import (
+    QQ,
+    ZZ,
     AffineCodimensionOneChowComparison,
     AffineWeilCycleIsomorphism,
     FreeModule,
     PolynomialRing,
-    QQ,
     Spec,
-    ZZ,
 )
 from dzack_research.preamble.categories.divisors.cartier_divisor_groups import (
     CartierDivisorGroup,

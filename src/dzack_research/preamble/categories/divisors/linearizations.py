@@ -22,23 +22,23 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import OwnedGroups
-from dzack_research.preamble.categories.modules.group_modules.group_modules import (
-    group_module_homset,
-)
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     FreshFreeModuleOn,
 )
+from dzack_research.preamble.categories.modules.group_modules.group_modules import (
+    group_module_homset,
+)
 from dzack_research.preamble.categories.modules.pure.modules import Modules
+from dzack_research.preamble.categories.schemes.schemes import (
+    Schemes,
+    _affine_morphism_from_pullback,
+)
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
     indexed_family,
-)
-from dzack_research.preamble.categories.schemes.schemes import (
-    Schemes,
-    _affine_morphism_from_pullback,
 )
 
 

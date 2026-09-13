@@ -1,6 +1,6 @@
 r"""Proper closed pushforward and flat open pullback of affine cycles."""
 
-from dzack_research.preamble.all import AffineCycleGroup, AffineSpace, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, AffineCycleGroup, AffineSpace
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_coefficients,
 )

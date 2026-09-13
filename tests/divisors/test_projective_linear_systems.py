@@ -1,6 +1,6 @@
 r"""Selected projective linear systems retain base loci and rational-map domains."""
 
-from dzack_research.preamble.all import OpenImmersions, ProjectiveSpace, QQ
+from dzack_research.preamble.all import QQ, OpenImmersions, ProjectiveSpace
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/tests/framework/test_linear_systems_restrictions.sage",

@@ -1,6 +1,6 @@
 """Restricted multiprojective line bundles retain their exact multidegree."""
 
-from dzack_research.preamble.all import ProjectiveSpace, QQ, scheme_product
+from dzack_research.preamble.all import QQ, ProjectiveSpace, scheme_product
 from dzack_research.preamble.categories.divisors.invertible_sheaves import (
     ProductProjectiveSubschemeLineBundleIsomorphism,
 )

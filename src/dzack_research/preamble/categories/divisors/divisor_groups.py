@@ -2,7 +2,6 @@
 
 from collections.abc import Mapping
 
-from dzack_research.preamble.owned_category_bases import Category
 from sage.misc.cachefunc import cached_function
 from sage.misc.latex import latex
 
@@ -16,6 +15,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from dzack_research.preamble.owned_category_bases import Category
 
 
 def _module_in_role(module, category, message, *, construction_data=None):

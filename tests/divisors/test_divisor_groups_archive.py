@@ -1,10 +1,10 @@
 r"""Archive reconciliation for the five divisor-group role categories."""
 
 from dzack_research.preamble.all import (
-    Cat,
     ZZ,
     CartierDivisorGroup,
     CartierDivisorGroups,
+    Cat,
     ClassGroup,
     ClassGroups,
     DivisorGroup,

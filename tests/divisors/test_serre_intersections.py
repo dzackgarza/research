@@ -1,6 +1,6 @@
 r"""Supported local intersections use Serre's alternating Tor lengths."""
 
-from dzack_research.preamble.all import AffineSpace, QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, AffineSpace
 
 
 def test_self_intersection_of_origin_on_affine_line_has_cancelling_tor_one() -> None:

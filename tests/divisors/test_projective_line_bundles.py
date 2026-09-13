@@ -1,9 +1,9 @@
 r"""Standard projective line bundles use the generic finite-atlas descent owner."""
 
 from dzack_research.preamble.all import (
+    QQ,
     FiniteAtlasInvertibleSheaf,
     ProjectiveSpace,
-    QQ,
     Schemes,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
