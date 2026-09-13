@@ -92,3 +92,23 @@ def test_dependent_product_and_coproduct_have_category_owned_constructors() -> N
     assert coproduct.index_set() is labels
     assert coproduct.cofactor(labels[0]) is left
     assert coproduct.cofactor(labels[1]) is right
+
+
+def test_finite_enumerated_product_exposes_its_mixed_radix_ranking_map() -> None:
+    left = Sets.Δ[1]
+    right = Sets.Δ[2]
+    product = CartesianProductOfSets(left, right)
+    ranking = product.ranking_map()
+    expected = (
+        (left(0), right(0)),
+        (left(0), right(1)),
+        (left(0), right(2)),
+        (left(1), right(0)),
+        (left(1), right(1)),
+        (left(1), right(2)),
+    )
+
+    for position, coordinates in enumerate(expected):
+        point = product(coordinates)
+        assert int(ranking(point)) == position
+        assert ranking.inverse()(position) == point

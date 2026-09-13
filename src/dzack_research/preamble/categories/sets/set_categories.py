@@ -1434,9 +1434,14 @@ def _cartesian_product_of[IndexT](index_set: Parent, family: Callable[[IndexT], 
     placements = [product_category]
     if index_set in FiniteSets() and index_set in EnumeratedSets():
         if all(family(index) in FiniteSets() for index in index_set):
-            placements.append(FiniteSets())
             if all(family(index) in EnumeratedSets() for index in index_set):
-                placements.extend((EnumeratedSets(), FiniteEnumeratedSets()))
+                category = FiniteEnumeratedCartesianProductsOfSets()
+                return product_category.ObjectType(
+                    category=category,
+                    index_set=index_set,
+                    family=family,
+                )
+            placements.append(FiniteSets())
     category = Category.join(placements)
     return product_category.ObjectType(category=category, index_set=index_set, family=family)
 
@@ -1568,52 +1573,7 @@ class CartesianProductsOfSets(OwnedCategory):
 
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
-            r"""The mixed-radix enumeration of a finite product of finite factors.
-
-            The represented enumeration is the mixed-radix one, which needs a
-            finite index set and a finite enumerated factor at each index.
-            Countably many finite factors need not have a countable product:
-            the product of copies of $\{0,1\}$ is the set of characteristic
-            functions of subsets of $\mathbb N$, hence is uncountable by
-            Cantor's diagonal argument.  No ranking by $\omega$ is asserted
-            for such a product.
-            """
-            assert self.has_finite_index_set(), "the mixed-radix enumeration is represented over a finite index set"
-            assert self.index_set() in EnumeratedSets(), "the mixed-radix enumeration reads its index order off the index set"
-            index_count = int(cardinal(self.index_set().cardinality()).finite_value())
-            index_ranking = self.index_set().ranking_map()
-            index_at = index_ranking.inverse()
-            for index in self.index_set():
-                factor = self.factor(index)
-                assert factor in EnumeratedSets(), f"the factor at {index} states no enumeration of its own"
-                assert cardinal(factor.cardinality()).is_finite(), f"the factor at {index} is infinite, so the product's mixed-radix enumeration is not represented here"
-            total_size = int(cardinal(self.cardinality()).finite_value())
-
-            def point_at(position):
-                position = int(position)
-                if position < 0 or position >= total_size:
-                    raise IndexError(position)
-                assignment = {}
-                quotient = position
-                for offset in range(index_count - 1, -1, -1):
-                    index = index_at(offset)
-                    factor = self.factor(index)
-                    radix = int(cardinal(factor.cardinality()).finite_value())
-                    quotient, digit = divmod(quotient, radix)
-                    assignment[offset] = factor.ranking_map().inverse()(digit)
-                return self(lambda index: assignment[int(index_ranking(index))])
-
-            def position_of(section):
-                section = self(section)
-                position = 0
-                for index in self.index_set():
-                    factor = self.factor(index)
-                    radix = int(cardinal(factor.cardinality()).finite_value())
-                    digit = int(factor.ranking_map()(section.component(index)))
-                    position = position * radix + digit
-                return position
-
-            return ranking_isomorphism(self, position_of, point_at)
+            return _cartesian_product_ranking_map(self)
 
         def projection(self, index: IndexT) -> SetMorphism:
             normalized = self.index_set()(index)
@@ -1664,6 +1624,77 @@ class CartesianProductsOfSets(OwnedCategory):
 
     def super_categories(self):
         return [Sets()]
+
+
+def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
+    r"""Return the mixed-radix enumeration of a finite enumerated product.
+
+    This is the enumeration datum that justifies placing the product in
+    :class:`EnumeratedSets`.  Keeping it outside either category's method MRO
+    lets the specialized placement expose the concrete map without duplicating
+    the product algorithm.
+    """
+    assert product.has_finite_index_set(), (
+        "the mixed-radix enumeration is represented over a finite index set"
+    )
+    assert product.index_set() in EnumeratedSets(), (
+        "the mixed-radix enumeration reads its index order off the index set"
+    )
+    index_count = int(cardinal(product.index_set().cardinality()).finite_value())
+    index_ranking = product.index_set().ranking_map()
+    index_at = index_ranking.inverse()
+    for index in product.index_set():
+        factor = product.factor(index)
+        assert factor in EnumeratedSets(), (
+            f"the factor at {index} states no enumeration of its own"
+        )
+        assert cardinal(factor.cardinality()).is_finite(), (
+            f"the factor at {index} is infinite, so the product's mixed-radix enumeration is not represented here"
+        )
+    total_size = int(cardinal(product.cardinality()).finite_value())
+
+    def point_at(position):
+        position = int(position)
+        if position < 0 or position >= total_size:
+            raise IndexError(position)
+        assignment = {}
+        quotient = position
+        for offset in range(index_count - 1, -1, -1):
+            index = index_at(offset)
+            factor = product.factor(index)
+            radix = int(cardinal(factor.cardinality()).finite_value())
+            quotient, digit = divmod(quotient, radix)
+            assignment[offset] = factor.ranking_map().inverse()(digit)
+        return product(lambda index: assignment[int(index_ranking(index))])
+
+    def position_of(section):
+        section = product(section)
+        position = 0
+        for index in product.index_set():
+            factor = product.factor(index)
+            radix = int(cardinal(factor.cardinality()).finite_value())
+            digit = int(factor.ranking_map()(section.component(index)))
+            position = position * radix + digit
+        return position
+
+    return ranking_isomorphism(product, position_of, point_at)
+
+
+class FiniteEnumeratedCartesianProductsOfSets(OwnedCategory):
+    r"""Finite dependent products carrying their mixed-radix enumeration."""
+
+    def super_categories(self):
+        return [
+            CartesianProductsOfSets(),
+            EnumeratedSets(),
+            FiniteSets(),
+            FiniteEnumeratedSets(),
+        ]
+
+    class ParentMethods:
+        @cached_method
+        def ranking_map(self) -> CategoricalIsomorphism:
+            return _cartesian_product_ranking_map(self)
 
 
 class CoproductsOfSets(OwnedCategory):
