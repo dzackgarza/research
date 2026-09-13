@@ -61,7 +61,7 @@ class IndexedFamily[IndexT, ValueT](SageObject):
             # Hashing is an implementation property, not a hypothesis on an
             # indexing set. Only labels actually requested are retained.
             for known, value in self._unhashable_value_cache:
-                if normalized == known:
+                if (normalized == known) is True:
                     return value
             value = self._value_function(normalized)
             self._unhashable_value_cache.append((normalized, value))
