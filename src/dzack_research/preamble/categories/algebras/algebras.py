@@ -631,6 +631,10 @@ class Algebras(OwnedCategoryOverBaseRing):
             r"""Return the refinement equipped with a two-sided unit."""
             return self._with_axiom("Unital")
 
+        def Commutative(self):
+            r"""Return the refinement satisfying ``xy=yx``."""
+            return self._with_axiom("Commutative")
+
         def Lie(self):
             r"""Return the refinement whose selected multiplication is a Lie bracket."""
             return self._with_axiom("Lie")
