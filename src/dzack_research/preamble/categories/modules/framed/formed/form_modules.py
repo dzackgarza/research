@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.modules.framed.finitely_generated.finite
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
     BasedFreeModule,
     FramedFreeModules,
+    MatrixSpace,
     FreeModuleOn,
     FreshFreeModuleOn,
     _module_subobject_constructor_data,
@@ -1425,6 +1426,16 @@ class FinitelyGeneratedFreeFormModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
         base_change = FormModules.ParentMethods.base_change
+
+        def gram_matrix(self, basis=None):
+            r"""Return the coordinate matrix of the selected finite free form."""
+            selected = tuple(self.module_generators()) if basis is None else tuple(basis)
+            if any(vector.parent() is not self for vector in selected):
+                raise ValueError("a Gram matrix basis consists of vectors of this formed module")
+            size = len(selected)
+            return MatrixSpace(self.value_module(), size, size).from_rows(
+                tuple(tuple(self.b(left, right) for right in selected) for left in selected)
+            )
 
         @cached_method
         def dual_module(self):

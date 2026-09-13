@@ -630,18 +630,47 @@ class ModuleMorphism(Morphism):
         return self._linear_combination_of_generator_images(coefficients)
 
     def matrix(self):
-        r"""Return the underlying free-module morphism under the matrix-Hom identification.
+        r"""Return the canonical coordinate matrix of this finite free map.
 
-        If this already lies in the full module Hom, it is returned literally.
-        A stricter structured morphism (for example a lattice isometry) is
-        first regarded as the corresponding element of the full ``R``-module
-        Hom with the same endpoints.
+        Coordinates live in the canonical matrix Hom
+        ``Hom_R(F_R([n]), F_R([m]))``.  A map whose endpoints already are
+        those canonical free modules is literally that matrix element; an
+        arbitrary framed map is transported only at this coordinate-view
+        boundary.
         """
 
         if not (_has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain())):
             raise NotImplementedError("a coordinate matrix requires finitely generated framed free endpoints")
-        homset = module_homset(self.domain(), self.codomain())
-        return self if self.parent() is homset else homset(self)
+        from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+            MatrixSpace,
+        )
+
+        domain_labels = tuple(self.domain().module_generating_set())
+        codomain_labels = tuple(self.codomain().module_generating_set())
+        coordinate_parent = MatrixSpace(
+            self.domain().base_ring(),
+            len(codomain_labels),
+            len(domain_labels),
+        )
+        if self.parent() is coordinate_parent:
+            return self
+        columns = {
+            domain_label: module_coefficients(
+                self(self.domain().module_generator(domain_label)),
+                self.codomain(),
+            )
+            for domain_label in domain_labels
+        }
+        zero = self.codomain().base_ring().zero()
+        return coordinate_parent.from_rows(
+            tuple(
+                tuple(
+                    columns[domain_label].get(codomain_label, zero)
+                    for domain_label in domain_labels
+                )
+                for codomain_label in codomain_labels
+            )
+        )
 
     def stack(self, other):
         r"""Return ``(self,other)`` into the biproduct of the codomains."""
@@ -1236,15 +1265,47 @@ class ModuleMorphism(Morphism):
         return module_homset(codomain, self.domain())(image)
 
     def inverse(self):
-        r"""Return the two-sided inverse of an isomorphism.
+        r"""Return the two-sided inverse, with coordinate inversion on matrix objects.
 
-        A bijection has one preimage of each generator of the codomain, so the
-        same construction that gives a section gives the inverse, and it needs
-        no freeness: where a section had to choose, this has nothing to choose.
-        The linear extension of those preimages is checked against the
-        codomain's relations by the constructor, which is where the assembled
-        map either is a morphism or is not.
+        A general module morphism must be an isomorphism.  The canonical
+        matrix Hom is also the coordinate-matrix object, where inversion is
+        the ordinary matrix operation and may extend coefficients to the
+        backend inverse's scalar ring (for example ``ZZ`` to ``QQ``).
         """
+        if _has_finite_free_framing(self.domain()) and _has_finite_free_framing(self.codomain()):
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                MatrixSpace,
+            )
+
+            domain_labels = tuple(self.domain().module_generating_set())
+            codomain_labels = tuple(self.codomain().module_generating_set())
+            coordinate_parent = MatrixSpace(
+                self.domain().base_ring(),
+                len(codomain_labels),
+                len(domain_labels),
+            )
+            if self.parent() is coordinate_parent:
+                if len(domain_labels) != len(codomain_labels):
+                    raise ValueError("a matrix inverse requires a square matrix")
+                from dzack_research.preamble.categories.modules.pure.modules import (
+                    _engine_matrix,
+                )
+                from dzack_research.preamble.categories.rings.ring_foundation import (
+                    _own_ring,
+                )
+
+                backend = _engine_matrix(self).inverse()
+                result_ring = _own_ring(backend.base_ring())
+                target = MatrixSpace(result_ring, backend.nrows(), backend.ncols())
+                return target.from_rows(
+                    tuple(
+                        tuple(
+                            result_ring._from_engine_element(backend[row, column])
+                            for column in range(backend.ncols())
+                        )
+                        for row in range(backend.nrows())
+                    )
+                )
 
         assert self.is_injective(), "only a bijection has a two-sided inverse"
         assert self.is_surjective(), "only a bijection has a two-sided inverse"
