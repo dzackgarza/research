@@ -138,7 +138,7 @@ def _gap_model(group):
             return group._libgap_()
     engine = _engine_group(group)
     match engine:
-        case PermutationGroup_generic():
+        case PermutationGroup_generic() | FreeGroup_class() | FinitelyPresentedGroup():
             return libgap(engine)
         case ParentLibGAP():
             return engine.gap()
@@ -175,7 +175,10 @@ def _elements_have_gap_models(group) -> bool:
         engine = _engine_group(group)
     except NotImplementedError:
         return False
-    return isinstance(engine, (PermutationGroup_generic, ParentLibGAP))
+    return isinstance(
+        engine,
+        (PermutationGroup_generic, ParentLibGAP, FreeGroup_class, FinitelyPresentedGroup),
+    )
 
 
 def _transported_subgroup(group, engine_subgroup):
@@ -282,6 +285,9 @@ def _engine_cosets(group, subgroup, side):
 
 
 def _unique_nonidentity_generators(group):
+    match group:
+        case OwnedGroup() if group._preamble_selected_group_generators is not None:
+            return group._preamble_selected_group_generators
     engine = _engine_group(group)
     backend_generators = tuple(engine.gens())
     owned_generators = finite_ordered_image(
@@ -460,6 +466,13 @@ def _is_abelian_witness(engine):
         return True
     if isinstance(engine, (AbelianGroup_class, AbelianGroup_subgroup)):
         return True
+    if isinstance(engine, FreeGroup_class):
+        return len(tuple(engine.gens())) <= 1
+    if isinstance(engine, FinitelyPresentedGroup):
+        # A bare finite presentation is not a cheap abelianity certificate.
+        # Sage/GAP may launch a coset-table computation here, while this routine
+        # only decides whether construction already supplied a positive witness.
+        return False
     try:
         return bool(engine.is_abelian())
     except (AttributeError, NotImplementedError, TypeError, ValueError):
@@ -636,6 +649,7 @@ class OwnedGroup(Parent):
 
     def __init__(self, engine) -> None:
         self._engine = engine
+        self._preamble_selected_group_generators = None
         Parent.__init__(self, category=_owned_group_category(engine))
         realize_owned_category(self)
 
@@ -1776,6 +1790,119 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 )
 
             return SelectedLimitConstruction(diagram, universal_cone, factorizer)
+
+        def _categorical_coproduct_construction(self, factors):
+            r"""Return the selected finite coproduct of represented finite groups.
+
+            In ``Grp`` the coproduct is the free product.  GAP supplies finite
+            presentation isomorphisms for the represented finite factors, the
+            maintained ``FreeProduct`` construction, and its canonical factor
+            embeddings.  The result is raised as one owned finitely presented
+            group; no GAP group or mapping crosses the public boundary.
+            """
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                CoproductCoconeCategory,
+                SelectedColimitConstruction,
+                _discrete_diagram,
+                _finite_factor_family,
+            )
+
+            family = _finite_factor_family(factors, name="Group coproduct factors")
+            assert family.cardinality() != cardinal(0), (
+                "the represented group coproduct currently requires a nonempty family"
+            )
+            if any(factor not in self for factor in family):
+                raise TypeError("a group coproduct requires group-valued factors")
+            assert all(factor in OwnedFiniteGroups() for factor in family), (
+                "the represented group coproduct currently uses GAP's finite-group "
+                "presentation and free-product algorithms"
+            )
+
+            labels = tuple(family.index_set())
+            presentation_isomorphisms = tuple(
+                _gap_model(family[label]).IsomorphismFpGroup() for label in labels
+            )
+            presented_factors = tuple(
+                isomorphism.Image() for isomorphism in presentation_isomorphisms
+            )
+            coproduct_engine = libgap.FreeProduct(*presented_factors)
+            coproduct = _own_group(coproduct_engine.sage())
+            selected_generators = tuple(
+                _element_from_engine(coproduct, generator)
+                for generator in coproduct_engine.GeneratorsOfGroup()
+            )
+            generator_positions = Sets.Δ[len(selected_generators) - 1]
+            coproduct._preamble_selected_group_generators = finite_ordered_image(
+                generator_positions,
+                lambda position: selected_generators[int(position)],
+                name=f"Chosen generators of {coproduct}",
+            )
+            nontrivial_factors = sum(
+                1 for label in labels if int(family[label].order()) > 1
+            )
+            refine(
+                coproduct,
+                OwnedInfiniteGroups()
+                if nontrivial_factors >= 2
+                else OwnedFiniteGroups(),
+            )
+
+            embeddings = tuple(
+                libgap.Embedding(coproduct_engine, position)
+                for position in range(1, len(labels) + 1)
+            )
+            target_category = OwnedGroups()
+            diagram = _discrete_diagram(family, target_category)
+
+            def injection(label):
+                position = labels.index(label)
+                return group_homset(family[label], coproduct)(
+                    presentation_isomorphisms[position] * embeddings[position]
+                )
+
+            universal_cocone = CoproductCoconeCategory(diagram).cocone(
+                coproduct,
+                lambda index: injection(index.value()),
+            )
+
+            def factorizer(cocone):
+                apex = cocone.apex()
+                assert _elements_have_gap_models(apex), (
+                    "the represented free-product factorization currently requires "
+                    "an apex with elementwise GAP coordinates"
+                )
+                generator_models = []
+                image_models = []
+                for position, label in enumerate(labels):
+                    factor = family[label]
+                    leg = cocone.costructure_morphism(diagram.domain()(label))
+                    isomorphism = presentation_isomorphisms[position]
+                    embedding = embeddings[position]
+                    for presented_generator in presented_factors[
+                        position
+                    ].GeneratorsOfGroup():
+                        generator_models.append(
+                            embedding.Image(presented_generator)
+                        )
+                        factor_generator = isomorphism.PreImagesRepresentative(
+                            presented_generator
+                        )
+                        image_models.append(
+                            _element_to_engine(
+                                apex,
+                                leg(_element_from_engine(factor, factor_generator)),
+                            )
+                        )
+                return group_homset(coproduct, apex)._from_engine_generator_images(
+                    generator_models,
+                    image_models,
+                )
+
+            return SelectedColimitConstruction(
+                diagram,
+                universal_cocone,
+                factorizer,
+            )
 
         def abelianization(self):
             r"""``(-)^ab : Grp -> Ab``, the abelianization functor.
