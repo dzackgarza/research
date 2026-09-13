@@ -354,6 +354,8 @@ class _GradedLebesgueElement(ModuleElement):
         )
 
     def _lmul_(self, scalar):
+        if scalar == self.parent().base_ring().zero():
+            return self.parent().zero()
         return self.parent()._from_components(
             {degree: scalar * function for degree, function in self._components.items()}
         )
