@@ -178,10 +178,21 @@ def GroupAlgebra(base_ring, group):
     )
     unit_element = module.module_generator(group.one())
     unit = _unit_morphism_from_element(module, unit_element, ring)
-    algebra = Algebras(ring).Associative().Unital()(module, multiplication, unit)
+
+    # The group law already decides the multiplication before the object is
+    # refined into the ring category: R[G] is commutative exactly when R and
+    # G are commutative.  Retain that defining datum before the unital
+    # refinement reaches OwnedRings; its construction hook legitimately asks
+    # the algebra for commutativity.  No finite enumeration of G is involved.
+    algebra = Algebras(ring)(module, multiplication)
+    algebra._preamble_multiplication_morphism = multiplication
+    algebra._preamble_algebra_is_commutative = bool(
+        ring.is_commutative() and group.is_abelian()
+    )
+    algebra = Algebras(ring).Associative().Unital()(algebra, unit)
     algebra._preamble_group = group
     refine(algebra, GroupAlgebras(ring))
-    if group.is_abelian():
+    if algebra.is_commutative():
         refine(algebra, CommutativeAlgebras(ring))
     return algebra
 

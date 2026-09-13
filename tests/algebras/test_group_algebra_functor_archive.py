@@ -125,3 +125,11 @@ def test_group_algebra_multiplication_remembers_whether_the_group_commutes() -> 
         != symmetric_algebra.module_generator(right)
         * symmetric_algebra.module_generator(left)
     )
+
+
+def test_group_algebra_commutativity_is_available_before_ring_refinement() -> None:
+    cyclic_algebra = GroupAlgebraFunctor(ZZ)(Groups.C(2))
+    symmetric_algebra = GroupAlgebraFunctor(ZZ)(Groups.S(3))
+
+    assert cyclic_algebra.is_commutative() is True
+    assert symmetric_algebra.is_commutative() is False

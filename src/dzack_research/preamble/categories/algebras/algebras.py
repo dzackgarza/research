@@ -662,6 +662,24 @@ class Algebras(OwnedCategoryOverBaseRing):
         def is_algebra(self) -> bool:
             return True
 
+        def is_commutative(self):
+            r"""Return whether the selected multiplication commutes when decided.
+
+            A constructor that knows the answer records it as defining algebra
+            data.  Otherwise a finite framing decides it from the multiplication
+            itself; an infinite framing leaves the question ``Unknown`` rather
+            than forcing enumeration.  This method belongs to the algebra node
+            because commutativity is a property of the multiplication before it
+            becomes a category refinement.
+            """
+            selected = self.__dict__.get("_preamble_algebra_is_commutative")
+            if selected is not None:
+                return bool(selected)
+            labels = self.module_generating_set()
+            if labels.cardinality().is_finite() is not True:
+                return Unknown
+            return _multiplication_is_commutative(self.multiplication_morphism())
+
         def _element_constructor_(self, element):
             r"""Read an algebra element in the exact retained module."""
             if not _has_exact_algebra_carrier(self):
