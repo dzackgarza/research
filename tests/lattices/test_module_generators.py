@@ -7,6 +7,7 @@ from dzack_research.preamble.all import (
     QuadraticField,
     Set,
     signature_pair,
+    signature_pairs,
     ZZ,
 )
 from dzack_research.preamble.categories.sets import NN, finite_ordered_set
@@ -148,6 +149,12 @@ def test_lattices_over_an_order_do_not_sniff_cartan_type() -> None:
     assert f * f == 1
     assert not lattice.is_even()
     assert even_lattice.is_even()
+
+
+def test_signature_pair_uses_the_public_cardinal_product_parent() -> None:
+    pair = signature_pair(1, 2)
+
+    assert pair.parent() is signature_pairs()
 
 
 def test_signature_pair_uses_the_fraction_field() -> None:
