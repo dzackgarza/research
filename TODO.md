@@ -905,7 +905,13 @@ that exists precisely so repairs are made against observed failures rather than 
 Take `terminal-reference` now.
 
 - [ ] **`terminal-reference`**. **Needs:** none.
-  After required implementation and transfer are finished, generate the
+  *Required implementation and transfer are finished.* They mean the twenty-eight
+  implementation nodes checked off in this file — `toric-cohomology`, `tor-ext`,
+  `witt-recursion`, `arithmetic-applications` and the rest — and every one is closed.
+  `optional-database` and `optional-engine` are optional by name and gate nothing.
+  A repair you discover from here does not reopen that condition; if it did, the
+  condition could never be met, because there is always one more repair to find.
+  Generate the
   preamble reference and category/functor graph from the integrated source,
   then read them against the intended objects, maps and inherited operations.
   **Acceptance:** documentation describes that source and exposes the
