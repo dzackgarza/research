@@ -59,6 +59,28 @@ ARCHIVE_RECONCILIATION = {
 }
 
 
+def test_archived_form_type_names_alias_the_universal_module_hom_owners() -> None:
+    from dzack_research.preamble.categories.forms.forms import (
+        BilinearFormHomset,
+        BilinearFormMorphism,
+        QuadraticFormHomset,
+        QuadraticFormMorphism,
+    )
+    from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+        TensorProductModuleHomset,
+        TensorProductModuleMorphism,
+    )
+    from dzack_research.preamble.categories.modules.powers import (
+        QuadraticModuleHomset,
+        QuadraticModuleMorphism,
+    )
+
+    assert BilinearFormHomset is TensorProductModuleHomset
+    assert BilinearFormMorphism is TensorProductModuleMorphism
+    assert QuadraticFormHomset is QuadraticModuleHomset
+    assert QuadraticFormMorphism is QuadraticModuleMorphism
+
+
 def test_quadratic_map_and_divided_square_classifier_are_inverse_presentations() -> None:
     module = BasedFreeModule(ZZ, finite_ordered_set(("x", "y")))
     x = module.module_generator("x")

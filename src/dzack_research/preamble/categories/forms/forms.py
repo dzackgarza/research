@@ -14,12 +14,14 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorProduct
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    TensorProductModuleHomset,
     TensorProductModuleMorphism,
     module_coefficients,
     module_homset,
 )
 from dzack_research.preamble.categories.modules.powers import (
     DividedSquare,
+    QuadraticModuleHomset,
     QuadraticModuleMorphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
@@ -47,6 +49,14 @@ from dzack_research.preamble.categories.sets.coordinate_families import (
 )
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
 from dzack_research.preamble.tensors.tensor import tensor
+
+
+# Historical form vocabulary now names the universal module-Hom owners.
+# These are aliases, not parallel form implementations.
+PairingMorphism = TensorProductModuleMorphism
+BilinearFormMorphism = TensorProductModuleMorphism
+BilinearFormHomset = TensorProductModuleHomset
+QuadraticFormHomset = QuadraticModuleHomset
 
 
 class BilinearFormHoms(OwnedCategoryOverBaseRing):
