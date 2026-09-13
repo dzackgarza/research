@@ -825,6 +825,25 @@ class ModuleMorphism(Morphism):
         )
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
 
+    def factor_through(self, target_embedding):
+        r"""Return the unique factor through a represented module embedding.
+
+        For ``f:A -> X`` and a monomorphism ``j:B -> X`` this constructs the
+        commuting-triangle map ``A -> B`` exactly when every selected generator
+        image of ``f`` lies in ``j(B)``.  The source map need not itself be a
+        monomorphism; uniqueness comes from ``j``.
+        """
+        if target_embedding.codomain() is not self.codomain():
+            raise ValueError("module factorization through a subobject requires one common codomain")
+        images = {}
+        for label in self.domain().module_generating_set():
+            image = self(self.domain().module_generator(label))
+            try:
+                images[label] = target_embedding.lift(image)
+            except (TypeError, ValueError) as error:
+                raise ValueError("the morphism image is not contained in the target subobject") from error
+        return module_homset(self.domain(), target_embedding.domain())(images)
+
     @cached_method
     def selected_presentation_morphism(self):
         r"""Lift this map to a commuting square of selected presentations.
@@ -1224,23 +1243,6 @@ class ModuleEmbedding(ModuleMorphism):
 
     def is_injective(self) -> bool:
         return True
-
-    def factor_through(self, target_embedding):
-        r"""Return the unique factor through ``target_embedding`` when it exists.
-
-        For inclusions ``i:A -> X`` and ``j:B -> X`` this constructs the
-        commuting-triangle map ``A -> B`` exactly when ``i(A) <= j(B)``.
-        """
-        if target_embedding.codomain() is not self.codomain():
-            raise ValueError("subobject factorization requires one common codomain")
-        images = {}
-        for label in self.domain().module_generating_set():
-            image = self(self.domain().module_generator(label))
-            try:
-                images[label] = target_embedding.lift(image)
-            except (TypeError, ValueError) as error:
-                raise ValueError("the first subobject is not contained in the second") from error
-        return module_homset(self.domain(), target_embedding.domain())(images)
 
 
 def _model_smith_engine(homset):
