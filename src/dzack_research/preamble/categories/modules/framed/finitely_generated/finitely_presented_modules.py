@@ -151,6 +151,29 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return False
             return bool(same_ring and same_presentation)
 
+        def __eq__(self, other):
+            r"""Compare the underlying represented modules, not extra equipment.
+
+            A selected finite presentation determines the represented cokernel,
+            so refinements such as localization or a chosen subobject inclusion
+            do not create a new underlying module.  Ideals retain their stronger
+            extensional equality as submodules of the ambient ring.
+            """
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                CommutativeIdeals,
+            )
+
+            ideals = CommutativeIdeals(self.base_ring())
+            if self in ideals and other in ideals:
+                return self._engine_ideal() == other._engine_ideal()
+            return self._same_selected_presentation_as(other)
+
+        def __ne__(self, other):
+            return not self == other
+
+        def __hash__(self):
+            return hash((self.base_ring(), self.presentation()))
+
         def _same_presentation_module(
             self,
             labels,
@@ -1499,27 +1522,6 @@ class _GeneralPresentedModule:
     has a Sage engine, else the owned free cover and ``None``.  Both are
     private; the category states the mathematics.
     """
-
-    def __eq__(self, other):
-        r"""Compare the underlying represented modules, not extra equipment.
-
-        Two ideals are equal when they are the same submodule of the ring,
-        whatever presentations were selected for them; that is the ideal
-        category's equality, routed to here because an ideal is placed in
-        both categories and equality is decided in one place.
-        """
-        from dzack_research.preamble.categories.rings.commutative_ideals import CommutativeIdeals
-
-        ideals = CommutativeIdeals(self.base_ring())
-        if self in ideals and other in ideals:
-            return self._engine_ideal() == other._engine_ideal()
-        return self._same_selected_presentation_as(other)
-
-    def __ne__(self, other):
-        return not self == other
-
-    def __hash__(self):
-        return hash((self.base_ring(), self.presentation()))
 
     def __init__(
         self,
