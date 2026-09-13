@@ -982,11 +982,13 @@ These are not prerequisites for the required mathematics or terminal T.
   The terminal node, and it loops rather than closing. Continually audit the codebase for
   unnecessary bloat, bad style and non-idiomatic constructions, opportunities to reduce lines
   of code, and anything hand-rolled that could be offloaded to a dependency — Python or
-  otherwise, inside Sage or outside it. Append every finding to `COMPLAINTS.md` as it is found.
+  otherwise, inside Sage or outside it. Append every finding to `COMPLAINTS.md` as it is found,
+  and repair at least one finding in the same turn that records it.
 
-  Findings accumulate there; they do not have to be fixed in the same pass, and the audit is
-  never declared finished. When there are no findings in a pass, record nothing and run it
-  again later.
+  A pass that files findings and repairs none has not advanced this node, and a commit whose
+  only content is a `COMPLAINTS.md` entry is not a unit of work. The backlog there may outrun
+  the repairs, and the audit is never declared finished. When there are no findings in a pass,
+  record nothing and run it again later.
 
 - [ ] **`optional-database`**. **Needs:** none.
   Add a database/classification example when it supplies data needed by
