@@ -366,7 +366,9 @@ class DiscreteCategories(OwnedCategory):
         return DiscreteCategory(Sets().an_object())
 
     def super_categories(self):
-        return [Objects()]
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return [Cat()]
 
     def __contains__(self, candidate) -> bool:
 
