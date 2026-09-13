@@ -21,7 +21,6 @@ from dzack_research.preamble.categories.abstract_categories.hom_categories impor
     HomCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
-from dzack_research.preamble.categories.algebras.algebras import CommutativeAlgebras
 from dzack_research.preamble.categories.group.groups import _own_group
 from dzack_research.preamble.categories.modules.fractional_ideals import (
     FractionalIdeal,
@@ -44,6 +43,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_ring,
     _own_ring,
     _owned_engine_ring,
+    ring_homset,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -218,11 +218,55 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def embeddings(self, target):
-            r"""Return the exact owned field embeddings ``K -> target``."""
+            r"""Return the owned field embeddings ``K -> target``.
+
+            If the target is again a number field, the arrows live in the
+            specialized number-field Hom.  Embeddings into a larger owned
+            field such as ``AA``, ``RR`` or ``CC`` are ring morphisms in the
+            ambient field category; the codomain is not falsely promoted to a
+            finite extension of ``QQ``.
+            """
 
             if target not in OwnedFields():
                 raise TypeError("number-field embeddings require an owned target field")
-            return self.Mor(target).embeddings()
+            if target in OwnedNumberFields():
+                return self.Mor(target).embeddings()
+
+            source_engine = _engine_ring(self)
+            from dzack_research.preamble.rings.real import ExactRealField
+
+            match target:
+                case ExactRealField():
+                    from sage.rings.qqbar import AA as SageAA
+
+                    engine_embeddings = tuple(source_engine.embeddings(SageAA))
+
+                    def embedding_at(position):
+                        engine_embedding = engine_embeddings[int(position)]
+                        return ring_homset(self, target).elementwise(
+                            lambda element: target(
+                                engine_embedding(
+                                    _engine_element(self, self(element))
+                                )
+                            )
+                        )
+
+                case _:
+                    engine_embeddings = tuple(
+                        source_engine.embeddings(_engine_ring(target))
+                    )
+
+                    def embedding_at(position):
+                        return ring_homset(self, target)(
+                            engine_embeddings[int(position)]
+                        )
+
+            positions = finite_ordered_set(range(len(engine_embeddings)))
+            return finite_ordered_image(
+                positions,
+                embedding_at,
+                name=f"Embeddings of {self} into {target}",
+            )
 
         def is_galois(self) -> bool:
             r"""Return whether ``K/QQ`` is Galois."""
