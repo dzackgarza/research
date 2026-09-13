@@ -65,6 +65,14 @@ def test_algebra_structure_morphism_lands_in_the_center() -> None:
     assert polynomial_eta.codomain() is polynomials
 
 
+def test_forgetful_functor_wraps_an_unframed_ring_with_its_scalar_base() -> None:
+    underlying = algebra_underlying_module_functor(ZZ)(ZZ)
+
+    assert underlying.base_ring() is ZZ
+    assert underlying.realized_object() is ZZ
+    assert underlying(ZZ(2)).underlying_element() == ZZ(2)
+
+
 def test_forgetful_functor_sends_an_algebra_to_its_underlying_module() -> None:
     order = _gaussian_integers()
     underlying = algebra_underlying_module_functor(ZZ)

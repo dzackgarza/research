@@ -59,12 +59,15 @@ class _UnderlyingAlgebraModules(OwnedCategoryOverBaseRing):
         return [Modules(self.base_ring())]
 
     class ParentMethods:
-        def __init__(self, algebra, **rest) -> None:
+        def __init__(self, algebra, base_ring, **rest) -> None:
             self._realized_algebra = algebra
             category = rest.get("category")
             if category is None:
                 raise TypeError("an underlying algebra module requires its module category")
-            super().__init__(base_ring=category.base_ring(), **rest)
+            ring = _owned_ring(base_ring)
+            if ring is not category.base_ring():
+                raise ValueError("the underlying algebra module has the wrong scalar ring")
+            super().__init__(base_ring=ring, **rest)
 
         def realized_object(self):
             return self._realized_algebra
@@ -163,6 +166,7 @@ def _legacy_algebra_underlying_module(algebra, ring):
     return object_of(
         _UnderlyingAlgebraModules(ring),
         algebra=algebra,
+        base_ring=ring,
     )
 
 
