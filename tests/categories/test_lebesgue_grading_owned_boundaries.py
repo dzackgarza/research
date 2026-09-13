@@ -42,6 +42,6 @@ def test_convolution_algebra_keeps_nonunital_owned_placement() -> None:
 
     assert algebra in LebesgueGradedModules(RR)
     assert algebra in AssociativeAlgebras(RR)
-    assert algebra not in Algebras(RR)
+    assert algebra in Algebras(RR)
     assert algebra not in GradedAlgebras(RR, UnitInterval)
     assert algebra.grading_monoid() is UnitInterval

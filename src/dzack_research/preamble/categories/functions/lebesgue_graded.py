@@ -654,3 +654,9 @@ def lebesgue_convolution_algebra():
         _lebesgue_multiplication(module, _convolution_piece_product),
         unital=False,
     )
+
+
+# Session names are also module-level mathematical objects: direct imports and
+# the public aggregator must reach the same interned algebra parents.
+GradedLebesgueAlgebra = graded_lebesgue_algebra()
+LebesgueConvolutionAlgebra = lebesgue_convolution_algebra()

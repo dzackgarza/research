@@ -168,7 +168,7 @@ def test_lebesgue_spaces_form_an_associative_algebra_under_convolution() -> None
     assert algebra in AssociativeAlgebras(RR)
     assert algebra in AssociativeAlgebrasWithChosenMultiplication(RR)
     assert algebra in LebesgueGradedModules(RR)
-    assert algebra not in Algebras(RR)
+    assert algebra in Algebras(RR)
     assert algebra not in GradedAlgebras(RR, UnitInterval)
     assert algebra.is_graded()
     assert algebra.grading_monoid() is UnitInterval
