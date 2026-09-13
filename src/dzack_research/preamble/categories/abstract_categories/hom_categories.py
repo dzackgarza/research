@@ -103,6 +103,51 @@ def _category_homset(
 
 
 
+def _declared_category_reaches(category: Category, target: Category) -> bool:
+    r"""Return whether ``target`` occurs in ``category``'s declared supergraph.
+
+    Fixed Hom objects can be distinct runtime parents even when one is the
+    inherited specialization of the other.  Sage's ``is_subcategory`` is not
+    reliable for these mixed Category/Parent Hom objects, so selection follows
+    the explicit immediate-supercategory graph by identity.
+    """
+    pending = [category]
+    seen = set()
+    while pending:
+        current = pending.pop()
+        if current is target:
+            return True
+        identity = id(current)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        try:
+            pending.extend(current.super_categories())
+        except (AttributeError, TypeError, ValueError):
+            continue
+    return False
+
+
+def _minimal_inherited_homs(candidates):
+    r"""Discard inherited Hom objects strictly above another candidate.
+
+    A join of object properties may reach the same arrow theory through several
+    branches.  If one branch carries a genuinely stronger Hom object (for
+    example commuting triangles between represented subobjects), that object is
+    the Hom of the join; its ordinary underlying Hom is only a supercategory.
+    Unrelated surviving candidates remain an ambiguity and are rejected by the
+    caller.
+    """
+    return [
+        candidate
+        for candidate in candidates
+        if not any(
+            other is not candidate and _declared_category_reaches(other, candidate)
+            for other in candidates
+        )
+    ]
+
+
 def _packet_supercategories(category):
     r"""Return semantic supercategories participating in the owned packet graph.
 
@@ -1168,6 +1213,7 @@ class HomCategoryOf(OwnedCategoryBase):
             if all(candidate is not known for known in inherited):
                 inherited.append(candidate)
 
+        inherited = _minimal_inherited_homs(inherited)
         if len(inherited) == 1:
             # One inherited Hom of the class this category would have built:
             # the subcategory adds no morphisms, so reuse that object literally

@@ -1012,7 +1012,11 @@ carry on with the 36 collection errors, which are this repository's own and are 
   inverse arrows while changing the represented Hom parent. The construction-order
   session regression no longer reads Sage's private `_cmp_key` representation (a
   method on current join categories); it now compares the existing structural
-  category-graph signature that the owned ordering itself is defined from.
+  category-graph signature that the owned ordering itself is defined from. A
+  toric construction then exposed join categories inheriting both an ordinary
+  Hom and its stricter subobject Hom; fixed-Hom selection now removes inherited
+  super-Homs and keeps the unique minimal arrow theory, while still rejecting
+  genuinely incomparable Hom constructions.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,

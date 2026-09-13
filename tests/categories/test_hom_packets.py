@@ -2,6 +2,7 @@
 from dzack_research.preamble.all import (
     QQ,
     ZZ,
+    AffineSpace,
     Algebras,
     AutCategoryOf,
     EndCategoryOf,
@@ -14,6 +15,7 @@ from dzack_research.preamble.all import (
     Lattices,
     Modules,
     MonoCategoryOf,
+    OpenImmersions,
     Sets,
     SymmetricAlgebraOn,
     algebra_homset,
@@ -105,6 +107,20 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
     algebra_aut_category = packet.Auts().Of(algebra)
     assert algebra_aut_category is packet.Isos().Of(algebra, algebra)
     assert packet.Ends().Of(algebra) in algebra_aut_category.super_categories()
+
+
+def test_join_hom_keeps_the_most_specific_inherited_arrow_theory() -> None:
+    line = AffineSpace(1, QQ, names=("x",))
+    x = line.coordinate_algebra().algebra_generator("x")
+    open_x = line.distinguished_open(x)
+
+    subobject_hom = OpenImmersions(line).Mor(open_x, open_x)
+    joined_hom = open_x.category().Mor(open_x, open_x)
+
+    assert joined_hom is subobject_hom
+    scheme_identity = open_x.categorical_identity_morphism()
+    represented_identity = joined_hom(scheme_identity)
+    assert represented_identity.factor_morphism() is scheme_identity
 
 
 def test_supercategory_hom_accepts_the_same_arrow_from_a_stronger_hom_parent() -> None:
