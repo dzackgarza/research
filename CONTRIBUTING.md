@@ -6154,6 +6154,14 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-58`: Observe the Current Verification Phase
 
+- **Where the condition is checked**: this rule suspends execution *while the architecture,
+  implementation, integration and transfer work remains open*, and whether it is open is not
+  recorded here — it is the state of the work nodes in [TODO.md](TODO.md). Read them before
+  concluding the suspension applies. A worker that treats the suspension as permanent has no
+  way to reach T, and the repository accumulates unexecuted constructions for as long as that
+  lasts; on 2026-09-13 it had banked sixty of them after the condition was already satisfied.
+  Closing a node does not reopen the condition, and neither does discovering a further repair.
+
 - **Rule**: Terminal T is the final verification phase of the preamble programme, after the required architecture, mathematical implementation, integration, and transfer work in `TODO.md`. While that work remains open, run no preamble tests, QC gates, Sage executions, or notebooks. Write and commit the construction and the mathematical specimens that would falsify it, explicitly unverified. References in other contribution policies to testing a work unit do not override this phase rule.
 
   Retain the two narrow operational exceptions: one short import check of a merged tree, and provisioning a tool required by a selected task. Neither is mathematical verification or permission to run a suite. Source review and checking a prose diff remain applicable. At T, execute the required mathematical evidence on the integrated architecture, diagnose actual failures, and establish the failed propositions at their owners. Do not restart repeated verification cycles against intermediate architectures.
