@@ -1619,12 +1619,18 @@ class CartesianProductsOfSets(OwnedCategory):
             self,
             parent: Parent,
             components: Callable[[IndexT], SourcePointT],
+            *,
+            positional_components: tuple[SourcePointT, ...] | None = None,
         ) -> None:
             Element.__init__(self, parent)
             self._components = components
+            self._positional_components = positional_components
 
         def component(self, index: IndexT) -> SourcePointT:
             normalized = self.parent().index_set()(index)
+            if self._positional_components is not None:
+                position = int(self.parent().index_set().ranking_map()(normalized))
+                return self._positional_components[position]
             value = self._components(normalized)
             return self.parent().factor(normalized)(value)
 
@@ -1665,6 +1671,8 @@ class CartesianProductsOfSets(OwnedCategory):
         def __hash__(self) -> int:
             if not self.parent().has_finite_index_set():
                 return hash(id(self.parent()))
+            if self._positional_components is not None:
+                return hash((id(self.parent()), self._positional_components))
             value_hash = 0
             for index in self.parent().index_set():
                 value_hash = hash((value_hash, self.component(index)))
@@ -1735,7 +1743,12 @@ class CartesianProductsOfSets(OwnedCategory):
             else:
                 raise ValueError("a product element needs one component per factor")
             ranking = self.index_set().ranking_map()
-            return self.element_class(self, lambda index: assignment[int(ranking(index))])
+            positional = tuple(assignment[position] for position in range(len(assignment)))
+            return self.element_class(
+                self,
+                lambda index: positional[int(ranking(index))],
+                positional_components=positional,
+            )
 
         @cached_method
         def ranking_map(self) -> CategoricalIsomorphism:
@@ -1775,8 +1788,12 @@ class CartesianProductsOfSets(OwnedCategory):
             if all(size.is_finite() for size in factor_cardinalities):
                 def sections(position, assignment):
                     if position == index_count:
-                        frozen = dict(assignment)
-                        yield self(lambda index: frozen[int(ranking(index))])
+                        positional = tuple(assignment[offset] for offset in range(index_count))
+                        yield self.element_class(
+                            self,
+                            lambda index, positional=positional: positional[int(ranking(index))],
+                            positional_components=positional,
+                        )
                         return
                     for value in factors[position]:
                         assignment[position] = value
@@ -1878,7 +1895,7 @@ def _cartesian_product_ranking_map(product) -> CategoricalIsomorphism:
             radix = int(cardinal(factor.cardinality()).finite_value())
             quotient, digit = divmod(quotient, radix)
             assignment[offset] = factor.ranking_map().inverse()(digit)
-        return product(lambda index: assignment[int(index_ranking(index))])
+        return product(tuple(assignment[offset] for offset in range(index_count)))
 
     def position_of(section):
         section = product(section)
