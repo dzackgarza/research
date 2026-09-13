@@ -26,6 +26,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedCategoryOverBaseRing,
     OwnedIntegralDomains,
+    PrincipalIdealDomains,
     _engine_element,
     _engine_quotient_cover_ideal,
     _engine_ring,
@@ -349,13 +350,56 @@ class CommutativeIdeals(OwnedCategoryOverBaseRing):
                     _cover_lifted_ideal(other)
                 )
                 return _descend_cover_ideal(self.ring(), saturated)
-            method = _engine_ideal_method(
-                self,
-                "saturation",
-                "this ideal backend has no saturation operation",
-            )
-            saturated, _reached_at_exponent = method(other._engine_ideal())
-            return _from_engine_ideal(self.ring(), saturated)
+            method = _optional_engine_method(self._engine_ideal(), "saturation")
+            match method:
+                case None:
+                    ring = self.ring()
+                    match ring in PrincipalIdealDomains():
+                        case True:
+                            pass
+                        case False:
+                            raise NotImplementedError(
+                                "this ideal backend has no saturation operation and the owned fallback requires a PID"
+                            )
+
+                    def principal_generator(ideal):
+                        generators = tuple(ideal.ideal_generators())
+                        match generators:
+                            case ():
+                                return ring.zero()
+                            case (first, *rest):
+                                generator = ring(first)
+                                for candidate in rest:
+                                    generator = generator.gcd(ring(candidate))
+                                return generator
+
+                    numerator = principal_generator(self)
+                    denominator = principal_generator(other)
+                    match (numerator == ring.zero(), denominator == ring.zero()):
+                        case (_, True):
+                            return ring.ideal(ring.one())
+                        case (True, False):
+                            return ring.ideal(ring.zero())
+                        case (False, False):
+                            current = numerator
+
+                    while True:
+                        common = current.gcd(denominator)
+                        match common.is_unit():
+                            case True:
+                                return ring.ideal(current)
+                            case False:
+                                quotient, remainder = current.quo_rem(common)
+                                match remainder == ring.zero():
+                                    case True:
+                                        current = quotient
+                                    case False:
+                                        raise ArithmeticError(
+                                            "a PID gcd did not divide the ideal generator exactly"
+                                        )
+                case _:
+                    saturated, _reached_at_exponent = method(other._engine_ideal())
+                    return _from_engine_ideal(self.ring(), saturated)
 
         saturation = ideal_saturation
 

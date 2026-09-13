@@ -1,4 +1,4 @@
-from dzack_research.preamble.all import PolynomialRing, QQ
+from dzack_research.preamble.all import PolynomialRing, QQ, ZZ
 
 
 def test_localization_units_use_ideal_saturation_over_multivariate_polynomials() -> None:
@@ -30,3 +30,17 @@ def test_localizing_at_a_product_makes_each_factor_a_unit() -> None:
 
     assert not localization(s0 + s1).is_unit()
 
+
+
+def test_pid_localization_units_use_owned_principal_saturation_fallback() -> None:
+    localized = ZZ.localization(ZZ(6))
+    localization = localized.localization_map()
+
+    for numerator in (ZZ(2), ZZ(3), ZZ(6), ZZ(12), ZZ(18)):
+        assert localization(numerator).is_unit()
+
+    for numerator in (ZZ(5), ZZ(10), ZZ(15)):
+        assert not localization(numerator).is_unit()
+
+    assert ZZ.ideal(72).ideal_saturation(ZZ.ideal(6)) == ZZ.ideal(1)
+    assert ZZ.ideal(20).ideal_saturation(ZZ.ideal(6)) == ZZ.ideal(5)
