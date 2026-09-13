@@ -817,12 +817,20 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             normalization = self.invariant_factor_presentation()
             diagonal = normalization.codomain().arrow()
             ring = self.base_ring()
-            target_rank = int(diagonal.codomain().module_generating_set().cardinality())
-            diagonal_rank = min(
-                int(diagonal.domain().module_generating_set().cardinality()),
-                target_rank,
-            )
-            return tuple(diagonal[position, position] if position < diagonal_rank else ring.zero() for position in range(target_rank))
+            source = diagonal.domain()
+            target = diagonal.codomain()
+            source_labels = tuple(source.module_generating_set())
+            target_labels = tuple(target.module_generating_set())
+            diagonal_rank = min(len(source_labels), len(target_labels))
+            invariants = []
+            for position, target_label in enumerate(target_labels):
+                if position >= diagonal_rank:
+                    invariants.append(ring.zero())
+                    continue
+                image = diagonal(source.module_generator(source_labels[position]))
+                coefficients = module_coefficients(image, target)
+                invariants.append(coefficients.get(target_label, ring.zero()))
+            return tuple(invariants)
 
         def module_rank(self):
             r"""Return the rank of the free summand over a PID."""
