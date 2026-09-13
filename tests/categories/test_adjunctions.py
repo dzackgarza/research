@@ -59,6 +59,8 @@ def test_module_equalizer_and_coequalizer_use_kernel_and_cokernel_semantics() ->
     coequalizer = Coequalizer(identity, negative_identity)
 
     assert equalizer.module_rank() == 0
+    assert coequalizer in Modules(ZZ)
+    assert coequalizer not in module.category()
     invariant_factors = coequalizer.invariant_factors()
     assert invariant_factors.cardinality() == 1
     assert invariant_factors[0] == ZZ(2)

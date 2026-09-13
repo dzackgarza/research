@@ -503,7 +503,10 @@ class Modules(OwnedCategoryOverBaseRing):
                 raise ValueError("module equalizer arrows must be parallel R-linear maps")
             equalizer = (left_morphism - right_morphism).kernel()
             inclusion = equalizer.inclusion()
-            diagram = ParallelPairDiagram(left_morphism, right_morphism, self)
+            ambient_modules = Modules(left_morphism.domain().base_ring())
+            diagram = ParallelPairDiagram(
+                left_morphism, right_morphism, ambient_modules
+            )
             shape = diagram.domain()
             universal_cone = ConeCategory(diagram).cone(
                 equalizer,
@@ -544,7 +547,10 @@ class Modules(OwnedCategoryOverBaseRing):
             difference = left_morphism - right_morphism
             coequalizer = difference.cokernel()
             projection = difference.cokernel_projection()
-            diagram = ParallelPairDiagram(left_morphism, right_morphism, self)
+            ambient_modules = Modules(left_morphism.domain().base_ring())
+            diagram = ParallelPairDiagram(
+                left_morphism, right_morphism, ambient_modules
+            )
             shape = diagram.domain()
             universal_cocone = CoconeCategory(diagram).cocone(
                 coequalizer,
