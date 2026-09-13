@@ -16,9 +16,12 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
+    CategoricalIsomorphism,
+    category_packet,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
+    OwnedCategoryOverBaseRing,
     OwnedOrders,
     OwnedRings,
     _engine_element,
@@ -1745,6 +1748,126 @@ class TensorProductModuleMorphism(ModuleMorphism):
         if self.left_module() is not self.right_module():
             raise TypeError("polar form syntax requires a diagonal bilinear form")
         return self.parent().scalar_multiple(self.domain().base_ring()(2), self)
+
+
+
+class ModuleAutomorphism(CategoricalIsomorphism):
+    r"""An invertible module endomorphism, as an element of ``Aut_R(M)``."""
+
+    def as_morphism(self):
+        return self.forward()
+
+    def matrix(self):
+        return self.forward().matrix()
+
+    def order(self):
+        return self.matrix().multiplicative_order()
+
+    def __eq__(self, other):
+        if self is other:
+            return True
+        if not isinstance(other, ModuleAutomorphism) or other.parent() is not self.parent():
+            return False
+        return self.forward() == other.forward()
+
+    def __ne__(self, other):
+        equal = self == other
+        from sage.misc.unknown import Unknown
+
+        return Unknown if equal is Unknown else not equal
+
+    def __hash__(self):
+        return hash(id(self.parent()))
+
+    def inverse(self):
+        return self.parent()._from_known_inverse_pair(self._inverse, self.forward())
+
+    __invert__ = inverse
+
+    def __mul__(self, other):
+        if not isinstance(other, ModuleAutomorphism) or other.parent() is not self.parent():
+            return NotImplemented
+        return self.parent()._from_known_inverse_pair(
+            self.forward() * other.forward(),
+            other._inverse * self._inverse,
+        )
+
+
+class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
+    r"""The groups ``Aut_R(M)`` of invertible module endomorphisms."""
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "module automorphism groups"
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        return [OwnedGroups()]
+
+
+class ModuleAutomorphismGroup(ModuleHomset):
+    r"""The unit group of ``End_R(M)``, retaining its actual module maps."""
+
+    Element = ModuleAutomorphism
+
+    def __init__(self, hom_family, module) -> None:
+        ModuleHomset.__init__(self, hom_family, module, module)
+        from dzack_research.preamble.refine import refine
+
+        refine(self, ModuleAutomorphismGroups(module.base_ring()))
+
+    def _from_known_inverse_pair(self, forward, inverse):
+        forward = module_homset(self.domain(), self.domain())(forward)
+        inverse = module_homset(self.domain(), self.domain())(inverse)
+        return self.element_class(self, forward, inverse, verify=False)
+
+    def _element_constructor_(self, datum):
+        if isinstance(datum, ModuleAutomorphism):
+            if datum.parent() is self:
+                return datum
+            datum = datum.as_morphism()
+        if isinstance(datum, CategoricalIsomorphism):
+            return self._from_known_inverse_pair(datum.forward(), datum.inverse())
+        forward = module_homset(self.domain(), self.domain())(datum)
+        return self._from_known_inverse_pair(forward, forward.inverse())
+
+    @cached_method
+    def identity(self):
+        identity = module_homset(self.domain(), self.domain()).identity()
+        return self._from_known_inverse_pair(identity, identity)
+
+    one = identity
+    identity_automorphism = identity
+
+    def module(self):
+        return self.domain()
+
+    def __contains__(self, candidate):
+        return isinstance(candidate, ModuleAutomorphism) and candidate.parent() is self
+
+    def is_finite(self):
+        try:
+            return bool(self.module().is_finite())
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            from sage.misc.unknown import Unknown
+
+            return Unknown
+
+    def super_categories(self):
+        packet = category_packet(self.base_category())
+        module = self.domain()
+        supers = [
+            packet.Homs().Of(module, module),
+            packet.Monos().Of(module, module),
+            packet.Epis().Of(module, module),
+        ]
+        if self.aut_family() is not None:
+            supers.append(packet.Ends().Of(module))
+        return supers
+
+    def _repr_(self):
+        return f"Aut_{self.base_category()}({self.module()})"
 
 
 class TensorProductModuleHomset(ModuleHomset):

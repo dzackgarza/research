@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.abstract_categories.constructions import
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     EndCategoryConstruction,
     HomCategoryConstruction,
+    IsoCategoryConstruction,
     _category_homset,
 )
 from dzack_research.preamble.categories.abstract_categories.products import (
@@ -40,6 +41,7 @@ from dzack_research.preamble.categories.algebras.associative_algebra_morphisms i
 )
 from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+    ModuleAutomorphismGroup,
     ModuleHomset,
     ModuleMorphism,
     TensorProductModuleHomset,
@@ -126,6 +128,23 @@ class LinearEndCategoryConstruction(EndCategoryConstruction):
 
 class ModuleEndCategoryConstruction(LinearEndCategoryConstruction):
     r"""The ring-valued endomorphism family ``M |-> End_R(M)``."""
+
+
+class ModuleIsoCategoryConstruction(IsoCategoryConstruction):
+    r"""Module isomorphisms, with ``Aut_R(M)`` represented by its unit group."""
+
+    def Of(self, domain, codomain=None):
+        if codomain is None:
+            codomain = domain
+        if domain is not codomain:
+            return super().Of(domain, codomain)
+        if domain not in self.base_category():
+            raise TypeError("a module automorphism requires a module in the base category")
+        cached = self._cached_between(domain, domain)
+        if cached is not None:
+            return cached
+        result = ModuleAutomorphismGroup(self, domain)
+        return self._remember_between(domain, domain, result)
 
 
 def _is_group_algebra(ring) -> bool:
@@ -685,6 +704,7 @@ class Modules(OwnedCategoryOverBaseRing):
         return Category.join(tuple(placement))
 
     _HomCategory = ModuleHomCategoryConstruction
+    _IsoCategory = ModuleIsoCategoryConstruction
     _EndCategory = ModuleEndCategoryConstruction
 
     class ElementMethods:
@@ -3190,6 +3210,18 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return self.parent().base_ring()._from_engine_element(backend.det())
 
         det = determinant
+
+        def multiplicative_order(self):
+            r"""Return the exact multiplicative order of this square matrix when finite."""
+            if self.parent().nrows() != self.parent().ncols():
+                raise ValueError("multiplicative order requires a square matrix")
+            order = _engine_matrix(self).multiplicative_order()
+            from sage.rings.infinity import Infinity
+            from sage.rings.integer_ring import ZZ as SageZZ
+
+            if order == Infinity:
+                return Infinity
+            return _own_ring(SageZZ)._from_engine_element(SageZZ(order))
 
         def matrix_rank(self):
             from sage.rings.integer_ring import ZZ as SageZZ
