@@ -291,6 +291,13 @@ class OrderedEnumeratedSets(OwnedCategory):
             ranking = self.ranking_map()
             return ranking(left) <= ranking(right)
 
+        def _an_element_(self):
+            r"""Return the first point of a nonempty selected enumeration."""
+            try:
+                return next(iter(self))
+            except StopIteration as error:
+                raise ValueError("the empty ordered enumerated set has no element") from error
+
         def _repr_(self) -> str:
             return self._name or f"Ordered image of {self.index_set()}"
 
