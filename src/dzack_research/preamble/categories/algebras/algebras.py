@@ -2340,6 +2340,13 @@ class AlgebraHomset(_AlgebraHomsetCommonMethods, CategoricalHomset):
     def _element_constructor_(self, images):
         return self.element_class(self, images)
 
+    @cached_method
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("identity is defined on an endomorphism homset")
+        module = self.domain().underlying_module()
+        return self(module_homset(module, module).identity())
+
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"
 
