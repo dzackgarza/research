@@ -67,10 +67,16 @@ def test_archived_wide_subcategory_and_core_keep_actual_allowed_arrows() -> None
 
     assert injections.admits(swap)
     assert not injections.admits(collapse)
-    assert injections.Mor(points, points)(swap) is swap
+    injection_object = injections.Mor(points, points)(swap)
+    assert injection_object.arrow() is swap
+    assert injection_object in injections.Mor(points, points)
     assert injections.compose(swap, swap) == injections.identity(points)
 
     isomorphism = Isomorphism(swap, swap)
     core = Core(Sets())
-    assert isomorphism in core.Mor(points, points)
-    assert core.Mor(points, points)(isomorphism) == isomorphism
+    core_hom = core.Mor(points, points)
+    assert isomorphism in core_hom
+    converted = core_hom(isomorphism)
+    assert converted.parent() is core_hom
+    assert converted.forward() is isomorphism.forward()
+    assert converted.inverse() is isomorphism.inverse()

@@ -1005,7 +1005,11 @@ carry on with the 36 collection errors, which are this repository's own and are 
   category; fixed Hom objects now accept same-endpoint arrows along the declared
   subcategory edge instead of re-verifying their presentation. This subsumes the
   earlier group-automorphism special case and lets the free-algebra functor reach
-  its next independent arithmetic assertion.
+  its next independent arithmetic assertion. The archived wide-subcategory
+  specimen also now uses the represented fixed-Hom object's explicit arrow
+  object rather than incorrectly identifying that object with its underlying map;
+  corestriction from a more specific core similarly retains the same forward and
+  inverse arrows while changing the represented Hom parent.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
