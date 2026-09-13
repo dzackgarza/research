@@ -1630,6 +1630,61 @@ class _GeneralPresentedModule:
         self._lifted_relation_submodule = lifted_submodule
         return lifted_free, lifted_submodule
 
+    def _singular_polynomial_relation_contains(self, vector):
+        r"""Decide direct polynomial relation membership through Singular.
+
+        Sage's generic free-submodule membership over a polynomial ring uses
+        the ambient fraction-field span, so, for example, it reports
+        ``e in <x e>`` over ``QQ[x,y]``.  Singular's module ``lift`` asks the
+        actual polynomial-module membership question.
+        """
+        from sage.libs.singular.function_factory import ff
+        from sage.matrix.constructor import matrix
+        from sage.rings.polynomial.polynomial_ring_constructor import PolynomialRing
+
+        engine = _engine_ring(self.base_ring())
+        if "polynomial" not in type(engine).__module__:
+            return NotImplemented
+        try:
+            coefficient_field = engine.base_ring()
+            if not bool(coefficient_field.is_field()):
+                return NotImplemented
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            return NotImplemented
+
+        if engine.ngens() == 1 and "multi_polynomial" not in type(engine).__module__:
+            singular_ring = PolynomialRing(
+                coefficient_field,
+                1,
+                engine.variable_names(),
+            )
+            to_singular = engine.hom([singular_ring.gen(0)], singular_ring)
+        else:
+            singular_ring = engine
+            to_singular = singular_ring
+
+        width = int(self.module_generating_set().cardinality())
+        rows = tuple(_presentation_rows(self))
+        if not rows:
+            return False
+        relations = matrix(
+            singular_ring,
+            len(rows),
+            width,
+            [to_singular(_engine_element(self.base_ring(), coefficient)) for row in rows for coefficient in row],
+        ).transpose()
+        requested = matrix(
+            singular_ring,
+            width,
+            1,
+            [to_singular(coefficient) for coefficient in tuple(vector)],
+        )
+        try:
+            ff.lift(relations, requested)
+        except RuntimeError:
+            return False
+        return True
+
     def _relation_contains(self, vector) -> bool:
         if vector == self._free_module.zero():
             return True
@@ -1648,6 +1703,9 @@ class _GeneralPresentedModule:
             raise NotImplementedError(f"equality in a presented module over {self.base_ring()} has no computation engine that decides membership in the relation module")
         lifted_backend = self._lifted_relation_backend()
         if lifted_backend is None:
+            polynomial_contains = self._singular_polynomial_relation_contains(vector)
+            if polynomial_contains is not NotImplemented:
+                return polynomial_contains
             return vector in self._relation_submodule
 
         lifted_free, lifted_submodule = lifted_backend
