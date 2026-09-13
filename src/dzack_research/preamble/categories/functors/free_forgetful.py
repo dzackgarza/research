@@ -1,6 +1,5 @@
 r"""The free-module/underlying-set adjunction ``F_R ⊣ U``."""
 
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
@@ -46,10 +45,9 @@ class UnderlyingSetFunctor(Functor):
         return module
 
     def _apply_morphism(self, module_morphism):
-        return SetMorphism(
-            Sets().Mor(module_morphism.domain(), module_morphism.codomain()),
-            module_morphism,
-        )
+        return Sets().Mor(
+            module_morphism.domain(), module_morphism.codomain()
+        )(module_morphism)
 
     def _repr_(self):
         return f"Underlying-set functor on {self._base_ring}-modules"
@@ -67,9 +65,8 @@ class FreeForgetfulAdjunction(Adjunction):
 
     def unit(self, set_object):
         free = self.left_adjoint()(set_object)
-        return SetMorphism(
-            Sets().Mor(set_object, free),
-            lambda element: free.module_generator(element),
+        return Sets().Mor(set_object, free)(
+            lambda element: free.module_generator(element)
         )
 
     def counit(self, module):
