@@ -236,6 +236,34 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
             return self._syzygy_resolution(int(steps))
 
+        def _selected_diagonal_relation_scalars(self):
+            r"""Return the selected diagonal relation scalars, or ``None``.
+
+            A presentation with independent diagonal relations already exhibits
+            the relation submodule as ``a_i e_i`` in the selected framing.
+            This datum is usable even when a private Sage free-submodule engine
+            cannot normalize nonunit pivots over an exact local PID.
+            """
+            ring = self.base_ring()
+            presentation = self.presentation()
+            source_labels = tuple(presentation.domain().module_generating_set())
+            target_labels = tuple(presentation.codomain().module_generating_set())
+            rows = tuple(_matrix_coordinate_rows(self.presentation_matrix()))
+            if len(rows) != len(source_labels) or len(source_labels) > len(target_labels):
+                return None
+            if not all(
+                coefficient != ring.zero()
+                if column == row
+                else coefficient == ring.zero()
+                for row, relation_row in enumerate(rows)
+                for column, coefficient in enumerate(relation_row)
+            ):
+                return None
+            return tuple(
+                rows[position][position] if position < len(rows) else ring.zero()
+                for position in range(len(target_labels))
+            )
+
         @cached_method
         def _relation_submodule_resolution(self):
             r"""Resolve over a PID, where the relation submodule is already free.
@@ -251,21 +279,7 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             presentation = self.presentation()
             degree_zero = presentation.codomain()
             zero = _free_cover_owner(self)._fresh_free_module_on(Sets.Δ[-1])
-            source_labels = tuple(presentation.domain().module_generating_set())
-            target_labels = tuple(degree_zero.module_generating_set())
-            relation_rows = tuple(_matrix_coordinate_rows(self.presentation_matrix()))
-            selected_is_independent_diagonal = (
-                len(source_labels) <= len(target_labels)
-                and len(relation_rows) == len(source_labels)
-                and all(
-                    coefficient != ring.zero()
-                    if column == row
-                    else coefficient == ring.zero()
-                    for row, relation_row in enumerate(relation_rows)
-                    for column, coefficient in enumerate(relation_row)
-                )
-            )
-            if selected_is_independent_diagonal:
+            if self._selected_diagonal_relation_scalars() is not None:
                 return _resolution_over_degrees(
                     self,
                     {0: degree_zero, 1: presentation.domain()},
@@ -339,6 +353,12 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 return self.presentation().image()
             if morphism.domain()._selected_presentation_rows() is None or morphism.codomain()._selected_presentation_rows() is None:
                 return NotImplemented
+            labels = morphism.domain().module_generating_set()
+            if labels.cardinality().is_finite() and all(
+                morphism(morphism.domain().module_generator(label)) == morphism.codomain().zero()
+                for label in labels
+            ):
+                return morphism.domain().subobject_on(morphism.domain().module_generators())
             if self.base_ring() in PrincipalIdealDomains():
                 return _pid_presentation_kernel(morphism)
             ring = self.base_ring()
@@ -1589,6 +1609,17 @@ class _GeneralPresentedModule:
         if vector == self._free_module.zero():
             return True
         if self._relation_submodule is None:
+            diagonal = self._selected_diagonal_relation_scalars()
+            ring = self.base_ring()
+            if diagonal is not None and ring in PrincipalIdealDomains():
+                labels = tuple(self.module_generating_set())
+                coefficients = module_coefficients(vector, self._free_module)
+                return all(
+                    coefficients.get(label, ring.zero()) == ring.zero()
+                    if scalar == ring.zero()
+                    else coefficients.get(label, ring.zero()) in ring.ideal(scalar)
+                    for label, scalar in zip(labels, diagonal, strict=True)
+                )
             raise NotImplementedError(f"equality in a presented module over {self.base_ring()} has no computation engine that decides membership in the relation module")
         lifted_backend = self._lifted_relation_backend()
         if lifted_backend is None:

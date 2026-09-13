@@ -117,6 +117,18 @@ def test_padic_dvr_cyclic_torsion_uses_the_owned_presentation_when_engine_echelo
     assert module.projective_dimension() == 1
 
 
+def test_padic_dvr_diagonal_relation_decides_classes_and_tor() -> None:
+    from dzack_research.preamble.all import Zp
+
+    ring = Zp(2)
+    module = FinitelyPresentedTorsionModules(ring).direct_sum_of_cyclics((ring(6),))
+    generator = module.module_generator(0)
+
+    assert ring(6) * generator == module.zero()
+    assert generator != module.zero()
+    assert module.tor(module, 1).cardinality() == module.cardinality()
+
+
 def test_padic_dvr_diagonal_relation_is_its_free_resolution_differential() -> None:
     from dzack_research.preamble.all import Zp
 
