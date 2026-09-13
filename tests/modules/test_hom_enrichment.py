@@ -3,6 +3,7 @@ from dzack_research.preamble.all import (
     FinitelyPresentedAlgebra,
     FinitelyPresentedModule,
     FinitelyPresentedModules,
+    ProjectiveModules,
     InternalHom,
     InternalHomModules,
     Modules,
@@ -32,6 +33,8 @@ def test_module_hom_is_the_internal_hom_module() -> None:
     assert internal_hom in Modules(ZZ)
     assert internal_hom in InternalHomModules(ZZ)
     assert internal_hom in FinitelyPresentedModules(ZZ)
+    assert internal_hom in ProjectiveModules(ZZ)
+    assert internal_hom.is_projective() is True
 
     f = internal_hom({"e": target.module_generator("f")})
     e = source.module_generator("e")

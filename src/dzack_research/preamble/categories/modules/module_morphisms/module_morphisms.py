@@ -1364,6 +1364,16 @@ class _ModuleHomsetCommonMethods:
     def base_ring(self):
         return self._preamble_base_ring
 
+    def is_projective(self) -> bool:
+        r"""Return whether this represented Hom has a selected finite-free model.
+
+        Matrix Hom objects install their free-module constructor before category
+        refinement, so projectivity is a theorem of the retained representation
+        rather than a category label used to certify itself.  General internal
+        Homs without that model make no projectivity claim here.
+        """
+        return callable(self.__dict__.get("_preamble_free_module_constructor"))
+
     def scalar_multiple(self, scalar, morphism):
         return self._owned_scalar_multiple(scalar, morphism)
 
