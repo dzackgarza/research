@@ -10,6 +10,7 @@ induced algebra morphism \(R[H]\to R[G]\).  Reference: Lam, *A First Course
 in Noncommutative Rings*, §1 and Theorem 6.1 (Maschke).
 """
 
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.abstract_categories.constructions import TensorSquare
@@ -17,6 +18,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     AlgebrasWithChosenMultiplication,
     CommutativeAlgebras,
+    UnitalMultiplicativeAlgebraMorphism,
     _unit_morphism_from_element,
     algebra_homset,
 )
@@ -33,6 +35,9 @@ from dzack_research.preamble.categories.modules.framed.framed_free_modules impor
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     module_homset,
+)
+from dzack_research.preamble.categories.modules.tensor_products import (
+    tensor_product_morphism,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -197,6 +202,45 @@ def GroupAlgebra(base_ring, group):
     return algebra
 
 
+class GroupAlgebraMorphism(UnitalMultiplicativeAlgebraMorphism):
+    r"""The algebra map ``R[H] -> R[G]`` induced by a represented group map.
+
+    The multiplication law is not re-decided by equality of two linear maps on
+    the (possibly infinite) basis ``H``.  A group morphism already satisfies
+    ``f(hk)=f(h)f(k)`` and ``f(1)=1``; extending its basis map ``R``-linearly is
+    therefore the unique unital algebra morphism of group algebras.
+    """
+
+    def __init__(self, parent, group_morphism) -> None:
+        Morphism.__init__(self, parent)
+        source = self.domain()
+        target = self.codomain()
+        if group_morphism.domain() is not source.group():
+            raise ValueError("the group map has the wrong source group algebra")
+        if group_morphism.codomain() is not target.group():
+            raise ValueError("the group map has the wrong target group algebra")
+
+        source_module = source.underlying_module()
+        target_module = target.underlying_module()
+        linear = module_homset(source_module, target_module)(
+            lambda label: target_module.module_generator(group_morphism(label))
+        )
+        source_multiplication = source.multiplication_morphism()
+        target_multiplication = target.multiplication_morphism()
+        self._underlying_morphism = linear
+        self._tensor_square_morphism = tensor_product_morphism(
+            linear,
+            linear,
+            source=source_multiplication.domain(),
+            target=target_multiplication.domain(),
+        )
+
+        source_identity = source_module.module_generator(source.group().one())
+        target_identity = target_module.module_generator(target.group().one())
+        if linear(source_identity) != target_identity:
+            raise ValueError("the induced group-algebra map does not preserve the unit")
+
+
 class GroupAlgebraFunctor(Functor):
     r"""\(R[-]\colon \mathbf{Grp}\to \mathbf{Alg}_R\).
 
@@ -219,12 +263,10 @@ class GroupAlgebraFunctor(Functor):
     def _apply_morphism(self, group_morphism):
         source = self(group_morphism.domain())
         target = self(group_morphism.codomain())
-        source_module = source.underlying_module()
-        target_module = target.underlying_module()
-        linear = module_homset(source_module, target_module)(
-            lambda label: target_module.module_generator(group_morphism(label))
+        return GroupAlgebraMorphism(
+            algebra_homset(source, target),
+            group_morphism,
         )
-        return algebra_homset(source, target)(linear)
 
     def _repr_(self):
         return f"Group-algebra functor over {self._base_ring}"
