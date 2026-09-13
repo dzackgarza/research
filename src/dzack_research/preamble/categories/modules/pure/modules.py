@@ -1481,6 +1481,44 @@ class ModulesWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         return ArrowCategory(Modules(self.base_ring()))
 
     class ParentMethods:
+        def __init__(
+            self,
+            *,
+            completion_source_module=None,
+            completion_defining_ideal=None,
+            completion_ring=None,
+            **rest,
+        ) -> None:
+            completion_data = (
+                completion_source_module,
+                completion_defining_ideal,
+                completion_ring,
+            )
+            if any(value is not None for value in completion_data) and not all(
+                value is not None for value in completion_data
+            ):
+                raise ValueError(
+                    "an adically completed module requires its source, defining ideal, and completion ring"
+                )
+            super().__init__(**rest)
+            if completion_source_module is None:
+                return
+            if completion_source_module.base_ring() is not completion_ring.completion_source():
+                raise ValueError(
+                    "the completed module source has the wrong ring for this completion"
+                )
+            if completion_defining_ideal.ring() is not completion_source_module.base_ring():
+                raise ValueError(
+                    "the completed module ideal is not an ideal of the source base ring"
+                )
+            if self.base_ring() is not completion_ring:
+                raise ValueError(
+                    "the completed module must be a module over the selected completion ring"
+                )
+            self._preamble_completion_source_module = completion_source_module
+            self._preamble_completion_defining_ideal = completion_defining_ideal
+            self._preamble_completion_ring = completion_ring
+
         @cached_method
         def presentation_object(self):
             r"""Return this module's selected presentation as an arrow object."""
