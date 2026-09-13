@@ -76,6 +76,9 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
 
         _rmul_ = _lmul_
 
+        def __rmul__(self, scalar):
+            return self.parent().scalar_multiple(scalar, self)
+
         def _richcmp_(self, other, op):
             if other.parent() is not self.parent() or other.parent() is not self.parent():
                 return NotImplemented
@@ -129,6 +132,7 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
         return [FramedModules(self.base_ring())]
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"base_ring"})
 
         def __init__(self, engine: QmodnZ, **rest) -> None:
             self._engine = engine
@@ -283,7 +287,9 @@ class FractionFieldQuotients(OwnedCategoryOverBaseRing):
                 for value in values
             )
             generator_numerator = abs(gcd(numerators))
-            generator = field(generator_numerator) / field(denominator)
+            generator = field._from_engine_element(
+                SageQQ(generator_numerator) / SageQQ(denominator)
+            )
             order_in_field = self.modulus() / generator
             try:
                 order = self.base_ring()(order_in_field)
