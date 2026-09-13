@@ -1315,7 +1315,11 @@ def group_homset(domain, codomain):
 
 
 class GroupAutomorphism(GroupHomomorphism):
-    pass
+    def __mul__(self, other):
+        r"""Compose automorphisms inside their represented automorphism group."""
+        if isinstance(other, GroupAutomorphism) and other.parent() is self.parent():
+            return self.parent()(other.gap() * self.gap(), check=False)
+        return super().__mul__(other)
 
 
 class GroupAutomorphismGroups(OwnedCategory):
@@ -1332,6 +1336,17 @@ class GroupAutomorphismGroups(OwnedCategory):
 
         def one(self):
             return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
+
+        def __iter__(self):
+            r"""Enumerate automorphisms when the underlying group is finite."""
+            if self.domain().is_finite() is not True:
+                raise TypeError(
+                    "enumerating an automorphism group requires a finite underlying group"
+                )
+            return (
+                self(backend, check=False)
+                for backend in self._libgap_().Elements()
+            )
 
         def supergroup(self):
             return self._supergroup

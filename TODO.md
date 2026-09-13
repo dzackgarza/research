@@ -1041,7 +1041,10 @@ carry on with the 36 collection errors, which are this repository's own and are 
   absolute Galois realization is now canonical per owned base field: repeated
   ``AbsoluteGaloisGroup(K)`` and ``K.absolute_galois_group()`` calls retain the
   same chosen closure/embedding object, while explicitly supplied realization
-  data still construct their stated choice.
+  data still construct their stated choice. Finite automorphism groups now
+  enumerate through their retained GAP automorphism group and compose inside the
+  same ``Aut(G)`` parent; ``Aut(C8)`` consequently exhibits all four involutions
+  and ``Aut(V4)`` retains its noncommutative order-six multiplication.
   `just test-universe` still reports 758 proof-surface findings.
   Session/notebook verification still has two active failures. `preamble.ipynb`
   previously failed its first code cell because `Lattices` was absent from the bound Sage kernel,
