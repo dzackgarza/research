@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    PrincipalIdealDomains,
     _engine_ring,
     _own_ring,
 )
@@ -108,14 +109,22 @@ class FinitelyPresentedTorsionModules(OwnedCategoryOverBaseRing):
             return iter(self.elements())
 
     def direct_sum_of_cyclics(self, orders):
-        if _engine_ring(self.base_ring()) is not SageZZ:
-            raise NotImplementedError(
-                "direct sums by integer orders are currently the ZZ specialization"
-            )
+        r"""Return ``\bigoplus_i R/(a_i)`` for the selected nonzero scalars.
+
+        Over ``ZZ`` the ``a_i`` are the usual cyclic-group orders.  Over a
+        general PID the same diagonal presentation is the invariant-factor
+        construction; unit entries contribute zero summands, as they should.
+        A zero entry would contribute a free copy of ``R`` and hence would not
+        define an object of the torsion category.
+        """
         ring = self.base_ring()
+        if ring not in PrincipalIdealDomains():
+            raise NotImplementedError(
+                "direct sums of cyclic torsion modules require a represented PID"
+            )
         orders = tuple(ring(order) for order in orders)
-        if any(order <= ring.one() for order in orders):
-            raise ValueError("cyclic summand orders must be greater than one")
+        if any(order == ring.zero() for order in orders):
+            raise ValueError("a cyclic torsion summand requires a nonzero relation scalar")
         size = len(orders)
 
         relations = MatrixSpace(
