@@ -100,14 +100,13 @@ class DifferentialGradedAlgebras(OwnedCategoryOverBaseRing):
 
         return [GradedAlgebras(self.base_ring()), CochainComplexes(self.base_ring())]
 
-    def Mor(self, domain, codomain):
-        if domain not in self or codomain not in self:
-            raise TypeError("a DGA Hom requires two differential graded algebras")
-        return dga_homset(domain, codomain)
-
     _HomCategory = None
 
     class ParentMethods:
+        def degree_index_set(self):
+            r"""Return the grading object as the inherited cochain degree set."""
+            return self.grading_monoid()
+
         def graded_algebra(self):
             return self
 
@@ -239,12 +238,24 @@ class DGAMorphism(Morphism):
         )
         for generator in generators:
             image = self(generator)
-            if (
-                generator.is_homogeneous()
-                and image != target.zero()
-                and (not image.is_homogeneous() or image.degree() != generator.degree())
-            ):
-                raise ValueError("a DGA morphism must preserve homogeneous degree")
+            if generator != source.zero():
+                try:
+                    generator_degree = source.homogeneous_degree(generator)
+                except (ValueError, NotImplementedError) as error:
+                    raise ValueError(
+                        "a selected DGA generator must be homogeneous"
+                    ) from error
+                if image != target.zero():
+                    try:
+                        image_degree = target.homogeneous_degree(image)
+                    except (ValueError, NotImplementedError) as error:
+                        raise ValueError(
+                            "a DGA morphism must preserve homogeneous degree"
+                        ) from error
+                    if image_degree != generator_degree:
+                        raise ValueError(
+                            "a DGA morphism must preserve homogeneous degree"
+                        )
             if self(source.d(generator)) != target.d(image):
                 raise ValueError("a DGA morphism must commute with the differential")
         for left in generators:
@@ -276,7 +287,7 @@ class DGAMorphism(Morphism):
         target = self.codomain().graded_piece(degree)
 
         def image(element):
-            source_element = self.domain().from_component(degree, element)
+            source_element = self.domain().from_graded_piece(degree, element)
             return self(source_element).homogeneous_component(degree)
 
         return DegreewiseLinearMorphism(source, target, image)
