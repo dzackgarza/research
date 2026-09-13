@@ -1,10 +1,9 @@
-from sage.categories.sets_cat import Sets
-
 from dzack_research.preamble.all import (
     BasedFreeModule,
     Modules,
     Groups,
     QuadraticField,
+    Sets,
     ZZ,
     abelianization_adjunction,
     base_change_adjunction,
