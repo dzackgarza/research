@@ -703,7 +703,7 @@ def test_general_module_localization_uses_fraction_model_and_detects_s_torsion()
 def test_ideal_localization_extension_contraction_colon_and_saturation() -> None:
     integer_ideal = ZZ.ideal(6)
     inverted_two = ZZ.localization(2)
-    extended_integer_ideal = integer_ideal.extension(inverted_two)
+    extended_integer_ideal = integer_ideal.extension_to_localization(inverted_two)
 
     assert extended_integer_ideal.inclusion().is_injective()
     assert 3 in extended_integer_ideal
@@ -719,7 +719,7 @@ def test_ideal_localization_extension_contraction_colon_and_saturation() -> None
     assert ideal.saturation(divisor) == ring.ideal(ring(y))
 
     localized_ring = ring.localization(x)
-    extended = ideal.extension(localized_ring)
+    extended = ideal.extension_to_localization(localized_ring)
     assert extended.inclusion().is_injective()
     assert localized_ring(y) in extended
     assert localized_ring.one() not in extended
@@ -782,7 +782,7 @@ def test_selected_presented_algebra_localization_has_exact_fraction_equality() -
     assert localized.one() != localized.zero()
 
     origin = axes.ideal(xbar, ybar)
-    localized_origin = origin.extension(localized)
+    localized_origin = origin.extension_to_localization(localized)
     assert localized_origin.contraction() == axes.ideal(axes.one())
     assert localized_origin.contains_ambient_element(localized.one())
 
