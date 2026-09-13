@@ -2363,6 +2363,24 @@ def _one_step_inverted_family(source, generators):
     return source, inverted
 
 
+def _generated_submonoid_contains_zero_in_domain(source, submonoid):
+    r"""Decide whether a generated multiplicative submonoid contains zero in a domain.
+
+    In an integral domain a finite product is zero exactly when one factor is
+    zero.  Thus a submonoid given by generators contains zero exactly when one
+    chosen generator is zero.  Predicate-defined submonoids keep their own
+    membership decision, and an unrepresented case remains unknown.
+    """
+    try:
+        return source.zero() in submonoid
+    except NotImplementedError:
+        try:
+            generators = tuple(submonoid.monoid_generators())
+        except NotImplementedError:
+            return None
+        return any(generator == source.zero() for generator in generators)
+
+
 def _localization_size_placements(source, submonoid):
     r"""Return exact cardinality placements inherited by ``S^-1 R``.
 
@@ -2373,7 +2391,10 @@ def _localization_size_placements(source, submonoid):
     """
     if source in FiniteSets():
         return (FiniteSets(),)
-    if source not in OwnedIntegralDomains() or source.zero() in submonoid:
+    if source not in OwnedIntegralDomains():
+        return ()
+    contains_zero = _generated_submonoid_contains_zero_in_domain(source, submonoid)
+    if contains_zero is not False:
         return ()
     if source in CountablyInfiniteSets():
         return (CountablyInfiniteSets(),)

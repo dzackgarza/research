@@ -200,6 +200,10 @@ class DistinguishedAffineCovers(OwnedCategory):
 class DistinguishedAffineCover(SageObject):
     r"""A finite affine cover ``X = union_i D(f_i)`` on a represented affine scheme."""
 
+    def _cache_key(self) -> int:
+        r"""Use identity when this cover parametrizes a descent category."""
+        return id(self)
+
     def __init__(self, scheme, elements) -> None:
         algebra = scheme.coordinate_algebra()
         elements = tuple(algebra(element) for element in elements)
