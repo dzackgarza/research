@@ -473,7 +473,9 @@ class Genus:
     def __eq__(self, other):
         if not isinstance(other, Genus):
             return NotImplemented
-        return self.signature_pair() == other.signature_pair() and self.discriminant_form() == other.discriminant_form()
+        if self.signature_pair() != other.signature_pair():
+            return False
+        return self.discriminant_form().is_isomorphic(other.discriminant_form())
 
     def __ne__(self, other):
         result = self.__eq__(other)

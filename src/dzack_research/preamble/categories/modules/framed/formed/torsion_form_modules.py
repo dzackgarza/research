@@ -16,7 +16,6 @@ from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
-    core_mor,
 )
 from dzack_research.preamble.categories.abstract_categories.hom_categories import (
     CategoricalHomset,
@@ -204,7 +203,7 @@ class TorsionFormIsometry(CategoricalIsomorphism):
 def torsion_form_isometry(forward, inverse, *, quadratic: bool):
     r"""Return the form isometry represented by mutually inverse module maps."""
     return TorsionFormIsometry(
-        core_mor(forward.domain(), forward.codomain()),
+        forward.parent(),
         forward,
         inverse,
         quadratic=quadratic,
@@ -919,7 +918,7 @@ def _engine_normal_form_key(form, *, quadratic: bool):
         SageQQ(engine._modulus),
         SageQQ(engine._modulus_qf),
         tuple(SageZZ(invariant) for invariant in normal.invariants()),
-        tuple(tuple(SageQQ(entry) for entry in row) for row in gram.components()),
+        tuple(tuple(SageQQ(entry) for entry in row) for row in gram.rows()),
     )
 
 
@@ -1459,7 +1458,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
         unformed = form.forget_form_morphism()(source_generator)
         normalized_unformed = module_isomorphism(unformed)
         forward_images[label] = normalized.equip_form_morphism()(normalized_unformed)
-    forward = form.Mor(normalized)(forward_images)
+    forward = module_homset(form, normalized)(forward_images)
 
     inverse_images = {}
     for label in normalized.module_generating_set():
@@ -1467,7 +1466,7 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
         unformed = normalized.forget_form_morphism()(normalized_generator)
         original_unformed = module_isomorphism.inverse()(unformed)
         inverse_images[label] = form.equip_form_morphism()(original_unformed)
-    inverse = normalized.Mor(form)(inverse_images)
+    inverse = module_homset(normalized, form)(inverse_images)
     return torsion_form_isometry(forward, inverse, quadratic=quadratic)
 
 

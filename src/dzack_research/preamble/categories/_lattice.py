@@ -221,7 +221,10 @@ def _vector_coefficients(vector, module):
 def _lattice_vector_from_coefficients(lattice, coefficients):
     r"""The lattice vector with the given basis coefficients."""
     return sum(
-        (lattice.module_generator(key) * coefficient for key, coefficient in coefficients.items()),
+        (
+            lattice.scalar_multiple(coefficient, lattice.module_generator(key))
+            for key, coefficient in coefficients.items()
+        ),
         lattice.element_class(lattice, lattice._module.zero()),
     )
 

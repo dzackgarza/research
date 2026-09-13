@@ -559,7 +559,13 @@ class Tensor:
         return sum(
             (
                 self[position]
-                * prod(vector[index] for vector, index in zip(vectors, position, strict=True))
+                * prod(
+                    (
+                        vector[index]
+                        for vector, index in zip(vectors, position, strict=True)
+                    ),
+                    start=self.base_ring().one(),
+                )
                 for position in cartesian_product(*(range(rank) for rank in self._lower_index_ranks()))
             ),
             self.base_ring().zero(),

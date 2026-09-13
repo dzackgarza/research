@@ -362,12 +362,12 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
             )
             normalization = formed.invariant_factor_form()
             forward = (
-                normalization.forward().module_morphism()
+                normalization.forward()
                 * formed.equip_form_morphism()
             )
             inverse = (
                 formed.forget_form_morphism()
-                * normalization.inverse().module_morphism()
+                * normalization.inverse()
             )
             return torsion_form_isometry(
                 forward,
@@ -623,12 +623,12 @@ class DiscriminantQuadraticModules(OwnedCategoryOverBaseRing):
             )
             normalization = formed.invariant_factor_form()
             forward = (
-                normalization.forward().module_morphism()
+                normalization.forward()
                 * formed.equip_form_morphism()
             )
             inverse = (
                 formed.forget_form_morphism()
-                * normalization.inverse().module_morphism()
+                * normalization.inverse()
             )
             return torsion_form_isometry(
                 forward,
