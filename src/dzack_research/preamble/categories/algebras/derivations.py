@@ -85,7 +85,7 @@ def _differentiate_representative(algebra, representative, variables):
             target(source.derivative(engine_variable))
         )
 
-    return finite_ordered_image(variables, derivative)
+    return tuple(derivative(variable) for variable in variables)
 
 
 class Derivation(ModuleElement):
@@ -450,6 +450,10 @@ class DerivationSpace(RestrictedHomCategoryParent):
         classifiers = self._kahler_classifier_module()
         return module_coefficients(self._to_kahler_classifier(derivation), classifiers)
 
+    def __call__(self, generator_images):
+        r"""Construct a derivation from its generator images, not an arrow object."""
+        return self._element_constructor_(generator_images)
+
     def _element_constructor_(self, generator_images):
         if isinstance(generator_images, Derivation) and generator_images.parent() is self:
             return generator_images
@@ -467,7 +471,7 @@ class DerivationSpace(RestrictedHomCategoryParent):
                 label: generator_images(self.algebra().algebra_generator(label)).underlying_element()
                 for label in self.generator_labels()
             }
-        return self.element_class(self, generator_images)
+        return Derivation(self, generator_images)
 
     def zero(self):
         return self({label: self.target_module().zero() for label in self.generator_labels()})
