@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     AutCategoryConstruction,
     AutCategoryOf,
     AutomorphismArrowCategory,
+    Biproduct,
     BiproductCategory,
     Cat,
     CategoricalIsomorphism,
@@ -44,8 +45,10 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     CommutativeSquare,
     Cone,
     ConeCategory,
+    Coproduct,
     CoproductCoconeCategory,
     CoproductsOfCategory,
+    Core,
     CoreCategory,
     CosliceCategory,
     CoveredObjectCategory,
@@ -80,9 +83,11 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     NaturalTransformationMorphism,
     OppositeMorphism,
     PosetCategory,
+    Product,
     ProductConeCategory,
     ProductMorphism,
     ProductsOfCategory,
+    Pushout,
     SliceCategory,
     Span,
     SpanCategory,
@@ -90,7 +95,9 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     SubobjectHomset,
     SubobjectMorphism,
     SuperobjectCategory,
+    TensorProduct,
     TensorProductCategory,
+    TensorSquare,
     WideSubcategory,
     category_packet,
     common_category,
@@ -147,6 +154,9 @@ from dzack_research.preamble.categories.algebras import (  # noqa: F401
     Differential,
     DifferentialComponentMorphism,
     DifferentialGradedAlgebras,
+    DividedPowerAlgebraOf,
+    DividedPowerAlgebraOn,
+    DividedPowerAlgebras,
     FinitelyPresentedAlgebra,
     FinitelyPresentedAlgebraOn,
     FinitelyPresentedAlgebras,
@@ -286,6 +296,7 @@ from dzack_research.preamble.categories.forms import (  # noqa: F401
     QuadraticForm,
     QuadraticFormMorphism,
     QuadraticForms,
+    QuadraticMap,
     gram_tensor_from_graph,
     gram_tensor_graph,
     tensor_connected_component_cuts,
@@ -790,6 +801,7 @@ from dzack_research.preamble.categories.modules import (  # noqa: F401
     Boundaries,
     CochainComplex,
     CochainComplexElement,
+    CochainComplexFromFamily,
     CochainComplexes,
     CochainComplexObject,
     CochainDifferential,
@@ -1118,6 +1130,7 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     aleph0,
     cardinal,
     cartesian_product_of,
+    finite_ordered_set,
     continuum,
     omega,
     omega0,
@@ -1142,6 +1155,8 @@ from dzack_research.preamble.coble import Coble  # noqa: F401
 from dzack_research.preamble.logic import Predicate, Unknown, ask  # noqa: F401
 from dzack_research.preamble.rings import (  # noqa: F401
     RR,
+    AdicCompletion,
+    AdicCompletions,
     AdicallyCompleteRings,
     ArtinianRings,
     CommutativeIdeal,
@@ -1157,6 +1172,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     FormalPowerSeriesRings,
     IntegralDomains,
     LocalRings,
+    Localization,
     NoetherianRings,
     NonNegativeReals,
     NumberFieldsWithChosenPrimitiveElement,
@@ -1165,6 +1181,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     OwnedFields,
     OwnedNumberFields,
     OwnedOrders,
+    OwnedCategoryOverBaseRing,
     OwnedRings,
     OwnedRngs,
     OwnedSemirings,
@@ -1173,6 +1190,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     PrimeFields,
     PrimeSpectra,
     PrincipalIdealDomains,
+    QuotientRing,
     RealApproximation,
     ResidueField,
     Rings,
@@ -1180,6 +1198,7 @@ from dzack_research.preamble.rings import (  # noqa: F401
     ZariskiClosedSubobject,
     _restore_session_ring_bindings,  # noqa: F401
     predicate_subring,
+    ring_morphism,
 )
 from dzack_research.preamble.sterk import Sterk  # noqa: F401
 from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
@@ -1244,7 +1263,11 @@ def _realize_owned_categories_over(_ring) -> None:
     session = globals()
     for _name in sorted(session):
         _value = session[_name]
-        if isinstance(_value, type) and issubclass(_value, OwnedCategoryOverBaseRing):
+        if (
+            isinstance(_value, type)
+            and _value is not OwnedCategoryOverBaseRing
+            and issubclass(_value, OwnedCategoryOverBaseRing)
+        ):
             _value(_ring)._cmp_key
 
 
