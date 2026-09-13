@@ -2461,13 +2461,19 @@ def _owned_ring_size(engine):
     r"""Return the exact Set-cardinality placement known from the engine kind."""
     from sage.categories.number_fields import NumberFields
     from sage.categories.sets_cat import Sets as SageSets
-    from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.rings.qqbar import AA as SageAA, QQbar as SageQQbar
 
     if engine.category().is_subcategory(SageSets().Finite()):
         return FiniteSets()
     if not engine.is_exact():
         return UncountableSets()
-    if engine is SageZZ or engine is SageQQ or engine in NumberFields() or engine is SageQQbar:
+    if (
+        engine is SageZZ
+        or engine is SageQQ
+        or engine in NumberFields()
+        or engine is SageAA
+        or engine is SageQQbar
+    ):
         return CountablyInfiniteSets()
     return Sets()
 

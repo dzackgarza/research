@@ -187,3 +187,13 @@ def test_owned_ring_cardinality_distinguishes_countable_and_uncountable_infinite
     assert session["CC"].cardinality() == session["continuum"]
     assert session["Zp"](5).cardinality() == session["continuum"]
     assert session["Qp"](5).cardinality() == session["continuum"]
+
+
+def test_owned_algebraic_real_and_complex_closures_are_countable() -> None:
+    session = _session()
+    AA = session["AA"]
+    QQbar = session["QQbar"]
+    aleph0 = session["aleph0"]
+
+    assert AA.cardinality() == aleph0
+    assert QQbar.cardinality() == aleph0
