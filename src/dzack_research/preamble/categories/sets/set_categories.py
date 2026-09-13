@@ -2380,6 +2380,21 @@ class NaturalNumberSets(OwnedCategory):
 
         __radd__ = __add__
 
+        def __sub__(self, other):
+            other = self.parent()(other)
+            return self.parent()(self._value - int(other))
+
+        def __rsub__(self, other):
+            return self.parent()(int(other) - self._value)
+
+        def __mod__(self, other):
+            divisor = int(self.parent()(other))
+            match divisor:
+                case 0:
+                    raise ZeroDivisionError("natural-number remainder by zero")
+                case _:
+                    return self.parent()(self._value % divisor)
+
         def _repr_(self):
             return str(self._value)
 
