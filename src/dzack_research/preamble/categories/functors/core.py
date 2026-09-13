@@ -148,13 +148,19 @@ class Functor(SageObject):
             )
         return self._record_object_image(obj, image)
 
-    def chosen_preimage(self, image: Parent) -> Parent:
-        r"""Return the unique source object recorded for this exact functor image."""
-        matches = [
-            record.source_object
-            for record in self._provenance.values()
-            if record.target_object is image and record.source_object is not None
-        ]
+    def chosen_preimage(self, image: Parent | Map) -> Parent | Map:
+        r"""Return the unique source recorded for this exact functor image.
+
+        Object and morphism images share the same provenance store, so reverse
+        lookup must inspect the corresponding half of each record rather than
+        silently treating every target as an object.
+        """
+        matches: list[Parent | Map] = []
+        for record in self._provenance.values():
+            if record.target_object is image and record.source_object is not None:
+                matches.append(record.source_object)
+            if record.target_morphism is image and record.source_morphism is not None:
+                matches.append(record.source_morphism)
         if not matches:
             raise ValueError(f"{image} has no chosen preimage recorded by {self}")
         if len(matches) != 1:
