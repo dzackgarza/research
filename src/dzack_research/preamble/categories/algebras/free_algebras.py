@@ -521,7 +521,8 @@ def FinitelyPresentedAlgebra(
     _free_source_module=None,
 ):
     r"""Notebook notation for the selected finite-presentation algebra constructor."""
-    return AlgebrasWithChosenFinitePresentation(presentation_ring.base_ring())(
+    category = AlgebrasWithChosenFinitePresentation(presentation_ring.base_ring())
+    return category._call_(
         presentation_ring,
         relations,
         extra_categories=_extra_categories,
@@ -977,7 +978,7 @@ def _quotient_by_algebra_elements_backend(
         _extra_categories=tuple(extra_categories),
         _extra_construction_data=extra_construction_data,
     )
-    quotient_map = algebra.Mor(quotient)(
+    quotient_map = algebra_homset(algebra, quotient)(
         {
             label: quotient.algebra_generator(label)
             for label in algebra.algebra_generating_set()
@@ -1134,7 +1135,10 @@ class FramedFreeAlgebraMorphism(AlgebraMorphism):
         except (AttributeError, ValueError):
             source_module = None
         if source_module is not None:
-            module_homset(source_module, self.codomain())(self._images.value)
+            module_homset(
+                source_module,
+                self.codomain().underlying_module(),
+            )(self._images.value)
 
     def _tensor_terms(self, element):
         domain = self.domain()
