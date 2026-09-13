@@ -462,10 +462,44 @@ class ModulesOverGroupAlgebra(Modules):
             coefficient = self.forget_action_morphism()(element)
             return self.equip_action_morphism()(self.action_of(group_element)(coefficient))
 
+        @cached_method
         def is_trivial_action(self) -> bool:
+            r"""Decide whether every represented group element acts as the identity.
+
+            A constructor may record a known trivial action, but triviality is a
+            property of the action rather than provenance of the constructor.
+            For a finitely generated group acting on a finitely generated module,
+            it is enough to check the selected group generators on the selected
+            module generators.
+            """
             if self._is_the_regular_module():
                 return bool(self.group().cardinality() == 1)
-            return self._preamble_action_is_trivial
+            if self._preamble_action_is_trivial:
+                return True
+
+            group = self.group()
+            if group.is_finitely_generated() is not True:
+                raise NotImplementedError(
+                    "deciding triviality of this action requires a chosen finite group generating set"
+                )
+            module = self.unacted_module()
+            labels = module.module_generating_set()
+            if labels.cardinality().is_finite() is not True:
+                raise NotImplementedError(
+                    "deciding triviality of this action requires a chosen finite module generating set"
+                )
+            for group_generator in group.group_generators():
+                action = self.action_of(group_generator)
+                for label in labels:
+                    generator = module.module_generator(label)
+                    equal = action(generator) == generator
+                    if equal is False:
+                        return False
+                    if equal is not True:
+                        raise NotImplementedError(
+                            "triviality of the represented action is undecidable on a selected generator"
+                        )
+            return True
 
         def scalar_multiple(self, scalar, element):
             r"""Apply the actual ``R[G]`` scalar action."""
