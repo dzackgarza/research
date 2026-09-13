@@ -36,6 +36,13 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
     def _repr_object_names(cls):
         return "affine semigroup algebras"
 
+    def __contains__(self, candidate) -> bool:
+        return (
+            candidate in CommutativeAlgebras(self.base_ring())
+            and candidate in AlgebrasWithChosenFinitePresentation(self.base_ring())
+            and hasattr(candidate, "_preamble_affine_semigroup_generator_coordinates")
+        )
+
     def _call_(
         self,
         generator_coordinates,
@@ -80,7 +87,7 @@ class AffineSemigroupAlgebras(OwnedCategoryOverBaseRing):
         return FinitelyPresentedAlgebra(
             presentation,
             relations,
-            _extra_categories=(self, *tuple(extra_categories)),
+            _extra_categories=tuple(extra_categories),
             _extra_construction_data=construction_data,
         )
 
