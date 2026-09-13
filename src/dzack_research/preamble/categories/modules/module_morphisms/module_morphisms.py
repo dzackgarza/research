@@ -1943,6 +1943,12 @@ class ModuleAutomorphismGroup(CategoricalHomset):
         inverse = module_homset(self.domain(), self.domain())(inverse)
         return self.element_class(self, forward, inverse, verify=False)
 
+    def __call__(self, datum):
+        r"""Construct an automorphism-group element rather than preserving a bare Iso arrow."""
+        if isinstance(datum, ModuleAutomorphism) and datum.parent() is self:
+            return datum
+        return self._element_constructor_(datum)
+
     def _element_constructor_(self, datum):
         if isinstance(datum, ModuleAutomorphism):
             if datum.parent() is self:
