@@ -5,7 +5,7 @@ retains its actual scalar structure map, while a framed algebra retains the
 chosen algebra-generator family used by finite generator operations.
 """
 
-from dzack_research.preamble.all import QQ, ZZ
+from dzack_research.preamble.all import QQ, ZZ, finite_ordered_set
 from dzack_research.preamble.categories.algebras.algebras import (
     Algebras,
     FramedAlgebras,
@@ -45,9 +45,8 @@ def test_archived_framed_algebra_generators_are_the_selected_finite_family() -> 
     generators = finite_algebra_generators(polynomial)
 
     assert polynomial in FramedAlgebras(QQ)
-    assert tuple(polynomial.algebra_generating_set()) == ("x", "y")
-    assert generators == (
-        polynomial.algebra_generator("x"),
-        polynomial.algebra_generator("y"),
-    )
+    assert polynomial.algebra_generating_set() == finite_ordered_set(("x", "y"))
+    assert generators.cardinality() == 2
+    assert generators[0] == polynomial.algebra_generator("x")
+    assert generators[1] == polynomial.algebra_generator("y")
     assert polynomial.product_on_algebra_generators("x", "y") == generators[0] * generators[1]

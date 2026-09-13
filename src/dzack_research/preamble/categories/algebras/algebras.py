@@ -65,6 +65,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 )
 from dzack_research.preamble.categories.sets.cardinals import aleph0
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+    finite_ordered_image,
     finite_ordered_set,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -2805,7 +2806,12 @@ def finite_algebra_generators(algebra):
         raise NotImplementedError(f"{algebra} carries no chosen finite algebra generating set")
     if not algebra.algebra_generating_set().cardinality().is_finite():
         raise NotImplementedError(f"{algebra} has an infinite chosen algebra generating set")
-    return tuple(algebra.algebra_generators())
+    labels = algebra.algebra_generating_set()
+    return finite_ordered_image(
+        labels,
+        algebra.algebra_generator,
+        name=f"Selected algebra generators of {algebra}",
+    )
 
 
 __all__ = [
