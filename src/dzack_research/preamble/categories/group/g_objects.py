@@ -120,8 +120,20 @@ class GObjectHomset(CategoricalHomset):
         CategoricalHomset.__init__(self, hom_family, domain, codomain)
 
     def underlying_homset(self):
-        r"""Return ``Mor_C(X, Y)``, in which the equivariant morphisms lie."""
-        return self.domain().underlying_category().Mor(self.domain(), self.codomain())
+        r"""Return ``Mor_C(U(X), U(Y))``, where equivariant maps live.
+
+        A concrete ``G``-object need not itself be an object of ``C``: an
+        ``R[G]``-module, for example, reaches ``Mod_R`` by restriction of
+        scalars.  Evaluation of the represented action functor is the common
+        forgetful construction for both generic functor-category objects and
+        concrete specializations, so use that rather than treating the acted
+        wrapper as its own underlying object.
+        """
+        category = self.hom_family().base_category()
+        forget = category.forgetful_functor()
+        source = forget(self.domain())
+        target = forget(self.codomain())
+        return category.underlying_category().Mor(source, target)
 
     def is_equivariant(self, arrow):
         r"""Decide ``f rho_X(s) = rho_Y(s) f`` on the chosen generators ``s``."""
