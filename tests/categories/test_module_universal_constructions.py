@@ -284,6 +284,8 @@ def test_finite_sequence_limit_and_colimit_use_product_equalizer_reductions() ->
     assert limit.structure_morphism(shape(2)) * into_limit == to_two
 
     colimit = ColimitsOfCategory(diagram.domain(), line.category()).construction(diagram)
+    assert colimit.object() in line.category()
+    assert colimit.object().module_rank() == 1
     from_zero = module_homset(line, probe)({"e": 6 * t})
     from_one = module_homset(line, probe)({"e": 3 * t})
     from_two = module_homset(line, probe)({"e": t})

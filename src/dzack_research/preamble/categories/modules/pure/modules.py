@@ -564,8 +564,34 @@ class Modules(OwnedCategoryOverBaseRing):
             ):
                 raise ValueError("module coequalizer arrows must be parallel R-linear maps")
             difference = left_morphism - right_morphism
-            coequalizer = difference.cokernel()
-            projection = difference.cokernel_projection()
+            raw_coequalizer = difference.cokernel()
+            raw_projection = difference.cokernel_projection()
+
+            # A stricter module category may still contain this particular
+            # coequalizer even though cokernels do not stay in that category
+            # in general.  Over a PID the presented quotient can certify that
+            # it is finite free and supplies the actual trivialization.  Use
+            # that isomorphic free representative when it lies in ``self`` so
+            # the selected colimit is genuinely an object of its stated target
+            # category, rather than a merely isomorphic presented module.
+            coequalizer = raw_coequalizer
+            projection = raw_projection
+            coequalizer_transport = None
+            if raw_coequalizer not in self:
+                trivialization = getattr(raw_coequalizer, "finite_free_trivialization", None)
+                if callable(trivialization):
+                    try:
+                        candidate_transport = trivialization()
+                    except (NotImplementedError, ValueError):
+                        candidate_transport = None
+                    if (
+                        candidate_transport is not None
+                        and candidate_transport.codomain() in self
+                    ):
+                        coequalizer_transport = candidate_transport
+                        coequalizer = candidate_transport.codomain()
+                        projection = candidate_transport.forward() * raw_projection
+
             ambient_modules = Modules(left_morphism.domain().base_ring())
             diagram = _parallel_pair_diagram(
                 left_morphism, right_morphism, ambient_modules
@@ -584,9 +610,12 @@ class Modules(OwnedCategoryOverBaseRing):
                 target_leg = cocone.costructure_morphism(shape.target())
                 target = cocone.apex()
                 ambient = left_morphism.codomain()
-                return module_homset(coequalizer, target)(
+                raw_factor = module_homset(raw_coequalizer, target)(
                     lambda label: target_leg(ambient.module_generator(label))
                 )
+                if coequalizer_transport is None:
+                    return raw_factor
+                return raw_factor * coequalizer_transport.inverse()
 
             return SelectedColimitConstruction(diagram, universal_cocone, factorizer)
 
