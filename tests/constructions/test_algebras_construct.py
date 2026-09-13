@@ -16,17 +16,24 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_free_algebra_over_every_commutative_ring(commutative_ring) -> None:
+    r"""``FreeAlgebraOn(R,S)`` is the free *commutative* algebra ``R[S]``.
+
+    The user-settled constructor contract is ``R[S] = Sym(F_R(S))``; the
+    noncommutative free associative construction is ``TensorAlgebraOn``.
+    """
     ring = commutative_ring
     free = FreeAlgebraOn(ring, ("a", "b"))
+    symmetric = SymmetricAlgebraOn(ring, ("a", "b"))
     a = free.algebra_generator("a")
     b = free.algebra_generator("b")
 
+    assert free is symmetric
     assert free in Algebras(ring)
     assert free in FreeAlgebras(ring)
-    assert free not in CommutativeAlgebras(ring)
-    assert free not in CommutativeRings()
-    assert a * b != b * a
-    assert (a + b) * (a + b) == a * a + a * b + b * a + b * b
+    assert free in CommutativeAlgebras(ring)
+    assert free in CommutativeRings()
+    assert a * b == b * a
+    assert (a + b) * (a + b) == a * a + ring(2) * a * b + b * b
     assert free.algebra_generators().cardinality() == 2
 
 
