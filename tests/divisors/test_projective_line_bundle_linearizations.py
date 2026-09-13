@@ -1,6 +1,15 @@
 """Character twists change projective section actions without changing the line bundle."""
 
-from dzack_research.preamble.all import QQ, C2ProjectiveLineLinearization, ProjectiveSpace
+from dzack_research.preamble.all import (
+    QQ,
+    C2DiagonalProductProjectiveAction,
+    C2ProjectiveLineLinearization,
+    ProductProjectiveLineBundleLinearization,
+    ProjectiveLineBundleLinearization,
+    ProjectiveLineCoordinateSwapAction,
+    ProjectiveSpace,
+    scheme_product,
+)
 
 
 def _linearizations():
@@ -106,3 +115,27 @@ def test_restriction_to_an_eigensection_divisor_is_an_equivariant_h0_map() -> No
     assert restriction.domain() is trivial.coherent_cohomology_group_module(0)
     assert restriction.codomain().coefficient_module_rank() == 1
     assert restriction.parent().is_equivariant(restriction) is True
+
+
+def test_line_bundle_linearize_routes_to_the_projective_space_owner() -> None:
+    line = ProjectiveSpace(1, QQ, names=("x", "y"))
+    bundle = line.O(1)
+    action = ProjectiveLineCoordinateSwapAction(line)
+    linearized = bundle.linearize(action, lambda _element: QQ.one())
+
+    assert isinstance(linearized, ProjectiveLineBundleLinearization)
+    assert not isinstance(linearized, ProductProjectiveLineBundleLinearization)
+    assert linearized.line_bundle() is bundle
+    assert linearized.section_scheme() is line
+
+
+def test_product_line_bundle_linearize_routes_to_the_multiprojective_owner() -> None:
+    line = ProjectiveSpace(1, QQ)
+    product = scheme_product(line, line)
+    bundle = product.O(1, 1)
+    action = C2DiagonalProductProjectiveAction(product)
+    linearized = bundle.linearize(action, lambda _element: QQ.one())
+
+    assert isinstance(linearized, ProductProjectiveLineBundleLinearization)
+    assert linearized.line_bundle() is bundle
+    assert linearized.section_scheme() is product

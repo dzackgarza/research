@@ -666,17 +666,6 @@ class ProjectiveSpaceLineBundle(FiniteAtlasInvertibleSheaf):
     def homogeneous_polynomial_sections(self):
         return self.global_sections()
 
-    def linearize(self, scheme_action_functor, character):
-        from dzack_research.preamble.categories.divisors.linearizations import (
-            ProductProjectiveLineBundleLinearization,
-        )
-
-        return ProductProjectiveLineBundleLinearization(
-            self,
-            scheme_action_functor,
-            character,
-        )
-
     def homogeneous_polynomial_comparison(self):
         sections = self.global_sections()
         identity = module_homset(sections, sections).identity()
@@ -1061,6 +1050,17 @@ class ProductProjectiveLineBundle(FiniteAtlasInvertibleSheaf):
     def restrict_to(self, closed_subscheme):
         r"""Return the restricted multiprojective line bundle on ``closed_subscheme``."""
         return ProductProjectiveSubschemeLineBundle(closed_subscheme, self)
+
+    def linearize(self, scheme_action_functor, character):
+        from dzack_research.preamble.categories.divisors.linearizations import (
+            ProductProjectiveLineBundleLinearization,
+        )
+
+        return ProductProjectiveLineBundleLinearization(
+            self,
+            scheme_action_functor,
+            character,
+        )
 
     def homogeneous_polynomial_sections(self):
         return self.global_sections()
