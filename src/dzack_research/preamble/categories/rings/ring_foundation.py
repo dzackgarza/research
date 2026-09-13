@@ -1,5 +1,6 @@
 """Owned scalar hierarchy and the boundary to Sage computation rings."""
 
+from collections.abc import Mapping
 from functools import wraps
 
 from sage.all import (
@@ -223,6 +224,17 @@ class RingHomset(CategoricalHomset):
             if datum.parent() is self:
                 return datum
             return self.elementwise(datum)
+        if isinstance(datum, Mapping):
+            from dzack_research.preamble.categories.algebras.algebras import (
+                _engine_algebra_morphism_from_generator_images,
+            )
+
+            engine_morphism = _engine_algebra_morphism_from_generator_images(
+                self.domain(),
+                self.codomain(),
+                datum,
+            )
+            return self._element_constructor_(engine_morphism)
         if isinstance(datum, Map):
             source_engine = _engine_ring(self.domain())
             target_engine = _engine_ring(self.codomain())
@@ -232,12 +244,14 @@ class RingHomset(CategoricalHomset):
                 raise ValueError("the engine ring map has the wrong codomain")
             return self.element_class(
                 self,
-                lambda element: target_engine(datum(source_engine(element))),
+                lambda element: self.codomain()._from_engine_element(
+                    datum(_engine_element(self.domain(), element))
+                ),
                 engine_morphism=datum,
             )
         if callable(datum):
             return self.elementwise(datum)
-        raise TypeError("a ring morphism is supplied by an exact map or engine morphism")
+        raise TypeError("a ring morphism is supplied by generator images, an exact map, or an engine morphism")
 
     def elementwise(self, function):
         return self.element_class(self, function)
