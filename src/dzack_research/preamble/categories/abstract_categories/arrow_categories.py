@@ -641,10 +641,18 @@ class CosliceCategory(ArrowCategory):
 
 
 def common_category(*objects: Parent) -> Category:
-    r"""Return the greatest Sage category common to the stated objects."""
+    r"""Return the smallest owned category containing all stated objects.
+
+    The owned category order is inclusion: a subcategory is below its
+    supercategories.  Hence the common ambient category is their join.  Keep
+    Sage's opposite backend order hidden behind :meth:`Cat.join` rather than
+    calling ``Category.meet`` directly here.
+    """
     if not objects:
         raise ValueError("a common category requires at least one object")
-    return Category.meet([obj.category() for obj in objects])
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    return Cat().join(tuple(obj.category() for obj in objects))
 
 
 class EndArrowCategory(ArrowCategory):
