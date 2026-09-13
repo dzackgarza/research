@@ -50,6 +50,18 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert local_at_five.maximal_ideal() == local_at_five.ideal(local_at_five(5))
 
 
+def test_localizing_a_polynomial_ring_at_one_keeps_an_exact_engine_realization() -> None:
+    polynomial = PolynomialRing(QQ, "x")
+    localized = polynomial.localization(polynomial.one())
+
+    assert localized.localization_source() is polynomial
+    assert tuple(localized.inverted_elements()) == (polynomial.one(),)
+    assert localized.localization_map()(polynomial.algebra_generator("x")) == (
+        localized(polynomial.algebra_generator("x"))
+    )
+    assert localized._selected_engine_ring() is not None
+
+
 def test_polynomial_prime_localization_has_expected_residue_field() -> None:
     field = GF(5)
     polynomial = PolynomialRing(field, "t")

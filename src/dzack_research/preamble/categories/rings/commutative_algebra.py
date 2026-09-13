@@ -2414,10 +2414,19 @@ def _finite_generated_localization(source, submonoid):
         return source
     bottom, inverted = _one_step_inverted_family(source, generators)
     values = tuple(_engine_element(bottom, value) for value in inverted)
+    engine_bottom = _engine_ring(bottom)
     try:
-        localization_engine = _engine_ring(bottom).localization(values)
+        localization_engine = engine_bottom.localization(values)
     except (AttributeError, NotImplementedError, TypeError, ValueError):
-        localization_engine = None
+        # Localizing at units changes no ring.  Some Sage polynomial-ring
+        # engines refuse the syntactic localization at ``1``; in that case
+        # the source engine itself is the exact realization of the selected
+        # localization.
+        try:
+            all_units = all(value.is_unit() for value in values)
+        except (AttributeError, NotImplementedError, TypeError, ValueError):
+            all_units = False
+        localization_engine = engine_bottom if all_units else None
     placements = list(_localization_size_placements(source, submonoid))
     if source in PrincipalIdealDomains():
         placements.append(PrincipalIdealDomains())
