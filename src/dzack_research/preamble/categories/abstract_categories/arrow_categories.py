@@ -1287,16 +1287,51 @@ def CoveredObjectsOf(
     return CoveredObjectCategory(base_category, base_object)
 
 
-def core_mor(domain: Parent, codomain: Parent) -> CoreHomset:
-    r"""Return ``Hom`` in the core of the greatest category holding both objects."""
-    return Core(common_category(domain, codomain)).Mor(domain, codomain)
+def core_mor(
+    domain: Parent,
+    codomain: Parent,
+    *,
+    base_category: Category | None = None,
+) -> CoreHomset:
+    r"""Return the core Hom in the stated arrow category.
+
+    Endpoint categories can be joins carrying several independent structures
+    whose morphism theories are intentionally not identified.  When an arrow
+    already names its mathematical Hom owner, use that owner rather than
+    reconstructing a Hom theory from the endpoints alone.
+    """
+    category = common_category(domain, codomain) if base_category is None else base_category
+    return Core(category).Mor(domain, codomain)
+
+
+def _represented_morphism_category(forward: Morphism, inverse: Morphism) -> Category | None:
+    r"""Return the common declared category of the supplied inverse arrows."""
+    categories = []
+    for morphism in (forward, inverse):
+        parent = morphism.parent()
+        accessor = getattr(parent, "base_category", None)
+        if accessor is None:
+            return None
+        try:
+            category = accessor()
+        except (AttributeError, TypeError, ValueError):
+            return None
+        if not isinstance(category, Category):
+            return None
+        categories.append(category)
+    if categories[0] is categories[1]:
+        return categories[0]
+    return None
 
 
 def _isomorphism_from_known_inverse_pair(forward, inverse):
     r"""Transport a previously proved inverse pair without re-solving equality."""
-    return core_mor(forward.domain(), forward.codomain())._from_known_inverse_pair(
-        forward, inverse
-    )
+    base_category = _represented_morphism_category(forward, inverse)
+    return core_mor(
+        forward.domain(),
+        forward.codomain(),
+        base_category=base_category,
+    )._from_known_inverse_pair(forward, inverse)
 
 
 def Isomorphism(
@@ -1304,7 +1339,12 @@ def Isomorphism(
     inverse: Morphism,
 ) -> CategoricalIsomorphism:
     r"""Return the isomorphism represented by mutually inverse arrows."""
-    return core_mor(forward.domain(), forward.codomain())(forward, inverse)
+    base_category = _represented_morphism_category(forward, inverse)
+    return core_mor(
+        forward.domain(),
+        forward.codomain(),
+        base_category=base_category,
+    )(forward, inverse)
 
 
 __all__ = [

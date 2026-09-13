@@ -283,6 +283,24 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             # callers never observe an un-enriched module Hom parent.
             refine(self, category)
 
+    def _already_parented_arrow(self, candidate) -> bool:
+        r"""Whether ``candidate`` is already represented by this Hom theory."""
+        return isinstance(candidate, Morphism) and (
+            candidate.parent() is self
+            or _arrow_is_inherited_from_subcategory(self, candidate)
+        )
+
+    def __call__(self, *args, **kwargs):
+        r"""Construct an arrow, preserving one already represented here.
+
+        If ``D <= C``, a ``D``-arrow is already a ``C``-arrow.  Reading it in
+        the weaker Hom must therefore preserve the arrow rather than
+        reinterpret its object as generator images or presentation data.
+        """
+        if len(args) == 1 and not kwargs and self._already_parented_arrow(args[0]):
+            return args[0]
+        return self._element_constructor_(*args, **kwargs)
+
     def hom_family(self) -> HomCategoryOf:
         return self._family
 
@@ -367,7 +385,7 @@ class CategoricalHomset(CategoryPacketMethods, OwnedHomset, Category):
             and arrow.codomain() is self.codomain_object()
         ):
             return False
-        if arrow.parent() is self or _arrow_is_inherited_from_subcategory(self, arrow):
+        if self._already_parented_arrow(arrow):
             return True
         try:
             self(arrow)

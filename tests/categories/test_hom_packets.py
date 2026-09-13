@@ -83,9 +83,12 @@ def test_category_packet_transports_hom_end_aut_supercategories() -> None:
 
     assert packet.C() is algebras
     module_packet = category_packet(modules)
-    assert module_packet.Homs() in packet.Homs().super_categories()
-    assert module_packet.Ends() in packet.Ends().super_categories()
-    assert module_packet.Auts() in packet.Auts().super_categories()
+    forget = algebra_underlying_module_functor(QQ)
+    assert forget.domain() is algebras
+    assert forget.codomain() is modules
+    assert module_packet.Homs() not in packet.Homs().super_categories()
+    assert module_packet.Ends() not in packet.Ends().super_categories()
+    assert module_packet.Auts() not in packet.Auts().super_categories()
     assert packet.Homs() in packet.Monos().super_categories()
     assert packet.Homs() in packet.Epis().super_categories()
     assert packet.Homs() in packet.Isos().super_categories()
@@ -157,9 +160,11 @@ def test_forgetful_functor_induces_hom_end_and_aut_functors() -> None:
 
     aut_source = AutCategoryOf(Algebras(QQ)).Of(algebra)(isomorphism)
     aut_image = induced_aut_functor(forget, algebra)(aut_source)
-    underlying_iso = aut_image.arrow()
-    assert underlying_iso.forward().domain() is forget(algebra)
-    assert underlying_iso.forward().codomain() is forget(algebra)
+    assert aut_image.parent() is Modules(QQ).Aut(forget(algebra))
+    assert aut_image.forward().domain() is forget(algebra)
+    assert aut_image.forward().codomain() is forget(algebra)
+    assert aut_image.inverse().domain() is forget(algebra)
+    assert aut_image.inverse().codomain() is forget(algebra)
 
 
 def test_lattice_embedding_isometry_and_automorphism_are_packet_objects() -> None:
