@@ -894,8 +894,22 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
 
             def owned_matrix_morphism(domain, codomain, backend_matrix):
                 homset = _refine_matrix_hom(module_homset(domain, codomain))
-                rows = [[ring._from_engine_element(backend_matrix[row, column]) for column in range(int(backend_matrix.ncols()))] for row in range(int(backend_matrix.nrows()))]
-                return homset.from_rows(rows)
+                source_labels = tuple(domain.module_generating_set())
+                target_labels = tuple(codomain.module_generating_set())
+                if int(backend_matrix.ncols()) != len(source_labels) or int(backend_matrix.nrows()) != len(target_labels):
+                    raise ArithmeticError("the Smith basis-change matrix has incompatible endpoint ranks")
+                return homset(
+                    {
+                        source_label: codomain.linear_combination(
+                            {
+                                target_label: ring._from_engine_element(backend_matrix[row, column])
+                                for row, target_label in enumerate(target_labels)
+                                if backend_matrix[row, column]
+                            }
+                        )
+                        for column, source_label in enumerate(source_labels)
+                    }
+                )
 
             # The stored relation matrix is the transpose of the presentation
             # morphism matrix.  If U R V = D, then V^t A U^t = D^t.
