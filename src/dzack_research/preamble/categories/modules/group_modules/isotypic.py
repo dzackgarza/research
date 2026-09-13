@@ -59,6 +59,8 @@ class IsotypicDecompositions(OwnedCategory):
         return [DirectSumObjects()]
 
     class ParentMethods:
+        _derived_construction_parameters = frozenset({"summands"})
+
         def __init__(self, isotypic_characters, isotypic_components, **rest) -> None:
             characters = tuple(isotypic_characters)
             components = tuple(isotypic_components)
